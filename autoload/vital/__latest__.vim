@@ -1,10 +1,10 @@
-let s:vital = {'version': 'v0_0_1'}
+let s:vital = {'version': '__latest__'}
 
 function! s:vital.system(x)
   echo "this is the version 0.0.1 implementation of system()!"
   return 1
 endfunction
 
-function! vital#v0_0_1#new()
+function! vital#__latest__#new()
   return s:vital
 endfunction

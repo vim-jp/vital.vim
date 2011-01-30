@@ -19,7 +19,7 @@ If you are a Vim plugin author, please check `vital.vim`.
 Assuming your Vim plugin name is `ujihisa`. You can define your utility function set `ujihisa#util` just by
 
     function! ujihisa#util()
-      return vital#of('0.0.1')
+      return vital#of('_49f672')
     endfunction
 
 and then you can call functions by `ujihisa#util().system()`, without taking care of `vital.vim` itself. It's all hidden.
