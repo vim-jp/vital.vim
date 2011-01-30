@@ -1,3 +1,3 @@
 function! vital#of(version)
-  return vital#v{a:version}#new()
+  return vital#_{a:version}#new()
 endfunction
