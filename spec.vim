@@ -12,8 +12,9 @@ echo unite#util#wcswidth('あいうえお') == 10
 echo unite#util#is_win() == 0
 "call unite#util#print_error('hi')
 call unite#util#smart_execute_command('echo', '') " hmm
-call unite#util#smart_execute_command('new', '/tmp/supertemp')
-if expand('%') =~ '/tmp/supertemp$'
+let tempname = tempname()
+call unite#util#smart_execute_command('new', tempname)
+if expand('%') ==# tempname
   echo 1
   q!
 else
