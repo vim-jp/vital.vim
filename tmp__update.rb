@@ -12,11 +12,12 @@ end
 vitaldir = File.expand_path ARGV.shift
 yourdir = File.expand_path ARGV.shift
 sha1 = ARGV.shift
+puts sha1
 
 Dir.chdir vitaldir do
   sha1 ||= `git show`[/commit (......)/, 1]
   sh "git checkout #{sha1} -- ."
-  sh "mv autoload/vital/__latest__.vim autoload/vital/_#{sha1}.vim"
+  File.rename 'autoload/vital/__latest__.vim', 'autoload/vital/_#{sha1}.vim'
   Dir.glob("autoload/**/*") do |f|
     next if File.directory? f
     a = File.read f
@@ -26,6 +27,6 @@ Dir.chdir vitaldir do
         io.write b
       end
     end
-    sh "cp #{f} #{yourdir}/#{f}"
+    File.copy_stream f, "#{yourdir}/#{f}"
   end
 end
