@@ -17,6 +17,7 @@ Dir.chdir vitaldir do
   sha1 ||= `git show`[/commit (......)/, 1]
   puts sha1
   sh "git checkout #{sha1} -- ."
+  Dir.mkdir "#{yourdir}/autoload/vital" unless Dir.exist? File.expand_path "#{yourdir}/autoload/vital"
   File.rename 'autoload/vital/__latest__.vim', "autoload/vital/_#{sha1}.vim"
   Dir.glob("autoload/**/*") do |f|
     next if File.directory? f
