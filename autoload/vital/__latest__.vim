@@ -185,14 +185,10 @@ function! s:vital.path2project_directory(path)"{{{
   return unite#substitute_path_separator(l:directory)
 endfunction"}}}
 " Check vimproc."{{{
-try
-  let s:exists_vimproc_version = vimproc#version()
-catch
-  let s:exists_vimproc_version = 0
-endtry
+let s:exists_vimproc = globpath(&rtp, 'autoload/vimproc.vim') != ''
 "}}}
 function! s:vital.has_vimproc()"{{{
-  return s:exists_vimproc_version
+  return s:exists_vimproc
 endfunction"}}}
 function! s:vital.system(str, ...)"{{{
   let l:command = a:str
