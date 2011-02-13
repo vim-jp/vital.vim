@@ -17,24 +17,19 @@ yourdir = File.expand_path ARGV.shift
 pluginname = Pathname(yourdir).basename.to_s
 sha1 = ARGV.shift
 
+placeholders = lambda do |x|
+  x.gsub(/__latest__/, "_#{sha1}").
+    gsub(/__plugin__/, "#{pluginname}")
+end
+
 Dir.chdir vitaldir do
   sha1 ||= `git show`[/commit (......)/, 1]
   puts sha1
   Dir.glob("autoload/**/*") do |before|
     next if File.directory? before
-    after =
-      case before
-      when 'autoload/vital/__latest__.vim'
-        "#{yourdir}/autoload/vital/_#{sha1}.vim"
-      when 'autoload/__plugin__/vital.vim'
-        "#{yourdir}/autoload/#{pluginname}/vital.vim"
-      else
-        "#{yourdir}/#{before}"
-      end
+    after = "#{yourdir}/#{placeholders.(before)}"
     FileUtils.mkdir_p(Pathname(after).dirname.to_s)
-    x = File.read before
-    x = x.gsub(/__latest__/, "_#{sha1}")
-    x = x.gsub(/__plugin__/, "#{pluginname}")
+    x = placeholders.(File.read before)
     File.open(after, 'w') do |io|
       io.write x
     end
