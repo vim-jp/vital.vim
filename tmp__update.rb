@@ -1,4 +1,5 @@
 require 'pathname'
+require 'fileutils'
 
 def sh(o)
   puts o
@@ -19,21 +20,23 @@ sha1 = ARGV.shift
 Dir.chdir vitaldir do
   sha1 ||= `git show`[/commit (......)/, 1]
   puts sha1
-  sh "git checkout #{sha1} -- ."
-  Dir.mkdir "#{yourdir}/autoload/vital" unless Dir.exist? File.expand_path "#{yourdir}/autoload/vital"
-  File.rename 'autoload/vital/__latest__.vim', "autoload/vital/_#{sha1}.vim"
-  Dir.mkdir "#{yourdir}/autoload/#{pluginname}" unless Dir.exist? File.expand_path "#{yourdir}/autoload/#{pluginname}"
-  File.rename 'autoload/__plugin__', "autoload/#{pluginname}"
-  Dir.glob("autoload/**/*") do |f|
-    next if File.directory? f
-    a = File.read f
-    b = a.gsub(/__latest__/, "_#{sha1}")
-    b = b.gsub(/__plugin__/, "#{pluginname}")
-    if a != b
-      File.open(f, 'w') do |io|
-        io.write b
+  Dir.glob("autoload/**/*") do |before|
+    next if File.directory? before
+    after =
+      case before
+      when 'autoload/vital/__latest__.vim'
+        "#{yourdir}/autoload/vital/_#{sha1}.vim"
+      when 'autoload/__plugin__/vital.vim'
+        "#{yourdir}/autoload/#{pluginname}/vital.vim"
+      else
+        "#{yourdir}/#{before}"
       end
+    FileUtils.mkdir_p(Pathname(after).dirname.to_s)
+    x = File.read before
+    x = x.gsub(/__latest__/, "_#{sha1}")
+    x = x.gsub(/__plugin__/, "#{pluginname}")
+    File.open(after, 'w') do |io|
+      io.write x
     end
-    File.copy_stream f, "#{yourdir}/#{f}"
   end
 end
