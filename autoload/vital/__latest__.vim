@@ -1,27 +1,25 @@
-let s:prelude = {'version': '__latest__'}
-
-function! s:prelude.truncate_smart(str, max, footer_width, separator)"{{{
-  let width = s:prelude.wcswidth(a:str)
+function! vital#__latest__#truncate_smart(str, max, footer_width, separator)"{{{
+  let width = vital#__latest__#wcswidth(a:str)
   if width <= a:max
     let ret = a:str
   else
-    let header_width = a:max - s:prelude.wcswidth(a:separator) - a:footer_width
-    let ret = s:prelude.strwidthpart(a:str, header_width) . a:separator
-          \ . s:prelude.strwidthpart_reverse(a:str, a:footer_width)
+    let header_width = a:max - vital#__latest__#wcswidth(a:separator) - a:footer_width
+    let ret = vital#__latest__#strwidthpart(a:str, header_width) . a:separator
+          \ . vital#__latest__#strwidthpart_reverse(a:str, a:footer_width)
   endif
 
-  return s:prelude.truncate(ret, a:max)
+  return vital#__latest__#truncate(ret, a:max)
 endfunction"}}}
 
-function! s:prelude.truncate(str, width)"{{{
+function! vital#__latest__#truncate(str, width)"{{{
   " Original function is from mattn.
   " http://github.com/mattn/googlereader-vim/tree/master
 
   let ret = a:str
-  let width = s:prelude.wcswidth(a:str)
+  let width = vital#__latest__#wcswidth(a:str)
   if width > a:width
-    let ret = s:prelude.strwidthpart(ret, a:width)
-    let width = s:prelude.wcswidth(ret)
+    let ret = vital#__latest__#strwidthpart(ret, a:width)
+    let width = vital#__latest__#wcswidth(ret)
   endif
 
   if width < a:width
@@ -31,13 +29,13 @@ function! s:prelude.truncate(str, width)"{{{
   return ret
 endfunction"}}}
 
-function! s:prelude.strchars(str)"{{{
+function! vital#__latest__#strchars(str)"{{{
   return len(substitute(a:str, '.', 'x', 'g'))
 endfunction"}}}
 
-function! s:prelude.strwidthpart(str, width)"{{{
+function! vital#__latest__#strwidthpart(str, width)"{{{
   let ret = a:str
-  let width = s:prelude.wcswidth(a:str)
+  let width = vital#__latest__#wcswidth(a:str)
   while width > a:width
     let char = matchstr(ret, '.$')
     let ret = ret[: -1 - len(char)]
@@ -46,9 +44,9 @@ function! s:prelude.strwidthpart(str, width)"{{{
 
   return ret
 endfunction"}}}
-function! s:prelude.strwidthpart_reverse(str, width)"{{{
+function! vital#__latest__#strwidthpart_reverse(str, width)"{{{
   let ret = a:str
-  let width = s:prelude.wcswidth(a:str)
+  let width = vital#__latest__#wcswidth(a:str)
   while width > a:width
     let char = matchstr(ret, '^.')
     let ret = ret[len(char) :]
@@ -60,14 +58,14 @@ endfunction"}}}
 
 if v:version >= 703
   " Use builtin function.
-  function! s:prelude.wcswidth(str)"{{{
+  function! vital#__latest__#wcswidth(str)"{{{
     return strdisplaywidth(a:str)
   endfunction"}}}
   function! s:wcwidth(str)"{{{
     return strwidth(a:str)
   endfunction"}}}
 else
-  function! s:prelude.wcswidth(str)"{{{
+  function! vital#__latest__#wcswidth(str)"{{{
     if a:str =~# '^[\x00-\x7f]*$'
       return strlen(a:str)
     end
@@ -109,50 +107,50 @@ else
   endfunction"}}}
 endif
 
-function! s:prelude.is_win()"{{{
+function! vital#__latest__#is_win()"{{{
   return has('win16') || has('win32') || has('win64')
 endfunction"}}}
 
-function! s:prelude.print_error(message)"{{{
+function! vital#__latest__#print_error(message)"{{{
   echohl WarningMsg | echomsg a:message | echohl None
 endfunction"}}}
 
-function! s:prelude.smart_execute_command(action, word)"{{{
+function! vital#__latest__#smart_execute_command(action, word)"{{{
   execute a:action . ' ' . (a:word == '' ? '' : '`=a:word`')
 endfunction"}}}
 
-function! s:prelude.escape_file_searching(buffer_name)"{{{
+function! vital#__latest__#escape_file_searching(buffer_name)"{{{
   return escape(a:buffer_name, '*[]?{},')
 endfunction"}}}
-function! s:prelude.escape_pattern(str)"{{{
+function! vital#__latest__#escape_pattern(str)"{{{
   return escape(a:str, '~"\.^$[]*')
 endfunction"}}}
 
-function! s:prelude.set_default(var, val)  "{{{
+function! vital#__latest__#set_default(var, val)  "{{{
   if !exists(a:var) || type({a:var}) != type(a:val)
     let {a:var} = a:val
   endif
 endfunction"}}}
-function! s:prelude.set_dictionary_helper(variable, keys, pattern)"{{{
+function! vital#__latest__#set_dictionary_helper(variable, keys, pattern)"{{{
   for key in split(a:keys, ',')
     if !has_key(a:variable, key)
       let a:variable[key] = a:pattern
     endif
   endfor
 endfunction"}}}
-function! s:prelude.substitute_path_separator(path)"{{{
-  return s:prelude.is_win() ? substitute(a:path, '\\', '/', 'g') : a:path
+function! vital#__latest__#substitute_path_separator(path)"{{{
+  return vital#__latest__#is_win() ? substitute(a:path, '\\', '/', 'g') : a:path
 endfunction"}}}
-function! s:prelude.path2directory(path)"{{{
-  return s:prelude.substitute_path_separator(isdirectory(a:path) ? a:path : fnamemodify(a:path, ':p:h'))
+function! vital#__latest__#path2directory(path)"{{{
+  return vital#__latest__#substitute_path_separator(isdirectory(a:path) ? a:path : fnamemodify(a:path, ':p:h'))
 endfunction"}}}
-function! s:prelude.path2project_directory(path)"{{{
-  let l:search_directory = s:prelude.path2directory(a:path)
+function! vital#__latest__#path2project_directory(path)"{{{
+  let l:search_directory = vital#__latest__#path2directory(a:path)
   let l:directory = ''
 
   " Search VCS directory.
   for d in ['.git', '.bzr', '.hg']
-    let d = finddir(d, s:prelude.escape_file_searching(l:search_directory) . ';')
+    let d = finddir(d, vital#__latest__#escape_file_searching(l:search_directory) . ';')
     if d != ''
       let l:directory = fnamemodify(d, ':p:h:h')
       break
@@ -162,7 +160,7 @@ function! s:prelude.path2project_directory(path)"{{{
   " Search project file.
   if l:directory == ''
     for d in ['build.xml', 'prj.el', '.project', 'pom.xml', 'Makefile', 'configure', 'Rakefile', 'NAnt.build', 'tags', 'gtags']
-      let d = findfile(d, s:prelude.escape_file_searching(l:search_directory) . ';')
+      let d = findfile(d, vital#__latest__#escape_file_searching(l:search_directory) . ';')
       if d != ''
         let l:directory = fnamemodify(d, ':p:h')
         break
@@ -187,10 +185,10 @@ endfunction"}}}
 " Check vimproc."{{{
 let s:exists_vimproc = globpath(&rtp, 'autoload/vimproc.vim') != ''
 "}}}
-function! s:prelude.has_vimproc()"{{{
+function! vital#__latest__#has_vimproc()"{{{
   return s:exists_vimproc
 endfunction"}}}
-function! s:prelude.system(str, ...)"{{{
+function! vital#__latest__#system(str, ...)"{{{
   let l:command = a:str
   let l:input = a:0 >= 1 ? a:1 : ''
   if &termencoding != '' && &termencoding != &encoding
@@ -199,10 +197,10 @@ function! s:prelude.system(str, ...)"{{{
   endif
 
   if a:0 == 0
-    let l:output = s:prelude.has_vimproc() ?
+    let l:output = vital#__latest__#has_vimproc() ?
           \ vimproc#system(l:command) : system(l:command)
   else
-    let l:output = s:prelude.has_vimproc() ?
+    let l:output = vital#__latest__#has_vimproc() ?
           \ vimproc#system(l:command, l:input) : system(l:command, l:input)
   endif
 
@@ -212,11 +210,8 @@ function! s:prelude.system(str, ...)"{{{
 
   return l:output
 endfunction"}}}
-function! s:prelude.get_last_status()"{{{
-  return s:prelude.has_vimproc() ?
+function! vital#__latest__#get_last_status()"{{{
+  return vital#__latest__#has_vimproc() ?
         \ vimproc#get_last_status() : v:shell_error
-endfunction"}}}
-function! vital#__latest__#prelude()"{{{
-  return s:prelude
 endfunction"}}}
 " vim: foldmethod=marker

@@ -17,6 +17,18 @@ yourdir = File.expand_path ARGV.shift
 pluginname = Pathname(yourdir).basename.to_s
 sha1 = ARGV.shift
 
+functions = Dir.glob("autoload/**/*.vim").map {|before|
+  File.read(before).scan(/\s*function!?\s+(vital#__latest__#[\w#]*)/).map(&:first)
+}.flatten(1)
+File.open("autoload/__plugin__/vital.vim", 'w') do |io|
+  functions.each {|f|
+    g = f.sub(/^vital#__latest__#/, "#{pluginname}#vital#")
+    io.puts "function! #{g}(...)"
+    io.puts "  return call('#{f}', a:000)"
+    io.puts "endfunction"
+  }
+end
+
 placeholders = lambda do |x|
   x.gsub(/__latest__/, "_#{sha1}").
     gsub(/__plugin__/, "#{pluginname}")
@@ -25,8 +37,7 @@ end
 Dir.chdir vitaldir do
   sha1 ||= `git show`[/commit (......)/, 1]
   puts sha1
-  Dir.glob("autoload/**/*") do |before|
-    next if File.directory? before
+  Dir.glob("autoload/**/*.vim") do |before|
     after = "#{yourdir}/#{placeholders.(before)}"
     FileUtils.mkdir_p(Pathname(after).dirname.to_s)
     x = placeholders.(File.read before)
