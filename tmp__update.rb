@@ -1,3 +1,5 @@
+require 'pathname'
+
 def sh(o)
   puts o
   system o or abort
@@ -11,6 +13,7 @@ end
 
 vitaldir = File.expand_path ARGV.shift
 yourdir = File.expand_path ARGV.shift
+pluginname = Pathname(yourdir).basename.to_s
 sha1 = ARGV.shift
 
 Dir.chdir vitaldir do
@@ -19,10 +22,13 @@ Dir.chdir vitaldir do
   sh "git checkout #{sha1} -- ."
   Dir.mkdir "#{yourdir}/autoload/vital" unless Dir.exist? File.expand_path "#{yourdir}/autoload/vital"
   File.rename 'autoload/vital/__latest__.vim', "autoload/vital/_#{sha1}.vim"
+  Dir.mkdir "#{yourdir}/autoload/#{pluginname}" unless Dir.exist? File.expand_path "#{yourdir}/autoload/#{pluginname}"
+  File.rename 'autoload/__plugin__', "autoload/#{pluginname}"
   Dir.glob("autoload/**/*") do |f|
     next if File.directory? f
     a = File.read f
     b = a.gsub(/__latest__/, "_#{sha1}")
+    b = b.gsub(/__plugin__/, "#{pluginname}")
     if a != b
       File.open(f, 'w') do |io|
         io.write b
