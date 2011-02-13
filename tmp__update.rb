@@ -14,7 +14,7 @@ end
 
 vitaldir = File.expand_path ARGV.shift
 yourdir = File.expand_path ARGV.shift
-pluginname = Pathname(yourdir).basename.to_s
+pluginname = Pathname(yourdir).basename.to_s.sub(/\.vim$/, '').gsub(/\W/, '_')
 sha1 = ARGV.shift
 
 Dir.glob("autoload/vital/**/*.vim").each do |script|
