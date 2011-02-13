@@ -17,16 +17,20 @@ yourdir = File.expand_path ARGV.shift
 pluginname = Pathname(yourdir).basename.to_s
 sha1 = ARGV.shift
 
-functions = Dir.glob("autoload/**/*.vim").map {|before|
-  File.read(before).scan(/\s*function!?\s+(vital#__latest__#[\w#]*)/).map(&:first)
-}.flatten(1)
-File.open("autoload/__plugin__/vital.vim", 'w') do |io|
-  functions.each {|f|
-    g = f.sub(/^vital#__latest__#/, "#{pluginname}#vital#")
-    io.puts "function! #{g}(...)"
-    io.puts "  return call('#{f}', a:000)"
-    io.puts "endfunction"
-  }
+Dir.glob("autoload/vital/**/*.vim").each do |script|
+  namespace = script[/^autoload\/vital\/(.*)\.vim$/, 1].
+    gsub('/', '#')
+  functions = File.read(script).scan(/\s*function!?\s+(vital##{namespace}#[\w#]*)/).map(&:first)
+  target = script.sub("vital/__latest__", "__plugin__/vital")
+  FileUtils.mkdir_p(Pathname(target).dirname.to_s)
+  File.open(target, 'w') do |io|
+    functions.each {|f|
+      g = f.sub(/^vital#__latest__#/, "#{pluginname}#vital#")
+      io.puts "function! #{g}(...)"
+      io.puts "  return call('#{f}', a:000)"
+      io.puts "endfunction"
+    }
+  end
 end
 
 placeholders = lambda do |x|
