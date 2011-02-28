@@ -170,7 +170,7 @@ function! vital#__latest__#path2project_directory(path)"{{{
 
   if l:directory == ''
     " Search /src/ directory.
-    let l:base = unite#substitute_path_separator(l:search_directory)
+    let l:base = vital#__latest__#substitute_path_separator(l:search_directory)
     if l:base =~# '/src/'
       let l:directory = l:base[: strridx(l:base, '/src/') + 3]
     endif
@@ -180,7 +180,7 @@ function! vital#__latest__#path2project_directory(path)"{{{
     let l:directory = l:search_directory
   endif
 
-  return unite#substitute_path_separator(l:directory)
+  return vital#__latest__#substitute_path_separator(l:directory)
 endfunction"}}}
 " Check vimproc."{{{
 let s:exists_vimproc = globpath(&rtp, 'autoload/vimproc.vim') != ''
