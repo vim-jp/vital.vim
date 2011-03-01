@@ -1,25 +1,25 @@
-function! vital#__latest__#truncate_smart(str, max, footer_width, separator)"{{{
-  let width = vital#__latest__#wcswidth(a:str)
+function! s:truncate_smart(str, max, footer_width, separator)"{{{
+  let width = s:wcswidth(a:str)
   if width <= a:max
     let ret = a:str
   else
-    let header_width = a:max - vital#__latest__#wcswidth(a:separator) - a:footer_width
-    let ret = vital#__latest__#strwidthpart(a:str, header_width) . a:separator
-          \ . vital#__latest__#strwidthpart_reverse(a:str, a:footer_width)
+    let header_width = a:max - s:wcswidth(a:separator) - a:footer_width
+    let ret = s:strwidthpart(a:str, header_width) . a:separator
+          \ . s:strwidthpart_reverse(a:str, a:footer_width)
   endif
 
-  return vital#__latest__#truncate(ret, a:max)
+  return s:truncate(ret, a:max)
 endfunction"}}}
 
-function! vital#__latest__#truncate(str, width)"{{{
+function! s:truncate(str, width)"{{{
   " Original function is from mattn.
   " http://github.com/mattn/googlereader-vim/tree/master
 
   let ret = a:str
-  let width = vital#__latest__#wcswidth(a:str)
+  let width = s:wcswidth(a:str)
   if width > a:width
-    let ret = vital#__latest__#strwidthpart(ret, a:width)
-    let width = vital#__latest__#wcswidth(ret)
+    let ret = s:strwidthpart(ret, a:width)
+    let width = s:wcswidth(ret)
   endif
 
   if width < a:width
@@ -29,13 +29,13 @@ function! vital#__latest__#truncate(str, width)"{{{
   return ret
 endfunction"}}}
 
-function! vital#__latest__#strchars(str)"{{{
+function! s:strchars(str)"{{{
   return len(substitute(a:str, '.', 'x', 'g'))
 endfunction"}}}
 
-function! vital#__latest__#strwidthpart(str, width)"{{{
+function! s:strwidthpart(str, width)"{{{
   let ret = a:str
-  let width = vital#__latest__#wcswidth(a:str)
+  let width = s:wcswidth(a:str)
   while width > a:width
     let char = matchstr(ret, '.$')
     let ret = ret[: -1 - len(char)]
@@ -44,9 +44,9 @@ function! vital#__latest__#strwidthpart(str, width)"{{{
 
   return ret
 endfunction"}}}
-function! vital#__latest__#strwidthpart_reverse(str, width)"{{{
+function! s:strwidthpart_reverse(str, width)"{{{
   let ret = a:str
-  let width = vital#__latest__#wcswidth(a:str)
+  let width = s:wcswidth(a:str)
   while width > a:width
     let char = matchstr(ret, '^.')
     let ret = ret[len(char) :]
@@ -58,14 +58,14 @@ endfunction"}}}
 
 if v:version >= 703
   " Use builtin function.
-  function! vital#__latest__#wcswidth(str)"{{{
+  function! s:wcswidth(str)"{{{
     return strdisplaywidth(a:str)
   endfunction"}}}
   function! s:wcwidth(str)"{{{
     return strwidth(a:str)
   endfunction"}}}
 else
-  function! vital#__latest__#wcswidth(str)"{{{
+  function! s:wcswidth(str)"{{{
     if a:str =~# '^[\x00-\x7f]*$'
       return strlen(a:str)
     end
@@ -107,50 +107,50 @@ else
   endfunction"}}}
 endif
 
-function! vital#__latest__#is_win()"{{{
+function! s:is_win()"{{{
   return has('win16') || has('win32') || has('win64')
 endfunction"}}}
 
-function! vital#__latest__#print_error(message)"{{{
+function! s:print_error(message)"{{{
   echohl WarningMsg | echomsg a:message | echohl None
 endfunction"}}}
 
-function! vital#__latest__#smart_execute_command(action, word)"{{{
+function! s:smart_execute_command(action, word)"{{{
   execute a:action . ' ' . (a:word == '' ? '' : '`=a:word`')
 endfunction"}}}
 
-function! vital#__latest__#escape_file_searching(buffer_name)"{{{
+function! s:escape_file_searching(buffer_name)"{{{
   return escape(a:buffer_name, '*[]?{},')
 endfunction"}}}
-function! vital#__latest__#escape_pattern(str)"{{{
+function! s:escape_pattern(str)"{{{
   return escape(a:str, '~"\.^$[]*')
 endfunction"}}}
 
-function! vital#__latest__#set_default(var, val)  "{{{
+function! s:set_default(var, val)  "{{{
   if !exists(a:var) || type({a:var}) != type(a:val)
     let {a:var} = a:val
   endif
 endfunction"}}}
-function! vital#__latest__#set_dictionary_helper(variable, keys, pattern)"{{{
+function! s:set_dictionary_helper(variable, keys, pattern)"{{{
   for key in split(a:keys, ',')
     if !has_key(a:variable, key)
       let a:variable[key] = a:pattern
     endif
   endfor
 endfunction"}}}
-function! vital#__latest__#substitute_path_separator(path)"{{{
-  return vital#__latest__#is_win() ? substitute(a:path, '\\', '/', 'g') : a:path
+function! s:substitute_path_separator(path)"{{{
+  return s:is_win() ? substitute(a:path, '\\', '/', 'g') : a:path
 endfunction"}}}
-function! vital#__latest__#path2directory(path)"{{{
-  return vital#__latest__#substitute_path_separator(isdirectory(a:path) ? a:path : fnamemodify(a:path, ':p:h'))
+function! s:path2directory(path)"{{{
+  return s:substitute_path_separator(isdirectory(a:path) ? a:path : fnamemodify(a:path, ':p:h'))
 endfunction"}}}
-function! vital#__latest__#path2project_directory(path)"{{{
-  let l:search_directory = vital#__latest__#path2directory(a:path)
+function! s:path2project_directory(path)"{{{
+  let l:search_directory = s:path2directory(a:path)
   let l:directory = ''
 
   " Search VCS directory.
   for d in ['.git', '.bzr', '.hg']
-    let d = finddir(d, vital#__latest__#escape_file_searching(l:search_directory) . ';')
+    let d = finddir(d, s:escape_file_searching(l:search_directory) . ';')
     if d != ''
       let l:directory = fnamemodify(d, ':p:h:h')
       break
@@ -160,7 +160,7 @@ function! vital#__latest__#path2project_directory(path)"{{{
   " Search project file.
   if l:directory == ''
     for d in ['build.xml', 'prj.el', '.project', 'pom.xml', 'Makefile', 'configure', 'Rakefile', 'NAnt.build', 'tags', 'gtags']
-      let d = findfile(d, vital#__latest__#escape_file_searching(l:search_directory) . ';')
+      let d = findfile(d, s:escape_file_searching(l:search_directory) . ';')
       if d != ''
         let l:directory = fnamemodify(d, ':p:h')
         break
@@ -170,7 +170,7 @@ function! vital#__latest__#path2project_directory(path)"{{{
 
   if l:directory == ''
     " Search /src/ directory.
-    let l:base = vital#__latest__#substitute_path_separator(l:search_directory)
+    let l:base = s:substitute_path_separator(l:search_directory)
     if l:base =~# '/src/'
       let l:directory = l:base[: strridx(l:base, '/src/') + 3]
     endif
@@ -180,15 +180,15 @@ function! vital#__latest__#path2project_directory(path)"{{{
     let l:directory = l:search_directory
   endif
 
-  return vital#__latest__#substitute_path_separator(l:directory)
+  return s:substitute_path_separator(l:directory)
 endfunction"}}}
 " Check vimproc."{{{
 let s:exists_vimproc = globpath(&rtp, 'autoload/vimproc.vim') != ''
 "}}}
-function! vital#__latest__#has_vimproc()"{{{
+function! s:has_vimproc()"{{{
   return s:exists_vimproc
 endfunction"}}}
-function! vital#__latest__#system(str, ...)"{{{
+function! s:system(str, ...)"{{{
   let l:command = a:str
   let l:input = a:0 >= 1 ? a:1 : ''
   if &termencoding != '' && &termencoding != &encoding
@@ -197,10 +197,10 @@ function! vital#__latest__#system(str, ...)"{{{
   endif
 
   if a:0 == 0
-    let l:output = vital#__latest__#has_vimproc() ?
+    let l:output = s:has_vimproc() ?
           \ vimproc#system(l:command) : system(l:command)
   else
-    let l:output = vital#__latest__#has_vimproc() ?
+    let l:output = s:has_vimproc() ?
           \ vimproc#system(l:command, l:input) : system(l:command, l:input)
   endif
 
@@ -210,8 +210,37 @@ function! vital#__latest__#system(str, ...)"{{{
 
   return l:output
 endfunction"}}}
-function! vital#__latest__#get_last_status()"{{{
-  return vital#__latest__#has_vimproc() ?
+function! s:get_last_status()"{{{
+  return s:has_vimproc() ?
         \ vimproc#get_last_status() : v:shell_error
 endfunction"}}}
+function! s:func(name)"{{{
+  return function(matchstr(expand('<sfile>'), '<SNR>\d\+_\zefunc$') . a:name)
+endfunction"}}}
+
+function! vital#__latest__#new()
+  " FIXME: Should automate.
+  return {
+  \   'truncate_smart': s:func('truncate_smart'),
+  \   'truncate': s:func('truncate'),
+  \   'strchars': s:func('strchars'),
+  \   'strwidthpart': s:func('strwidthpart'),
+  \   'strwidthpart_reverse': s:func('strwidthpart_reverse'),
+  \   'wcswidth': s:func('wcswidth'),
+  \   'wcwidth': s:func('wcwidth'),
+  \   'is_win': s:func('is_win'),
+  \   'print_error': s:func('print_error'),
+  \   'smart_execute_command': s:func('smart_execute_command'),
+  \   'escape_file_searching': s:func('escape_file_searching'),
+  \   'escape_pattern': s:func('escape_pattern'),
+  \   'set_default': s:func('set_default'),
+  \   'set_dictionary_helper': s:func('set_dictionary_helper'),
+  \   'substitute_path_separator': s:func('substitute_path_separator'),
+  \   'path2directory': s:func('path2directory'),
+  \   'path2project_directory': s:func('path2project_directory'),
+  \   'has_vimproc': s:func('has_vimproc'),
+  \   'system': s:func('system'),
+  \   'get_last_status': s:func('get_last_status'),
+  \ }
+endfunction
 " vim: foldmethod=marker
