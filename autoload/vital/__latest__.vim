@@ -229,7 +229,7 @@ function! s:func(name)"{{{
   return function(matchstr(expand('<sfile>'), '<SNR>\d\+_\zefunc$') . a:name)
 endfunction"}}}
 
-function! vital#__latest__#new()
+function! vital#{s:self_version}#new()
   " FIXME: Should automate.
   return {
   \   'import': s:func('import'),

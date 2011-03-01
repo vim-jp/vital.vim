@@ -1,4 +1,5 @@
-function! vital#__latest__#data#ordered_set#new() "{{{
+let s:self_version = expand('<sfile>:h:h:t:r')
+function! vital#{s:self_version}#data#ordered_set#new() "{{{
   " FIXME: Should automate.
   return {
   \   'new': s:func('new'),

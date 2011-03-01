@@ -28,9 +28,8 @@ Dir.chdir vitaldir do
   Dir.glob("autoload/**/*.vim") do |before|
     after = "#{yourdir}/#{placeholders.(before)}"
     FileUtils.mkdir_p(Pathname(after).dirname.to_s)
-    x = placeholders.(File.read before)
     File.open(after, 'w') do |io|
-      io.write x
+      io.write File.read before
     end
   end
   File.open("#{yourdir}/autoload/vital/#{pluginname}.vital", 'w') do |io|
