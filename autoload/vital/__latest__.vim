@@ -2,11 +2,11 @@ let s:self_version = expand('<sfile>:t:r')
 function! s:import(name)"{{{
   let namespace = substitute(a:name, '\W\+', '#', 'g')
   try
-    let module = vital#{s:self_version}#{namespace}#new()
+    let sid = vital#{s:self_version}#{namespace}#sid()
   catch /^Vim\%((\a\+)\)\?:E117/
     throw 'vital: module not found: ' . a:name
   endtry
-  return module
+  return s:_functions(sid)
 endfunction"}}}
 
 function! s:truncate_smart(str, max, footer_width, separator)"{{{

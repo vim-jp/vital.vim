@@ -1,14 +1,10 @@
 let s:self_version = expand('<sfile>:h:h:t:r')
-function! vital#{s:self_version}#data#ordered_set#new() "{{{
-  " FIXME: Should automate.
-  return {
-  \   'new': s:func('new'),
-  \   'version': s:func('version'),
-  \ }
+function! vital#{s:self_version}#data#ordered_set#sid() "{{{
+  return s:_sid()
 endfunction "}}}
 
-function! s:func(name) "{{{
-  return function(matchstr(expand('<sfile>'), '<SNR>\d\+_\zefunc$') . a:name)
+function! s:_sid() "{{{
+  return expand('<sfile>')
 endfunction "}}}
 
 function! s:version() "{{{
