@@ -22,7 +22,7 @@ function! s:import(name)"{{{
     endtry
     let sid = len(scripts) + 1  " We expect that the file newly read is +1.
   endif
-  return s:_functions(sid)
+  return s:_build_module(sid)
 endfunction"}}}
 
 function! s:truncate_smart(str, max, footer_width, separator)"{{{
@@ -241,7 +241,7 @@ function! s:get_last_status()"{{{
   return s:has_vimproc() ?
         \ vimproc#get_last_status() : v:shell_error
 endfunction"}}}
-function! s:_functions(sid)
+function! s:_build_module(sid)
   let prefix = '<SNR>' . a:sid . '_'
   redir => funcs
     silent! function
