@@ -225,34 +225,25 @@ function! s:get_last_status()"{{{
   return s:has_vimproc() ?
         \ vimproc#get_last_status() : v:shell_error
 endfunction"}}}
-function! s:func(name)"{{{
-  return function(matchstr(expand('<sfile>'), '<SNR>\d\+_\zefunc$') . a:name)
+function! s:_func(name)"{{{
+  return function(matchstr(expand('<sfile>'), '<SNR>\d\+_\ze_func$') . a:name)
 endfunction"}}}
+function! s:_functions()
+  let prefix = matchstr(expand('<sfile>'), '<SNR>\d\+_\ze_functions$')
+  redir => funcs
+    silent! function
+  redir END
+  let filter_pat = '^function ' . prefix . '\a'
+  let map_pat = prefix . '\zs\w\+'
+  return map(filter(split(funcs, "\n"), 'v:val =~# filter_pat'),
+  \          'matchstr(v:val, map_pat)')
+endfunction
 
 function! vital#{s:self_version}#new()
-  " FIXME: Should automate.
-  return {
-  \   'import': s:func('import'),
-  \   'truncate_smart': s:func('truncate_smart'),
-  \   'truncate': s:func('truncate'),
-  \   'strchars': s:func('strchars'),
-  \   'strwidthpart': s:func('strwidthpart'),
-  \   'strwidthpart_reverse': s:func('strwidthpart_reverse'),
-  \   'wcswidth': s:func('wcswidth'),
-  \   'wcwidth': s:func('wcwidth'),
-  \   'is_win': s:func('is_win'),
-  \   'print_error': s:func('print_error'),
-  \   'smart_execute_command': s:func('smart_execute_command'),
-  \   'escape_file_searching': s:func('escape_file_searching'),
-  \   'escape_pattern': s:func('escape_pattern'),
-  \   'set_default': s:func('set_default'),
-  \   'set_dictionary_helper': s:func('set_dictionary_helper'),
-  \   'substitute_path_separator': s:func('substitute_path_separator'),
-  \   'path2directory': s:func('path2directory'),
-  \   'path2project_directory': s:func('path2project_directory'),
-  \   'has_vimproc': s:func('has_vimproc'),
-  \   'system': s:func('system'),
-  \   'get_last_status': s:func('get_last_status'),
-  \ }
+  let module = {}
+  for func in s:_functions()
+    let module[func] = s:_func(func)
+  endfor
+  return module
 endfunction
 " vim: foldmethod=marker
