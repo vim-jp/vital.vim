@@ -245,6 +245,9 @@ function! s:get_last_status()"{{{
         \ vimproc#get_last_status() : v:shell_error
 endfunction"}}}
 function! s:_import(name, scripts)
+  if type(a:name) == type(0)
+    return s:_build_module(a:name)
+  endif
   let target = a:name == '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
   let pat = substitute(s:base_dir . target, '[/\\]', '[/\\\\]', 'g') . '\.vim$'
   let sid = 0
