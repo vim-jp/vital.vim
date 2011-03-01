@@ -1,3 +1,14 @@
+let s:self_version = expand('<sfile>:t:r')
+function! s:import(name)"{{{
+  let namespace = substitute(a:name, '\W\+', '#', 'g')
+  try
+    let module = vital#{s:self_version}#{namespace}#new()
+  catch /^Vim\%((\a\+)\)\?:E117/
+    throw 'vital: module not found: ' . a:name
+  endtry
+  return module
+endfunction"}}}
+
 function! s:truncate_smart(str, max, footer_width, separator)"{{{
   let width = s:wcswidth(a:str)
   if width <= a:max
@@ -221,6 +232,7 @@ endfunction"}}}
 function! vital#__latest__#new()
   " FIXME: Should automate.
   return {
+  \   'import': s:func('import'),
   \   'truncate_smart': s:func('truncate_smart'),
   \   'truncate': s:func('truncate'),
   \   'strchars': s:func('strchars'),
