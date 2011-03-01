@@ -27,10 +27,17 @@ Assuming your Vim plugin name is `ujihisa`. You can define your utility function
 
 and then you can call functions by `ujihisa#util#system()`, without taking care of `vital.vim` itself. It's all hidden.
 
-Vital has module system.
+Vital has module system. The below is an example to import/load a module `data/ordered_set` and to call a function `f()` of the module.
 
-    let O = vital#of('ujihisa').import('data.ordered_set')
-    O.new
+    let V = vital#of('ujihisa')
+    let O = V.import('data/ordered_set')
+    call O.f()
+
+or
+
+    let V = vital#of('ujihisa')
+    call V.load('data/ordered_set')
+    call V.data.ordered_set.f()
 
 We recommend you to use a capital letter for a the Vital module dictionary to assign.
 
