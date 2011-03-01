@@ -225,25 +225,27 @@ function! s:get_last_status()"{{{
   return s:has_vimproc() ?
         \ vimproc#get_last_status() : v:shell_error
 endfunction"}}}
-function! s:_func(name)"{{{
-  return function(matchstr(expand('<sfile>'), '<SNR>\d\+_\ze_func$') . a:name)
+function! s:_sid()"{{{
+  return expand('<sfile>')
 endfunction"}}}
-function! s:_functions()
-  let prefix = matchstr(expand('<sfile>'), '<SNR>\d\+_\ze_functions$')
+function! s:_functions(sid)
+  let prefix = matchstr(a:sid, '<SNR>\d\+_\ze\w\+$')
   redir => funcs
     silent! function
   redir END
   let filter_pat = '^function ' . prefix . '\a'
   let map_pat = prefix . '\zs\w\+'
-  return map(filter(split(funcs, "\n"), 'v:val =~# filter_pat'),
+  let functions = map(filter(split(funcs, "\n"), 'v:val =~# filter_pat'),
   \          'matchstr(v:val, map_pat)')
+
+  let module = {}
+  for func in functions
+    let module[func] = function(prefix . func)
+  endfor
+  return module
 endfunction
 
 function! vital#{s:self_version}#new()
-  let module = {}
-  for func in s:_functions()
-    let module[func] = s:_func(func)
-  endfor
-  return module
+  return s:_functions(s:_sid())
 endfunction
 " vim: foldmethod=marker
