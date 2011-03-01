@@ -1,8 +1,20 @@
-function! vital#__latest__#data#ordered_set#version() "{{{
+function! vital#__latest__#data#ordered_set#new() "{{{
+  " FIXME: Should automate.
+  return {
+  \   'new': s:func('new'),
+  \   'version': s:func('version'),
+  \ }
+endfunction "}}}
+
+function! s:func(name) "{{{
+  return function(matchstr(expand('<sfile>'), '<SNR>\d\+_\zefunc$') . a:name)
+endfunction "}}}
+
+function! s:version() "{{{
   return '0.0.0dev'
 endfunction "}}}
 
-function! vital#__latest__#data#ordered_set#new(...) "{{{
+function! s:new(...) "{{{
     let obj = deepcopy(s:ordered_set)
     if a:0 && type(a:1) == type({})
         call extend(obj, a:1, 'force')
