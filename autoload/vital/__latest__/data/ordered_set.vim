@@ -1,12 +1,3 @@
-let s:self_version = expand('<sfile>:h:h:t:r')
-function! vital#{s:self_version}#data#ordered_set#sid() "{{{
-  return s:_sid()
-endfunction "}}}
-
-function! s:_sid() "{{{
-  return expand('<sfile>')
-endfunction "}}}
-
 function! s:version() "{{{
   return '0.0.0dev'
 endfunction "}}}

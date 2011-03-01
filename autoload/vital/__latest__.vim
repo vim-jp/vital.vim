@@ -1,11 +1,27 @@
+let s:base_dir = expand('<sfile>:r')
 let s:self_version = expand('<sfile>:t:r')
 function! s:import(name)"{{{
-  let namespace = substitute(a:name, '\W\+', '#', 'g')
-  try
-    let sid = vital#{s:self_version}#{namespace}#sid()
-  catch /^Vim\%((\a\+)\)\?:E117/
-    throw 'vital: module not found: ' . a:name
-  endtry
+  let target = a:name == '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
+  let pat = substitute(s:base_dir . target, '[/\\]', '[/\\\\]', 'g') . '\.vim$'
+  let sid = 0
+  redir => scriptsnames
+    silent! scriptnames
+  redir END
+  let scripts = split(scriptsnames, "\n")
+  for script in scripts
+    if script =~? pat
+      let sid = matchstr(script, '^\s*\zs\d\+') - 0
+      break
+    endif
+  endfor
+  if !sid
+    try
+      source `=s:base_dir . target . '.vim'`
+    catch /^Vim\%((\a\+)\)\?:E484/
+      throw 'vital: module not found: ' . a:name
+    endtry
+    let sid = len(scripts) + 1  " We expect that the file newly read is +1.
+  endif
   return s:_functions(sid)
 endfunction"}}}
 
@@ -225,11 +241,8 @@ function! s:get_last_status()"{{{
   return s:has_vimproc() ?
         \ vimproc#get_last_status() : v:shell_error
 endfunction"}}}
-function! s:_sid()"{{{
-  return expand('<sfile>')
-endfunction"}}}
 function! s:_functions(sid)
-  let prefix = matchstr(a:sid, '<SNR>\d\+_\ze\w\+$')
+  let prefix = '<SNR>' . a:sid . '_'
   redir => funcs
     silent! function
   redir END
@@ -246,6 +259,6 @@ function! s:_functions(sid)
 endfunction
 
 function! vital#{s:self_version}#new()
-  return s:_functions(s:_sid())
+  return s:import('')
 endfunction
 " vim: foldmethod=marker
