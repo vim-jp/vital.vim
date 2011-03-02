@@ -3,13 +3,13 @@ let s:self_version = expand('<sfile>:t:r')
 
 let s:loaded = {}
 
-function! s:import(name, ...)"{{{
+function! s:import(name, ...)
   let module = s:_import(a:name, s:_scripts())
   if a:0 && type(a:1) == type({})
     call extend(a:1, module, 'keep')
   endif
   return module
-endfunction"}}}
+endfunction
 
 function! s:load(...) dict
   let scripts = s:_scripts()
@@ -74,7 +74,7 @@ function! s:_build_module(sid)
   redir => funcs
     silent! function
   redir END
-  let filter_pat = '^function ' . prefix . '\a'
+  let filter_pat = '^function ' . prefix
   let map_pat = prefix . '\zs\w\+'
   let functions = map(filter(split(funcs, "\n"), 'v:val =~# filter_pat'),
   \          'matchstr(v:val, map_pat)')
@@ -83,6 +83,14 @@ function! s:_build_module(sid)
   for func in functions
     let module[func] = function(prefix . func)
   endfor
+  if has_key(module, '_vital_loaded')
+    try
+      call module._vital_loaded(vital#{s:self_version}#new())
+    catch
+      " FIXME: Show the error message for debug.
+    endtry
+  endif
+  call filter(module, 'v:key =~# "^\\a"')
   let s:loaded[a:sid] = module
   return copy(module)
 endfunction
