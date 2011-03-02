@@ -1,7 +1,11 @@
 let s:base_dir = expand('<sfile>:r')
 let s:self_version = expand('<sfile>:t:r')
-function! s:import(name)"{{{
-  return s:_import(a:name, s:_scripts())
+function! s:import(name, ...)"{{{
+  let module = s:_import(a:name, s:_scripts())
+  if a:0 && type(a:1) == type({})
+    call extend(a:1, module, 'keep')
+  endif
+  return module
 endfunction"}}}
 
 function! s:load(...) dict
