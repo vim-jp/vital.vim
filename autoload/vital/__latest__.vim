@@ -28,6 +28,61 @@ function! s:load(...) dict
   return self
 endfunction
 
+function! s:_import(name, scripts)
+  if type(a:name) == type(0)
+    return s:_build_module(a:name)
+  endif
+  let target = a:name == '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
+  let pat = substitute(s:base_dir . target, '[/\\]', '[/\\\\]', 'g') . '\.vim$'
+  let sid = 0
+  for script in a:scripts
+    if script =~? pat
+      let sid = matchstr(script, '^\s*\zs\d\+') - 0
+      break
+    endif
+  endfor
+  if !sid
+    try
+      source `=s:base_dir . target . '.vim'`
+    catch /^Vim\%((\a\+)\)\?:E484/
+      throw 'vital: module not found: ' . a:name
+    endtry
+    let sid = len(a:scripts) + 1  " We expect that the file newly read is +1.
+  endif
+  return s:_build_module(sid)
+endfunction
+
+function! s:_scripts()
+  redir => scripts
+    silent! scriptnames
+  redir END
+  return split(scripts, "\n")
+endfunction
+
+function! s:_build_module(sid)
+  let prefix = '<SNR>' . a:sid . '_'
+  redir => funcs
+    silent! function
+  redir END
+  let filter_pat = '^function ' . prefix . '\a'
+  let map_pat = prefix . '\zs\w\+'
+  let functions = map(filter(split(funcs, "\n"), 'v:val =~# filter_pat'),
+  \          'matchstr(v:val, map_pat)')
+
+  let module = {}
+  for func in functions
+    let module[func] = function(prefix . func)
+  endfor
+  return module
+endfunction
+
+function! vital#{s:self_version}#new()
+  return s:import('')
+endfunction
+
+
+" TODO Move the following functions to the appropriate module.
+
 function! s:truncate_smart(str, max, footer_width, separator)"{{{
   let width = s:wcswidth(a:str)
   if width <= a:max
@@ -244,53 +299,4 @@ function! s:get_last_status()"{{{
   return s:has_vimproc() ?
         \ vimproc#get_last_status() : v:shell_error
 endfunction"}}}
-function! s:_import(name, scripts)
-  if type(a:name) == type(0)
-    return s:_build_module(a:name)
-  endif
-  let target = a:name == '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
-  let pat = substitute(s:base_dir . target, '[/\\]', '[/\\\\]', 'g') . '\.vim$'
-  let sid = 0
-  for script in a:scripts
-    if script =~? pat
-      let sid = matchstr(script, '^\s*\zs\d\+') - 0
-      break
-    endif
-  endfor
-  if !sid
-    try
-      source `=s:base_dir . target . '.vim'`
-    catch /^Vim\%((\a\+)\)\?:E484/
-      throw 'vital: module not found: ' . a:name
-    endtry
-    let sid = len(a:scripts) + 1  " We expect that the file newly read is +1.
-  endif
-  return s:_build_module(sid)
-endfunction
-function! s:_scripts()
-  redir => scripts
-    silent! scriptnames
-  redir END
-  return split(scripts, "\n")
-endfunction
-function! s:_build_module(sid)
-  let prefix = '<SNR>' . a:sid . '_'
-  redir => funcs
-    silent! function
-  redir END
-  let filter_pat = '^function ' . prefix . '\a'
-  let map_pat = prefix . '\zs\w\+'
-  let functions = map(filter(split(funcs, "\n"), 'v:val =~# filter_pat'),
-  \          'matchstr(v:val, map_pat)')
-
-  let module = {}
-  for func in functions
-    let module[func] = function(prefix . func)
-  endfor
-  return module
-endfunction
-
-function! vital#{s:self_version}#new()
-  return s:import('')
-endfunction
 " vim: foldmethod=marker
