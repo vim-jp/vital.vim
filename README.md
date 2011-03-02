@@ -39,6 +39,12 @@ or
     call V.load('data/ordered_set')
     call V.data.ordered_set.f()
 
+or
+
+    let V = vital#of('ujihisa')
+    call V.import('data/ordered_set', s:)
+    call s:f()
+
 We recommend you to use a capital letter for a the Vital module dictionary to assign.
 
 ## Reference
