@@ -1,5 +1,8 @@
 let s:base_dir = expand('<sfile>:r')
 let s:self_version = expand('<sfile>:t:r')
+
+let s:loaded = {}
+
 function! s:import(name, ...)"{{{
   let module = s:_import(a:name, s:_scripts())
   if a:0 && type(a:1) == type({})
@@ -64,6 +67,9 @@ function! s:_scripts()
 endfunction
 
 function! s:_build_module(sid)
+  if has_key(s:loaded, a:sid)
+    return copy(s:loaded[a:sid])
+  endif
   let prefix = '<SNR>' . a:sid . '_'
   redir => funcs
     silent! function
@@ -77,7 +83,8 @@ function! s:_build_module(sid)
   for func in functions
     let module[func] = function(prefix . func)
   endfor
-  return module
+  let s:loaded[a:sid] = module
+  return copy(module)
 endfunction
 
 function! vital#{s:self_version}#new()
