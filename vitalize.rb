@@ -7,8 +7,8 @@ def sh(o)
 end
 
 if ARGV.size < 2
-  warn "usage: ruby tmp__update.rb {vital.vim dir} {your project dir} [{sha1}]"
-  warn "example: ruby tmp__update.rb ~/git/vital.vim ~/.vim/bundle/unite.vim 1896f2"
+  warn "usage: ruby vitalize.rb {vital.vim dir} {your project dir} [{sha1}]"
+  warn "example: ruby vitalize.rb ~/git/vital.vim ~/.vim/bundle/unite.vim 1896f2"
   abort
 end
 
