@@ -39,7 +39,7 @@ function! s:_import(name, scripts)
   if type(a:name) == type(0)
     return s:_build_module(a:name)
   endif
-  let target = a:name == '' ? '/prelude' : '/' . substitute(a:name, '\W\+', '/', 'g')
+  let target = a:name == '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
   let pat = substitute(s:base_dir . target, '[/\\]', '[/\\\\]', 'g') . '\.vim$'
   let sid = 0
   for script in a:scripts
@@ -96,5 +96,7 @@ function! s:_build_module(sid)
 endfunction
 
 function! vital#{s:self_version}#new()
-  return s:import('')
+  let V = s:import('')
+  call V.import('prelude', V)
+  return V
 endfunction
