@@ -45,5 +45,15 @@ function! s:join(...)
   return path[1 :]  " Remove an extra pass separator of the head.
 endfunction
 
+if has('win16') || has('win32') || has('win64') || has('win95')
+  function! s:is_absolute(path)
+    return a:path =~? '^[a-z]:[/\]'
+  endfunction
+else
+  function! s:is_absolute(path)
+    return a:path[0] ==# '/'
+  endfunction
+endif
+
 
 let &cpo = s:save_cpo
