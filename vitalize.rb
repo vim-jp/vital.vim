@@ -26,6 +26,8 @@ placeholders = lambda do |x|
     gsub(/__plugin__/, "#{pluginname}")
 end
 
+FileUtils.rm_rf "#{yourdir}/autoload/vital"
+
 Dir.chdir vitaldir do
   sha1 ||= `git show`[/commit (......)/, 1]
   puts sha1
