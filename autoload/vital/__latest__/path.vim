@@ -56,5 +56,28 @@ else
   endfunction
 endif
 
+" Return the parent directory of the path.
+" NOTE: fnamemodify(path, ':h') does not return the parent directory
+" when path[-1] is the separator.
+function! s:dirname(path)
+  let path = a:path
+  let orig = a:path
+
+  let path = s:remove_last_separator(path)
+  if path == ''
+    return orig    " root directory
+  endif
+
+  let path = fnamemodify(path, ':h')
+  return path
+endfunction
+
+" Remove the separator at the end of a:path.
+function! s:remove_last_separator(path) "{{{
+  let sep = s:separator()
+  let pat = (sep == '\' ? '\\' : '/') . '\+$'
+  return substitute(a:path, pat, '', '')
+endfunction "}}}
+
 
 let &cpo = s:save_cpo
