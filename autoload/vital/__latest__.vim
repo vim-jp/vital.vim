@@ -60,14 +60,6 @@ function! s:_import(name, scripts)
 endfunction
 
 function! s:_scripts()
-  if exists('s:_scripts_memo')
-    return s:_scripts_memo
-  endif
-  let s:_scripts_memo = s:_scripts_ize()
-  return s:_scripts_memo
-endfunction
-
-function! s:_scripts_ize()
   redir => scripts
     silent! scriptnames
   redir END
