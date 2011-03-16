@@ -47,9 +47,11 @@ or
 
 We recommend you to use a capital letter for a the Vital module dictionary to assign.
 
-## Reference
+## References
 
 * [Delegation in Vim script](http://ujihisa.blogspot.com/2011/02/delegation-in-vim-script.html)
+* [Core concept of vital (in Japanese)](http://d.hatena.ne.jp/thinca/20110310/1299768323)
+* [How to make a vital module (in Japanese)](http://d.hatena.ne.jp/thinca/20110311/1299769233)
 
 ## Author
 
