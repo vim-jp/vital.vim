@@ -39,6 +39,9 @@ function! s:_import(name, scripts)
   if type(a:name) == type(0)
     return s:_build_module(a:name)
   endif
+  if a:name =~# '^[^A-Z]' || a:name =~# '\W[^A-Z]'
+    throw 'vital: module name must start with capital letter: ' . a:name
+  endif
   let target = a:name == '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
   let pat = substitute(s:base_dir . target, '[/\\]', '[/\\\\]', 'g') . '\.vim$'
   let sid = 0
@@ -97,6 +100,6 @@ endfunction
 
 function! vital#{s:self_version}#new()
   let V = s:import('')
-  call V.import('prelude', V)
+  call V.import('Prelude', V)
   return V
 endfunction

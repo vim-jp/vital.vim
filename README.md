@@ -30,19 +30,19 @@ and then you can call functions by `ujihisa#util#system()`, without taking care 
 Vital has module system. The below is an example to import/load a module `data/ordered_set` and to call a function `f()` of the module.
 
     let V = vital#of('ujihisa')
-    let O = V.import('data/ordered_set')
+    let O = V.import('Data.OrderedSet')
     call O.f()
 
 or
 
     let V = vital#of('ujihisa')
-    call V.load('data/ordered_set')
+    call V.load('Data.OrderedSet')
     call V.data.ordered_set.f()
 
 or
 
     let V = vital#of('ujihisa')
-    call V.import('data/ordered_set', s:)
+    call V.import('Data.OrderedSet', s:)
     call s:f()
 
 We recommend you to use a capital letter for a the Vital module dictionary to assign.
