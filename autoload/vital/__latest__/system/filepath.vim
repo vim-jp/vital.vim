@@ -1,5 +1,3 @@
-" vital.path
-
 " You should check the following related builtin functions.
 " fnamemodify()
 " resolve()
