@@ -43,6 +43,8 @@ function! s:_import(name, scripts)
     throw 'vital: module name must start with capital letter: ' . a:name
   endif
   let target = a:name == '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
+  let target = substitute(target, '\(\l\)\(\u\)', '\1_\l\2', 'g') " OrderedSet -> Ordered_set
+  let target = tolower(target)
   let pat = substitute(s:base_dir . target, '[/\\]', '[/\\\\]', 'g') . '\.vim$'
   let sid = 0
   for script in a:scripts
