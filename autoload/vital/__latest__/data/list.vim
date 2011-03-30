@@ -44,5 +44,16 @@ function! s:flatten(list)  " {{{
   return list
 endfunction  " }}}
 
+" Sort a list with expression.
+" a:a and a:b can be used in {expr}.
+function! s:sort(list, expr)  " {{{2
+  let s:expr = a:expr
+  return sort(a:list, 's:_compare')
+endfunction
+
+function! s:_compare(a, b)  " {{{2
+  return eval(s:expr)
+endfunction
+
 
 let &cpo = s:save_cpo
