@@ -3,7 +3,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Remove duplicates from a list.
+" Removes duplicates from a list.
 " FIXME: string only.
 function! s:uniq(list)  " {{{
   let i = 0
@@ -20,7 +20,7 @@ function! s:uniq(list)  " {{{
   return a:list
 endfunction  " }}}
 
-" Concatenate a list of lists.
+" Concatenates a list of lists.
 " XXX: Should we verify the input?
 function! s:concat(list)  " {{{
   let list = []
@@ -30,7 +30,7 @@ function! s:concat(list)  " {{{
   return list
 endfunction  " }}}
 
-" Flatten a list.
+" Flattens a list.
 function! s:flatten(list)  " {{{
   let list = []
   for i in a:list
@@ -44,7 +44,7 @@ function! s:flatten(list)  " {{{
   return list
 endfunction  " }}}
 
-" Sort a list with expression.
+" Sorts a list with expression to compare each two values.
 " a:a and a:b can be used in {expr}.
 function! s:sort(list, expr)  " {{{2
   if type(a:expr) == type(function('function'))
