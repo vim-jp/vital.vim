@@ -64,7 +64,7 @@ endfunction
 function! s:sort_by(list, expr)  " {{{2
   let pairs = map(a:list, printf('[v:val, %s]', a:expr))
   return map(s:sort(pairs,
-  \      'a:a[1] == a:b[1] ? 0 : a:a[1] > a:b[1] ? 1 : -1'), 'v:val[0]')
+  \      'a:a[1] ==# a:b[1] ? 0 : a:a[1] ># a:b[1] ? 1 : -1'), 'v:val[0]')
 endfunction
 
 
