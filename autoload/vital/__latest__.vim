@@ -44,7 +44,7 @@ function! s:_import(name, scripts)
   endif
   let target = a:name == '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
   let target = substitute(target, '\(\l\)\(\u\)', '\1_\l\2', 'g') " OrderedSet -> Ordered_set
-  let target = tolower(target)
+  let target = substitute(target, '/\zs\u', '\l\0', 'g') " Ordered_set -> ordered_set
   let pat = substitute(s:base_dir . target, '[/\\]', '[/\\\\]', 'g') . '\.vim$'
   let sid = 0
   for script in a:scripts
