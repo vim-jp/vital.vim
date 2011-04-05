@@ -65,10 +65,7 @@ function! s:_import(name, scripts)
 endfunction
 
 function! s:_scripts()
-  redir => scripts
-    silent! scriptnames
-  redir END
-  return split(scripts, "\n")
+  return split(s:_redir('scriptnames'), "\n")
 endfunction
 
 function! s:_build_module(sid)
@@ -76,9 +73,7 @@ function! s:_build_module(sid)
     return copy(s:loaded[a:sid])
   endif
   let prefix = '<SNR>' . a:sid . '_'
-  redir => funcs
-    silent! function
-  redir END
+  let funcs = s:_redir('function')
   let filter_pat = '^function ' . prefix
   let map_pat = prefix . '\zs\w\+'
   let functions = map(filter(split(funcs, "\n"), 'v:val =~# filter_pat'),
@@ -98,6 +93,26 @@ function! s:_build_module(sid)
   call filter(module, 'v:key =~# "^\\a"')
   let s:loaded[a:sid] = module
   return copy(module)
+endfunction
+
+function! s:_redir(...)
+  let temp = tempname()
+  let save_vfile = &verbosefile
+  let &verbosefile = temp
+
+  let res = ''
+  try
+    for c in a:000
+      silent execute c
+    endfor
+    if &verbosefile ==# temp
+      let &verbosefile = save_vfile
+      let res = join(readfile(temp), "\n")
+    endif
+  finally
+    call delete(temp)
+  endtry
+  return res
 endfunction
 
 function! vital#{s:self_version}#new()
