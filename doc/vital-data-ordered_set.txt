@@ -1,0 +1,81 @@
+*vital-data-ordered_set.txt* *vital-data-ordered_set*
+
+Author:
+  tyru <tyru.exe@gmail.com>
+Version: 0.0.0
+License: Under the same license as Vim itself (see :help license)
+
+==============================================================================
+CONTENTS						*vital-data-ordered_set-contents*
+
+Introduction		|vital-data-ordered_set-introduction|
+Interface			|vital-data-ordered_set-interface|
+  Functions			|vital-data-ordered_set-functions|
+Changelog			|vital-data-ordered_set-changelog|
+
+
+==============================================================================
+INTRODUCTION						*vital-data-ordered_set-introduction* {{{
+
+|vital-data-ordered_set| is Collection Utilities Library.
+It provides some data structure (e.g., ordered dictionary/set).
+
+}}}
+==============================================================================
+INTERFACE				*vital-data-ordered_set-interface* {{{
+------------------------------------------------------------------------------
+FUNCTIONS					*vital-data-ordered_set-functions* {{{
+
+vital#data#ordered_set#load()		*vital#data#ordered_set#load()*
+	Loads autoload/vital#data/ordered_set.vim .
+
+vital#data#ordered_set#new()		*vital#data#ordered_set#new()*
+	Returns ordered set object.
+
+
+
+data.ordered_set.push({elem})		*data.ordered_set.push()*
+	Pushes an element to data.ordered_set.
+	This adds the element to set.
+	But if the element exists in the set,
+	it does not adds the element.
+
+data.ordered_set.unshift({elem})		*data.ordered_set.unshift()*
+	Unshifts an element to data.ordered_set.
+	This adds the element to set.
+	But if the element exists in the set,
+	it does not adds the element.
+
+data.ordered_set.size({elem})		*data.ordered_set.size()*
+	Gets the number of elements in data.ordered_set.
+
+data.ordered_set.to_list({elem})		*data.ordered_set.to_list()*
+	Converts to |List|.
+
+data.ordered_set.has({elem})		*data.ordered_set.has()*
+	Checks if there is the element in data.ordered_set.
+	This returns boolean value.
+
+data.ordered_set.has_id({id})		*data.ordered_set.has_id()*
+	Checks if there is the element which has {id} in data.ordered_set.
+	This returns boolean value.
+
+data.ordered_set.clear()		*data.ordered_set.clear()*
+	Initializes data.ordered_set.
+	After calling this, data.ordered_set has no elements.
+
+data.ordered_set.remove({elem})		*data.ordered_set.remove()*
+	Remove {elem} from data.ordered_set if it exists.
+	If it does not exist, this does not do anything.
+
+}}}
+}}}
+==============================================================================
+CHANGELOG						*vital-data-ordered_set-changelog* {{{
+
+0.0.0:
+- Initial upload
+
+}}}
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=4:ft=help:norl:noet:fdm=marker:fen
