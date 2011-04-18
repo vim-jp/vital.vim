@@ -4,8 +4,10 @@ endfunction "}}}
 
 function! s:new(...) "{{{
     let obj = deepcopy(s:ordered_set)
-    if a:0 && type(a:1) == type({})
-        call extend(obj, a:1, 'force')
+    if a:0
+    \   && type(a:1) == type({})
+    \   && has_key(a:1, 'Fn_identifier')
+        let obj.Fn_identifier = a:1.Fn_identifier
     endif
     return obj
 endfunction "}}}
