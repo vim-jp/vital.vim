@@ -8,7 +8,7 @@ set cpo&vim
 
 
 function! s:version() "{{{
-  return '0.0.0dev'
+    return '0.0.15'
 endfunction "}}}
 
 function! s:new(...) "{{{
