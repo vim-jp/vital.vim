@@ -1,3 +1,12 @@
+" vim:foldmethod=marker:fen:
+scriptencoding utf-8
+
+" Saving 'cpoptions' {{{
+let s:save_cpo = &cpo
+set cpo&vim
+" }}}
+
+
 function! s:version() "{{{
   return '0.0.0dev'
 endfunction "}}}
@@ -68,10 +77,15 @@ function! s:ordered_set.remove(elem) "{{{
     let id = call(self.Fn_identifier, [a:elem])
     if has_key(self._dict, id)
         let idx = self._origin_pos + self._dict[id]
-        unlet self._array[idx]
+        unlet self._list[idx]
         if idx < self._origin_pos
             let self._origin_pos -= 1
         endif
         unlet self._dict[id]
     endif
 endfunction "}}}
+
+
+" Restore 'cpoptions' {{{
+let &cpo = s:save_cpo
+" }}}
