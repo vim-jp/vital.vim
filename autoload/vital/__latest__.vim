@@ -107,7 +107,7 @@ function! s:_redir(...)
     endfor
     if &verbosefile ==# temp
       let &verbosefile = save_vfile
-      let res = join(readfile(temp), "\n")
+      let res = join(readfile(temp, 'b'), "\n")
     endif
   finally
     call delete(temp)
