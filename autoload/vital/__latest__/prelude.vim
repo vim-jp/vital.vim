@@ -147,6 +147,11 @@ function! s:iconv(expr, from, to)
   let result = iconv(a:expr, a:from, a:to)
   return result != '' ? result : a:expr
 endfunction
+" Like builtin getchar() but returns string always.
+function! s:getchar(...)
+  let c = call('getchar', a:000)
+  return type(c) == type(0) ? nr2char(c) : c
+endfunction
 
 function! s:set_default(var, val)  "{{{
   if !exists(a:var) || type({a:var}) != type(a:val)
