@@ -122,7 +122,11 @@ function! s:is_mac()"{{{
 endfunction"}}}
 
 function! s:print_error(message)"{{{
-  echohl WarningMsg | echomsg a:message | echohl None
+  echohl ErrorMsg
+  for m in split(a:message, "\n")
+    echomsg m
+  endfor
+  echohl None
 endfunction"}}}
 
 function! s:smart_execute_command(action, word)"{{{
