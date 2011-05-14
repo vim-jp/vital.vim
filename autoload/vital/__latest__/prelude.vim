@@ -139,6 +139,14 @@ endfunction"}}}
 function! s:escape_pattern(str)"{{{
   return escape(a:str, '~"\.^$[]*')
 endfunction"}}}
+" iconv() wrapper for safety.
+function! s:iconv(expr, from, to)
+  if a:from == '' || a:to == '' || a:from ==# a:to
+    return a:expr
+  endif
+  let result = iconv(a:expr, a:from, a:to)
+  return result != '' ? result : a:expr
+endfunction
 
 function! s:set_default(var, val)  "{{{
   if !exists(a:var) || type({a:var}) != type(a:val)
