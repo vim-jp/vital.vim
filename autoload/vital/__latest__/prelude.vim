@@ -214,8 +214,8 @@ function! s:system(str, ...)"{{{
   let l:command = a:str
   let l:input = a:0 >= 1 ? a:1 : ''
   if &termencoding != '' && &termencoding != &encoding
-    let l:command = iconv(l:command, &encoding, &termencoding)
-    let l:input = iconv(l:input, &encoding, &termencoding)
+    let l:command = s:iconv(l:command, &encoding, &termencoding)
+    let l:input = s:iconv(l:input, &encoding, &termencoding)
   endif
 
   if a:0 == 0
@@ -227,7 +227,7 @@ function! s:system(str, ...)"{{{
   endif
 
   if &termencoding != '' && &termencoding != &encoding
-    let l:output = iconv(l:output, &termencoding, &encoding)
+    let l:output = s:iconv(l:output, &termencoding, &encoding)
   endif
 
   return l:output
