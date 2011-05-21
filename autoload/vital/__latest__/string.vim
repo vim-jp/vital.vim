@@ -6,7 +6,7 @@ set cpo&vim
 " Substitute a:from => a:to by string.
 " To substitute by pattern, use substitute() instead.
 " Test: https://gist.github.com/984296
-function! s:substring(str, from, to)
+function! s:replace(str, from, to)
     if a:str ==# '' || a:from ==# ''
         return a:str
     endif
@@ -22,9 +22,9 @@ function! s:substring(str, from, to)
 endfunction
 
 " Substitute a:from => a:to only once.
-" cf. s:substring()
+" cf. s:replace()
 " Test: https://gist.github.com/984296
-function! s:substring_once(str, from, to)
+function! s:replace_once(str, from, to)
     if a:str ==# '' || a:from ==# ''
         return a:str
     endif
