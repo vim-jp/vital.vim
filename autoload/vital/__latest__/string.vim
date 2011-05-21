@@ -5,6 +5,7 @@ set cpo&vim
 
 " Substitute a:from => a:to by string.
 " To substitute by pattern, use substitute() instead.
+" Test: https://gist.github.com/984296
 function! s:substring(str, from, to)
     if a:str ==# '' || a:from ==# ''
         return a:str
@@ -22,6 +23,7 @@ endfunction
 
 " Substitute a:from => a:to only once.
 " cf. s:substring()
+" Test: https://gist.github.com/984296
 function! s:substring_once(str, from, to)
     if a:str ==# '' || a:from ==# ''
         return a:str
@@ -38,6 +40,7 @@ endfunction
 
 " Divide to two elements of List. ([left, right])
 " e.g.: s:divide_leftright("neocomplcache", "compl") returns ["neo", "cache"]
+" Test: https://gist.github.com/984356
 function! s:divide_leftright(haystack, needle)
     let ERROR = ['', '']
     if a:haystack ==# '' || a:needle ==# ''
