@@ -36,5 +36,20 @@ function! s:substring_once(str, from, to)
     endif
 endfunction
 
+" Divide to two elements of List. ([left, right])
+" e.g.: s:divide_leftright("neocomplcache", "compl") returns ["neo", "cache"]
+function! s:divide_leftright(haystack, needle)
+    let ERROR = ['', '']
+    if a:haystack ==# '' || a:needle ==# ''
+        return ERROR
+    endif
+    let idx = stridx(a:haystack, a:needle)
+    if idx ==# -1
+        return ERROR
+    endif
+    let left  = idx ==# 0 ? '' : a:haystack[: idx - 1]
+    let right = a:haystack[idx + strlen(a:needle) :]
+    return [left, right]
+endfunction
 
 let &cpo = s:save_cpo
