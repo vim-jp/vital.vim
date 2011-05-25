@@ -38,10 +38,10 @@ function! s:replace_once(str, from, to)
     endif
 endfunction
 
-" Divide to two elements of List. ([left, right])
-" e.g.: s:divide_leftright("neocomplcache", "compl") returns ["neo", "cache"]
+" Split to two elements of List. ([left, right])
+" e.g.: s:split_leftright("neocomplcache", "compl") returns ["neo", "cache"]
 " Test: https://gist.github.com/984356
-function! s:divide_leftright(haystack, needle)
+function! s:split_leftright(haystack, needle)
     let ERROR = ['', '']
     if a:haystack ==# '' || a:needle ==# ''
         return ERROR
