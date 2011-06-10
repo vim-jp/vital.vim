@@ -112,6 +112,10 @@ else
   endfunction"}}}
 endif
 
+function! s:mb_strlen(str)"{{{
+  return strlen(substitute(copy(a:str), '.', 'x', 'g'))
+endfunction"}}}
+
 let s:is_windows = has('win16') || has('win32') || has('win64')
 let s:is_mac = !s:is_windows && (has('mac') || has('macunix') || has('gui_macvim') || system('uname') =~? '^darwin')
 function! s:is_windows()"{{{
