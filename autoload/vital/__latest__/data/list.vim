@@ -67,5 +67,14 @@ function! s:sort_by(list, expr)  " {{{2
   \      'a:a[1] ==# a:b[1] ? 0 : a:a[1] ># a:b[1] ? 1 : -1'), 'v:val[0]')
 endfunction
 
+" Returns List of character sequence between [a:from, a:to]
+" e.g.: s:char_range('a', 'c') returns ['a', 'b', 'c']
+function! s:char_range(from, to) " {{{2
+  return map(
+  \   range(char2nr(a:from), char2nr(a:to)),
+  \   'nr2char(v:val)'
+  \)
+endfunction
+
 
 let &cpo = s:save_cpo
