@@ -23,5 +23,10 @@ function! s:wrap(callable)
     \   . 'a:callable is not callable!'
 endfunction
 
+function! s:bind(callable, this)
+    let this = copy(a:this)
+    let this.do = s:wrap(a:callable).do
+    return this
+endfunction
 
 let &cpo = s:save_cpo
