@@ -42,22 +42,30 @@ function! s:move_file_pure(src, dest, ...) "{{{
 endfunction "}}}
 
 " Copy a file.
-" Implemented by 'cp' executable.
+" Dispatch s:copy_file_exe() or s:copy_file_pure().
 function! s:copy_file(src, dest, ...) "{{{
     let show_error = a:0 ? a:1 : 1
     if executable('cp')
-        silent execute '!cp' shellescape(a:src) shellescape(a:dest)
-        if v:shell_error
-            if show_error
-                call s:warn("'cp' returned failure value: " . v:shell_error)
-            endif
-            return 0
-        endif
-        return 1
+        return s:copy_file_exe(a:src, a:dest, show_error)
     else
         return s:copy_file_pure(a:src, a:dest, show_error)
     endif
 endfunction "}}}
+
+" Copy a file.
+" Implemented by 'cp' executable.
+function! s:copy_file_exe(src, dest, ...)
+    if !executable('cp') | return 0 | endif
+    let show_error = a:0 ? a:1 : 1
+    silent execute '!cp' shellescape(a:src) shellescape(a:dest)
+    if v:shell_error
+        if show_error
+            call s:warn("'cp' returned failure value: " . v:shell_error)
+        endif
+        return 0
+    endif
+    return 1
+endfunction
 
 " Copy a file.
 " Implemented by pure vimscript.
