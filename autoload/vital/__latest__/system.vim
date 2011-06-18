@@ -18,6 +18,7 @@ endfunction "}}}
 
 " Move a file.
 " Implemented by 'mv' executable.
+" TODO: Support non-*nix like system.
 function! s:move_file_exe(src, dest, ...)
     if !executable('mv') | return 0 | endif
     silent execute '!mv' shellescape(a:src) shellescape(a:dest)
@@ -61,6 +62,7 @@ endfunction "}}}
 
 " Copy a file.
 " Implemented by 'cp' executable.
+" TODO: Support non-*nix like system.
 function! s:copy_file_exe(src, dest, ...)
     if !executable('cp') | return 0 | endif
     let show_error = a:0 ? a:1 : 1
