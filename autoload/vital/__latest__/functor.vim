@@ -23,6 +23,8 @@ function! s:wrap(callable)
         return {'do': a:callable}
     elseif type(a:callable) ==# type({})
     \   && has_key(a:callable, 'do')
+    \   && (type(a:callable.do) ==# type("")
+    \       || type(a:callable.do) ==# type(function('tr')))
         return a:callable
     endif
     throw 'vital: Functor.wrap(): '
