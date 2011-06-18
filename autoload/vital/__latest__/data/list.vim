@@ -24,8 +24,8 @@ endfunction "}}}
 " XXX: Should we verify the input?
 function! s:concat(list)  "{{{
   let list = []
-  for i in a:list
-    let list += i
+  for Value in a:list
+    let list += Value
   endfor
   return list
 endfunction "}}}
@@ -33,13 +33,13 @@ endfunction "}}}
 " Flattens a list.
 function! s:flatten(list)  "{{{
   let list = []
-  for i in a:list
-    if type(i) == type([])
-      let list += s:flatten(i)
+  for Value in a:list
+    if type(Value) == type([])
+      let list += s:flatten(Value)
     else
-      call add(list, i)
+      call add(list, Value)
     endif
-    unlet! i
+    unlet! Value
   endfor
   return list
 endfunction "}}}
