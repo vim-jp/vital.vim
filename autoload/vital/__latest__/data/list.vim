@@ -87,5 +87,14 @@ function! s:has(list, Value) "{{{
   return 0
 endfunction "}}}
 
+" Returns true if a:list[a:index] exists.
+" Returns false otherwise.
+" NOTE: Returns false when a:index is negative number.
+function! s:has_index(list, index) "{{{
+    " Return true when negative index?
+    " let index = a:index >= 0 ? a:index : len(a:list) + a:index
+    return 0 <= a:index && a:index < len(a:list)
+endfunction "}}}
+
 
 let &cpo = s:save_cpo
