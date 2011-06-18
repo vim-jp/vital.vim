@@ -26,14 +26,15 @@ endfunction "}}}
 
 " Copy a file.
 " Implemented by pure vimscript.
-function! s:move_file_pure(src, dest, show_error) "{{{
-    let copy_success = s:copy_file(a:src, a:dest, a:show_error)
+function! s:move_file_pure(src, dest, ...) "{{{
+    let show_error = a:0 ? a:1 : 1
+    let copy_success = s:copy_file(a:src, a:dest, show_error)
     let remove_success = delete(a:src) == 0
 
     if copy_success && remove_success
         return 1
     else
-        if a:show_error
+        if show_error
             call s:warn("can't move '" . a:src . "' to '" . a:dest . "'.")
         endif
         return 0
@@ -60,10 +61,11 @@ endfunction "}}}
 
 " Copy a file.
 " Implemented by pure vimscript.
-function! s:copy_file_pure(src, dest, show_error) "{{{
+function! s:copy_file_pure(src, dest, ...) "{{{
+    let show_error = a:0 ? a:1 : 1
     let ret = writefile(readfile(a:src, "b"), a:dest, "b")
     if ret == -1
-        if a:show_error
+        if show_error
             call s:warn("can't copy '" . a:src . "' to '" . a:dest . "'.")
             sleep 1
         endif
