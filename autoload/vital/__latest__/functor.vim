@@ -46,12 +46,12 @@ function! s:bind(callable, this)
     return this
 endfunction
 
-" Curry a:callable's 1st argument with a:v.
-function! s:curry(callable, v)
+" Curry a:callable's 1st argument with a:V.
+function! s:curry(callable, V)
     return {
     \   'do': s:localfunc('__curry_stub', s:__sid()),
     \   '__functor': s:wrap(a:callable),
-    \   '__value': a:v,
+    \   '__value': a:V,
     \}
 endfunction
 function! s:__curry_stub(...) dict
