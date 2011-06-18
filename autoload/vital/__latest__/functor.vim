@@ -35,6 +35,21 @@ function! s:bind(callable, this)
     return this
 endfunction
 
+" Curry a:callable's 1st argument with a:V.
+function! s:curry(callable, V)
+    return {
+    \   'do': s:localfunc('__curry_stub', s:__sid()),
+    \   '__functor': s:wrap(a:callable),
+    \   '__value': a:V,
+    \}
+endfunction
+function! s:__curry_stub(...) dict
+    return s:call(self.__functor, [self.__value] + a:000)
+endfunction
+function! s:__sid()
+    return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze___sid$')
+endfunction
+
 " Convert script-local function to globally callable function.
 function! s:localfunc(funcname, sid)
     return printf('<SNR>%d_%s', a:sid, a:funcname)
