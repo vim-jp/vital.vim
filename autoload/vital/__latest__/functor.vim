@@ -18,8 +18,9 @@ endfunction
 " with callable object.
 function! s:wrap(callable)
     if type(a:callable) ==# type("")
-    \   || type(a:callable) ==# type(function('tr'))
         return {'do': function(a:callable)}
+    elseif type(a:callable) ==# type(function('tr'))
+        return {'do': a:callable}
     elseif type(a:callable) ==# type({})
     \   && has_key(a:callable, 'do')
         return a:callable
