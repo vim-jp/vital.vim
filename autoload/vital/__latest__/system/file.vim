@@ -1,4 +1,4 @@
-" Utilities for list.
+" Utilities for file copy/move/mkdir/etc.
 
 let s:save_cpo = &cpo
 set cpo&vim
