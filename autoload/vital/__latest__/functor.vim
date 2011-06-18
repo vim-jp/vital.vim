@@ -8,7 +8,7 @@ set cpo&vim
 " but first argument is callable object.
 function! s:call(callable, args, ...)
     let functor = s:wrap(a:callable)
-    return call(functor.do, a:args, functor)
+    return call(functor.do, a:args, (a:0 ? a:1 : functor))
 endfunction
 
 function! s:wrap(callable)
