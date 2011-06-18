@@ -4,23 +4,18 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-" NOTE: "s:mb_*()" functions support multibyte.
-" But some other functions with no "mb" prefix
-" also support multibyte.
-
-
 " Returns the number of character in a:str.
-" s:mb_strlen(str) {{{
+" s:strchars(str) {{{
 if exists('*strchars')
-    let s:mb_strlen = function('strchars')
+    let s:strchars = function('strchars')
 else
-    function! s:mb_strlen(str)
+    function! s:strchars(str)
         return strlen(substitute(copy(a:str), '.', 'x', 'g'))
     endfunction
 endif "}}}
 
 " Remove last character from a:str.
-function! s:mb_chop(str) "{{{
+function! s:chop(str) "{{{
     return substitute(a:str, '.$', '', '')
 endfunction "}}}
 
