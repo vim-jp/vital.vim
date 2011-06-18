@@ -5,26 +5,33 @@ set cpo&vim
 
 
 
-" Copy a file.
-" Implemented by 'mv' executable.
+" Move a file.
+" Dispatch s:move_file_exe() or s:move_file_pure().
 function! s:move_file(src, dest, ...) "{{{
     let show_error = a:0 ? a:1 : 1
     if executable('mv')
-        silent execute '!mv' shellescape(a:src) shellescape(a:dest)
-        if v:shell_error
-            if show_error
-                call s:warn("'mv' returned failure value: " . v:shell_error)
-                sleep 1
-            endif
-            return 0
-        endif
-        return 1
+        return s:move_file_exe(a:src, a:dest, show_error)
     else
         return s:move_file_pure(a:src, a:dest, show_error)
     endif
 endfunction "}}}
 
-" Copy a file.
+" Move a file.
+" Implemented by 'mv' executable.
+function! s:move_file_exe(src, dest, ...)
+    if !executable('mv') | return 0 | endif
+    silent execute '!mv' shellescape(a:src) shellescape(a:dest)
+    if v:shell_error
+        if show_error
+            call s:warn("'mv' returned failure value: " . v:shell_error)
+            sleep 1
+        endif
+        return 0
+    endif
+    return 1
+endfunction
+
+" Move a file.
 " Implemented by pure vimscript.
 function! s:move_file_pure(src, dest, ...) "{{{
     let show_error = a:0 ? a:1 : 1
