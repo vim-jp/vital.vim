@@ -11,6 +11,11 @@ function! s:call(callable, args, ...)
     return call(functor.do, a:args, (a:0 ? a:1 : functor))
 endfunction
 
+" Wrap
+" - function name (String)
+" - Funcref value
+" - callable object
+" with callable object.
 function! s:wrap(callable)
     if type(a:callable) ==# type("")
     \   || type(a:callable) ==# type(function('tr'))
@@ -23,6 +28,7 @@ function! s:wrap(callable)
     \   . 'a:callable is not callable!'
 endfunction
 
+" Bind a:this to a:callable's `self`.
 function! s:bind(callable, this)
     let this = copy(a:this)
     let this.do = s:wrap(a:callable).do
