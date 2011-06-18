@@ -17,16 +17,19 @@ endfunction
 " - callable object
 " with callable object.
 " NOTE: `s:wrap(callable).do` must be Funcref value.
+let s:TYPE_STRING  = type("")
+let s:TYPE_FUNCREF = type(function('tr'))
+let s:TYPE_DICT    = type({})
 function! s:wrap(callable)
-    if type(a:callable) ==# type("")
-        return {'do': function(a:callable)}
-    elseif type(a:callable) ==# type(function('tr'))
+    if type(a:callable) ==# s:TYPE_FUNCREF
         return {'do': a:callable}
-    elseif type(a:callable) ==# type({})
+    elseif type(a:callable) ==# s:TYPE_STRING
+        return {'do': function(a:callable)}
+    elseif type(a:callable) ==# s:TYPE_DICT
     \   && has_key(a:callable, 'do')
-        if type(a:callable.do) ==# type(function('tr'))
+        if type(a:callable.do) ==# s:TYPE_FUNCREF
             return a:callable
-        elseif type(a:callable.do) ==# type("")
+        elseif type(a:callable.do) ==# s:TYPE_STRING
             return extend(a:callable, {
             \   'do': function(a:callable),
             \}, 'force')
