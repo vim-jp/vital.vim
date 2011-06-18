@@ -35,4 +35,10 @@ function! s:bind(callable, this)
     return this
 endfunction
 
+" Convert script-local function to globally callable function.
+function! s:localfunc(funcname, sid)
+    return printf('<SNR>%d_%s', a:sid, a:funcname)
+endfunction
+
+
 let &cpo = s:save_cpo
