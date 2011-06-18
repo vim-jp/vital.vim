@@ -16,6 +16,7 @@ endfunction
 " - Funcref value
 " - callable object
 " with callable object.
+" NOTE: `s:wrap(callable).do` must be Funcref value.
 function! s:wrap(callable)
     if type(a:callable) ==# type("")
         return {'do': function(a:callable)}
@@ -23,9 +24,13 @@ function! s:wrap(callable)
         return {'do': a:callable}
     elseif type(a:callable) ==# type({})
     \   && has_key(a:callable, 'do')
-    \   && (type(a:callable.do) ==# type("")
-    \       || type(a:callable.do) ==# type(function('tr')))
-        return a:callable
+        if type(a:callable.do) ==# type(function('tr'))
+            return a:callable
+        elseif type(a:callable.do) ==# type("")
+            return extend(a:callable, {
+            \   'do': function(a:callable),
+            \}, 'force')
+        endif
     endif
     throw 'vital: Functor.wrap(): '
     \   . 'a:callable is not callable!'
