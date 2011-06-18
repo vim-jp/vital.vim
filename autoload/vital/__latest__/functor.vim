@@ -6,21 +6,21 @@ set cpo&vim
 
 " The same arguments as call()
 " but first argument is callable object.
-function! s:call(functor, args, ...)
-    let functor = s:wrap(a:functor)
+function! s:call(callable, args, ...)
+    let functor = s:wrap(a:callable)
     return call(functor.do, a:args, functor)
 endfunction
 
-function! s:wrap(functor)
-    if type(a:functor) ==# type("")
-    \   || type(a:functor) ==# type(function('tr'))
-        return {'do': function(a:functor)}
-    elseif type(a:functor) ==# type({})
-    \   && has_key(a:functor, 'do')
-        return a:functor
+function! s:wrap(callable)
+    if type(a:callable) ==# type("")
+    \   || type(a:callable) ==# type(function('tr'))
+        return {'do': function(a:callable)}
+    elseif type(a:callable) ==# type({})
+    \   && has_key(a:callable, 'do')
+        return a:callable
     endif
     throw 'vital: Functor.wrap(): '
-    \   . 'a:functor is not callable!'
+    \   . 'a:callable is not callable!'
 endfunction
 
 
