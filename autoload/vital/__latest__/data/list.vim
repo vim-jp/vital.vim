@@ -76,5 +76,16 @@ function! s:char_range(from, to) " {{{
   \)
 endfunction "}}}
 
+" Returns true if a:list has a:Value.
+" Returns false otherwise.
+function! s:has(list, Value) "{{{
+  for Value in a:list
+    if Value ==# a:Value
+      return 1
+    endif
+  endfor
+  return 0
+endfunction "}}}
+
 
 let &cpo = s:save_cpo
