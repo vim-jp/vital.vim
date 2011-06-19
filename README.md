@@ -22,7 +22,7 @@ Assuming your Vim plugin name is `ujihisa`. You can define your utility function
 
     let V = vital#of('ujihisa')
     function! ujihisa#util#system(...)
-      return call(V.system, a:000)
+      return call(V.system, a:000, V)
     endfunction
 
 and then you can call functions by `ujihisa#util#system()`, without taking care of `vital.vim` itself. It's all hidden.
@@ -37,7 +37,7 @@ or
 
     let V = vital#of('ujihisa')
     call V.load('Data.OrderedSet')
-    call V.data.ordered_set.f()
+    call V.Data.OrderedSet.f()
 
 or
 
