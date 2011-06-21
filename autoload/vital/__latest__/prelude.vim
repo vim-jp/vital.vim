@@ -10,6 +10,56 @@ function! s:globpath(...)
     return split(R, '\n')
 endfunction
 
+" Wrapper functions for type().
+let [
+\   s:__TYPE_NUMBER,
+\   s:__TYPE_STRING,
+\   s:__TYPE_FUNCREF,
+\   s:__TYPE_LIST,
+\   s:__TYPE_DICT,
+\   s:__TYPE_FLOAT
+\] = [
+\   type(3),
+\   type(""),
+\   type(function('tr')),
+\   type([]),
+\   type({}),
+\   type(3.14159)
+\]
+" Number or Float
+function! s:is_numeric(Value)
+    let _ = type(a:Value)
+    return _ ==# s:__TYPE_NUMBER
+    \   || _ ==# s:__TYPE_FLOAT
+endfunction
+" Number
+function! s:is_integer(Value)
+    return type(a:Value) ==# s:__TYPE_NUMBER
+endfunction
+function! s:is_number(Value)
+    return type(a:Value) ==# s:__TYPE_NUMBER
+endfunction
+" Float
+function! s:is_float(Value)
+    return type(a:Value) ==# s:__TYPE_FLOAT
+endfunction
+" String
+function! s:is_string(Value)
+    return type(a:Value) ==# s:__TYPE_STRING
+endfunction
+" Funcref
+function! s:is_funcref(Value)
+    return type(a:Value) ==# s:__TYPE_FUNCREF
+endfunction
+" List
+function! s:is_list(Value)
+    return type(a:Value) ==# s:__TYPE_LIST
+endfunction
+" Dictionary
+function! s:is_dict(Value)
+    return type(a:Value) ==# s:__TYPE_DICT
+endfunction
+
 function! s:truncate_smart(str, max, footer_width, separator)"{{{
   let width = s:wcswidth(a:str)
   if width <= a:max
