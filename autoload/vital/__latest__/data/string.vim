@@ -56,6 +56,8 @@ function! s:split_leftright(haystack, needle)
 endfunction
 
 " Returns the number of character in a:str.
+" NOTE: This returns proper value
+" even if a:str contains multibyte character(s).
 " s:strchars(str) {{{
 if exists('*strchars')
     " TODO: Why can't I write like this?
@@ -70,6 +72,8 @@ else
 endif "}}}
 
 " Remove last character from a:str.
+" NOTE: This returns proper value
+" even if a:str contains multibyte character(s).
 function! s:chop(str) "{{{
     return substitute(a:str, '.$', '', '')
 endfunction "}}}
