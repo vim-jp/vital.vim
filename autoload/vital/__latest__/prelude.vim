@@ -80,14 +80,14 @@ else
       if ucs == 0
         break
       endif
-      let width += s:wcwidth(ucs)
+      let width += s:_wcwidth(ucs)
       let str = substitute(str, mx_first, '', '')
     endwhile
     return width
   endfunction"}}}
 
   " UTF-8 only.
-  function! s:wcwidth(ucs)"{{{
+  function! s:_wcwidth(ucs)"{{{
     let ucs = a:ucs
     if (ucs >= 0x1100
           \  && (ucs <= 0x115f
