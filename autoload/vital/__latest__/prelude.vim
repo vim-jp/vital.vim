@@ -1,3 +1,15 @@
+
+" glob() wrapper which returns List.
+function! s:glob(...)
+    let R = call('glob', a:000)
+    return split(R, '\n')
+endfunction
+" globpath() wrapper which returns List.
+function! s:globpath(...)
+    let R = call('globpath', a:000)
+    return split(R, '\n')
+endfunction
+
 function! s:truncate_smart(str, max, footer_width, separator)"{{{
   let width = s:wcswidth(a:str)
   if width <= a:max
