@@ -6,7 +6,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:path_sep_pattern = exists('+shellslash') ? '[\\/]' : '/'
+let s:path_sep_pattern = (exists('+shellslash') ? '[\\/]' : '/') . '\+'
 
 " Get the path separator.
 function! s:separator()
@@ -37,7 +37,7 @@ function! s:join(...)
     \                           part)
     unlet part
   endfor
-  return substitute(path[1 :], s:path_sep_pattern . '\+', sep, 'g')
+  return substitute(path[1 :], s:path_sep_pattern, sep, 'g')
 endfunction
 
 " Check if the path is absolute path.
