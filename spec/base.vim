@@ -1,5 +1,4 @@
-" FIXME
-let &rtp = '/Users/ujihisa/.vimbundles/vital.vim/'
+let &runtimepath = expand('<sfile>:h:h')
 
 let s:results = {}
 let s:context_stack = []
