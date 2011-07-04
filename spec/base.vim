@@ -26,7 +26,8 @@ command! -nargs=+ It
 command! -nargs=+ Should
       \ call s:should(<q-args>)
 command! -nargs=0 End
-      \ call remove(s:context_stack, -1)
+      \ call remove(s:context_stack, -1) |
+      \ redraw
 
 command! -nargs=+ Fin
       \ call writefile([string(s:results)], <q-args>) |
