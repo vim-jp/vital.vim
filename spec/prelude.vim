@@ -105,8 +105,13 @@ Context Prelude.truncate_smart()
   End
 End
 
-  "IS unite#util#strchars('this'), 4
-  "IS unite#util#strchars('あいうえお'), 5
+Context Prelude.strchars()
+  It counts the number of letters, not the number of bytes.
+    Should g:V.strchars('this') ==# 4
+    Should g:V.strchars('あいうえお') ==# 5
+  End
+End
+
   "IS unite#util#strwidthpart('this is a pen', 5), 'this '
   "IS unite#util#strwidthpart('あいうえお', 5), 'あい'
   "IS unite#util#strwidthpart_reverse('this is a pen', 5), 'a pen'
