@@ -3,14 +3,14 @@ let &runtimepath = expand('<sfile>:h:h')
 let s:results = {}
 let s:context_stack = []
 
-function! s:should(cond)
+function! s:should(cond, result)
   " FIXME: validate
   let it = s:context_stack[-1][1]
   let context = s:context_stack[-2][1]
   if !has_key(s:results, context)
     let s:results[context] = []
   endif
-  call add(s:results[context], s:_should(it, a:cond))
+  call add(s:results[context], a:result ? '.' : it . a:cont)
 endfunction
 
 function! s:_should(it, cond)
@@ -24,7 +24,7 @@ command! -nargs=+ Context
 command! -nargs=+ It
       \ call add(s:context_stack, ['i', <q-args>])
 command! -nargs=+ Should
-      \ call s:should(<q-args>)
+      \ call s:should(<q-args>, eval(<q-args>))
 command! -nargs=0 End
       \ call remove(s:context_stack, -1) |
       \ redraw!
