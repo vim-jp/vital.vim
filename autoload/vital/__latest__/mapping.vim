@@ -36,14 +36,7 @@ function! s:options_dict2raw(dict)
 endfunction
 
 function! s:options_chars2raw(chars)
-    let table = {
-    \   's': '<silent>',
-    \   'S': '<script>',
-    \   'e': '<expr>',
-    \   'b': '<buffer>',
-    \   'u': '<unique>',
-    \}
-    return join(map(split(a:chars, '\zs'), 'get(table, v:val, "")'), '')
+    return s:options_dict2raw(s:options_chars2dict(a:chars))
 endfunction
 
 function! s:options_chars2dict(chars)
