@@ -100,7 +100,7 @@ function! s:__get_command(type, mode, dict, lhs, rhs)
     let noremap = get(a:dict, 'noremap', 0)
     return join([
     \   a:mode . (noremap ? 'nore' : '') . a:type,
-    \   s:mapopt_dict2raw(a:dict),
+    \   s:options_dict2raw(a:dict),
     \   a:lhs,
     \   a:rhs,
     \])
@@ -115,7 +115,7 @@ function! s:get_unmap_command(mode, dict, lhs)
 
     return join([
     \   a:mode . 'unmap',
-    \   s:mapopt_dict2raw(a:dict),
+    \   s:options_dict2raw(a:dict),
     \   a:lhs,
     \])
 endfunction
