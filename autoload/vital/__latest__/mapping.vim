@@ -24,15 +24,15 @@ set cpo&vim
 
 
 
-function! s:options_dict2raw(maparg)
+function! s:options_dict2raw(dict)
     " Convert dictionary to Vim's :map options.
     return
-    \   (get(a:maparg, 'expr')      ? '<expr>'    : '')
-    \   . (get(a:maparg, 'buffer')  ? '<buffer>'  : '')
-    \   . (get(a:maparg, 'silent')  ? '<silent>'  : '')
-    \   . (get(a:maparg, 'special') ? '<special>' : '')
-    \   . (get(a:maparg, 'script')  ? '<script>'  : '')
-    \   . (get(a:maparg, 'unique')  ? '<unique>'  : '')
+    \   (get(a:dict, 'expr')      ? '<expr>'    : '')
+    \   . (get(a:dict, 'buffer')  ? '<buffer>'  : '')
+    \   . (get(a:dict, 'silent')  ? '<silent>'  : '')
+    \   . (get(a:dict, 'special') ? '<special>' : '')
+    \   . (get(a:dict, 'script')  ? '<script>'  : '')
+    \   . (get(a:dict, 'unique')  ? '<unique>'  : '')
 endfunction
 
 function! s:options_chars2raw(chars)
