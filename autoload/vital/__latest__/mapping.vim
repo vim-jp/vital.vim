@@ -39,11 +39,12 @@ endfunction
 
 function! s:options_dict2chars(dict)
     return
-    \   (get(a:dict, 'expr')     ? 'e' : '')
-    \   . (get(a:dict, 'buffer') ? 'b' : '')
-    \   . (get(a:dict, 'silent') ? 's' : '')
-    \   . (get(a:dict, 'script') ? 'S' : '')
-    \   . (get(a:dict, 'unique') ? 'u' : '')
+    \   (get(a:dict, 'expr')      ? 'e' : '')
+    \   . (get(a:dict, 'buffer')  ? 'b' : '')
+    \   . (get(a:dict, 'silent')  ? 's' : '')
+    \   . (get(a:dict, 'script')  ? 'S' : '')
+    \   . (get(a:dict, 'unique')  ? 'u' : '')
+    \   . (get(a:dict, 'noremap') ? ''  : 'r')
 endfunction
 
 function! s:options_chars2raw(chars)
