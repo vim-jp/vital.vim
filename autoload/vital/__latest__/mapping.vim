@@ -69,7 +69,7 @@ function! s:execute_map_command(mode, dict, lhs, rhs)
     execute s:get_map_command(a:mode, a:dict, a:lhs, a:rhs)
 endfunction
 
-function! s:get_map_command(mode, dict, lhs, rhs)
+function! s:get_map_command(...)
     return call('s:__get_command', ['map'] + a:000)
 endfunction
 
@@ -79,7 +79,7 @@ function! s:execute_abbr_command(mode, dict, lhs, rhs)
     execute s:get_abbr_command(a:mode, a:dict, a:lhs, a:rhs)
 endfunction
 
-function! s:get_abbr_command(mode, dict, lhs, rhs)
+function! s:get_abbr_command(...)
     return call('s:__get_command', ['abbr'] + a:000)
 endfunction
 
