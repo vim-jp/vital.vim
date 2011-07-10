@@ -164,6 +164,6 @@ End
 
 Context Prelude.is_mac()
   It is true only when the platform is Mac OS X
-    Should g:V.is_mac() ==# !g:V.is_windows() && (has('mac') || has('macunix') || has('gui_macvim') || system('uname') =~? '^darwin')
+    Should g:V.is_mac() ==# (!g:V.is_windows() && (has('mac') || has('macunix') || has('gui_macvim') || system('uname') =~? '^darwin'))
   End
 End
