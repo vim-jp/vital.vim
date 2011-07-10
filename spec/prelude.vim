@@ -148,3 +148,22 @@ Context Prelude.system()
     Should g:V.system('echo 1234') ==# "1234\n"
   End
 End
+
+
+Context Prelude.is_cygwin()
+  It is true only when the platform is cygwin
+    Should g:V.is_cygwin() ==# has('win32unix')
+  End
+End
+
+Context Prelude.is_windows()
+  It is true only when the platform is MS Windows
+    Should g:V.is_windows() ==# has('win16') || has('win32') || has('win64')
+  End
+End
+
+Context Prelude.is_mac()
+  It is true only when the platform is Mac OS X
+    Should g:V.is_mac() ==# !g:V.is_windows() && (has('mac') || has('macunix') || has('gui_macvim') || system('uname') =~? '^darwin')
+  End
+End
