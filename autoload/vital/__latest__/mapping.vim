@@ -70,7 +70,7 @@ function! s:execute_map_command(mode, dict, lhs, rhs)
 endfunction
 
 function! s:get_map_command(...)
-    return call('s:__get_command', ['map'] + a:000)
+    return call('s:__get_map_command', ['map'] + a:000)
 endfunction
 
 function! s:execute_abbr_command(mode, dict, lhs, rhs)
@@ -80,7 +80,7 @@ function! s:execute_abbr_command(mode, dict, lhs, rhs)
 endfunction
 
 function! s:get_abbr_command(...)
-    return call('s:__get_command', ['abbr'] + a:000)
+    return call('s:__get_map_command', ['abbr'] + a:000)
 endfunction
 
 function! s:execute_unmap_command(mode, dict, lhs)
@@ -89,7 +89,7 @@ function! s:execute_unmap_command(mode, dict, lhs)
     execute s:get_unmap_command(a:mode, a:dict, a:lhs)
 endfunction
 
-function! s:__get_command(type, mode, dict, lhs, rhs)
+function! s:__get_map_command(type, mode, dict, lhs, rhs)
     if type(a:dict) != type({})
     \   || !s:is_mode_char(a:mode)
     \   || a:lhs ==# ''
