@@ -23,6 +23,11 @@ set cpo&vim
 " rhs: :help {rhs}
 
 
+" chars <-> dict (easy)
+" raw <-> chars (`chars -> raw` is easy but `raw -> chars` is not easy)
+" raw <-> dict (`dict -> raw` is easy but `raw -> dict` is not easy)
+
+
 
 function! s:options_dict2raw(dict)
     " Convert dictionary to Vim's :map options.
