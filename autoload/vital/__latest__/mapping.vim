@@ -106,7 +106,15 @@ function! s:__get_map_command(type, mode, dict, lhs, rhs)
     \])
 endfunction
 
-function! s:get_unmap_command(mode, dict, lhs)
+function! s:get_unmap_command(...)
+    return call('s:__get_unmap_command', ['unmap'] + a:000)
+endfunction
+
+function! s:get_unabbr_command(...)
+    return call('s:__get_unmap_command', ['unabbr'] + a:000)
+endfunction
+
+function! s:__get_unmap_command(type, mode, dict, lhs)
     if type(a:dict) != type({})
     \   || !s:is_mode_char(a:mode)
     \   || a:lhs ==# ''
@@ -114,7 +122,7 @@ function! s:get_unmap_command(mode, dict, lhs)
     endif
 
     return join([
-    \   a:mode . 'unmap',
+    \   a:mode . a:type,
     \   s:options_dict2raw(a:dict),
     \   a:lhs,
     \])
