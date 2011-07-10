@@ -6,7 +6,6 @@ set cpo&vim
 
 
 " TODO:
-" - document for argument variable names.
 " - parsing functions
 " - s:split_to_keys() in arpeggio.vim
 " - s:key2char() in eskk.vim
@@ -14,6 +13,14 @@ set cpo&vim
 " - builder object: .lhs(), .rhs(), .modes(), ...
 " - move functions from eskk.vim(autoload/eskk/map.vim), emap.vim(autoload/emap.vim)
 
+" Variable name convention:
+" maparg: Dictionary which maparg() returns when {dict} is true.
+" dict: it differs a little from `maparg` above. it contains more keys like "unique", etc.
+" chars: String that each character means option. e.g., "b" (which means <buffer>)
+" raw: String that option passing to :map command's argument. e.g., "<buffer>"
+" mode: a character which means current mode. see s:get_all_modes() for avaiable modes.
+" lhs: :help {lhs}
+" rhs: :help {rhs}
 
 
 
