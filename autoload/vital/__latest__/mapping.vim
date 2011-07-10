@@ -51,7 +51,7 @@ function! s:options_chars2dict(chars)
     \   'expr': (stridx(a:chars, 'e') isnot -1),
     \   'buffer': (stridx(a:chars, 'b') isnot -1),
     \   'silent' : (stridx(a:chars, 's') isnot -1),
-    \   'special' : (stridx(a:chars, 'S') isnot -1),
+    \   'script' : (stridx(a:chars, 'S') isnot -1),
     \   'unique': (stridx(a:chars, 'u') isnot -1),
     \   'noremap': (stridx(a:chars, 'r') is -1),
     \}
