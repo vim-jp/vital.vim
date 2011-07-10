@@ -68,11 +68,11 @@ function! s:dirname(path)
 endfunction
 
 " Remove the separator at the end of a:path.
-function! s:remove_last_separator(path) "{{{
+function! s:remove_last_separator(path)
   let sep = s:separator()
   let pat = (sep == '\' ? '\\' : '/') . '\+$'
   return substitute(a:path, pat, '', '')
-endfunction "}}}
+endfunction
 
 
 let &cpo = s:save_cpo
