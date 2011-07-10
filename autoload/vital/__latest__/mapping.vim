@@ -30,14 +30,16 @@ set cpo&vim
 
 
 function! s:options_dict2raw(dict)
-    " Convert dictionary to Vim's :map options.
+    return s:options_chars2raw(s:options_dict2chars(a:dict))
+endfunction
+
+function! s:options_dict2chars(dict)
     return
-    \   (get(a:dict, 'expr')      ? '<expr>'    : '')
-    \   . (get(a:dict, 'buffer')  ? '<buffer>'  : '')
-    \   . (get(a:dict, 'silent')  ? '<silent>'  : '')
-    \   . (get(a:dict, 'special') ? '<special>' : '')
-    \   . (get(a:dict, 'script')  ? '<script>'  : '')
-    \   . (get(a:dict, 'unique')  ? '<unique>'  : '')
+    \   (get(a:dict, 'expr')     ? 'e' : '')
+    \   . (get(a:dict, 'buffer') ? 'b' : '')
+    \   . (get(a:dict, 'silent') ? 's' : '')
+    \   . (get(a:dict, 'script') ? 'S' : '')
+    \   . (get(a:dict, 'unique') ? 'u' : '')
 endfunction
 
 function! s:options_chars2raw(chars)
