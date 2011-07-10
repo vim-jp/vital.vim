@@ -85,12 +85,6 @@ function! s:execute_unmap_command(mode, dict, lhs)
     execute s:get_unmap_command(a:mode, a:dict, a:lhs)
 endfunction
 
-function! s:get_unmap_command(mode, dict, lhs)
-    return call('s:__get_command', ['unmap'] + a:000)
-endfunction
-
-
-
 function! s:__get_command(type, mode, dict, lhs, rhs)
     if type(a:dict) != type({})
     \   || !s:is_mode_char(a:mode)
@@ -105,6 +99,20 @@ function! s:__get_command(type, mode, dict, lhs, rhs)
     \   s:mapopt_dict2raw(a:dict),
     \   a:lhs,
     \   a:rhs,
+    \])
+endfunction
+
+function! s:get_unmap_command(mode, dict, lhs)
+    if type(a:dict) != type({})
+    \   || !s:is_mode_char(a:mode)
+    \   || a:lhs ==# ''
+        return ''
+    endif
+
+    return join([
+    \   a:mode . 'unmap',
+    \   s:mapopt_dict2raw(a:dict),
+    \   a:lhs,
     \])
 endfunction
 
