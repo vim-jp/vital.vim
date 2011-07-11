@@ -107,7 +107,7 @@ endfunction
 function! s:wrap(str)
   let L = s:V.import('Data.List')
   return L.concat(
-        \ map(split(a:str, '\r\?\n'), 's:_split_by_wcswitdh(v:val, &columns)'))
+        \ map(split(a:str, '\r\?\n'), 's:_split_by_wcswitdh(v:val, &columns - 1)'))
 endfunction
 
 
