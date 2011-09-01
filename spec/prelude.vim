@@ -37,7 +37,7 @@ Context Prelude.is_number()
 End
 
 Context Prelude.is_float()
-  It checks if the argument is a float 
+  It checks if the argument is a float
     Should g:V.is_float(3) ==# 0
     Should g:V.is_float(3.14159) ==# 1
     Should g:V.is_float("") ==# 0
@@ -48,7 +48,7 @@ Context Prelude.is_float()
 End
 
 Context Prelude.is_string()
-  It checks if the argument is a string 
+  It checks if the argument is a string
     Should g:V.is_string(3) ==# 0
     Should g:V.is_string(3.14159) ==# 0
     Should g:V.is_string("") ==# 1
