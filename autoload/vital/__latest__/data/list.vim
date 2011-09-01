@@ -4,16 +4,15 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Removes duplicates from a list.
-" FIXME: string only.
 function! s:uniq(list)  "{{{
   let i = 0
   let seen = {}
   while i < len(a:list)
-    if has_key(seen, '_' . a:list[i])
+    let key = string(a:list[i])
+    if has_key(seen, key)
       call remove(a:list, i)
     else
-      " Avoid empty string for key of dictionary.
-      let seen['_' . a:list[i]] = 1
+      let seen[key] = 1
       let i += 1
     endif
   endwhile
