@@ -112,8 +112,13 @@ Context Prelude.strchars()
   End
 End
 
-  "IS unite#util#strwidthpart('this is a pen', 5), 'this '
-  "IS unite#util#strwidthpart('あいうえお', 5), 'あい'
+Context Prelude.strwidthpart()
+  It cuts a string to give width
+    Should g:V.strwidthpart('this is a pen', 5) ==# 'this '
+    Should g:V.strwidthpart('あいうえお', 5) ==# 'あい'
+  End
+End
+
   "IS unite#util#strwidthpart_reverse('this is a pen', 5), 'a pen'
   "IS unite#util#strwidthpart_reverse('あいうえお', 5), 'えお'
   "IS unite#util#wcswidth('this is a pen'), 13
