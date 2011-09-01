@@ -4,19 +4,20 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Removes duplicates from a list.
-function! s:uniq(list)
+function! s:uniq(list, ...)
+  let list = a:0 ? map(a:list, printf('[v:val, %s]', a:1)) : a:list
   let i = 0
   let seen = {}
-  while i < len(a:list)
-    let key = string(a:list[i])
+  while i < len(list)
+    let key = string(a:0 ? list[i][1] : list[i])
     if has_key(seen, key)
-      call remove(a:list, i)
+      call remove(list, i)
     else
       let seen[key] = 1
       let i += 1
     endif
   endwhile
-  return a:list
+  return a:0 ? map(list, 'v:val[0]') : list
 endfunction
 
 " Concatenates a list of lists.
