@@ -38,7 +38,7 @@ Dir.chdir vitaldir do
   sha1 ||= `git show`[/commit (......)/, 1]
   puts sha1
   Dir.glob("autoload/**/*.vim") do |before|
-    after = "#{yourdir}/#{placeholders.(before)}"
+    after = "#{yourdir}/#{placeholders.call(before)}"
     FileUtils.mkdir_p(Pathname(after).dirname.to_s)
     writefile(after, File.read(before))
   end
