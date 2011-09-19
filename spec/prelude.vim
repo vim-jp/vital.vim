@@ -37,7 +37,7 @@ Context Prelude.is_number()
 End
 
 Context Prelude.is_float()
-  It checks if the argument is a float 
+  It checks if the argument is a float
     Should g:V.is_float(3) ==# 0
     Should g:V.is_float(3.14159) ==# 1
     Should g:V.is_float("") ==# 0
@@ -48,7 +48,7 @@ Context Prelude.is_float()
 End
 
 Context Prelude.is_string()
-  It checks if the argument is a string 
+  It checks if the argument is a string
     Should g:V.is_string(3) ==# 0
     Should g:V.is_string(3.14159) ==# 0
     Should g:V.is_string("") ==# 1
@@ -112,10 +112,20 @@ Context Prelude.strchars()
   End
 End
 
-  "IS unite#util#strwidthpart('this is a pen', 5), 'this '
-  "IS unite#util#strwidthpart('あいうえお', 5), 'あい'
-  "IS unite#util#strwidthpart_reverse('this is a pen', 5), 'a pen'
-  "IS unite#util#strwidthpart_reverse('あいうえお', 5), 'えお'
+Context Prelude.strwidthpart()
+  It cuts a string to give width
+    Should g:V.strwidthpart('this is a pen', 5) ==# 'this '
+    Should g:V.strwidthpart('あいうえお', 5) ==# 'あい'
+  End
+End
+
+Context Prelude.strwidthpart()
+  It cuts backward a string to give width
+    Should g:V.strwidthpart_reverse('this is a pen', 5) ==# 'a pen'
+    Should g:V.strwidthpart_reverse('あいうえお', 5) ==# 'えお'
+  End
+End
+
   "IS unite#util#wcswidth('this is a pen'), 13
   "IS unite#util#wcswidth('あいうえお'), 10
   "IS unite#util#is_win(), 0

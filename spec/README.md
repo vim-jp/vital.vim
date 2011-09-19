@@ -4,6 +4,10 @@ on vimshell
 
     $ texe vim -u NONE -i NONE -N --cmd 'filetype indent on' -S spec/prelude.vim -c 'Fin /tmp/prelude.result'
 
+for gui vim (example: MacVim):
+
+    $ /Applications/MacVim.app/Contents/MacOS/Vim -g -u NONE -i NONE -N --cmd 'filetype indent on' -S spec/prelude.vim -c 'Fin /tmp/prelude.result'
+
 otherwise
 
     :VimProcBang vim -u NONE -i NONE -N --cmd 'filetype indent on' -S spec/prelude.vim -c 'Fin /tmp/prelude.result'
