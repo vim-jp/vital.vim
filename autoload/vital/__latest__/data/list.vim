@@ -92,5 +92,22 @@ function! s:has_index(list, index)
     return 0 <= a:index && a:index < len(a:list)
 endfunction
 
+" similar to Haskell's Data.List.span
+function! s:span(f, xs)
+  let border = len(a:xs)
+  for i in range(0, len(a:xs)-1)
+    if !eval(substitute(a:f, 'v:val', a:xs[i], 'g'))
+      let border = i
+      break
+    endif
+  endfor
+  return [a:xs[0 : border-1], a:xs[border : -1]]
+endfunction
+
+" similar to Haskell's Data.List.break
+function! s:break(f, xs)
+  return s:span(printf('!(%s)', a:f), a:xs)
+endfunction
+
 
 let &cpo = s:save_cpo
