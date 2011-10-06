@@ -33,3 +33,14 @@ Context Data.List.break()
     Should [[1, 3], [5, 2]] == g:L.break('v:val == 5', [1, 3, 5, 2])
   End
 End
+
+Context Data.List.foldl()
+  It folds a list from left
+    Should 55 == g:L.foldl('v:memo + v:val', 0, range(1, 10))
+    Should [[[], 1], 2] == g:L.foldl('[v:memo, v:val]', [], [1, 2])
+  End
+
+  It does nothing if the list is empty
+    Should 123 == g:L.foldl('echoerr omg', 123, [])
+  End
+End

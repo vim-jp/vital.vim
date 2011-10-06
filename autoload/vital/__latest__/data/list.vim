@@ -109,5 +109,15 @@ function! s:break(f, xs)
   return s:span(printf('!(%s)', a:f), a:xs)
 endfunction
 
+" similar to Haskell's Prelude.foldl
+function! s:foldl(f, init, xs)
+  let memo = a:init
+  for x in a:xs
+    let expr = substitute(a:f, 'v:val', string(x), 'g')
+    let expr = substitute(expr, 'v:memo', string(memo), 'g')
+    let memo = eval(expr)
+  endfor
+  return memo
+endfunction
 
 let &cpo = s:save_cpo
