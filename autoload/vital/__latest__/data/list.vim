@@ -115,9 +115,18 @@ function! s:foldl(f, init, xs)
   for x in a:xs
     let expr = substitute(a:f, 'v:val', string(x), 'g')
     let expr = substitute(expr, 'v:memo', string(memo), 'g')
+    unlet memo
     let memo = eval(expr)
   endfor
   return memo
+endfunction
+
+" similar to Haskell's Prelude.foldl1
+function! s:foldl1(f, xs)
+  if len(a:xs) == 0
+    throw 'foldl1'
+  endif
+  return s:foldl(a:f, a:xs[0], a:xs[1:])
 endfunction
 
 let &cpo = s:save_cpo

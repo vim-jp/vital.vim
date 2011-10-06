@@ -44,3 +44,19 @@ Context Data.List.foldl()
     Should 123 == g:L.foldl('echoerr omg', 123, [])
   End
 End
+
+Context Data.List.foldl1()
+  It folds a list from left
+    Should 55 == g:L.foldl1('v:memo + v:val', range(1, 10))
+    Should [1, 2] == g:L.foldl1('[v:memo, v:val]', [1, 2])
+  End
+
+  It causes an error when the list is empty
+    try
+      call g:L.foldl1('123', [])
+      Should 0
+    catch
+      Should 1
+    endtry
+  End
+End
