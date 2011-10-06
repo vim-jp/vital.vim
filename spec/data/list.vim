@@ -60,3 +60,15 @@ Context Data.List.foldl1()
     endtry
   End
 End
+
+Context Data.List.foldr()
+  It folds a list from right
+    Should 55 == g:L.foldr('v:memo + v:val', 0, range(1, 10))
+    Should [[[], 2], 1] == g:L.foldr('[v:memo, v:val]', [], [1, 2])
+  End
+
+  It does nothing if the list is empty
+    Should 123 == g:L.foldr('echoerr omg', 123, [])
+  End
+End
+
