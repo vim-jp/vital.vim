@@ -142,4 +142,13 @@ function! s:foldr(f, init, xs)
   return memo
 endfunction
 
+" similar to Haskell's Prelude.fold11
+function! s:foldr1(f, xs)
+  if len(a:xs) == 0
+    throw 'foldr1'
+  endif
+  return s:foldr(a:f, a:xs[-1], a:xs[0:-2])
+endfunction
+
+
 let &cpo = s:save_cpo
