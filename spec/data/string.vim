@@ -1,4 +1,5 @@
 source spec/base.vim
+scriptencoding utf-8
 
 let g:S = vital#of('vital').import('Data.String')
 
@@ -78,5 +79,26 @@ Context Data.String.split_leftright()
     " No match
     Should g:S.split_leftright('neocomplcache', 'neocon') ==# ['', '']
     Should g:S.split_leftright('neocomplcache', 'neco') ==# ['', '']
+  End
+End
+
+Context Data.String.strchars()
+  It returns the number of character in a:str, not byte
+    Should g:S.strchars('あいうえお') ==# 5
+    Should g:S.strchars('aiueo') ==# 5
+    Should g:S.strchars('') ==# 0
+    Should g:S.strchars('あiうeお') ==# 5
+    Should g:S.strchars('aいuえo') ==# 5
+    if &ambiwidth ==# 'single'
+        Should g:S.strchars('Shougo△') ==# 7
+    elseif &ambiwidth ==# 'double'
+        Should g:S.strchars('Shougo△') ==# 8
+    elseif &ambiwidth ==# 'auto'
+        " TODO: I don't know +kaoriya version's "auto" behavior...
+    else
+        " wtf?
+        let be_nonsense = 0
+        Should be_nonsense
+    endif
   End
 End
