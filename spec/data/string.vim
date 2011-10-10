@@ -83,7 +83,7 @@ Context Data.String.split_leftright()
 End
 
 Context Data.String.strchars()
-  It returns the number of character in a:str, not byte
+  It returns the number of character, not byte
     Should g:S.strchars('あいうえお') ==# 5
     Should g:S.strchars('aiueo') ==# 5
     Should g:S.strchars('') ==# 0
