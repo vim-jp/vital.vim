@@ -23,6 +23,11 @@ Context Data.String.replace()
     " FIXME: this causes infinite loop
     " Should g:S.replace('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
     Should g:S.replace('foobar', 'bar', 'baz') ==# 'foobaz'
+
+    " Specific tests for Data.String.replace()
+    Should g:S.replace('hello', 'l', '') ==# 'heo'
+    Should g:S.replace('hello', 'l', 'L') ==# 'heLLo'
+    Should g:S.replace('hello', 'l', 'LL') ==# 'heLLLLo'
   End
 End
 
@@ -38,5 +43,10 @@ Context Data.String.replace_once()
     " FIXME: this causes infinite loop
     " Should g:S.replace_once('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
     Should g:S.replace_once('foobar', 'bar', 'baz') ==# 'foobaz'
+
+    " Specific tests for Data.String.replace_once()
+    Should g:S.replace_once('hello', 'l', '') ==# 'helo'
+    Should g:S.replace_once('hello', 'l', 'L') ==# 'heLlo'
+    Should g:S.replace_once('hello', 'l', 'LL') ==# 'heLLlo'
   End
 End
