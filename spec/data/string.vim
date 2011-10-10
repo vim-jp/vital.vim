@@ -28,6 +28,12 @@ Context Data.String.replace()
     Should g:S.replace('hello', 'l', '') ==# 'heo'
     Should g:S.replace('hello', 'l', 'L') ==# 'heLLo'
     Should g:S.replace('hello', 'l', 'LL') ==# 'heLLLLo'
+    Should g:S.replace('queue', 'ue', '') ==# 'q'
+    Should g:S.replace('queue', 'ue', 'u') ==# 'quu'
+    Should g:S.replace('queue', 'ue', 'uu') ==# 'quuuu'
+    Should g:S.replace('mimic', 'mi', '') ==# 'c'
+    Should g:S.replace('mimic', 'mi', 'm') ==# 'mmc'
+    Should g:S.replace('mimic', 'mi', 'mm') ==# 'mmmmc'
   End
 End
 
@@ -48,5 +54,11 @@ Context Data.String.replace_once()
     Should g:S.replace_once('hello', 'l', '') ==# 'helo'
     Should g:S.replace_once('hello', 'l', 'L') ==# 'heLlo'
     Should g:S.replace_once('hello', 'l', 'LL') ==# 'heLLlo'
+    Should g:S.replace_once('queue', 'ue', '') ==# 'que'
+    Should g:S.replace_once('queue', 'ue', 'u') ==# 'quue'
+    Should g:S.replace_once('queue', 'ue', 'uu') ==# 'quuue'
+    Should g:S.replace_once('mimic', 'mi', '') ==# 'mic'
+    Should g:S.replace_once('mimic', 'mi', 'm') ==# 'mmic'
+    Should g:S.replace_once('mimic', 'mi', 'mm') ==# 'mmmic'
   End
 End
