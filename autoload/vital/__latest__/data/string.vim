@@ -6,7 +6,6 @@ let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
 
 " Substitute a:from => a:to by string.
 " To substitute by pattern, use substitute() instead.
-" Test: https://gist.github.com/984296
 function! s:replace(str, from, to)
     if a:str ==# '' || a:from ==# ''
         return a:str
@@ -24,7 +23,6 @@ endfunction
 
 " Substitute a:from => a:to only once.
 " cf. s:replace()
-" Test: https://gist.github.com/984296
 function! s:replace_once(str, from, to)
     if a:str ==# '' || a:from ==# ''
         return a:str
@@ -41,7 +39,6 @@ endfunction
 
 " Split to two elements of List. ([left, right])
 " e.g.: s:split_leftright("neocomplcache", "compl") returns ["neo", "cache"]
-" Test: https://gist.github.com/984356
 function! s:split_leftright(haystack, needle)
     let ERROR = ['', '']
     if a:haystack ==# '' || a:needle ==# ''
