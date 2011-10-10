@@ -13,12 +13,14 @@ End
 
 Context Data.String.replace()
   It substitutes arg2 to arg3 from arg1
+    " TODO: Write common tests in one place
     " Common tests for replace(), replace_once()
     Should g:S.replace('foobar', 'ob', '') ==# 'foar'
     Should g:S.replace('foobar', 'foo', '') ==# 'bar'
     Should g:S.replace('foobar', 'ar', '') ==# 'foob'
     Should g:S.replace('', 'foo', '') ==# ''
     Should g:S.replace('foobar', '', '') ==# 'foobar'
+    " FIXME: this causes infinite loop
     " Should g:S.replace('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
     Should g:S.replace('foobar', 'bar', 'baz') ==# 'foobaz'
   End
@@ -26,12 +28,14 @@ End
 
 Context Data.String.replace_once()
   It is like Data.String.replace(), but this substitutes the first matching substring, not all
+    " TODO: Write common tests in one place
     " Common tests for replace(), replace_once()
     Should g:S.replace_once('foobar', 'ob', '') ==# 'foar'
     Should g:S.replace_once('foobar', 'foo', '') ==# 'bar'
     Should g:S.replace_once('foobar', 'ar', '') ==# 'foob'
     Should g:S.replace_once('', 'foo', '') ==# ''
     Should g:S.replace_once('foobar', '', '') ==# 'foobar'
+    " FIXME: this causes infinite loop
     " Should g:S.replace_once('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
     Should g:S.replace_once('foobar', 'bar', 'baz') ==# 'foobaz'
   End
