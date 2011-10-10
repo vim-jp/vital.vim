@@ -62,3 +62,21 @@ Context Data.String.replace_once()
     Should g:S.replace_once('mimic', 'mi', 'mm') ==# 'mmmic'
   End
 End
+
+Context Data.String.split_leftright()
+  It splits into two substrings: left/right substring next to matched string with pattern
+    Should g:S.split_leftright('neocomplcache', 'compl') ==# ['neo', 'cache']
+    Should g:S.split_leftright('autocomplpop', 'compl') ==# ['auto', 'pop']
+    Should g:S.split_leftright('neocomplcache', 'neo') ==# ['', 'complcache']
+    Should g:S.split_leftright('autocomplpop', 'auto') ==# ['', 'complpop']
+    Should g:S.split_leftright('neocomplcache', 'cache') ==# ['neocompl', '']
+    Should g:S.split_leftright('autocomplpop', 'pop') ==# ['autocompl', '']
+    " Invalid arguments
+    Should g:S.split_leftright('', 'compl') ==# ['', '']
+    Should g:S.split_leftright('neo', '') ==# ['', '']
+    Should g:S.split_leftright('', '') ==# ['', '']
+    " No match
+    Should g:S.split_leftright('neocomplcache', 'neocon') ==# ['', '']
+    Should g:S.split_leftright('neocomplcache', 'neco') ==# ['', '']
+  End
+End
