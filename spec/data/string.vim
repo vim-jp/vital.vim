@@ -64,6 +64,13 @@ Context Data.String.replace_once()
   End
 End
 
+Context Data.String.scan()
+  It scans a string by a pattern and returns a list of matched strings
+    Should g:S.scan('neo compl cache', 'c\w\+') == ['compl', 'cache']
+    Should g:S.scan('[](){}', '[{()}]') == ['(', ')', '{', '}']
+  End
+End
+
 Context Data.String.split_leftright()
   It splits into two substrings: left/right substring next to matched string with pattern
     Should g:S.split_leftright('neocomplcache', 'compl') ==# ['neo', 'cache']

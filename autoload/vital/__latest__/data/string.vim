@@ -37,6 +37,19 @@ function! s:replace_once(str, from, to)
     endif
 endfunction
 
+function! s:scan(str, pattern)
+  let list = []
+  let pos = 0
+  while 0 <= pos
+    let matched = matchstr(a:str, a:pattern, pos)
+    let pos = matchend(a:str, a:pattern, pos)
+    if !empty(matched)
+      call add(list, matched)
+    endif
+  endwhile
+  return list
+endfunction
+
 " Split to two elements of List. ([left, right])
 " e.g.: s:split_leftright("neocomplcache", "compl") returns ["neo", "cache"]
 function! s:split_leftright(haystack, needle)
