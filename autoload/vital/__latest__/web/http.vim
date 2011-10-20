@@ -1,44 +1,7 @@
-" "HTTP utils" in vital.
-
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:__nr2byte(nr)
-  if a:nr < 0x80
-    return nr2char(a:nr)
-  elseif a:nr < 0x800
-    return nr2char(a:nr/64+192).nr2char(a:nr%64+128)
-  elseif a:nr < 0x10000
-    return nr2char(a:nr/4096%16+224).nr2char(a:nr/64%64+128).nr2char(a:nr%64+128)
-  elseif a:nr < 0x200000
-    return nr2char(a:nr/262144%16+240).nr2char(a:nr/4096/16+128).nr2char(a:nr/64%64+128).nr2char(a:nr%64+128)
-  elseif a:nr < 0x4000000
-    return nr2char(a:nr/16777216%16+248).nr2char(a:nr/262144%16+128).nr2char(a:nr/4096/16+128).nr2char(a:nr/64%64+128).nr2char(a:nr%64+128)
-  else
-    return nr2char(a:nr/1073741824%16+252).nr2char(a:nr/16777216%16+128).nr2char(a:nr/262144%16+128).nr2char(a:nr/4096/16+128).nr2char(a:nr/64%64+128).nr2char(a:nr%64+128)
-  endif
-endfunction
-
-function! s:__nr2enc_char(charcode)
-  if &encoding == 'utf-8'
-    return nr2char(a:charcode)
-  endif
-  let char = s:__nr2byte(a:charcode)
-  if strlen(char) > 1
-    let char = strtrans(iconv(char, 'utf-8', &encoding))
-  endif
-  return char
-endfunction
-
-function! s:__nr2hex(nr)
-  let n = a:nr
-  let r = ""
-  while n
-    let r = '0123456789ABCDEF'[n % 16] . r
-    let n = n / 16
-  endwhile
-  return r
-endfunction
+let s:utils = V.import('Web.Utils')
 
 function! s:__urlencode_char(c)
   let utf = iconv(a:c, &encoding, "utf-8")
@@ -104,7 +67,7 @@ function! s:encodeURIComponent(items)
       elseif ch == ' '
         let ret .= '+'
       else
-        let ret .= '%' . substitute('0' . s:__nr2hex(char2nr(ch)), '^.*\(..\)$', '\1', '')
+        let ret .= '%' . substitute('0' . s:utils.nr2hex(char2nr(ch)), '^.*\(..\)$', '\1', '')
       endif
       let i = i + 1
     endwhile

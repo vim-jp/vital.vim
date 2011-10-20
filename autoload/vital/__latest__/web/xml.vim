@@ -1,38 +1,9 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:utils = V.import('Web.Utils')
+
 let s:__template = { 'name': '', 'attr': {}, 'child': [] }
-
-function! s:__nr2byte(nr)
-  if a:nr < 0x80
-    return nr2char(a:nr)
-  elseif a:nr < 0x800
-    return nr2char(a:nr/64+192).nr2char(a:nr%64+128)
-  else
-    return nr2char(a:nr/4096%16+224).nr2char(a:nr/64%64+128).nr2char(a:nr%64+128)
-  endif
-endfunction
-
-function! s:__nr2enc_char(charcode)
-  if &encoding == 'utf-8'
-    return nr2char(a:charcode)
-  endif
-  let char = s:__nr2byte(a:charcode)
-  if strlen(char) > 1
-    let char = strtrans(iconv(char, 'utf-8', &encoding))
-  endif
-  return char
-endfunction
-
-function! s:__nr2hex(nr)
-  let n = a:nr
-  let r = ""
-  while n
-    let r = '0123456789ABCDEF'[n % 16] . r
-    let n = n / 16
-  endwhile
-  return r
-endfunction
 
 function! s:decodeEntityReference(str)
   let str = a:str
@@ -42,8 +13,8 @@ function! s:decodeEntityReference(str)
   "let str = substitute(str, '&apos;', "'", 'g')
   "let str = substitute(str, '&nbsp;', ' ', 'g')
   "let str = substitute(str, '&yen;', '\&#65509;', 'g')
-  let str = substitute(str, '&#x\([0-9a-fA-F]\+\);', '\=s:__nr2enc_char("0x".submatch(1))', 'g')
-  let str = substitute(str, '&#\(\d\+\);', '\=s:__nr2enc_char(submatch(1))', 'g')
+  let str = substitute(str, '&#x\([0-9a-fA-F]\+\);', '\=s:utils.nr2enc_char("0x".submatch(1))', 'g')
+  let str = substitute(str, '&#\(\d\+\);', '\=s:utils.nr2enc_char(submatch(1))', 'g')
   let str = substitute(str, '&amp;', '\&', 'g')
   return str
 endfunction
