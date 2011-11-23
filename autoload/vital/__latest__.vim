@@ -1,4 +1,3 @@
-let s:base_dir = expand('<sfile>:r')
 let s:self_version = expand('<sfile>:t:r')
 
 let s:loaded = {}
@@ -42,14 +41,15 @@ function! s:_import(name, scripts)
   if a:name =~# '^[^A-Z]' || a:name =~# '\W[^A-Z]'
     throw 'vital: module name must start with capital letter: ' . a:name
   endif
-  let target = a:name == '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
+  let target = a:name ==# '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
   let target = substitute(target, '\l\zs\ze\u', '_', 'g') " OrderedSet -> Ordered_Set
   let target = substitute(target, '[/_]\zs\u', '\l\0', 'g') " Ordered_Set -> ordered_set
-  let target = s:base_dir . target . '.vim'
-  let sid = get(a:scripts, s:_unify_path(target), 0)
+  let tailpath = printf('autoload/vital/%s%s.vim', s:self_version, target)
+  let path = get(split(globpath(&runtimepath, tailpath, 1), "\n"), 0, '')
+  let sid = get(a:scripts, s:_unify_path(path), 0)
   if !sid
     try
-      source `=target`
+      source `=path`
     catch /^Vim\%((\a\+)\)\?:E484/
       throw 'vital: module not found: ' . a:name
     endtry
