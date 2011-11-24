@@ -15,7 +15,7 @@ function! s:decode(json)
   return ret
 endfunction
 
-function! s:encode(obj)
+function! s:encode(val)
   if type(a:val) == 0
     return a:val
   elseif type(a:val) == 1
