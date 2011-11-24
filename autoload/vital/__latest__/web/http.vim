@@ -1,7 +1,9 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:utils = V.import('Web.Utils')
+let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
+
+let s:string = s:V.import('Data.String')
 
 function! s:__urlencode_char(c)
   let utf = iconv(a:c, &encoding, "utf-8")
@@ -67,7 +69,7 @@ function! s:encodeURIComponent(items)
       elseif ch == ' '
         let ret .= '+'
       else
-        let ret .= '%' . substitute('0' . s:utils.nr2hex(char2nr(ch)), '^.*\(..\)$', '\1', '')
+        let ret .= '%' . substitute('0' . s:string.nr2hex(char2nr(ch)), '^.*\(..\)$', '\1', '')
       endif
       let i = i + 1
     endwhile
