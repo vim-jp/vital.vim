@@ -88,7 +88,7 @@ Content of a message text file is as following.
 	  'hello': 'こんにちは',
 	}
 <
-This is just a Vim |Dictionary|.
+This is just a Vim |Dictionary|.  This file must be written by utf-8.
 
 
 
