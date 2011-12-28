@@ -1,0 +1,103 @@
+*vital-locale-message.txt*	very simple message localization library.
+
+Version: 1.0
+Author : thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS				*vital-locale-messages-contents*
+
+CONTENTS			|Vital.Locale.Message-contents|
+INTRODUCTION			|Vital.Locale.Message-introduction|
+USAGE				|Vital.Locale.Message-usage|
+INTERFACE			|Vital.Locale.Message-interface|
+MESSAGE TEXT			|Vital.Locale.Message-message-text|
+CHANGELOG			|Vital.Locale.Message-changelog|
+
+
+
+==============================================================================
+CONTENTS				*Vital.Locale.Message-contents*
+
+INTRODUCTION			|vital-locale-messages-introduction|
+INTERFACE			|vital-locale-messages-interface|
+  FUNCTIONS			  |vital-locale-messages-functions|
+CHANGELOG			|vital-locale-messages-changelog|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Locale.Message-introduction*
+
+*Vital.Locale.Message* is a very simple message localization library.
+
+
+
+==============================================================================
+USAGE					*Vital.Locale.Message-usage*
+>
+	let s:V = vital#of('my-plugin')
+	let s:message = s:V.import('Locale.Message').new('my-plugin')
+	function! s:_(text)
+	  return s:message._(a:text)
+	endfunction
+
+	echo s:_('my-plugin is loaded.')
+<
+
+
+==============================================================================
+INTERFACE				*Vital.Locale.Message-interface*
+-----------------------------------------------------------------------------
+FUNCTIONS				*Vital.Locale.Message-functions*
+
+new({plugin-name})			*Vital.Locale.Message.new()*
+	Creates a new Message object.
+
+get_lang()				*Vital.Locale.Message.get_lang()*
+	Gets language code.
+
+Message.get({text})		*Vital.Locale.Message.Message.get()*
+	Returns a localized text.
+	If the text is not found, returns {text}.
+
+Message._({text})		*Vital.Locale.Message.Message._()*
+	Shortcut version of |Vital.Locale.Message.Message.get()|.
+
+Message.load({lang})		*Vital.Locale.Message.Message.load()*
+	Loads a message text file manually.
+	Normally, this is called by automatically.
+
+
+
+==============================================================================
+MESSAGE TEXT				*Vital.Locale.Message-message-text*
+
+An localized message text file should be placed in following.
+>
+	{runtimepath}/message/{plugin-name}/{lang}.txt
+<
+- {runtimepath} is a one of 'runtimepath'.
+- {plugin-name} is your plugin name.
+  It is passed to |Vital.Locale.Message.new()|.
+- {lang} is language code.  Ex: en, ja, fr, ...
+
+Content of a message text file is as following.
+>
+	{
+	  'message': 'メッセージ',
+	  'hello': 'こんにちは',
+	}
+<
+This is just a Vim |Dictionary|.
+
+
+
+==============================================================================
+CHANGELOG				*Vital.Locale.Message-changelog*
+
+1.0	2011-12-28
+	- Initial version.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
