@@ -11,7 +11,7 @@ function! s:new(plugin)
 endfunction
 
 function! s:get_lang()
-  return v:lang[: 1]
+  return v:lang ==# 'C' ? 'en' : v:lang[: 1]
 endfunction
 
 let s:Message = {}
