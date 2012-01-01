@@ -6,10 +6,10 @@ Author : thinca <thinca+vim@gmail.com>
 ==============================================================================
 CONTENTS				*Vital.Locale.Message-contents*
 
-CONTENTS			|Vital.Locale.Message-contents|
 INTRODUCTION			|Vital.Locale.Message-introduction|
 USAGE				|Vital.Locale.Message-usage|
 INTERFACE			|Vital.Locale.Message-interface|
+  Message Object		  |Vital.Locale.Message-Message|
 MESSAGE TEXT			|Vital.Locale.Message-message-text|
 CHANGELOG			|Vital.Locale.Message-changelog|
 
@@ -46,14 +46,17 @@ new({plugin-name})			*Vital.Locale.Message.new()*
 get_lang()				*Vital.Locale.Message.get_lang()*
 	Gets language code.
 
-Message.get({text})		*Vital.Locale.Message.Message.get()*
+------------------------------------------------------------------------------
+Message Object			*Vital.Locale.Message-Message*
+
+Message.get({text})		*Vital.Locale.Message-Message.get()*
 	Returns a localized text.
 	If the text is not found, returns {text}.
 
-Message._({text})		*Vital.Locale.Message.Message._()*
-	Shortcut version of |Vital.Locale.Message.Message.get()|.
+Message._({text})		*Vital.Locale.Message-Message._()*
+	Shortcut version of |Vital.Locale.Message-Message.get()|.
 
-Message.load({lang})		*Vital.Locale.Message.Message.load()*
+Message.load({lang})		*Vital.Locale.Message-Message.load()*
 	Loads a message text file manually.
 	Normally, this is called by automatically.
 
