@@ -4,7 +4,7 @@ Version: 1.0
 Author : thinca <thinca+vim@gmail.com>
 
 ==============================================================================
-CONTENTS				*vital-locale-messages-contents*
+CONTENTS				*Vital.Locale.Message-contents*
 
 CONTENTS			|Vital.Locale.Message-contents|
 INTRODUCTION			|Vital.Locale.Message-introduction|
@@ -12,16 +12,6 @@ USAGE				|Vital.Locale.Message-usage|
 INTERFACE			|Vital.Locale.Message-interface|
 MESSAGE TEXT			|Vital.Locale.Message-message-text|
 CHANGELOG			|Vital.Locale.Message-changelog|
-
-
-
-==============================================================================
-CONTENTS				*Vital.Locale.Message-contents*
-
-INTRODUCTION			|vital-locale-messages-introduction|
-INTERFACE			|vital-locale-messages-interface|
-  FUNCTIONS			  |vital-locale-messages-functions|
-CHANGELOG			|vital-locale-messages-changelog|
 
 
 
