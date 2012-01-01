@@ -62,7 +62,7 @@ Message.load({lang})		*Vital.Locale.Message.Message.load()*
 ==============================================================================
 MESSAGE TEXT				*Vital.Locale.Message-message-text*
 
-An localized message text file should be placed in following.
+A localized message text file should be placed in following.
 >
 	{runtimepath}/message/{plugin-name}/{lang}.txt
 <
