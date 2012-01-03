@@ -40,7 +40,8 @@ endfunction
 function! s:scan(str, pattern)
   let list = []
   let pos = 0
-  while 0 <= pos
+  let len = len(a:str)
+  while 0 <= pos && pos < len
     let matched = matchstr(a:str, a:pattern, pos)
     let pos = matchend(a:str, a:pattern, pos)
     if !empty(matched)

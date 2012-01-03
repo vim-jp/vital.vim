@@ -68,6 +68,7 @@ Context Data.String.scan()
   It scans a string by a pattern and returns a list of matched strings
     Should g:S.scan('neo compl cache', 'c\w\+') == ['compl', 'cache']
     Should g:S.scan('[](){}', '[{()}]') == ['(', ')', '{', '}']
+    Should g:S.scan('string', '.*') == ['string']
   End
 End
 
