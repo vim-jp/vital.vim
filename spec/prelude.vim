@@ -119,7 +119,7 @@ Context Prelude.strwidthpart()
   End
 End
 
-Context Prelude.strwidthpart()
+Context Prelude.strwidthpart_reverse()
   It cuts backward a string to give width
     Should g:V.strwidthpart_reverse('this is a pen', 5) ==# 'a pen'
     Should g:V.strwidthpart_reverse('あいうえお', 5) ==# 'えお'
