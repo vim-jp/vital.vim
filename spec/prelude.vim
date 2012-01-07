@@ -117,12 +117,18 @@ Context Prelude.strwidthpart()
     Should g:V.strwidthpart('this is a pen', 5) ==# 'this '
     Should g:V.strwidthpart('あいうえお', 5) ==# 'あい'
   End
+  It returns an empty string by illegal width
+    Should g:V.strwidthpart('あいうえお', -1) ==# ''
+  End
 End
 
 Context Prelude.strwidthpart_reverse()
   It cuts backward a string to give width
     Should g:V.strwidthpart_reverse('this is a pen', 5) ==# 'a pen'
     Should g:V.strwidthpart_reverse('あいうえお', 5) ==# 'えお'
+  End
+  It returns an empty string by illegal width
+    Should g:V.strwidthpart_reverse('あいうえお', -1) ==# ''
   End
 End
 
