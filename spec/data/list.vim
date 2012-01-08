@@ -25,12 +25,16 @@ End
 Context Data.List.span()
   It splits a list into two lists. The former is until the given condition doesn't satisfy.
     Should [[1, 3], [5, 2]] == g:L.span('v:val < 5', [1, 3, 5, 2])
+    Should [[], [1, 2, 3, 4, 5]] == g:L.span('v:val > 3', [1, 2, 3, 4, 5])
+    Should [[1, 2], [3, 4, 5]] == g:L.span('v:val < 3', [1, 2, 3, 4, 5])
   End
 End
 
 Context Data.List.break()
   It splits a list into two lists. The latter is from the given condition satisfies.
     Should [[1, 3], [5, 2]] == g:L.break('v:val == 5', [1, 3, 5, 2])
+    Should [[1, 2, 3], [4, 5]] == g:L.break('v:val > 3', [1, 2, 3, 4, 5])
+    Should [[], [1, 2, 3, 4, 5]] == g:L.break('v:val < 3', [1, 2, 3, 4, 5])
   End
 End
 

@@ -95,13 +95,13 @@ endfunction
 " similar to Haskell's Data.List.span
 function! s:span(f, xs)
   let border = len(a:xs)
-  for i in range(0, len(a:xs)-1)
+  for i in range(len(a:xs))
     if !eval(substitute(a:f, 'v:val', a:xs[i], 'g'))
       let border = i
       break
     endif
   endfor
-  return [a:xs[0 : border-1], a:xs[border : -1]]
+  return border == 0 ? [[], copy(a:xs)] : [a:xs[: border - 1], a:xs[border :]]
 endfunction
 
 " similar to Haskell's Data.List.break
