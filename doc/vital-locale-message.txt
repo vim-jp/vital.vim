@@ -9,6 +9,7 @@ CONTENTS				*Vital.Locale.Message-contents*
 INTRODUCTION			|Vital.Locale.Message-introduction|
 USAGE				|Vital.Locale.Message-usage|
 INTERFACE			|Vital.Locale.Message-interface|
+  FUNCTIONS			  |Vital.Locale.Message-functions|
   Message Object		  |Vital.Locale.Message-Message|
 MESSAGE TEXT			|Vital.Locale.Message-message-text|
 CHANGELOG			|Vital.Locale.Message-changelog|
@@ -37,7 +38,7 @@ USAGE					*Vital.Locale.Message-usage*
 
 ==============================================================================
 INTERFACE				*Vital.Locale.Message-interface*
------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Locale.Message-functions*
 
 new({plugin-name})			*Vital.Locale.Message.new()*
