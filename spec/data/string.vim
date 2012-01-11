@@ -110,3 +110,16 @@ Context Data.String.strchars()
     endif
   End
 End
+
+Context Data.String.nsplit()
+  It splits into strings determines number with pattern
+    Should g:S.nsplit('neo compl_cache', 2, '[ _]') ==# ['neo', 'compl_cache']
+    Should g:S.nsplit('neo compl_cache', 3, '[ _]') ==# ['neo', 'compl', 'cache']
+    Should g:S.nsplit('neo compl__cache', 2, '[ _]') ==# ['neo', 'compl__cache']
+    Should g:S.nsplit('neo compl__cache', 3, '[ _]') ==# ['neo', 'compl', '_cache']
+    Should g:S.nsplit('neo compl__cache', 4, '[ _]') ==# ['neo', 'compl', '', 'cache']
+    Should g:S.nsplit('neo compl__cache', 2, '[ _]', 0) ==# ['neo', 'compl__cache']
+    Should g:S.nsplit('neo compl__cache', 3, '[ _]', 0) ==# ['neo', 'compl', '_cache']
+    Should g:S.nsplit('neo compl__cache', 4, '[ _]', 0) ==# ['neo', 'compl', 'cache']
+  End
+End
