@@ -42,7 +42,7 @@ DOM object is structured as |Directory| like following.
 	  "attr": {
 	    "href": "http://example.com",
 	    "title": "example",
-	  ],
+	  },
 	  "child": [...]
 	}
 <
