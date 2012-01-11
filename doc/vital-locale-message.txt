@@ -63,6 +63,20 @@ Message.load({lang})		*Vital.Locale.Message-Message.load()*
 	Loads a message text file manually.
 	Normally, this is called by automatically.
 
+Message.missing({text})		*Vital.Locale.Message-Message.missing()*
+	This is called by |Vital.Locale.Message-Message.get()| if the {text}
+	was not found in the message text file.
+	By default, nothing is done.
+	This is used for debugging by the override.
+>
+	let s:mes = V.Locale.Message.new('my-plugin')
+	if g:my_plugin_debug
+	  function s:mes.missing(text)
+	    echomsg 'Text missing: ' . a:text
+	  endfunction
+	endif
+<
+
 
 
 ==============================================================================
@@ -100,6 +114,7 @@ CHANGELOG				*Vital.Locale.Message-changelog*
 
 1.1	2012-01-11
 	- New rule for {plugin-name}.
+	- Added |Vital.Locale.Message-Message.missing()|.
 
 1.0	2011-12-28
 	- Initial version.

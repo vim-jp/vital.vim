@@ -19,8 +19,11 @@ function! s:Message.get(text)
   if self.lang !=# s:get_lang()
     call self.load()
   endif
-  let text = get(self.data, a:text, a:text)
-  return text !=# '' ? text : a:text
+  if has_key(self.data, a:text)
+    return self.data[a:text]
+  endif
+  call self.missing(a:text)
+  return a:text
 endfunction
 function! s:Message.load(lang)
   let pattern = printf(self.path, a:lang)
@@ -31,5 +34,7 @@ function! s:Message.load(lang)
   \ : {}
 endfunction
 let s:Message._ = s:Message.get
+function! s:Message.missing(text)
+endfunction
 
 let &cpo = s:save_cpo
