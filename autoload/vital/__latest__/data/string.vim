@@ -70,40 +70,40 @@ endfunction
 " Slices into strings determines the number of substrings.
 " e.g.: s:splitn("neo compl cache", '\s', 2) returns ['neo', 'compl cache']
 function! s:nsplit(expr, n, ...)
-	let pattern = get(a:000, 0, '\s')
-	let keepempty = get(a:000, 1, 1)
-	let ret = []
-	let expr = a:expr
-	if a:n <= 1
-		return [expr]
-	endif
-	while 1
-		let pos = match(expr, pattern)
-		if pos == -1
-			if expr !~ pattern || keepempty
-				call add(ret, expr)
-			endif
-			break
-		elseif pos >= 0
-			let left = pos > 0 ? expr[:pos-1] : ''
-			if pos > 0 || keepempty
-				call add(ret, left)
-			endif
-			let ml = len(matchstr(expr, pattern))
-			if pos == 0 && ml == 0
-				let pos = 1
-			endif
-			let expr = expr[pos+ml :]
-		endif
-		if len(expr) == 0
-			break
-		endif
-		if len(ret) == a:n - 1
-			call add(ret, expr)
-			break
-		endif
-	endwhile
-	return ret
+    let pattern = get(a:000, 0, '\s')
+    let keepempty = get(a:000, 1, 1)
+    let ret = []
+    let expr = a:expr
+    if a:n <= 1
+        return [expr]
+    endif
+    while 1
+        let pos = match(expr, pattern)
+        if pos == -1
+            if expr !~ pattern || keepempty
+                call add(ret, expr)
+            endif
+            break
+        elseif pos >= 0
+            let left = pos > 0 ? expr[:pos-1] : ''
+            if pos > 0 || keepempty
+                call add(ret, left)
+            endif
+            let ml = len(matchstr(expr, pattern))
+            if pos == 0 && ml == 0
+                let pos = 1
+            endif
+            let expr = expr[pos+ml :]
+        endif
+        if len(expr) == 0
+            break
+        endif
+        if len(ret) == a:n - 1
+            call add(ret, expr)
+            break
+        endif
+    endwhile
+    return ret
 endfunction
 
 " Returns the number of character in a:str.
