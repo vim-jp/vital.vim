@@ -1,0 +1,57 @@
+*vital-web-xml.txt*			XML parser written in pure vimscript.
+
+Version: 1.0
+Author : mattn <mattn.jp@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Web.Xml-contents*
+
+INTRODUCTION				|Vital.Web.Xml-introduction|
+INTERFACE				|Vital.Web.Xml-interface|
+  Functions				|Vital.Web.Xml-functions|
+  Structures				|Vital.Web.Xml-structures|
+CHANGELOG				|Vital.Web.Xml-changelog|
+
+
+==============================================================================
+INTRODUCTION				*Vital.Web.Xml-introduction*
+
+|Vital.Web.Xml| is XML parser Library.
+
+==============================================================================
+INTERFACE				*Vital.Web.Xml-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Web.Xml-functions*
+
+parse(content)				*Vital.Web.Xml.parse()*
+	Parse content into DOM object.
+
+parseFile(file)				*Vital.Web.Xml.parseFile()*
+	Parse html file into DOM object.
+
+parseURI(url)				*Vital.Web.Xml.parseURI()*
+	Get and parse html into DOM object.
+
+------------------------------------------------------------------------------
+STRUCTURES				*Vital.Web.Xml-structures*
+
+DOM object is structured as |Directory| like following.
+>
+	{
+	  "name": "a",
+	  "attr": {
+	    "href": "http://example.com",
+	    "title": "example",
+	  ],
+	  "child": [...]
+	}
+<
+
+==============================================================================
+CHANGELOG				*Vital.Web.Xml-changelog*
+
+1.0	2011-12-28
+	- Initial upload
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
