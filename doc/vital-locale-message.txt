@@ -1,6 +1,6 @@
 *vital-locale-message.txt*	very simple message localization library.
 
-Version: 1.0
+Version: 1.1
 Author : thinca <thinca+vim@gmail.com>
 
 ==============================================================================
@@ -42,10 +42,12 @@ INTERFACE				*Vital.Locale.Message-interface*
 FUNCTIONS				*Vital.Locale.Message-functions*
 
 new({plugin-name})			*Vital.Locale.Message.new()*
-	Creates a new Message object.
+	Creates a new Message object(|Vital.Locale.Message-Message|).
+	{plugin-name} is used as the location of message text.
+	See also |Vital.Locale.Message-message-text|.
 
 get_lang()				*Vital.Locale.Message.get_lang()*
-	Gets language code.
+	Gets the current language code.
 
 ------------------------------------------------------------------------------
 Message Object			*Vital.Locale.Message-Message*
@@ -75,6 +77,13 @@ A localized message text file should be placed in following.
   It is passed to |Vital.Locale.Message.new()|.
 - {lang} is language code.  Ex: en, ja, fr, ...
 
+If {plugin-name} contains "%s", the rule changes.
+>
+	{runtimepath}/{plugin-name}
+<
+"%s" is replaced by {lang}.
+
+
 Content of a message text file is as following.
 >
 	{
@@ -88,6 +97,9 @@ This is just a Vim |Dictionary|.  This file must be written by utf-8.
 
 ==============================================================================
 CHANGELOG				*Vital.Locale.Message-changelog*
+
+1.1	2012-01-11
+	- New rule for {plugin-name}.
 
 1.0	2011-12-28
 	- Initial version.

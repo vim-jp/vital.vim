@@ -3,9 +3,9 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:new(plugin)
+function! s:new(path)
   let obj = copy(s:Message)
-  let obj.plugin = a:plugin
+  let obj.path = a:path =~# '%s' ? a:path : 'message/' . a:path . '/%s.txt'
   call obj.load(s:get_lang())
   return obj
 endfunction
@@ -23,7 +23,7 @@ function! s:Message.get(text)
   return text !=# '' ? text : a:text
 endfunction
 function! s:Message.load(lang)
-  let pattern = printf('message/%s/%s.txt', self.plugin, a:lang)
+  let pattern = printf(self.path, a:lang)
   let file = get(split(globpath(&runtimepath, pattern), "\n"), 0, '')
   let self.lang = a:lang
   sandbox let self.data = filereadable(file) ?
