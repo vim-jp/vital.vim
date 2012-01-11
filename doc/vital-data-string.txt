@@ -1,0 +1,62 @@
+*vital-data-string.txt*		string utilities library.
+
+==============================================================================
+CONTENTS				*Vital.Data.String-contents*
+
+INTRODUCTION			|Vital.Data.String-introduction|
+INTERFACE			|Vital.Data.String-interface|
+  Functions			  |Vital.Data.String-functions|
+CHANGELOG			|Vital.Data.String-changelog|
+
+
+==============================================================================
+INTRODUCTION				*Vital.Data.String-introduction*
+
+|Vital.Data.String| is String Utilities Library.
+It provides some functions to manipulate |String|.
+
+==============================================================================
+INTERFACE				*Vital.Data.String-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.String-functions*
+
+replace({str}, {from}, {to})		*Vital.Data.String.replace()*
+	Return string replaced {from} to {to} from {str}.
+
+replace_once({str}, {from}, {to})	*Vital.Data.String.replace_once()*
+	Return string replaced {from} to {to} from {str} at once.
+
+scan({str}, {pattern})			*Vital.Data.String.scan()*
+	Return |List| which matched {pattern} } in {str}.
+
+split_leftright({haystack}, {needle})	*Vital.Data.String.split_leftright()*
+	Return |List| that separate with {needle} in {haystack}.
+
+nsplit({expr}, {n}, [, {pattern} [, {keepempty}]])
+					*Vital.Data.String.nsplit()*
+	Behave like |split()|. Return list which is limited as {n}'th elements.
+
+chop({str}) 				*Vital.Data.String.chop()*
+	Remove last character from {str}
+
+wrap({str})				*Vital.Data.String.wrap()*
+	Return |String| wrapped to fit to |columns| width.
+
+nr2byte({nr})				*Vital.Data.String.nr2byte()*
+	Return utf-8 bytes which has the number value {nr}.
+
+nr2enc_char({charcode})			*Vital.Data.String.nr2enc_char()*
+	Return string which has the number value {nr}. This function depend on
+	|encoding| option.
+
+nr2hex({nr})				*Vital.Data.String.nr2hex()*
+	Return hex string which has the number value {nr}.
+
+==============================================================================
+CHANGELOG				*Vital.Data.String-changelog*
+
+0.0.0:
+- Initial upload
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
