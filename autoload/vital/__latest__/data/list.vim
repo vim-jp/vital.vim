@@ -150,5 +150,10 @@ function! s:foldr1(f, xs)
   return s:foldr(a:f, a:xs[-1], a:xs[0:-2])
 endfunction
 
+" similar to python's zip()
+function! s:zip(...)
+    return map(range(min(map(copy(a:000), 'len(v:val)'))), "map(copy(a:000), 'v:val['.v:val.']')")
+endfunction
+
 
 let &cpo = s:save_cpo
