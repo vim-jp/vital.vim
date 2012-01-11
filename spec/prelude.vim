@@ -1,3 +1,4 @@
+scriptencoding utf-8
 source spec/base.vim
 
 let g:V = vital#of('vital')
