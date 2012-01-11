@@ -1,4 +1,4 @@
-*vital-data-ordered_set.txt* *vital-data-ordered_set*
+*vital-data-ordered_set.txt*		ordered collection library.
 
 Author:
   tyru <tyru.exe@gmail.com>
@@ -6,76 +6,74 @@ Version: 0.0.0
 License: Under the same license as Vim itself (see :help license)
 
 ==============================================================================
-CONTENTS						*vital-data-ordered_set-contents*
+CONTENTS				*Vital.Data.Ordered_set-contents*
 
-Introduction		|vital-data-ordered_set-introduction|
-Interface			|vital-data-ordered_set-interface|
-  Functions			|vital-data-ordered_set-functions|
-Changelog			|vital-data-ordered_set-changelog|
+INTRODUCTION			|Vital.Data.Ordered_set-introduction|
+INTERFACE			|Vital.Data.Ordered_set-interface|
+  Functions			  |Vital.Data.Ordered_set-functions|
+  Ordered_set Object		  |Vital.Data.Ordered_set-Ordered_set|
+CHANGELOG			|Vital.Data.Ordered_set-changelog|
 
 
 ==============================================================================
-INTRODUCTION						*vital-data-ordered_set-introduction* {{{
+INTRODUCTION				*Vital.Data.Ordered_set-introduction*
 
-|vital-data-ordered_set| is Collection Utilities Library.
+|Vital.Data.Ordered_set| is Collection Utilities Library.
 It provides some data structure (e.g., ordered dictionary/set).
 
-}}}
 ==============================================================================
-INTERFACE				*vital-data-ordered_set-interface* {{{
+INTERFACE				*Vital.Data.Ordered_set-interface*
 ------------------------------------------------------------------------------
-FUNCTIONS					*vital-data-ordered_set-functions* {{{
+FUNCTIONS				*Vital.Data.Ordered_set-functions*
 
-vital#data#ordered_set#load()		*vital#data#ordered_set#load()*
+load()				*Vital.Data.Ordered_set.load()*
 	Loads autoload/vital#data/ordered_set.vim .
 
-vital#data#ordered_set#new()		*vital#data#ordered_set#new()*
-	Returns ordered set object.
+new()				*Vital.Data.Ordered_set.new()*
+	Returns 'Ordered_set' object.
 
+------------------------------------------------------------------------------
+Ordered_set Object		*Vital.Data.Ordered_set-Ordered_set*
 
-
-data.ordered_set.push({elem})		*data.ordered_set.push()*
+ordered_set.push({elem})	*Vital.Data.Ordered_set-Ordered_set.push()*
 	Pushes an element to data.ordered_set.
 	This adds the element to set.
 	But if the element exists in the set,
 	it does not adds the element.
 
-data.ordered_set.unshift({elem})		*data.ordered_set.unshift()*
+ordered_set.unshift({elem})	*Vital.Data.Ordered_set-Ordered_set.unshift()*
 	Unshifts an element to data.ordered_set.
 	This adds the element to set.
 	But if the element exists in the set,
 	it does not adds the element.
 
-data.ordered_set.size({elem})		*data.ordered_set.size()*
+ordered_set.size({elem})	*Vital.Data.Ordered_set-Ordered_set.size()*
 	Gets the number of elements in data.ordered_set.
 
-data.ordered_set.to_list({elem})		*data.ordered_set.to_list()*
+ordered_set.to_list({elem})	*Vital.Data.Ordered_set-Ordered_set.to_list()*
 	Converts to |List|.
 
-data.ordered_set.has({elem})		*data.ordered_set.has()*
+data.ordered_set.has({elem})	*Vital.Data.Ordered_set-Ordered_set.has()*
 	Checks if there is the element in data.ordered_set.
 	This returns boolean value.
 
-data.ordered_set.has_id({id})		*data.ordered_set.has_id()*
+ordered_set.has_id({id})	*Vital.Data.Ordered_set-Ordered_set.has_id()*
 	Checks if there is the element which has {id} in data.ordered_set.
 	This returns boolean value.
 
-data.ordered_set.clear()		*data.ordered_set.clear()*
+ordered_set.clear()		*Vital.Data.Ordered_set-Ordered_set.clear()*
 	Initializes data.ordered_set.
 	After calling this, data.ordered_set has no elements.
 
-data.ordered_set.remove({elem})		*data.ordered_set.remove()*
+ordered_set.remove({elem})	*Vital.Data.Ordered_set-Ordered_set.remove()*
 	Remove {elem} from data.ordered_set if it exists.
 	If it does not exist, this does not do anything.
 
-}}}
-}}}
 ==============================================================================
-CHANGELOG						*vital-data-ordered_set-changelog* {{{
+CHANGELOG				*Vital.Data.Ordered_set-changelog*
 
 0.0.0:
 - Initial upload
 
-}}}
 ==============================================================================
-vim:tw=78:fo=tcq2mM:ts=4:ft=help:norl:noet:fdm=marker:fen
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
