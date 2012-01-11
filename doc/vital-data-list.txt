@@ -1,0 +1,97 @@
+*vital-data-list.txt*		list utilities library.
+
+==============================================================================
+CONTENTS				*Vital.Data.List-contents*
+
+INTRODUCTION			|Vital.Data.List-introduction|
+INTERFACE			|Vital.Data.List-interface|
+  Functions			  |Vital.Data.List-functions|
+CHANGELOG			|Vital.Data.List-changelog|
+
+
+==============================================================================
+INTRODUCTION				*Vital.Data.List-introduction*
+
+|Vital.Data.List| is List Utilities Library.
+It provides some functions to manipulate |List|.
+
+==============================================================================
+INTERFACE				*Vital.Data.List-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.List-functions*
+
+uniq({list})				*Vital.Data.List.uniq()*
+	Return identical elements from {list}.
+
+concat({list})				*Vital.Data.List.concat()*
+	Returns elements concat in {list}.
+>
+	:echo s:list.concat([[1],[2,3]])
+	[1,2,3]
+<
+flattens({list})				*Vital.Data.List.flattens()*
+	Returns elements flattens in {list}.
+>
+	:echo s:list.flattens([[1],[2,3]])
+	[1,2,3]
+	:echo s:list.flattens([[1],2,3])
+	[1,2,3]
+<
+sort({list}, {expr})			*Vital.Data.List.sort()*
+	Returns sorted elements in {list}. {expr} is operate to compare.
+	This variable can be specified |String| or |Funcref|.
+>
+	:echo s:list.sort([3,1,2], 'a:a - a:b')
+	[1,2,3]
+	:echo s:list.sort(['A','a','b'], function('MyCompare'))
+<
+sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
+	Returns sorted elements with key in {list}.
+
+char_range({from}, {to})		*Vital.Data.List.char_range()*
+	Returns letters between {from} and {to}.
+
+has({list}, {Value})			*Vital.Data.List.has()*
+	Returns 1 if {Value} is in {list}.
+
+has_index({list}, {index})		*Vital.Data.List.has_index()*
+	Returns 1 if can point to {index} for {list}.
+
+span({f}, {xs})				*Vital.Data.List.span()*
+	Behave Haskell's Data.List.span().
+>
+	:echo s:list.span("v:val==1", [1,2])
+	[[1],[2]]
+<
+break({f}, {xs})			*Vital.Data.List.break()*
+	Behave Haskell's Data.List.break().
+>
+	:echo s:list.span("v:val==1", [1,2])
+	[[1]]
+<
+foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
+	Behave Haskell's Data.List.foldl().
+
+foldl1({f}, {init}, {xs})		*Vital.Data.List.foldl1()*
+	Behave Haskell's Data.List.foldl().
+
+foldlr({f}, {init}, {xs})		*Vital.Data.List.foldlr()*
+	Behave Haskell's Data.List.foldr().
+
+foldlr1({f}, {init}, {xs})		*Vital.Data.List.foldlr1()*
+	Behave Haskell's Data.List.foldr1().
+
+zip(...)				*Vital.Data.List.zip()*
+	Behave python's zip().
+>
+	:echo s:list.zip([1,2,3],[4,5,6],[7,8,9])
+	[[1,4,7],[2,5,8],[3,6,9]]
+<
+==============================================================================
+CHANGELOG				*Vital.Data.List-changelog*
+
+0.0.0:
+- Initial upload
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
