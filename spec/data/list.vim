@@ -92,3 +92,10 @@ Context Data.List.foldr1()
   End
 End
 
+Context Data.List.zip()
+  It return mixed list from arguments
+    Should g:L.zip([1,2,3]) ==# [[1],[2],[3]]
+    Should g:L.zip([1,2,3],[4,5,6],[7,8,9]) ==# [[1,4,7],[2,5,8],[3,6,9]]
+    Should g:L.zip([1,2,3],[4,5],[7,8,9]) ==# [[1,4,7],[2,5,8]]
+  End
+End
