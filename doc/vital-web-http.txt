@@ -1,0 +1,70 @@
+*vital-web-http.txt* *vital-web-http*
+
+Author:
+  mattn <mattn.jp@gmail.com>
+Version: 0.0.0
+License: Under the same license as Vim itself (see :help license)
+
+==============================================================================
+CONTENTS						*vital-web-http-contents*
+
+Introduction		|vital-web-http-introduction|
+Interface			|vital-web-http-interface|
+  Functions			|vital-web-http-functions|
+Changelog			|vital-web-http-changelog|
+
+
+==============================================================================
+INTRODUCTION						*vital-web-http-introduction* {{{
+
+|vital-web-http| is HTTP Utilities Library.
+It provides simple HTTP client.
+
+}}}
+==============================================================================
+INTERFACE				*vital-web-http-interface* {{{
+------------------------------------------------------------------------------
+FUNCTIONS					*vital-web-http-functions* {{{
+
+vital#web#http#get(url, param, header)		*vital#web#http#get()*
+	Send GET request to url.
+
+vital#web#http#post(url, param, header)		*vital#web#http#post()*
+	Send POST request to url.
+
+vital#web#http#encodeURI(param)				*vital#web#http#encodeURI()*
+	Encode params as URI query.
+
+vital#web#http#decodeURI(str)				*vital#web#http#decodeURI()*
+	Decode string as URI params.
+
+vital#web#http#encodeURIComponent(str)		*vital#web#http#encodeURIComponent()*
+	Encode param as URI components.
+
+}}}
+------------------------------------------------------------------------------
+RESPONSE					*vital-web-http-response* {{{
+
+|vital#web#http#get| and |vital#web#http#post| return data structure like
+following.
+>
+ {
+   "header": [
+     "Content-Type: text/html",
+     "Content-Length: 310"
+    ],
+    "content": "<html> ....."
+ }
+<
+
+}}}
+}}}
+==============================================================================
+CHANGELOG						*vital-web-http-changelog* {{{
+
+0.0.0:
+- Initial upload
+
+}}}
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=4:ft=help:norl:noet:fdm=marker:fen
