@@ -89,11 +89,9 @@ function! s:nsplit(expr, n, ...)
 			if pos > 0 || keepempty
 				call add(ret, left)
 			endif
-			let ms = matchstr(expr, pattern)
-			let ml = len(ms)
-			if ml == 0
-				call add(ret, expr)
-				break
+			let ml = len(matchstr(expr, pattern))
+			if pos == 0 && ml == 0
+				let pos = 1
 			endif
 			let expr = expr[pos+ml :]
 		endif
@@ -101,7 +99,8 @@ function! s:nsplit(expr, n, ...)
 			break
 		endif
 		if len(ret) == a:n - 1
-			let pattern = ''
+			call add(ret, expr)
+			break
 		endif
 	endwhile
 	return ret
