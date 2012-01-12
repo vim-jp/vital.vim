@@ -22,10 +22,18 @@ FUNCTIONS				*Vital.Data.String-functions*
 
 replace({str}, {from}, {to})		*Vital.Data.String.replace()*
 	Return string replaced {from} to {to} from {str}.
-
+>
+	:echo s:string.replace("fooba.bazbar", "ba.", "zzz")
+	foozzzbazbar
+>
 replace_once({str}, {from}, {to})	*Vital.Data.String.replace_once()*
 	Return string replaced {from} to {to} from {str} at once.
-
+>
+	:echo s:string.replace("foobarbazbar", "bar", "zzz")
+	foozzzbazzzz
+	:echo s:string.replace_once("foobarbazbar", "bar", "zzz")
+	foozzzbazbar
+>
 scan({str}, {pattern})			*Vital.Data.String.scan()*
 	Return |List| which matched {pattern} } in {str}.
 
