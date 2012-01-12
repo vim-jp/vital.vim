@@ -21,14 +21,18 @@ INTERFACE				*Vital.Data.List-interface*
 FUNCTIONS				*Vital.Data.List-functions*
 
 uniq({list})				*Vital.Data.List.uniq()*
-	Return identical elements from {list}.
+	Removes duplicates elements from {list}, nondestructively. In
+	particular, it keeps only the first occurrence of each element.
 
 concat({list})				*Vital.Data.List.concat()*
-	Returns elements concat in {list}.
+	Concatenates list of lists {list}.
 >
 	:echo s:list.concat([[1],[2,3]])
 	[1,2,3]
 <
+	This is similar to |Vital.Data.List.flattens()| but this doesn't
+	flatten recursively.
+
 flattens({list})				*Vital.Data.List.flattens()*
 	Returns elements flattens in {list}.
 >
