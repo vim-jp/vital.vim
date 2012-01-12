@@ -62,31 +62,31 @@ has_index({list}, {index})		*Vital.Data.List.has_index()*
 	Returns 1 if can point to {index} for {list}.
 
 span({f}, {xs})				*Vital.Data.List.span()*
-	Behave Haskell's Data.List.span().
+	Behaves like Haskell's Data.List.span().
 >
 	:echo s:list.span("v:val==1", [1,2])
 	[[1],[2]]
 <
 break({f}, {xs})			*Vital.Data.List.break()*
-	Behave Haskell's Data.List.break().
+	Behaves like Haskell's Data.List.break().
 >
 	:echo s:list.span("v:val==1", [1,2])
 	[[1]]
 <
 foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
-	Behave Haskell's Data.List.foldl().
+	Behaves like Haskell's Data.List.foldl().
 
 foldl1({f}, {init}, {xs})		*Vital.Data.List.foldl1()*
-	Behave Haskell's Data.List.foldl().
+	Behaves like Haskell's Data.List.foldl().
 
-foldlr({f}, {init}, {xs})		*Vital.Data.List.foldlr()*
-	Behave Haskell's Data.List.foldr().
+foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
+	Behaves like Haskell's Data.List.foldr().
 
-foldlr1({f}, {init}, {xs})		*Vital.Data.List.foldlr1()*
-	Behave Haskell's Data.List.foldr1().
+foldr1({f}, {init}, {xs})		*Vital.Data.List.foldr1()*
+	Behaves like Haskell's Data.List.foldr1().
 
 zip(...)				*Vital.Data.List.zip()*
-	Behave python's zip().
+	Behaves like python's zip().
 >
 	:echo s:list.zip([1,2,3],[4,5,6],[7,8,9])
 	[[1,4,7],[2,5,8],[3,6,9]]
