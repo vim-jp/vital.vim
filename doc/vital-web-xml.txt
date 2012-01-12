@@ -10,8 +10,6 @@ INTRODUCTION				|Vital.Web.Xml-introduction|
 INTERFACE				|Vital.Web.Xml-interface|
   Functions				|Vital.Web.Xml-functions|
   Structures				|Vital.Web.Xml-structures|
-CHANGELOG				|Vital.Web.Xml-changelog|
-
 
 ==============================================================================
 INTRODUCTION				*Vital.Web.Xml-introduction*
@@ -46,12 +44,5 @@ DOM object is structured as |Directory| like following.
 	  "child": [...]
 	}
 <
-
-==============================================================================
-CHANGELOG				*Vital.Web.Xml-changelog*
-
-1.0	2011-12-28
-	- Initial upload
-
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

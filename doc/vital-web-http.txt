@@ -10,8 +10,6 @@ INTRODUCTION				|Vital.Web.Http-introduction|
 INTERFACE				|Vital.Web.Http-interface|
   Functions				|Vital.Web.Http-functions|
   Response				|Vital.Web.Http-response|
-CHANGELOG				|Vital.Web.Http-changelog|
-
 
 ==============================================================================
 INTRODUCTION				*Vital.Web.Http-introduction*
@@ -52,12 +50,5 @@ RESPONSE				*Vital.Web.Http-response*
 	  "content": "<html> ....."
 	}
 <
-
-==============================================================================
-CHANGELOG				*Vital.Web.Http-changelog*
-
-1.0	2011-12-28
-	- Initial upload
-
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

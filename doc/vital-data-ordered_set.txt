@@ -12,8 +12,6 @@ INTRODUCTION			|Vital.Data.Ordered_set-introduction|
 INTERFACE			|Vital.Data.Ordered_set-interface|
   Functions			  |Vital.Data.Ordered_set-functions|
   Ordered_set Object		  |Vital.Data.Ordered_set-Ordered_set|
-CHANGELOG			|Vital.Data.Ordered_set-changelog|
-
 
 ==============================================================================
 INTRODUCTION				*Vital.Data.Ordered_set-introduction*
@@ -68,12 +66,6 @@ ordered_set.clear()		*Vital.Data.Ordered_set-Ordered_set.clear()*
 ordered_set.remove({elem})	*Vital.Data.Ordered_set-Ordered_set.remove()*
 	Remove {elem} from data.ordered_set if it exists.
 	If it does not exist, this does not do anything.
-
-==============================================================================
-CHANGELOG				*Vital.Data.Ordered_set-changelog*
-
-0.0.0:
-- Initial upload
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

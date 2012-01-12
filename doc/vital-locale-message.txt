@@ -12,9 +12,6 @@ INTERFACE			|Vital.Locale.Message-interface|
   FUNCTIONS			  |Vital.Locale.Message-functions|
   Message Object		  |Vital.Locale.Message-Message|
 MESSAGE TEXT			|Vital.Locale.Message-message-text|
-CHANGELOG			|Vital.Locale.Message-changelog|
-
-
 
 ==============================================================================
 INTRODUCTION				*Vital.Locale.Message-introduction*
@@ -106,19 +103,6 @@ Content of a message text file is as following.
 	}
 <
 This is just a Vim |Dictionary|.  This file must be written by utf-8.
-
-
-
-==============================================================================
-CHANGELOG				*Vital.Locale.Message-changelog*
-
-1.1	2012-01-11
-	- New rule for {plugin-name}.
-	- Added |Vital.Locale.Message-Message.missing()|.
-
-1.0	2011-12-28
-	- Initial version.
-
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

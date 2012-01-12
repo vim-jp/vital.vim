@@ -6,8 +6,6 @@ CONTENTS				*Vital.Data.String-contents*
 INTRODUCTION			|Vital.Data.String-introduction|
 INTERFACE			|Vital.Data.String-interface|
   Functions			  |Vital.Data.String-functions|
-CHANGELOG			|Vital.Data.String-changelog|
-
 
 ==============================================================================
 INTRODUCTION				*Vital.Data.String-introduction*
@@ -59,12 +57,6 @@ nr2enc_char({charcode})			*Vital.Data.String.nr2enc_char()*
 
 nr2hex({nr})				*Vital.Data.String.nr2hex()*
 	Return hex string which has the number value {nr}.
-
-==============================================================================
-CHANGELOG				*Vital.Data.String-changelog*
-
-0.0.0:
-- Initial upload
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

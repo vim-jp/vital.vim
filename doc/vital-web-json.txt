@@ -9,8 +9,6 @@ CONTENTS				*Vital.Web.Json-contents*
 INTRODUCTION				|Vital.Web.Json-introduction|
 INTERFACE				|Vital.Web.Json-interface|
   Functions				|Vital.Web.Json-functions|
-CHANGELOG				|Vital.Web.Json-changelog|
-
 
 ==============================================================================
 INTRODUCTION				*Vital.Web.Json-introduction*
@@ -27,12 +25,6 @@ encode(object)				*Vital.Web.Json.encode()*
 
 decode(json)				*Vital.Web.Json.decode()*
 	Decode JSON string into variable that vim can treat.
-
-==============================================================================
-CHANGELOG				*Vital.Web.Json-changelog*
-
-1.0	2011-12-28
-	- Initial upload
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

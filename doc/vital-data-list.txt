@@ -6,8 +6,6 @@ CONTENTS				*Vital.Data.List-contents*
 INTRODUCTION			|Vital.Data.List-introduction|
 INTERFACE			|Vital.Data.List-interface|
   Functions			  |Vital.Data.List-functions|
-CHANGELOG			|Vital.Data.List-changelog|
-
 
 ==============================================================================
 INTRODUCTION				*Vital.Data.List-introduction*
@@ -91,11 +89,5 @@ zip(...)				*Vital.Data.List.zip()*
 	:echo s:list.zip([1,2,3],[4,5,6],[7,8,9])
 	[[1,4,7],[2,5,8],[3,6,9]]
 <
-==============================================================================
-CHANGELOG				*Vital.Data.List-changelog*
-
-0.0.0:
-- Initial upload
-
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
