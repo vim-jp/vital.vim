@@ -64,6 +64,7 @@ Message.missing({text})		*Vital.Locale.Message-Message.missing()*
 	was not found in the message text file.
 	By default, nothing is done.
 	This is used for debugging by the override.
+	If a string is returned, it is used for localized text.
 >
 	let s:mes = V.Locale.Message.new('my-plugin')
 	if g:my_plugin_debug
@@ -72,7 +73,15 @@ Message.missing({text})		*Vital.Locale.Message-Message.missing()*
 	  endfunction
 	endif
 <
-
+	An example of dynamic translation.
+	(localized texts of Message object is stored in "data" attribute.)
+>
+	let s:mes = V.Locale.Message.new('my-plugin')
+	function s:mes.missing(text)
+	  let self.data[a:text] = Translate(a:text)
+	  return self.data[a:text]
+	endfunction
+<
 
 
 ==============================================================================

@@ -22,8 +22,8 @@ function! s:Message.get(text)
   if has_key(self.data, a:text)
     return self.data[a:text]
   endif
-  call self.missing(a:text)
-  return a:text
+  let text = self.missing(a:text)
+  return type(text) == type('') ? text : a:text
 endfunction
 function! s:Message.load(lang)
   let pattern = printf(self.path, a:lang)
