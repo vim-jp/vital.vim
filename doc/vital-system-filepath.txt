@@ -1,0 +1,40 @@
+*vital-system-filepath.txt*		path string utilities library.
+
+==============================================================================
+CONTENTS				*Vital.System.Filepath-contents*
+
+INTRODUCTION			|Vital.System.Filepath-introduction|
+INTERFACE			|Vital.System.Filepath-interface|
+  Functions			  |Vital.System.Filepath-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.System.Filepath-introduction*
+
+|Vital.System.Filepath| is Path String Utilities Library.
+It provides some functions to manipulate path strings.
+
+==============================================================================
+INTERFACE				*Vital.System.Filepath-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.System.Filepath-functions*
+
+separator()				*Vital.System.Filepath.separator()*
+	Return OS related path separator as string.
+
+unify_separator({path})			*Vital.System.Filepath.unify_separator()*
+	Return path string replaced all path separators with '/'.
+
+split({path})				*Vital.System.Filepath.split()*
+	Return |List| of elements in {path} string.
+
+join({args}...)				 *Vital.System.Filepath.join()*
+	Join the path in {args}.
+
+dirname({path})				 *Vital.System.Filepath.dirname()*
+	Return directory name from {path}.
+
+remove_last_separator({path})	 *Vital.System.Filepath.remove_last_separator()*
+	Remove last path separator if exists.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

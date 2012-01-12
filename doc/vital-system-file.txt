@@ -1,4 +1,4 @@
-*vital-system-file.txt*		list utilities library.
+*vital-system-file.txt*		filesystem utilities library.
 
 ==============================================================================
 CONTENTS				*Vital.System.File-contents*
