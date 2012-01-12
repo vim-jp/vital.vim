@@ -1,9 +1,6 @@
 *vital-data-ordered_set.txt*		ordered collection library.
 
-Author:
-  tyru <tyru.exe@gmail.com>
-Version: 0.0.0
-License: Under the same license as Vim itself (see :help license)
+Maintainer: tyru <tyru.exe@gmail.com>
 
 ==============================================================================
 CONTENTS				*Vital.Data.Ordered_set-contents*

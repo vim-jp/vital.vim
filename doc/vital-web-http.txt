@@ -1,7 +1,6 @@
 *vital-web-http.txt*				simple HTTP client library.
 
-Version: 1.0
-Author : mattn <mattn.jp@gmail.com>
+Maintainer: mattn <mattn.jp@gmail.com>
 
 ==============================================================================
 CONTENTS				*Vital.Web.Http-contents*

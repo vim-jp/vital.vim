@@ -1,7 +1,6 @@
 *vital-locale-message.txt*	very simple message localization library.
 
-Version: 1.1
-Author : thinca <thinca+vim@gmail.com>
+Maintainer: thinca <thinca+vim@gmail.com>
 
 ==============================================================================
 CONTENTS				*Vital.Locale.Message-contents*
