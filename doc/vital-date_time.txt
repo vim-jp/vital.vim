@@ -1,0 +1,301 @@
+*Vital.DateTime.txt*	date and time library.
+
+Maintainer: thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.DateTime-contents*
+
+INTRODUCTION			|Vital.DateTime-introduction|
+INTERFACE			|Vital.DateTime-interface|
+  FUNCTIONS			  |Vital.DateTime-functions|
+OBJECTS				|Vital.DateTime-objects|
+  DateTime Object		  |Vital.DateTime-DateTime|
+  TimeZone Object		  |Vital.DateTime-TimeZone|
+  TimeDelta Object		  |Vital.DateTime-TimeDelta|
+TODO				|Vital.DateTime-todo|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.DateTime-introduction*
+
+*Vital.DateTime* is a date and time library.
+
+- This library uses proleptic Gregorian calendar.
+- Don't treat DST(summer time).
+- Don't treat leap second.
+
+
+==============================================================================
+INTERFACE				*Vital.DateTime-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.DateTime-functions*
+
+now([{timezone}])			*Vital.DateTime.now()*
+	Creates a new DateTime object with now time.
+	See |Vital.DateTime.timezone()| about {timezone}.
+
+					*Vital.DateTime.from_unix_time()*
+from_unix_time({unix-time} [, {timezone}])
+	Creates a new DateTime object from {unix-time}.
+	See |Vital.DateTime.timezone()| about {timezone}.
+
+					*Vital.DateTime.from_date()*
+from_date([{year} [, {month} [, {day}
+          [, {hour} [, {minute} [, {second} [, {timezone}]]]]]]])
+	Creates a new DateTime object from date info.
+	See |Vital.DateTime.timezone()| about {timezone}.
+
+					*Vital.DateTime.from_format()*
+from_format({string}, {format} [, {locale}])
+	Creates a new DateTime object from format.
+	Currently supported descriptors.
+	TODO: list of formats.
+
+from_julian_day({jd} [, {timezone}])	*Vital.DateTime.from_julian_day()*
+	Creates a new DateTime object from Julian day.
+	{jd} accepts |Float| value.
+	See |Vital.DateTime.timezone()| about {timezone}.
+
+timezone([{timezone}])			*Vital.DateTime.timezone()*
+	Creates a new TimeZone object.
+	{timezone} accepts one of following.
+	- Omitted or an empty string
+	  - Returns current timezone.
+	- A string like "+0900"
+	- A string like "+09:00"
+	- TimeZone object.
+	  - Returns it directly.
+
+delta()					*Vital.DateTime.delta()*
+delta({days}, {seconds})
+delta({value}, {unit}, ...)
+	Creates a new TimeDelta object.
+	{unit} accepts the followings:
+	"second", "minute", "hour", "day", "week"
+delta({TimeDelta})
+	Returns {TimeDelta} directly.
+
+compare({datetime1}, {datetime2})	*Vital.DateTime.compare()*
+	Comparison function for DateTime.  This is useful when using |sort()|.
+
+month_names([{longname} [, {locale}]])	*Vital.DateTime.month_names()*
+	Returns month names according to the current or specified locale.
+	If {longname} is supplied and it is true, returns long name.
+
+weekday_names([{longname} [, {locale}]])*Vital.DateTime.weekday_names()*
+	Returns weekday names according to the current or specified locale.
+	If {longname} is supplied and it is true, returns long name.
+
+am_pm_names([{lowercase} [, {locale}]])	*Vital.DateTime.am_pm_names()*
+	Returns am/pm names according to the current or specified locale.
+	If {lowercase} is supplied and it is true, returns lower case.
+
+is_leap_year({year})			*Vital.DateTime.is_leap_year()*
+	Returns true when the {year} is a leap year.
+
+
+
+==============================================================================
+OBJECTS					*Vital.DateTime-objects*
+
+------------------------------------------------------------------------------
+DateTime Object			*Vital.DateTime-DateTime*
+
+DateTime.year()			*Vital.DateTime-DateTime.year()*
+	Returns the year.
+
+DateTime.month()		*Vital.DateTime-DateTime.month()*
+	Returns the month. (1-12)
+
+DateTime.day()			*Vital.DateTime-DateTime.day()*
+	Returns the day. (1-31)
+
+DateTime.hour()			*Vital.DateTime-DateTime.hour()*
+	Returns the hour. (0-23)
+
+DateTime.minute()		*Vital.DateTime-DateTime.minute()*
+	Returns the minute. (0-59)
+
+DateTime.second()		*Vital.DateTime-DateTime.second()*
+	Returns the second. (0-59)
+
+DateTime.timezone()		*Vital.DateTime-DateTime.timezone()*
+	Returns the TimeZone object.
+DateTime.timezone({timezone})
+	Same as "DateTime.to({timezone})".
+
+DateTime.day_of_week()		*Vital.DateTime-DateTime.day_of_week()*
+	Returns the day of the week. (0-6)  0 is Sunday.
+
+DateTime.day_of_year()		*Vital.DateTime-DateTime.day_of_year()*
+	Returns the day of the year.
+
+DateTime.days_from_era()	*Vital.DateTime-DateTime.days_from_era()*
+	Returns the number of days from the Christian era.
+
+DateTime.julian_day([{float}])	*Vital.DateTime-DateTime.julian_day()*
+	Returns the Julian day.
+	If {float} is supplied and it is true, returns |Float| value.
+
+DateTime.seconds_of_day()	*Vital.DateTime-DateTime.seconds_of_day()*
+	Returns the number of seconds of the day.
+
+DateTime.quarter()		*Vital.DateTime-DateTime.quarter()*
+	Returns the quarter. (1-4)
+
+DateTime.unix_time()		*Vital.DateTime-DateTime.unix_time()*
+	Returns the unix time.
+	If this DateTime is out of range of unix time, returns -1.
+
+DateTime.is_leap_year()		*Vital.DateTime-DateTime.is_leap_year()*
+	Returns true when the year is a leap year.
+
+DateTime.is({DateTime})		*Vital.DateTime-DateTime.is()*
+	Returns true if this DateTime and the specified {DateTime} is the same
+	time.
+
+DateTime.compareTo({DateTime})	*Vital.DateTime-DateTime.compareTo()*
+	Returns -1 if {DateTime} is after than this DateTime.
+	Returns 0 if {DateTime} and this DateTime is same.
+	Returns 1 if {DateTime} is before than this DateTime.
+
+DateTime.delta({DateTime})	*Vital.DateTime-DateTime.delta()*
+	Returns a new TimeDelta(|Vital.DateTime-TimeDelta|) object.
+	It is the delta of this DateTime to {DateTime}.
+
+DateTime.to({TimeDelta})	*Vital.DateTime-DateTime.to()*
+DateTime.to({TimeZone})
+	Returns a new object from which the specified time is different.
+	This function accepts the same arguments as |Vital.DateTime.delta()|.
+	If {TimeZone} object is passed, this returns a new object from which
+	the timezone is different.
+
+				*Vital.DateTime-DateTime.format()*
+DateTime.format({format} [, {locale}])
+	Returns the formatted string of this DateTime.
+	TODO: list of formats.
+
+				*Vital.DateTime-DateTime.strftime()*
+DateTime.strftime({format})
+	Same as "strftime({format}, dt.unix_time())".
+	Note that timezone is always converted to current timezone.
+
+DateTime.to_string()		*Vital.DateTime-DateTime.to_string()*
+	Same as "format('%c')".
+
+------------------------------------------------------------------------------
+TimeZone Object			*Vital.DateTime-TimeZone*
+
+TimeZone has just the offset.  Name of timezone is not supported yet.
+
+TimeZone.offset()		*Vital.DateTime-TimeZone.offset()*
+	Returns the offset in second.
+
+TimeZone.minutes()		*Vital.DateTime-TimeZone.minutes()*
+	Returns the offset in minute.
+
+TimeZone.hours()		*Vital.DateTime-TimeZone.hours()*
+	Returns the offset in hour.
+
+TimeZone.sign()			*Vital.DateTime-TimeZone.sign()*
+	Returns the offset of sign.  This is -1, 0, or 1.
+
+TimeZone.offset_string()	*Vital.DateTime-TimeZone.offset_string()*
+	Returns the offset by the format used by RFC 2822.  ex: "+0900"
+
+TimeZone.w3c()			*Vital.DateTime-TimeZone.w3c()*
+	Returns the offset by the format used by W3CDTF.  ex: "+09:00"
+
+------------------------------------------------------------------------------
+TimeDelta Object		*Vital.DateTime-TimeDelta*
+
+TimeDelta is a delta of two DateTime.  This object holds delta with the
+following elements.
+- seconds
+  - Less than the seconds on a day.
+- days
+- sign
+  - direction (ago or later)
+
+TimeDelta.seconds()		*Vital.DateTime-TimeDelta.seconds()*
+	Returns the seconds parts of the delta.
+
+TimeDelta.minutes()		*Vital.DateTime-TimeDelta.minutes()*
+	Returns the seconds parts of the delta in minute.
+
+TimeDelta.hours()		*Vital.DateTime-TimeDelta.hours()*
+	Returns the seconds parts of the delta in hour.
+
+TimeDelta.days()		*Vital.DateTime-TimeDelta.days()*
+	Returns the days parts of the delta.
+
+TimeDelta.weeks()		*Vital.DateTime-TimeDelta.weeks()*
+	Returns the days parts of the delta in week.
+
+TimeDelta.months()		*Vital.DateTime-TimeDelta.months()*
+	Returns the days parts of the delta in month.
+	The month is always calculated in 30 days.
+
+TimeDelta.years()		*Vital.DateTime-TimeDelta.years()*
+	Returns the days parts of the delta in year.
+	The year is always calculated in 365 days.
+
+TimeDelta.total_seconds()	*Vital.DateTime-TimeDelta.total_seconds()*
+	Returns the total eeconds of the delta.
+	This may overflow, when the delta is large.
+
+TimeDelta.sign()		*Vital.DateTime-TimeDelta.sign()*
+	Returns the seconds sign of the delta.
+	This is -1, 0, or 1.
+
+TimeDelta.negate()		*Vital.DateTime-TimeDelta.negate()*
+	Returns a new negated TimeDelta object.
+	delta.sign() == -delta.negate().sign()
+
+TimeDelta.add({other})		*Vital.DateTime-TimeDelta.add()*
+	Returns a new TimeDelta object which added this and {other}.
+	{other} accepts the same arguments as |Vital.DateTime.delta()|.
+
+TimeDelta.about()		*Vital.DateTime-TimeDelta.about()*
+	Returns a string that about this delta.
+	Exemples:
+	"now"
+	"8 seconds later"
+	"30 minutes ago"
+	"1 hour later"
+	"4 days ago"
+	"3 weeks later"
+	"2 months ago"
+	"1 year later"
+
+TimeDelta.to_string()		*Vital.DateTime-TimeDelta.to_string()*
+	Returns a string representation of this TimeDelta.  It is the
+	following string.
+	"[-]{n}day[s], HH:MM:SS".
+
+
+
+==============================================================================
+TIPS					*Vital.DateTime-tips*
+
+- All objects are immutable.
+  - Don't touch the inner value.
+- {timezone} argument accepts arguments of |Vital.DateTime.timezone()|
+  directly.
+
+
+
+==============================================================================
+TODO					*Vital.DateTime-todo*
+
+- Week number of the current year.
+- Optional member "TimeDelta.from".
+  - The origin date.
+  - For accurate years and months.
+- more specs(test).
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
