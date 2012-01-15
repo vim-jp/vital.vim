@@ -12,6 +12,7 @@ OBJECTS				|Vital.DateTime-objects|
   DateTime Object		  |Vital.DateTime-DateTime|
   TimeZone Object		  |Vital.DateTime-TimeZone|
   TimeDelta Object		  |Vital.DateTime-TimeDelta|
+FORMAT				|Vital.DateTime-format|
 TIPS				|Vital.DateTime-tips|
 TODO				|Vital.DateTime-todo|
 
@@ -51,8 +52,7 @@ from_date([{year} [, {month} [, {day}
 					*Vital.DateTime.from_format()*
 from_format({string}, {format} [, {locale}])
 	Creates a new DateTime object from format.
-	Currently supported descriptors.
-	TODO: list of formats.
+	See |Vital.DateTime-format| about {format}.
 
 from_julian_day({jd} [, {timezone}])	*Vital.DateTime.from_julian_day()*
 	Creates a new DateTime object from Julian day.
@@ -176,7 +176,7 @@ DateTime.to({TimeZone})
 				*Vital.DateTime-DateTime.format()*
 DateTime.format({format} [, {locale}])
 	Returns the formatted string of this DateTime.
-	TODO: list of formats.
+	See |Vital.DateTime-format| about {format}.
 
 				*Vital.DateTime-DateTime.strftime()*
 DateTime.strftime({format})
@@ -275,6 +275,63 @@ TimeDelta.to_string()		*Vital.DateTime-TimeDelta.to_string()*
 	Returns a string representation of this TimeDelta.  It is the
 	following string.
 	"[-]{n}day[s], HH:MM:SS".
+
+
+
+==============================================================================
+FORMAT					*Vital.DateTime-format*
+
+The format is used by the following functions.
+- |Vital.DateTime-DateTime.format()|
+  - For formatting.
+- |Vital.DateTime.from_format()|
+  - For parsing.
+
+The format is similar to |strftime()|.
+There is a list of specifications of the format.
+
+  +---- Available for formatting
+  | +-- Available for parsing
+  | |
+  o o  %a  The abbreviated weekday name.
+  o    %A  The full weekday name.
+  o    %b  The abbreviated month name.
+  o o  %B  The full month name.
+  o o  %c  Equivalent to "%F %T %z".
+  o o  %C  The century number (year/100) as a 2-digit integer.
+  o o  %d  The day of the month as a decimal number (range 01 to 31).
+  o o  %D  Equivalent to "%m/%d/%y".
+  o o  %e  Equivalent to "%_m/%_d/%_y".
+  o o  %F  Equivalent to "%Y-%m-%d".
+  o o  %H  The hour as a decimal number using a 24-hour clock(range 00 to 23).
+  o o  %I  The hour as a decimal number using a 12-hour clock(range 01 to 12).
+  o    %j  The day of the year as a decimal number (range 001 to 366).
+  o o  %k  Equivalent to "%_H".
+  o o  %l  Equivalent to "%_I".
+  o o  %m  The month as a decimal number (range 01 to 12).
+  o o  %M  The minute as a decimal number (range 00 to 59).
+  o o  %n  When formatting, a newline character.
+           When parsing, arbitrary whitespace.
+  o o  %p  Either "AM" or "PM" according to the given time value.
+  o o  %P  Like %p but in lowercase.
+  o o  %r  Equivalent to "%I:%M:%S %p".
+  o o  %R  Equivalent to "%H:%M".
+  o    %s  The number of seconds since the Epoch, 1970-01-01 00:00:00 +0000.
+  o o  %S  The second as a decimal number (range 00 to 59).
+  o o  %t  When formatting, a tab character.
+           When parsing, arbitrary whitespace.
+  o o  %u  The day of the week as a decimal, range 1 to 7, Monday being 1.
+  o o  %T  Equivalent to "%H:%M:%S".
+  o    %w  The day of the week as a decimal, range 0 to 6, Sunday being 0.
+  o o  %y  The year as a decimal number without a century (range 00 to 99).
+  o o  %Y  The year as a decimal number including the century.
+  o o  %z  The +hhmm or -hhmm numeric timezone.
+  o o  %%  A literal '%' character.
+
+Flags and width
+---------------
+You can use the flag and width like glibc.
+TODO: More detail.
 
 
 
