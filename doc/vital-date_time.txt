@@ -294,9 +294,9 @@ There is a list of specifications of the format.
   | +-- Available for parsing
   | |
   o o  %a  The abbreviated weekday name.
-  o    %A  The full weekday name.
+  o o  %A  The full weekday name.
   o    %b  The abbreviated month name.
-  o o  %B  The full month name.
+  o    %B  The full month name.
   o o  %c  Equivalent to "%F %T %z".
   o o  %C  The century number (year/100) as a 2-digit integer.
   o o  %d  The day of the month as a decimal number (range 01 to 31).
