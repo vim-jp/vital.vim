@@ -12,6 +12,7 @@ OBJECTS				|Vital.DateTime-objects|
   DateTime Object		  |Vital.DateTime-DateTime|
   TimeZone Object		  |Vital.DateTime-TimeZone|
   TimeDelta Object		  |Vital.DateTime-TimeDelta|
+TIPS				|Vital.DateTime-tips|
 TODO				|Vital.DateTime-todo|
 
 
