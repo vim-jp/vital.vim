@@ -1,4 +1,4 @@
-*Vital.DateTime.txt*	date and time library.
+*vital-date-time.txt*	date and time library.
 
 Maintainer: thinca <thinca+vim@gmail.com>
 
