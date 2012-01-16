@@ -115,7 +115,7 @@ function! s:timezone(...)
   if s:_is_class(info, 'TimeZone')
     return info
   endif
-  if empty(info)
+  if type(info) != type(0) && empty(info)
     unlet info
     let info = s:_default_tz()
   endif
