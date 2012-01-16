@@ -694,12 +694,12 @@ let s:SECONDS_OF_DAY = s:SECONDS_OF_HOUR * s:NUM_HOURS
 let s:ERA_TIME = s:_g2jd(1, 1, 1)
 let s:EPOC_TIME = s:_g2jd(1970, 1, 1)
 
-let s:MONTHS =
-\   map(range(1, 12), 's:from_date(1970, v:val).unix_time()')
-let s:WEEKS =
-\   map(range(4, 10), 's:from_date(1970, 1, v:val).unix_time()')
-let s:AM_PM_TIMES =
-\   map([0, 12], 's:from_date(1970, 1, 1, v:val).unix_time()')
+let s:MONTHS = map(range(1, 12),
+\   's:from_date(1970, v:val, 1, 0, 0, 0, 0).unix_time()')
+let s:WEEKS = map(range(4, 10),
+\   's:from_date(1970, 1, v:val, 0, 0, 0, 0).unix_time()')
+let s:AM_PM_TIMES = map([0, 12],
+\   's:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
 
 let s:STRING_T = type('')
 let s:LIST_T = type([])
