@@ -128,7 +128,7 @@ function! s:timezone(...)
     \                (str2nr(list[2]) * 60 + str2nr(list[3], 10))
   else
     " TODO: TimeZone names
-    throw 'Vital.DateTime: Unknown timezone: ' . string(a:tz)
+    throw 'Vital.DateTime: Unknown timezone: ' . string(info)
   endif
   return tz
 endfunction
