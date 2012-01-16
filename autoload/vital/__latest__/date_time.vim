@@ -121,7 +121,7 @@ function! s:timezone(...)
   endif
   let tz = copy(s:TimeZone)
   if type(info) == type(0)
-    tz._offset = info
+    let tz._offset = info
   elseif info =~# '^[+-]\d\{2}:\?\d\{2}$'
     let list = matchlist(info, '\v([+-])(\d{2})(\d{2})')
     let tz._offset = str2nr(list[1] . '60') *
