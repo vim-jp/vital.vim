@@ -3,6 +3,32 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V)
+  let s:V = a:V
+
+  if s:V.is_windows()
+    let s:win_tz =
+    \  -(split(s:V.system(printf('reg query "%s" /v Bias | findstr REG_DWORD',
+    \ 'HKLM\System\CurrentControlSet\Control\TimeZoneInformation')))[-1] * 60)
+  endif
+
+  " default values
+  call extend(s:DateTime, {
+  \   '_year': 0,
+  \   '_month': 1,
+  \   '_day': 1,
+  \   '_hour': 0,
+  \   '_minute': 0,
+  \   '_second': 0,
+  \   '_timezone': s:timezone(),
+  \ })
+  call extend(s:TimeDelta, {
+  \   '_days': 0,
+  \   '_time': 0,
+  \   '_sign': 0,
+  \ })
+endfunction
+
 " Creates a DateTime object with now time.
 function! s:now(...)
   return call('s:from_unix_time', [localtime()] + a:000)
@@ -37,14 +63,14 @@ function! s:from_format(string, format, ...)
   let locale = a:0 ? a:1 : ''
   let remain = a:string
   for f in s:_split_format(a:format)
-    if type(f) == s:STRING_T
+    if s:V.is_string(f)
       let matched_len = len(f)
       if f !=# remain[: matched_len - 1]
         throw "Vital.DateTime: Parse error:\n" .
         \     'input: ' . a:string . "\nformat: " . a:format
         break
       endif
-    elseif type(f) == s:LIST_T
+    elseif s:V.is_list(f)
       let [d, flag, width] = f
       let info = s:format_info[d]
       let key = '_' . info[0]
@@ -52,14 +78,13 @@ function! s:from_format(string, format, ...)
         throw 'Vital.DateTime: Unknown descriptor: ' . d
         break
       endif
-      let mt = type(info[1])
-      if mt == s:FUNC_T
+      if s:V.is_funcref(info[1])
         let pattern = call(info[1], [locale], {})
-        if type(pattern) == s:LIST_T
+        if s:V.is_list(pattern)
           let values = pattern
           let l:['pattern'] = '\%(' . join(values, '\|') . '\)'
         endif
-      elseif mt == s:LIST_T
+      elseif s:V.is_list(info[1])
         if width ==# ''
           let width = info[1][1]
         endif
@@ -67,7 +92,7 @@ function! s:from_format(string, format, ...)
         if flag == '_'
           let pattern = '\s*' . pattern
         endif
-      elseif mt == s:STRING_T
+      elseif s:V.is_string(info[1])
         let pattern = info[1]
       endif
 
@@ -77,7 +102,7 @@ function! s:from_format(string, format, ...)
       if exists('values')
         let value = index(values, value)
         unlet values
-      elseif mt == s:LIST_T
+      elseif s:V.is_list(info[1])
         let value = str2nr(value, 10)
       endif
 
@@ -99,7 +124,7 @@ endfunction
 function! s:from_julian_day(jd, ...)
   let tz = call('s:timezone', a:000)
   let second = 0
-  if has('float') && type(a:jd) == type(0.0)
+  if s:V.is_float(a:jd)
     let jd = float2nr(floor(a:jd))
     let second = float2nr(s:SECONDS_OF_DAY * (a:jd - jd))
   else
@@ -311,13 +336,13 @@ function! s:DateTime.format(format, ...)
   let locale = a:0 ? a:1 : ''
   let result = ''
   for f in s:_split_format(a:format)
-    if type(f) == s:STRING_T
+    if s:V.is_string(f)
       let result .= f
-    elseif type(f) == s:LIST_T
+    elseif s:V.is_list(f)
       let [d, flag, width] = f
       let info = s:format_info[d]
       let padding = ''
-      if type(info[1]) == s:LIST_T
+      if s:V.is_list(info[1])
         let [padding, w] = info[1]
         if width ==# ''
           let width = w
@@ -660,7 +685,7 @@ function! s:_split_format(format)
     let [matched, flag, width, d] = matchlist(format, pat)[: 3]
     let format = format[len(matched) :]
     let info = s:format_info[d]
-    if type(info) == s:STRING_T
+    if s:V.is_string(info)
       let format = info . format
     else
       let res += [[d, flag, width]]
@@ -671,9 +696,6 @@ function! s:_split_format(format)
 endfunction
 
 if has('win16') || has('win32') || has('win64')
-  let s:win_tz =
-  \  -(split(system(printf('reg query %s /v Bias | findstr REG_DWORD',
-  \ 'HKLM\System\CurrentControlSet\Control\TimeZoneInformation')))[-1] * 60)
   function! s:_default_tz()
     return s:win_tz
   endfunction
@@ -700,25 +722,5 @@ let s:WEEKS = map(range(4, 10),
 \   's:from_date(1970, 1, v:val, 0, 0, 0, 0).unix_time()')
 let s:AM_PM_TIMES = map([0, 12],
 \   's:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
-
-let s:STRING_T = type('')
-let s:LIST_T = type([])
-let s:FUNC_T = type(function('function'))
-
-" default values
-call extend(s:DateTime, {
-\   '_year': 0,
-\   '_month': 1,
-\   '_day': 1,
-\   '_hour': 0,
-\   '_minute': 0,
-\   '_second': 0,
-\   '_timezone': s:timezone(),
-\ })
-call extend(s:TimeDelta, {
-\   '_days': 0,
-\   '_time': 0,
-\   '_sign': 0,
-\ })
 
 let &cpo = s:save_cpo
