@@ -134,7 +134,7 @@ function! s:timezone(...)
 endfunction
 
 " Creates a new TimeDelta object.
-function s:delta(...)
+function! s:delta(...)
   let info = a:0 ? a:1 : ''
   if s:_is_class(info, 'TimeDelta')
     return info
