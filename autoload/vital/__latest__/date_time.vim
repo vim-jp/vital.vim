@@ -244,7 +244,7 @@ function! s:DateTime.day_of_year()
 endfunction
 function! s:DateTime.days_from_era()
   if !has_key(self, '_day_from_era')
-    let self._day_from_era = self.julian_day() - s:ERA_TIME
+    let self._day_from_era = self.julian_day() - s:ERA_TIME + 1
   endif
   return self._day_from_era
 endfunction
