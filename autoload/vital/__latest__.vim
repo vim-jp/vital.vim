@@ -45,8 +45,9 @@ function! s:_import(name, scripts)
   let target = substitute(target, '\l\zs\ze\u', '_', 'g') " OrderedSet -> Ordered_Set
   let target = substitute(target, '[/_]\zs\u', '\l\0', 'g') " Ordered_Set -> ordered_set
   let tailpath = printf('autoload/vital/%s%s.vim', s:self_version, target)
-  let path = get(split(globpath(&runtimepath, tailpath, 1), "\n"), 0, '')
-  let sid = get(a:scripts, s:_unify_path(path), 0)
+  let paths = split(globpath(&runtimepath, tailpath, 1), "\n")
+  let path = s:_unify_path(get(paths, 0, ''))
+  let sid = get(a:scripts, path, 0)
   if !sid
     try
       source `=path`
@@ -54,6 +55,7 @@ function! s:_import(name, scripts)
       throw 'vital: module not found: ' . a:name
     endtry
     let sid = len(a:scripts) + 1  " We expect that the file newly read is +1.
+    let a:scripts[path] = sid
   endif
   return s:_build_module(sid)
 endfunction
