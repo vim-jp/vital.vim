@@ -12,8 +12,9 @@ endfunction
 
 function! s:load(...) dict
   let scripts = s:_scripts()
-  for name in a:000
-    let target = split(name, '\W\+')
+  for arg in a:000
+    let [name, as] = type(arg) == type([]) ? arg[: 1] : [arg, arg]
+    let target = split(as, '\W\+')
     let dict = self
     while 2 <= len(target)
       let ns = remove(target, 0)
@@ -30,6 +31,7 @@ function! s:load(...) dict
     if !empty(target) && !has_key(dict, target[0])
       let dict[target[0]] = s:_import(name, scripts)
     endif
+    unlet arg
   endfor
   return self
 endfunction
