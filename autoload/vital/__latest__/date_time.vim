@@ -74,9 +74,8 @@ function! s:from_format(string, format, ...)
       let [d, flag, width] = f
       let info = s:format_info[d]
       let key = '_' . info[0]
-      if key !=# '_' && !has_key(o, key)
-        throw 'Vital.DateTime: Unknown descriptor: ' . d
-        break
+      if !has_key(o, key)
+        let key = '_'
       endif
       if s:V.is_funcref(info[1])
         let pattern = call(info[1], [locale], {})
