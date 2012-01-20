@@ -74,7 +74,7 @@ function! s:_scripts()
 endfunction
 
 function! s:_unify_path(path)
-  return resolve(fnamemodify(a:path, ':p:gs?\\\+?/?'))
+  return resolve(fnamemodify(a:path, ':p:gs?[\\/]\+?/?'))
 endfunction
 
 function! s:_build_module(sid)
