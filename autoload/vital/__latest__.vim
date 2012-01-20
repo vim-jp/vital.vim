@@ -94,8 +94,12 @@ function! s:_build_module(sid, debug)
     let module[func] = function(prefix . func)
   endfor
   if has_key(module, '_vital_loaded')
+    let V = vital#{s:self_version}#new()
+    if has_key(module, '_vital_depends')
+      call call(V.load, module._vital_depends(), V)
+    endif
     try
-      call module._vital_loaded(vital#{s:self_version}#new())
+      call module._vital_loaded(V)
     catch
       " FIXME: Show an error message for debug.
     endtry
