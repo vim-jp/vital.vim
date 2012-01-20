@@ -3,7 +3,7 @@ let s:self_version = expand('<sfile>:t:r')
 let s:loaded = {}
 
 function! s:import(name, ...)
-  let module = s:_import(a:name, s:_scripts())
+  let module = s:_import(a:name, s:_scripts(), 0)
   if a:0 && type(a:1) == type({})
     call extend(a:1, module, 'keep')
   endif
@@ -12,6 +12,7 @@ endfunction
 
 function! s:load(...) dict
   let scripts = s:_scripts()
+  let debug = has_key(self, 'debug') && self.debug
   for arg in a:000
     let [name, as] = type(arg) == type([]) ? arg[: 1] : [arg, arg]
     let target = split(as, '\W\+')
@@ -29,16 +30,16 @@ function! s:load(...) dict
     endwhile
 
     if !empty(target) && !has_key(dict, target[0])
-      let dict[target[0]] = s:_import(name, scripts)
+      let dict[target[0]] = s:_import(name, scripts, debug)
     endif
     unlet arg
   endfor
   return self
 endfunction
 
-function! s:_import(name, scripts)
+function! s:_import(name, scripts, debug)
   if type(a:name) == type(0)
-    return s:_build_module(a:name)
+    return s:_build_module(a:name, a:debug)
   endif
   if a:name =~# '^[^A-Z]' || a:name =~# '\W[^A-Z]'
     throw 'vital: module name must start with capital letter: ' . a:name
@@ -59,7 +60,7 @@ function! s:_import(name, scripts)
     let sid = len(a:scripts) + 1  " We expect that the file newly read is +1.
     let a:scripts[path] = sid
   endif
-  return s:_build_module(sid)
+  return s:_build_module(sid, a:debug)
 endfunction
 
 function! s:_scripts()
@@ -77,7 +78,7 @@ function! s:_unify_path(path)
   return resolve(fnamemodify(a:path, ':p:gs?[\\/]\+?/?'))
 endfunction
 
-function! s:_build_module(sid)
+function! s:_build_module(sid, debug)
   if has_key(s:loaded, a:sid)
     return copy(s:loaded[a:sid])
   endif
@@ -99,7 +100,9 @@ function! s:_build_module(sid)
       " FIXME: Show an error message for debug.
     endtry
   endif
-  call filter(module, 'v:key =~# "^\\a"')
+  if !a:debug
+    call filter(module, 'v:key =~# "^\\a"')
+  endif
   let s:loaded[a:sid] = module
   return copy(module)
 endfunction
