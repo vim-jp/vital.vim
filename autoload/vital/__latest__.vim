@@ -3,11 +3,17 @@ let s:self_version = expand('<sfile>:t:r')
 let s:loaded = {}
 
 function! s:import(name, ...)
-  let module = s:_import(a:name, s:_scripts(), 0)
-  if a:0 && type(a:1) == type({})
-    call extend(a:1, module, 'keep')
-  endif
-  return module
+  let module = {}
+  let debug = 0
+  for a in a:000
+    if type(a) == type({})
+      let module = a
+    elseif type(a) == type(0)
+      let debug = a
+    endif
+    unlet a
+  endfor
+  return extend(module, s:_import(a:name, s:_scripts(), debug), 'keep')
 endfunction
 
 function! s:load(...) dict
