@@ -115,23 +115,24 @@ endfunction "}}}
 
 
 " rmdir recursively.
-function! s:rmdir(path, flag)
+function! s:rmdir(path, ...)
+  let f = a:0 ? a:1 : ''
   if exists("+rmdir")
-    return call('rmdir', [a:path, a:flag])
+    return call('rmdir', [a:path] + a:000)
   elseif has("unix")
     let flag = ''
-    let flag .= a:flag =~ 'f' ? ' -f' : ''
-    let flag .= a:flag =~ 'r' ? ' -r' : ''
+    let flag .= f =~ 'f' ? ' -f' : ''
+    let flag .= f =~ 'r' ? ' -r' : ''
     let ret = system("/bin/rm" . flag . ' ' . shellescape(a:path))
   elseif has("win32") || has("win95") || has("win64") || has("win16")
     let flag = ''
     if &shell =~? "sh$"
-      let flag .= a:flag =~ 'f' ? ' -f' : ''
-      let flag .= a:flag =~ 'r' ? ' -r' : ''
+      let flag .= f =~ 'f' ? ' -f' : ''
+      let flag .= f =~ 'r' ? ' -r' : ''
       let ret = system("/bin/rm" . flag . ' ' . shellescape(a:path))
     else
-      let flag .= a:flag =~ 'f' ? ' /Q' : ''
-      let flag .= a:flag =~ 'r' ? ' /S' : ''
+      let flag .= f =~ 'f' ? ' /Q' : ''
+      let flag .= f =~ 'r' ? ' /S' : ''
       let ret = system("rmdir " . flag . ' ' . shellescape(a:path) . ' 2>&1')
     endif
   endif
