@@ -116,24 +116,24 @@ endfunction "}}}
 
 " rmdir recursively.
 function! s:rmdir(path, ...)
-  let f = a:0 ? a:1 : ''
+  let flags = a:0 ? a:1 : ''
   if exists("+rmdir")
     return call('rmdir', [a:path] + a:000)
   elseif has("unix")
-    let flag = ''
-    let flag .= f =~ 'f' ? ' -f' : ''
-    let flag .= f =~ 'r' ? ' -r' : ''
-    let ret = system("/bin/rm" . flag . ' ' . shellescape(a:path))
+    let option = ''
+    let option .= flags =~ 'f' ? ' -f' : ''
+    let option .= flags =~ 'r' ? ' -r' : ''
+    let ret = system("/bin/rm" . option . ' ' . shellescape(a:path))
   elseif has("win32") || has("win95") || has("win64") || has("win16")
-    let flag = ''
+    let option = ''
     if &shell =~? "sh$"
-      let flag .= f =~ 'f' ? ' -f' : ''
-      let flag .= f =~ 'r' ? ' -r' : ''
-      let ret = system("/bin/rm" . flag . ' ' . shellescape(a:path))
+      let option .= flags =~ 'f' ? ' -f' : ''
+      let option .= flags =~ 'r' ? ' -r' : ''
+      let ret = system("/bin/rm" . option . ' ' . shellescape(a:path))
     else
-      let flag .= f =~ 'f' ? ' /Q' : ''
-      let flag .= f =~ 'r' ? ' /S' : ''
-      let ret = system("rmdir " . flag . ' ' . shellescape(a:path) . ' 2>&1')
+      let option .= flags =~ 'f' ? ' /Q' : ''
+      let option .= flags =~ 'r' ? ' /S' : ''
+      let ret = system("rmdir " . option . ' ' . shellescape(a:path) . ' 2>&1')
     endif
   endif
   if v:shell_error
