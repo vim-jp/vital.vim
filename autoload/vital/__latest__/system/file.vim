@@ -140,7 +140,5 @@ fun! s:rmdir(path, flag)
   endif
 endfun
 
-call s:rmdir("c:/temp/foo/bar/baz", "rf")
-
 
 let &cpo = s:save_cpo
