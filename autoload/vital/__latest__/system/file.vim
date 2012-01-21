@@ -115,7 +115,7 @@ endfunction "}}}
 
 
 " rmdir recursively.
-fun! s:rmdir(path, flag)
+function! s:rmdir(path, flag)
   if exists("+rmdir")
     return call('rmdir', [a:path, a:flag])
   elseif has("unix")
@@ -138,7 +138,7 @@ fun! s:rmdir(path, flag)
   if v:shell_error
     throw substitute(ret, '\n', '', 'g')
   endif
-endfun
+endfunction
 
 
 let &cpo = s:save_cpo
