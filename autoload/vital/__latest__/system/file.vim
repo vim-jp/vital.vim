@@ -114,4 +114,33 @@ function! s:mkdir_nothrow(...) "{{{
 endfunction "}}}
 
 
+" rmdir recursively.
+fun! s:rmdir(path, flag)
+  if exists("+rmdir")
+    return call('rmdir', [a:path, a:flag])
+  elseif has("unix")
+    let flag = ''
+    let flag .= a:flag =~ 'f' ? ' -f' : ''
+    let flag .= a:flag =~ 'r' ? ' -r' : ''
+    let ret = system("/bin/rm" . flag . ' ' . shellescape(a:path))
+  elseif has("win32") || has("win95") || has("win64") || has("win16")
+    let flag = ''
+    if &shell =~? "sh$"
+      let flag .= a:flag =~ 'f' ? ' -f' : ''
+      let flag .= a:flag =~ 'r' ? ' -r' : ''
+      let ret = system("/bin/rm" . flag . ' ' . shellescape(a:path))
+    else
+      let flag .= a:flag =~ 'f' ? ' /Q' : ''
+      let flag .= a:flag =~ 'r' ? ' /S' : ''
+      let ret = system("rmdir " . flag . ' ' . shellescape(a:path) . ' 2>&1')
+    endif
+  endif
+  if v:shell_error
+    throw substitute(ret, '\n', '', 'g')
+  endif
+endfun
+
+call s:rmdir("c:/temp/foo/bar/baz", "rf")
+
+
 let &cpo = s:save_cpo
