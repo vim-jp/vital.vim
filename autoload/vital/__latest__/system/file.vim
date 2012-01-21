@@ -123,13 +123,13 @@ function! s:rmdir(path, ...)
     let option = ''
     let option .= flags =~ 'f' ? ' -f' : ''
     let option .= flags =~ 'r' ? ' -r' : ''
-    let ret = system("/bin/rm" . option . ' ' . shellescape(a:path))
+    let ret = system("/bin/rm" . option . ' ' . shellescape(a:path) . ' 2>&1')
   elseif has("win32") || has("win95") || has("win64") || has("win16")
     let option = ''
     if &shell =~? "sh$"
       let option .= flags =~ 'f' ? ' -f' : ''
       let option .= flags =~ 'r' ? ' -r' : ''
-      let ret = system("/bin/rm" . option . ' ' . shellescape(a:path))
+      let ret = system("/bin/rm" . option . ' ' . shellescape(a:path) . ' 2>&1')
     else
       let option .= flags =~ 'f' ? ' /Q' : ''
       let option .= flags =~ 'r' ? ' /S' : ''
