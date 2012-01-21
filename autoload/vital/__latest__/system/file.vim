@@ -117,7 +117,7 @@ endfunction "}}}
 " rmdir recursively.
 function! s:rmdir(path, ...)
   let flags = a:0 ? a:1 : ''
-  if exists("+rmdir")
+  if exists("*rmdir")
     return call('rmdir', [a:path] + a:000)
   elseif has("unix")
     let option = ''
