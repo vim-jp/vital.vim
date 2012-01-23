@@ -113,7 +113,5 @@ function! s:_redir(cmd)
 endfunction
 
 function! vital#{s:self_version}#new()
-  let V = s:import('')
-  call V.import('Prelude', V)
-  return V
+  return s:import('').load(['Prelude', ''])
 endfunction
