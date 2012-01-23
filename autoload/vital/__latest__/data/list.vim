@@ -109,6 +109,31 @@ function! s:break(f, xs)
   return s:span(printf('!(%s)', a:f), a:xs)
 endfunction
 
+" similar to Haskell's Prelude.all
+function! s:all(f, xs)
+  return !s:any(printf('!(%s)', a:f), a:xs)
+endfunction
+
+" similar to Haskell's Prelude.any
+function! s:any(f, xs)
+  for x in a:xs
+    if eval(substitute(a:f, 'v:val', string(x), 'g'))
+      return 1
+    endif
+  endfor
+  return 0
+endfunction
+
+" similar to Haskell's Prelude.and
+function! s:and(xs)
+  return s:all('v:val', a:xs)
+endfunction
+
+" similar to Haskell's Prelude.or
+function! s:or(xs)
+  return s:any('v:val', a:xs)
+endfunction
+
 " similar to Haskell's Prelude.foldl
 function! s:foldl(f, init, xs)
   let memo = a:init

@@ -38,6 +38,52 @@ Context Data.List.break()
   End
 End
 
+Context Data.List.all()
+  It returns true if all items in the list fulfill the condition.
+    Should g:L.all('v:val % 2 == 0', [2, 8, 4, 6])
+    Should !g:L.all('v:val % 2 == 0', [2, 8, 5, 6])
+    Should g:L.all('0 < v:val', [2, 8, 4, 6])
+    Should !g:L.all('0 < v:val', [2, 0, 4, 6])
+  End
+  It returns true if the list is empty.
+    Should g:L.all('v:val', [])
+  End
+End
+
+Context Data.List.any()
+  It returns true if at least one item in the list fulfills the condition.
+    Should !g:L.any('v:val % 2 == 1', [2, 8, 4, 6])
+    Should g:L.any('v:val % 2 == 1', [2, 8, 5, 6])
+    Should !g:L.any('0 >= v:val', [2, 8, 4, 6])
+    Should g:L.any('0 >= v:val', [2, 0, 4, 6])
+  End
+  It returns false if the list is empty.
+    Should !g:L.any('v:val', [])
+  End
+End
+
+Context Data.List.and()
+  It returns the conjunction of a boolean list.
+    Should g:L.and([1, 1, 1, 1])
+    Should !g:L.and([1, 0, 1, 1])
+    Should !g:L.and([0, 0, 0, 0])
+  End
+  It returns true if the list is empty.
+    Should g:L.and([])
+  End
+End
+
+Context Data.List.and()
+  It returns the disjunction of a boolean list.
+    Should g:L.or([1, 1, 1, 1])
+    Should g:L.or([1, 0, 1, 1])
+    Should !g:L.or([0, 0, 0, 0])
+  End
+  It returns false if the list is empty.
+    Should !g:L.or([])
+  End
+End
+
 Context Data.List.foldl()
   It folds a list from left
     Should 55 == g:L.foldl('v:memo + v:val', 0, range(1, 10))
