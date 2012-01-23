@@ -5,7 +5,7 @@ set cpo&vim
 
 " Removes duplicates from a list.
 function! s:uniq(list, ...)
-  let list = a:0 ? map(a:list, printf('[v:val, %s]', a:1)) : a:list
+  let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)
   let i = 0
   let seen = {}
   while i < len(list)
