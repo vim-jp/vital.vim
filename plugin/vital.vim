@@ -17,6 +17,7 @@ let s:REQUIRED_MODULES = [
 \ ]
 let s:HASH_SIZE = 6
 let s:V = vital#of('vital')
+let s:L = s:V.import('Data.List')
 let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
 let s:vital_dir = expand('<sfile>:h:h:p')
@@ -103,6 +104,7 @@ function! s:vitalize(name, to, modules, hash)
   else
     let all_modules = []
   endif
+  let all_modules = s:L.uniq(all_modules)
   if empty(all_modules)
     let files = s:all_modules()
   else
