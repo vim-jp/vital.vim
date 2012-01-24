@@ -31,7 +31,7 @@ function! s:check_system()
   endif
 endfunction
 function! s:git(cmd)
-  return system(printf('git "--git-dir=%s" %s', s:git_dir, a:cmd))
+  return system(printf('git --git-dir %s %s', shellescape(s:git_dir), a:cmd))
 endfunction
 function! s:git_current_hash()
   return s:git('rev-parse HEAD')
