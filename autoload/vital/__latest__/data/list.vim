@@ -116,12 +116,7 @@ endfunction
 
 " similar to Haskell's Prelude.any
 function! s:any(f, xs)
-  for x in a:xs
-    if eval(substitute(a:f, 'v:val', string(x), 'g'))
-      return 1
-    endif
-  endfor
-  return 0
+  return !empty(filter(map(copy(a:xs), a:f), 'v:val'))
 endfunction
 
 " similar to Haskell's Prelude.and
