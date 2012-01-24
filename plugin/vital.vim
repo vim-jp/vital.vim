@@ -83,7 +83,7 @@ endfunction
 function! s:all_modules()
   let pat = '^.*\zs\<autoload/vital/.*'
   return filter(map(split(glob(s:vital_dir . '/autoload/vital/**/*.vim'), "\n"),
-  \          'matchstr(substitute(v:val, "\\", "/", "g"), pat)'), 'v:val!=""')
+  \          'matchstr(s:FP.unify_separator(v:val), pat)'), 'v:val!=""')
 endfunction
 function! s:vitalize(name, to, modules, hash)
   let cur = s:git_current_hash()
