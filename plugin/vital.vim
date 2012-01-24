@@ -82,8 +82,8 @@ function! s:file2module(file)
 endfunction
 function! s:all_modules()
   let pat = '^.*\zs\<autoload/vital/.*'
-  return filter(map(split(glob(s:vital_dir . '/autoload/vital/**/*.vim')),
-  \          'matchstr(v:val, pat)'), 'v:val!=""')
+  return filter(map(split(glob(s:vital_dir . '/autoload/vital/**/*.vim'), "\n"),
+  \          'matchstr(substitute(v:val, "\\", "/", "g"), pat)'), 'v:val!=""')
 endfunction
 function! s:vitalize(name, to, modules, hash)
   let cur = s:git_current_hash()
@@ -128,12 +128,38 @@ function! s:vitalize(name, to, modules, hash)
 endfunction
 function! s:command(args)
   call s:check_system()
-  let to = fnamemodify(a:args[0], ':p')
-  call s:vitalize(fnamemodify(to, ':h:t'), to, a:args[1 :], '')
+  let options = filter(copy(a:args), 'v:val=~"^--"')
+  let args = filter(copy(a:args), 'v:val!~"^--"')
+  let to = ''
+  let modules = args[1:]
+  let name = fnamemodify(to, ':h:t')
+  let hash = ''
+  for option in options
+    if option =~ '^--init'
+      let modules = filter(map(s:all_modules(), 's:file2module(v:val)'),
+      \  'v:val!=""')
+    elseif option =~ '^--help'
+      echo "Usage :Vitalize {options} {target-dir} [module ...]"
+      return
+    elseif option =~ '^--name=\S'
+      let name = option[7:]
+    elseif option =~ '^--hash=\S'
+      let hash = option[7:]
+    else
+      echohl Error | echomsg "Invalid argument" | echohl None
+      return
+    endif
+  endfor
+  if len(args) == 0
+    echohl Error | echomsg "Argument required" | echohl None
+    return
+  endif
+  let to = fnamemodify(args[0], ':p')
+  call s:vitalize(name, to, modules, '')
 endfunction
 
-" :Vitalize {target-dir} [module ...]
-command! -nargs=+ Vitalize call s:command([<f-args>])
+" :Vitalize {options} {target-dir} [module ...]
+command! -nargs=* Vitalize call s:command([<f-args>])
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
