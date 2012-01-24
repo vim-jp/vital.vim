@@ -95,11 +95,18 @@ function! s:vitalize(name, to, modules, hash)
   else
     unlet cur
   endif
+  let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
   if !empty(a:modules)
-    let all_modules = s:search_dependence(a:modules + s:REQUIRED_MODULES)
-    let files = map(all_modules, 's:module2file(v:val)')
+    let all_modules = a:modules + s:REQUIRED_MODULES
+  elseif filereadable(vital_file)
+    let all_modules = readfile(vital_file)[2 :]
   else
+    let all_modules = []
+  endif
+  if empty(all_modules)
     let files = s:all_modules()
+  else
+    let files = map(s:search_dependence(all_modules), 's:module2file(v:val)')
   endif
   if isdirectory(a:to . '/autoload/vital')
     call s:F.rmdir(a:to . '/autoload/vital', 'rf')
@@ -112,8 +119,7 @@ function! s:vitalize(name, to, modules, hash)
     let after = substitute(f, '__latest__', '_' . shash, '')
     call s:copy(s:vital_dir . '/' . f, a:to . '/' . after)
   endfor
-  let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
-  call writefile([shash], vital_file)
+  call writefile([shash, ''] + all_modules, vital_file)
   if exists('cur')
     call s:git_checkout(cur)
   endif
