@@ -71,6 +71,18 @@ break({f}, {xs})			*Vital.Data.List.break()*
 	:echo s:list.span("v:val==1", [1,2])
 	[[1]]
 <
+all({f}, {xs})				*Vital.Data.List.all()*
+	Behaves like Haskell's Prelude.all().
+
+any({f}, {xs})				*Vital.Data.List.any()*
+	Behaves like Haskell's Prelude.any().
+
+and({xs})				*Vital.Data.List.and()*
+	Behaves like Haskell's Prelude.and().
+
+or({xs})				*Vital.Data.List.or()*
+	Behaves like Haskell's Prelude.or().
+
 foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 	Behaves like Haskell's Data.List.foldl().
 

@@ -31,5 +31,10 @@ mkdir_nothrow({name} [, {path} [, {prot}]])
 					*Vital.System.File.mkdir_nothrow()*
 	Mkdir. But don't throw if it fails.
 
+rmdir({path}, [{flags}])		*Vital.System.File.rmdir()*
+	Remove a directory.
+	If {flags} contains "r", this removes the directory and its contents
+	recursively.
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

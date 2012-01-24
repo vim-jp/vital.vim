@@ -23,7 +23,7 @@ function! s:load(...) dict
     let [name, as] = type(arg) == type([]) ? arg[: 1] : [arg, arg]
     let target = split(as, '\W\+')
     let dict = self
-    while 2 <= len(target)
+    while 1 <= len(target)
       let ns = remove(target, 0)
       if !has_key(dict, ns)
         let dict[ns] = {}
@@ -31,12 +31,13 @@ function! s:load(...) dict
       if type(dict[ns]) == type({})
         let dict = dict[ns]
       else
-        let target = []
+        unlet dict
+        break
       endif
     endwhile
 
-    if !empty(target) && !has_key(dict, target[0])
-      let dict[target[0]] = s:_import(name, scripts, debug)
+    if exists('dict')
+      call extend(dict, s:_import(name, scripts, debug))
     endif
     unlet arg
   endfor
@@ -129,7 +130,5 @@ function! s:_redir(cmd)
 endfunction
 
 function! vital#{s:self_version}#new()
-  let V = s:import('')
-  call V.import('Prelude', V)
-  return V
+  return s:_import('', s:_scripts(), 0).load(['Prelude', ''])
 endfunction
