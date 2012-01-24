@@ -101,7 +101,8 @@ function! s:vitalize(name, to, modules, hash)
   else
     let files = s:all_modules()
   endif
-  " TODO: rmdir a:to/autoload/vital
+  call s:F.rmdir(a:to . '/autoload/vital', 'rf')
+  call delete(a:to . '/autoload/vital.vim')
   let shash = hash[: s:HASH_SIZE]
   let g:modules = map(copy(files), 's:file2module(v:val)')
   for f in files + s:REQUIRED_FILES
