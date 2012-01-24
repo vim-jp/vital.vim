@@ -104,7 +104,6 @@ function! s:vitalize(name, to, modules, hash)
   call s:F.rmdir(a:to . '/autoload/vital', 'rf')
   call delete(a:to . '/autoload/vital.vim')
   let shash = hash[: s:HASH_SIZE]
-  let g:modules = map(copy(files), 's:file2module(v:val)')
   for f in files + s:REQUIRED_FILES
     let after = substitute(f, '__latest__', '_' . shash, '')
     call s:copy(s:vital_dir . '/' . f, a:to . '/' . after)
