@@ -81,8 +81,8 @@ function! s:file2module(file)
 endfunction
 function! s:all_modules()
   let pat = '^.*\zs\<autoload/vital/.*'
-  return map(split(glob(s:vital_dir . '/autoload/vital/**/*.vim')),
-  \          'matchstr(v:val, pat)')
+  return filter(map(split(glob(s:vital_dir . '/autoload/vital/**/*.vim')),
+  \          'matchstr(v:val, pat)'), 'v:val!=""')
 endfunction
 function! s:vitalize(name, to, modules, hash)
   let cur = s:git_current_hash()
@@ -101,8 +101,12 @@ function! s:vitalize(name, to, modules, hash)
   else
     let files = s:all_modules()
   endif
-  call s:F.rmdir(a:to . '/autoload/vital', 'rf')
-  call delete(a:to . '/autoload/vital.vim')
+  if isdirectory(a:to . '/autoload/vital')
+    call s:F.rmdir(a:to . '/autoload/vital', 'rf')
+  endif
+  if filereadable(a:to . '/autoload/vital.vim')
+    call delete(a:to . '/autoload/vital.vim')
+  endif
   let shash = hash[: s:HASH_SIZE]
   for f in files + s:REQUIRED_FILES
     let after = substitute(f, '__latest__', '_' . shash, '')
