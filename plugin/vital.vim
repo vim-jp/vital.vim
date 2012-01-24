@@ -126,6 +126,19 @@ function! s:vitalize(name, to, modules, hash)
     call s:git_checkout(cur)
   endif
 endfunction
+function! VitalCompleteModule(arglead, cmdline, cursorpos)
+  let options = ['--init', '--name=', '--hash=', '--help']
+  let args = filter(split(a:cmdline[: a:cursorpos], '\s\+'), 'v:val!="^--"')
+  if a:arglead =~ '^--'
+    return filter(options, 'stridx(v:val, a:arglead)!=-1')
+  elseif len(args) > 2
+    return filter(map(s:all_modules(), 's:file2module(v:val)'),
+    \  'stridx(v:val, a:arglead)!=-1')
+  else
+    return map(filter(split(glob(a:arglead . "*"), "\n"),
+    \  'isdirectory(v:val)'), 'escape(v:val, " ")')
+  endif
+endfunction
 function! s:command(args)
   call s:check_system()
   let options = filter(copy(a:args), 'v:val=~"^--"')
@@ -159,7 +172,7 @@ function! s:command(args)
 endfunction
 
 " :Vitalize {options} {target-dir} [module ...]
-command! -nargs=* Vitalize call s:command([<f-args>])
+command! -nargs=* -complete=customlist,VitalCompleteModule Vitalize call s:command([<f-args>])
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
