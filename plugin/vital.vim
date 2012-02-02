@@ -143,7 +143,7 @@ function! s:command(args)
   call s:check_system()
   let options = filter(copy(a:args), 'v:val=~"^--"')
   let args = filter(copy(a:args), 'v:val!~"^--"')
-  let to = ''
+  let to = fnamemodify(args[0], ':p')
   let modules = args[1:]
   let name = fnamemodify(to, ':h:t')
   let hash = ''
@@ -167,7 +167,6 @@ function! s:command(args)
     echohl Error | echomsg "Argument required" | echohl None
     return
   endif
-  let to = fnamemodify(args[0], ':p')
   call s:vitalize(name, to, modules, '')
 endfunction
 
