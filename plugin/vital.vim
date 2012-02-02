@@ -167,7 +167,7 @@ function! s:command(args)
     echohl Error | echomsg "Argument required" | echohl None
     return
   endif
-  call s:vitalize(name, to, modules, '')
+  call s:vitalize(name, to, modules, hash)
 endfunction
 
 " :Vitalize {options} {target-dir} [module ...]
