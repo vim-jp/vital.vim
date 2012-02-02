@@ -4,6 +4,10 @@ let s:save_cpo = &cpo
 set cpo&vim
 let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
 
+function! s:_vital_depends()
+  return ['Data.List']
+endfunction
+
 " Substitute a:from => a:to by string.
 " To substitute by pattern, use substitute() instead.
 function! s:replace(str, from, to)

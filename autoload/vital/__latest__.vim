@@ -3,15 +3,22 @@ let s:self_version = expand('<sfile>:t:r')
 let s:loaded = {}
 
 function! s:import(name, ...)
-  let module = s:_import(a:name, s:_scripts())
-  if a:0 && type(a:1) == type({})
-    call extend(a:1, module, 'keep')
-  endif
-  return module
+  let module = {}
+  let debug = 0
+  for a in a:000
+    if type(a) == type({})
+      let module = a
+    elseif type(a) == type(0)
+      let debug = a
+    endif
+    unlet a
+  endfor
+  return extend(module, s:_import(a:name, s:_scripts(), debug), 'keep')
 endfunction
 
 function! s:load(...) dict
   let scripts = s:_scripts()
+  let debug = has_key(self, 'debug') && self.debug
   for arg in a:000
     let [name, as] = type(arg) == type([]) ? arg[: 1] : [arg, arg]
     let target = split(as, '\W\+')
@@ -30,16 +37,20 @@ function! s:load(...) dict
     endwhile
 
     if exists('dict')
-      call extend(dict, s:_import(name, scripts))
+      call extend(dict, s:_import(name, scripts, debug))
     endif
     unlet arg
   endfor
   return self
 endfunction
 
-function! s:_import(name, scripts)
+function! s:unload()
+  let s:loaded = {}
+endfunction
+
+function! s:_import(name, scripts, debug)
   if type(a:name) == type(0)
-    return s:_build_module(a:name)
+    return s:_build_module(a:name, a:debug)
   endif
   if a:name =~# '^[^A-Z]' || a:name =~# '\W[^A-Z]'
     throw 'vital: module name must start with capital letter: ' . a:name
@@ -60,7 +71,7 @@ function! s:_import(name, scripts)
     let sid = len(a:scripts) + 1  " We expect that the file newly read is +1.
     let a:scripts[path] = sid
   endif
-  return s:_build_module(sid)
+  return s:_build_module(sid, a:debug)
 endfunction
 
 function! s:_scripts()
@@ -78,7 +89,7 @@ function! s:_unify_path(path)
   return resolve(fnamemodify(a:path, ':p:gs?[\\/]\+?/?'))
 endfunction
 
-function! s:_build_module(sid)
+function! s:_build_module(sid, debug)
   if has_key(s:loaded, a:sid)
     return copy(s:loaded[a:sid])
   endif
@@ -94,13 +105,19 @@ function! s:_build_module(sid)
     let module[func] = function(prefix . func)
   endfor
   if has_key(module, '_vital_loaded')
+    let V = vital#{s:self_version}#new()
+    if has_key(module, '_vital_depends')
+      call call(V.load, module._vital_depends(), V)
+    endif
     try
-      call module._vital_loaded(vital#{s:self_version}#new())
+      call module._vital_loaded(V)
     catch
       " FIXME: Show an error message for debug.
     endtry
   endif
-  call filter(module, 'v:key =~# "^\\a"')
+  if !a:debug
+    call filter(module, 'v:key =~# "^\\a"')
+  endif
   let s:loaded[a:sid] = module
   return copy(module)
 endfunction
@@ -113,5 +130,5 @@ function! s:_redir(cmd)
 endfunction
 
 function! vital#{s:self_version}#new()
-  return s:_import('', s:_scripts()).load(['Prelude', ''])
+  return s:_import('', s:_scripts(), 0).load(['Prelude', ''])
 endfunction
