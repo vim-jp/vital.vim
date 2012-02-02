@@ -1,9 +1,9 @@
 " vitalizer by vim script.
 
-if exists('g:loaded_vital')
+if exists('g:loaded_vitalizer')
   finish
 endif
-let g:loaded_vital = 1
+let g:loaded_vitalizer = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -25,10 +25,10 @@ let s:git_dir = s:vital_dir . '/.git'
 
 function! s:check_system()
   if !executable('git')
-    throw 'vital: git is required by vitalizer.'
+    throw 'vitalizer: git is required by vitalizer.'
   endif
   if !isdirectory(s:git_dir)
-    throw 'vital: vital directory must be a git work directory.'
+    throw 'vitalizer: vital directory must be a git work directory.'
   endif
 endfunction
 function! s:git(cmd)
