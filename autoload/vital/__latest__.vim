@@ -20,8 +20,8 @@ function! s:load(...) dict
   let scripts = s:_scripts()
   let debug = has_key(self, 'debug') && self.debug
   for arg in a:000
-    let [name, as] = type(arg) == type([]) ? arg[: 1] : [arg, arg]
-    let target = split(as, '\W\+')
+    let [name; as] = type(arg) == type([]) ? arg[: 1] : [arg, arg]
+    let target = split(join(as, ''), '\W\+')
     let dict = self
     while 1 <= len(target)
       let ns = remove(target, 0)
