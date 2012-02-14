@@ -28,15 +28,15 @@ concat({list})				*Vital.Data.List.concat()*
 	:echo s:list.concat([[1],[2,3]])
 	[1,2,3]
 <
-	This is similar to |Vital.Data.List.flattens()| but this doesn't
+	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
 
-flattens({list})				*Vital.Data.List.flattens()*
-	Returns elements flattens in {list}.
+flatten({list})				*Vital.Data.List.flatten()*
+	Returns elements flatten in {list}.
 >
-	:echo s:list.flattens([[1],[2,3]])
+	:echo s:list.flatten([[1],[2,3]])
 	[1,2,3]
-	:echo s:list.flattens([[1],2,3])
+	:echo s:list.flatten([[1],2,3])
 	[1,2,3]
 <
 sort({list}, {expr})			*Vital.Data.List.sort()*
