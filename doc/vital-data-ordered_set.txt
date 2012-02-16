@@ -3,66 +3,69 @@
 Maintainer: tyru <tyru.exe@gmail.com>
 
 ==============================================================================
-CONTENTS				*Vital.Data.Ordered_set-contents*
+CONTENTS				*Vital.Data.OrderedSet-contents*
 
-INTRODUCTION			|Vital.Data.Ordered_set-introduction|
-INTERFACE			|Vital.Data.Ordered_set-interface|
-  Functions			  |Vital.Data.Ordered_set-functions|
-  Ordered_set Object		  |Vital.Data.Ordered_set-Ordered_set|
+INTRODUCTION			|Vital.Data.OrderedSet-introduction|
+INTERFACE			|Vital.Data.OrderedSet-interface|
+  FUNCTIONS			  |Vital.Data.OrderedSet-functions|
+  OrderedSet Object		  |Vital.Data.OrderedSet-OrderedSet|
+
+
 
 ==============================================================================
-INTRODUCTION				*Vital.Data.Ordered_set-introduction*
+INTRODUCTION				*Vital.Data.OrderedSet-introduction*
 
-|Vital.Data.Ordered_set| is Collection Utilities Library.
+|Vital.Data.OrderedSet| is Collection Utilities Library.
 It provides some data structure (e.g., ordered dictionary/set).
 
+
+
 ==============================================================================
-INTERFACE				*Vital.Data.Ordered_set-interface*
+INTERFACE				*Vital.Data.OrderedSet-interface*
 ------------------------------------------------------------------------------
-FUNCTIONS				*Vital.Data.Ordered_set-functions*
+FUNCTIONS				*Vital.Data.OrderedSet-functions*
 
-load()				*Vital.Data.Ordered_set.load()*
-	Loads autoload/vital#data/ordered_set.vim .
-
-new()				*Vital.Data.Ordered_set.new()*
-	Returns 'Ordered_set' object.
+new()					*Vital.Data.OrderedSet.new()*
+	Returns a new 'OrderedSet' object.
 
 ------------------------------------------------------------------------------
-Ordered_set Object		*Vital.Data.Ordered_set-Ordered_set*
+OrderedSet Object		*Vital.Data.OrderedSet-OrderedSet*
 
-ordered_set.push({elem})	*Vital.Data.Ordered_set-Ordered_set.push()*
-	Pushes an element to data.ordered_set.
+OrderedSet.push({elem})		*Vital.Data.OrderedSet-OrderedSet.push()*
+	Pushes an element to OrderedSet.
 	This adds the element to set.
 	But if the element exists in the set,
 	it does not adds the element.
 
-ordered_set.unshift({elem})	*Vital.Data.Ordered_set-Ordered_set.unshift()*
-	Unshifts an element to data.ordered_set.
+OrderedSet.unshift({elem})	*Vital.Data.OrderedSet-OrderedSet.unshift()*
+	Unshifts an element to OrderedSet.
 	This adds the element to set.
 	But if the element exists in the set,
 	it does not adds the element.
 
-ordered_set.size({elem})	*Vital.Data.Ordered_set-Ordered_set.size()*
-	Gets the number of elements in data.ordered_set.
+OrderedSet.size({elem})		*Vital.Data.OrderedSet-OrderedSet.size()*
+	Gets the number of elements in OrderedSet.
 
-ordered_set.to_list({elem})	*Vital.Data.Ordered_set-Ordered_set.to_list()*
+OrderedSet.to_list({elem})	*Vital.Data.OrderedSet-OrderedSet.to_list()*
 	Converts to |List|.
 
-data.ordered_set.has({elem})	*Vital.Data.Ordered_set-Ordered_set.has()*
-	Checks if there is the element in data.ordered_set.
+OrderedSet.has({elem})		*Vital.Data.OrderedSet-OrderedSet.has()*
+	Checks if there is the element in OrderedSet.
 	This returns boolean value.
 
-ordered_set.has_id({id})	*Vital.Data.Ordered_set-Ordered_set.has_id()*
-	Checks if there is the element which has {id} in data.ordered_set.
+OrderedSet.has_id({id})		*Vital.Data.OrderedSet-OrderedSet.has_id()*
+	Checks if there is the element which has {id} in OrderedSet.
 	This returns boolean value.
 
-ordered_set.clear()		*Vital.Data.Ordered_set-Ordered_set.clear()*
-	Initializes data.ordered_set.
-	After calling this, data.ordered_set has no elements.
+OrderedSet.clear()		*Vital.Data.OrderedSet-OrderedSet.clear()*
+	Initializes OrderedSet.
+	After calling this, OrderedSet has no elements.
 
-ordered_set.remove({elem})	*Vital.Data.Ordered_set-Ordered_set.remove()*
-	Remove {elem} from data.ordered_set if it exists.
+OrderedSet.remove({elem})	*Vital.Data.OrderedSet-OrderedSet.remove()*
+	Remove {elem} from OrderedSet if it exists.
 	If it does not exist, this does not do anything.
+
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
