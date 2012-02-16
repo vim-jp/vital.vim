@@ -10,7 +10,7 @@ INTERFACE			|Vital.Data.List-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Data.List-introduction*
 
-|Vital.Data.List| is List Utilities Library.
+*Vital.Data.List* is List Utilities Library.
 It provides some functions to manipulate |List|.
 
 ==============================================================================

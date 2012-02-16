@@ -10,7 +10,7 @@ INTERFACE			|Vital.System.Filepath-interface|
 ==============================================================================
 INTRODUCTION				*Vital.System.Filepath-introduction*
 
-|Vital.System.Filepath| is Path String Utilities Library.
+*Vital.System.Filepath* is Path String Utilities Library.
 It provides some functions to manipulate path strings.
 
 ==============================================================================

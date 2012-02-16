@@ -10,7 +10,7 @@ INTERFACE			|Vital.System.File-interface|
 ==============================================================================
 INTRODUCTION				*Vital.System.File-introduction*
 
-|Vital.System.File| is Filesystem Utilities Library.
+*Vital.System.File* is Filesystem Utilities Library.
 It provides some functions for file system.
 
 ==============================================================================

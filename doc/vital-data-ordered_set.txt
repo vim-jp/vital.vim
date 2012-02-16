@@ -15,7 +15,7 @@ INTERFACE			|Vital.Data.OrderedSet-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Data.OrderedSet-introduction*
 
-|Vital.Data.OrderedSet| is Collection Utilities Library.
+*Vital.Data.OrderedSet* is Collection Utilities Library.
 It provides some data structure (e.g., ordered dictionary/set).
 
 

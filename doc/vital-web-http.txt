@@ -13,7 +13,7 @@ INTERFACE				|Vital.Web.Http-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Web.Http-introduction*
 
-|Vital.Web.Http| is HTTP Utilities Library. It provides simple HTTP client.
+*Vital.Web.Http* is HTTP Utilities Library. It provides simple HTTP client.
 
 ==============================================================================
 INTERFACE				*Vital.Web.Http-interface*

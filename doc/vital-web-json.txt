@@ -12,7 +12,7 @@ INTERFACE				|Vital.Web.Json-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Web.Json-introduction*
 
-|Vital.Web.Json| is JSON parser Library.
+*Vital.Web.Json* is JSON parser Library.
 
 ==============================================================================
 INTERFACE				*Vital.Web.Json-interface*

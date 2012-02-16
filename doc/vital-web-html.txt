@@ -13,7 +13,7 @@ INTERFACE				|Vital.Web.Html-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Web.Html-introduction*
 
-|Vital.Web.Html| is HTML parser Library. This is based on |Vital.Web.XML|.
+*Vital.Web.Html* is HTML parser Library. This is based on |Vital.Web.XML|.
 
 ==============================================================================
 INTERFACE				*Vital.Web.Html-interface*

@@ -10,7 +10,7 @@ INTERFACE			|Vital.Data.String-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Data.String-introduction*
 
-|Vital.Data.String| is String Utilities Library.
+*Vital.Data.String* is String Utilities Library.
 It provides some functions to manipulate |String|.
 
 ==============================================================================
