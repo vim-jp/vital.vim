@@ -138,9 +138,13 @@ function! vitalizer#command(args)
   call s:check_system()
   let options = filter(copy(a:args), 'v:val=~"^--"')
   let args = filter(copy(a:args), 'v:val!~"^--"')
-  let to = fnamemodify(args[0], ':p')
-  let modules = args[1:]
-  let name = fnamemodify(to, ':h:t')
+  if empty(args)
+    call insert(options, '--help')
+  else
+    let to = fnamemodify(args[0], ':p')
+    let modules = args[1 :]
+    let name = fnamemodify(to, ':h:t')
+  endif
   let hash = ''
   for option in options
     if option =~ '^--init'
