@@ -147,7 +147,7 @@ function! vitalizer#command(args)
       let modules = filter(map(s:all_modules(), 's:file2module(v:val)'),
       \  'v:val!=""')
     elseif option =~ '^--help'
-      echo "Usage :Vitalize {options} {target-dir} [module ...]"
+      echo "Usage :Vitalize [options ...] {target-dir} [module ...]"
       return
     elseif option =~ '^--name=\S'
       let name = option[7:]
