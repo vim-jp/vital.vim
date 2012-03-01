@@ -206,7 +206,7 @@ function! s:smart_execute_command(action, word)"{{{
 endfunction"}}}
 
 function! s:escape_file_searching(buffer_name)"{{{
-  return join(map(split(a:buffer_name, '\zs'), '"[".v:val."]"'), '')
+  return escape(a:buffer_name, '*[]?{},')
 endfunction"}}}
 function! s:escape_pattern(str)"{{{
   return escape(a:str, '~"\.^$[]*')
