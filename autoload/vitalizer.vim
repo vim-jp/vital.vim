@@ -27,7 +27,7 @@ function! s:check_system()
   endif
 endfunction
 function! s:git(cmd)
-  return system(printf('git --git-dir %s %s', shellescape(s:git_dir), a:cmd))
+  return system(printf('git --git-dir "%s" %s', s:git_dir, a:cmd))
 endfunction
 function! s:git_current_hash()
   return s:git('rev-parse HEAD')
@@ -36,7 +36,7 @@ function! s:git_checkout(hash)
   return s:git('checkout ' . hash)
 endfunction
 function! s:copy(from, to)
-  let todir = s:FP.dirname(a:to)
+  let todir = substitute(s:FP.dirname(a:to), '//', '/', 'g')
   if !isdirectory(todir)
     call mkdir(todir, 'p')
   endif
