@@ -50,6 +50,16 @@ sort({list}, {expr})			*Vital.Data.List.sort()*
 sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
 	Returns sorted elements with key in {list}.
 
+max({list}, {expr})			*Vital.Data.List.max()*
+	Returns a maximum value in {list} through given {expr}.
+	Returns 0 if {list} is empty.
+	"v:val" can be used in {expr}.
+
+min({list}, {expr})			*Vital.Data.List.min()*
+	Returns a minimum value in {list} through given {expr}.
+	Returns 0 if {list} is empty.
+	"v:val" can be used in {expr}.
+
 char_range({from}, {to})		*Vital.Data.List.char_range()*
 	Returns letters between {from} and {to}.
 

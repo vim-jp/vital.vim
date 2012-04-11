@@ -22,6 +22,26 @@ Context Data.List.uniq()
   End
 End
 
+Context Data.List.max()
+  It returns a maximum value in the list through the given expr.
+    Should 'hehehe' ==# g:L.max(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
+    Should -50 == g:L.max([20, -50, -15, 30], 'abs(v:val)')
+  End
+  It returns 0 if the list is empty.
+    Should 0 == g:L.max([], 'v:val')
+  End
+End
+
+Context Data.List.min()
+  It returns a minimum value in the list through the given expr.
+    Should 'foo' ==# g:L.min(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
+    Should -15 == g:L.min([20, -50, -15, 30], 'abs(v:val)')
+  End
+  It returns 0 if the list is empty.
+    Should 0 == g:L.min([], 'v:val')
+  End
+End
+
 Context Data.List.span()
   It splits a list into two lists. The former is until the given condition doesn't satisfy.
     Should [[1, 3], [5, 2]] == g:L.span('v:val < 5', [1, 3, 5, 2])

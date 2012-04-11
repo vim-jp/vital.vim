@@ -68,6 +68,33 @@ function! s:sort_by(list, expr)
   \      'a:a[1] ==# a:b[1] ? 0 : a:a[1] ># a:b[1] ? 1 : -1'), 'v:val[0]')
 endfunction
 
+" Returns a maximum value in {list} through given {expr}.
+" Returns 0 if {list} is empty.
+" v:val is used in {expr}
+function! s:max(list, expr)
+  if empty(a:list)
+    return 0
+  endif
+  let [max_i, i] = [0, 1]
+  let [max_val; list] = map(copy(a:list), a:expr)
+  for v in list
+    if max_val < v
+      let max_val = v
+      let max_i = i
+    endif
+    let i += 1
+  endfor
+  return a:list[max_i]
+endfunction
+
+" Returns a minimum value in {list} through given {expr}.
+" Returns 0 if {list} is empty.
+" v:val is used in {expr}
+" FIXME: -0x80000000 == 0x80000000
+function! s:min(list, expr)
+  return s:max(a:list, '-(' . a:expr . ')')
+endfunction
+
 " Returns List of character sequence between [a:from, a:to]
 " e.g.: s:char_range('a', 'c') returns ['a', 'b', 'c']
 function! s:char_range(from, to)
