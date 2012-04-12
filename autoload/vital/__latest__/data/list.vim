@@ -75,16 +75,8 @@ function! s:max(list, expr)
   if empty(a:list)
     return 0
   endif
-  let [max_i, i] = [0, 1]
-  let [max_val; list] = map(copy(a:list), a:expr)
-  for v in list
-    if max_val < v
-      let max_val = v
-      let max_i = i
-    endif
-    let i += 1
-  endfor
-  return a:list[max_i]
+  let list = map(copy(a:list), a:expr)
+  return a:list[index(list, max(list))]
 endfunction
 
 " Returns a minimum value in {list} through given {expr}.
