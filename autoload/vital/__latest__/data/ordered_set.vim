@@ -29,6 +29,18 @@ let s:ordered_set = {
 \   'Fn_identifier': 'string',
 \}
 
+function! s:ordered_set.prepend(list) "{{{
+    for V in a:list
+        call self.unshift(V)
+    endfor
+endfunction "}}}
+
+function! s:ordered_set.append(list) "{{{
+    for V in a:list
+        call self.push(V)
+    endfor
+endfunction "}}}
+
 function s:ordered_set.push(elem) "{{{
     let id = call(self.Fn_identifier, [a:elem])
     if !has_key(self._dict, id)
