@@ -195,4 +195,18 @@ function! s:nr2hex(nr)
   return r
 endfunction
 
+" If a ==# b, returns -1.
+" If a !=# b, returns first index of diffrent character.
+function! s:diffidx(a, b)
+  let [a, b] = [a:a, a:b]
+  let max = strlen(a) ># strlen(b) ? strlen(a) : strlen(b)
+  for i in range(max)
+    " if `i` is out of range, a[i] returns empty string.
+    if a[i] !=# b[i]
+      return i
+    endif
+  endfor
+  return -1
+endfunction
+
 let &cpo = s:save_cpo
