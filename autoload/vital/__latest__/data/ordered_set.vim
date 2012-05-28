@@ -93,11 +93,20 @@ function! s:ordered_set.remove(elem) "{{{
     let id = call(self.Fn_identifier, [a:elem])
     if has_key(self._dict, id)
         let idx = self._origin_pos + self._dict[id]
+        unlet self._dict[id]
         unlet self._list[idx]
         if idx < self._origin_pos
+            for i in range(0, idx - 1)
+                let id = call(self.Fn_identifier, [self._list[i]])
+                let self._dict[id] += 1
+            endfor
             let self._origin_pos -= 1
+        else
+            for i in range(idx, len(self._list) - 1)
+                let id = call(self.Fn_identifier, [self._list[i]])
+                let self._dict[id] -= 1
+            endfor
         endif
-        unlet self._dict[id]
         return 1
     endif
     return 0
