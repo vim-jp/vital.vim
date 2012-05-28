@@ -30,7 +30,7 @@ let s:ordered_set = {
 \}
 
 function! s:ordered_set.prepend(list) "{{{
-    for V in a:list
+    for V in reverse(a:list)
         call self.unshift(V)
     endfor
 endfunction "}}}
