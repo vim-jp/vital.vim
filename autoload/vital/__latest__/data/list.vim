@@ -106,9 +106,9 @@ endfunction
 " Returns false otherwise.
 " NOTE: Returns false when a:index is negative number.
 function! s:has_index(list, index)
-    " Return true when negative index?
-    " let index = a:index >= 0 ? a:index : len(a:list) + a:index
-    return 0 <= a:index && a:index < len(a:list)
+  " Return true when negative index?
+  " let index = a:index >= 0 ? a:index : len(a:list) + a:index
+  return 0 <= a:index && a:index < len(a:list)
 endfunction
 
 " similar to Haskell's Data.List.span
@@ -191,7 +191,7 @@ endfunction
 
 " similar to python's zip()
 function! s:zip(...)
-    return map(range(min(map(copy(a:000), 'len(v:val)'))), "map(copy(a:000), 'v:val['.v:val.']')")
+  return map(range(min(map(copy(a:000), 'len(v:val)'))), "map(copy(a:000), 'v:val['.v:val.']')")
 endfunction
 
 

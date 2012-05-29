@@ -1,13 +1,15 @@
+" vim:set et ts=2 sts=2 sw=2 tw=0:
+
 
 " glob() wrapper which returns List.
 function! s:glob(...)
-    let R = call('glob', a:000)
-    return split(R, '\n')
+  let R = call('glob', a:000)
+  return split(R, '\n')
 endfunction
 " globpath() wrapper which returns List.
 function! s:globpath(...)
-    let R = call('globpath', a:000)
-    return split(R, '\n')
+  let R = call('globpath', a:000)
+  return split(R, '\n')
 endfunction
 
 " Wrapper functions for type().
@@ -31,36 +33,36 @@ let [
 
 " Number or Float
 function! s:is_numeric(Value)
-    let _ = type(a:Value)
-    return _ ==# s:__TYPE_NUMBER
-    \   || _ ==# s:__TYPE_FLOAT
+  let _ = type(a:Value)
+  return _ ==# s:__TYPE_NUMBER
+  \   || _ ==# s:__TYPE_FLOAT
 endfunction
 " Number
 function! s:is_integer(Value)
-    return type(a:Value) ==# s:__TYPE_NUMBER
+  return type(a:Value) ==# s:__TYPE_NUMBER
 endfunction
 function! s:is_number(Value)
-    return type(a:Value) ==# s:__TYPE_NUMBER
+  return type(a:Value) ==# s:__TYPE_NUMBER
 endfunction
 " Float
 function! s:is_float(Value)
-    return type(a:Value) ==# s:__TYPE_FLOAT
+  return type(a:Value) ==# s:__TYPE_FLOAT
 endfunction
 " String
 function! s:is_string(Value)
-    return type(a:Value) ==# s:__TYPE_STRING
+  return type(a:Value) ==# s:__TYPE_STRING
 endfunction
 " Funcref
 function! s:is_funcref(Value)
-    return type(a:Value) ==# s:__TYPE_FUNCREF
+  return type(a:Value) ==# s:__TYPE_FUNCREF
 endfunction
 " List
 function! s:is_list(Value)
-    return type(a:Value) ==# s:__TYPE_LIST
+  return type(a:Value) ==# s:__TYPE_LIST
 endfunction
 " Dictionary
 function! s:is_dict(Value)
-    return type(a:Value) ==# s:__TYPE_DICT
+  return type(a:Value) ==# s:__TYPE_DICT
 endfunction
 
 function! s:truncate_smart(str, max, footer_width, separator)"{{{

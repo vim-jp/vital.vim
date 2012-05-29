@@ -97,7 +97,7 @@ function! s:get(url, ...)
         let command .= " -H " . quote . key . ": " . substitute(headdata[key], '"', '"""', 'g') . quote
       else
         let command .= " -H " . quote . key . ": " . headdata[key] . quote
-	  endif
+      endif
     endfor
     let command .= " ".quote.url.quote
     let res = system(command)
@@ -109,7 +109,7 @@ function! s:get(url, ...)
         let command .= " --header=" . quote . key . ": " . substitute(headdata[key], '"', '"""', 'g') . quote
       else
         let command .= " --header=" . quote . key . ": " . headdata[key] . quote
-	  endif
+      endif
     endfor
     let command .= " ".quote.url.quote
     let res = system(command)
@@ -154,7 +154,7 @@ function! s:post(url, ...)
         let command .= " -H " . quote . key . ": " . substitute(headdata[key], '"', '"""', 'g') . quote
       else
         let command .= " -H " . quote . key . ": " . headdata[key] . quote
-	  endif
+      endif
     endfor
     let command .= " ".quote.url.quote
     let file = tempname()
@@ -169,7 +169,7 @@ function! s:post(url, ...)
         let command .= " --header=" . quote . key . ": " . substitute(headdata[key], '"', '"""', 'g') . quote
       else
         let command .= " --header=" . quote . key . ": " . headdata[key] . quote
-	  endif
+      endif
     endfor
     let command .= " ".quote.url.quote
     let file = tempname()
