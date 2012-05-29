@@ -343,4 +343,5 @@ function! s:get_last_status()"{{{
   return s:has_vimproc() ?
         \ vimproc#get_last_status() : v:shell_error
 endfunction"}}}
-" vim: foldmethod=marker
+
+" vim:set et ts=2 sts=2 sw=2 tw=0:
