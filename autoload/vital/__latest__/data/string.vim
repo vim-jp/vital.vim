@@ -198,12 +198,13 @@ endfunction
 " If a ==# b, returns -1.
 " If a !=# b, returns first index of diffrent character.
 function! s:diffidx(a, b)
-  let [a, b] = [a:a, a:b]
-  let max = strlen(a) ># strlen(b) ? strlen(a) : strlen(b)
-  for i in range(max)
+  let [a, b] = [split(a:a, '\zs'), split(a:b, '\zs')]
+  let [al, bl] = [len(a), len(b)]
+  let l = max([al, bl])
+  for i in range(l)
     " if `i` is out of range, a[i] returns empty string.
-    if a[i] !=# b[i]
-      return i
+    if i >= al || i >= bl || a[i] !=# b[i]
+      return i > 0 ? strlen(join(a[:i-1], '')) : 0
     endif
   endfor
   return -1

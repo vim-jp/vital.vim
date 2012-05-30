@@ -123,3 +123,15 @@ Context Data.String.nsplit()
     Should g:S.nsplit('neo compl__cache', 4, '[ _]', 0) ==# ['neo', 'compl', 'cache']
   End
 End
+
+Context Data.String.diffidx()
+  It returns the index of string that found a different
+    Should g:S.diffidx('abcde', 'abdce') ==# 2
+    Should g:S.diffidx('', '') ==# -1
+    Should g:S.diffidx('', 'a') ==# 0
+    Should g:S.diffidx('a', '') ==# 0
+    Should g:S.diffidx('a', 'ab') ==# 1
+    Should g:S.diffidx('a', 'a') ==# -1
+    Should g:S.diffidx('▽', '▼') ==# 0
+  End
+End
