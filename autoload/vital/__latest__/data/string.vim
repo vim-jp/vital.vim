@@ -57,17 +57,18 @@ endfunction
 
 " Split to two elements of List. ([left, right])
 " e.g.: s:split_leftright('neocomplcache', 'compl') returns ['neo', 'cache']
-function! s:split_leftright(haystack, needle)
+function! s:split_leftright(expr, pattern)
   let ERROR = ['', '']
-  if a:haystack ==# '' || a:needle ==# ''
+  if a:expr ==# '' || a:pattern ==# ''
     return ERROR
   endif
-  let idx = stridx(a:haystack, a:needle)
-  if idx ==# -1
+  let begin = match(a:expr, a:pattern)
+  if begin is -1
     return ERROR
   endif
-  let left  = idx ==# 0 ? '' : a:haystack[: idx - 1]
-  let right = a:haystack[idx + strlen(a:needle) :]
+  let end = matchend(a:expr, a:pattern)
+  let left  = begin <=# 0 ? '' : a:expr[: begin - 1]
+  let right = a:expr[end :]
   return [left, right]
 endfunction
 

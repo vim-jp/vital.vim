@@ -87,6 +87,12 @@ Context Data.String.split_leftright()
     " No match
     Should g:S.split_leftright('neocomplcache', 'neocon') ==# ['', '']
     Should g:S.split_leftright('neocomplcache', 'neco') ==# ['', '']
+    " Pattern
+    Should g:S.split_leftright('neocomplcache', '...\zs.....') ==# ['neo', 'cache']
+    Should g:S.split_leftright('neocomplcache', '.\zs..\ze.....') ==# ['n', 'complcache']
+    Should g:S.split_leftright('neocomplcache', '........') ==# ['', 'cache']
+    Should g:S.split_leftright('neocomplcache', '........\zs....\ze.') ==# ['neocompl', 'e']
+    Should g:S.split_leftright('neocomplcache', 'neo\zscompl.....') ==# ['neo', '']
   End
 End
 
