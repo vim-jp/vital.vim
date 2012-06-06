@@ -35,8 +35,10 @@ replace_once({str}, {from}, {to})	*Vital.Data.String.replace_once()*
 scan({str}, {pattern})			*Vital.Data.String.scan()*
 	Return |List| which matched {pattern} } in {str}.
 
-split_leftright({haystack}, {needle})	*Vital.Data.String.split_leftright()*
-	Return |List| that separate with {needle} in {haystack}.
+split_leftright({expr}, {pattern})	*Vital.Data.String.split_leftright()*
+	Return |List| that contains two |String| split by {pattern}.
+    e.g.: >
+    echo Data.String.split_leftright('neocomplcache', 'neo\zs.....') == ['neo', 'cache']
 
 nsplit({expr}, {n}, [, {pattern} [, {keepempty}]])
 					*Vital.Data.String.nsplit()*
