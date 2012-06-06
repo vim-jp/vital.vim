@@ -56,9 +56,14 @@ function! s:scan(str, pattern)
 endfunction
 
 " Split to two elements of List. ([left, right])
-" e.g.: s:split_leftright('neocomplcache', 'compl') returns ['neo', 'cache']
+" e.g.: s:split3('neocomplcache', 'compl') returns ['neo', 'compl', 'cache']
 function! s:split_leftright(expr, pattern)
-  let ERROR = ['', '']
+  let [left, _, right] = s:split3(a:expr, a:pattern)
+  return [left, right]
+endfunction
+
+function! s:split3(expr, pattern)
+  let ERROR = ['', '', '']
   if a:expr ==# '' || a:pattern ==# ''
     return ERROR
   endif
@@ -66,10 +71,10 @@ function! s:split_leftright(expr, pattern)
   if begin is -1
     return ERROR
   endif
-  let end = matchend(a:expr, a:pattern)
+  let end   = matchend(a:expr, a:pattern)
   let left  = begin <=# 0 ? '' : a:expr[: begin - 1]
   let right = a:expr[end :]
-  return [left, right]
+  return [left, a:expr[begin : end-1], right]
 endfunction
 
 " Slices into strings determines the number of substrings.

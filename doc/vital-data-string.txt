@@ -40,6 +40,13 @@ split_leftright({expr}, {pattern})	*Vital.Data.String.split_leftright()*
     e.g.: >
     echo Data.String.split_leftright('neocomplcache', 'neo\zs.....') == ['neo', 'cache']
 
+split3({expr}, {pattern})	*Vital.Data.String.split3()*
+	Like |Vital.Data.String.split_leftright()|,
+    but this function returns [left, middle, right]
+    not only [left, right].
+    e.g.: >
+    echo Data.String.split3('neocomplcache', 'neo\zs.....') == ['neo', 'compl', 'cache']
+
 nsplit({expr}, {n}, [, {pattern} [, {keepempty}]])
 					*Vital.Data.String.nsplit()*
 	Behave like |split()|. Return list which is limited as {n}'th elements.

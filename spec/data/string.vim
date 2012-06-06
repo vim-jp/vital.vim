@@ -72,6 +72,30 @@ Context Data.String.scan()
   End
 End
 
+Context Data.String.split3()
+  It splits into two substrings: left/right substring next to matched string with pattern
+    Should g:S.split3('neocomplcache', 'compl') ==# ['neo', 'compl', 'cache']
+    Should g:S.split3('autocomplpop', 'compl') ==# ['auto', 'compl', 'pop']
+    Should g:S.split3('neocomplcache', 'neo') ==# ['', 'neo', 'complcache']
+    Should g:S.split3('autocomplpop', 'auto') ==# ['', 'auto', 'complpop']
+    Should g:S.split3('neocomplcache', 'cache') ==# ['neocompl', 'cache', '']
+    Should g:S.split3('autocomplpop', 'pop') ==# ['autocompl', 'pop', '']
+    " Invalid arguments
+    Should g:S.split3('', 'compl') ==# ['', '', '']
+    Should g:S.split3('neo', '') ==# ['', '', '']
+    Should g:S.split3('', '') ==# ['', '', '']
+    " No match
+    Should g:S.split3('neocomplcache', 'neocon') ==# ['', '', '']
+    Should g:S.split3('neocomplcache', 'neco') ==# ['', '', '']
+    " Pattern
+    Should g:S.split3('neocomplcache', '...\zs.....') ==# ['neo', 'compl', 'cache']
+    Should g:S.split3('neocomplcache', '.\zs..\ze.....') ==# ['n', 'eo', 'complcache']
+    Should g:S.split3('neocomplcache', '........') ==# ['', 'neocompl', 'cache']
+    Should g:S.split3('neocomplcache', '........\zs....\ze.') ==# ['neocompl', 'cach', 'e']
+    Should g:S.split3('neocomplcache', 'neo\zscompl.....') ==# ['neo', 'complcache', '']
+  End
+End
+
 Context Data.String.split_leftright()
   It splits into two substrings: left/right substring next to matched string with pattern
     Should g:S.split_leftright('neocomplcache', 'compl') ==# ['neo', 'cache']
