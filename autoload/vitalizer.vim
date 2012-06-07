@@ -81,6 +81,8 @@ function! s:all_modules()
   \          'matchstr(s:FP.unify_separator(v:val), pat)'), 'v:val!=""')
 endfunction
 function! vitalizer#vitalize(name, to, modules, hash)
+  " FIXME: Should check if a working tree is dirty.
+
   " Save current HEAD to restore a working tree later.
   let cur = s:git_current_hash()
   if a:hash ==# ''
