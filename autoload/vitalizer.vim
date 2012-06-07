@@ -17,6 +17,7 @@ let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
 let s:vital_dir = expand('<sfile>:h:h:p')
 let s:git_dir = s:vital_dir . '/.git'
+let s:changes_file = s:vital_dir . '/Changes'
 
 function! s:check_system()
   if !executable('git')
@@ -80,6 +81,32 @@ function! s:all_modules()
   return filter(map(split(glob(s:vital_dir . '/autoload/vital/**/*.vim'), "\n"),
   \          'matchstr(s:FP.unify_separator(v:val), pat)'), 'v:val!=""')
 endfunction
+function! s:get_changes()
+  let sections = split(join(readfile(s:changes_file), "\n"), '\n\ze[a-z0-9]\{7}\n')
+  let changes = {}
+  for section in sections
+    let lines = split(section, "\n")
+    let changes[lines[0]] = join(
+    \  map(lines[1:], 'matchstr(v:val, "^\\s*\\zs.*")'), "\n")
+  endfor
+  return changes
+endfunction
+function! s:show_changes(to)
+  let current = fnamemodify(split(glob(a:to . '/autoload/vital/_*'), "\n")[0], ':t')
+  if current != '__latest__'
+    let keys = split(s:git("log --format=format:%h"), "\n")
+    let pos = index(keys, current[1:])
+    if pos != -1
+      let changes = s:get_changes()
+      for n in range(pos)
+        if has_key(changes, keys[n])
+          echo keys[n]
+          echo "    " changes[keys[n]]
+        endif
+      endfor
+    endif
+  endif
+endfunction
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
 
@@ -110,6 +137,11 @@ function! vitalizer#vitalize(name, to, modules, hash)
   else
     let files = map(s:search_dependence(all_modules), 's:module2file(v:val)')
   endif
+
+  " Show critical changes.
+  " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
+  " TODO: Support changes in a limit range by passing 'hash' value.
+  call s:show_changes(a:to)
 
   " Remove previous vital.
   if isdirectory(a:to . '/autoload/vital')
