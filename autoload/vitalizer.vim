@@ -111,12 +111,12 @@ function! vitalizer#vitalize(name, to, modules, hash)
   if filereadable(a:to . '/autoload/vital.vim')
     call delete(a:to . '/autoload/vital.vim')
   endif
-  let shash = hash[: s:HASH_SIZE]
+  let short_hash = hash[: s:HASH_SIZE]
   for f in files + s:REQUIRED_FILES
-    let after = substitute(f, '__latest__', '_' . shash, '')
+    let after = substitute(f, '__latest__', '_' . short_hash, '')
     call s:copy(s:vital_dir . '/' . f, a:to . '/' . after)
   endfor
-  call writefile([shash, ''] + all_modules, vital_file)
+  call writefile([short_hash, ''] + all_modules, vital_file)
   if exists('cur')
     call s:git_checkout(cur)
   endif
