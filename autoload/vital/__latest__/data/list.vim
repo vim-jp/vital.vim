@@ -3,6 +3,23 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:pop(list)
+  return remove(a:list, -1)
+endfunction
+
+function! s:push(list, val)
+  call add(a:list, a:val)
+  return a:list
+endfunction
+
+function! s:shift(list)
+  return remove(a:list, 0)
+endfunction
+
+function! s:unshift(list, val)
+  return insert(a:list, a:val)
+endfunction
+
 " Removes duplicates from a list.
 function! s:uniq(list, ...)
   let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)

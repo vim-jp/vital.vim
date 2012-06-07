@@ -2,6 +2,50 @@ source spec/base.vim
 
 let g:L = vital#of('vital').import('Data.List')
 
+Context Data.List.pop()
+  It removes the last element from a list and returns that element
+    Should 3 == g:L.pop([1, 2, 3])
+    Should 9 == g:L.pop(range(10))
+  End
+  It causes an error when the list is empty
+    try
+      call g:L.pop([])
+      Should 0
+    catch /^Vim(\w*):E684:/
+      Should 1
+    endtry
+  End
+End
+
+Context Data.List.push()
+  It appends an element to a list and returns the list itself
+    Should [1, 2, 3, 4] == g:L.push([1, 2, 3], 4)
+    Should [7, 8, 9, 10] == g:L.push(range(7, 9), 10)
+  End
+End
+
+Context Data.List.shift()
+  It removes the first element from a list and returns that element
+    Should 1 == g:L.shift([1, 2, 3])
+    Should 0 == g:L.shift(range(10))
+  End
+  It causes an error when the list is empty
+    try
+      call g:L.shift([])
+      Should 0
+    catch /^Vim(\w*):E684:/
+      Should 1
+    endtry
+  End
+End
+
+Context Data.List.unshift()
+  It inserts an element to the head of a list and returns the list itself
+    Should [4, 1, 2, 3] == g:L.unshift([1, 2, 3], 4)
+    Should [10, 7, 8, 9] == g:L.unshift(range(7, 9), 10)
+  End
+End
+
 Context Data.List.uniq()
   It makes a list unique
     Should ['vim', 'emacs'] == g:L.uniq(['vim', 'emacs', 'vim', 'vim'])

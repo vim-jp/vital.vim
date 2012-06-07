@@ -18,6 +18,18 @@ INTERFACE				*Vital.Data.List-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Data.List-functions*
 
+pop({list})				*Vital.Data.List.pop()*
+	Removes the last element from a list and returns that element.
+
+push({list}, {val})			*Vital.Data.List.push()*
+	Appends {val} to {list} and returns the list itself.
+
+shift({list})				*Vital.Data.List.shift()*
+	Removes the first element from a list and returns that element.
+
+unshift({list}, {val})			*Vital.Data.List.unshift()*
+	Inserts {val} to the head of {list} and returns the list itself.
+
 uniq({list})				*Vital.Data.List.uniq()*
 	Removes duplicates elements from {list}, nondestructively. In
 	particular, it keeps only the first occurrence of each element.
