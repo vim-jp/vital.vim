@@ -100,8 +100,8 @@ function! s:show_changes(to)
       let changes = s:get_changes()
       for n in range(pos)
         if has_key(changes, keys[n])
-          echo keys[n]
-          echo "    " changes[keys[n]]
+          echomsg keys[n]
+          echomsg "    " changes[keys[n]]
         endif
       endfor
     endif
