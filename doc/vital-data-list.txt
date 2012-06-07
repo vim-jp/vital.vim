@@ -96,13 +96,13 @@ or({xs})				*Vital.Data.List.or()*
 foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 	Behaves like Haskell's Data.List.foldl().
 
-foldl1({f}, {init}, {xs})		*Vital.Data.List.foldl1()*
-	Behaves like Haskell's Data.List.foldl().
+foldl1({f}, {xs})			*Vital.Data.List.foldl1()*
+	Behaves like Haskell's Data.List.foldl1().
 
 foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
 	Behaves like Haskell's Data.List.foldr().
 
-foldr1({f}, {init}, {xs})		*Vital.Data.List.foldr1()*
+foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
 	Behaves like Haskell's Data.List.foldr1().
 
 zip(...)				*Vital.Data.List.zip()*
