@@ -81,6 +81,7 @@ function! s:all_modules()
   \          'matchstr(s:FP.unify_separator(v:val), pat)'), 'v:val!=""')
 endfunction
 function! vitalizer#vitalize(name, to, modules, hash)
+  " Save current HEAD to restore a working tree later.
   let cur = s:git_current_hash()
   if a:hash ==# ''
     let hash = cur
@@ -91,6 +92,8 @@ function! vitalizer#vitalize(name, to, modules, hash)
   else
     unlet cur
   endif
+
+  " Determine installing modules.
   let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
   if !empty(a:modules)
     let all_modules = a:modules + s:REQUIRED_MODULES
@@ -105,18 +108,24 @@ function! vitalizer#vitalize(name, to, modules, hash)
   else
     let files = map(s:search_dependence(all_modules), 's:module2file(v:val)')
   endif
+
+  " Remove previous vital.
   if isdirectory(a:to . '/autoload/vital')
     call s:F.rmdir(a:to . '/autoload/vital', 'rf')
   endif
   if filereadable(a:to . '/autoload/vital.vim')
     call delete(a:to . '/autoload/vital.vim')
   endif
+
+  " Install vital.
   let short_hash = hash[: s:HASH_SIZE]
   for f in files + s:REQUIRED_FILES
     let after = substitute(f, '__latest__', '_' . short_hash, '')
     call s:copy(s:vital_dir . '/' . f, a:to . '/' . after)
   endfor
   call writefile([short_hash, ''] + all_modules, vital_file)
+
+  " Go back to HEAD if previously checked-out.
   if exists('cur')
     call s:git_checkout(cur)
   endif
