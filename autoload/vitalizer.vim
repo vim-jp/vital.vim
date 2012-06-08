@@ -91,21 +91,22 @@ function! s:get_changes()
   endfor
   return changes
 endfunction
-function! s:show_changes(to)
-  let current = fnamemodify(split(glob(a:to . '/autoload/vital/_*'), "\n")[0], ':t')
-  if current != '__latest__'
-    let keys = split(s:git("log --format=format:%h"), "\n")
-    let pos = index(keys, current[1:])
-    if pos != -1
-      let changes = s:get_changes()
-      for n in range(pos)
-        if has_key(changes, keys[n])
-          echomsg keys[n]
-          echomsg "    " changes[keys[n]]
-        endif
-      endfor
-    endif
+function! s:show_changes(name, to)
+  let ver = readfile(a:to . '/autoload/vital/' . a:name . '.vital', 'b')
+  let current = substitute(ver[0], '\W', '', 'g')
+  let confirm_required = 0
+  if current != '_latest__'
+    let keys = split(s:git(printf("log --format=format:%%h %s..HEAD", current)), "\n")
+    let changes = s:get_changes()
+    for key in keys
+      if has_key(changes, key)
+        echomsg key
+        echomsg join(map(split(changes[key], "\n"), '"    ".v:val'))
+        let confirm_required = 1
+      endif
+    endfor
   endif
+  return confirm_required
 endfunction
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
@@ -141,7 +142,15 @@ function! vitalizer#vitalize(name, to, modules, hash)
   " Show critical changes.
   " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
   " TODO: Support changes in a limit range by passing 'hash' value.
-  call s:show_changes(a:to)
+  if s:show_changes(a:name, a:to)
+    echohl WarningMsg
+    echomsg "*** WARNING *** There are critical changes from previous vital you installed."
+    echohl None
+    if confirm("Would you like to install a new version?", "&Y\n&n", "Y")
+      echomsg "Canceled"
+      return
+    endif
+  endif
 
   " Remove previous vital.
   if isdirectory(a:to . '/autoload/vital')
