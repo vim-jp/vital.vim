@@ -128,11 +128,6 @@ function! vitalizer#vitalize(name, to, modules, hash)
     let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
     if !filereadable(vital_file) && glob(a:to . '/autoload/vital/*.vital', 1) != ''
       let vital_file = split(glob(a:to . '/autoload/vital/*.vital', 1), '\n')[0]
-    else
-      echohl Error
-      echomsg "error: could not find .vital file in '".a:to."'."
-      echohl None
-      return
     endif
 
     " Determine installing modules.
