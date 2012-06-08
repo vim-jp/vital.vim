@@ -13,17 +13,17 @@ let s:is_mac = !s:is_windows
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!executable('xdg-open') && system('uname') =~? '^darwin'))
 
-" Get the path separator.
+" Get the directory separator.
 function! s:separator()
   return !exists('+shellslash') || &shellslash ? '/' : '\'
 endfunction
 
-" Convert all path separators to "/".
+" Convert all directory separators to "/".
 function! s:unify_separator(path)
   return substitute(a:path, s:path_sep_pattern, '/', 'g')
 endfunction
 
-" Split the path with path separator.
+" Split the path with directory separator.
 " Note that this includes the drive letter of MS Windows.
 function! s:split(path)
   return split(a:path, s:path_sep_pattern)

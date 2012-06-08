@@ -19,10 +19,10 @@ INTERFACE				*Vital.System.Filepath-interface*
 FUNCTIONS				*Vital.System.Filepath-functions*
 
 separator()				*Vital.System.Filepath.separator()*
-	Return OS related path separator as string.
+	Return OS related directory separator as string.
 
 unify_separator({path})			*Vital.System.Filepath.unify_separator()*
-	Return path string replaced all path separators with '/'.
+	Return path string replaced all directory separators with '/'.
 
 split({path})				*Vital.System.Filepath.split()*
 	Return |List| of elements in {path} string.
@@ -34,7 +34,7 @@ dirname({path})				 *Vital.System.Filepath.dirname()*
 	Return directory name from {path}.
 
 remove_last_separator({path})	 *Vital.System.Filepath.remove_last_separator()*
-	Remove last path separator if exists.
+	Remove last directory separator if exists.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
