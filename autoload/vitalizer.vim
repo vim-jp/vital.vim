@@ -123,65 +123,67 @@ function! vitalizer#vitalize(name, to, modules, hash)
     unlet cur
   endif
 
-  " Search *.vital file in a target directory.
-  let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
-  if !filereadable(vital_file) && glob(a:to . '/autoload/vital/*.vital') != ''
-    let vital_file = split(glob(a:to . '/autoload/vital/*.vital'), '\n')[0]
-  else
-    echohl Error
-    echomsg "error: could not find .vital file in '".a:to."'."
-    echohl None
-    return
-  endif
-
-  " Determine installing modules.
-  if !empty(a:modules)
-    let all_modules = a:modules + s:REQUIRED_MODULES
-  elseif filereadable(vital_file)
-    let all_modules = readfile(vital_file)[2 :]
-  else
-    let all_modules = []
-  endif
-  let all_modules = s:L.uniq(all_modules)
-  if empty(all_modules)
-    let files = s:all_modules()
-  else
-    let files = map(s:search_dependence(all_modules), 's:module2file(v:val)')
-  endif
-
-  " Show critical changes.
-  " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
-  " TODO: Support changes in a limit range by passing 'hash' value.
-  if s:show_changes(vital_file)
-    echohl WarningMsg
-    echomsg "*** WARNING *** There are critical changes from previous vital you installed."
-    echohl None
-    if confirm("Would you like to install a new version?", "&Y\n&n", "Y")
-      echomsg "Canceled"
+  try
+    " Search *.vital file in a target directory.
+    let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
+    if !filereadable(vital_file) && glob(a:to . '/autoload/vital/*.vital') != ''
+      let vital_file = split(glob(a:to . '/autoload/vital/*.vital'), '\n')[0]
+    else
+      echohl Error
+      echomsg "error: could not find .vital file in '".a:to."'."
+      echohl None
       return
     endif
-  endif
 
-  " Remove previous vital.
-  if isdirectory(a:to . '/autoload/vital')
-    call s:F.rmdir(a:to . '/autoload/vital', 'rf')
-  endif
-  if filereadable(a:to . '/autoload/vital.vim')
-    call delete(a:to . '/autoload/vital.vim')
-  endif
+    " Determine installing modules.
+    if !empty(a:modules)
+      let all_modules = a:modules + s:REQUIRED_MODULES
+    elseif filereadable(vital_file)
+      let all_modules = readfile(vital_file)[2 :]
+    else
+      let all_modules = []
+    endif
+    let all_modules = s:L.uniq(all_modules)
+    if empty(all_modules)
+      let files = s:all_modules()
+    else
+      let files = map(s:search_dependence(all_modules), 's:module2file(v:val)')
+    endif
 
-  " Install vital.
-  let short_hash = hash[: s:HASH_SIZE]
-  for f in files + s:REQUIRED_FILES
-    let after = substitute(f, '__latest__', '_' . short_hash, '')
-    call s:copy(s:vital_dir . '/' . f, a:to . '/' . after)
-  endfor
-  call writefile([short_hash, ''] + all_modules, vital_file)
+    " Show critical changes.
+    " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
+    " TODO: Support changes in a limit range by passing 'hash' value.
+    if s:show_changes(vital_file)
+      echohl WarningMsg
+      echomsg "*** WARNING *** There are critical changes from previous vital you installed."
+      echohl None
+      if confirm("Would you like to install a new version?", "&Y\n&n", "Y")
+        echomsg "Canceled"
+        return
+      endif
+    endif
 
-  " Go back to HEAD if previously checked-out.
-  if exists('cur')
-    call s:git_checkout(cur)
-  endif
+    " Remove previous vital.
+    if isdirectory(a:to . '/autoload/vital')
+      call s:F.rmdir(a:to . '/autoload/vital', 'rf')
+    endif
+    if filereadable(a:to . '/autoload/vital.vim')
+      call delete(a:to . '/autoload/vital.vim')
+    endif
+
+    " Install vital.
+    let short_hash = hash[: s:HASH_SIZE]
+    for f in files + s:REQUIRED_FILES
+      let after = substitute(f, '__latest__', '_' . short_hash, '')
+      call s:copy(s:vital_dir . '/' . f, a:to . '/' . after)
+    endfor
+    call writefile([short_hash, ''] + all_modules, vital_file)
+  finally
+    " Go back to HEAD if previously checked-out.
+    if exists('cur')
+      call s:git_checkout(cur)
+    endif
+  endtry
 endfunction
 function! vitalizer#complete(arglead, cmdline, cursorpos)
   let options = ['--init', '--name=', '--hash=', '--help']
@@ -220,7 +222,7 @@ function! vitalizer#command(args)
     elseif option =~ '^--hash=\S'
       let hash = option[7:]
     else
-      echohl Error | echomsg "Invalid argument" | echohl None
+      echohl Error | echomsg "Invalid argument: ".option | echohl None
       return
     endif
   endfor
