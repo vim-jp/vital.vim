@@ -78,7 +78,7 @@ function! s:file2module(file)
 endfunction
 function! s:all_modules()
   let pat = '^.*\zs\<autoload/vital/.*'
-  return filter(map(split(glob(s:vital_dir . '/autoload/vital/**/*.vim'), "\n"),
+  return filter(map(split(glob(s:vital_dir . '/autoload/vital/**/*.vim', 1), "\n"),
   \          'matchstr(s:FP.unify_separator(v:val), pat)'), 'v:val!=""')
 endfunction
 function! s:get_changes()
@@ -126,8 +126,8 @@ function! vitalizer#vitalize(name, to, modules, hash)
   try
     " Search *.vital file in a target directory.
     let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
-    if !filereadable(vital_file) && glob(a:to . '/autoload/vital/*.vital') != ''
-      let vital_file = split(glob(a:to . '/autoload/vital/*.vital'), '\n')[0]
+    if !filereadable(vital_file) && glob(a:to . '/autoload/vital/*.vital', 1) != ''
+      let vital_file = split(glob(a:to . '/autoload/vital/*.vital', 1), '\n')[0]
     else
       echohl Error
       echomsg "error: could not find .vital file in '".a:to."'."
@@ -194,7 +194,7 @@ function! vitalizer#complete(arglead, cmdline, cursorpos)
     return filter(map(s:all_modules(), 's:file2module(v:val)'),
     \  'stridx(v:val, a:arglead)!=-1')
   else
-    return map(filter(split(glob(a:arglead . "*"), "\n"),
+    return map(filter(split(glob(a:arglead . "*", 1), "\n"),
     \  'isdirectory(v:val)'), 'escape(v:val, " ")')
   endif
 endfunction
