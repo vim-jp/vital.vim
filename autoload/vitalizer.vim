@@ -91,8 +91,8 @@ function! s:get_changes()
   endfor
   return changes
 endfunction
-function! s:show_changes(name, to)
-  let ver = readfile(a:to . '/autoload/vital/' . a:name . '.vital', 'b')
+function! s:show_changes(vital_file)
+  let ver = readfile(a:vital_file, 'b')
   let current = substitute(ver[0], '\W', '', 'g')
   let confirm_required = 0
   if current != '_latest__'
@@ -123,8 +123,18 @@ function! vitalizer#vitalize(name, to, modules, hash)
     unlet cur
   endif
 
-  " Determine installing modules.
+  " Search *.vital file in a target directory.
   let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
+  if !filereadable(vital_file) && glob(a:to . '/autoload/vital/*.vital') != ''
+    let vital_file = split(glob(a:to . '/autoload/vital/*.vital'), '\n')[0]
+  else
+    echohl Error
+    echomsg "error: could not find .vital file in '".a:to."'."
+    echohl None
+    return
+  endif
+
+  " Determine installing modules.
   if !empty(a:modules)
     let all_modules = a:modules + s:REQUIRED_MODULES
   elseif filereadable(vital_file)
@@ -142,7 +152,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
   " Show critical changes.
   " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
   " TODO: Support changes in a limit range by passing 'hash' value.
-  if s:show_changes(a:name, a:to)
+  if s:show_changes(vital_file)
     echohl WarningMsg
     echomsg "*** WARNING *** There are critical changes from previous vital you installed."
     echohl None
