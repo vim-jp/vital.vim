@@ -126,8 +126,9 @@ function! vitalizer#vitalize(name, to, modules, hash)
   try
     " Search *.vital file in a target directory.
     let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
-    if !filereadable(vital_file) && glob(a:to . '/autoload/vital/*.vital', 1) != ''
-      let vital_file = split(glob(a:to . '/autoload/vital/*.vital', 1), '\n')[0]
+    let filelist = glob(a:to . '/autoload/vital/*.vital', 1)
+    if !filereadable(vital_file) && filelist != ''
+      let vital_file = split(filelist, '\n')[0]
     endif
 
     " Determine installing modules.
