@@ -18,6 +18,12 @@ function! s:separator()
   return !exists('+shellslash') || &shellslash ? '/' : '\'
 endfunction
 
+" Get the path separator.
+let s:path_separator = s:is_windows ? ';' : ':'
+function! s:path_separator()
+  return s:path_separator
+endfunction
+
 " Convert all directory separators to "/".
 function! s:unify_separator(path)
   return substitute(a:path, s:path_sep_pattern, '/', 'g')

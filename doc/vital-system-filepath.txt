@@ -21,6 +21,9 @@ FUNCTIONS				*Vital.System.Filepath-functions*
 separator()				*Vital.System.Filepath.separator()*
 	Return OS related directory separator as string.
 
+path_separator()			*Vital.System.Filepath.path_separator()*
+	Return OS related path separator as string.
+
 unify_separator({path})			*Vital.System.Filepath.unify_separator()*
 	Return path string replaced all directory separators with '/'.
 
