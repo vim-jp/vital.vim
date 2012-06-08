@@ -148,7 +148,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Show critical changes.
     " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
     " TODO: Support changes in a limit range by passing 'hash' value.
-    if s:show_changes(vital_file)
+    if filereadable(vital_file) && s:show_changes(vital_file)
       echohl WarningMsg
       echomsg "*** WARNING *** There are critical changes from previous vital you installed."
       echohl None
