@@ -92,8 +92,8 @@ function! s:get_changes()
   return changes
 endfunction
 function! s:show_changes(vital_file)
-  let ver = readfile(a:vital_file, 'b')
-  let current = substitute(ver[0], '\W', '', 'g')
+  let [ver] = readfile(a:vital_file, 'b', 1)
+  let current = substitute(ver, '\W', '', 'g')
   let confirm_required = 0
   if current != '_latest__'
     let keys = split(s:git(printf("log --format=format:%%h %s..HEAD", current)), "\n")
