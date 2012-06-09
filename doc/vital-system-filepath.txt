@@ -18,29 +18,29 @@ INTERFACE				*Vital.System.Filepath-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.System.Filepath-functions*
 
-separator()				*Vital.System.Filepath.separator()*
+separator()			*Vital.System.Filepath.separator()*
 	Return OS related directory separator as string.
 
-path_separator()			*Vital.System.Filepath.path_separator()*
+path_separator()		*Vital.System.Filepath.path_separator()*
 	Return OS related path separator as string.
 
-unify_separator({path})			*Vital.System.Filepath.unify_separator()*
+unify_separator({path})		*Vital.System.Filepath.unify_separator()*
 	Return path string replaced all directory separators with '/'.
 
-which({command} [, {path}])		*Vital.System.Filepath.which()*
+which({command} [, {path}])	*Vital.System.Filepath.which()*
 	Returns the full path of {command}.  This searches from {path} or
 	$PATH.  If the command is not found, returns empty string.
 
-split({path})				*Vital.System.Filepath.split()*
+split({path})			*Vital.System.Filepath.split()*
 	Return |List| of elements in {path} string.
 
-join({args}...)				 *Vital.System.Filepath.join()*
+join({args}...)			 *Vital.System.Filepath.join()*
 	Join the path in {args}.
 
-dirname({path})				 *Vital.System.Filepath.dirname()*
+dirname({path})			 *Vital.System.Filepath.dirname()*
 	Return directory name from {path}.
 
-remove_last_separator({path})	 *Vital.System.Filepath.remove_last_separator()*
+remove_last_separator({path})  *Vital.System.Filepath.remove_last_separator()*
 	Remove last directory separator if exists.
 
 ==============================================================================
