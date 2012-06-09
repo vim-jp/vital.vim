@@ -47,6 +47,9 @@ or
 
 We recommend you to use a capital letter for a the Vital module dictionary to assign.
 
+## If you want to become a vital commiter
+[Become a vital.vim Developer](https://github.com/vim-jp/vital.vim/wiki/Become-a-vital.vim-Developer)
+
 ## References
 
 * [Delegation in Vim script](http://ujihisa.blogspot.com/2011/02/delegation-in-vim-script.html)
