@@ -27,6 +27,10 @@ path_separator()			*Vital.System.Filepath.path_separator()*
 unify_separator({path})			*Vital.System.Filepath.unify_separator()*
 	Return path string replaced all directory separators with '/'.
 
+which({command} [, {path}])		*Vital.System.Filepath.which()*
+	Returns the full path of {command}.  This searches from {path} or
+	$PATH.  If the command is not found, returns empty string.
+
 split({path})				*Vital.System.Filepath.split()*
 	Return |List| of elements in {path} string.
 

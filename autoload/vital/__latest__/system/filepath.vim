@@ -29,6 +29,28 @@ function! s:unify_separator(path)
   return substitute(a:path, s:path_sep_pattern, '/', 'g')
 endfunction
 
+" Get the full path of command.
+function! s:which(command, ...)
+  let pathlist = a:command =~# s:path_sep_pattern ? ['.'] :
+  \              !a:0                  ? split($PATH, s:path_separator) :
+  \              type(a:1) == type([]) ? copy(a:1) :
+  \                                      split(a:1, s:path_separator)
+  let pathext = s:is_windows ? split($PATHEXT, s:path_separator)
+  \                          : ['']
+
+  let dirsep = s:separator()
+  for dir in pathlist
+    for ext in pathext
+      let full = fnamemodify(dir . dirsep . a:command . ext, ':p')
+      if filereadable(full)
+        return glob(substitute(toupper(full), '\u:\@!', '[\0\L\0]', 'g'))
+      endif
+    endfor
+  endfor
+
+  return ''
+endfunction
+
 " Split the path with directory separator.
 " Note that this includes the drive letter of MS Windows.
 function! s:split(path)
