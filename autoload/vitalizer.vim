@@ -82,6 +82,9 @@ function! s:all_modules()
   \          'matchstr(s:FP.unify_separator(v:val), pat)'), 'v:val!=""')
 endfunction
 function! s:get_changes()
+  if !filereadable(s:changes_file)
+    return {}
+  endif
   let sections = split(join(readfile(s:changes_file), "\n"), '\n\ze[a-z0-9]\{7}\n')
   let changes = {}
   for section in sections
