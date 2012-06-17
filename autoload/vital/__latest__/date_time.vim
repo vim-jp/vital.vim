@@ -599,10 +599,10 @@ function! s:_weekday_full(locale)
   return s:weekday_names(1, a:locale)
 endfunction
 function! s:_am_pm_lower(locale)
-  return s:am_pm_names(0, a:locale)
+  return s:am_pm_names(1, a:locale)
 endfunction
 function! s:_am_pm_upper(locale)
-  return s:am_pm_names(1, a:locale)
+  return s:am_pm_names(0, a:locale)
 endfunction
 
 " key = descriptor
