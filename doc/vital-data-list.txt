@@ -93,6 +93,9 @@ break({f}, {xs})			*Vital.Data.List.break()*
 	:echo s:list.span("v:val==1", [1,2])
 	[[1]]
 <
+partition({f}, {xs})			*Vital.Data.List.partition()*
+	Behaves like Haskell's Data.List.partition().
+
 all({f}, {xs})				*Vital.Data.List.all()*
 	Behaves like Haskell's Prelude.all().
 

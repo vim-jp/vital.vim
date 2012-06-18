@@ -102,6 +102,12 @@ Context Data.List.break()
   End
 End
 
+Context Data.List.partition()
+  It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate.
+    Should [[0, 2, 4], [1, 3]] == g:L.partition('v:val % 2 == 0', range(5))
+  End
+End
+
 Context Data.List.all()
   It returns true if all items in the list fulfill the condition.
     Should g:L.all('v:val % 2 == 0', [2, 8, 4, 6])
