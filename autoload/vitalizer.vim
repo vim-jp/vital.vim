@@ -136,17 +136,18 @@ function! vitalizer#vitalize(name, to, modules, hash)
 
     " Determine installing modules.
     if !empty(a:modules)
-      let all_modules = a:modules + s:REQUIRED_MODULES
+      let all_modules = a:modules
     elseif filereadable(vital_file)
       let all_modules = readfile(vital_file)[2 :]
     else
       let all_modules = []
     endif
-    let all_modules = s:L.uniq(all_modules)
     if empty(all_modules)
       let files = s:all_modules()
     else
-      let files = map(s:search_dependence(all_modules), 's:module2file(v:val)')
+      let all_modules = s:L.uniq(all_modules)
+      let files = map(s:search_dependence(all_modules + s:REQUIRED_MODULES),
+      \               's:module2file(v:val)')
     endif
 
     " Show critical changes.
