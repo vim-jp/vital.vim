@@ -31,7 +31,11 @@ COMMANDS					*vitalizer-commands*
 	The Prelude module(|Vital.Prelude|) is always included.
 	List of {module} is recorded to your Vital.  This is used after next
 	time if {module} is omitted.
-
+	You can use +/- prefix to {module}.  This adds or removes the
+	specified module.
+>
+	:Vitalize path/to/plugin +Web.Http -DateTime
+<
 	options ~
 	--init
 		Uses all modules forcely.

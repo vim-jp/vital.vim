@@ -135,12 +135,23 @@ function! vitalizer#vitalize(name, to, modules, hash)
     endif
 
     " Determine installing modules.
-    if !empty(a:modules)
-      let all_modules = a:modules
-    elseif filereadable(vital_file)
+    let all_modules = []
+    if filereadable(vital_file)
       let all_modules = readfile(vital_file)[2 :]
-    else
-      let all_modules = []
+    endif
+    if !empty(a:modules)
+      let [diff, modules] = s:L.partition('v:val =~# "^[+-]"', a:modules)
+      if !empty(modules)
+        let all_modules = modules
+      endif
+      for entry in diff
+        let module = entry[1 :]
+        if entry[0] ==# '+'
+          let all_modules += [module]
+        else
+          call filter(all_modules, 'v:val !=# module')
+        endif
+      endfor
     endif
     if empty(all_modules)
       let files = s:all_modules()
