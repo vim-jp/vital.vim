@@ -62,4 +62,4 @@ Tatsuhiro Ujihisa
 
 ## License
 
-NYSL
+[NYSL]<http://www.kmonos.net/nysl/>
