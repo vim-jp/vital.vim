@@ -59,3 +59,7 @@ We recommend you to use a capital letter for a the Vital module dictionary to as
 ## Author
 
 Tatsuhiro Ujihisa
+
+## License
+
+NYSL
