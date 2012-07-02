@@ -35,8 +35,12 @@ function! s:which(command, ...)
   \              !a:0                  ? split($PATH, s:path_separator) :
   \              type(a:1) == type([]) ? copy(a:1) :
   \                                      split(a:1, s:path_separator)
-  if s:is_windows
-    let pathext = map(split($PATHEXT, s:path_separator), 'tolower(v:val)')
+  if s:is_windows || s:is_cygwin
+    if s:is_windows
+      let pathext = map(split($PATHEXT, s:path_separator), 'tolower(v:val)')
+    else
+      let pathext = ['', '.exe']
+    endif
     if index(pathext, '.' . tolower(fnamemodify(a:command, ':e'))) != -1
       let pathext = ['']
     endif
@@ -49,7 +53,10 @@ function! s:which(command, ...)
     for ext in pathext
       let full = fnamemodify(dir . dirsep . a:command . ext, ':p')
       if filereadable(full)
-        return glob(substitute(toupper(full), '\u:\@!', '[\0\L\0]', 'g'), 1)
+        let full = glob(substitute(toupper(full), '\u:\@!', '[\0\L\0]', 'g'), 1)
+        if full != ''
+          return full
+        endif
       endif
     endfor
   endfor
