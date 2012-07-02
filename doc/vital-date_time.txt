@@ -24,8 +24,8 @@ INTRODUCTION				*Vital.DateTime-introduction*
 *Vital.DateTime* is a date and time library.
 
 - This library uses proleptic Gregorian calendar.
-- Don't treat DST(summer time).
-- Don't treat leap second.
+- Doesn't treat DST(summer time).
+- Doesn't treat leap second.
 
 
 ==============================================================================
@@ -36,27 +36,32 @@ FUNCTIONS				*Vital.DateTime-functions*
 
 now([{timezone}])			*Vital.DateTime.now()*
 	Creates a new DateTime object with now time.
+	See |Vital.DateTime-DateTime| about DateTime object.
 	See |Vital.DateTime.timezone()| about {timezone}.
 
 					*Vital.DateTime.from_unix_time()*
 from_unix_time({unix-time} [, {timezone}])
 	Creates a new DateTime object from {unix-time}.
+	See |Vital.DateTime-DateTime| about DateTime object.
 	See |Vital.DateTime.timezone()| about {timezone}.
 
 					*Vital.DateTime.from_date()*
 from_date([{year} [, {month} [, {day}
           [, {hour} [, {minute} [, {second} [, {timezone}]]]]]]])
 	Creates a new DateTime object from date info.
+	See |Vital.DateTime-DateTime| about DateTime object.
 	See |Vital.DateTime.timezone()| about {timezone}.
 
 					*Vital.DateTime.from_format()*
 from_format({string}, {format} [, {locale}])
 	Creates a new DateTime object from format.
+	See |Vital.DateTime-DateTime| about DateTime object.
 	See |Vital.DateTime-format| about {format}.
 
 from_julian_day({jd} [, {timezone}])	*Vital.DateTime.from_julian_day()*
 	Creates a new DateTime object from Julian day.
 	{jd} accepts |Float| value.
+	See |Vital.DateTime-DateTime| about DateTime object.
 	See |Vital.DateTime.timezone()| about {timezone}.
 
 timezone([{timezone}])			*Vital.DateTime.timezone()*
@@ -68,6 +73,7 @@ timezone([{timezone}])			*Vital.DateTime.timezone()*
 	- A string like "+09:00"
 	- TimeZone object.
 	  - Returns it directly.
+	See |Vital.DateTime-TimeZone| about TimeZone object.
 
 delta()					*Vital.DateTime.delta()*
 delta({days}, {seconds})
