@@ -27,26 +27,22 @@ endfunction
 " Get the path extensions
 function! s:path_extensions()
   if !exists('s:path_extensions')
-    let s:path_extensions = s:_path_extensions()
+    if s:is_windows
+      if exists('$PATHEXT')
+        let pathext = $PATHEXT
+      else
+        " get default PATHEXT
+        let pathext = matchstr(system('set pathext'), '^pathext=\zs.*\ze\n', 'i')
+      endif
+      let s:path_extensions = map(split(pathext, s:path_separator), 'tolower(v:val)')
+    elseif s:is_cygwin
+      " cygwin is not use $PATHEXT
+      let s:path_extensions = ['', '.exe']
+    else
+      let s:path_extensions = ['']
+    endif
   endif
   return s:path_extensions
-endfunction
-
-function! s:_path_extensions()
-  if s:is_windows
-    if exists('$PATHEXT')
-      let pathext = $PATHEXT
-    else
-      " get default PATHEXT
-      let pathext = matchstr(system('set pathext'), '^pathext=\zs.*\ze\n', 'i')
-    endif
-    return map(split(pathext, s:path_separator), 'tolower(v:val)')
-  elseif s:is_cygwin
-    " cygwin is not use $PATHEXT
-    return ['', '.exe']
-  else
-    return ['']
-  endif
 endfunction
 
 " Convert all directory separators to "/".
