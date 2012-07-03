@@ -24,6 +24,27 @@ function! s:path_separator()
   return s:path_separator
 endfunction
 
+" Get the path extensions
+function! s:path_extensions()
+  if !exists('s:path_extensions')
+    if s:is_windows
+      if exists('$PATHEXT')
+        let pathext = $PATHEXT
+      else
+        " get default PATHEXT
+        let pathext = matchstr(system('set pathext'), '^pathext=\zs.*\ze\n', 'i')
+      endif
+      let s:path_extensions = map(split(pathext, s:path_separator), 'tolower(v:val)')
+    elseif s:is_cygwin
+      " cygwin is not use $PATHEXT
+      let s:path_extensions = ['', '.exe']
+    else
+      let s:path_extensions = ['']
+    endif
+  endif
+  return s:path_extensions
+endfunction
+
 " Convert all directory separators to "/".
 function! s:unify_separator(path)
   return substitute(a:path, s:path_sep_pattern, '/', 'g')
@@ -35,16 +56,9 @@ function! s:which(command, ...)
   \              !a:0                  ? split($PATH, s:path_separator) :
   \              type(a:1) == type([]) ? copy(a:1) :
   \                                      split(a:1, s:path_separator)
-  if s:is_windows || s:is_cygwin
-    if s:is_windows
-      let pathext = map(split($PATHEXT, s:path_separator), 'tolower(v:val)')
-    else
-      let pathext = ['', '.exe']
-    endif
-    if index(pathext, '.' . tolower(fnamemodify(a:command, ':e'))) != -1
-      let pathext = ['']
-    endif
-  else
+
+  let pathext = s:path_extensions()
+  if index(pathext, '.' . tolower(fnamemodify(a:command, ':e'))) != -1
     let pathext = ['']
   endif
 
