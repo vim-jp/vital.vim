@@ -314,16 +314,18 @@ function! s:path2project_directory(path, ...)"{{{
   return s:substitute_path_separator(directory)
 endfunction"}}}
 " Check vimproc."{{{
-let s:exists_vimproc = globpath(&rtp, 'autoload/vimproc.vim') != ''
-try
-  call vimproc#version()
-catch
-  let s:exists_vimproc = 0
-endtry
-"}}}
 function! s:has_vimproc()"{{{
+  if !exists('s:exists_vimproc')
+    try
+      call vimproc#version()
+      let s:exists_vimproc = 1
+    catch
+      let s:exists_vimproc = 0
+    endtry
+  endif
   return s:exists_vimproc
 endfunction"}}}
+"}}}
 function! s:system(str, ...)"{{{
   let command = a:str
   let input = a:0 >= 1 ? a:1 : ''
