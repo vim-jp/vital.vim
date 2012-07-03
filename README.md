@@ -62,4 +62,15 @@ Tatsuhiro Ujihisa
 
 ## License
 
-[NYSL]<http://www.kmonos.net/nysl/>
+[NYSL](http://www.kmonos.net/nysl/)
+
+### What's NYSL? and Why?
+
+NYSL is a very loose license like a [Beer License](http://en.wikipedia.org/wiki/Beerware), or more like [WTFPL](http://en.wikipedia.org/wiki/WTFPL).
+See [NYSL](http://www.kmonos.net/nysl/NYSL.TXT) for details.  (English and Japanese)
+
+vital.vim is a bundling(static) library.
+We think everyone should use it easily, without the care about license.
+That's why we choose NYSL.
+
+(See <https://github.com/vim-jp/vital.vim/issues/26> about the discussion.)
