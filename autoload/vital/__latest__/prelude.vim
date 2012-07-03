@@ -315,6 +315,11 @@ function! s:path2project_directory(path, ...)"{{{
 endfunction"}}}
 " Check vimproc."{{{
 let s:exists_vimproc = globpath(&rtp, 'autoload/vimproc.vim') != ''
+try
+  call vimproc#version()
+catch
+  let s:exists_vimproc = 0
+endtry
 "}}}
 function! s:has_vimproc()"{{{
   return s:exists_vimproc
