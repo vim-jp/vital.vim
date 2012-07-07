@@ -137,7 +137,7 @@ endfunction
 
 " Return true if filesystem ignores alphabetic case of a filename.
 " Return false otherwise.
-let s:is_case_tolerant = s:is_windows || s:is_cygwin || s:is_mac
+let s:is_case_tolerant = filereadable(expand('<sfile>:r') . '.VIM')
 function! s:is_case_tolerant()
   return s:is_case_tolerant
 endfunction
