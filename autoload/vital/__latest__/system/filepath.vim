@@ -52,7 +52,7 @@ endfunction
 
 " Get the full path of command.
 function! s:which(command, ...)
-  let pathlist = a:command =~# s:path_sep_pattern ? ['.'] :
+  let pathlist = a:command =~# s:path_sep_pattern ? [''] :
   \              !a:0                  ? split($PATH, s:path_separator) :
   \              type(a:1) == type([]) ? copy(a:1) :
   \                                      split(a:1, s:path_separator)
@@ -64,8 +64,9 @@ function! s:which(command, ...)
 
   let dirsep = s:separator()
   for dir in pathlist
+    let head = dir ==# '' ? '' : dir . dirsep
     for ext in pathext
-      let full = fnamemodify(dir . dirsep . a:command . ext, ':p')
+      let full = fnamemodify(head . a:command . ext, ':p')
       if filereadable(full)
         if s:is_case_tolerant()
           let full = glob(substitute(
