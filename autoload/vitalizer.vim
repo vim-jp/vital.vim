@@ -202,7 +202,7 @@ function! vitalizer#complete(arglead, cmdline, cursorpos)
   let args = filter(split(a:cmdline[: a:cursorpos], '\s\+'), 'v:val!~"^--"')
   if arglead =~ '^--'
     return filter(options, 'stridx(v:val, arglead)!=-1')
-  elseif len(args) > 2
+  elseif len(args) > 2 || (len(args) == 2 && a:cmdline =~# '\s$')
     let prefix = arglead =~# '^[+-]' ? arglead[0] : ''
     return filter(map(s:all_modules(), 'prefix . s:file2module(v:val)'),
     \  'stridx(v:val, arglead)!=-1')
