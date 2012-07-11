@@ -1,0 +1,135 @@
+*vital-vim-buffer-manager.txt*	simple buffer manager.
+
+Maintainer: thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS			*Vital.Vim.Buffer.Manager-contents*
+
+INTRODUCTION			|Vital.Vim.Buffer.Manager-introduction|
+USAGE				|Vital.Vim.Buffer.Manager-usage|
+INTERFACE			|Vital.Vim.Buffer.Manager-interface|
+  FUNCTIONS			  |Vital.Vim.Buffer.Manager-functions|
+OBJECTS				|Vital.Vim.Buffer.Manager-objects|
+  Manger Object			  |Vital.Vim.Buffer.Manager-Manager|
+CONFIG				|Vital.Vim.Buffer.Manager-config|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.Vim.Buffer.Manager-introduction*
+
+*Vital.Vim.Buffer.Manager* is a simple Vim's buffer manager library.
+This manager stores the opened buffers, and reuses the opened window when
+opening a new buffer.
+
+
+
+==============================================================================
+USAGE				*Vital.Vim.Buffer.Manager-usage*
+>
+	let BM = V.import('Vim.Buffer.Manager')
+	let m = BM.new()  " creates new manager
+	" opens a new buffer named "buffer name" to a new window
+	call m.open('buffer name')
+	" opens a new buffer to same window (reused automatically)
+	call m.open('buffer 2')
+
+	echo m.config('range')         " gets the config value
+	call m.config('range', 'all')  " sets the config value
+
+	let m2 = BM.new()  " creates new manager
+	" each managers are independent
+	call m2.open('buffer 3')
+<
+
+
+==============================================================================
+INTERFACE			*Vital.Vim.Buffer.Manager-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.Vim.Buffer.Manager-functions*
+
+new([{config}])			*Vital.Vim.Buffer.Manager.new()*
+	Creates a new Manager object(|Vital.Vim.Buffer.Manager-Manager|).
+
+==============================================================================
+OBJECTS				*Vital.Vim.Buffer.Manager-objects*
+
+------------------------------------------------------------------------------
+Manger Object			*Vital.Vim.Buffer.Manager-Manager*
+
+				*Vital.Vim.Buffer.Manager-Manager.open()*
+Manager.open({bufname} [, {config}])
+	Opens a buffer.
+	First, this function searches a window that is opening a managed
+	buffer from range(|Vital.Vim.Buffer.Manager-config-range|).
+	If a window is found, it moves to the window and opens a buffer.
+	If it is not found, opens a buffer by
+	opener(|Vital.Vim.Buffer.Manager-config-opener|).
+
+Manager.opened({bufname})	*Vital.Vim.Buffer.Manager-Manager.opened()*
+
+Manager.close([{range}])	*Vital.Vim.Buffer.Manager-Manager.close()*
+	Closes the {range} buffer if it exists.
+
+Manager.config()		*Vital.Vim.Buffer.Manager-Manager.config()*
+	Gets the config as |Dictionary|.
+Manager.config({config})
+	Sets the config by |Dictionary|.  All values are overwritten.
+Manager.config({config-name})
+	Gets the config value.
+Manager.config({config-name}, {value})
+	Sets the config value.
+
+Manager.is_managed({bufnr})	*Vital.Vim.Buffer.Manager-Manager.is_managed()*
+	If the specified {bufnr} is managed by this openbuf, returns true.
+
+				*Vital.Vim.Buffer.Manager-Manager.add()*
+Manager.add({bufnr} [, {bufname}])
+	Adds a buffer to this for managing.  The buffer must exist.
+
+Manager.list()			*Vital.Vim.Buffer.Manager-Manager.list()*
+	Get the list of the buffer numbers that managed by this openbuf.
+
+Manager.nearest([{range}])	*Vital.Vim.Buffer.Manager-Manager.nearest()*
+	Searchs the nearest managed buffer.  Returns the position and buffer
+	number by the form like [{tabpagenr}, {winnr}, {bufnr}].  If the
+	{range} argument is present and not zero, searchs current tabpage
+	only.  If the buffer is not found, returns empty list.
+
+Manager.move([{range}])		*Vital.Vim.Buffer.Manager-Manager.move()*
+	Moves to the nearest managed buffer.  Returns true if focus moved or
+	was already staying in the managed buffer.
+
+Manager.do({cmd})		*Vital.Vim.Buffer.Manager-Manager.do()*
+	Executes ":execute {cmd} bufnr" for each managed buffers.  If {cmd}
+	includes "%s", it is replaced by bufnr.
+	Example: >
+	call openbuf.do('bwipeout')
+
+
+
+==============================================================================
+CONFIG				*Vital.Vim.Buffer.Manager-config*
+
+opener				*Vital.Vim.Buffer.Manager-config-opener*
+	Way to open a new window.  This is one of followings:
+	- A command as |String|.
+	- A |Funcref| to open a window.
+	  This |Funcref| receives {bufname} as first argument.
+	- A |String| that starts with "=".
+	  This is treated as |expr|, and result is a opener.
+
+range				*Vital.Vim.Buffer.Manager-config-range*
+	Range which searches a window.
+	"current"
+		Current window only.
+	"tabpage"
+		Current tabpage.
+	"all"
+		Windows of all tabpages.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
