@@ -4,9 +4,10 @@ set cpo&vim
 let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
 
 function! s:_vital_depends()
-  return ['Data.String']
+  return ['Data.String', 'Prelude']
 endfunction
 
+let s:prelude = s:V.import('Prelude')
 let s:string = s:V.import('Data.String')
 
 function! s:__urlencode_char(c)
@@ -100,7 +101,7 @@ function! s:get(url, ...)
       endif
     endfor
     let command .= " ".quote.url.quote
-    let res = system(command)
+    let res = s:prelude.system(command)
   elseif executable('wget')
     let command = 'wget -O- --save-headers --server-response -q -L '
     let quote = &shellxquote == '"' ?  "'" : '"'
@@ -112,7 +113,7 @@ function! s:get(url, ...)
       endif
     endfor
     let command .= " ".quote.url.quote
-    let res = system(command)
+    let res = s:prelude.system(command)
   endif
   if res =~ '^HTTP/1.\d 3' || res =~ '^HTTP/1\.\d 200 Connection established'
     let pos = stridx(res, "\r\n\r\n")
@@ -159,7 +160,7 @@ function! s:post(url, ...)
     let command .= " ".quote.url.quote
     let file = tempname()
     call writefile(split(postdatastr, "\n"), file, "b")
-    let res = system(command . " --data-binary @" . quote.file.quote)
+    let res = s:prelude.system(command . " --data-binary @" . quote.file.quote)
   elseif executable('wget')
     let command = 'wget -O- --save-headers --server-response -q -L '
     let headdata['X-HTTP-Method-Override'] = method
@@ -174,7 +175,7 @@ function! s:post(url, ...)
     let command .= " ".quote.url.quote
     let file = tempname()
     call writefile(split(postdatastr, "\n"), file, "b")
-    let res = system(command . " --post-data @" . quote.file.quote)
+    let res = s:prelude.system(command . " --post-data @" . quote.file.quote)
   endif
   call delete(file)
   if res =~ '^HTTP/1.\d 3' || res =~ '^HTTP/1\.\d 200 Connection established'
