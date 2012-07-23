@@ -49,7 +49,8 @@ INTERFACE			*Vital.Vim.Buffer.Manager-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS			*Vital.Vim.Buffer.Manager-functions*
 
-new([{config}])			*Vital.Vim.Buffer.Manager.new()*
+				*Vital.Vim.Buffer.Manager.new()*
+new([{config} [, {user-config}]])
 	Creates a new Manager object(|Vital.Vim.Buffer.Manager-Manager|).
 
 ==============================================================================
@@ -81,6 +82,14 @@ Manager.config({config-name})
 Manager.config({config-name}, {value})
 	Sets the config value.
 
+Manager.user_config({config})  *Vital.Vim.Buffer.Manager-Manager.user_config()*
+	Sets variable name of user's config.
+	User can customize the behavior via the variable.
+	If {config} is a |Dictionary|, variable name can be set per config.
+>
+	manager.user_config({'opener': 'g:your_plugin_opener'})
+<
+
 Manager.is_managed({bufnr})	*Vital.Vim.Buffer.Manager-Manager.is_managed()*
 	If the specified {bufnr} is managed by this openbuf, returns true.
 
@@ -111,6 +120,9 @@ Manager.do({cmd})		*Vital.Vim.Buffer.Manager-Manager.do()*
 
 ==============================================================================
 CONFIG				*Vital.Vim.Buffer.Manager-config*
+
+Priority:
+method argument > user config > config
 
 opener				*Vital.Vim.Buffer.Manager-config-opener*
 	Way to open a new window.  This is one of followings:

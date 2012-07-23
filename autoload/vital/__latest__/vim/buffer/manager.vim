@@ -13,16 +13,14 @@ let s:default_config = {
 \ }
 let s:Manager = {
 \   '_config': s:default_config,
+\   '_user_config': {},
 \   '_bufnrs': {},
 \ }
 
 function! s:Manager.open(bufname, ...)
   let result = {}
   let lastbuf = bufnr('$')
-  let config = copy(self._config)
-  if a:0
-    call extend(config, s:_config(a:1))
-  endif
+  let config = s:_make_config(self, a:000)
   let moved = self.move(config.range)
 
   let Opener = moved ? 'edit' : config.opener
@@ -73,6 +71,11 @@ function! s:Manager.config(...)
   return self
 endfunction
 
+function! s:Manager.user_config(config)
+  let self._user_config = a:config
+  return self
+endfunction
+
 function! s:Manager.is_managed(bufnr)
   return has_key(self._bufnrs, a:bufnr)
 endfunction
@@ -87,7 +90,7 @@ function! s:Manager.list()
 endfunction
 
 function! s:Manager.nearest(...)
-  let range = a:0 ? a:1 : self.config('range')
+  let range = s:_make_config(self, map(copy(a:000), '{"range": v:val}')).range
 
   if range ==# 'tabpage'
     let tabpages = [tabpagenr()]
@@ -109,7 +112,7 @@ function! s:Manager.nearest(...)
 endfunction
 
 function! s:Manager.move(...)
-  let range = a:0 ? a:1 : self.config('range')
+  let range = s:_make_config(self, map(copy(a:000), '{"range": v:val}')).range
   if range !=# 'all' && range !=# 'tabpage'
     return 0
   endif
@@ -130,7 +133,9 @@ function! s:Manager.do(cmd)
 endfunction
 
 function! s:new(...)
-  return deepcopy(s:Manager).config(a:0 ? s:_config(a:1) : {})
+  return deepcopy(s:Manager)
+  \.config(a:0 ? s:_config(a:1) : {})
+  \.user_config(2 <= a:0 ? a:2 : {})
 endfunction
 
 function! s:open(buffer, opener)
@@ -159,6 +164,22 @@ function! s:open(buffer, opener)
     let &wildignore = save_wildignore
   endtry
   return loaded
+endfunction
+
+function! s:_make_config(manager, configs)
+  let configs = [a:manager._config]
+  let user = a:manager._user_config
+  if s:V.is_string(user)
+    let configs += [exists(user) ? {user} : {}]
+  elseif s:V.is_dict(user)
+    let configs += [map(copy(user), 'exists(v:val) ? {v:val} : {}')]
+  endif
+
+  let config = {}
+  for c in configs + a:configs
+    call extend(config, s:_config(c))
+  endfor
+  return config
 endfunction
 
 function! s:_config(c)
