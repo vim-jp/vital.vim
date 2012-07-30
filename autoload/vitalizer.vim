@@ -198,16 +198,15 @@ function! vitalizer#vitalize(name, to, modules, hash)
 endfunction
 function! vitalizer#complete(arglead, cmdline, cursorpos)
   let options = ['--init', '--name=', '--hash=', '--help']
-  let arglead = matchstr(a:cmdline, '\s\zs\S\+$')
-  let args = filter(split(a:cmdline[: a:cursorpos], '\s\+'), 'v:val!~"^--"')
-  if arglead =~ '^--'
-    return filter(options, 'stridx(v:val, arglead)!=-1')
+  let args = filter(split(a:cmdline[: a:cursorpos], '[^\\]\zs\s\+'), 'v:val!~"^--"')
+  if a:arglead =~ '^--'
+    return filter(options, 'stridx(v:val, a:arglead)!=-1')
   elseif len(args) > 2 || (len(args) == 2 && a:cmdline =~# '\s$')
-    let prefix = arglead =~# '^[+-]' ? arglead[0] : ''
+    let prefix = a:arglead =~# '^[+-]' ? a:arglead[0] : ''
     return filter(map(s:all_modules(), 'prefix . s:file2module(v:val)'),
-    \  'stridx(v:val, arglead)!=-1')
+    \  'stridx(v:val, a:arglead)!=-1')
   else
-    return map(filter(split(glob(arglead . "*", 1), "\n"),
+    return map(filter(split(glob(a:arglead . "*", 1), "\n"),
     \  'isdirectory(v:val)'), 'escape(v:val, " ")')
   endif
 endfunction
