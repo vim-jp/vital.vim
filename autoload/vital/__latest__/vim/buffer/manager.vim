@@ -139,6 +139,10 @@ function! s:new(...)
 endfunction
 
 function! s:open(buffer, opener)
+  if s:is_cmdwin()
+    return 0
+  endif
+
   let save_wildignore = &wildignore
   let &wildignore = ''
   try
@@ -165,6 +169,18 @@ function! s:open(buffer, opener)
   endtry
   return loaded
 endfunction
+
+function! s:is_cmdwin()"{{{
+  let errmsg_save = v:errmsg
+  silent! verbose noautocmd wincmd p
+  if errmsg_save !=# v:errmsg
+        \ && v:errmsg =~ '^E11:'
+    return 1
+  endif
+
+  silent! noautocmd wincmd p
+  return 0
+endfunction"}}}
 
 function! s:_make_config(manager, configs)
   let configs = [a:manager._config]
