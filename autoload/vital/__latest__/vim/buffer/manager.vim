@@ -18,7 +18,16 @@ let s:Manager = {
 \ }
 
 function! s:Manager.open(bufname, ...)
-  let result = {}
+  if s:is_cmdwin()
+    " Note: Failed to open buffer in cmdline window.
+    return {
+  \   'loaded': 0,
+  \   'newwin': -1,
+  \   'newbuf': 0,
+  \   'bufnr': -1,
+  \ }
+  endif
+
   let lastbuf = bufnr('$')
   let config = s:_make_config(self, a:000)
   let moved = self.move(config.range)
@@ -139,10 +148,6 @@ function! s:new(...)
 endfunction
 
 function! s:open(buffer, opener)
-  if s:is_cmdwin()
-    return 0
-  endif
-
   let save_wildignore = &wildignore
   let &wildignore = ''
   try
@@ -170,7 +175,7 @@ function! s:open(buffer, opener)
   return loaded
 endfunction
 
-function! s:is_cmdwin()"{{{
+function! s:is_cmdwin()
   let errmsg_save = v:errmsg
   silent! verbose noautocmd wincmd p
   if errmsg_save !=# v:errmsg
@@ -180,7 +185,7 @@ function! s:is_cmdwin()"{{{
 
   silent! noautocmd wincmd p
   return 0
-endfunction"}}}
+endfunction
 
 function! s:_make_config(manager, configs)
   let configs = [a:manager._config]
