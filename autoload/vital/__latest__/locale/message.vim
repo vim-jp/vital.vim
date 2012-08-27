@@ -6,7 +6,6 @@ set cpo&vim
 function! s:new(path)
   let obj = copy(s:Message)
   let obj.path = a:path =~# '%s' ? a:path : 'message/' . a:path . '/%s.txt'
-  call obj.load(s:get_lang())
   return obj
 endfunction
 
@@ -16,8 +15,8 @@ endfunction
 
 let s:Message = {}
 function! s:Message.get(text)
-  if self.lang !=# s:get_lang()
-    call self.load()
+  if !has_key(self, 'lang')
+    call self.load(s:get_lang())
   endif
   if has_key(self.data, a:text)
     return self.data[a:text]
