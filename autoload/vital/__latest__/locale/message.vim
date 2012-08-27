@@ -27,10 +27,14 @@ endfunction
 function! s:Message.load(lang)
   let pattern = printf(self.path, a:lang)
   let file = get(split(globpath(&runtimepath, pattern), "\n"), 0)
+  if !filereadable(file)
+    let self.lang = ''
+    let self.data = {}
+    return
+  endif
   let self.lang = a:lang
-  sandbox let self.data = filereadable(file) ?
+  sandbox let self.data =
   \ eval(iconv(join(readfile(file), ''), 'utf-8', &encoding))
-  \ : {}
 endfunction
 let s:Message._ = s:Message.get
 function! s:Message.missing(text)
