@@ -33,8 +33,8 @@ function! s:Message.load(lang)
     return
   endif
   let self.lang = a:lang
-  sandbox let self.data =
-  \ eval(iconv(join(readfile(file), ''), 'utf-8', &encoding))
+  let lines = filter(readfile(file), 'v:val !~# "^\\s*#"')
+  sandbox let self.data = eval(iconv(join(lines, ''), 'utf-8', &encoding))
 endfunction
 let s:Message._ = s:Message.get
 function! s:Message.missing(text)
