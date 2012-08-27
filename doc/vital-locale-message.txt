@@ -106,11 +106,14 @@ If {plugin-name} contains "%s", the rule changes.
 Content of a message text file is as following.
 >
 	{
+	  # comment line
 	  'message': 'メッセージ',
 	  'hello': 'こんにちは',
 	}
 <
 This is just a Vim |Dictionary|.  This file must be written by utf-8.
+A comment line starts with "#".  A comment cannot start after a text.
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
