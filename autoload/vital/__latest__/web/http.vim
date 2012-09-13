@@ -200,6 +200,19 @@ function! s:post(url, ...)
   \}
 endfunction
 
+function! s:parseHeader(headers)
+  " FIXME: User should be able to specify the treatment method of the duplicate item.
+  let header = {}
+  for h in a:headers
+    let matched = matchlist(h, '^\([^:]\+\):\s*\(.*\)$')
+    if !empty(matched)
+      let [name, value] = matched[1 : 2]
+      let header[name] = value
+    endif
+  endfor
+  return header
+endfunction
+
 let &cpo = s:save_cpo
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:

@@ -26,6 +26,10 @@ get(url, param, header)			*Vital.Web.Http.get()*
 post(url, param, header)		*Vital.Web.Http.post()*
 	Send POST request to url.
 
+parseHeader(headers)			*Vital.Web.Http.parseHeader()*
+	Parse headers list to a dictionary.
+	Duplicated fields are overwritten.
+
 encodeURI(param)			*Vital.Web.Http.encodeURI()*
 	Encode params as URI query.
 
