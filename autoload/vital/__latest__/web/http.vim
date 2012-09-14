@@ -195,7 +195,7 @@ function! s:post(url, ...)
     let content = res[pos+2:]
   endif
   return {
-  \ "header" : split(res[0:pos], '\r\?\n'),
+  \ "header" : split(res[:pos-1], '\r\?\n'),
   \ "content" : content
   \}
 endfunction
