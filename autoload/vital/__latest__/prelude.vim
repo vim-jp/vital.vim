@@ -260,7 +260,7 @@ function! s:set_default(var, val)  "{{{
   endif
 endfunction"}}}
 function! s:set_dictionary_helper(variable, keys, pattern)"{{{
-  for key in split(a:keys, ',')
+  for key in split(a:keys, '\s*,\s*')
     if !has_key(a:variable, key)
       let a:variable[key] = a:pattern
     endif
