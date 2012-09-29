@@ -4,10 +4,17 @@
 " glob() wrapper which returns List
 " and 'wildignore' does not affect
 " this function's return value.
-function! s:glob(expr)
-  let R = glob(a:expr, 1)
-  return split(R, '\n')
-endfunction
+if v:version ># 703 ||
+\  (v:version is 703 && has('patch465'))
+  function! s:glob(expr)
+    return glob(a:expr, 1, 1)
+  endfunction
+else
+  function! s:glob(expr)
+    let R = glob(a:expr, 1)
+    return split(R, '\n')
+  endfunction
+endif
 " globpath() wrapper which returns List
 " and 'suffixes' and 'wildignore' does not affect
 " this function's return value.
