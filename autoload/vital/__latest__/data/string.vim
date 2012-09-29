@@ -121,8 +121,6 @@ endfunction
 " even if a:str contains multibyte character(s).
 " s:strchars(str) {{{
 if exists('*strchars')
-  " TODO: Why can't I write like this?
-  " let s:strchars = function('strchars')
   function! s:strchars(str)
     return strchars(a:str)
   endfunction
