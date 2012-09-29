@@ -1,14 +1,18 @@
 " vim:set et ts=2 sts=2 sw=2 tw=0:
 
 
-" glob() wrapper which returns List.
-function! s:glob(...)
-  let R = call('glob', a:000)
+" glob() wrapper which returns List
+" and 'wildignore' does not affect
+" this function's return value.
+function! s:glob(expr)
+  let R = glob(a:expr, 1)
   return split(R, '\n')
 endfunction
-" globpath() wrapper which returns List.
-function! s:globpath(...)
-  let R = call('globpath', a:000)
+" globpath() wrapper which returns List
+" and 'suffixes' and 'wildignore' does not affect
+" this function's return value.
+function! s:globpath(path, expr)
+  let R = globpath(a:path, a:expr, 1)
   return split(R, '\n')
 endfunction
 
