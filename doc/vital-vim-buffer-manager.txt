@@ -91,14 +91,14 @@ Manager.user_config({config})  *Vital.Vim.Buffer.Manager-Manager.user_config()*
 <
 
 Manager.is_managed({bufnr})	*Vital.Vim.Buffer.Manager-Manager.is_managed()*
-	If the specified {bufnr} is managed by this openbuf, returns true.
+	If the specified {bufnr} is managed by this Manager, returns true.
 
 				*Vital.Vim.Buffer.Manager-Manager.add()*
 Manager.add({bufnr} [, {bufname}])
 	Adds a buffer to this for managing.  The buffer must exist.
 
 Manager.list()			*Vital.Vim.Buffer.Manager-Manager.list()*
-	Get the list of the buffer numbers that managed by this openbuf.
+	Get the list of the buffer numbers that managed by this Manager.
 
 Manager.nearest([{range}])	*Vital.Vim.Buffer.Manager-Manager.nearest()*
 	Searchs the nearest managed buffer.  Returns the position and buffer
@@ -114,7 +114,7 @@ Manager.do({cmd})		*Vital.Vim.Buffer.Manager-Manager.do()*
 	Executes ":execute {cmd} bufnr" for each managed buffers.  If {cmd}
 	includes "%s", it is replaced by bufnr.
 	Example: >
-	call openbuf.do('bwipeout')
+	call Manager.do('bwipeout')
 
 
 
