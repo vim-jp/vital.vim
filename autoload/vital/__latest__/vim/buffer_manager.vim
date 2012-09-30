@@ -1,9 +1,4 @@
-" deprecated
-
-function! s:_deprecated(fname)
-  echomsg printf("Vital.Vim.Buffer.Manager.%s is deprecated! Please use Vital.Vim.BufferManager.%s instead.",
-        \ a:fname, a:fname)
-endfunction
+" buffer manager.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -147,14 +142,12 @@ function! s:Manager.do(cmd)
 endfunction
 
 function! s:new(...)
-  call s:_deprecated("new")
   return deepcopy(s:Manager)
   \.config(a:0 ? s:_config(a:1) : {})
   \.user_config(2 <= a:0 ? a:2 : {})
 endfunction
 
 function! s:open(buffer, opener)
-  call s:_deprecated("open")
   let save_wildignore = &wildignore
   let &wildignore = ''
   try
@@ -183,7 +176,6 @@ function! s:open(buffer, opener)
 endfunction
 
 function! s:is_cmdwin()
-  call s:_deprecated("is_cmdwin")
   let errmsg_save = v:errmsg
   silent! verbose noautocmd wincmd p
   if errmsg_save !=# v:errmsg
