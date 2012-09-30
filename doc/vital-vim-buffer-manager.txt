@@ -1,4 +1,4 @@
-*vital-vim-buffer-manager.txt*	simple buffer manager.
+*vital-vim-buffer-manager.txt*	buffer manager.
 
 Maintainer: thinca <thinca+vim@gmail.com>
 
@@ -18,9 +18,9 @@ CONFIG				|Vital.Vim.Buffer.Manager-config|
 ==============================================================================
 INTRODUCTION			*Vital.Vim.Buffer.Manager-introduction*
 
-*Vital.Vim.Buffer.Manager* is a simple Vim's buffer manager library.
-This manager stores the opened buffers, and reuses the opened window when
-opening a new buffer.
+*Vital.Vim.Buffer.Manager* is a Vim's buffer manager library.  This manager
+stores the opened buffers, and reuses the opened window when opening a new
+buffer.
 
 
 
