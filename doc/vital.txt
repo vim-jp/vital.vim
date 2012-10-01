@@ -7,6 +7,7 @@ CONTENTS				*Vital-contents*
 
 INTRODUCTION				|Vital-introduction|
 USAGE					|Vital-usage|
+VARIABLES				|Vital-variables|
 LINKS					|Vital-links|
 
 ==============================================================================
@@ -58,6 +59,21 @@ We recommend you to use a capital letter for a the Vital module dictionary
 to assign as Vital convention. That makes your code more readable among Vital
 programmers.
 
+------------------------------------------------------------------------------
+VARIABLES 					*Vital-variables*
+
+g:vital_debug
+							*g:vital_debug*
+		Default: 0
+
+		Vital.import and Vital.load ignore functions which name begins
+		with underscore, but this option enables importing/loading
+		such functions.
+
+		let g:vital_debug = 1
+
+		Note that this option is only for Vital plugin developers; not
+		for Vital users.
 ==============================================================================
 LINKS					*Vital-links*
 
