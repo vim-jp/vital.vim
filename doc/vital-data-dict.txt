@@ -1,0 +1,53 @@
+*Vital.Data.Dict.txt*		dictionary utilities library.
+
+==============================================================================
+CONTENTS				*Vital.Data.Dict-contents*
+
+INTRODUCTION			|Vital.Data.Dict-introduction|
+INTERFACE			|Vital.Data.Dict-interface|
+  FUNCTIONS			  |Vital.Data.Dict-functions|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Dict-introduction*
+
+*Vital.Data.Dict* is Dict Utilities Library.
+It provides some functions to manipulate |Dictionary|.
+
+==============================================================================
+INTERFACE				*Vital.Data.Dict-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Dict-functions*
+
+make({keys}, {values} [, {fill}])	*Vital.Datal.Dict.make()*
+	Makes a dictionary from {keys} and {values}.
+	If length of {keys} is less than {values}, tails of {values} are
+	ignored.
+	If length of {keys} is more than {values}, {values} are filled by
+	{fill}.
+	If {fill} is omitted, 0 is used.
+>
+	make(['one', 'two', 'three'], [1, 2, 3])
+	=> {'one': 1, 'two': 2, 'three': 3}
+
+
+swap({dict})				*Vital.Datal.Dict.swap()*
+	Makes a dictionary that swapped keys and values.
+>
+	swap({'one': 1, 'two': 2, 'three': 3})
+	=> {'1': 'one', '2': 'two', '3': 'three'}
+<
+make_index({list} [, {value}])		*Vital.Datal.Dict.make_index()*
+	Makes an index dictionary.  This dictionary has {list} as key, and has
+	{value} as each value.
+	If {value} is omitted, 1 is used.
+>
+	make_index(['apple', 'orange', 'banana'])
+	=> {'apple': 1, 'orange': 1, 'banana': 1}
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
