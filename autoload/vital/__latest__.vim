@@ -3,14 +3,27 @@ let s:self_version = expand('<sfile>:t:r')
 let s:loaded = {}
 
 function! s:import(name, ...)
-  let module = {}
+  let target = {}
+  let functions = []
   for a in a:000
     if type(a) == type({})
-      let module = a
+      let target = a
+    elseif type(a) == type([])
+      let functions = a
     endif
     unlet a
   endfor
-  return extend(module, s:_import(a:name, s:_scripts()), 'keep')
+  let module = s:_import(a:name, s:_scripts())
+  if empty(functions)
+    call extend(target, module, 'keep')
+  else
+    for f in functions
+      if has_key(module, f) && !has_key(target, f)
+        let target[f] = module[f]
+      endif
+    endfor
+  endif
+  return target
 endfunction
 
 function! s:load(...) dict
