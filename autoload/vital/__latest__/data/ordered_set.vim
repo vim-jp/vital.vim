@@ -4,11 +4,11 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-function! s:version() "{{{
+function! s:version()
   return '0.0.15'
-endfunction "}}}
+endfunction
 
-function! s:new(...) "{{{
+function! s:new(...)
   let obj = deepcopy(s:ordered_set)
   if a:0
   \   && type(a:1) == type({})
@@ -16,7 +16,7 @@ function! s:new(...) "{{{
     let obj.Fn_identifier = a:1.Fn_identifier
   endif
   return obj
-endfunction "}}}
+endfunction
 
 
 let s:ordered_set = {
@@ -26,19 +26,19 @@ let s:ordered_set = {
 \   'Fn_identifier': 'string',
 \}
 
-function! s:ordered_set.prepend(list) "{{{
+function! s:ordered_set.prepend(list)
   for V in reverse(a:list)
     call self.unshift(V)
   endfor
-endfunction "}}}
+endfunction
 
-function! s:ordered_set.append(list) "{{{
+function! s:ordered_set.append(list)
   for V in a:list
     call self.push(V)
   endfor
-endfunction "}}}
+endfunction
 
-function s:ordered_set.push(elem) "{{{
+function s:ordered_set.push(elem)
   let id = call(self.Fn_identifier, [a:elem])
   if !has_key(self._dict, id)
     let self._dict[id] = len(self._list) - self._origin_pos
@@ -46,9 +46,9 @@ function s:ordered_set.push(elem) "{{{
     return 1
   endif
   return 0
-endfunction "}}}
+endfunction
 
-function! s:ordered_set.unshift(elem) "{{{
+function! s:ordered_set.unshift(elem)
   let id = call(self.Fn_identifier, [a:elem])
   if !has_key(self._dict, id)
     let self._origin_pos += 1
@@ -57,36 +57,36 @@ function! s:ordered_set.unshift(elem) "{{{
     return 1
   endif
   return 0
-endfunction "}}}
+endfunction
 
-function! s:ordered_set.empty() "{{{
+function! s:ordered_set.empty()
   return empty(self._list)
-endfunction "}}}
+endfunction
 
-function! s:ordered_set.size() "{{{
+function! s:ordered_set.size()
   return len(self._list)
-endfunction "}}}
+endfunction
 
-function! s:ordered_set.to_list() "{{{
+function! s:ordered_set.to_list()
   return copy(self._list)
-endfunction "}}}
+endfunction
 
-function! s:ordered_set.has(elem) "{{{
+function! s:ordered_set.has(elem)
   let id = call(self.Fn_identifier, [a:elem])
   return has_key(self._dict, id)
-endfunction "}}}
+endfunction
 
-function! s:ordered_set.has_id(id) "{{{
+function! s:ordered_set.has_id(id)
   return has_key(self._dict, a:id)
-endfunction "}}}
+endfunction
 
-function! s:ordered_set.clear() "{{{
+function! s:ordered_set.clear()
   let self._list = []
   let self._dict  = {}
   let self._origin_pos = 0
-endfunction "}}}
+endfunction
 
-function! s:ordered_set.remove(elem) "{{{
+function! s:ordered_set.remove(elem)
   let id = call(self.Fn_identifier, [a:elem])
   if has_key(self._dict, id)
     let idx = self._origin_pos + self._dict[id]
@@ -107,7 +107,7 @@ function! s:ordered_set.remove(elem) "{{{
     return 1
   endif
   return 0
-endfunction "}}}
+endfunction
 
 
 let &cpo = s:save_cpo
