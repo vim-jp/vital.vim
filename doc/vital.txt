@@ -13,18 +13,18 @@ LINKS					|Vital-links|
 INTRODUCTION				*Vital-introduction*
 
 This is like a plugin which has both aspects of Bundler and jQuery at the
-same.
+same time.
 
  Bundler: http://gembundler.com/
  jQuery:  http://jquery.com/
 
-If you are a Vim user who don't make Vim plugins, please ignore this page.
+If you are a Vim user who doesn't make Vim plugins, please ignore this page.
 If you are a Vim plugin author, please check this out.
 
 ==============================================================================
 USAGE					*Vital-usage*
 
-Assuming your Vim plugin name is 'ujihisa'. You can define your utility
+Assuming your Vim plugin name is "ujihisa", you can define your utility
 function set 'ujihisa#util' just by
 >
     let V = vital#of('ujihisa')
@@ -35,8 +35,8 @@ function set 'ujihisa#util' just by
 and then you can call functions by 'ujihisa#util#system()', without taking
 care of |vital.vim| itself. It's all hidden.
 
-|Vital| has module system. The below is an example to 'import/load' a module
-'data/ordered_set' and to call a function 'f()' of the module.
+|Vital| has module system. The below is an example to import/load a module
+"data/ordered_set" and to call a function "f()" of the module.
 >
     let V = vital#of('ujihisa')
     let O = V.import('Data.OrderedSet')
@@ -54,14 +54,17 @@ or
     call V.import('Data.OrderedSet', s:)
     call s:f()
 <
-We recommend you to use a capital letter for a the 'Vital' module dictionary
-to assign.
+We recommend you to use a capital letter for a the Vital module dictionary
+to assign as Vital convention. That makes your code more readable among Vital
+programmers.
 
 ==============================================================================
 LINKS					*Vital-links*
 
  Delegation in Vim script:
    http://ujihisa.blogspot.com/2011/02/delegation-in-vim-script.html
+ How to use Vital modules (in Japanese):
+   http://rbtnn.github.com/how-to-use-vital.vim/
  Core concept of vital (in Japanese):
    http://d.hatena.ne.jp/thinca/20110310/1299768323
  How to make a vital module (in Japanese):
