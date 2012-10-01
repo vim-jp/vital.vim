@@ -723,5 +723,6 @@ let s:AM_PM_TIMES = map([0, 12],
 \   's:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
 
 let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:
