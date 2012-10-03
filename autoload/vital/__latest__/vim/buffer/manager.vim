@@ -183,16 +183,7 @@ function! s:open(buffer, opener)
 endfunction
 
 function! s:is_cmdwin()
-  call s:_deprecated("is_cmdwin")
-  let errmsg_save = v:errmsg
-  silent! verbose noautocmd wincmd p
-  if errmsg_save !=# v:errmsg
-        \ && v:errmsg =~ '^E11:'
-    return 1
-  endif
-
-  silent! noautocmd wincmd p
-  return 0
+  return bufname('%') ==# '[Command Line]'
 endfunction
 
 function! s:_make_config(manager, configs)
