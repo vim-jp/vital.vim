@@ -2,7 +2,11 @@
 
 let s:save_cpo = &cpo
 set cpo&vim
-let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
+
+function! s:_vital_loaded(V)
+  let s:V = a:V
+  let s:L = s:V.import('Data.List')
+endfunction
 
 function! s:_vital_depends()
   return ['Data.List']
@@ -163,8 +167,7 @@ function! s:_split_by_wcswitdh(body, x)
 endfunction
 
 function! s:wrap(str)
-  let L = s:V.import('Data.List')
-  return L.concat(
+  return s:L.concat(
         \ map(split(a:str, '\r\?\n'), 's:_split_by_wcswitdh(v:val, &columns - 1)'))
 endfunction
 
