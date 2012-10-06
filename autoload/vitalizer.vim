@@ -44,6 +44,11 @@ function! s:copy(from, to)
   call writefile(readfile(a:from, "b"), a:to, "b")
 endfunction
 function! s:search_dependence(modules)
+  " XXX Not smart...
+  if exists('g:vital_debug')
+    let vital_debug = g:vital_debug
+  endif
+  let g:vital_debug = 1
   call s:V.unload()
   let all = {}
   let modules = a:modules
@@ -61,6 +66,9 @@ function! s:search_dependence(modules)
     endfor
     let modules = next
   endwhile
+  if exists('vital_debug')
+    let g:vital_debug = vital_debug
+  endif
   return sort(keys(all))
 endfunction
 function! s:module2file(name)
