@@ -179,7 +179,7 @@ endfunction
 function! s:_make_header_args(headdata, option, quote)
   let args = ''
   for [key, value] in items(a:headdata)
-    if has('win32')
+    if s:prelude.is_windows()
       let value = substitute(value, '"', '"""', 'g')
     endif
     let args .= " " . a:option . a:quote . key . ": " . value . a:quote
