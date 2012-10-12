@@ -103,26 +103,7 @@ function! s:get(url, ...)
     let command .= " ".quote.url.quote
     let res = s:prelude.system(command)
   endif
-  if res =~ '^HTTP/1.\d [13]' || res =~ '^HTTP/1\.\d 200 Connection established'
-    let pos = stridx(res, "\r\n\r\n")
-    if pos != -1
-      let res = res[pos+4:]
-    else
-      let pos = stridx(res, "\n\n")
-      let res = res[pos+2:]
-    endif
-  endif
-  let pos = stridx(res, "\r\n\r\n")
-  if pos != -1
-    let content = res[pos+4:]
-  else
-    let pos = stridx(res, "\n\n")
-    let content = res[pos+2:]
-  endif
-  return {
-  \ "header" : split(res[:pos-1], '\r\?\n'),
-  \ "content" : content
-  \}
+  return s:_build_response(res)
 endfunction
 
 function! s:post(url, ...)
@@ -154,26 +135,31 @@ function! s:post(url, ...)
     let res = s:prelude.system(command . " --post-data @" . quote.file.quote)
   endif
   call delete(file)
+  return s:_build_response(res)
+endfunction
+
+function! s:_build_response(res)
+  let res = a:res
   if res =~ '^HTTP/1.\d [13]' || res =~ '^HTTP/1\.\d 200 Connection established'
     let pos = stridx(res, "\r\n\r\n")
     if pos != -1
-      let res = res[pos+4:]
+      let res = res[pos + 4 :]
     else
       let pos = stridx(res, "\n\n")
-      let res = res[pos+2:]
+      let res = res[pos + 2 :]
     endif
   endif
   let pos = stridx(res, "\r\n\r\n")
   if pos != -1
-    let content = res[pos+4:]
+    let content = res[pos + 4 :]
   else
     let pos = stridx(res, "\n\n")
-    let content = res[pos+2:]
+    let content = res[pos + 2 :]
   endif
   return {
-  \ "header" : split(res[:pos-1], '\r\?\n'),
-  \ "content" : content
-  \}
+  \   'header' : split(res[: pos - 1], '\r\?\n'),
+  \   'content': content
+  \ }
 endfunction
 
 function! s:_make_header_args(headdata, option, quote)
