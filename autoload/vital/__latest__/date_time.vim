@@ -31,7 +31,11 @@ endfunction
 
 " Creates a DateTime object with now time.
 function! s:now(...)
-  return call('s:from_unix_time', [localtime()] + a:000)
+  let now = s:from_unix_time(localtime())
+  if a:0
+    let now = now.to(s:timezone(a:1))
+  endif
+  return now
 endfunction
 
 " Creates a DateTime object from specified unix time.
