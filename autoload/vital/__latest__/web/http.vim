@@ -90,15 +90,14 @@ function! s:get(url, ...)
   if strlen(getdatastr)
     let url .= "?" . getdatastr
   endif
+  let quote = &shellxquote == '"' ?  "'" : '"'
   if executable('curl')
     let command = 'curl -L -s -k -i '
-    let quote = &shellxquote == '"' ?  "'" : '"'
     let command .= s:_make_header_args(headdata, '-H ', quote)
     let command .= " ".quote.url.quote
     let res = s:prelude.system(command)
   elseif executable('wget')
     let command = 'wget -O- --save-headers --server-response -q -L '
-    let quote = &shellxquote == '"' ?  "'" : '"'
     let command .= s:_make_header_args(headdata, '--header=', quote)
     let command .= " ".quote.url.quote
     let res = s:prelude.system(command)
@@ -116,22 +115,19 @@ function! s:post(url, ...)
   else
     let postdatastr = postdata
   endif
+  let quote = &shellxquote == '"' ?  "'" : '"'
+  let file = tempname()
+  call writefile(split(postdatastr, "\n"), file, "b")
   if executable('curl')
     let command = 'curl -L -s -k -i -X '.method
-    let quote = &shellxquote == '"' ?  "'" : '"'
     let command .= s:_make_header_args(headdata, '-H ', quote)
     let command .= " ".quote.url.quote
-    let file = tempname()
-    call writefile(split(postdatastr, "\n"), file, "b")
     let res = s:prelude.system(command . " --data-binary @" . quote.file.quote)
   elseif executable('wget')
-    let command = 'wget -O- --save-headers --server-response -q -L '
     let headdata['X-HTTP-Method-Override'] = method
-    let quote = &shellxquote == '"' ?  "'" : '"'
+    let command = 'wget -O- --save-headers --server-response -q -L '
     let command .= s:_make_header_args(headdata, '--header=', quote)
     let command .= " ".quote.url.quote
-    let file = tempname()
-    call writefile(split(postdatastr, "\n"), file, "b")
     let res = s:prelude.system(command . " --post-data @" . quote.file.quote)
   endif
   call delete(file)
