@@ -71,6 +71,7 @@ timezone([{timezone}])			*Vital.DateTime.timezone()*
 	  - Returns current timezone.
 	- A string like "+0900"
 	- A string like "+09:00"
+	- A number that specifies the offset by hour.
 	- TimeZone object.
 	  - Returns it directly.
 	See |Vital.DateTime-TimeZone| about TimeZone object.
