@@ -115,7 +115,7 @@ function! s:get(url, ...)
     let command .= " ".quote.url.quote
     let res = s:prelude.system(command)
   endif
-  if res =~ '^HTTP/1.\d 3' || res =~ '^HTTP/1\.\d 200 Connection established'
+  if res =~ '^HTTP/1.\d [13]' || res =~ '^HTTP/1\.\d 200 Connection established'
     let pos = stridx(res, "\r\n\r\n")
     if pos != -1
       let res = res[pos+4:]
@@ -178,7 +178,7 @@ function! s:post(url, ...)
     let res = s:prelude.system(command . " --post-data @" . quote.file.quote)
   endif
   call delete(file)
-  if res =~ '^HTTP/1.\d 3' || res =~ '^HTTP/1\.\d 200 Connection established'
+  if res =~ '^HTTP/1.\d [13]' || res =~ '^HTTP/1\.\d 200 Connection established'
     let pos = stridx(res, "\r\n\r\n")
     if pos != -1
       let res = res[pos+4:]
