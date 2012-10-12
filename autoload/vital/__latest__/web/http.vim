@@ -93,25 +93,13 @@ function! s:get(url, ...)
   if executable('curl')
     let command = 'curl -L -s -k -i '
     let quote = &shellxquote == '"' ?  "'" : '"'
-    for key in keys(headdata)
-      if has('win32')
-        let command .= " -H " . quote . key . ": " . substitute(headdata[key], '"', '"""', 'g') . quote
-      else
-        let command .= " -H " . quote . key . ": " . headdata[key] . quote
-      endif
-    endfor
+    let command .= s:_make_header_args(headdata, '-H ', quote)
     let command .= " ".quote.url.quote
     let res = s:prelude.system(command)
   elseif executable('wget')
     let command = 'wget -O- --save-headers --server-response -q -L '
     let quote = &shellxquote == '"' ?  "'" : '"'
-    for key in keys(headdata)
-      if has('win32')
-        let command .= " --header=" . quote . key . ": " . substitute(headdata[key], '"', '"""', 'g') . quote
-      else
-        let command .= " --header=" . quote . key . ": " . headdata[key] . quote
-      endif
-    endfor
+    let command .= s:_make_header_args(headdata, '--header=', quote)
     let command .= " ".quote.url.quote
     let res = s:prelude.system(command)
   endif
@@ -150,13 +138,7 @@ function! s:post(url, ...)
   if executable('curl')
     let command = 'curl -L -s -k -i -X '.method
     let quote = &shellxquote == '"' ?  "'" : '"'
-    for key in keys(headdata)
-      if has('win32')
-        let command .= " -H " . quote . key . ": " . substitute(headdata[key], '"', '"""', 'g') . quote
-      else
-        let command .= " -H " . quote . key . ": " . headdata[key] . quote
-      endif
-    endfor
+    let command .= s:_make_header_args(headdata, '-H ', quote)
     let command .= " ".quote.url.quote
     let file = tempname()
     call writefile(split(postdatastr, "\n"), file, "b")
@@ -165,13 +147,7 @@ function! s:post(url, ...)
     let command = 'wget -O- --save-headers --server-response -q -L '
     let headdata['X-HTTP-Method-Override'] = method
     let quote = &shellxquote == '"' ?  "'" : '"'
-    for key in keys(headdata)
-      if has('win32')
-        let command .= " --header=" . quote . key . ": " . substitute(headdata[key], '"', '"""', 'g') . quote
-      else
-        let command .= " --header=" . quote . key . ": " . headdata[key] . quote
-      endif
-    endfor
+    let command .= s:_make_header_args(headdata, '--header=', quote)
     let command .= " ".quote.url.quote
     let file = tempname()
     call writefile(split(postdatastr, "\n"), file, "b")
@@ -198,6 +174,18 @@ function! s:post(url, ...)
   \ "header" : split(res[:pos-1], '\r\?\n'),
   \ "content" : content
   \}
+endfunction
+
+function! s:_make_header_args(headdata, option, quote)
+  let args = ''
+  for key in keys(a:headdata)
+    if has('win32')
+      let args .= " " . a:option . a:quote . key . ": " . substitute(a:headdata[key], '"', '"""', 'g') . a:quote
+    else
+      let args .= " " . a:option . a:quote . key . ": " . a:headdata[key] . a:quote
+    endif
+  endfor
+  return args
 endfunction
 
 function! s:parseHeader(headers)
