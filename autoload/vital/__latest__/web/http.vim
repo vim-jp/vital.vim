@@ -98,6 +98,9 @@ function! s:request(...)
   let url = get(settings, 'url', '')
   let method = toupper(get(settings, 'method', 'GET'))
   let headers = get(settings, 'headers', {})
+  if has_key(settings, 'contentType')
+    let headers['Content-Type'] = settings.contentType
+  endif
   let quote = &shellxquote == '"' ?  "'" : '"'
   if has_key(settings, 'param')
     let getdatastr = s:encodeURI(settings.param)

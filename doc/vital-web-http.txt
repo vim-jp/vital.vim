@@ -52,6 +52,10 @@ request({method}, {url} [, {settings}])
 	"headers"	Default: (None)
 		Request headers. This is a dictionary.
 
+	"contentType"	Default: (None)
+		Content-Type for "data".
+		This is one of "headers".  This is used preferentially.
+
 parseHeader({headers})			*Vital.Web.Http.parseHeader()*
 	Parse {headers} list to a dictionary.
 	Duplicated fields are overwritten.
