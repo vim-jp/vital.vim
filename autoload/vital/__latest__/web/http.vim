@@ -35,12 +35,12 @@ endfunction
 
 function! s:encodeURI(items)
   let ret = ''
-  if type(a:items) == 4
+  if s:prelude.is_dict(a:items)
     for key in sort(keys(a:items))
       if strlen(ret) | let ret .= "&" | endif
       let ret .= key . "=" . s:encodeURI(a:items[key])
     endfor
-  elseif type(a:items) == 3
+  elseif s:prelude.is_list(a:items)
     for item in sort(a:items)
       if strlen(ret) | let ret .= "&" | endif
       let ret .= item
@@ -53,12 +53,12 @@ endfunction
 
 function! s:encodeURIComponent(items)
   let ret = ''
-  if type(a:items) == 4
+  if s:prelude.is_dict(a:items)
     for key in sort(keys(a:items))
       if strlen(ret) | let ret .= "&" | endif
       let ret .= key . "=" . s:encodeURIComponent(a:items[key])
     endfor
-  elseif type(a:items) == 3
+  elseif s:prelude.is_list(a:items)
     for item in sort(a:items)
       if strlen(ret) | let ret .= "&" | endif
       let ret .= item
@@ -110,7 +110,7 @@ function! s:post(url, ...)
   let headdata = a:0 > 1 ? a:000[1] : {}
   let method = a:0 > 2 ? a:000[2] : "POST"
   let url = a:url
-  if type(postdata) == 4
+  if s:prelude.is_dict(postdata)
     let postdatastr = s:encodeURI(postdata)
   else
     let postdatastr = postdata
