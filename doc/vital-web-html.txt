@@ -20,13 +20,13 @@ INTERFACE				*Vital.Web.Html-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.Html-functions*
 
-parse(content)				*Vital.Web.Html.parse()*
+parse({content})			*Vital.Web.Html.parse()*
 	Parse content into DOM object.
 
-parseFile(file)				*Vital.Web.Html.parseFile()*
+parseFile({file})			*Vital.Web.Html.parseFile()*
 	Parse html file into DOM object.
 
-parseURI(url)				*Vital.Web.Html.parseURI()*
+parseURI({url})				*Vital.Web.Html.parseURI()*
 	Get and parse html into DOM object.
 
 ------------------------------------------------------------------------------

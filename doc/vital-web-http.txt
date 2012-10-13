@@ -20,23 +20,23 @@ INTERFACE				*Vital.Web.Http-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.Http-functions*
 
-get(url, param, header)			*Vital.Web.Http.get()*
+get({url}, {param}, {header})		*Vital.Web.Http.get()*
 	Send GET request to url.
 
-post(url, param, header)		*Vital.Web.Http.post()*
+post({url}, {param}, {header})		*Vital.Web.Http.post()*
 	Send POST request to url.
 
-parseHeader(headers)			*Vital.Web.Http.parseHeader()*
-	Parse headers list to a dictionary.
+parseHeader({headers})			*Vital.Web.Http.parseHeader()*
+	Parse {headers} list to a dictionary.
 	Duplicated fields are overwritten.
 
-encodeURI(param)			*Vital.Web.Http.encodeURI()*
+encodeURI({param})			*Vital.Web.Http.encodeURI()*
 	Encode params as URI query.
 
-decodeURI(str)				*Vital.Web.Http.decodeURI()*
+decodeURI({str})			*Vital.Web.Http.decodeURI()*
 	Decode string as URI params.
 
-encodeURIComponent(str)			*Vital.Web.Http.encodeURIComponent()*
+encodeURIComponent({str})		*Vital.Web.Http.encodeURIComponent()*
 	Encode param as URI components.
 
 ------------------------------------------------------------------------------

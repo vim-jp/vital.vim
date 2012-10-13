@@ -19,10 +19,10 @@ INTERFACE				*Vital.Web.Json-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.Json-functions*
 
-encode(object)				*Vital.Web.Json.encode()*
+encode({object})			*Vital.Web.Json.encode()*
 	Encode object into JSON string.
 
-decode(json)				*Vital.Web.Json.decode()*
+decode({json})				*Vital.Web.Json.decode()*
 	Decode JSON string into variable that vim can treat.
 
 ==============================================================================
