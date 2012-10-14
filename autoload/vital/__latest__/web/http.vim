@@ -156,8 +156,13 @@ function! s:command_builders.curl(settings, quote)
   return command
 endfunction
 function! s:command_builders.wget(settings, quote)
-  let a:settings.headers['X-HTTP-Method-Override'] = a:settings.method
   let command = get(a:settings, 'command', 'wget')
+  let method = a:settings.method
+  if method ==# 'HEAD'
+    let command .= ' --spider'
+  elseif method !=# 'GET' && method !=# 'POST'
+    let a:settings.headers['X-HTTP-Method-Override'] = a:settings.method
+  endif
   let command .= ' -O- --save-headers --server-response -q -L '
   let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
   if has_key(a:settings, 'username')
