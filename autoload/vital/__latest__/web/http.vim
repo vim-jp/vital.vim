@@ -85,6 +85,8 @@ endfunction
 let s:default_settings = {
 \   'method': 'GET',
 \   'headers': {},
+\   'client': executable('curl') ? 'curl' :
+\             executable('wget') ? 'wget' : '',
 \ }
 function! s:request(...)
   let settings = {}
@@ -120,9 +122,7 @@ function! s:request(...)
   endif
 
   let quote = &shellxquote == '"' ?  "'" : '"'
-  let client = executable('curl') ? 'curl' :
-  \            executable('wget') ? 'wget' : ''
-  let command = s:command_builders[client](settings, quote)
+  let command = s:command_builders[settings.client](settings, quote)
   let res = s:prelude.system(command)
 
   if has_key(settings, '_file')
