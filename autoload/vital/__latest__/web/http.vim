@@ -181,6 +181,14 @@ endfunction
 
 function! s:_build_response(res)
   let res = a:res
+  if res =~# '^\s'
+    " wget returns extra headers with indention
+    " when redirected or authenticated
+    let pos = match(res, '\n\zs\S')
+    if 0 <= pos
+      let res = res[pos :]
+    endif
+  endif
   while res =~# '^HTTP/1.\d [13]' || res =~# '^HTTP/1\.\d 200 Connection established'
     let pos = stridx(res, "\r\n\r\n")
     if pos != -1
