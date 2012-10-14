@@ -181,7 +181,7 @@ endfunction
 
 function! s:_build_response(res)
   let res = a:res
-  if res =~# '^HTTP/1.\d [13]' || res =~# '^HTTP/1\.\d 200 Connection established'
+  while res =~# '^HTTP/1.\d [13]' || res =~# '^HTTP/1\.\d 200 Connection established'
     let pos = stridx(res, "\r\n\r\n")
     if pos != -1
       let res = res[pos + 4 :]
@@ -189,7 +189,7 @@ function! s:_build_response(res)
       let pos = stridx(res, "\n\n")
       let res = res[pos + 2 :]
     endif
-  endif
+  endwhile
   let pos = stridx(res, "\r\n\r\n")
   if pos != -1
     let content = res[pos + 4 :]
