@@ -139,7 +139,8 @@ endfunction
 
 let s:command_builders = {}
 function! s:command_builders.curl(settings, quote)
-  let command = 'curl -L -s -k -i -X ' . a:settings.method
+  let command = get(a:settings, 'command', 'curl')
+  let command .= ' -L -s -k -i -X ' . a:settings.method
   let command .= s:_make_header_args(a:settings.headers, '-H ', a:quote)
   let command .= ' ' . a:quote . a:settings.url . a:quote
   if has_key(a:settings, '_file')
@@ -149,7 +150,8 @@ function! s:command_builders.curl(settings, quote)
 endfunction
 function! s:command_builders.wget(settings, quote)
   let a:settings.headers['X-HTTP-Method-Override'] = a:settings.method
-  let command = 'wget -O- --save-headers --server-response -q -L '
+  let command = get(a:settings, 'command', 'wget')
+  let command .= ' -O- --save-headers --server-response -q -L '
   let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
   let command .= ' ' . a:quote . a:settings.url . a:quote
   if has_key(a:settings, '_file')

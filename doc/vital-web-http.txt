@@ -59,6 +59,9 @@ request({method}, {url} [, {settings}])
 	"client"	Default: "curl" or "wget" (executable one)
 		HTTP client used for a request.
 
+	"command"
+		Command name for client.  You should use with "client".
+
 parseHeader({headers})			*Vital.Web.Http.parseHeader()*
 	Parse {headers} list to a dictionary.
 	Duplicated fields are overwritten.
