@@ -142,6 +142,13 @@ function! s:command_builders.curl(settings, quote)
   let command = get(a:settings, 'command', 'curl')
   let command .= ' -L -s -k -i -X ' . a:settings.method
   let command .= s:_make_header_args(a:settings.headers, '-H ', a:quote)
+  if has_key(a:settings, 'username')
+    let auth = a:settings.username
+    if has_key(a:settings, 'password')
+      let auth .= ':' . a:settings.password
+    endif
+    let command .= ' --anyauth --user ' . a:quote . auth . a:quote
+  endif
   let command .= ' ' . a:quote . a:settings.url . a:quote
   if has_key(a:settings, '_file')
     let command .= ' --data-binary @' . a:quote . a:settings._file . a:quote
@@ -153,6 +160,12 @@ function! s:command_builders.wget(settings, quote)
   let command = get(a:settings, 'command', 'wget')
   let command .= ' -O- --save-headers --server-response -q -L '
   let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
+  if has_key(a:settings, 'username')
+    let command .= ' --http-user ' . a:quote . a:settings.username . a:quote
+  endif
+  if has_key(a:settings, 'password')
+    let command .= ' --http-password ' . a:quote . a:settings.password . a:quote
+  endif
   let command .= ' ' . a:quote . a:settings.url . a:quote
   if has_key(a:settings, '_file')
     let command .= ' --post-data @' . a:quote . a:settings._file . a:quote
@@ -189,7 +202,8 @@ function! s:_build_response(res)
       let res = res[pos :]
     endif
   endif
-  while res =~# '^HTTP/1.\d [13]' || res =~# '^HTTP/1\.\d 200 Connection established'
+  while res =~# '^HTTP/1.\d \%([13]\|401\)' ||
+  \     res =~# '^HTTP/1\.\d 200 Connection established'
     let pos = stridx(res, "\r\n\r\n")
     if pos != -1
       let res = res[pos + 4 :]

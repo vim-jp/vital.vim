@@ -56,6 +56,12 @@ request({method}, {url} [, {settings}])
 		Content-Type for "data".
 		This is one of "headers".  This is used preferentially.
 
+	"username"	Default: (None)
+		User name for an HTTP authentication.
+
+	"password"	Default: (None)
+		Password for an HTTP authentication.
+
 	"client"	Default: "curl" or "wget" (executable one)
 		HTTP client used for a request.
 
