@@ -82,6 +82,10 @@ function! s:encodeURIComponent(items)
   return ret
 endfunction
 
+let s:default_settings = {
+\   'method': 'GET',
+\   'headers': {},
+\ }
 function! s:request(...)
   let settings = {}
   for arg in a:000
@@ -95,49 +99,46 @@ function! s:request(...)
     endif
     unlet arg
   endfor
-  let url = get(settings, 'url', '')
-  let method = toupper(get(settings, 'method', 'GET'))
-  let headers = get(settings, 'headers', {})
+  call extend(settings, s:default_settings, 'keep')
   if has_key(settings, 'contentType')
-    let headers['Content-Type'] = settings.contentType
+    let settings.headers['Content-Type'] = settings.contentType
   endif
   let quote = &shellxquote == '"' ?  "'" : '"'
   if has_key(settings, 'param')
     let getdatastr = s:encodeURI(settings.param)
     if strlen(getdatastr)
-      let url .= '?' . getdatastr
+      let settings.url .= '?' . getdatastr
     endif
   endif
-  let has_data = has_key(settings, 'data')
-  if has_data
+  if has_key(settings, 'data')
     if s:prelude.is_dict(settings.data)
       let postdatastr = s:encodeURI(settings.data)
     else
       let postdatastr = settings.data
     endif
-    let file = tempname()
-    call writefile(split(postdatastr, "\n"), file, "b")
+    let settings._file = tempname()
+    call writefile(split(postdatastr, "\n"), settings._file, "b")
   endif
   if executable('curl')
-    let command = 'curl -L -s -k -i -X ' . method
-    let command .= s:_make_header_args(headers, '-H ', quote)
-    let command .= ' ' . quote . url . quote
-    if has_data
-      let command .= ' --data-binary @' . quote . file . quote
+    let command = 'curl -L -s -k -i -X ' . settings.method
+    let command .= s:_make_header_args(settings.headers, '-H ', quote)
+    let command .= ' ' . quote . settings.url . quote
+    if has_key(settings, '_file')
+      let command .= ' --data-binary @' . quote . settings._file . quote
     endif
     let res = s:prelude.system(command)
   elseif executable('wget')
-    let headers['X-HTTP-Method-Override'] = method
+    let settings.headers['X-HTTP-Method-Override'] = settings.method
     let command = 'wget -O- --save-headers --server-response -q -L '
-    let command .= s:_make_header_args(headers, '--header=', quote)
-    let command .= ' ' . quote . url . quote
-    if has_data
-      let command .= ' --post-data @' . quote . file . quote
+    let command .= s:_make_header_args(settings.headers, '--header=', quote)
+    let command .= ' ' . quote . settings.url . quote
+    if has_key(settings, '_file')
+      let command .= ' --post-data @' . quote . settings._file . quote
     endif
     let res = s:prelude.system(command)
   endif
-  if has_data
-    call delete(file)
+  if has_key(settings, '_file')
+    call delete(settings._file)
   endif
   return s:_build_response(res)
 endfunction
