@@ -102,6 +102,12 @@ function! s:request(...)
     unlet arg
   endfor
   call extend(settings, s:default_settings, 'keep')
+  if !has_key(settings, 'url')
+    throw 'Vital.Web.Http.request(): "url" parameter is required.'
+  endif
+  if !has_key(s:command_builders, settings.client)
+    throw 'Vital.Web.Http.request(): Unknown client "' . settings.client . "'"
+  endif
   if has_key(settings, 'contentType')
     let settings.headers['Content-Type'] = settings.contentType
   endif
