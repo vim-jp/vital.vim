@@ -95,7 +95,10 @@ RESPONSE				*Vital.Web.Http-response*
 	    "Content-Type: text/html",
 	    "Content-Length: 310"
 	  ],
-	  "content": "<html> ....."
+	  "content": "<html> .....",
+	  "status": 200,
+	  "statusText": "OK",
+	  "success": 1,
 	}
 <
 ==============================================================================

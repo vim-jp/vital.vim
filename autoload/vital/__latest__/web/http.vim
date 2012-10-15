@@ -235,10 +235,21 @@ function! s:_build_response(res)
     let pos = stridx(res, "\n\n")
     let content = res[pos + 2 :]
   endif
-  return {
-  \   'header' : split(res[: pos - 1], '\r\?\n'),
-  \   'content': content
+
+  let header = split(res[: pos - 1], '\r\?\n')
+  let response = {
+  \   'header' : header,
+  \   'content': content,
   \ }
+
+  let matched = matchlist(header[0], '^HTTP/1\.\d\s\+\(\d\+\)\s\+\(.*\)')
+  if !empty(matched)
+    let [status, statusText] = matched[1 : 2]
+    let response.status = status - 0
+    let response.statusText = statusText
+    let response.success = status =~# '^2'
+  endif
+  return response
 endfunction
 
 function! s:_make_header_args(headdata, option, quote)
