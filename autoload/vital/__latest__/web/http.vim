@@ -108,7 +108,7 @@ function! s:request(...)
   if !has_key(settings, 'url')
     throw 'Vital.Web.Http.request(): "url" parameter is required.'
   endif
-  if !has_key(s:command_builders, settings.client)
+  if !has_key(s:clients, settings.client)
     throw 'Vital.Web.Http.request(): Unknown client "' . settings.client . "'"
   endif
   if has_key(settings, 'contentType')
@@ -120,30 +120,36 @@ function! s:request(...)
       let settings.url .= '?' . getdatastr
     endif
   endif
+  let settings._file = {}
   if has_key(settings, 'data')
     if s:Prelude.is_dict(settings.data)
       let postdatastr = s:encodeURI(settings.data)
     else
       let postdatastr = settings.data
     endif
-    let settings._file = tempname()
-    call writefile(split(postdatastr, "\n"), settings._file, "b")
+    let settings._file.post = tempname()
+    call writefile(split(postdatastr, "\n"), settings._file.post, "b")
   endif
 
   let quote = &shellxquote == '"' ?  "'" : '"'
-  let command = s:command_builders[settings.client](settings, quote)
-  let res = s:Prelude.system(command)
+  let [header, content] = s:clients[settings.client](settings, quote)
 
-  if has_key(settings, '_file')
-    call delete(settings._file)
-  endif
-  return s:_build_response(res)
+  for file in values(settings._file)
+    if filereadable(file)
+      call delete(file)
+    endif
+  endfor
+  return s:_build_response(header, content)
 endfunction
 
-let s:command_builders = {}
-function! s:command_builders.curl(settings, quote)
+let s:clients = {}
+function! s:clients.curl(settings, quote)
   let command = get(a:settings, 'command', 'curl')
-  let command .= ' -L -s -k -i -X ' . a:settings.method
+  let a:settings._file.header = tempname()
+  let a:settings._file.content = tempname()
+  let command .= ' --dump-header ' . a:quote . a:settings._file.header . a:quote
+  let command .= ' --output ' . a:quote . a:settings._file.content . a:quote
+  let command .= ' -L -s -k -X ' . a:settings.method
   let command .= s:_make_header_args(a:settings.headers, '-H ', a:quote)
   let timeout = get(a:settings, 'timeout', '')
   if timeout =~# '^\d\+$'
@@ -157,12 +163,20 @@ function! s:command_builders.curl(settings, quote)
     let command .= ' --anyauth --user ' . a:quote . auth . a:quote
   endif
   let command .= ' ' . a:quote . a:settings.url . a:quote
-  if has_key(a:settings, '_file')
-    let command .= ' --data-binary @' . a:quote . a:settings._file . a:quote
+  if has_key(a:settings._file, 'post')
+    let file = a:settings._file.post
+    let command .= ' --data-binary @' . a:quote . file . a:quote
   endif
-  return command
+
+  call s:Prelude.system(command)
+
+  let headerstr = s:_readfile(a:settings._file.header)
+  let header_chunks = split(headerstr, "\r\n\r\n")
+  let header = empty(header_chunks) ? [] : split(header_chunks[-1], "\r\n")
+  let content = s:_readfile(a:settings._file.content)
+  return [header, content]
 endfunction
-function! s:command_builders.wget(settings, quote)
+function! s:clients.wget(settings, quote)
   let command = get(a:settings, 'command', 'wget')
   let method = a:settings.method
   if method ==# 'HEAD'
@@ -170,7 +184,11 @@ function! s:command_builders.wget(settings, quote)
   elseif method !=# 'GET' && method !=# 'POST'
     let a:settings.headers['X-HTTP-Method-Override'] = a:settings.method
   endif
-  let command .= ' -O- --save-headers --server-response -q -L '
+  let a:settings._file.header = tempname()
+  let a:settings._file.content = tempname()
+  let command .= ' -o ' . a:quote . a:settings._file.header . a:quote
+  let command .= ' -O ' . a:quote . a:settings._file.content . a:quote
+  let command .= ' --server-response -q -L '
   let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
   let timeout = get(a:settings, 'timeout', '')
   if timeout =~# '^\d\+$'
@@ -183,10 +201,23 @@ function! s:command_builders.wget(settings, quote)
     let command .= ' --http-password ' . a:quote . a:settings.password . a:quote
   endif
   let command .= ' ' . a:quote . a:settings.url . a:quote
-  if has_key(a:settings, '_file')
-    let command .= ' --post-data @' . a:quote . a:settings._file . a:quote
+  if has_key(a:settings._file, 'post')
+    let file = a:settings._file.post
+    let command .= ' --post-data @' . a:quote . file . a:quote
   endif
-  return command
+
+  call s:Prelude.system(command)
+
+  if filereadable(a:settings._file.header)
+    let header_lines = readfile(a:settings._file.header, 'b')
+    call map(header_lines, 'matchstr(v:val, "^\\s*\\zs.*")')
+    let headerstr = join(header_lines, "\n")
+    let header = split(split(headerstr, '\n\zeHTTP/1\.\d')[-1], "\n")
+  else
+    let header = []
+  endif
+  let content = s:_readfile(a:settings._file.content)
+  return [header, content]
 endfunction
 
 function! s:get(url, ...)
@@ -208,47 +239,28 @@ function! s:post(url, ...)
   return s:request(settings)
 endfunction
 
-function! s:_build_response(res)
-  let res = a:res
-  if res =~# '^\s'
-    " wget returns extra headers with indention
-    " when redirected or authenticated
-    let pos = match(res, '\n\zs\S')
-    if 0 <= pos
-      let res = res[pos :]
-    endif
+function! s:_readfile(file)
+  if filereadable(a:file)
+    return join(readfile(a:file, 'b'), "\n")
   endif
-  while res =~# '^HTTP/1.\d \%([13]\|401\)' ||
-  \     res =~# '^HTTP/1\.\d 200 Connection established'
-    let pos = stridx(res, "\r\n\r\n")
-    if pos != -1
-      let res = res[pos + 4 :]
-    else
-      let pos = stridx(res, "\n\n")
-      let res = res[pos + 2 :]
-    endif
-  endwhile
-  let pos = stridx(res, "\r\n\r\n")
-  if pos != -1
-    let content = res[pos + 4 :]
-  else
-    let pos = stridx(res, "\n\n")
-    let content = res[pos + 2 :]
-  endif
+  return ''
+endfunction
 
-  let header = split(res[: pos - 1], '\r\?\n')
+function! s:_build_response(header, content)
   let response = {
-  \   'header' : header,
-  \   'content': content,
+  \   'header' : a:header,
+  \   'content': a:content,
   \ }
 
-  let status_line = remove(header, 0)
-  let matched = matchlist(status_line, '^HTTP/1\.\d\s\+\(\d\+\)\s\+\(.*\)')
-  if !empty(matched)
-    let [status, statusText] = matched[1 : 2]
-    let response.status = status - 0
-    let response.statusText = statusText
-    let response.success = status =~# '^2'
+  if !empty(a:header)
+    let status_line = remove(a:header, 0)
+    let matched = matchlist(status_line, '^HTTP/1\.\d\s\+\(\d\+\)\s\+\(.*\)')
+    if !empty(matched)
+      let [status, statusText] = matched[1 : 2]
+      let response.status = status - 0
+      let response.statusText = statusText
+      let response.success = status =~# '^2'
+    endif
   endif
   return response
 endfunction
