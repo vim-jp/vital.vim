@@ -242,7 +242,8 @@ function! s:_build_response(res)
   \   'content': content,
   \ }
 
-  let matched = matchlist(header[0], '^HTTP/1\.\d\s\+\(\d\+\)\s\+\(.*\)')
+  let status_line = remove(header, 0)
+  let matched = matchlist(status_line, '^HTTP/1\.\d\s\+\(\d\+\)\s\+\(.*\)')
   if !empty(matched)
     let [status, statusText] = matched[1 : 2]
     let response.status = status - 0
