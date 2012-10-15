@@ -5,8 +5,8 @@ set cpo&vim
 function! s:_vital_loaded(V)
   let s:V = a:V
 
-  let s:prelude = s:V.import('Prelude')
-  let s:string = s:V.import('Data.String')
+  let s:Prelude = s:V.import('Prelude')
+  let s:String = s:V.import('Data.String')
 endfunction
 
 function! s:_vital_depends()
@@ -38,12 +38,12 @@ endfunction
 
 function! s:encodeURI(items)
   let ret = ''
-  if s:prelude.is_dict(a:items)
+  if s:Prelude.is_dict(a:items)
     for key in sort(keys(a:items))
       if strlen(ret) | let ret .= "&" | endif
       let ret .= key . "=" . s:encodeURI(a:items[key])
     endfor
-  elseif s:prelude.is_list(a:items)
+  elseif s:Prelude.is_list(a:items)
     for item in sort(a:items)
       if strlen(ret) | let ret .= "&" | endif
       let ret .= item
@@ -56,12 +56,12 @@ endfunction
 
 function! s:encodeURIComponent(items)
   let ret = ''
-  if s:prelude.is_dict(a:items)
+  if s:Prelude.is_dict(a:items)
     for key in sort(keys(a:items))
       if strlen(ret) | let ret .= "&" | endif
       let ret .= key . "=" . s:encodeURIComponent(a:items[key])
     endfor
-  elseif s:prelude.is_list(a:items)
+  elseif s:Prelude.is_list(a:items)
     for item in sort(a:items)
       if strlen(ret) | let ret .= "&" | endif
       let ret .= item
@@ -77,7 +77,7 @@ function! s:encodeURIComponent(items)
       elseif ch == ' '
         let ret .= '+'
       else
-        let ret .= '%' . substitute('0' . s:string.nr2hex(char2nr(ch)), '^.*\(..\)$', '\1', '')
+        let ret .= '%' . substitute('0' . s:String.nr2hex(char2nr(ch)), '^.*\(..\)$', '\1', '')
       endif
       let i = i + 1
     endwhile
@@ -94,9 +94,9 @@ let s:default_settings = {
 function! s:request(...)
   let settings = {}
   for arg in a:000
-    if s:prelude.is_dict(arg)
+    if s:Prelude.is_dict(arg)
       let settings = extend(settings, arg, 'keep')
-    elseif s:prelude.is_string(arg)
+    elseif s:Prelude.is_string(arg)
       if has_key(settings, 'url')
         let settings.method = settings.url
       endif
@@ -121,7 +121,7 @@ function! s:request(...)
     endif
   endif
   if has_key(settings, 'data')
-    if s:prelude.is_dict(settings.data)
+    if s:Prelude.is_dict(settings.data)
       let postdatastr = s:encodeURI(settings.data)
     else
       let postdatastr = settings.data
@@ -132,7 +132,7 @@ function! s:request(...)
 
   let quote = &shellxquote == '"' ?  "'" : '"'
   let command = s:command_builders[settings.client](settings, quote)
-  let res = s:prelude.system(command)
+  let res = s:Prelude.system(command)
 
   if has_key(settings, '_file')
     call delete(settings._file)
@@ -244,7 +244,7 @@ endfunction
 function! s:_make_header_args(headdata, option, quote)
   let args = ''
   for [key, value] in items(a:headdata)
-    if s:prelude.is_windows()
+    if s:Prelude.is_windows()
       let value = substitute(value, '"', '"""', 'g')
     endif
     let args .= " " . a:option . a:quote . key . ": " . value . a:quote
