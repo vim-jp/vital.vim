@@ -142,6 +142,10 @@ function! s:command_builders.curl(settings, quote)
   let command = get(a:settings, 'command', 'curl')
   let command .= ' -L -s -k -i -X ' . a:settings.method
   let command .= s:_make_header_args(a:settings.headers, '-H ', a:quote)
+  let timeout = get(a:settings, 'timeout', '')
+  if timeout =~# '^\d\+$'
+    let command .= ' --max-time ' . timeout
+  endif
   if has_key(a:settings, 'username')
     let auth = a:settings.username
     if has_key(a:settings, 'password')
@@ -165,6 +169,10 @@ function! s:command_builders.wget(settings, quote)
   endif
   let command .= ' -O- --save-headers --server-response -q -L '
   let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
+  let timeout = get(a:settings, 'timeout', '')
+  if timeout =~# '^\d\+$'
+    let command .= ' --timeout=' . timeout
+  endif
   if has_key(a:settings, 'username')
     let command .= ' --http-user ' . a:quote . a:settings.username . a:quote
   endif

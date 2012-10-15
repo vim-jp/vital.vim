@@ -56,6 +56,9 @@ request({method}, {url} [, {settings}])
 		Content-Type for "data".
 		This is one of "headers".  This is used preferentially.
 
+	"timeout"	Default: (None)
+		Network timeout by seconds.
+
 	"username"	Default: (None)
 		User name for an HTTP authentication.
 
