@@ -253,13 +253,14 @@ function! s:_build_response(header, content)
   \ }
 
   if !empty(a:header)
-    let status_line = remove(a:header, 0)
+    let status_line = get(a:header, 0)
     let matched = matchlist(status_line, '^HTTP/1\.\d\s\+\(\d\+\)\s\+\(.*\)')
     if !empty(matched)
       let [status, statusText] = matched[1 : 2]
       let response.status = status - 0
       let response.statusText = statusText
       let response.success = status =~# '^2'
+      call remove(a:header, 0)
     endif
   endif
   return response
