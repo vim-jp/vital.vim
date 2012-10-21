@@ -1,0 +1,33 @@
+*vital-vim-compat.txt*	Vim compatibility wrapper functions.
+
+==============================================================================
+CONTENTS				*Vital.Vim.Compat-contents*
+
+INTRODUCTION			|Vital.Vim.Compat-introduction|
+INTERFACE			|Vital.Vim.Compat-interface|
+  FUNCTIONS			  |Vital.Vim.Compat-functions|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Vim.Compat-introduction*
+
+*Vital.Vim.Compat* provides vim compatibility wrapper functions for different
+versions/patchlevels of Vim.
+
+This module is not for multiple OS compatibilities but for versions of Vim
+itself.
+
+==============================================================================
+INTERFACE				*Vital.Vim.Compat-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Vim.Compat-functions*
+
+shiftwidth()				*Vital.Vim.Compat.shiftwidth()*
+	Compatibility function of |shiftwidth()| available from Vim 7.3.694.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
