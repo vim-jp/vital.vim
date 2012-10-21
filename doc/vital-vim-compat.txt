@@ -24,6 +24,10 @@ INTERFACE				*Vital.Vim.Compat-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Vim.Compat-functions*
 
+has_version({version})			*Vital.Vim.Compat.has_version()*
+	Returns true if the version of Vim is same or larger than {version}.
+	{version} is a string like "7.3.123".
+
 shiftwidth()				*Vital.Vim.Compat.shiftwidth()*
 	Compatibility function of |shiftwidth()| available from Vim 7.3.694.
 
