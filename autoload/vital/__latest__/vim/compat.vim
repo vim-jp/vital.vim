@@ -23,6 +23,11 @@ if exists('*shiftwidth')
   function! s:shiftwidth()
     return shiftwidth()
   endfunction
+elseif s:has_version('7.3.629')
+  " 7.3.629: When 'shiftwidth' is zero use the value of 'tabstop'.
+  function! s:shiftwidth()
+    return &shiftwidth == 0 ? &tabstop : &shiftwidth
+  endfunction
 else
   function! s:shiftwidth()
     return &shiftwidth
