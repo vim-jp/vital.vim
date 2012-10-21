@@ -7,7 +7,7 @@ set cpo&vim
 " This module is not for multiple OS compatibilities but for versions of Vim
 " itself.
 
-" Patch 7.3.694
+" Patch 7.3.629
 if exists('*shiftwidth')
   function! s:shiftwidth()
     return shiftwidth()
