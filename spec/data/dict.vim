@@ -42,3 +42,27 @@ Context Data.Dict.make_index()
     Should {'apple': 'true', 'orange': 'true', 'banana': 'true'} == g:D.make_index(['apple', 'orange', 'banana'], 'true')
   End
 End
+
+Context Data.Dict.pick()
+  It returns filtered dictionary that only have values for the whitelisted
+    Should {'apple': 'red', 'melon': 'green'} ==
+    \      g:D.pick({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
+    \               ['apple', 'melon'])
+  End
+  It ignores unexisting item of whitelist
+    Should {'apple': 'red', 'melon': 'green'} ==
+    \      g:D.pick({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
+    \               ['apple', 'orange', 'lemon', 'melon'])
+  End
+  It returns new dictionary
+    let dict = {}
+    Should dict isnot g:D.pick(dict, [])
+    unlet dict
+  End
+  It doesn't change the passed dictionary
+    let dict = {'apple': 'red', 'banana': 'yellow', 'melon': 'green'}
+    Should {} == g:D.pick(dict, [])
+    Should {'apple': 'red', 'banana': 'yellow', 'melon': 'green'} == dict
+    unlet dict
+  End
+End

@@ -28,6 +28,16 @@ function! s:make_index(list, ...)
   return s:make(a:list, [], value)
 endfunction
 
+function! s:pick(dict, keys)
+  let new_dict = {}
+  for key in a:keys
+    if has_key(a:dict, key)
+      let new_dict[key] = a:dict[key]
+    endif
+  endfor
+  return new_dict
+endfunction
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
