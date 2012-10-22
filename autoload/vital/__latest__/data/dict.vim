@@ -38,6 +38,15 @@ function! s:pick(dict, keys)
   return new_dict
 endfunction
 
+function! s:omit(dict, keys)
+  let new_dict = copy(a:dict)
+  for key in a:keys
+    if has_key(a:dict, key)
+      call remove(new_dict, key)
+    endif
+  endfor
+  return new_dict
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

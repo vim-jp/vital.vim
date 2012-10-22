@@ -51,6 +51,8 @@ pick({dict}, {keys})			*Vital.Datal.Dict.pick()*
 	Returns a copy of the {dict}, filtered to only have values for the
 	whitelisted {keys}.
 
+omit({dict}, {keys})			*Vital.Datal.Dict.omit()*
+	Returns a copy of the {dict}, filtered to omit the blacklisted {keys}.
 
 
 ==============================================================================

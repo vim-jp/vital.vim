@@ -66,3 +66,27 @@ Context Data.Dict.pick()
     unlet dict
   End
 End
+
+Context Data.Dict.omit()
+  It returns filtered dictionary that omit the blacklisted
+    Should {'banana': 'yellow'} ==
+    \      g:D.omit({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
+    \               ['apple', 'melon'])
+  End
+  It ignores unexisting item of blacklist
+    Should {'banana': 'yellow'} ==
+    \      g:D.omit({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
+    \               ['apple', 'orange', 'lemon', 'melon'])
+  End
+  It returns new dictionary
+    let dict = {}
+    Should dict isnot g:D.omit(dict, [])
+    unlet dict
+  End
+  It doesn't change the passed dictionary
+    let dict = {'apple': 'red', 'banana': 'yellow', 'melon': 'green'}
+    Should {} == g:D.omit(dict, keys(dict))
+    Should {'apple': 'red', 'banana': 'yellow', 'melon': 'green'} == dict
+    unlet dict
+  End
+End
