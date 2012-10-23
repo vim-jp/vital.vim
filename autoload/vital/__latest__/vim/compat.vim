@@ -7,6 +7,9 @@ set cpo&vim
 " This module is not for multiple OS compatibilities but for versions of Vim
 " itself.
 
+" e.g.)
+" echo s:has_version('7.3.629')
+" echo s:has_version('7.3')
 function! s:has_version(version)
   let versions = split(a:version, '\.')
   if len(versions) == 2
