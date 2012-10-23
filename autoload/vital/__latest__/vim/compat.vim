@@ -9,7 +9,9 @@ set cpo&vim
 
 function! s:has_version(version)
   let versions = split(a:version, '\.')
-  if len(versions) != 3
+  if len(versions) == 2
+    let versions += [1]
+  elseif len(versions) != 3
     return 0
   endif
   let vim_version = versions[0] * 100 + versions[1]
