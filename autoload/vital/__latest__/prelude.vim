@@ -364,21 +364,6 @@ function! s:get_last_status()
         \ vimproc#get_last_status() : v:shell_error
 endfunction
 
-" e.g.)
-" echo s:fill_version('7.3.629')
-" echo s:fill_version('7.3')
-function! s:fill_version(str)
-    let m = matchlist(a:str, '\v'.'^(\d+)\.(\d{1,2})(\.\d+)?$')
-    if empty(m)
-        throw 'error: Vital.Prelude.fill_version(): '
-        \   . 'version string format is invalid: '.a:str
-    endif
-    let ver = printf('%d%02d', m[1], m[2])
-    let patch = m[3] ==# '' ? '1' : m[3][1:]
-    return v:version ># ver
-    \   || (v:version is ver && has('patch'.patch))
-endfunction
-
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
