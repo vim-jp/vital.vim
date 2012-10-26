@@ -79,7 +79,7 @@ function! s:_import(name, scripts)
   let sid = get(a:scripts, path, 0)
   if !sid
     try
-      source `=path`
+      execute 'source' fnameescape(path)
     catch /^Vim\%((\a\+)\)\?:E484/
       throw 'vital: module not found: ' . a:name
     catch /^Vim\%((\a\+)\)\?:E127/
