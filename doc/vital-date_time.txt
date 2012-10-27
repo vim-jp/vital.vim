@@ -251,7 +251,7 @@ TimeDelta.years()		*Vital.DateTime-TimeDelta.years()*
 	The year is always calculated in 365 days.
 
 TimeDelta.total_seconds()	*Vital.DateTime-TimeDelta.total_seconds()*
-	Returns the total eeconds of the delta.
+	Returns the total seconds of the delta.
 	This may overflow, when the delta is large.
 
 TimeDelta.sign()		*Vital.DateTime-TimeDelta.sign()*
