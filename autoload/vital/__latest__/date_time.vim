@@ -192,7 +192,7 @@ function! s:delta(...)
 endfunction
 
 function! s:compare(d1, d2)
-  return a:d1.compareTo(a:d2)
+  return a:d1.compare(a:d2)
 endfunction
 
 " Returns month names according to the current or specified locale.
@@ -313,9 +313,9 @@ function! s:DateTime.is_leap_year()
   return s:is_leap_year(self._year)
 endfunction
 function! s:DateTime.is(dt)
-  return self.compareTo(a:dt) == 0
+  return self.compare(a:dt) == 0
 endfunction
-function! s:DateTime.compareTo(dt)
+function! s:DateTime.compare(dt)
   return self.delta(a:dt).sign()
 endfunction
 function! s:DateTime.delta(dt)

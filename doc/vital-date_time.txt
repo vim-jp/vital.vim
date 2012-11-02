@@ -164,7 +164,7 @@ DateTime.is({DateTime})		*Vital.DateTime-DateTime.is()*
 	Returns true if this DateTime and the specified {DateTime} is the same
 	time.
 
-DateTime.compareTo({DateTime})	*Vital.DateTime-DateTime.compareTo()*
+DateTime.compare({DateTime})	*Vital.DateTime-DateTime.compare()*
 	Returns -1 if {DateTime} is after than this DateTime.
 	Returns 0 if {DateTime} and this DateTime is same.
 	Returns 1 if {DateTime} is before than this DateTime.
