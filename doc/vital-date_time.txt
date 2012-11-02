@@ -174,11 +174,11 @@ DateTime.delta({DateTime})	*Vital.DateTime-DateTime.delta()*
 	It is the delta of this DateTime to {DateTime}.
 
 DateTime.to({TimeDelta})	*Vital.DateTime-DateTime.to()*
-DateTime.to({TimeZone})
+DateTime.to({timezone})
 	Returns a new object from which the specified time is different.
 	This function accepts the same arguments as |Vital.DateTime.delta()|.
-	If {TimeZone} object is passed, this returns a new object from which
-	the timezone is different.
+	If {timezone} is passed, this returns a new object from which the
+	timezone is different.
 
 				*Vital.DateTime-DateTime.format()*
 DateTime.format({format} [, {locale}])

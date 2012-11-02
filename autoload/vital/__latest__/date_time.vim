@@ -325,9 +325,10 @@ function! s:DateTime.delta(dt)
 endfunction
 function! s:DateTime.to(...)
   let dt = self._clone()
-  if a:0 && s:_is_class(a:1, 'TimeZone')
-    let dt._second += a:1.offset() - dt.timezone().offset()
-    let dt._timezone = a:1
+  if a:0 == 1 && !s:_is_class(a:1, 'TimeDelta')
+    let tz = s:timezone(a:1)
+    let dt._second += tz.offset() - dt.timezone().offset()
+    let dt._timezone = tz
     return dt._normalize()
   endif
   let delta = call('s:delta', a:000)
