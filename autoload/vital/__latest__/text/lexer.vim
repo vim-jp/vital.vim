@@ -1,44 +1,4 @@
 
-" how to use {{{
-" let V = vital#of('vital')
-" let L = V.import('Text.Lexer')
-" try
-"   echo L.new(['digit','\d\+'],['whitespace','\s\+']).parse('53  4')
-"   " [
-"   "   {'col': 0, 'label': 'digit', 'matched_text': '53'},
-"   "   {'col': 2, 'label': 'whitespace', 'matched_text': '  '},
-"   "   {'col': 4, 'label': 'digit', 'matched_text': '4'}
-"   " ]
-" catch 
-"   echo v:_exception
-" endtry
-"
-" try
-"   let obj = L.simple_parser(L.new(['digit','\d\+'],['whitespace','\s\+']).parse('53  4'))
-"   function! obj.statement() dict "{{{
-"     let tokens = []
-"     if self.next_is('digit')
-"       let tokens += [self.consume()]
-"     elseif self.next_is('whitespace')
-"       call self.consume()
-"     elseif ! self.end()
-"       call s:_exception('syntax error.')
-"     endif
-"     return tokens
-"   endfunction "}}}
-"   while ! obj.end()
-"     let obj.tokens += obj.statement()
-"   endwhile
-"   echo obj.tokens
-"   " [
-"   "   {'col': 0, 'label': 'digit', 'matched_text': '53'},
-"   "   {'col': 4, 'label': 'digit', 'matched_text': '4'}
-"   " ]
-" catch
-"   echo v:_exception
-" endtry
-" }}}
-
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -63,7 +23,7 @@ endfunction "}}}
 function! s:_exception(msg) "{{{
   throw printf('[lexer] %s', a:msg)
 endfunction "}}}
-function! s:new(...) "{{{
+function! s:lexer(...) "{{{
   let obj = { 'tokens' : [] }
   for e in a:000
     let obj.tokens += [(s:_token(e))]

@@ -1,0 +1,92 @@
+*vital-text-lexer.txt*	lexer library.
+
+Maintainer: rbtnn <naru123456789@gmail.com>
+
+==============================================================================
+CONTENTS			                *Vital.Text.Lexer-contents*
+
+INTRODUCTION		                 |Vital.Lexer-introduction|
+INTERFACE		                 |Vital.Lexer-interface|
+  FUNCTIONS			         |Vital.Lexer-functions|
+OBJECTS			                 |Vital.Lexer-objects|
+  Lexer Object   	                 |Vital.Lexer-Lexer|
+EXEMPLES	                 	 |Vital.Lexer-exemples|
+
+==============================================================================
+INTRODUCTION			                *Vital.Lexer-introduction*
+
+*Vital.Lexer* is lexer library.
+
+==============================================================================
+INTERFACE			                *Vital.Lexer-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			                *Vital.Lexer-functions*
+
+lexer(...)		                        *Vital.Lexer.lexer()*
+	Creates a new Lexer object.
+	Format of {...} is "[ [label,regex] , ... ]".
+
+==============================================================================
+OBJECTS				                *Vital.Lexer-objects*
+
+------------------------------------------------------------------------------
+Lexer Object		                        *Vital.Lexer-Lexer*
+
+Lexer.parse(expr)		                *Vital.Lexer-Lexer.expr()*
+	parse {expr}.
+
+Lexer.simple_parser(lexered_tokens)             *Vital.Lexer-Lexer.simple_parser()*
+	Creates a new Parser object.
+	This Parser object is a parser interface which is related Lexer object.
+	{lexered_tokens} is a result of Lexer.parse(expr).
+	Parser object has end(), next(), next_is(label) and consume().
+
+==============================================================================
+EXEMPLES					*Vital.Lexer-exemples*
+
+lexer exemple                    		*Vital.Lexer-lexer-exemple*
+>
+	let V = vital#of('vital')
+	let L = V.import('Text.Lexer')
+	try
+	  echo L.lexer(['digit','\d\+'],['whitespace','\s\+']).parse('53  4')
+	  " [
+	  "   {'col': 0, 'label': 'digit', 'matched_text': '53'},
+	  "   {'col': 2, 'label': 'whitespace', 'matched_text': '  '},
+	  "   {'col': 4, 'label': 'digit', 'matched_text': '4'}
+	  " ]
+	catch 
+	  echo v:exception
+	endtry
+<
+
+simple_parser exemple		        	*Vital.Lexer-simple_parser-exemple*
+>
+	try
+	  let obj = L.simple_parser(L.lexer(['digit','\d\+'],['whitespace','\s\+']).parse('53  4'))
+	  function! obj.statement() dict "{{{
+	    let tokens = []
+	    if self.next_is('digit')
+	      let tokens += [self.consume()]
+	    elseif self.next_is('whitespace')
+	      call self.consume()
+	    elseif ! self.end()
+	      call s:_exception('syntax error.')
+	    endif
+	    return tokens
+	  endfunction "}}}
+	  while ! obj.end()
+	    let obj.tokens += obj.statement()
+	  endwhile
+	  echo obj.tokens
+	  " [
+	  "   {'col': 0, 'label': 'digit', 'matched_text': '53'},
+	  "   {'col': 4, 'label': 'digit', 'matched_text': '4'}
+	  " ]
+	catch
+	  echo v:exception
+	endtry
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
