@@ -17,15 +17,15 @@ function! s:_token(list) "{{{
     let tkn = { 'label' : a:list[0], 'regex' : a:list[1] }
     return tkn
   else
-    call s:_exception('first argument-type is not a list.')
+    call s:_exception('first argument is not list.')
   endif
 endfunction "}}}
 function! s:_exception(msg) "{{{
-  throw printf('[lexer] %s', a:msg)
+  throw printf('[Text.Lexer] %s', a:msg)
 endfunction "}}}
-function! s:lexer(...) "{{{
+function! s:lexer(patterns) "{{{
   let obj = { 'tokens' : [] }
-  for e in a:000
+  for e in a:patterns
     let obj.tokens += [(s:_token(e))]
   endfor
   function! obj.parse(string) dict "{{{

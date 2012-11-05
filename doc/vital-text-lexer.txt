@@ -10,6 +10,7 @@ INTERFACE		                 |Vital.Lexer-interface|
   FUNCTIONS			         |Vital.Lexer-functions|
 OBJECTS			                 |Vital.Lexer-objects|
   Lexer Object   	                 |Vital.Lexer-Lexer|
+  Parser Object   	                 |Vital.Lexer-Parser|
 EXEMPLES	                 	 |Vital.Lexer-exemples|
 
 ==============================================================================
@@ -23,9 +24,16 @@ INTERFACE			                *Vital.Lexer-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS			                *Vital.Lexer-functions*
 
-lexer(...)		                        *Vital.Lexer.lexer()*
+lexer(patterns)		                        *Vital.Lexer.lexer()*
 	Creates a new Lexer object.
-	Format of {...} is "[ [label,regex] , ... ]".
+	{patterns} is a format such as "[ [label,regex] , ... ]".
+	Lexer object has parse(expr).
+
+simple_parser(lexed_tokens)             *Vital.Lexer.simple_parser()*
+	Creates a new Parser object.
+	This Parser object is a parser interface which is related Lexer object.
+	{lexed_tokens} is a result of Lexer.parse(expr).
+	Parser object has end(), next(), next_is(label) and consume().
 
 ==============================================================================
 OBJECTS				                *Vital.Lexer-objects*
@@ -33,14 +41,27 @@ OBJECTS				                *Vital.Lexer-objects*
 ------------------------------------------------------------------------------
 Lexer Object		                        *Vital.Lexer-Lexer*
 
-Lexer.parse(expr)		                *Vital.Lexer-Lexer.expr()*
-	parse {expr}.
+Lexer.parse(expr)		                *Vital.Lexer-Lexer.parse()*
+	Parse {expr}.
+        This return value is a list of dictionary which has following keys.
+		'matched_text' : matched text in {expr}.
+		'col' : index of 'matched_text' in {expr}.
+		'label' : label of 'matched_text'.
 
-Lexer.simple_parser(lexered_tokens)             *Vital.Lexer-Lexer.simple_parser()*
-	Creates a new Parser object.
-	This Parser object is a parser interface which is related Lexer object.
-	{lexered_tokens} is a result of Lexer.parse(expr).
-	Parser object has end(), next(), next_is(label) and consume().
+------------------------------------------------------------------------------
+Parser Object		                        *Vital.Lexer-Parser*
+
+Lexer.consume()    		                *Vital.Lexer-Parser.consume()*
+	Consume next token from {lexed_tokens}. Return this token.
+
+Lexer.next()    		                *Vital.Lexer-Parser.next()*
+	Return next token. This function does not comsume.
+
+Lexer.end()    		                        *Vital.Lexer-Parser.end()*
+	Return 1 if next() is end of {lexed_tokens}, otherwise return 0.
+
+Lexer.next_is(label)    		        *Vital.Lexer-Parser.next_is()*
+	Return 1 if next().label is {label}, otherwise return 0.
 
 ==============================================================================
 EXEMPLES					*Vital.Lexer-exemples*
@@ -50,13 +71,13 @@ lexer exemple                    		*Vital.Lexer-lexer-exemple*
 	let V = vital#of('vital')
 	let L = V.import('Text.Lexer')
 	try
-	  echo L.lexer(['digit','\d\+'],['whitespace','\s\+']).parse('53  4')
+	  echo L.lexer([['digit','\d\+'],['whitespace','\s\+']]).parse('53  4')
 	  " [
 	  "   {'col': 0, 'label': 'digit', 'matched_text': '53'},
 	  "   {'col': 2, 'label': 'whitespace', 'matched_text': '  '},
 	  "   {'col': 4, 'label': 'digit', 'matched_text': '4'}
 	  " ]
-	catch 
+	catch  '[Text.Lexer]'
 	  echo v:exception
 	endtry
 <
@@ -64,29 +85,46 @@ lexer exemple                    		*Vital.Lexer-lexer-exemple*
 simple_parser exemple		        	*Vital.Lexer-simple_parser-exemple*
 >
 	try
-	  let obj = L.simple_parser(L.lexer(['digit','\d\+'],['whitespace','\s\+']).parse('53  4'))
-	  function! obj.statement() dict "{{{
+	  let lexed_tokens = L.lexer(
+	  \   [['plus','+'],['digit','\d\+'],['whitespace','\s\+']]
+	  \ ).parse('53 +  4 + 9')
+	  let obj = L.simple_parser(lexed_tokens)
+	  function! obj.ignore() dict "{{{
+	    if ! self.end()
+	      if self.next_is('whitespace')
+		call self.consume()
+	      endif
+	    endif
+	  endfunction "}}}
+	  function! obj.digit() dict "{{{
 	    let tokens = []
+	    call self.ignore()
 	    if self.next_is('digit')
 	      let tokens += [self.consume()]
-	    elseif self.next_is('whitespace')
-	      call self.consume()
 	    elseif ! self.end()
-	      call s:_exception('syntax error.')
+	      throw '[lexer] expect digit.'
 	    endif
 	    return tokens
 	  endfunction "}}}
-	  while ! obj.end()
-	    let obj.tokens += obj.statement()
-	  endwhile
-	  echo obj.tokens
-	  " [
-	  "   {'col': 0, 'label': 'digit', 'matched_text': '53'},
-	  "   {'col': 4, 'label': 'digit', 'matched_text': '4'}
-	  " ]
-	catch
+	  function! obj.statement() dict "{{{
+	    let tokens = []
+	    let lhs = str2nr(self.digit()[0].matched_text)
+	    while ! self.end()
+	      if self.next_is('plus')
+		call self.consume()
+		let rhs = str2nr(self.digit()[0].matched_text)
+		let lhs = lhs + rhs
+	      endif
+	      call self.ignore()
+	    endwhile
+	    return lhs
+	  endfunction "}}}
+	  echo obj.statement()
+	  " 66
+	catch  '[Text.Lexer]'
 	  echo v:exception
 	endtry
+<
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
