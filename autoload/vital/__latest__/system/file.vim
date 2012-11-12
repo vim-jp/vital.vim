@@ -137,11 +137,11 @@ function! s:rmdir(path, ...)
     if &shell =~? "sh$"
       let option .= flags =~# 'f' ? ' -f' : ''
       let option .= flags =~# 'r' ? ' -r' : ''
-      let ret = system("/bin/rm" . option . ' ' . shellescape(a:path) . ' 2>&1')
+      let ret = system("/bin/rm" . option . ' ' . shellescape(a:path))
     else
       let option .= flags =~# 'f' ? ' /Q' : ''
       let option .= flags =~# 'r' ? ' /S' : ''
-      let ret = system("rmdir " . option . ' "' . a:path . '" 2>&1')
+      let ret = system("rmdir" . option . ' ' . shellescape(a:path))
     endif
   endif
   if v:shell_error
