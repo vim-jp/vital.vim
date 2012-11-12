@@ -141,7 +141,7 @@ function! s:rmdir(path, ...)
     else
       let option .= flags =~# 'f' ? ' /Q' : ''
       let option .= flags =~# 'r' ? ' /S' : ''
-      let ret = system("rmdir" . option . ' ' . shellescape(a:path))
+      let ret = system("rmdir" . option . ' "' . a:path . '"')
     endif
   endif
   if v:shell_error
