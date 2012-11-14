@@ -87,8 +87,8 @@ encodeURIComponent({str})		*Vital.Web.Http.encodeURIComponent()*
 ------------------------------------------------------------------------------
 RESPONSE				*Vital.Web.Http-response*
 
-|Vital.Web.Http.get| and |Vital.Web.Http.post| return data structure as
-|Directory| like following.
+|Vital.Web.Http.request()|, |Vital.Web.Http.get()|, and |Vital.Web.Http.post()|
+return data structure as |Directory| like following.
 >
 	{
 	  "header": [
