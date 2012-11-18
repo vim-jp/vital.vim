@@ -23,7 +23,9 @@ function! s:check_system()
   if !executable('git')
     throw 'vitalizer: git is required by vitalizer.'
   endif
-  if !isdirectory(s:git_dir)
+  " NOTE: s:git_dir is a file with recent git
+  " when vital.vim repository is a submodule.
+  if !isdirectory(s:git_dir) && !filereadable(s:git_dir)
     throw 'vitalizer: vital directory must be a git work directory.'
   endif
 endfunction
