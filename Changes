@@ -1,2 +1,4 @@
 ce22f3b
 	Vim.Buffer.Manager was moved to Vim.BufferManager
+0c76985
+	A version file '*.vital' contains '\r'. all plugins using vital.vim must upgrade.
