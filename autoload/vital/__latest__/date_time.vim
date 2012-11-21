@@ -167,13 +167,15 @@ function! s:timezone(...)
   let tz = copy(s:TimeZone)
   if s:V.is_number(info)
     let tz._offset = info * 60 * 60
-  elseif info =~# '^[+-]\d\{2}:\?\d\{2}$'
-    let list = matchlist(info, '\v^([+-])(\d{2}):?(\d{2})$')
-    let tz._offset = str2nr(list[1] . '60') *
-    \                (str2nr(list[2]) * 60 + str2nr(list[3], 10))
   else
-    " TODO: TimeZone names
-    throw 'Vital.DateTime: Unknown timezone: ' . string(info)
+    let list = matchlist(info, '\v^([+-])?(\d{1,2}):?(\d{1,2})?$')
+    if !empty(list)
+      let tz._offset = str2nr(list[1] . '60') *
+      \                (str2nr(list[2]) * 60 + str2nr(list[3], 10))
+    else
+      " TODO: TimeZone names
+      throw 'Vital.DateTime: Unknown timezone: ' . string(info)
+    endif
   endif
   return tz
 endfunction
