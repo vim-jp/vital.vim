@@ -6,6 +6,23 @@ set cpo&vim
 function! s:_vital_loaded(V)
   let s:V = a:V
 
+  let s:NUM_SECONDS = 60
+  let s:NUM_MINUTES = 60
+  let s:NUM_HOURS = 24
+  let s:NUM_DAYS_OF_WEEK = 7
+  let s:NUM_MONTHS = 12
+  let s:SECONDS_OF_HOUR = s:NUM_SECONDS * s:NUM_MINUTES
+  let s:SECONDS_OF_DAY = s:SECONDS_OF_HOUR * s:NUM_HOURS
+  let s:ERA_TIME = s:_g2jd(1, 1, 1)
+  let s:EPOC_TIME = s:_g2jd(1970, 1, 1)
+
+  let s:MONTHS = map(range(1, 12),
+  \   's:from_date(1970, v:val, 1, 0, 0, 0, 0).unix_time()')
+  let s:WEEKS = map(range(4, 10),
+  \   's:from_date(1970, 1, v:val, 0, 0, 0, 0).unix_time()')
+  let s:AM_PM_TIMES = map([0, 12],
+  \   's:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
+
   if s:V.is_windows()
     let s:win_tz =
     \  -(split(s:V.system(printf('reg query "%s" /v Bias | findstr REG_DWORD',
@@ -143,12 +160,12 @@ function! s:timezone(...)
   if s:_is_class(info, 'TimeZone')
     return info
   endif
-  if type(info) != type(0) && empty(info)
+  if !s:V.is_number(info) && empty(info)
     unlet info
     let info = s:_default_tz()
   endif
   let tz = copy(s:TimeZone)
-  if type(info) == type(0)
+  if s:V.is_number(info)
     let tz._offset = info * 60 * 60
   elseif info =~# '^[+-]\d\{2}:\?\d\{2}$'
     let list = matchlist(info, '\v([+-])(\d{2})(\d{2})')
@@ -168,12 +185,12 @@ function! s:delta(...)
     return info
   endif
   let d = copy(s:TimeDelta)
-  if a:0 == 2 && type(a:1) == type(0) && type(a:2) == type(0)
+  if a:0 == 2 && s:V.is_number(a:1) && s:V.is_number(a:2)
     let d._days = a:1
     let d._time = a:2
   else
     let a = copy(a:000)
-    while 2 <= len(a) && type(a[0]) == type(0) && type(a[1]) == type('')
+    while 2 <= len(a) && s:V.is_number(a[0]) && s:V.is_string(a[1])
       let [value, unit] = remove(a, 0, 1)
       if unit =~? '^seconds\?$'
         let d._time += value
@@ -231,7 +248,7 @@ function! s:_new_class(class)
   return extend({'class': a:class}, s:Class)
 endfunction
 function! s:_is_class(obj, class)
-  return type(a:obj) == type({}) && get(a:obj, 'class', '') ==# a:class
+  return s:V.is_dict(a:obj) && get(a:obj, 'class', '') ==# a:class
 endfunction
 
 " ----------------------------------------------------------------------------
@@ -713,24 +730,6 @@ else
     return strftime('%z')
   endfunction
 endif
-
-" ----------------------------------------------------------------------------
-let s:NUM_SECONDS = 60
-let s:NUM_MINUTES = 60
-let s:NUM_HOURS = 24
-let s:NUM_DAYS_OF_WEEK = 7
-let s:NUM_MONTHS = 12
-let s:SECONDS_OF_HOUR = s:NUM_SECONDS * s:NUM_MINUTES
-let s:SECONDS_OF_DAY = s:SECONDS_OF_HOUR * s:NUM_HOURS
-let s:ERA_TIME = s:_g2jd(1, 1, 1)
-let s:EPOC_TIME = s:_g2jd(1970, 1, 1)
-
-let s:MONTHS = map(range(1, 12),
-\   's:from_date(1970, v:val, 1, 0, 0, 0, 0).unix_time()')
-let s:WEEKS = map(range(4, 10),
-\   's:from_date(1970, 1, v:val, 0, 0, 0, 0).unix_time()')
-let s:AM_PM_TIMES = map([0, 12],
-\   's:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
