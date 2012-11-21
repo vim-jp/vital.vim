@@ -132,7 +132,8 @@ DateTime.second()		*Vital.DateTime-DateTime.second()*
 DateTime.timezone()		*Vital.DateTime-DateTime.timezone()*
 	Returns the TimeZone object.
 DateTime.timezone({timezone})
-	Same as "DateTime.to({timezone})".
+	Returns a new object with the specified {timezone}.
+	This changes only {timezone}, the number of time is not changed.
 
 DateTime.day_of_week()		*Vital.DateTime-DateTime.day_of_week()*
 	Returns the day of the week. (0-6)  0 is Sunday.

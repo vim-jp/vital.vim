@@ -255,7 +255,12 @@ function! s:DateTime.second()
   return self._second
 endfunction
 function! s:DateTime.timezone(...)
-  return a:0 ? self.to(call('s:timezone', a:000)) : self._timezone
+  if a:0
+    let dt = self._clone()
+    let dt._timezone = call('s:timezone', a:000)
+    return dt
+  endif
+  return self._timezone
 endfunction
 function! s:DateTime.day_of_week()
   if !has_key(self, '_day_of_week')
