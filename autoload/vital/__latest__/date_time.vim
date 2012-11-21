@@ -691,7 +691,7 @@ let s:format_info = {
 \         '(o[key] != 0 ? o[key] : (value < 69 ? 2000 : 1900)) + value'],
 \   'Y': ['year', ['0', 4]],
 \   'z': ['timezone', '\v[+-]?%(\d{1,2})?:?%(\d{1,2})?', 'value.offset_string()',
-\         's:timezone(value)'],
+\         's:timezone(empty(value) ? 0 : value)'],
 \ }
 let s:format_info.h = s:format_info.b
 let s:DESCRIPTORS_PATTERN = join(keys(s:format_info), '\|')
