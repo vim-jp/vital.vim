@@ -1,0 +1,81 @@
+*vital-data-tree.txt*		tree utilities library.
+
+==============================================================================
+CONTENTS				*Vital.Data.Tree-contents*
+
+INTRODUCTION			|Vital.Data.Tree-introduction|
+INTERFACE			|Vital.Data.Tree-interface|
+  Functions			  |Vital.Data.Tree-functions|
+  Examples			  |Vital.Data.Tree-examples|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Tree-introduction*
+
+*Vital.Data.Tree* is Tree Utilities Library.
+
+==============================================================================
+INTERFACE				*Vital.Data.Tree-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Tree-functions*
+
+new({token},...)      			*Vital.Data.Tree.new()*
+	Create new Tree Object.
+
+------------------------------------------------------------------------------
+
+Tree.token      			*Vital.Data.Tree.token*
+Tree.children      			*Vital.Data.Tree.children*
+Tree.addchild      			*Vital.Data.Tree.addchild*
+Tree.tostring      			*Vital.Data.Tree.tostring*
+Tree.preorder_traversal       		*Vital.Data.Tree.preorder_traversal*
+Tree.inorder_traversal       		*Vital.Data.Tree.inorder_traversal*
+Tree.postorder_traversal       		*Vital.Data.Tree.postorder_traversal*
+
+==============================================================================
+EXAMPLES   				*Vital.Data.Tree-examples*
+
+>
+    let V = vital#of('vital')
+    let T = V.import('Data.Tree')
+    
+    let tree_obj = T.new('+',1,T.new('-',2,3))
+    " or 
+    let tree_obj = T.new('+', [1,T.new('-',2,3)] )
+    "
+    "    +
+    "   / \
+    "  1   -
+    "     / \
+    "    2   3
+    "
+
+    echo tree_obj.token
+    " +
+
+    echo tree_obj.children
+    " [1,T.new('-',2,3)]
+    
+    echo tree_obj.tostring()
+    " {'+': ['1', {'-': ['2', '3']}]}
+
+    echo tree_obj.preorder_traversal()
+    " ['+', 1, '-', 2, 3]
+
+    echo tree_obj.inorder_traversal()
+    " [1, '+', 2, '-', 3]
+
+    echo tree_obj.postorder_traversal()
+    " [1, '-', 2, 3, '+']
+     
+    echo tree_obj.addchild(4).tostring()
+    " {'+': ['1', {'-': ['2', '3']}, '4']}
+    "
+    "     +
+    "   / | \
+    "  1  -  4
+    "    / \
+    "   2   3
+    "
+<
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
