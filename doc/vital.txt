@@ -5,10 +5,15 @@ Author : ujihisa
 ==============================================================================
 CONTENTS				*Vital-contents*
 
-INTRODUCTION				|Vital-introduction|
-USAGE					|Vital-usage|
-VARIABLES				|Vital-variables|
-LINKS					|Vital-links|
+INTRODUCTION			|Vital-introduction|
+USAGE				|Vital-usage|
+INTERFACE			|Vital-interface|
+  FUNCTIONS			  |Vital-functions|
+  Vital object			  |Vital-Vital-object|
+  VARIABLES			  |Vital-variables|
+LINKS				|Vital-links|
+
+
 
 ==============================================================================
 INTRODUCTION				*Vital-introduction*
@@ -59,21 +64,49 @@ We recommend you to use a capital letter for a the Vital module dictionary
 to assign as Vital convention. That makes your code more readable among Vital
 programmers.
 
+
+
+==============================================================================
+INTERFACE				*Vital-interface*
+
 ------------------------------------------------------------------------------
-VARIABLES 					*Vital-variables*
+FUNCTIONS 				*Vital-functions*
 
-g:vital_debug
-							*g:vital_debug*
-		Default: 0
+vital#of({plugin-name})			*vital#of()*
+	Creates a new Vital object(|Vital-Vital-object|).
 
-		Vital.import and Vital.load ignore functions which name begins
-		with underscore, but this option enables importing/loading
-		such functions.
+------------------------------------------------------------------------------
+Vital object 				*Vital-Vital-object*
 
-		let g:vital_debug = 1
+Vital.import({module-name} [, {to}])	*Vital-Vital.import()*
+	Imports a single module specified by {module-name} to {to} or empty
+	dictionary, and returns it.
+>
+	let List = V.import('Data.List')
+	echo List.uniq([1,1,2])
 
-		Note that this option is only for Vital plugin developers; not
-		for Vital users.
+Vital.load({module-name})		*Vital-Vital.load()*
+	Loads a module to the Vital directly.
+>
+	call V.load('Data.List')
+	echo V.Data.List.uniq([1,1,2])
+
+------------------------------------------------------------------------------
+VARIABLES 				*Vital-variables*
+
+g:vital_debug				*g:vital_debug*
+	Default: 0
+
+	Vital.import and Vital.load ignore functions which name begins with
+	underscore, but this option enables importing/loading such functions.
+>
+	let g:vital_debug = 1
+<
+	Note that this option is only for Vital plugin developers; not for
+	Vital users.
+
+
+
 ==============================================================================
 LINKS					*Vital-links*
 
