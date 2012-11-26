@@ -1,7 +1,5 @@
 *vital.txt*		A comprehensive Vim utility functions for Vim plugins.
 
-Author : ujihisa
-
 ==============================================================================
 CONTENTS				*Vital-contents*
 
