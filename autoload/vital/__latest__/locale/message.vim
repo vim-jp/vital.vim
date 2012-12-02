@@ -26,15 +26,20 @@ function! s:Message.get(text)
 endfunction
 function! s:Message.load(lang)
   let pattern = printf(self.path, a:lang)
-  let file = get(split(globpath(&runtimepath, pattern), "\n"), 0)
-  if !filereadable(file)
-    let self.lang = ''
-    let self.data = {}
-    return
-  endif
+  let files = split(globpath(&runtimepath, pattern), "\n")
+  let data = {}
+  for file in files
+    if filereadable(file)
+      let lines = filter(readfile(file), 'v:val !~# "^\\s*#"')
+      sandbox let res = eval(iconv(join(lines, ''), 'utf-8', &encoding))
+      if type(res) == type(data)
+        call extend(data, res)
+      endif
+      unlet res
+    endif
+  endfor
   let self.lang = a:lang
-  let lines = filter(readfile(file), 'v:val !~# "^\\s*#"')
-  sandbox let self.data = eval(iconv(join(lines, ''), 'utf-8', &encoding))
+  let self.data = data
 endfunction
 let s:Message._ = s:Message.get
 function! s:Message.missing(text)
