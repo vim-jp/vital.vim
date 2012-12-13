@@ -3,7 +3,7 @@ source spec/base.vim
 
 let g:V = vital#of('vital')
 
-"Test of wrapper function for type()"{{{
+"Test of wrapper function for type() "{{{
 Context Prelude.is_numeric()
   It checks if the argument is a numeric
     Should g:V.is_numeric(3) ==# 1
