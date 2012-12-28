@@ -41,6 +41,12 @@ reverse({str})				*Vital.Data.String.reverse()*
 	:echo String.reverse("string")
 	gnirts
 <
+common_head({strs})			*Vital.Data.String.common_head()*
+	Returns a common part of head of strings.
+>
+	:echo String.common_head(['neocomplcache', 'neosnippet', 'neobundle'])
+	'neo'
+
 split_leftright({expr}, {pattern})	*Vital.Data.String.split_leftright()*
 	Returns |List| that contains two |String| split by {pattern}.
 >

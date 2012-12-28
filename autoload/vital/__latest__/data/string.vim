@@ -63,6 +63,21 @@ function! s:reverse(str)
   return join(reverse(split(a:str, '.\zs')), '')
 endfunction
 
+function! s:common_head(strs)
+  if empty(a:strs)
+    return ''
+  endif
+  let head = a:strs[0]
+  for str in a:strs[1 :]
+    let pat = substitute(str, '.', '[\0]', 'g')
+    let head = matchstr(head, '^\%[' . pat . ']')
+    if head ==# ''
+      break
+    endif
+  endfor
+  return head
+endfunction
+
 " Split to two elements of List. ([left, right])
 " e.g.: s:split3('neocomplcache', 'compl') returns ['neo', 'compl', 'cache']
 function! s:split_leftright(expr, pattern)

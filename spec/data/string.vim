@@ -82,6 +82,16 @@ Context Data.String.reverse()
   End
 End
 
+Context Data.String.common_head()
+  It returns common part of head of strings
+    Should g:S.common_head(['neocomplcache', 'neosnippet', 'neobundle']) ==# 'neo'
+    Should g:S.common_head(['neocomplcache', 'vimshell']) ==# ''
+  End
+  It returns an empty string with empty list
+    Should g:S.common_head([]) ==# ''
+  End
+End
+
 Context Data.String.split3()
   It splits into two substrings: left/right substring next to matched string with pattern
     Should g:S.split3('neocomplcache', 'compl') ==# ['neo', 'compl', 'cache']
