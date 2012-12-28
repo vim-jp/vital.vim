@@ -21,40 +21,41 @@ FUNCTIONS				*Vital.Data.String-functions*
 replace({str}, {from}, {to})		*Vital.Data.String.replace()*
 	Return string replaced {from} to {to} from {str}.
 >
-	:echo s:string.replace("fooba.bazbar", "ba.", "zzz")
+	:echo String.replace("fooba.bazbar", "ba.", "zzz")
 	foozzzbazbar
->
+<
 replace_once({str}, {from}, {to})	*Vital.Data.String.replace_once()*
 	Return string replaced {from} to {to} from {str} at once.
 >
-	:echo s:string.replace("foobarbazbar", "bar", "zzz")
+	:echo String.replace("foobarbazbar", "bar", "zzz")
 	foozzzbazzzz
-	:echo s:string.replace_once("foobarbazbar", "bar", "zzz")
+	:echo String.replace_once("foobarbazbar", "bar", "zzz")
 	foozzzbazbar
->
+<
 scan({str}, {pattern})			*Vital.Data.String.scan()*
 	Return |List| which matched {pattern} } in {str}.
 
 reverse({str})				*Vital.Data.String.reverse()*
 	Return a reversed string.  This works on character base.
 >
-	:echo s:String.reverse("string")
+	:echo String.reverse("string")
 	gnirts
->
+<
 split_leftright({expr}, {pattern})	*Vital.Data.String.split_leftright()*
 	Return |List| that contains two |String| split by {pattern}.
-    e.g.: >
-    echo Data.String.split_leftright('neocomplcache', 'neo\zs.....') == ['neo', 'cache']
+>
+	:echo String.split_leftright('neocomplcache', 'neo\zs.....')
+	['neo', 'cache']
 
 split3({expr}, {pattern})	*Vital.Data.String.split3()*
-	Like |Vital.Data.String.split_leftright()|,
-    but this function returns [left, middle, right]
-    not only [left, right].
-    e.g.: >
-    echo Data.String.split3('neocomplcache', 'neo\zs.....') == ['neo', 'compl', 'cache']
-
-nsplit({expr}, {n}, [, {pattern} [, {keepempty}]])
+	Like |Vital.Data.String.split_leftright()|, but this function returns
+	[left, middle, right] not only [left, right].
+>
+	:echo String.split3('neocomplcache', 'neo\zs.....')
+	['neo', 'compl', 'cache']
+<
 					*Vital.Data.String.nsplit()*
+nsplit({expr}, {n}, [, {pattern} [, {keepempty}]])
 	Behave like |split()|. Return list which is limited as {n}'th elements.
 
 chop({str}) 				*Vital.Data.String.chop()*
