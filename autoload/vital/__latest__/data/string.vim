@@ -59,6 +59,10 @@ function! s:scan(str, pattern)
   return list
 endfunction
 
+function! s:reverse(str)
+  return join(reverse(split(a:str, '.\zs')), '')
+endfunction
+
 " Split to two elements of List. ([left, right])
 " e.g.: s:split3('neocomplcache', 'compl') returns ['neo', 'compl', 'cache']
 function! s:split_leftright(expr, pattern)

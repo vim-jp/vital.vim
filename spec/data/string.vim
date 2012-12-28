@@ -72,6 +72,16 @@ Context Data.String.scan()
   End
 End
 
+Context Data.String.reverse()
+  It returns a reversed string
+    Should g:S.reverse('string') ==# 'gnirts'
+    Should g:S.reverse('') ==# ''
+  End
+  It works on character base
+    Should g:S.reverse('あいうえお') ==# 'おえういあ'
+  End
+End
+
 Context Data.String.split3()
   It splits into two substrings: left/right substring next to matched string with pattern
     Should g:S.split3('neocomplcache', 'compl') ==# ['neo', 'compl', 'cache']
