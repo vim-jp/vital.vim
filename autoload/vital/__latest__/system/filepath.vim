@@ -143,7 +143,7 @@ function! s:basename(path)
     return orig    " root directory
   endif
 
-  let path = fnamemodify(path, ':h')
+  let path = fnamemodify(path, ':t')
   return path
 endfunction
 
