@@ -131,6 +131,22 @@ function! s:dirname(path)
   return path
 endfunction
 
+" Return the basename of the path.
+" NOTE: fnamemodify(path, ':h') does not return basename
+" when path[-1] is the separator.
+function! s:basename(path)
+  let path = a:path
+  let orig = a:path
+
+  let path = s:remove_last_separator(path)
+  if path == ''
+    return orig    " root directory
+  endif
+
+  let path = fnamemodify(path, ':h')
+  return path
+endfunction
+
 " Remove the separator at the end of a:path.
 function! s:remove_last_separator(path)
   let sep = s:separator()
