@@ -66,6 +66,22 @@ Context Data.List.uniq()
   End
 End
 
+Context Data.List.clear()
+  It clears the all items of a list
+    let list = [1, 2, 3]
+    call g:L.clear(list)
+    Should list == []
+  End
+  It returns the passed list directly
+    let list = [1, 2, 3]
+    Should g:L.clear(list) is list
+  End
+  It has no effects for empty list
+    let list = []
+    Should g:L.clear(list) == []
+  End
+End
+
 Context Data.List.max()
   It returns a maximum value in the list through the given expr.
     Should 'hehehe' ==# g:L.max(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')

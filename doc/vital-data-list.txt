@@ -34,6 +34,9 @@ uniq({list})				*Vital.Data.List.uniq()*
 	Removes duplicates elements from {list}, nondestructively. In
 	particular, it keeps only the first occurrence of each element.
 
+clear({list})				*Vital.Data.List.clear()*
+	Clears the all items of {list}.  Returns {list}.
+
 concat({list})				*Vital.Data.List.concat()*
 	Concatenates list of lists {list}.
 >
