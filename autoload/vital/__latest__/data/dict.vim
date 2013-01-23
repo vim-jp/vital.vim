@@ -48,6 +48,13 @@ function! s:omit(dict, keys)
   return new_dict
 endfunction
 
+function! s:clear(dict)
+  for key in keys(a:dict)
+    call remove(a:dict, key)
+  endfor
+  return a:dict
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

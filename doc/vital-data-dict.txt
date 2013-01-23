@@ -54,6 +54,9 @@ pick({dict}, {keys})			*Vital.Datal.Dict.pick()*
 omit({dict}, {keys})			*Vital.Datal.Dict.omit()*
 	Returns a copy of the {dict}, filtered to omit the blacklisted {keys}.
 
+clear({dict})				*Vital.Datal.Dict.clear()*
+	Clears the all items of {dict}.  Returns {dict}.
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

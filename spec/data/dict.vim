@@ -90,3 +90,15 @@ Context Data.Dict.omit()
     unlet dict
   End
 End
+
+Context Data.Dict.clear()
+  It clears the all items of a dictionary
+    let dict = {'one': 1, 'two': 2, 'three': 3}
+    call g:D.clear(dict)
+    Should dict == {}
+  End
+  It returns the passed dictionary directly
+    let dict = {'one': 1, 'two': 2, 'three': 3}
+    Should g:D.clear(dict) is dict
+  End
+End
