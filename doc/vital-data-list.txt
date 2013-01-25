@@ -30,9 +30,11 @@ shift({list})				*Vital.Data.List.shift()*
 unshift({list}, {val})			*Vital.Data.List.unshift()*
 	Inserts {val} to the head of {list} and returns the list itself.
 
-uniq({list})				*Vital.Data.List.uniq()*
+uniq({list} [, {expr}])			*Vital.Data.List.uniq()*
 	Removes duplicates elements from {list}, nondestructively. In
 	particular, it keeps only the first occurrence of each element.
+	If {expr} is given, uniquity is judged with the value to which a
+	formula is applied.
 
 clear({list})				*Vital.Data.List.clear()*
 	Clears the all items of {list}.  Returns {list}.
