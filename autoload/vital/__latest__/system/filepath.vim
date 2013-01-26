@@ -115,6 +115,10 @@ else
   endfunction
 endif
 
+function! s:is_relative(path)
+  return !s:is_absolute(a:path)
+endfunction
+
 " Return the parent directory of the path.
 " NOTE: fnamemodify(path, ':h') does not return the parent directory
 " when path[-1] is the separator.
