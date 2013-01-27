@@ -15,7 +15,7 @@ let s:is_mac = !s:is_windows && !s:is_cygwin
 
 " Get the directory separator.
 function! s:separator()
-  return !exists('+shellslash') || &shellslash ? '/' : '\'
+  return fnamemodify('.', ':p')[-1 :]
 endfunction
 
 " Get the path separator.
