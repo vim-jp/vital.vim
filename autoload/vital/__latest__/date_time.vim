@@ -93,59 +93,65 @@ function! s:from_format(string, format, ...)
         \     'input: ' . a:string . "\nformat: " . a:format
         break
       endif
-    elseif s:V.is_list(f)
-      let [d, flag, width] = f
-      let info = s:format_info[d]
+      let remain = remain[matched_len :]
+    else  " if s:V.is_list(f)
+      let info = f[0]
       if info[0] ==# '#skip'
         let skip_pattern = info[1]
-        unlet f
-        continue
+      else
+        let remain = s:_read_format(o, f, remain, skip_pattern, locale)
+        let skip_pattern = ''
       endif
-      let key = '_' . info[0]
-      if !has_key(o, key)
-        let key = '_'
-      endif
-      if s:V.is_funcref(info[1])
-        let pattern = call(info[1], [locale], {})
-        if s:V.is_list(pattern)
-          let values = pattern
-          let l:['pattern'] = '\%(' . join(values, '\|') . '\)'
-        endif
-      elseif s:V.is_list(info[1])
-        if width ==# ''
-          let width = info[1][1]
-        endif
-        let pattern = '\d\{1,' . width . '}'
-        if flag == '_'
-          let pattern = '\s*' . pattern
-        endif
-      elseif s:V.is_string(info[1])
-        let pattern = info[1]
-      endif
-
-      let value = matchstr(remain, '^' . skip_pattern . pattern)
-      let matched_len = len(value)
-
-      if exists('values')
-        let value = index(values, value)
-        unlet values
-      elseif s:V.is_list(info[1])
-        let value = str2nr(value, 10)
-      endif
-
-      if 4 <= len(info)
-        let l:['value'] = eval(info[3])
-      endif
-      if key !=# '_'
-        let o[key] = value
-      endif
-      unlet value pattern
     endif
-    let remain = remain[matched_len :]
-    let skip_pattern = ''
     unlet f
   endfor
   return o._normalize()
+endfunction
+function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale)
+  " "o", "key", "value" and "locale" is used by parse_conv
+  let o = a:datetime
+  let locale = a:locale  " for parse_conv
+  let [info, flag, width] = a:descriptor
+  let key = '_' . info[0]
+  if !has_key(o, key)
+    let key = '_'
+  endif
+  let Captor = info[1]
+  if s:V.is_funcref(Captor)
+    let pattern = call(Captor, [a:locale], {})
+    if s:V.is_list(pattern)
+      let candidates = pattern
+      unlet pattern
+      let pattern = '\%(' . join(candidates, '\|') . '\)'
+    endif
+  elseif s:V.is_list(Captor)
+    if width ==# ''
+      let width = Captor[1]
+    endif
+    let pattern = '\d\{1,' . width . '}'
+    if flag == '_'
+      let pattern = '\s*' . pattern
+    endif
+  else  " if s:V.is_string(Captor)
+    let pattern = Captor
+  endif
+
+  let value = matchstr(a:remain, '^' . a:skip_pattern . pattern)
+  let matched_len = len(value)
+
+  if exists('candidates')
+    let value = index(candidates, value)
+  elseif s:V.is_list(Captor)
+    let value = str2nr(value, 10)
+  endif
+
+  if 4 <= len(info)
+    let l:['value'] = eval(info[3])
+  endif
+  if key !=# '_'
+    let o[key] = value
+  endif
+  return a:remain[matched_len :]
 endfunction
 
 " Creates a DateTime object from Julian day.
@@ -375,8 +381,7 @@ function! s:DateTime.format(format, ...)
     if s:V.is_string(f)
       let result .= f
     elseif s:V.is_list(f)
-      let [d, flag, width] = f
-      let info = s:format_info[d]
+      let [info, flag, width] = f
       let padding = ''
       if s:V.is_list(info[1])
         let [padding, w] = info[1]
@@ -728,7 +733,7 @@ function! s:_split_format(format)
     if s:V.is_string(info)
       let format = info . format
     else
-      let res += [[d, flag, width]]
+      let res += [[info, flag, width]]
     endif
     unlet info
   endwhile
