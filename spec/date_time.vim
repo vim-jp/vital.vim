@@ -28,7 +28,7 @@ End
 
 Context DateTime.DateTime.from_julian_day()
   It makes a DateTime object from string
-    let dt = g:DT.from_julian_day(2455928.627836)
+    let dt = g:DT.from_julian_day(2455928.627836, 0)
     Should dt.year() is 2012
     Should dt.month() is 1
     Should dt.day() is 2
