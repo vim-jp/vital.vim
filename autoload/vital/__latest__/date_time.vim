@@ -83,10 +83,12 @@ function! s:from_format(string, format, ...)
   let o = copy(s:DateTime)
   let locale = a:0 ? a:1 : ''
   let remain = a:string
+  let skip_pattern = ''
   for f in s:_split_format(a:format)
     if s:V.is_string(f)
-      let matched_len = len(f)
-      if f !=# remain[: matched_len - 1]
+      let pat = '^' . skip_pattern . '\V' . escape(f, '\')
+      let matched_len = len(matchstr(remain, pat))
+      if matched_len == 0
         throw "Vital.DateTime: Parse error:\n" .
         \     'input: ' . a:string . "\nformat: " . a:format
         break
@@ -94,6 +96,11 @@ function! s:from_format(string, format, ...)
     elseif s:V.is_list(f)
       let [d, flag, width] = f
       let info = s:format_info[d]
+      if info[0] ==# '#skip'
+        let skip_pattern = info[1]
+        unlet f
+        continue
+      endif
       let key = '_' . info[0]
       if !has_key(o, key)
         let key = '_'
@@ -116,7 +123,7 @@ function! s:from_format(string, format, ...)
         let pattern = info[1]
       endif
 
-      let value = matchstr(remain, '^' . pattern)
+      let value = matchstr(remain, '^' . skip_pattern . pattern)
       let matched_len = len(value)
 
       if exists('values')
@@ -135,6 +142,7 @@ function! s:from_format(string, format, ...)
       unlet value pattern
     endif
     let remain = remain[matched_len :]
+    let skip_pattern = ''
     unlet f
   endfor
   return o._normalize()
@@ -645,6 +653,8 @@ endfunction
 " at parse:
 "   field = param name (with "_")
 "           if it doesn't exists, the descriptor can't use.
+"   field = #skip
+"           in this case, captor is a skipping pattern
 "   captor = pattern to match.
 "   captor = [flat, width] for number format.
 "   captor = a function to return a pattern or candidates.
@@ -692,9 +702,10 @@ let s:format_info = {
 \   'Y': ['year', ['0', 4]],
 \   'z': ['timezone', '\v[+-]?%(\d{1,2})?:?%(\d{1,2})?', 'value.offset_string()',
 \         's:timezone(empty(value) ? 0 : value)'],
+\   '*': ['#skip', '.\{-}', ''],
 \ }
 let s:format_info.h = s:format_info.b
-let s:DESCRIPTORS_PATTERN = join(keys(s:format_info), '\|')
+let s:DESCRIPTORS_PATTERN = '[' . join(keys(s:format_info), '') . ']'
 
 " 'foo%Ybar%02m' => ['foo', ['Y', '', -1], 'bar', ['m', '0', 2], '']
 function! s:_split_format(format)

@@ -340,6 +340,7 @@ There is a list of specifications of the format.
   o o  %z  The +hhmm or -hhmm numeric timezone.  The pattern which this uses
            for parsing is same as the argument of |Vital.DateTime.timezone()|.
            But, an empty string is treated as UTC.
+    o  %*  Any texts.
 
 Flags and width
 ---------------

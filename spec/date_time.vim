@@ -35,6 +35,16 @@ Context DateTime.DateTime.from_format()
     Should dt.second() is 5
     Should dt.timezone().hours() is 9
   End
+  It can skip any text by %*
+    let dt = g:DT.from_format('2011-01-03T10:16:46.297581Z', '%Y-%m-%dT%H:%M:%S%*Z%z', 'C')
+    Should dt.year() is 2011
+    Should dt.month() is 1
+    Should dt.day() is 3
+    Should dt.hour() is 10
+    Should dt.minute() is 16
+    Should dt.second() is 46
+    Should dt.timezone().hours() is 0
+  End
 End
 
 Context DateTime.DateTime.from_julian_day()
