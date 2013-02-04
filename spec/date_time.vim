@@ -26,18 +26,6 @@ Context DateTime.DateTime.from_format()
   End
 End
 
-Context DateTime.DateTime.from_format()
-  It makes a DateTime object from string
-    let dt = g:DT.from_format('2012-1-02 03:04:05', '%Y-%m-%d %H:%M:%S')
-    Should dt.year() is 2012
-    Should dt.month() is 1
-    Should dt.day() is 2
-    Should dt.hour() is 3
-    Should dt.minute() is 4
-    Should dt.second() is 5
-  End
-End
-
 Context DateTime.DateTime.from_julian_day()
   It makes a DateTime object from string
     let dt = g:DT.from_julian_day(2455928.627836)
