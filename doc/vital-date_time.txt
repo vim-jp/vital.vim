@@ -336,7 +336,9 @@ There is a list of specifications of the format.
   o    %w  The day of the week as a decimal, range 0 to 6, Sunday being 0.
   o o  %y  The year as a decimal number without a century (range 00 to 99).
   o o  %Y  The year as a decimal number including the century.
-  o o  %z  The +hhmm or -hhmm numeric timezone.
+  o o  %z  The +hhmm or -hhmm numeric timezone.  The pattern which this uses
+           for parsing is same as the argument of |Vital.DateTime.timezone()|.
+           But, an empty string is treated as UTC.
   o o  %%  A literal '%' character.
 
 Flags and width
