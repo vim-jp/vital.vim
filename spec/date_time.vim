@@ -25,6 +25,16 @@ Context DateTime.DateTime.from_format()
     Should dt.second() is 5
     Should dt.timezone().offset() is 0
   End
+  It can treat the some format specifier
+    let dt = g:DT.from_format('02 Jan 2012 03:04:05 +0900', '%d %b %Y%n%H:%M:%S%n%z', 'C')
+    Should dt.year() is 2012
+    Should dt.month() is 1
+    Should dt.day() is 2
+    Should dt.hour() is 3
+    Should dt.minute() is 4
+    Should dt.second() is 5
+    Should dt.timezone().hours() is 9
+  End
 End
 
 Context DateTime.DateTime.from_julian_day()
