@@ -304,6 +304,7 @@ There is a list of specifications of the format.
   +---- Available for formatting
   | +-- Available for parsing
   | |
+  o o  %%  The '%' character.
   o    %a  The abbreviated weekday name.
   o    %A  The full weekday name.
   o o  %b  The abbreviated month name.
@@ -339,7 +340,6 @@ There is a list of specifications of the format.
   o o  %z  The +hhmm or -hhmm numeric timezone.  The pattern which this uses
            for parsing is same as the argument of |Vital.DateTime.timezone()|.
            But, an empty string is treated as UTC.
-  o o  %%  A literal '%' character.
 
 Flags and width
 ---------------
