@@ -673,7 +673,7 @@ let s:format_info = {
 \   'l': '%_I',
 \   'm': ['month', ['0', 2]],
 \   'M': ['minute', ['0', 2]],
-\   'n': ['', '\_.*', "\n"],
+\   'n': ['', '\_s*', "\n"],
 \   'p': ['hour', function('s:_am_pm_upper'),
 \         's:_am_pm_upper(locale)[value / 12]', 'o[key] + value * 12'],
 \   'P': ['hour', function('s:_am_pm_lower'),
