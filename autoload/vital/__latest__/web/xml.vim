@@ -270,7 +270,7 @@ function! s:parse(xml)
   let oldmaxfuncdepth=&maxfuncdepth
   let &maxmempattern=2000000
   let &maxfuncdepth=2000
-  "try
+  try
     call s:__parse_tree({'xml': a:xml, 'encoding': ''}, top)
     for node in top.child
       if type(node) == 4
@@ -278,10 +278,10 @@ function! s:parse(xml)
       endif
       unlet node
     endfor
-  "catch /.*/
-  "endtry
-  let &maxmempattern=oldmaxmempattern
-  let &maxfuncdepth=oldmaxfuncdepth
+  finally
+    let &maxmempattern=oldmaxmempattern
+    let &maxfuncdepth=oldmaxfuncdepth
+  endtry
   throw "Parse Error"
 endfunction
 
