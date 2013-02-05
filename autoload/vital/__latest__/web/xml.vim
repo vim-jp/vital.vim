@@ -4,10 +4,11 @@ set cpo&vim
 let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
 
 function! s:_vital_depends()
-  return ['Data.String']
+  return ['Data.String', 'Web.Http']
 endfunction
 
 let s:string = s:V.import('Data.String')
+let s:http = s:V.import('Web.Http')
 
 let s:__template = { 'name': '', 'attr': {}, 'child': [] }
 
@@ -289,7 +290,7 @@ function! s:parseFile(fname)
 endfunction
 
 function! s:parseURL(url)
-  return s:parse(http#get(a:url).content)
+  return s:parse(s:http.get(a:url).content)
 endfunction
 
 let &cpo = s:save_cpo
