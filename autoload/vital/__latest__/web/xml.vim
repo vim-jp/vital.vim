@@ -48,9 +48,9 @@ function! s:__matchNode(node, cond)
   endif
   if type(a:cond) == 3
     let ret = 1
-    for r in a:cond
-      if !s:__matchNode(a:node, r) | let ret = 0 | endif
-      unlet r
+    for R in a:cond
+      if !s:__matchNode(a:node, R) | let ret = 0 | endif
+      unlet R
     endfor
     return ret
   endif
