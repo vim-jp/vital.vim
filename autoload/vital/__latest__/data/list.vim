@@ -151,6 +151,11 @@ function! s:break(f, xs)
   return s:span(printf('!(%s)', a:f), a:xs)
 endfunction
 
+" similar to Haskell's Data.List.takeWhile
+function! s:take_while(f, xs)
+  return s:span(a:f, a:xs)[0]
+endfunction
+
 " similar to Haskell's Data.List.partition
 function! s:partition(f, xs)
   return [filter(copy(a:xs), a:f), filter(copy(a:xs), '!(' . a:f . ')')]

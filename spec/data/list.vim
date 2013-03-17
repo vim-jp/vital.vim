@@ -128,6 +128,19 @@ Context Data.List.break()
   End
 End
 
+Context data.list.take_while()
+  It creates a list from another one, it inspects the original list and takes from its elements to the moment when the condition fails, then it stops processing
+    Should [1, 3] == g:L.take_while('v:val < 5', [1, 3, 5, 2])
+    Should [] == g:L.take_while('v:val > 3', [1, 2, 3, 4, 5])
+    Should [1, 2] == g:L.take_while('v:val < 3', [1, 2, 3, 4, 5])
+  End
+
+  It of course handles list of list.
+    should [[1], [2, 3]] ==
+          \ g:L.take_while('len(v:val) > 0', [[1], [2, 3], [], [4]])
+  End
+End
+
 Context Data.List.partition()
   It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate.
     Should [[0, 2, 4], [1, 3]] == g:L.partition('v:val % 2 == 0', range(5))
