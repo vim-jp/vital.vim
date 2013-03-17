@@ -138,7 +138,7 @@ endfunction
 function! s:span(f, xs)
   let border = len(a:xs)
   for i in range(len(a:xs))
-    if !eval(substitute(a:f, 'v:val', a:xs[i], 'g'))
+    if !eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
       let border = i
       break
     endif

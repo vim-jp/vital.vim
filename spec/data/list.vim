@@ -108,6 +108,11 @@ Context Data.List.span()
     Should [[], [1, 2, 3, 4, 5]] == g:L.span('v:val > 3', [1, 2, 3, 4, 5])
     Should [[1, 2], [3, 4, 5]] == g:L.span('v:val < 3', [1, 2, 3, 4, 5])
   End
+
+  It of course handles list of list.
+    Should [[[1], [2, 3]], [[], [4]]] ==
+          \ g:L.span('len(v:val) > 0', [[1], [2, 3], [], [4]])
+  End
 End
 
 Context Data.List.break()
