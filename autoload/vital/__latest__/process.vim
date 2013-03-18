@@ -5,6 +5,8 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
+" FIXME: Unfortunately, can't use s:_vital_loaded() for this purpose.
+" Because these variables are used when this script file is loaded.
 let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 let s:is_unix = has('unix')
 
