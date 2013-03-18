@@ -112,10 +112,6 @@ function! s:truncate(str, width)
   return ret
 endfunction
 
-function! s:strchars(str)
-  return len(substitute(a:str, '.', 'x', 'g'))
-endfunction
-
 function! s:strwidthpart(str, width)
   if a:width <= 0
     return ''

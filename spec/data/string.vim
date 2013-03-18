@@ -142,6 +142,7 @@ End
 
 Context Data.String.strchars()
   It returns the number of character, not byte
+    Should g:S.strchars('this') ==# 4
     Should g:S.strchars('あいうえお') ==# 5
     Should g:S.strchars('aiueo') ==# 5
     Should g:S.strchars('') ==# 0
