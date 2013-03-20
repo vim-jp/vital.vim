@@ -22,14 +22,14 @@ let s:is_unix = has('unix')
 " If a:expr is a List, shellescape() each argument.
 " If a:expr is a String, just pass the argument to system().
 if s:is_windows
-  function! s:system_bg(expr)
+  function! s:spawn(expr)
     let cmdline = a:expr
     if type(a:expr) is type([])
       let cmdline = join(a:expr, ' ')
     elseif type(a:expr) is type("")
       let cmdline = a:expr
     else
-      throw 'Process.system_bg(): invalid argument (value type:'.type(a:expr).')'
+      throw 'Process.spawn(): invalid argument (value type:'.type(a:expr).')'
     endif
 
     " Escape:
@@ -51,14 +51,14 @@ if s:is_windows
   endfunction
 
 elseif s:is_unix
-  function! s:system_bg(expr)
+  function! s:spawn(expr)
     let cmdline = a:expr
     if type(a:expr) is type([])
       let cmdline = join(shellescape(a:expr), ' ')
     elseif type(a:expr) is type("")
       let cmdline = a:expr
     else
-      throw 'Process.system_bg(): invalid argument (value type:'.type(a:expr).')'
+      throw 'Process.spawn(): invalid argument (value type:'.type(a:expr).')'
     endif
 
     let cmdline = cmdline.(cmdline =~# '&\s*$' ? '' : ' &')
@@ -68,8 +68,8 @@ elseif s:is_unix
 
 else
   " XXX: Should :throw when this script file is loaded?
-  function! s:system_bg(expr)
-    throw 'Process.system_bg(): does not support your platform.'
+  function! s:spawn(expr)
+    throw 'Process.spawn(): does not support your platform.'
   endfunction
 endif
 
