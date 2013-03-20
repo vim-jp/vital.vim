@@ -106,13 +106,6 @@ Context Prelude.truncate_smart()
   End
 End
 
-Context Prelude.strchars()
-  It counts the number of letters, not the number of bytes.
-    Should g:V.strchars('this') ==# 4
-    Should g:V.strchars('あいうえお') ==# 5
-  End
-End
-
 Context Prelude.strwidthpart()
   It cuts a string to give width
     Should g:V.strwidthpart('this is a pen', 5) ==# 'this '
