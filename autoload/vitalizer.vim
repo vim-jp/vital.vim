@@ -114,7 +114,9 @@ function! s:show_changes(vital_file)
     for key in keys
       if has_key(changes, key)
         echomsg key
-        echomsg join(map(split(changes[key], "\n"), '"    ".v:val'))
+        for line in split(changes[key], "\n")
+          echomsg '    '.line
+        endfor
         let confirm_required = 1
       endif
     endfor
