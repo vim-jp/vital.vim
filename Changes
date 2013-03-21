@@ -1,3 +1,7 @@
+f86462b
+	'Prelude.{iconv,has_vimproc,system}()' are deprecated.
+	(not removed but will be removed after a while)
+	use 'Process.{iconv,has_vimproc,system}()' instead.
 572a2db
 	Removed Prelude.strchars(). use Data.String.strchars() instead.
 ce22f3b
