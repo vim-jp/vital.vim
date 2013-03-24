@@ -133,16 +133,18 @@ function! s:__get_unmap_command(type, mode, dict, lhs)
 endfunction
 
 
+let s:ALL_MODES = 'nvoiclxs'
 function! s:get_all_modes()
-  return 'nvoiclxs'
+  return s:ALL_MODES
 endfunction
 
+let s:ALL_MODES_LIST = split(s:ALL_MODES, '\zs')
 function! s:get_all_modes_list()
-  return split(s:get_all_modes(), '\zs')
+  return copy(s:ALL_MODES_LIST)
 endfunction
 
 function! s:is_mode_char(char)
-  return a:char =~# '^['.s:get_all_modes().']$'
+  return a:char =~# '^['.s:ALL_MODES.']$'
 endfunction
 
 
