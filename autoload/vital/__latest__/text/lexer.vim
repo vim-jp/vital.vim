@@ -28,7 +28,7 @@ function! s:lexer(patterns) "{{{
   for e in a:patterns
     let obj.tokens += [(s:_token(e))]
   endfor
-  function! obj.parse(string) dict "{{{
+  function! obj.exec(string) dict "{{{
     let match_tokens = []
     let idx = 0
     while idx < len(a:string)

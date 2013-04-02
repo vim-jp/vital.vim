@@ -27,12 +27,12 @@ FUNCTIONS			                *Vital.Lexer-functions*
 lexer(patterns)		                        *Vital.Lexer.lexer()*
 	Creates a new Lexer object.
 	{patterns} is a format such as "[ [label,regex] , ... ]".
-	Lexer object has parse(expr).
+	Lexer object has exec(expr).
 
 simple_parser(lexed_tokens)             *Vital.Lexer.simple_parser()*
 	Creates a new Parser object.
 	This Parser object is a parser interface which is related Lexer object.
-	{lexed_tokens} is a result of Lexer.parse(expr).
+	{lexed_tokens} is a result of Lexer.exec(expr).
 	Parser object has end(), next(), next_is(label) and consume().
 
 ==============================================================================
@@ -41,8 +41,8 @@ OBJECTS				                *Vital.Lexer-objects*
 ------------------------------------------------------------------------------
 Lexer Object		                        *Vital.Lexer-Lexer*
 
-Lexer.parse(expr)		                *Vital.Lexer-Lexer.parse()*
-	Parse {expr}.
+Lexer.exec(expr)		                *Vital.Lexer-Lexer.exec()*
+	Evaluate {expr}.
         This return value is a list of dictionary which has following keys.
 		'matched_text' : matched text in {expr}.
 		'col' : index of 'matched_text' in {expr}.
@@ -71,7 +71,7 @@ lexer exemple                    		*Vital.Lexer-lexer-exemple*
 	let V = vital#of('vital')
 	let L = V.import('Text.Lexer')
 	try
-	  echo L.lexer([['digit','\d\+'],['whitespace','\s\+']]).parse('53  4')
+	  echo L.lexer([['digit','\d\+'],['whitespace','\s\+']]).exec('53  4')
 	  " [
 	  "   {'col': 0, 'label': 'digit', 'matched_text': '53'},
 	  "   {'col': 2, 'label': 'whitespace', 'matched_text': '  '},
@@ -87,7 +87,7 @@ simple_parser exemple		        	*Vital.Lexer-simple_parser-exemple*
 	try
 	  let lexed_tokens = L.lexer(
 	  \   [['plus','+'],['digit','\d\+'],['whitespace','\s\+']]
-	  \ ).parse('53 +  4 + 9')
+	  \ ).exec('53 +  4 + 9')
 	  let obj = L.simple_parser(lexed_tokens)
 	  function! obj.ignore() dict "{{{
 	    if ! self.end()
