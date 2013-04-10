@@ -169,9 +169,9 @@ endfunction "}}}
 " NOTE _concat() is just a copy of Data.List.concat().
 " FIXME don't repeat yourself
 function! s:_split_by_wcswidth_once(body, x)
-  return [
-        \ s:V.strwidthpart(a:body, a:x),
-        \ s:V.strwidthpart_reverse(a:body, s:V.wcswidth(a:body) - a:x)]
+  let fst = s:V.strwidthpart(a:body, a:x)
+  let snd = s:V.strwidthpart_reverse(a:body, s:V.wcswidth(a:body) - s:V.wcswidth(fst))
+  return [ fst, snd ]    
 endfunction
 
 function! s:_split_by_wcswidth(body, x)
@@ -185,9 +185,14 @@ function! s:_split_by_wcswidth(body, x)
   return memo
 endfunction
 
-function! s:wrap(str)
+function! s:trim(str)
+  return matchstr(a:str,'^\s*\zs.\{-}\ze\s*$')
+endfunction   
+
+function! s:wrap(str,...)
+  let _columns = a:0 > 0 ? a:1 : &columns
   return s:L.concat(
-        \ map(split(a:str, '\r\?\n'), 's:_split_by_wcswidth(v:val, &columns - 1)'))
+        \ map(split(a:str, '\r\?\n'), 's:_split_by_wcswidth(v:val, _columns - 1)'))
 endfunction
 
 function! s:nr2byte(nr)

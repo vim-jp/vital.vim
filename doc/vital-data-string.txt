@@ -68,8 +68,12 @@ nsplit({expr}, {n}, [, {pattern} [, {keepempty}]])
 chop({str}) 				*Vital.Data.String.chop()*
 	Removes last character from {str}.
 
-wrap({str})				*Vital.Data.String.wrap()*
+trim({str})	                	*Vital.Data.String.trim()*
+	Returns |String| Removed spaces from the beginning and end of a {str}.
+
+wrap({str}[, {columns}])		*Vital.Data.String.wrap()*
 	Returns |String| wrapped to fit to |columns| width.
+        Default: {columns} = &columns
 
 nr2byte({nr})				*Vital.Data.String.nr2byte()*
 	Returns utf-8 bytes which has the number value {nr}.
