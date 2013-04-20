@@ -171,7 +171,7 @@ endfunction "}}}
 function! s:_split_by_wcswidth_once(body, x)
   let fst = s:V.strwidthpart(a:body, a:x)
   let snd = s:V.strwidthpart_reverse(a:body, s:V.wcswidth(a:body) - s:V.wcswidth(fst))
-  return [ fst, snd ]    
+  return [fst, snd]
 endfunction
 
 function! s:_split_by_wcswidth(body, x)
@@ -187,7 +187,7 @@ endfunction
 
 function! s:trim(str)
   return matchstr(a:str,'^\s*\zs.\{-}\ze\s*$')
-endfunction   
+endfunction
 
 function! s:wrap(str,...)
   let _columns = a:0 > 0 ? a:1 : &columns
