@@ -40,6 +40,22 @@ else
   endfunction
 endif
 
+if exists('*capture')
+  function! s:capture(command)
+    return capture(a:command)
+  endfunction
+else
+  function! s:capture(command)
+    try
+      redir => out
+      silent execute a:command
+    finally
+      redir END
+    endtry
+    return out
+  endfunction
+endif
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
