@@ -223,7 +223,12 @@ function! vitalizer#complete(arglead, cmdline, cursorpos)
   endif
 endfunction
 function! vitalizer#command(args)
-  call s:check_system()
+  try
+    call s:check_system()
+  catch
+    echohl ErrorMsg | echomsg v:exception | echohl None
+    return
+  endtry
   let options = filter(copy(a:args), 'v:val=~"^--"')
   let args = filter(copy(a:args), 'v:val!~"^--"')
   if empty(args)
