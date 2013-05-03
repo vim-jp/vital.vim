@@ -251,12 +251,12 @@ function! vitalizer#command(args)
     elseif option =~ '^--hash=\S'
       let hash = option[7:]
     else
-      echohl Error | echomsg "Invalid argument: ".option | echohl None
+      echohl ErrorMsg | echomsg "Invalid argument: ".option | echohl None
       return
     endif
   endfor
   if len(args) == 0
-    echohl Error | echomsg "Argument required" | echohl None
+    echohl ErrorMsg | echomsg "Argument required" | echohl None
     return
   endif
   call vitalizer#vitalize(name, to, modules, hash)
