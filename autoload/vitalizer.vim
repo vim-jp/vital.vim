@@ -164,29 +164,29 @@ function! vitalizer#vitalize(name, to, modules, hash)
     endif
 
     " Determine installing modules.
-    let all_modules = []
+    let installing_modules = []
     if filereadable(vital_file)
-      let all_modules = readfile(vital_file)[2 :]
+      let installing_modules = readfile(vital_file)[2 :]
     endif
     if !empty(a:modules)
       let [diff, modules] = s:L.partition('v:val =~# "^[+-]"', a:modules)
       if !empty(modules)
-        let all_modules = modules
+        let installing_modules = modules
       endif
       for entry in diff
         let module = entry[1 :]
         if entry[0] ==# '+'
-          let all_modules += [module]
+          let installing_modules += [module]
         else
-          call filter(all_modules, 'v:val !=# module')
+          call filter(installing_modules, 'v:val !=# module')
         endif
       endfor
     endif
-    if empty(all_modules)
+    if empty(installing_modules)
       let files = s:all_modules()
     else
-      let all_modules = s:L.uniq(all_modules)
-      let files = map(s:search_dependence(all_modules + s:REQUIRED_MODULES),
+      let installing_modules = s:L.uniq(installing_modules)
+      let files = map(s:search_dependence(installing_modules + s:REQUIRED_MODULES),
       \               's:module2file(v:val)')
     endif
 
@@ -217,7 +217,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       let after = substitute(f, '__latest__', '_' . short_hash, '')
       call s:copy(s:vital_dir . '/' . f, a:to . '/' . after)
     endfor
-    call writefile([short_hash, ''] + all_modules, vital_file)
+    call writefile([short_hash, ''] + installing_modules, vital_file)
 
   catch
     echohl ErrorMsg | echomsg v:exception | echohl None
