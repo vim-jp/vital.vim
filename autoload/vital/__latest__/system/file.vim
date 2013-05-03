@@ -113,12 +113,7 @@ endfunction "}}}
 " Returns true if success.
 " Returns false if failure.
 function! s:mkdir_nothrow(...) "{{{
-  try
-    call call('mkdir', a:000)
-    return 1
-  catch
-    return 0
-  endtry
+  silent! return call('mkdir', a:000)
 endfunction "}}}
 
 
