@@ -42,7 +42,7 @@ endif
 
 if exists('*capture')
   function! s:capture(command)
-    return capture(a:command)
+    return call('capture', [a:command])
   endfunction
 else
   function! s:capture(command)
