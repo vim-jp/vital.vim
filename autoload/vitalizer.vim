@@ -30,7 +30,12 @@ function! s:check_system()
   endif
 endfunction
 function! s:git(cmd)
-  return system(printf('git --git-dir "%s" %s', s:git_dir, a:cmd))
+  let cmd = printf('git --git-dir "%s" %s', s:git_dir, a:cmd)
+  let output = system(cmd)
+  if v:shell_error
+    throw "vitalizer: '" . cmd . "' failed: ".output
+  endif
+  return output
 endfunction
 function! s:git_current_hash()
   return s:git('rev-parse HEAD')
@@ -126,15 +131,27 @@ endfunction
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
 
-  " Save current HEAD to restore a working tree later.
-  let cur = s:git_current_hash()
+  try
+    " Save current HEAD to restore a working tree later.
+    let cur = s:git_current_hash()
+  catch
+    echohl ErrorMsg | echomsg 'Could not retrieve current HEAD: '.v:exception | echohl None
+    return
+  endtry
+
   if a:hash ==# ''
     let hash = cur
     unlet cur
   elseif cur !=? a:hash
-    call s:git_checkout(a:hash)
+    try
+      call s:git_checkout(a:hash)
+    catch
+      echohl ErrorMsg | echomsg "'git checkout' failed: ".v:exception | echohl None
+      return
+    endtry
     let hash = a:hash
   else
+    let hash = a:hash
     unlet cur
   endif
 
@@ -201,10 +218,19 @@ function! vitalizer#vitalize(name, to, modules, hash)
       call s:copy(s:vital_dir . '/' . f, a:to . '/' . after)
     endfor
     call writefile([short_hash, ''] + all_modules, vital_file)
+
+  catch
+    echohl ErrorMsg | echomsg v:exception | echohl None
+
   finally
     " Go back to HEAD if previously checked-out.
     if exists('cur')
-      call s:git_checkout(cur)
+      try
+        call s:git_checkout(cur)
+      catch
+        echohl ErrorMsg | echomsg "'git checkout' failed: ".v:exception | echohl None
+        return
+      endtry
     endif
   endtry
 endfunction
