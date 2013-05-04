@@ -138,6 +138,8 @@ function! s:rmdir(path, ...)
       let option .= flags =~# 'r' ? ' /S' : ''
       let ret = system("rmdir" . option . ' "' . a:path . '"')
     endif
+  else
+    throw 'vital: System.File.rmdir(): your platform is not supported'
   endif
   if v:shell_error
     throw substitute(iconv(ret, 'char', &encoding), '\n', '', 'g')
