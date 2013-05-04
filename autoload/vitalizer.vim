@@ -170,6 +170,18 @@ function! vitalizer#vitalize(name, to, modules, hash)
       let vital_file = split(filelist, '\n')[0]
     endif
 
+    " Check if all of specified modules exist.
+    let missing = copy(a:modules)
+    call map(missing, 'substitute(v:val, "^[+-]", "", "")')
+    let all_modules = s:all_modules()
+    call filter(missing, 'index(all_modules, s:module2file(v:val)) is -1')
+    if !empty(missing)
+      echohl ErrorMsg
+      echomsg "Some modules don't exist: " . join(missing, ', ')
+      echohl None
+      return
+    endif
+
     " Determine installing modules.
     let installing_modules = []
     if filereadable(vital_file)
