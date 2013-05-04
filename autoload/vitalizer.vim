@@ -128,6 +128,13 @@ function! s:show_changes(vital_file)
   endif
   return confirm_required
 endfunction
+function! s:echoerr(msg)
+  echohl ErrorMsg
+  for line in split(a:msg, "\n")
+    echomsg line
+  endfor
+  echohl None
+endfunction
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
 
@@ -135,7 +142,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Save current HEAD to restore a working tree later.
     let cur = s:git_current_hash()
   catch
-    echohl ErrorMsg | echomsg 'Could not retrieve current HEAD: '.v:exception | echohl None
+    call s:echoerr('Could not retrieve current HEAD: ' . v:exception)
     return
   endtry
 
@@ -146,7 +153,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     try
       call s:git_checkout(a:hash)
     catch
-      echohl ErrorMsg | echomsg "'git checkout' failed: ".v:exception | echohl None
+      call s:echoerr("'git checkout' failed: " . v:exception)
       return
     endtry
     let hash = a:hash
@@ -220,7 +227,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     call writefile([short_hash, ''] + installing_modules, vital_file)
 
   catch
-    echohl ErrorMsg | echomsg v:exception | echohl None
+    call s:echoerr(v:exception)
 
   finally
     " Go back to HEAD if previously checked-out.
@@ -228,7 +235,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       try
         call s:git_checkout(cur)
       catch
-        echohl ErrorMsg | echomsg "'git checkout' failed: ".v:exception | echohl None
+        call s:echoerr("'git checkout' failed: " . v:exception)
         return
       endtry
     endif
@@ -252,7 +259,7 @@ function! vitalizer#command(args)
   try
     call s:check_system()
   catch
-    echohl ErrorMsg | echomsg v:exception | echohl None
+    call s:echoerr(v:exception)
     return
   endtry
   let options = filter(copy(a:args), 'v:val=~"^--"')
@@ -277,12 +284,12 @@ function! vitalizer#command(args)
     elseif option =~ '^--hash=\S'
       let hash = option[7:]
     else
-      echohl ErrorMsg | echomsg "Invalid argument: ".option | echohl None
+      call s:echoerr("Invalid argument: " . option)
       return
     endif
   endfor
   if len(args) == 0
-    echohl ErrorMsg | echomsg "Argument required" | echohl None
+    call s:echoerr("Argument required")
     return
   endif
   call vitalizer#vitalize(name, to, modules, hash)
