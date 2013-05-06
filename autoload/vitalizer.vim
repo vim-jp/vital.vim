@@ -224,7 +224,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
 
     " Remove previous vital.
     if isdirectory(a:to . '/autoload/vital')
-      call s:F.rmdir(a:to . '/autoload/vital', 'rf')
+      call s:F.delete(a:to . '/autoload/vital', 'rf')
     endif
     if filereadable(a:to . '/autoload/vital.vim')
       call delete(a:to . '/autoload/vital.vim')
