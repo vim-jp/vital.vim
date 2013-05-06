@@ -60,7 +60,7 @@ function! s:move_file(src, dest) "{{{
 endfunction "}}}
 
 " Move a file.
-" Implemented by 'mv' executable.
+" Implemented by external program.
 " TODO: Support non-*nix like system.
 function! s:move_file_exe(src, dest)
   if !executable('mv') | return 0 | endif
@@ -88,7 +88,7 @@ function! s:copy_file(src, dest) "{{{
 endfunction "}}}
 
 " Copy a file.
-" Implemented by 'cp' executable.
+" Implemented by external program.
 " TODO: Support non-*nix like system.
 function! s:copy_file_exe(src, dest)
   if !executable('cp') | return 0 | endif
