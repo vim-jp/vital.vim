@@ -28,7 +28,7 @@ function! s:open(filename) "{{{
           \ shellescape(filename)))
   elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
     " KDE.
-    call system(printf('%s %s &', 'kioclien exec',
+    call system(printf('%s %s &', 'kioclient exec',
           \ shellescape(filename)))
   elseif exists('$GNOME_DESKTOP_SESSION_ID')
     " GNOME.
