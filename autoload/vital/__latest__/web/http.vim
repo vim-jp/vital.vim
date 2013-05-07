@@ -261,6 +261,9 @@ function! s:_build_response(header, content)
   let response = {
   \   'header' : a:header,
   \   'content': a:content,
+  \   'status': 0,
+  \   'statusText': '',
+  \   'success': 0,
   \ }
 
   if !empty(a:header)

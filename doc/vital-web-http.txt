@@ -109,5 +109,25 @@ return data structure as |Directory| like following.
 	  "success": 1,
 	}
 <
+"header"
+		The header lines of response.  This can convert to
+		|Dictionary| by |Vital.Web.Http.parseHeader()|.
+
+"content"
+		The content of response.
+
+"status"
+		The http status code of response.
+		If the code couldn't take, this is 0.
+
+"statusText"
+		The http status code text of response.
+		If the code couldn't take, this is empty string.
+
+"success"
+		This is true if the "status" is 2xx.
+
+
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
