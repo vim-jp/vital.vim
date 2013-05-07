@@ -194,7 +194,7 @@ function! s:clients.wget(settings, quote)
   let command .= ' -O ' . a:quote . a:settings._file.content . a:quote
   let command .= ' --server-response -q -L '
   if has_key(a:settings, 'maxRedirect')
-    let command .= ' --max-redirect ' . a:settings.maxRedirect
+    let command .= ' --max-redirect=' . a:settings.maxRedirect
   endif
   let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
   let timeout = get(a:settings, 'timeout', '')
