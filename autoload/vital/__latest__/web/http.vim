@@ -116,7 +116,11 @@ function! s:request(...)
     let settings.headers['Content-Type'] = settings.contentType
   endif
   if has_key(settings, 'param')
-    let getdatastr = s:encodeURI(settings.param)
+    if s:Prelude.is_dict(settings.param)
+      let getdatastr = s:encodeURI(settings.param)
+    else
+      let getdatastr = settings.param
+    endif
     if strlen(getdatastr)
       let settings.url .= '?' . getdatastr
     endif
