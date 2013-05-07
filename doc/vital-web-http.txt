@@ -22,14 +22,17 @@ FUNCTIONS				*Vital.Web.Http-functions*
 
 get({url}, {param}, {header})		*Vital.Web.Http.get()*
 	Send GET request to url.
+	This is just a wrapper of |Vital.Web.Http.request()|.
 
 post({url}, {param}, {header})		*Vital.Web.Http.post()*
 	Send POST request to url.
+	This is just a wrapper of |Vital.Web.Http.request()|.
 
 request([{settings}])			*Vital.Web.Http.request()*
 request({url} [, {settings}])
 request({method}, {url} [, {settings}])
 	Send request to url.
+	This requires the one of "client"(curl or wget).
 	{settings} is a |Dictionary| which contains the following items:
 
 	"url"		Required
@@ -74,6 +77,7 @@ request({method}, {url} [, {settings}])
 
 	"command"
 		Command name for client.  You should use with "client".
+		This maybe becomes like "/usr/bin/curl".
 
 parseHeader({headers})			*Vital.Web.Http.parseHeader()*
 	Parse {headers} list to a dictionary.
