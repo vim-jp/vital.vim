@@ -157,6 +157,8 @@ function! s:clients.curl(settings, quote)
   let command .= ' -L -s -k -X ' . a:settings.method
   if has_key(a:settings, 'maxRedirect')
     let command .= ' --max-redirs ' . a:settings.maxRedirect
+  else
+    let command .= ' --max-redirs 20'
   endif
   let command .= s:_make_header_args(a:settings.headers, '-H ', a:quote)
   let timeout = get(a:settings, 'timeout', '')
@@ -199,6 +201,8 @@ function! s:clients.wget(settings, quote)
   let command .= ' --server-response -q -L '
   if has_key(a:settings, 'maxRedirect')
     let command .= ' --max-redirect=' . a:settings.maxRedirect
+  else
+    let command .= ' --max-redirect=20'
   endif
   let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
   let timeout = get(a:settings, 'timeout', '')
@@ -206,15 +210,15 @@ function! s:clients.wget(settings, quote)
     let command .= ' --timeout=' . timeout
   endif
   if has_key(a:settings, 'username')
-    let command .= ' --http-user ' . a:quote . a:settings.username . a:quote
+    let command .= ' --http-user=' . a:quote . a:settings.username . a:quote
   endif
   if has_key(a:settings, 'password')
-    let command .= ' --http-password ' . a:quote . a:settings.password . a:quote
+    let command .= ' --http-password=' . a:quote . a:settings.password . a:quote
   endif
   let command .= ' ' . a:quote . a:settings.url . a:quote
   if has_key(a:settings._file, 'post')
     let file = a:settings._file.post
-    let command .= ' --post-data @' . a:quote . file . a:quote
+    let command .= ' --post-file=' . a:quote . file . a:quote
   endif
 
   call s:Prelude.system(command)

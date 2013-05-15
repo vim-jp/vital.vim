@@ -13,7 +13,7 @@ INTERFACE				|Vital.Web.Http-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Web.Http-introduction*
 
-*Vital.Web.Http* is HTTP Utilities Library. It provides simple HTTP client.
+*Vital.Web.Http* is an HTTP Utilities Library.  It provides a simple HTTP client.
 
 ==============================================================================
 INTERFACE				*Vital.Web.Http-interface*
@@ -21,39 +21,39 @@ INTERFACE				*Vital.Web.Http-interface*
 FUNCTIONS				*Vital.Web.Http-functions*
 
 get({url}, {param}, {header})		*Vital.Web.Http.get()*
-	Send GET request to url.
+	Send a GET request to the server.
 	This is just a wrapper of |Vital.Web.Http.request()|.
 
 post({url}, {param}, {header})		*Vital.Web.Http.post()*
-	Send POST request to url.
+	Send a POST request to the server.
 	This is just a wrapper of |Vital.Web.Http.request()|.
 
 request([{settings}])			*Vital.Web.Http.request()*
 request({url} [, {settings}])
 request({method}, {url} [, {settings}])
-	Send request to url.
-	This requires the one of "client"(curl or wget).
+	Send a request to the server.
+	This function requires one of the clients, "curl" or "wget".
 	{settings} is a |Dictionary| which contains the following items:
 
 	"url"		Required
-		URL.
+		URL of a server.
 
 	"method"	Default: "GET"
 		HTTP Method.
 
 	"param"		Default: (None)
-		Get parameters.  This is a string or a dictionary.
+		GET parameters.  This is a string or a dictionary.
 		If dictionary, it is converted to a string by
 		|Vital.Web.Http.encodeURI()|.
 		This is appended to url.
 
 	"data"		Default: (None)
-		Post data.  This is a string or a dictionary.
+		POST data.  This is a string or a dictionary.
 		If dictionary, it is converted to a string by
 		|Vital.Web.Http.encodeURI()|.
 
 	"headers"	Default: (None)
-		Request headers. This is a dictionary.
+		Request headers.  This is a dictionary.
 
 	"contentType"	Default: (None)
 		Content-Type for "data".
@@ -68,15 +68,15 @@ request({method}, {url} [, {settings}])
 	"password"	Default: (None)
 		Password for an HTTP authentication.
 
-	"maxRedirect"	Default: (None)
+	"maxRedirect"	Default: (20)
 		Maximun number of redirections.
-		Default is dependent on "client".
+		The default is 20, which is usually far more than necessary.
 
 	"client"	Default: "curl" or "wget" (executable one)
 		HTTP client used for a request.
 
 	"command"
-		Command name for client.  You should use with "client".
+		Command name for a client.  You should use with "client".
 		This maybe becomes like "/usr/bin/curl".
 
 parseHeader({headers})			*Vital.Web.Http.parseHeader()*
@@ -110,22 +110,22 @@ return data structure as |Directory| like following.
 	}
 <
 "header"
-		The header lines of response.  This can convert to
+		The header lines of a response.  This can convert to
 		|Dictionary| by |Vital.Web.Http.parseHeader()|.
 
 "content"
-		The content of response.
+		The content of a response.
 
 "status"
-		The http status code of response.
+		The http status code of a response.
 		If the code couldn't take, this is 0.
 
 "statusText"
-		The http status code text of response.
-		If the code couldn't take, this is empty string.
+		The http status code text of a response.
+		If the code couldn't take, this is the empty string.
 
 "success"
-		This is true if the "status" is 2xx.
+		This is 1 if the "status" is 2xx.
 
 
 
