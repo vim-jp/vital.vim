@@ -129,7 +129,7 @@ elseif has('unix')
     let option = ''
     let option .= flags =~# 'f' ? ' -f' : ''
     let option .= flags =~# 'r' ? ' -r' : ''
-    let ret = system("/bin/rm" . option . ' ' . shellescape(a:path) . ' 2>&1')
+    let ret = system("/bin/rm" . option . ' ' . shellescape(a:path))
     if v:shell_error
       throw substitute(iconv(ret, 'char', &encoding), '\n', '', 'g')
     endif
