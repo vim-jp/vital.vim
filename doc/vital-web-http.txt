@@ -72,7 +72,7 @@ request({method}, {url} [, {settings}])
 	"password"	Default: (None)
 		Password for an HTTP authentication.
 
-	"maxRedirect"	Default: (20)
+	"maxRedirect"	Default: 20
 		Maximun number of redirections.
 		The default is 20, which is usually far more than necessary.
 

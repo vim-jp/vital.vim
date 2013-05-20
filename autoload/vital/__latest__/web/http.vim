@@ -90,6 +90,7 @@ let s:default_settings = {
 \   'headers': {},
 \   'client': executable('curl') ? 'curl' :
 \             executable('wget') ? 'wget' : '',
+\   'maxRedirect': 20,
 \ }
 function! s:request(...)
   let settings = {}
@@ -161,11 +162,7 @@ function! s:clients.curl(settings, quote)
   endif
   let command .= ' --output ' . a:quote . output_file . a:quote
   let command .= ' -L -s -k -X ' . a:settings.method
-  if has_key(a:settings, 'maxRedirect')
-    let command .= ' --max-redirs ' . a:settings.maxRedirect
-  else
-    let command .= ' --max-redirs 20'
-  endif
+  let command .= ' --max-redirs ' . a:settings.maxRedirect
   let command .= s:_make_header_args(a:settings.headers, '-H ', a:quote)
   let timeout = get(a:settings, 'timeout', '')
   if timeout =~# '^\d\+$'
@@ -215,11 +212,7 @@ function! s:clients.wget(settings, quote)
   endif
   let command .= ' -O ' . a:quote . output_file . a:quote
   let command .= ' --server-response -q -L '
-  if has_key(a:settings, 'maxRedirect')
-    let command .= ' --max-redirect=' . a:settings.maxRedirect
-  else
-    let command .= ' --max-redirect=20'
-  endif
+  let command .= ' --max-redirect=' . a:settings.maxRedirect
   let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
   let timeout = get(a:settings, 'timeout', '')
   if timeout =~# '^\d\+$'
