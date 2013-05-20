@@ -59,6 +59,10 @@ request({method}, {url} [, {settings}])
 		Content-Type for "data".
 		This is one of "headers".  This is used preferentially.
 
+	"outputFile"	Default: (None)
+		Output the result to this file.
+		"content" of the result become empty when this is specified.
+
 	"timeout"	Default: (None)
 		Network timeout by seconds.
 

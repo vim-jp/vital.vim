@@ -151,9 +151,15 @@ let s:clients = {}
 function! s:clients.curl(settings, quote)
   let command = get(a:settings, 'command', 'curl')
   let a:settings._file.header = tempname()
-  let a:settings._file.content = tempname()
   let command .= ' --dump-header ' . a:quote . a:settings._file.header . a:quote
-  let command .= ' --output ' . a:quote . a:settings._file.content . a:quote
+  let has_output_file = has_key(a:settings, 'outputFile')
+  if has_output_file
+    let output_file = a:settings.outputFile
+  else
+    let output_file = tempname()
+    let a:settings._file.content = output_file
+  endif
+  let command .= ' --output ' . a:quote . output_file . a:quote
   let command .= ' -L -s -k -X ' . a:settings.method
   if has_key(a:settings, 'maxRedirect')
     let command .= ' --max-redirs ' . a:settings.maxRedirect
@@ -183,7 +189,11 @@ function! s:clients.curl(settings, quote)
   let headerstr = s:_readfile(a:settings._file.header)
   let header_chunks = split(headerstr, "\r\n\r\n")
   let header = empty(header_chunks) ? [] : split(header_chunks[-1], "\r\n")
-  let content = s:_readfile(a:settings._file.content)
+  if has_output_file
+    let content = ''
+  else
+    let content = s:_readfile(output_file)
+  endif
   return [header, content]
 endfunction
 function! s:clients.wget(settings, quote)
@@ -195,9 +205,15 @@ function! s:clients.wget(settings, quote)
     let a:settings.headers['X-HTTP-Method-Override'] = a:settings.method
   endif
   let a:settings._file.header = tempname()
-  let a:settings._file.content = tempname()
   let command .= ' -o ' . a:quote . a:settings._file.header . a:quote
-  let command .= ' -O ' . a:quote . a:settings._file.content . a:quote
+  let has_output_file = has_key(a:settings, 'outputFile')
+  if has_output_file
+    let output_file = a:settings.outputFile
+  else
+    let output_file = tempname()
+    let a:settings._file.content = output_file
+  endif
+  let command .= ' -O ' . a:quote . output_file . a:quote
   let command .= ' --server-response -q -L '
   if has_key(a:settings, 'maxRedirect')
     let command .= ' --max-redirect=' . a:settings.maxRedirect
@@ -231,7 +247,11 @@ function! s:clients.wget(settings, quote)
   else
     let header = []
   endif
-  let content = s:_readfile(a:settings._file.content)
+  if has_output_file
+    let content = ''
+  else
+    let content = s:_readfile(output_file)
+  endif
   return [header, content]
 endfunction
 
