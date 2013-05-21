@@ -3,7 +3,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:is_windows = has('win16') || has('win32') || has('win64')
+let s:is_unix = has('unix')
+let s:is_windows = has("win16") || has("win95") || has("win32") || has("win64")
 let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
@@ -116,15 +117,9 @@ function! s:mkdir_nothrow(...) "{{{
   silent! return call('mkdir', a:000)
 endfunction "}}}
 
-
-" rmdir recursively.
-if exists("*rmdir")
-  function! s:rmdir(path, ...)
-    return call('rmdir', [a:path] + a:000)
-  endfunction
-
-elseif has('unix')
-  function! s:rmdir(path, ...)
+" Delete a file/directory.
+if s:is_unix
+  function! s:delete(path, ...)
     let flags = a:0 ? a:1 : ''
     let option = ''
     let option .= flags =~# 'f' ? ' -f' : ''
@@ -135,8 +130,8 @@ elseif has('unix')
     endif
   endfunction
 
-elseif has("win32") || has("win95") || has("win64") || has("win16")
-  function! s:rmdir(path, ...)
+elseif s:is_windows
+  function! s:delete(path, ...)
     let flags = a:0 ? a:1 : ''
     let option = ''
     if &shell =~? "sh$"
@@ -154,7 +149,7 @@ elseif has("win32") || has("win95") || has("win64") || has("win16")
   endfunction
 
 else
-  function! s:rmdir(path, ...)
+  function! s:delete(path, ...)
     throw 'vital: System.File.rmdir(): your platform is not supported'
   endfunction
 endif

@@ -1,3 +1,5 @@
+9617a0d
+	'System.File.rmdir()' was renamed to 'System.File.delete()'.
 f86462b
 	'Prelude.{iconv,has_vimproc,system}()' are deprecated.
 	(not removed but will be removed after a while)
