@@ -19,28 +19,28 @@ INTERFACE				*Vital.Data.List-interface*
 FUNCTIONS				*Vital.Data.List-functions*
 
 pop({list})				*Vital.Data.List.pop()*
-	Removes the last element from a list and returns that element.
+	Removes the last element from a list and returns the element.
 
 push({list}, {val})			*Vital.Data.List.push()*
 	Appends {val} to {list} and returns the list itself.
 
 shift({list})				*Vital.Data.List.shift()*
-	Removes the first element from a list and returns that element.
+	Removes the first element from a list and returns the element.
 
 unshift({list}, {val})			*Vital.Data.List.unshift()*
 	Inserts {val} to the head of {list} and returns the list itself.
 
 uniq({list} [, {expr}])			*Vital.Data.List.uniq()*
-	Removes duplicates elements from {list}, nondestructively. In
+	Removes duplicates elements from {list}, nondestructively.  In
 	particular, it keeps only the first occurrence of each element.
 	If {expr} is given, uniquity is judged with the value to which a
 	formula is applied.
 
 clear({list})				*Vital.Data.List.clear()*
-	Clears the all items of {list}.  Returns {list}.
+	Removes all the items of {list}.  Returns the empty list.
 
 concat({list})				*Vital.Data.List.concat()*
-	Concatenates list of lists {list}.
+	Concatenates a list {list} of lists.
 >
 	:echo s:list.concat([[1],[2,3]])
 	[1,2,3]
@@ -57,7 +57,7 @@ flatten({list})				*Vital.Data.List.flatten()*
 	[1,2,3]
 <
 sort({list}, {expr})			*Vital.Data.List.sort()*
-	Returns sorted elements in {list}. {expr} is operate to compare.
+	Returns sorted elements in {list}.  {expr} is operate to compare.
 	This variable can be specified |String| or |Funcref|.
 >
 	:echo s:list.sort([3,1,2], 'a:a - a:b')
@@ -81,10 +81,10 @@ char_range({from}, {to})		*Vital.Data.List.char_range()*
 	Returns letters between {from} and {to}.
 
 has({list}, {Value})			*Vital.Data.List.has()*
-	Returns 1 if {Value} is in {list}.
+	Returns Number non-zero if {Value} is in {list}, otherwize zero.
 
 has_index({list}, {index})		*Vital.Data.List.has_index()*
-	Returns 1 if can point to {index} for {list}.
+	Returns 1 if can point to {index} for {list}, otherwize zero.
 
 span({f}, {xs})				*Vital.Data.List.span()*
 	Behaves like Haskell's Data.List.span().
