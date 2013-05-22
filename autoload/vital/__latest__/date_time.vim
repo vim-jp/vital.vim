@@ -24,14 +24,10 @@ function! s:_vital_loaded(V)
   \   's:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
 
   if s:V.is_windows()
-    let s:win_tz = 0
-    let regs = split(s:V.system('reg query "HKLM\System\CurrentControlSet\Control\TimeZoneInformation" /v Bias'), "\n")
-    for reg in regs
-      if reg =~# 'REG_DWORD'
-        let s:win_tz = -1 * split(reg)[-1] / 60
-        break
-      endif
-    endfor
+    let key = 'HKLM\System\CurrentControlSet\Control\TimeZoneInformation'
+    let regs = s:V.system(printf('reg query "%s" /v Bias', key))
+    let time = matchstr(regs, 'REG_DWORD\s*\zs0x\x\+')
+    let s:win_tz = empty(time) ? 0 : time / -60
   endif
 
   " default values
