@@ -25,7 +25,7 @@ function! s:_vital_loaded(V)
 
   if s:V.is_windows()
     let s:win_tz = 0
-    let regs = split(vimproc#system('reg query "HKLM\System\CurrentControlSet\Control\TimeZoneInformation" /v Bias'), "\n")
+    let regs = split(s:V.system('reg query "HKLM\System\CurrentControlSet\Control\TimeZoneInformation" /v Bias'), "\n")
     for reg in regs
       if reg =~# 'REG_DWORD'
         let s:win_tz = -1 * split(reg)[-1] * 60
