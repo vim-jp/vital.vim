@@ -27,7 +27,7 @@ function! s:_vital_loaded(V)
     let key = 'HKLM\System\CurrentControlSet\Control\TimeZoneInformation'
     let regs = s:V.system(printf('reg query "%s" /v Bias', key))
     let time = matchstr(regs, 'REG_DWORD\s*\zs0x\x\+')
-    let s:win_tz = empty(time) ? 0 : time / -60
+    let s:win_tz = empty(time) ? 0 : time / -s:NUM_MINUTES
   endif
 
   " default values
@@ -181,12 +181,12 @@ function! s:timezone(...)
   endif
   let tz = copy(s:TimeZone)
   if s:V.is_number(info)
-    let tz._offset = info * 60 * 60
+    let tz._offset = info * s:NUM_MINUTES * s:NUM_SECONDS
   else
     let list = matchlist(info, '\v^([+-])?(\d{1,2}):?(\d{1,2})?$')
     if !empty(list)
-      let tz._offset = str2nr(list[1] . '60') *
-      \                (str2nr(list[2]) * 60 + str2nr(list[3], 10))
+      let tz._offset = str2nr(list[1] . s:NUM_SECONDS) *
+      \                (str2nr(list[2]) * s:NUM_MINUTES + str2nr(list[3]))
     else
       " TODO: TimeZone names
       throw 'Vital.DateTime: Unknown timezone: ' . string(info)
@@ -339,7 +339,8 @@ function! s:DateTime.unix_time()
       let self._unix_time = -1
     else
       let self._unix_time = (self.julian_day() - s:EPOC_TIME) *
-      \  s:SECONDS_OF_DAY + self._hour * 3600 + self._minute * 60 +
+      \  s:SECONDS_OF_DAY + self._hour * s:SECONDS_OF_HOUR +
+      \  self._minute * s:NUM_SECONDS +
       \  self._second - self._timezone.offset()
       if self._unix_time < 0
         let self._unix_time = -1
