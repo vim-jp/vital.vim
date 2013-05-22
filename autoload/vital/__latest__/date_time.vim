@@ -28,7 +28,7 @@ function! s:_vital_loaded(V)
     let regs = split(s:V.system('reg query "HKLM\System\CurrentControlSet\Control\TimeZoneInformation" /v Bias'), "\n")
     for reg in regs
       if reg =~# 'REG_DWORD'
-        let s:win_tz = -1 * split(reg)[-1] * 60
+        let s:win_tz = -1 * split(reg)[-1] / 60
         break
       endif
     endfor
