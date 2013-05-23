@@ -7,12 +7,10 @@ INTRODUCTION			|Vital.Data.Dict-introduction|
 INTERFACE			|Vital.Data.Dict-interface|
   FUNCTIONS			  |Vital.Data.Dict-functions|
 
-
-
 ==============================================================================
 INTRODUCTION				*Vital.Data.Dict-introduction*
 
-*Vital.Data.Dict* is Dict Utilities Library.
+*Vital.Data.Dict* is Dictionary Utilities Library.
 It provides some functions to manipulate |Dictionary|.
 
 ==============================================================================
@@ -23,40 +21,66 @@ FUNCTIONS				*Vital.Data.Dict-functions*
 
 make({keys}, {values} [, {fill}])	*Vital.Datal.Dict.make()*
 	Makes a dictionary from {keys} and {values}.
-	If length of {keys} is less than {values}, tails of {values} are
+	If the length of {keys} is less than {values}, tails of {values} are
 	ignored.
-	If length of {keys} is more than {values}, {values} are filled by
+	If the length of {keys} is more than {values}, {values} are filled by
 	{fill}.
 	If {fill} is omitted, 0 is used.
 >
-	make(['one', 'two', 'three'], [1, 2, 3])
-	=> {'one': 1, 'two': 2, 'three': 3}
-
+	:echo Dict.make(['one', 'two', 'three'], [1, 2, 3])
+	{'one': 1, 'two': 2, 'three': 3}
+	:echo Dict.make(['one', 'two', 'three'], [1, 2, 3, 4])
+	{'one': 1, 'two': 2, 'three': 3}
+	:echo Dict.make(['one', 'two', 'three'], [1, 2])
+	{'one': 1, 'two': 2, 'three': 0}
+	:echo Dict.make(['one', 'two', 'three'], [1, 2], 9)
+	{'one': 1, 'two': 2, 'three': 9}
+<
 
 swap({dict})				*Vital.Datal.Dict.swap()*
 	Makes a dictionary that swapped keys and values.
 >
-	swap({'one': 1, 'two': 2, 'three': 3})
-	=> {'1': 'one', '2': 'two', '3': 'three'}
+	:echo Dict.swap({'one': 1, 'two': 2, 'three': 3})
+	{'1': 'one', '2': 'two', '3': 'three'}
 <
+
 make_index({list} [, {value}])		*Vital.Datal.Dict.make_index()*
 	Makes an index dictionary.  This dictionary has {list} as key, and has
 	{value} as each value.
 	If {value} is omitted, 1 is used.
 >
-	make_index(['apple', 'orange', 'banana'])
-	=> {'apple': 1, 'orange': 1, 'banana': 1}
+	:echo Dict.make_index(['apple', 'orange', 'banana'])
+	{'apple': 1, 'orange': 1, 'banana': 1}
+	:echo Dict.make_index(['apple', 'orange', 'banana'], 5)
+	{'apple': 5, 'orange': 5, 'banana': 5}
 <
+
 pick({dict}, {keys})			*Vital.Datal.Dict.pick()*
-	Returns a copy of the {dict}, filtered to only have values for the
+	Returns a copy of the {dict}, filtered to only have entries for the
 	whitelisted {keys}.
+>
+	:let d = {'one' : 1, 'two' : 2, 'three' : 3}
+	:echo Dict.pick(d, ['one', 'three'])
+	{'one': 1, 'three': 3}
+<
 
 omit({dict}, {keys})			*Vital.Datal.Dict.omit()*
 	Returns a copy of the {dict}, filtered to omit the blacklisted {keys}.
+>
+	:let d = {'one' : 1, 'two' : 2, 'three' : 3}
+	:echo Dict.omit(d, ['one', 'three'])
+	{'two': 2}
+<
 
 clear({dict})				*Vital.Datal.Dict.clear()*
-	Clears the all items of {dict}.  Returns {dict}.
-
+	Remove all the elements of {dict}.  Returns the empty dictionary {dict}.
+>
+	:let d = {'one' : 1, 'two' : 2, 'three' : 3}
+	:echo Dict.clear(d)
+	{}
+	:echo d
+	{}
+<
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
