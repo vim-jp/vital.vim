@@ -42,7 +42,7 @@ clear({list})				*Vital.Data.List.clear()*
 concat({list})				*Vital.Data.List.concat()*
 	Concatenates a list {list} of lists.
 >
-	:echo s:list.concat([[1],[2,3]])
+	:echo List.concat([[1],[2,3]])
 	[1,2,3]
 <
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
@@ -51,18 +51,18 @@ concat({list})				*Vital.Data.List.concat()*
 flatten({list})				*Vital.Data.List.flatten()*
 	Returns elements flatten in {list}.
 >
-	:echo s:list.flatten([[1],[2,3]])
+	:echo List.flatten([[1],[2,3]])
 	[1,2,3]
-	:echo s:list.flatten([[1],2,3])
+	:echo List.flatten([[1],2,3])
 	[1,2,3]
 <
 sort({list}, {expr})			*Vital.Data.List.sort()*
-	Returns sorted elements in {list}.  {expr} is operate to compare.
-	This variable can be specified |String| or |Funcref|.
+	Returns sorted elements in |List| {list}.  {expr} is operate to compare.
+	{expr} mast be a |String| or a |Funcref|.
 >
-	:echo s:list.sort([3,1,2], 'a:a - a:b')
+	:echo List.sort([3,1,2], 'a:a - a:b')
 	[1,2,3]
-	:echo s:list.sort(['A','a','b'], function('MyCompare'))
+	:echo List.sort(['A','a','b'], function('MyCompare'))
 <
 sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
 	Returns sorted elements with key in {list}.
@@ -73,29 +73,29 @@ max({list}, {expr})			*Vital.Data.List.max()*
 	"v:val" can be used in {expr}.
 
 min({list}, {expr})			*Vital.Data.List.min()*
-	Returns a minimum value in {list} through given {expr}.
+	Returns a minimum value in |List| {list} through given {expr}.
 	Returns 0 if {list} is empty.
 	"v:val" can be used in {expr}.
 
 char_range({from}, {to})		*Vital.Data.List.char_range()*
 	Returns letters between {from} and {to}.
 
-has({list}, {Value})			*Vital.Data.List.has()*
-	Returns Number non-zero if {Value} is in {list}, otherwize zero.
+has({list}, {value})			*Vital.Data.List.has()*
+	Returns Number non-zero if {value} is in {list}, otherwise zero.
 
 has_index({list}, {index})		*Vital.Data.List.has_index()*
-	Returns 1 if can point to {index} for {list}, otherwize zero.
+	Returns 1 if can point to {index} for {list}, otherwise zero.
 
 span({f}, {xs})				*Vital.Data.List.span()*
 	Behaves like Haskell's Data.List.span().
 >
-	:echo s:list.span("v:val==1", [1,2])
+	:echo List.span("v:val==1", [1,2])
 	[[1],[2]]
 <
 break({f}, {xs})			*Vital.Data.List.break()*
 	Behaves like Haskell's Data.List.break().
 >
-	:echo s:list.span("v:val==1", [1,2])
+	:echo List.span("v:val==1", [1,2])
 	[[1]]
 <
 partition({f}, {xs})			*Vital.Data.List.partition()*
@@ -128,7 +128,7 @@ foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
 zip(...)				*Vital.Data.List.zip()*
 	Behaves like python's zip().
 >
-	:echo s:list.zip([1,2,3],[4,5,6],[7,8,9])
+	:echo List.zip([1,2,3],[4,5,6],[7,8,9])
 	[[1,4,7],[2,5,8],[3,6,9]]
 <
 ==============================================================================
