@@ -187,7 +187,7 @@ function! s:clients.curl(settings, quote)
 
   let headerstr = s:_readfile(a:settings._file.header)
   let header_chunks = split(headerstr, "\r\n\r\n")
-  let header = empty(header_chunks) ? [] : split(header_chunks[-1], "\r\n")
+  let header = split(get(header_chunks, -1, ''), "\r\n")
   if has_output_file
     let content = ''
   else
@@ -239,7 +239,8 @@ function! s:clients.wget(settings, quote)
     let header_lines = readfile(a:settings._file.header, 'b')
     call map(header_lines, 'matchstr(v:val, "^\\s*\\zs.*")')
     let headerstr = join(header_lines, "\n")
-    let header = split(split(headerstr, '\n\zeHTTP/1\.\d')[-1], "\n")
+    let header_chunks = split(headerstr, '\n\zeHTTP/1\.\d')
+    let header = split(get(header_chunks, -1, ''), "\n")
   else
     let header = []
   endif
