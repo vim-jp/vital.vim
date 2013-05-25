@@ -165,12 +165,12 @@ function! s:_build_module(sid)
 endfunction
 
 function! s:_redir(cmd)
-  let oldverbosefile = &verbosefile
-  set verbosefile=
+  let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
+  set verbose=0 verbosefile=
   redir => res
     silent! execute a:cmd
   redir END
-  let &verbosefile = oldverbosefile
+  let [&verbose, &verbosefile] = [save_verbose, save_verbosefile]
   return res
 endfunction
 
