@@ -19,28 +19,28 @@ INTERFACE				*Vital.Data.List-interface*
 FUNCTIONS				*Vital.Data.List-functions*
 
 pop({list})				*Vital.Data.List.pop()*
-	Removes the last element from a list and returns the element.
+	Removes the last element from |List| {list} and returns the element.
 
 push({list}, {val})			*Vital.Data.List.push()*
-	Appends {val} to {list} and returns the list itself.
+	Appends {val} to the end of |List| {list} and returns the list itself.
 
 shift({list})				*Vital.Data.List.shift()*
-	Removes the first element from a list and returns the element.
+	Removes the first element from |List| {list} and returns the element.
 
 unshift({list}, {val})			*Vital.Data.List.unshift()*
-	Inserts {val} to the head of {list} and returns the list itself.
+	Inserts {val} to the head of |List| {list} and returns the list itself.
 
 uniq({list} [, {expr}])			*Vital.Data.List.uniq()*
-	Removes duplicates elements from {list}, nondestructively.  In
+	Removes duplicate elements from |List| {list}, nondestructively.  In
 	particular, it keeps only the first occurrence of each element.
-	If {expr} is given, uniquity is judged with the value to which a
+	If {expr} is given, uniqueness is judged with the value to which a
 	formula is applied.
 
 clear({list})				*Vital.Data.List.clear()*
-	Removes all the items of {list}.  Returns the empty list.
+	Removes all the items of |List| {list}.  Returns the empty list.
 
 concat({list})				*Vital.Data.List.concat()*
-	Concatenates a list {list} of lists.
+	Concatenates |List| {list} of lists.
 >
 	:echo List.concat([[1],[2,3]])
 	[1,2,3]
@@ -49,7 +49,7 @@ concat({list})				*Vital.Data.List.concat()*
 	flatten recursively.
 
 flatten({list})				*Vital.Data.List.flatten()*
-	Returns elements flatten in {list}.
+	Flattens |List| {list} of lists recursively.
 >
 	:echo List.flatten([[1],[2,3]])
 	[1,2,3]
@@ -57,61 +57,155 @@ flatten({list})				*Vital.Data.List.flatten()*
 	[1,2,3]
 <
 sort({list}, {expr})			*Vital.Data.List.sort()*
-	Returns sorted elements in |List| {list}.  {expr} is operate to compare.
-	{expr} mast be a |String| or a |Funcref|.
+	Sorts the items in |List| {list} in-place.  Returns {list}.  {expr}
+	must be a |String| or a |Funcref|.  When {expr} is a |Funcref|, this
+	function returns the same result as |sort()|.  When {expr} is a |String|,
+	this function uses {expr} to compare items.  Inside {expr} a:a and a:b
+	have the value of the current items.  The evaluating result of {expr}
+	must have zero if they are equal, 1 or bigger if a:a sorts after the
+	a:b, -1 or smaller if a:a sorts before a:b.
 >
+	func MyCompare(i1, i2)
+		return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
+	endfunc
+	:echo List.sort(['pineapple','orange','banana','apple'],function('MyCompare'))
+	['apple', 'banana', 'orange', 'pineapple']
 	:echo List.sort([3,1,2], 'a:a - a:b')
 	[1,2,3]
-	:echo List.sort(['A','a','b'], function('MyCompare'))
+	:echo List.sort(['pineapple','orange','banana','apple'],'len(a:a)-len(a:b)')
+	['apple', 'orange', 'banana', 'pineapple']
 <
 sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
-	Returns sorted elements with key in {list}.
+	Returns a sorted |List| with key in |List| {list}.
 
 max({list}, {expr})			*Vital.Data.List.max()*
 	Returns a maximum value in {list} through given {expr}.
 	Returns 0 if {list} is empty.
 	"v:val" can be used in {expr}.
-
+>
+	:echo List.max(['pineapple','orange','banana','apple'], 'len(v:val)')
+	pineapple
+	:echo List.max([20, -50, -15, 30], 'abs(v:val)')
+	-50
+<
 min({list}, {expr})			*Vital.Data.List.min()*
 	Returns a minimum value in |List| {list} through given {expr}.
 	Returns 0 if {list} is empty.
 	"v:val" can be used in {expr}.
-
+>
+	:echo List.min(['pineapple','orange','banana','apple'], 'len(v:val)')
+	apple
+	:echo List.min([20, -50, -15, 30], 'abs(v:val)')
+	-15
+<
 char_range({from}, {to})		*Vital.Data.List.char_range()*
-	Returns letters between {from} and {to}.
+	Returns a |List| of letters from {from} to {to}.
 
 has({list}, {value})			*Vital.Data.List.has()*
-	Returns Number non-zero if {value} is in {list}, otherwise zero.
+	Returns Number 1 if {value} is in |List| {list}, otherwise zero.
 
 has_index({list}, {index})		*Vital.Data.List.has_index()*
-	Returns 1 if can point to {index} for {list}, otherwise zero.
+	Returns Number 1 if can point to {index} for |List| {list}, otherwise zero.
+	If {index} is negative Number, this function returns zero.
 
-span({f}, {xs})				*Vital.Data.List.span()*
+span({string}, {list})				*Vital.Data.List.span()*
+	Returns a list of two lists where concatenation of them is
+	equal to {list}, all the items of the first list satisfy {string} and
+	the first item of the second list does not satisfy {string}.
+	Inside {string} |v:val| has the value of the current item.
+
 	Behaves like Haskell's Data.List.span().
 >
 	:echo List.span("v:val==1", [1,2])
-	[[1],[2]]
+	[[1], [2]]
+	:echo List.span('v:val < 5', [1, 3, 5, 2])
+	[[1, 3], [5, 2]]
+	:echo List.span('v:val > 3', [1, 2, 3, 4, 5])
+	[[], [1, 2, 3, 4, 5]]
+	:echo List.span('v:val < 3', [1, 2, 3, 4, 5])
+	[[1, 2], [3, 4, 5]]
 <
-break({f}, {xs})			*Vital.Data.List.break()*
+break({expr}, {list})			*Vital.Data.List.break()*
+	Returns a list of two lists where concatenation of them is
+	equal to {list}, all the items of the first list do not satisfy {string} and
+	the first item of the second list satisfies {string}.
+	Inside {string} |v:val| has the value of the current item.
+
 	Behaves like Haskell's Data.List.break().
 >
-	:echo List.span("v:val==1", [1,2])
-	[[1]]
+	:echo List.break("v:val==1", [1,2])
+	[[], [1, 2]]
+	:echo List.break('v:val == 5', [1, 3, 5, 2])
+	[[1, 3], [5, 2]]
+	:echo List.break('v:val > 3', [1, 2, 3, 4, 5])
+	[[1, 2, 3], [4, 5]]
+	:echo List.break('v:val < 3', [1, 2, 3, 4, 5])
+	[[], [1, 2, 3, 4, 5]]
 <
-partition({f}, {xs})			*Vital.Data.List.partition()*
+all({expr}, {list})				*Vital.Data.List.all()*
+	Returns Number 1 if all the items in |List| {list} fulfill the
+	condition {expr}, zero otherwise.
+	If {list} is empty, this function returns 1.
+
+	This function behaves like Haskell's Prelude.all().
+>
+	:echo List.all('v:val % 2 == 0', [2, 8, 4, 6])
+	1
+	:echo List.all('v:val % 2 == 1', [2, 8, 4, 6])
+	0
+	:echo List.all('v:val % 2 == 0', [2, 8, 5, 6])
+	0
+	:echo List.all('0 < v:val', [2, 8, 4, 6])
+	1
+	:echo List.all('0 < v:val', [2, 0, 4, 6])
+	0
+<
+any({expr}, {list})				*Vital.Data.List.any()*
+	Returns Number 1 if at least one item in |List| {list} fulfills the
+	condition {expr}, zero otherwise.  If {list} is empty, this function
+	returns 1.
+
+	This function behaves like Haskell's Prelude.any().
+>
+	:echo List.any('v:val % 2 == 0', [2, 8, 4, 6])
+	1
+	:echo List.all('v:val % 2 == 1', [2, 8, 4, 6])
+	0
+	:echo List.any('v:val % 2 == 0', [2, 8, 5, 6])
+	1
+	:echo List.any('0 < v:val', [2, 8, 4, 6])
+	1
+	:echo List.any('0 < v:val', [2, 0, 4, 6])
+	1
+<
+and({list})				*Vital.Data.List.and()*
+	Returns Number 1 if all the items of |List| {list} are non-zero
+	Numbers, zero otherwise.  If {list} is empty, this function returns 1.
+
+	This function behaves like Haskell's Prelude.and().
+>
+	:echo List.and([1, 2, 3, 1])
+	1
+	:echo List.and([1, 0, 3, 1])
+	0
+	:echo List.and([0, 0, 0, 0])
+	0
+<
+or({list})				*Vital.Data.List.or()*
+	Returns Number 1 if at least one item in List {list} is non-zero,
+	zero otherwise.  If {list} is empty, this function returns 1.
+
+	This function behaves like Haskell's Prelude.or().
+>
+	:echo List.or([1, 2, 3, 1])
+	1
+	:echo List.or([1, 0, 3, 1])
+	1
+	:echo List.or([0, 0, 0, 0])
+	0
+<
+partition({expr}, {list})			*Vital.Data.List.partition()*
 	Behaves like Haskell's Data.List.partition().
-
-all({f}, {xs})				*Vital.Data.List.all()*
-	Behaves like Haskell's Prelude.all().
-
-any({f}, {xs})				*Vital.Data.List.any()*
-	Behaves like Haskell's Prelude.any().
-
-and({xs})				*Vital.Data.List.and()*
-	Behaves like Haskell's Prelude.and().
-
-or({xs})				*Vital.Data.List.or()*
-	Behaves like Haskell's Prelude.or().
 
 foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 	Behaves like Haskell's Data.List.foldl().
