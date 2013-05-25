@@ -91,6 +91,7 @@ let s:default_settings = {
 \   'client': executable('curl') ? 'curl' :
 \             executable('wget') ? 'wget' : '',
 \   'maxRedirect': 20,
+\   'retry': 1,
 \ }
 function! s:request(...)
   let settings = {}
@@ -165,6 +166,7 @@ function! s:clients.curl(settings, quote)
   let command .= ' --max-redirs ' . a:settings.maxRedirect
   let command .= s:_make_header_args(a:settings.headers, '-H ', a:quote)
   let timeout = get(a:settings, 'timeout', '')
+  let command .= ' --retry ' . a:settings.retry
   if timeout =~# '^\d\+$'
     let command .= ' --max-time ' . timeout
   endif
@@ -215,6 +217,7 @@ function! s:clients.wget(settings, quote)
   let command .= ' --max-redirect=' . a:settings.maxRedirect
   let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
   let timeout = get(a:settings, 'timeout', '')
+  let command .= ' --tries=' . a:settings.retry
   if timeout =~# '^\d\+$'
     let command .= ' --timeout=' . timeout
   endif

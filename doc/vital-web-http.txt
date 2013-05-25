@@ -73,8 +73,11 @@ request({method}, {url} [, {settings}])
 		Password for an HTTP authentication.
 
 	"maxRedirect"	Default: 20
-		Maximun number of redirections.
+		Maximum number of redirections.
 		The default is 20, which is usually far more than necessary.
+
+	"retry"		Default: 1
+		Maximum number of retries.
 
 	"client"	Default: "curl" or "wget" (executable one)
 		HTTP client used for a request.
