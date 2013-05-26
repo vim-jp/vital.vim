@@ -171,10 +171,7 @@ function! s:clients.curl(settings, quote)
     let command .= ' --max-time ' . timeout
   endif
   if has_key(a:settings, 'username')
-    let auth = a:settings.username
-    if has_key(a:settings, 'password')
-      let auth .= ':' . a:settings.password
-    endif
+    let auth = a:settings.username . ':' . get(a:settings, 'password', '')
     let command .= ' --anyauth --user ' . a:quote . auth . a:quote
   endif
   let command .= ' ' . a:quote . a:settings.url . a:quote
