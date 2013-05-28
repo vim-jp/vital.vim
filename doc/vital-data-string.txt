@@ -53,7 +53,7 @@ split_leftright({expr}, {pattern})	*Vital.Data.String.split_leftright()*
 	:echo String.split_leftright('neocomplcache', 'neo\zs.....')
 	['neo', 'cache']
 <
-split3({expr}, {pattern})	*Vital.Data.String.split3()*
+split3({expr}, {pattern})		*Vital.Data.String.split3()*
 	Like |Vital.Data.String.split_leftright()|, but this function returns
 	[left, middle, right] not only [left, right].
 >

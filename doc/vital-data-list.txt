@@ -28,7 +28,8 @@ shift({list})				*Vital.Data.List.shift()*
 	Removes the first element from |List| {list} and returns the element.
 
 unshift({list}, {val})			*Vital.Data.List.unshift()*
-	Inserts {val} to the head of |List| {list} and returns the list itself.
+	Inserts {val} to the head of |List| {list} and returns the list
+	itself.
 
 uniq({list} [, {expr}])			*Vital.Data.List.uniq()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In
@@ -42,8 +43,8 @@ clear({list})				*Vital.Data.List.clear()*
 concat({list})				*Vital.Data.List.concat()*
 	Concatenates |List| {list} of lists.
 >
-	:echo List.concat([[1],[2,3]])
-	[1,2,3]
+	:echo List.concat([[1], [2, 3]])
+	[1, 2, 3]
 <
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
@@ -51,28 +52,29 @@ concat({list})				*Vital.Data.List.concat()*
 flatten({list})				*Vital.Data.List.flatten()*
 	Flattens |List| {list} of lists recursively.
 >
-	:echo List.flatten([[1],[2,3]])
-	[1,2,3]
-	:echo List.flatten([[1],2,3])
-	[1,2,3]
+	:echo List.flatten([[1], [2, 3]])
+	[1, 2, 3]
+	:echo List.flatten([[1], 2, 3])
+	[1, 2, 3]
 <
 sort({list}, {expr})			*Vital.Data.List.sort()*
 	Sorts the items in |List| {list} in-place.  Returns {list}.  {expr}
 	must be a |String| or a |Funcref|.  When {expr} is a |Funcref|, this
-	function returns the same result as |sort()|.  When {expr} is a |String|,
-	this function uses {expr} to compare items.  Inside {expr} a:a and a:b
-	have the value of the current items.  The evaluating result of {expr}
-	must have zero if they are equal, 1 or bigger if a:a sorts after the
-	a:b, -1 or smaller if a:a sorts before a:b.
+	function returns the same result as |sort()|.  When {expr} is a
+	|String|, this function uses {expr} to compare items.  Inside {expr}
+	a:a and a:b have the value of the current items.  The evaluating
+	result of {expr} must have zero if they are equal, 1 or bigger if a:a
+	sorts after the a:b, -1 or smaller if a:a sorts before a:b.
 >
-	func MyCompare(i1, i2)
+	function MyCompare(i1, i2)
 		return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
-	endfunc
-	:echo List.sort(['pineapple','orange','banana','apple'],function('MyCompare'))
+	endfunction
+	let list = ['pineapple', 'orange', 'banana', 'apple']
+	:echo List.sort(copy(list), function('MyCompare'))
 	['apple', 'banana', 'orange', 'pineapple']
-	:echo List.sort([3,1,2], 'a:a - a:b')
-	[1,2,3]
-	:echo List.sort(['pineapple','orange','banana','apple'],'len(a:a)-len(a:b)')
+	:echo List.sort([3, 1, 2], 'a:a - a:b')
+	[1, 2, 3]
+	:echo List.sort(copy(list), 'len(a:a)-len(a:b)')
 	['apple', 'orange', 'banana', 'pineapple']
 <
 sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
@@ -105,10 +107,10 @@ has({list}, {value})			*Vital.Data.List.has()*
 	Returns Number 1 if {value} is in |List| {list}, otherwise zero.
 
 has_index({list}, {index})		*Vital.Data.List.has_index()*
-	Returns Number 1 if can point to {index} for |List| {list}, otherwise zero.
-	If {index} is negative Number, this function returns zero.
+	Returns Number 1 if can point to {index} for |List| {list}, otherwise
+	zero.  If {index} is negative Number, this function returns zero.
 
-span({string}, {list})				*Vital.Data.List.span()*
+span({string}, {list})			*Vital.Data.List.span()*
 	Returns a list of two lists where concatenation of them is
 	equal to {list}, all the items of the first list satisfy {string} and
 	the first item of the second list does not satisfy {string}.
@@ -116,7 +118,7 @@ span({string}, {list})				*Vital.Data.List.span()*
 
 	Behaves like Haskell's Data.List.span().
 >
-	:echo List.span("v:val==1", [1,2])
+	:echo List.span("v:val==1", [1, 2])
 	[[1], [2]]
 	:echo List.span('v:val < 5', [1, 3, 5, 2])
 	[[1, 3], [5, 2]]
@@ -127,13 +129,13 @@ span({string}, {list})				*Vital.Data.List.span()*
 <
 break({expr}, {list})			*Vital.Data.List.break()*
 	Returns a list of two lists where concatenation of them is
-	equal to {list}, all the items of the first list do not satisfy {string} and
-	the first item of the second list satisfies {string}.
+	equal to {list}, all the items of the first list do not satisfy
+	{string} and the first item of the second list satisfies {string}.
 	Inside {string} |v:val| has the value of the current item.
 
 	Behaves like Haskell's Data.List.break().
 >
-	:echo List.break("v:val==1", [1,2])
+	:echo List.break("v:val==1", [1, 2])
 	[[], [1, 2]]
 	:echo List.break('v:val == 5', [1, 3, 5, 2])
 	[[1, 3], [5, 2]]
@@ -142,7 +144,7 @@ break({expr}, {list})			*Vital.Data.List.break()*
 	:echo List.break('v:val < 3', [1, 2, 3, 4, 5])
 	[[], [1, 2, 3, 4, 5]]
 <
-all({expr}, {list})				*Vital.Data.List.all()*
+all({expr}, {list})			*Vital.Data.List.all()*
 	Returns Number 1 if all the items in |List| {list} fulfill the
 	condition {expr}, zero otherwise.
 	If {list} is empty, this function returns 1.
@@ -160,7 +162,7 @@ all({expr}, {list})				*Vital.Data.List.all()*
 	:echo List.all('0 < v:val', [2, 0, 4, 6])
 	0
 <
-any({expr}, {list})				*Vital.Data.List.any()*
+any({expr}, {list})			*Vital.Data.List.any()*
 	Returns Number 1 if at least one item in |List| {list} fulfills the
 	condition {expr}, zero otherwise.  If {list} is empty, this function
 	returns 1.
@@ -204,7 +206,7 @@ or({list})				*Vital.Data.List.or()*
 	:echo List.or([0, 0, 0, 0])
 	0
 <
-partition({expr}, {list})			*Vital.Data.List.partition()*
+partition({expr}, {list})		*Vital.Data.List.partition()*
 	Behaves like Haskell's Data.List.partition().
 
 foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
@@ -222,8 +224,8 @@ foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
 zip(...)				*Vital.Data.List.zip()*
 	Behaves like python's zip().
 >
-	:echo List.zip([1,2,3],[4,5,6],[7,8,9])
-	[[1,4,7],[2,5,8],[3,6,9]]
+	:echo List.zip([1, 2, 3], [4, 5, 6], [7, 8, 9])
+	[[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 <
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

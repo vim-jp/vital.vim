@@ -1,4 +1,4 @@
-*vital-web-http.txt*				simple HTTP client library.
+*vital-web-http.txt*	simple HTTP client library.
 
 Maintainer: mattn <mattn.jp@gmail.com>
 
@@ -13,7 +13,8 @@ INTERFACE				|Vital.Web.Http-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Web.Http-introduction*
 
-*Vital.Web.Http* is an HTTP Utilities Library.  It provides a simple HTTP client.
+*Vital.Web.Http* is an HTTP Utilities Library.  It provides a simple HTTP
+client.
 
 ==============================================================================
 INTERFACE				*Vital.Web.Http-interface*
