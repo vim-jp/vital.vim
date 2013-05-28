@@ -48,8 +48,8 @@ request({method}, {url} [, {settings}])
 		This is appended to url.
 
 	"data"		Default: (None)
-		POST data.  This is a string or a dictionary.
-		If dictionary, it is converted to a string by
+		POST data.  This is a string, a list, or a dictionary.
+		If it is a dictionary, it is converted to a string by
 		|Vital.Web.Http.encodeURI()|.
 
 	"headers"	Default: (None)

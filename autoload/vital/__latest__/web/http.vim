@@ -130,12 +130,14 @@ function! s:request(...)
   let settings._file = {}
   if has_key(settings, 'data')
     if s:Prelude.is_dict(settings.data)
-      let postdatastr = s:encodeURI(settings.data)
+      let postdata = [s:encodeURI(settings.data)]
+    elseif s:Prelude.is_list(settings.data)
+      let postdata = settings.data
     else
-      let postdatastr = settings.data
+      let postdata = split(settings.data, "\n")
     endif
     let settings._file.post = tempname()
-    call writefile(split(postdatastr, "\n"), settings._file.post, "b")
+    call writefile(postdata, settings._file.post, "b")
   endif
 
   let quote = &shellxquote == '"' ?  "'" : '"'
