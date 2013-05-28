@@ -151,6 +151,80 @@ function! s:request(...)
   return s:_build_response(header, content)
 endfunction
 
+function! s:get(url, ...)
+  let settings = {
+  \    'url': a:url,
+  \    'param': a:0 > 0 ? a:1 : {},
+  \    'headers': a:0 > 1 ? a:2 : {},
+  \ }
+  return s:request(settings)
+endfunction
+
+function! s:post(url, ...)
+  let settings = {
+  \    'url': a:url,
+  \    'data': a:0 > 0 ? a:1 : {},
+  \    'headers': a:0 > 1 ? a:2 : {},
+  \    'method': a:0 > 2 ? a:3 : 'POST',
+  \ }
+  return s:request(settings)
+endfunction
+
+function! s:_readfile(file)
+  if filereadable(a:file)
+    return join(readfile(a:file, 'b'), "\n")
+  endif
+  return ''
+endfunction
+
+function! s:_build_response(header, content)
+  let response = {
+  \   'header' : a:header,
+  \   'content': a:content,
+  \   'status': 0,
+  \   'statusText': '',
+  \   'success': 0,
+  \ }
+
+  if !empty(a:header)
+    let status_line = get(a:header, 0)
+    let matched = matchlist(status_line, '^HTTP/1\.\d\s\+\(\d\+\)\s\+\(.*\)')
+    if !empty(matched)
+      let [status, statusText] = matched[1 : 2]
+      let response.status = status - 0
+      let response.statusText = statusText
+      let response.success = status =~# '^2'
+      call remove(a:header, 0)
+    endif
+  endif
+  return response
+endfunction
+
+function! s:_make_header_args(headdata, option, quote)
+  let args = ''
+  for [key, value] in items(a:headdata)
+    if s:Prelude.is_windows()
+      let value = substitute(value, '"', '"""', 'g')
+    endif
+    let args .= " " . a:option . a:quote . key . ": " . value . a:quote
+  endfor
+  return args
+endfunction
+
+function! s:parseHeader(headers)
+  " FIXME: User should be able to specify the treatment method of the duplicate item.
+  let header = {}
+  for h in a:headers
+    let matched = matchlist(h, '^\([^:]\+\):\s*\(.*\)$')
+    if !empty(matched)
+      let [name, value] = matched[1 : 2]
+      let header[name] = value
+    endif
+  endfor
+  return header
+endfunction
+
+" Clients
 let s:clients = {}
 function! s:clients.curl(settings, quote)
   let command = get(a:settings, 'command', 'curl')
@@ -249,79 +323,6 @@ function! s:clients.wget(settings, quote)
     let content = s:_readfile(output_file)
   endif
   return [header, content]
-endfunction
-
-function! s:get(url, ...)
-  let settings = {
-  \    'url': a:url,
-  \    'param': a:0 > 0 ? a:1 : {},
-  \    'headers': a:0 > 1 ? a:2 : {},
-  \ }
-  return s:request(settings)
-endfunction
-
-function! s:post(url, ...)
-  let settings = {
-  \    'url': a:url,
-  \    'data': a:0 > 0 ? a:1 : {},
-  \    'headers': a:0 > 1 ? a:2 : {},
-  \    'method': a:0 > 2 ? a:3 : 'POST',
-  \ }
-  return s:request(settings)
-endfunction
-
-function! s:_readfile(file)
-  if filereadable(a:file)
-    return join(readfile(a:file, 'b'), "\n")
-  endif
-  return ''
-endfunction
-
-function! s:_build_response(header, content)
-  let response = {
-  \   'header' : a:header,
-  \   'content': a:content,
-  \   'status': 0,
-  \   'statusText': '',
-  \   'success': 0,
-  \ }
-
-  if !empty(a:header)
-    let status_line = get(a:header, 0)
-    let matched = matchlist(status_line, '^HTTP/1\.\d\s\+\(\d\+\)\s\+\(.*\)')
-    if !empty(matched)
-      let [status, statusText] = matched[1 : 2]
-      let response.status = status - 0
-      let response.statusText = statusText
-      let response.success = status =~# '^2'
-      call remove(a:header, 0)
-    endif
-  endif
-  return response
-endfunction
-
-function! s:_make_header_args(headdata, option, quote)
-  let args = ''
-  for [key, value] in items(a:headdata)
-    if s:Prelude.is_windows()
-      let value = substitute(value, '"', '"""', 'g')
-    endif
-    let args .= " " . a:option . a:quote . key . ": " . value . a:quote
-  endfor
-  return args
-endfunction
-
-function! s:parseHeader(headers)
-  " FIXME: User should be able to specify the treatment method of the duplicate item.
-  let header = {}
-  for h in a:headers
-    let matched = matchlist(h, '^\([^:]\+\):\s*\(.*\)$')
-    if !empty(matched)
-      let [name, value] = matched[1 : 2]
-      let header[name] = value
-    endif
-  endfor
-  return header
 endfunction
 
 let &cpo = s:save_cpo
