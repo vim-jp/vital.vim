@@ -80,8 +80,10 @@ request({method}, {url} [, {settings}])
 	"retry"		Default: 1
 		Maximum number of retries.
 
-	"client"	Default: "curl" or "wget" (executable one)
-		HTTP client used for a request.
+	"client"	Default: ["curl", "wget"]
+		Candidate list of HTTP client to use for a request.
+		The first available one is used.
+		A string as an HTTP client is also possible.
 
 	"command"
 		Command name for a client.  You should use with "client".

@@ -88,8 +88,7 @@ endfunction
 let s:default_settings = {
 \   'method': 'GET',
 \   'headers': {},
-\   'client': executable('curl') ? 'curl' :
-\             executable('wget') ? 'wget' : '',
+\   'client': ['curl', 'wget'],
 \   'maxRedirect': 20,
 \   'retry': 1,
 \ }
@@ -111,8 +110,13 @@ function! s:request(...)
   if !has_key(settings, 'url')
     throw 'Vital.Web.Http.request(): "url" parameter is required.'
   endif
-  if !has_key(s:clients, settings.client)
-    throw 'Vital.Web.Http.request(): Unknown client "' . settings.client . "'"
+  let client_candidates =
+  \   s:Prelude.is_list(settings.client) ? settings.client
+  \                                      : [settings.client]
+  let client = s:_get_client(settings)
+  if empty(client)
+    throw 'Vital.Web.Http.request(): Available client not found: '
+    \    . string(settings.client)
   endif
   if has_key(settings, 'contentType')
     let settings.headers['Content-Type'] = settings.contentType
@@ -141,7 +145,7 @@ function! s:request(...)
   endif
 
   let quote = &shellxquote == '"' ?  "'" : '"'
-  let [header, content] = s:clients[settings.client](settings, quote)
+  let [header, content] = client.request(settings, quote)
 
   for file in values(settings._file)
     if filereadable(file)
@@ -225,8 +229,23 @@ function! s:parseHeader(headers)
 endfunction
 
 " Clients
+function! s:_get_client(settings)
+  let candidates = a:settings.client
+  let names = s:Prelude.is_list(candidates) ? candidates : [candidates]
+  for name in names
+    if has_key(s:clients, name) && s:clients[name].available(a:settings)
+      return s:clients[name]
+    endif
+  endfor
+  return {}
+endfunction
 let s:clients = {}
-function! s:clients.curl(settings, quote)
+
+let s:clients.curl = {}
+function! s:clients.curl.available(settings)
+  return executable('curl')
+endfunction
+function! s:clients.curl.request(settings, quote)
   let command = get(a:settings, 'command', 'curl')
   let a:settings._file.header = tempname()
   let command .= ' --dump-header ' . a:quote . a:settings._file.header . a:quote
@@ -268,7 +287,12 @@ function! s:clients.curl(settings, quote)
   endif
   return [header, content]
 endfunction
-function! s:clients.wget(settings, quote)
+
+let s:clients.wget = {}
+function! s:clients.wget.available(settings)
+  return executable('wget')
+endfunction
+function! s:clients.wget.request(settings, quote)
   let command = get(a:settings, 'command', 'wget')
   let method = a:settings.method
   if method ==# 'HEAD'
