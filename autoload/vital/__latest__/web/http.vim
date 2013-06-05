@@ -144,8 +144,7 @@ function! s:request(...)
     call writefile(postdata, settings._file.post, "b")
   endif
 
-  let quote = &shellxquote == '"' ?  "'" : '"'
-  let [header, content] = client.request(settings, quote)
+  let [header, content] = client.request(settings)
 
   for file in values(settings._file)
     if filereadable(file)
@@ -245,10 +244,11 @@ let s:clients.curl = {}
 function! s:clients.curl.available(settings)
   return executable('curl')
 endfunction
-function! s:clients.curl.request(settings, quote)
+function! s:clients.curl.request(settings)
+  let quote = s:_quote()
   let command = get(a:settings, 'command', 'curl')
   let a:settings._file.header = tempname()
-  let command .= ' --dump-header ' . a:quote . a:settings._file.header . a:quote
+  let command .= ' --dump-header ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
   if has_output_file
     let output_file = a:settings.outputFile
@@ -256,10 +256,10 @@ function! s:clients.curl.request(settings, quote)
     let output_file = tempname()
     let a:settings._file.content = output_file
   endif
-  let command .= ' --output ' . a:quote . output_file . a:quote
+  let command .= ' --output ' . quote . output_file . quote
   let command .= ' -L -s -k -X ' . a:settings.method
   let command .= ' --max-redirs ' . a:settings.maxRedirect
-  let command .= s:_make_header_args(a:settings.headers, '-H ', a:quote)
+  let command .= s:_make_header_args(a:settings.headers, '-H ', quote)
   let timeout = get(a:settings, 'timeout', '')
   let command .= ' --retry ' . a:settings.retry
   if timeout =~# '^\d\+$'
@@ -267,12 +267,12 @@ function! s:clients.curl.request(settings, quote)
   endif
   if has_key(a:settings, 'username')
     let auth = a:settings.username . ':' . get(a:settings, 'password', '')
-    let command .= ' --anyauth --user ' . a:quote . auth . a:quote
+    let command .= ' --anyauth --user ' . quote . auth . quote
   endif
-  let command .= ' ' . a:quote . a:settings.url . a:quote
+  let command .= ' ' . quote . a:settings.url . quote
   if has_key(a:settings._file, 'post')
     let file = a:settings._file.post
-    let command .= ' --data-binary @' . a:quote . file . a:quote
+    let command .= ' --data-binary @' . quote . file . quote
   endif
 
   call s:Prelude.system(command)
@@ -292,7 +292,8 @@ let s:clients.wget = {}
 function! s:clients.wget.available(settings)
   return executable('wget')
 endfunction
-function! s:clients.wget.request(settings, quote)
+function! s:clients.wget.request(settings)
+  let quote = s:_quote()
   let command = get(a:settings, 'command', 'wget')
   let method = a:settings.method
   if method ==# 'HEAD'
@@ -301,7 +302,7 @@ function! s:clients.wget.request(settings, quote)
     let a:settings.headers['X-HTTP-Method-Override'] = a:settings.method
   endif
   let a:settings._file.header = tempname()
-  let command .= ' -o ' . a:quote . a:settings._file.header . a:quote
+  let command .= ' -o ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
   if has_output_file
     let output_file = a:settings.outputFile
@@ -309,25 +310,25 @@ function! s:clients.wget.request(settings, quote)
     let output_file = tempname()
     let a:settings._file.content = output_file
   endif
-  let command .= ' -O ' . a:quote . output_file . a:quote
+  let command .= ' -O ' . quote . output_file . quote
   let command .= ' --server-response -q -L '
   let command .= ' --max-redirect=' . a:settings.maxRedirect
-  let command .= s:_make_header_args(a:settings.headers, '--header=', a:quote)
+  let command .= s:_make_header_args(a:settings.headers, '--header=', quote)
   let timeout = get(a:settings, 'timeout', '')
   let command .= ' --tries=' . a:settings.retry
   if timeout =~# '^\d\+$'
     let command .= ' --timeout=' . timeout
   endif
   if has_key(a:settings, 'username')
-    let command .= ' --http-user=' . a:quote . a:settings.username . a:quote
+    let command .= ' --http-user=' . quote . a:settings.username . quote
   endif
   if has_key(a:settings, 'password')
-    let command .= ' --http-password=' . a:quote . a:settings.password . a:quote
+    let command .= ' --http-password=' . quote . a:settings.password . quote
   endif
-  let command .= ' ' . a:quote . a:settings.url . a:quote
+  let command .= ' ' . quote . a:settings.url . quote
   if has_key(a:settings._file, 'post')
     let file = a:settings._file.post
-    let command .= ' --post-file=' . a:quote . file . a:quote
+    let command .= ' --post-file=' . quote . file . quote
   endif
 
   call s:Prelude.system(command)
@@ -347,6 +348,10 @@ function! s:clients.wget.request(settings, quote)
     let content = s:_readfile(output_file)
   endif
   return [header, content]
+endfunction
+
+function! s:_quote()
+  return &shellxquote == '"' ?  "'" : '"'
 endfunction
 
 let &cpo = s:save_cpo
