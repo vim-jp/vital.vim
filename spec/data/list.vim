@@ -254,3 +254,10 @@ Context Data.List.zip()
     Should g:L.zip([1,2,3],[4,5],[7,8,9]) ==# [[1,4,7],[2,5,8]]
   End
 End
+
+Context Data.List.with_index()
+  It return list with index
+    Should g:L.with_index(['a', 'b', 'c']) ==# [['a', 0], ['b', 1], ['c', 2]]
+    Should g:L.with_index(['a', 'b', 'c'], 3) ==# [['a', 3], ['b', 4], ['c', 5]]
+  End
+End
