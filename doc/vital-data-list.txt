@@ -227,5 +227,27 @@ zip(...)				*Vital.Data.List.zip()*
 	:echo List.zip([1, 2, 3], [4, 5, 6], [7, 8, 9])
 	[[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 <
+
+with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
+	Returns {list} with index. {offset} means the base of index.
+	If you specify {offset}, index starts with {offset}.
+>
+	:echo List.with_index(['a', 'b', 'c'])
+	[['a', 0], ['b', 1], ['c', 2]]
+<
+	This function is useful when used with |:for|.
+	For example, when you have lines as a list of string and you want to
+	output a line with a line number to each line, you may write as below.
+>
+	for idx in range(1, len(lines))
+		echo idx.': '.lines[idx]
+	endfor
+<
+	This procedure can be rewritten using with_index() as below.
+>
+	for [line, idx] in List.with_index(lines, 1)
+		echo idx.': '.line
+	endfor
+<
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
