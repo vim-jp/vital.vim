@@ -45,9 +45,9 @@ or
     call V.import('Data.OrderedSet', s:)
     call s:f()
 
-We recommend you to use a capital letter for a the Vital module dictionary to assign.
+We recommend you to use a capital letter for a Vital module dictionary to assign.
 
-## If you want to become a vital commiter
+## If you want to become a vital committer
 [Become a vital.vim Developer](https://github.com/vim-jp/vital.vim/wiki/Become-a-vital.vim-Developer)
 
 ## References

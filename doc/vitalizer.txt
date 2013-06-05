@@ -38,7 +38,7 @@ COMMANDS					*vitalizer-commands*
 <
 	options ~
 	--init
-		Uses all modules forcely.
+		Uses all modules forcedly.
 	--name={name}
 		Specifies a name of your Vital.  If omitted, name of
 		{target-dir} is used.

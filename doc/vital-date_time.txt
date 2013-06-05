@@ -272,7 +272,7 @@ TimeDelta.add({other})		*Vital.DateTime-TimeDelta.add()*
 
 TimeDelta.about()		*Vital.DateTime-TimeDelta.about()*
 	Returns a string that about this delta.
-	Exemples:
+	Examples:
 	"now"
 	"8 seconds later"
 	"30 minutes ago"
