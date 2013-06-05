@@ -58,8 +58,8 @@ or
     call V.import('Data.OrderedSet', s:)
     call s:f()
 <
-We recommend you to use a capital letter for a the Vital module dictionary
-to assign as Vital convention. That makes your code more readable among Vital
+We recommend you to use a capital letter for a Vital module dictionary to
+assign as Vital convention. That makes your code more readable among Vital
 programmers.
 
 

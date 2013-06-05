@@ -11,7 +11,7 @@ INTERFACE		                 |Vital.Lexer-interface|
 OBJECTS			                 |Vital.Lexer-objects|
   Lexer Object   	                 |Vital.Lexer-Lexer|
   Parser Object   	                 |Vital.Lexer-Parser|
-EXEMPLES	                 	 |Vital.Lexer-exemples|
+EXAMPLES	                 	 |Vital.Lexer-examples|
 
 ==============================================================================
 INTRODUCTION			                *Vital.Lexer-introduction*
@@ -55,7 +55,7 @@ Lexer.consume()    		                *Vital.Lexer-Parser.consume()*
 	Consume next token from {lexed_tokens}. Return this token.
 
 Lexer.next()    		                *Vital.Lexer-Parser.next()*
-	Return next token. This function does not comsume.
+	Return next token. This function does not consume.
 
 Lexer.end()    		                        *Vital.Lexer-Parser.end()*
 	Return 1 if next() is end of {lexed_tokens}, otherwise return 0.
@@ -64,9 +64,9 @@ Lexer.next_is(label)    		        *Vital.Lexer-Parser.next_is()*
 	Return 1 if next().label is {label}, otherwise return 0.
 
 ==============================================================================
-EXEMPLES					*Vital.Lexer-exemples*
+EXAMPLES					*Vital.Lexer-examples*
 
-lexer exemple                    		*Vital.Lexer-lexer-exemple*
+lexer example                    		*Vital.Lexer-lexer-example*
 >
 	let V = vital#of('vital')
 	let L = V.import('Text.Lexer')
@@ -82,7 +82,7 @@ lexer exemple                    		*Vital.Lexer-lexer-exemple*
 	endtry
 <
 
-simple_parser exemple		        	*Vital.Lexer-simple_parser-exemple*
+simple_parser example		        	*Vital.Lexer-simple_parser-example*
 >
 	try
 	  let lexed_tokens = L.lexer(

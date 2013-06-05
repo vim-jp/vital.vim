@@ -19,7 +19,7 @@ INTERFACE				*Vital.System.File-interface*
 FUNCTIONS				*Vital.System.File-functions*
 
 open({filename})			*Vital.System.File.open()*
-	Open a file specified as {filename}. it can be a file or folder.
+	Open a file specified as {filename}. It can be a file or folder.
 
 move_file({src}, {dest})		*Vital.System.File.move_file()*
 	Move a file {src} to {dest}
