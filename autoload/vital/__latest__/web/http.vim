@@ -110,9 +110,9 @@ function! s:request(...)
   if !has_key(settings, 'url')
     throw 'Vital.Web.Http.request(): "url" parameter is required.'
   endif
-  let client_candidates =
-  \   s:Prelude.is_list(settings.client) ? settings.client
-  \                                      : [settings.client]
+  if !s:Prelude.is_list(settings.client)
+    let settings.client = [settings.client]
+  endif
   let client = s:_get_client(settings)
   if empty(client)
     throw 'Vital.Web.Http.request(): Available client not found: '
