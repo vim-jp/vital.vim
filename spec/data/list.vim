@@ -136,7 +136,7 @@ Context data.list.take_while()
   End
 
   It of course handles list of list.
-    should [[1], [2, 3]] ==
+    Should [[1], [2, 3]] ==
           \ g:L.take_while('len(v:val) > 0', [[1], [2, 3], [], [4]])
   End
 End
