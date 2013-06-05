@@ -1,4 +1,4 @@
-*vital-web-xml.txt*			XML parser written in pure vimscript.
+*vital-web-xml.txt*			XML parser written in pure Vim script.
 
 Maintainer: mattn <mattn.jp@gmail.com>
 
