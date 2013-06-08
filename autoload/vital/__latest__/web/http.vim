@@ -261,7 +261,7 @@ function! s:clients.python.available(settings)
   return 1
 endfunction
 function! s:clients.python.request(settings)
-  " TODO: timeout(for Python 2.5 or before), maxRedirect, retry, outputFile
+  " TODO: maxRedirect, retry, outputFile
   if has_key(a:settings, 'data')
     let a:settings._postdata = s:_postdata(a:settings.data)
   endif
@@ -304,12 +304,18 @@ try:
                     director.add_handler(digestauth)
                 req = urllib2.Request(settings['url'], data, requestHeaders)
                 req.get_method = lambda: settings['method']
+                default_timeout = socket.getdefaulttimeout()
                 try:
-                    res = director.open(req, None, timeout)
+                    # for Python 2.5 or before
+                    socket.setdefaulttimeout(timeout)
+                    res = director.open(req, timeout=timeout)
+                    socket.setdefaulttimeout(default_timeout)
                 except urllib2.URLError as res:
+                    socket.setdefaulttimeout(default_timeout)
                     # FIXME: We want body and headers if possible
                     return (status(res), '')
                 except socket.timeout as e:
+                    socket.setdefaulttimeout(default_timeout)
                     return ('', '')
 
                 st = status(res)
