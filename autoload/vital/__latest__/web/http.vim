@@ -294,7 +294,7 @@ try:
                 try:
                     res = director.open(req, None, timeout)
                 except urllib2.URLError as res:
-                    # FIXME: 
+                    # FIXME: We want body and headers if possible
                     return (status(res), '')
                 except socket.timeout as e:
                     return ('', '')
