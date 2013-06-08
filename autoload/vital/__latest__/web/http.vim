@@ -132,17 +132,6 @@ function! s:request(...)
     endif
   endif
   let settings._file = {}
-  if has_key(settings, 'data')
-    if s:Prelude.is_dict(settings.data)
-      let postdata = [s:encodeURI(settings.data)]
-    elseif s:Prelude.is_list(settings.data)
-      let postdata = settings.data
-    else
-      let postdata = split(settings.data, "\n")
-    endif
-    let settings._file.post = tempname()
-    call writefile(postdata, settings._file.post, "b")
-  endif
 
   let [header, content] = client.request(settings)
 
@@ -178,6 +167,22 @@ function! s:_readfile(file)
     return join(readfile(a:file, 'b'), "\n")
   endif
   return ''
+endfunction
+
+function! s:_make_postfile(data)
+  let fname = tempname()
+  call writefile(s:_postdata(a:data), fname, 'b')
+  return fname
+endfunction
+
+function! s:_postdata(data)
+  if s:Prelude.is_dict(a:data)
+    return [s:encodeURI(a:data)]
+  elseif s:Prelude.is_list(a:data)
+    return a:data
+  else
+    return split(a:data, "\n")
+  endif
 endfunction
 
 function! s:_build_response(header, content)
@@ -257,6 +262,9 @@ function! s:clients.python.available(settings)
 endfunction
 function! s:clients.python.request(settings)
   " TODO: timeout(for Python 2.5 or before), maxRedirect, retry, outputFile
+  if has_key(a:settings, 'data')
+    let a:settings._postdata = s:_postdata(a:settings.data)
+  endif
   let header = ''
   let body = ''
   python << endpython
@@ -267,12 +275,17 @@ try:
             def vimstr(s):
                 return "'" + s.replace("\0", "\n").replace("'", "''") + "'"
 
+            def vimlist2str(list):
+                if not list:
+                    return None
+                return "\n".join([s.replace("\n", "\0") for s in list])
+
             def status(res):
                 return "HTTP/1.0 %d %s\r\n" % (res.code, res.msg)
 
             def access():
                 settings = vim.eval('a:settings')
-                data = settings.get('data')
+                data = vimlist2str(settings.get('_postdata'))
                 timeout = settings.get('timeout')
                 if timeout:
                     timeout = float(timeout)
@@ -348,9 +361,9 @@ function! s:clients.curl.request(settings)
     let command .= ' --anyauth --user ' . quote . auth . quote
   endif
   let command .= ' ' . quote . a:settings.url . quote
-  if has_key(a:settings._file, 'post')
-    let file = a:settings._file.post
-    let command .= ' --data-binary @' . quote . file . quote
+  if has_key(a:settings, 'data')
+    let a:settings._file.post = s:_make_postfile(a:settings.data)
+    let command .= ' --data-binary @' . quote . a:settings._file.post . quote
   endif
 
   call s:Prelude.system(command)
@@ -404,9 +417,9 @@ function! s:clients.wget.request(settings)
     let command .= ' --http-password=' . quote . a:settings.password . quote
   endif
   let command .= ' ' . quote . a:settings.url . quote
-  if has_key(a:settings._file, 'post')
-    let file = a:settings._file.post
-    let command .= ' --post-file=' . quote . file . quote
+  if has_key(a:settings, 'data')
+    let a:settings._file.post = s:_make_postfile(a:settings.data)
+    let command .= ' --post-file=' . quote . a:settings._file.post . quote
   endif
 
   call s:Prelude.system(command)
