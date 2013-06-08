@@ -84,6 +84,7 @@ request({method}, {url} [, {settings}])
 		Candidate list of HTTP client to use for a request.
 		The first available one is used.
 		A string as an HTTP client is also possible.
+		See also |Vital.Web.Http-client|.
 
 	"command"
 		Command name for a client.  You should use with "client".
@@ -136,6 +137,27 @@ return data structure as |Directory| like following.
 
 "success"
 		This is 1 if the "status" is 2xx.
+
+
+
+------------------------------------------------------------------------------
+CLIENT					*Vital.Web.Http-client*
+
+The following can be used.
+(TODO: More document.  Especially about limitation.)
+
+python					*Vital.Web.Http-client-python*
+	Use Python's urllib2 library via |if_python|.
+
+curl					*Vital.Web.Http-client-curl*
+	Use curl command.
+
+	http://curl.haxx.se/
+
+wget					*Vital.Web.Http-client-wget*
+	Use wget command.
+
+	http://www.gnu.org/software/wget/
 
 
 
