@@ -88,7 +88,7 @@ endfunction
 let s:default_settings = {
 \   'method': 'GET',
 \   'headers': {},
-\   'client': ['curl', 'wget'],
+\   'client': ['python', 'curl', 'wget'],
 \   'maxRedirect': 20,
 \   'retry': 1,
 \ }
@@ -239,6 +239,84 @@ function! s:_get_client(settings)
   return {}
 endfunction
 let s:clients = {}
+
+let s:clients.python = {}
+function! s:clients.python.available(settings)
+  if !has('python')
+    return 0
+  endif
+  if has_key(a:settings, 'outputFile')
+    " 'outputFile' is not supported yet
+    return 0
+  endif
+  if get(a:settings, 'retry', 0) != 1
+    " 'retry' is not supported yet
+    return 0
+  endif
+  return 1
+endfunction
+function! s:clients.python.request(settings)
+  " TODO: timeout(for Python 2.5 or before), maxRedirect, retry, outputFile
+  let header = ''
+  let body = ''
+  python << endpython
+try:
+    class DummyClassForLocalScope:
+        def main():
+            import vim, urllib2, socket
+            def vimstr(s):
+                return "'" + s.replace("\0", "\n").replace("'", "''") + "'"
+
+            def status(res):
+                return "HTTP/1.0 %d %s\r\n" % (res.code, res.msg)
+
+            def access():
+                settings = vim.eval('a:settings')
+                data = settings.get('data')
+                timeout = settings.get('timeout')
+                if timeout:
+                    timeout = float(timeout)
+                requestHeaders = settings.get('headers')
+                director = urllib2.build_opener()
+                if settings.has_key('username'):
+                    passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                    passman.add_password(
+                        None,
+                        settings['url'],
+                        settings['username'],
+                        settings.get('password', ''))
+                    basicauth = urllib2.HTTPBasicAuthHandler(passman)
+                    digestauth = urllib2.HTTPDigestAuthHandler(passman)
+                    director.add_handler(basicauth)
+                    director.add_handler(digestauth)
+                req = urllib2.Request(settings['url'], data, requestHeaders)
+                req.get_method = lambda: settings['method']
+                try:
+                    res = director.open(req, None, timeout)
+                except urllib2.URLError as res:
+                    # FIXME: 
+                    return (status(res), '')
+                except socket.timeout as e:
+                    return ('', '')
+
+                st = status(res)
+                responseHeaders = st + ''.join(res.info().headers)
+                return (responseHeaders, res.read())
+
+            (header, body) = access()
+            vim.command('let header = ' + vimstr(header))
+            vim.command('let body = ' + vimstr(body))
+
+        main()
+        raise RuntimeError("Exit from local scope")
+
+except RuntimeError as exception:
+    if exception.args != ("Exit from local scope",):
+        raise exception
+
+endpython
+  return [split(header, "\r\n"), body]
+endfunction
 
 let s:clients.curl = {}
 function! s:clients.curl.available(settings)
