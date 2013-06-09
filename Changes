@@ -1,3 +1,5 @@
+83a6526
+	Vim.Buffer.Manager was removed completely (it was deprecated.)
 f86462b
 	'Prelude.{iconv,has_vimproc,system}()' are deprecated.
 	(not removed but will be removed after a while)
