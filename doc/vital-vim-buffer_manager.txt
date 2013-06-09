@@ -1,6 +1,6 @@
 *vital-vim-buffer_manager.txt*	buffer manager.
 
-Maintainer: thinca <thinca+vim@gmail.com>
+Maintainers: thinca <thinca+vim@gmail.com>, ujihisa <ujihisa at gmail com>
 
 ==============================================================================
 CONTENTS			*Vital.Vim.BufferManager-contents*

@@ -1,0 +1,40 @@
+*vital-vim-buffer.txt*	Vim's buffer related stuff in general.
+
+Maintainers: thinca <thinca+vim@gmail.com>, ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS			*Vital.Vim.Buffer-contents*
+
+INTRODUCTION			|Vital.Vim.Buffer-introduction|
+USAGE				|Vital.Vim.Buffer-usage|
+INTERFACE			|Vital.Vim.Buffer-interface|
+  FUNCTIONS			  |Vital.Vim.Buffer-functions|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.Vim.Buffer-introduction*
+
+*Vital.Vim.Buffer* is a Vim's buffer library.
+
+
+==============================================================================
+USAGE				*Vital.Vim.Buffer-usage*
+>
+	let B = V.import('Vim.Buffer')
+	echo B.is_cmdwin() " 1 if you are in command-line-window.
+<
+
+
+==============================================================================
+INTERFACE			*Vital.Vim.Buffer-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.Vim.Buffer-functions*
+
+				*Vital.Vim.Buffer.is_cmdwin()*
+	gives you a boolean value about the current buffer is in
+	|command-line-window| or now.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
