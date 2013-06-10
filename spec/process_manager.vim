@@ -9,7 +9,7 @@ Context ProcessManager.is_available()
   End
 End
 
-Context ProcessManager.start()
+Context ProcessManager.new()
   It makes a process synchronously ans stores the info inside ProcessManager
     " TODO
   End

@@ -12,7 +12,17 @@ function! s:is_available()
   return s:V.has_vimproc()
 endfunction
 
-function! s:start(cmd)
+function! s:touch(name, cmd)
+  if has_key(s:_processes, a:name)
+    return 'existing'
+  else
+    let p = vimproc#popen3(a:cmd)
+    let s:_processes[a:name] = p
+    return 'new'
+  endif
+endfunction
+
+function! s:new(cmd)
   let p = vimproc#popen3(a:cmd)
   let s:_processes_i += 1
   let s:_processes[s:_processes_i] = p
@@ -26,7 +36,7 @@ function! s:stop(i)
 endfunction
 
 function! s:read(i)
-  return s:read_wait(a:i, 0.2)
+  return s:read_wait(a:i, 0.1)
 endfunction
 
 function! s:read_wait(i, wait)
@@ -57,7 +67,7 @@ function! s:writeln(i, str)
   return s:write(a:i, a:str . "\n")
 endfunction
 
-" let i = s:start('clojure-1.5')
+" let i = s:new('clojure-1.5')
 " echo s:read_wait(i, 2.0)
 " call s:writeln(i, '(j 1)(+ 2 3)')
 " echo s:read(i)
