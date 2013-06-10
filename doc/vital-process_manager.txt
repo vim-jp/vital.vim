@@ -33,16 +33,16 @@ USAGE				*Vital.ProcessManager-usage*
 	if !P.available " please always check if it's available.
 	  throw "omg"
 	endif
-	let i = s:new('clojure-1.5') " creates a process that runs clojure
+	let i = P.new('clojure-1.5') " creates a process that runs clojure
 	" read the stdout/stderr and wait until the process's output stays
 	" same for 2.0 sec.
-	echo s:read_wait(i, 2.0)
-	call s:writeln(i, '(+ 2 3)')
+	echo P.read_wait(i, 2.0)
+	call P.writeln(i, '(+ 2 3)')
 	" read the stdout/stderr and wait until the process's output stays
 	" same for 0.1 sec.
-	echo s:read(i) " ["5\nuser=>", '']
+	echo P.read(i) " ["5\nuser=>", '']
 	" kills the process, and let ProcessManager forget it.
-	echo s:stop(i)
+	echo P.stop(i)
 <
 
 
