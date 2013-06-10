@@ -36,7 +36,7 @@ function! s:stop(i)
 endfunction
 
 function! s:read(i)
-  return s:read_wait(a:i, 0.1)
+  return s:read_wait(a:i, 0.05)
 endfunction
 
 function! s:read_wait(i, wait)
