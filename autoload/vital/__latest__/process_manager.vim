@@ -36,10 +36,14 @@ function! s:stop(i)
 endfunction
 
 function! s:read(i)
-  return s:read_wait(a:i, 0.05)
+  return s:read_wait_endpatterns(a:i, 0.05, [])
 endfunction
 
 function! s:read_wait(i, wait)
+  return s:read_wait_endpatterns(a:i, a:wait, [])
+endfunction
+
+function! s:read_wait_endpatterns(i, wait, endpatterns)
   if !has_key(s:_processes, a:i)
     throw printf("ProcessManager doesn't know about %s", a:i)
   endif
@@ -58,6 +62,11 @@ function! s:read_wait(i, wait)
       let lastchanged = reltime()
       let out_memo .= x
       let err_memo .= y
+      for pattern in a:endpatterns
+        if out_memo =~ pattern
+          return [substitute(out_memo, pattern, '', ''), err_memo]
+        endif
+      endfor
     endif
   endwhile
 endfunction
