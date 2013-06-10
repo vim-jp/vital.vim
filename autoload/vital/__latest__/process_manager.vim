@@ -40,6 +40,10 @@ function! s:read(i)
 endfunction
 
 function! s:read_wait(i, wait)
+  if !has_key(s:_processes, a:i)
+    throw printf("ProcessManager doesn't know about %s", a:i)
+  endif
+
   let p = s:_processes[a:i]
   let out_memo = ''
   let err_memo = ''
@@ -59,6 +63,10 @@ function! s:read_wait(i, wait)
 endfunction
 
 function! s:write(i, str)
+  if !has_key(s:_processes, a:i)
+    throw printf("ProcessManager doesn't know about %s", a:i)
+  endif
+
   let p = s:_processes[a:i]
   call p.stdin.write(a:str)
 endfunction
