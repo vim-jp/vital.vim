@@ -45,6 +45,22 @@ USAGE				*Vital.ProcessManager-usage*
 	echo P.stop(i)
 <
 
+>
+	" An alternative way with label
+	function! s:f(x)
+  	  let t =  P.touch('scala1', 'scala')
+  	  if t ==# 'new'
+  	    " wait for longer time to make sure scala runs, since scala is
+  	    " really slow to run.
+  	    call P.read_wait('scala1', 2.0)
+	  endif
+	  call P.writeln('scala1', a:x)
+	  return P.read('scala1')
+	endfunction
+	echo s:f('1 + 2') "=> '3' but slow
+	echo s:f('2 + 3') "=> '5' and fast!
+<
+
 
 ==============================================================================
 INTERFACE			*Vital.ProcessManager-interface*
