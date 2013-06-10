@@ -1,0 +1,57 @@
+*vital-process_manager.txt*	process manager with vimproc.
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS			*Vital.ProcessManager-contents*
+
+INTRODUCTION			|Vital.ProcessManager-introduction|
+USAGE				|Vital.ProcessManager-usage|
+INTERFACE			|Vital.ProcessManager-interface|
+  FUNCTIONS			  |Vital.ProcessManager-functions|
+OBJECTS				|Vital.ProcessManager-objects|
+  Manger Object			  |Vital.ProcessManager-Manager|
+CONFIG				|Vital.ProcessManager-config|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.ProcessManager-introduction*
+
+*Vital.ProcessManager* is a Vim's process manager library, powered by
+|vimproc|.  This manager stores external processes ran by this library, and
+provide higher layer synchronous non-blocking read/write interface.
+
+Note that this library doesn't work on Vim without vimproc; vimproc is
+required.
+
+
+==============================================================================
+USAGE				*Vital.ProcessManager-usage*
+>
+	let P = V.import('ProcessManager')
+	if !P.available " please always check if it's available.
+	  throw "omg"
+	endif
+	let i = s:start('clojure-1.5') " creates a process that runs clojure
+	" read the stdout/stderr and wait until the process's output stays
+	" same for 2.0 sec.
+	echo s:read_wait(i, 2.0)
+	call s:writeln(i, '(+ 2 3)')
+	" read the stdout/stderr and wait until the process's output stays
+	" same for 0.2 sec.
+	echo s:read(i) " ["5\nuser=>", '']
+	" kills the process, and let ProcessManager forget it.
+	echo s:stop(i)
+<
+
+
+==============================================================================
+INTERFACE			*Vital.ProcessManager-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.ProcessManager-functions*
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
