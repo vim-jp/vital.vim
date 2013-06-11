@@ -52,7 +52,7 @@ function! s:read_wait(i, wait, endpatterns)
     let [x, y] = [p.stdout.read(), p.stderr.read()]
     if x ==# '' && y ==# ''
       if str2float(reltimestr(reltime(lastchanged))) > a:wait
-        return [out_memo, err_memo]
+        return [out_memo, err_memo, 'timedout']
       endif
     else
       let lastchanged = reltime()
@@ -60,7 +60,7 @@ function! s:read_wait(i, wait, endpatterns)
       let err_memo .= y
       for pattern in a:endpatterns
         if out_memo =~ ("\n" . pattern)
-          return [substitute(out_memo, pattern, '', ''), err_memo]
+          return [substitute(out_memo, pattern, '', ''), err_memo, 'matched']
         endif
       endfor
     endif

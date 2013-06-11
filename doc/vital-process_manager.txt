@@ -40,7 +40,7 @@ USAGE				*Vital.ProcessManager-usage*
 	call P.writeln(i, '(+ 2 3)')
 	" read the stdout/stderr and wait until the process's output stays
 	" same for 0.05 sec.
-	echo P.read(i, []) " ["5\nuser=>", '']
+	echo P.read(i, []) " ["5\nuser=>", '', 'timedout']
 	" kills the process, and let ProcessManager forget it.
 	echo P.stop(i)
 <
