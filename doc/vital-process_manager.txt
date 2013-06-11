@@ -36,11 +36,11 @@ USAGE				*Vital.ProcessManager-usage*
 	let i = P.new('clojure-1.5') " creates a process that runs clojure
 	" read the stdout/stderr and wait until the process's output stays
 	" same for 2.0 sec.
-	echo P.read_wait(i, 2.0)
+	echo P.read_wait(i, 2.0, [])
 	call P.writeln(i, '(+ 2 3)')
 	" read the stdout/stderr and wait until the process's output stays
 	" same for 0.05 sec.
-	echo P.read(i) " ["5\nuser=>", '']
+	echo P.read(i, []) " ["5\nuser=>", '']
 	" kills the process, and let ProcessManager forget it.
 	echo P.stop(i)
 <
@@ -52,10 +52,10 @@ USAGE				*Vital.ProcessManager-usage*
   	  if t ==# 'new'
   	    " wait for longer time to make sure scala runs, since scala is
   	    " really slow to run.
-  	    call P.read_wait('scala1', 2.0)
+  	    call P.read_wait('scala1', 2.0, [])
 	  endif
 	  call P.writeln('scala1', a:x)
-	  return P.read('scala1')
+	  return P.read('scala1', [])
 	endfunction
 	echo s:f('1 + 2') "=> '3' but slow
 	echo s:f('2 + 3') "=> '5' and fast!

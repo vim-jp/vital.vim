@@ -35,19 +35,11 @@ function! s:stop(i)
   unlet s:_processes[s:_processes_i]
 endfunction
 
-function! s:read(i)
-  return s:read_wait_endpatterns(a:i, 0.05, [])
+function! s:read(i, endpatterns)
+  return s:read_wait(a:i, 0.05, a:endpatterns)
 endfunction
 
-function! s:read_wait(i, wait)
-  return s:read_wait_endpatterns(a:i, a:wait, [])
-endfunction
-
-function! s:read_endpatterns(i, endpatterns)
-  return s:read_wait_endpatterns(a:i, 0.05, a:endpatterns)
-endfunction
-
-function! s:read_wait_endpatterns(i, wait, endpatterns)
+function! s:read_wait(i, wait, endpatterns)
   if !has_key(s:_processes, a:i)
     throw printf("ProcessManager doesn't know about %s", a:i)
   endif
@@ -89,9 +81,9 @@ function! s:writeln(i, str)
 endfunction
 
 " let i = s:new('clojure-1.5')
-" echo s:read_wait(i, 2.0)
+" echo s:read_wait(i, 2.0, [])
 " call s:writeln(i, '(j 1)(+ 2 3)')
-" echo s:read(i)
+" echo s:read(i, [])
 " echo s:stop(i)
 
 let &cpo = s:save_cpo
