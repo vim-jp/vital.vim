@@ -59,7 +59,7 @@ function! s:read_wait(i, wait, endpatterns)
       let out_memo .= x
       let err_memo .= y
       for pattern in a:endpatterns
-        if out_memo =~ ("\n" . pattern)
+        if out_memo =~ ("\\(^\\|\n\\)" . pattern)
           return [substitute(out_memo, pattern, '', ''), err_memo, 'matched']
         endif
       endfor
@@ -79,12 +79,6 @@ endfunction
 function! s:writeln(i, str)
   return s:write(a:i, a:str . "\n")
 endfunction
-
-" let i = s:new('clojure-1.5')
-" echo s:read_wait(i, 2.0, [])
-" call s:writeln(i, '(j 1)(+ 2 3)')
-" echo s:read(i, [])
-" echo s:stop(i)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
