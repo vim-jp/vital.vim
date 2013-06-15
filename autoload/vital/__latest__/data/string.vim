@@ -242,7 +242,7 @@ function! s:diffidx(a, b)
 endfunction
 
 function! s:substitute_last(expr, pat, sub)
-  return substitute(a:expr, printf('%s\(.*%s.*\)\@!', a:pat, a:pat), a:sub, '')
+  return substitute(a:expr, printf('.*\zs%s', a:pat), a:sub, '')
 endfunction
 
 let &cpo = s:save_cpo
