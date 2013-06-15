@@ -85,5 +85,9 @@ nr2enc_char({charcode})			*Vital.Data.String.nr2enc_char()*
 nr2hex({nr})				*Vital.Data.String.nr2hex()*
 	Returns a hex string which has the number value {nr}.
 
+substitute_last({expr}, {pat}, {sub}})	*Vital.Data.String.substitute_last()*
+	Behaves like |substitute()|, but it only replaces the last matched
+	string.
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

@@ -186,3 +186,9 @@ Context Data.String.diffidx()
     Should g:S.diffidx('▽', '▼') ==# 0
   End
 End
+
+Context Data.String.substitute_last()
+  It makes new string substituting a given string with the given regexp pattern, but only the last matched part.
+    Should g:S.substitute_last('vital is vim', 'i', 'ooo') ==# 'vital is vooom'
+  End
+End
