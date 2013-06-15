@@ -61,7 +61,7 @@ function! s:read_wait(i, wait, endpatterns)
       let err_memo .= y
       for pattern in a:endpatterns
         if out_memo =~ ("\\(^\\|\n\\)" . pattern)
-          return [s:S.substitute_last(out_memo, pattern, '', ''), err_memo, 'matched']
+          return [s:S.substitute_last(out_memo, pattern, ''), err_memo, 'matched']
         endif
       endfor
     endif
