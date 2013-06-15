@@ -6,6 +6,7 @@ let s:_processes = {}
 
 function! s:_vital_loaded(V)
   let s:V = a:V
+  let s:S = s:V.import('Data.String')
 endfunction
 
 function! s:is_available()
@@ -60,7 +61,7 @@ function! s:read_wait(i, wait, endpatterns)
       let err_memo .= y
       for pattern in a:endpatterns
         if out_memo =~ ("\\(^\\|\n\\)" . pattern)
-          return [substitute(out_memo, pattern, '', ''), err_memo, 'matched']
+          return [s:S.substitute_last(out_memo, pattern, '', ''), err_memo, 'matched']
         endif
       endfor
     endif
