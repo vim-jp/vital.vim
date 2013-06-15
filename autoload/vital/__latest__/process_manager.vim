@@ -81,6 +81,21 @@ function! s:writeln(i, str)
   return s:write(a:i, a:str . "\n")
 endfunction
 
+function! s:status(i)
+  if !has_key(s:_processes, a:i)
+    throw printf("ProcessManager doesn't know about %s", a:i)
+  endif
+  
+  let p = s:_processes[a:i]
+  let stat= p.kill(0)
+
+  if stat
+    return 'stopped'
+  endif
+
+  return 'running'
+endfunction 
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 " vim:set et ts=2 sts=2 sw=2 tw=0:
