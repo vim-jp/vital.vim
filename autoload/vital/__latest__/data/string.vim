@@ -24,7 +24,7 @@ function! s:replace(str, from, to)
     let left  = idx ==# 0 ? '' : str[: idx - 1]
     let right = str[idx + strlen(a:from) :]
     let str = left . a:to . right
-    let idx = stridx(str, a:from)
+    let idx = stridx(str, a:from, idx + strlen(a:to))
   endwhile
   return str
 endfunction
