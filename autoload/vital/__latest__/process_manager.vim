@@ -90,11 +90,11 @@ function! s:status(i)
   let stat= p.kill(0)
 
   if stat
-    return 'stopped'
+    return 'active'
   endif
 
-  return 'running'
-endfunction 
+  return 'inactive'
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

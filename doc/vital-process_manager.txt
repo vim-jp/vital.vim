@@ -43,6 +43,7 @@ USAGE				*Vital.ProcessManager-usage*
 	echo P.read(i, []) " ["5\nuser=>", '', 'timedout']
 	" kills the process, and let ProcessManager forget it.
 	echo P.stop(i)
+	echo P.status() " 'inactive'
 <
 
 >
