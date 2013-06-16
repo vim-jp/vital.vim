@@ -15,4 +15,12 @@ Context ProcessManager.new()
   End
 End
 
+Context ProcessManager.status()
+  It is 'stopped' when the process is not working
+    let i = g:P.new('ls') " assuming you have ls command
+    sleep " TODO it's evil.
+    Should g:P.status(i) == 'stopped'
+  End
+  " TODO make new test case about 'running'
+End
 " TODO
