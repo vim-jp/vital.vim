@@ -6,11 +6,10 @@ Maintainer: ujihisa <ujihisa at gmail com>
 CONTENTS			*Vital.ProcessManager-contents*
 
 INTRODUCTION			|Vital.ProcessManager-introduction|
-USAGE				|Vital.ProcessManager-usage|
+  USAGE				|Vital.ProcessManager-usage|
+  PRINCIPLE			|Vital.ProcessManager-principle|
 INTERFACE			|Vital.ProcessManager-interface|
   FUNCTIONS			  |Vital.ProcessManager-functions|
-OBJECTS				|Vital.ProcessManager-objects|
-  Manger Object			  |Vital.ProcessManager-Manager|
 CONFIG				|Vital.ProcessManager-config|
 
 
@@ -63,6 +62,17 @@ USAGE				*Vital.ProcessManager-usage*
 <
 
 
+==============================================================================
+PRINCIPLE			*Vital.ProcessManager-principle*
+
+* Nonblocking
+  * blocking APIs should have verbose name to discourage developers to use
+* Synchronous (asynchronous in Vim always makes trouble)
+* Don't show lower layer too much easily, but don't hide completely. No
+  perfect abstraction exists in the world.
+* Avoid tricky specification. Function name and behaviour itself should
+  explain what it does.
+>
 ==============================================================================
 INTERFACE			*Vital.ProcessManager-interface*
 
