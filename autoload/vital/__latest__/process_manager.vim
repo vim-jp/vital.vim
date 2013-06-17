@@ -9,6 +9,10 @@ function! s:_vital_loaded(V)
   let s:S = s:V.import('Data.String')
 endfunction
 
+function! s:_vital_depends()
+  return ['Data.String']
+endfunction
+
 function! s:is_available()
   return s:V.has_vimproc()
 endfunction
