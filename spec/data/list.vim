@@ -261,3 +261,18 @@ Context Data.List.with_index()
     Should g:L.with_index(['a', 'b', 'c'], 3) ==# [['a', 3], ['b', 4], ['c', 5]]
   End
 End
+
+Context Data.List.flatten()
+  It return list flatten
+    Should g:L.flatten(['a', ['b'], 'c']) ==# ['a', 'b', 'c']
+    Should g:L.flatten(['a', [['b'], 'c']]) ==# ['a', 'b', 'c']
+    Should g:L.flatten([['a', ['b']], 'c']) ==# ['a', 'b', 'c']
+    Should g:L.flatten(['a', [[['b']], 'c']]) ==# ['a', 'b', 'c']
+    Should g:L.flatten(['a', [[['b']], 'c']], 1) ==# ['a', [['b']], 'c']
+    Should g:L.flatten([[['a']], [[['b']], 'c']], 1) ==# [['a'], [['b']], 'c']
+    Should g:L.flatten([[['a']], [[['b']], 'c']], 2) ==# ['a', [['b']], 'c']
+    Should g:L.flatten([[['a']], [[['b']], 'c']], 3) ==# ['a', ['b'], 'c']
+    Should g:L.flatten([[['a']], [[['b']], 'c']], 4) ==# ['a', 'b', 'c']
+    Should g:L.flatten([[['a']], [[['b']], 'c']], 10) ==# ['a', 'b', 'c']
+  End
+End
