@@ -37,7 +37,7 @@ endfunction
 function! s:stop(i)
   let p = s:_processes[a:i]
   call p.kill(9)
-  unlet s:_processes[s:_processes_i]
+  unlet s:_processes[a:i]
 endfunction
 
 function! s:read(i, endpatterns)
