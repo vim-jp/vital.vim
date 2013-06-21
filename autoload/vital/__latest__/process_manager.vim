@@ -94,10 +94,10 @@ function! s:status(i)
   let stat= p.kill(0)
 
   if stat
-    return 'active'
+    return 'inactive'
   endif
 
-  return 'inactive'
+  return 'active'
 endfunction
 
 let &cpo = s:save_cpo
