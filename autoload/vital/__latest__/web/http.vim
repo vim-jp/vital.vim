@@ -105,6 +105,7 @@ function! s:request(...)
     endif
     unlet arg
   endfor
+  let s:default_settings.headers = {}
   call extend(settings, s:default_settings, 'keep')
   let settings.method = toupper(settings.method)
   if !has_key(settings, 'url')
