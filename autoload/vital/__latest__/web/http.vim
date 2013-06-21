@@ -105,7 +105,7 @@ function! s:request(...)
     endif
     unlet arg
   endfor
-  call extend(settings, s:default_settings, 'keep')
+  call extend(settings, deepcopy(s:default_settings), 'keep')
   let settings.method = toupper(settings.method)
   if !has_key(settings, 'url')
     throw 'Vital.Web.Http.request(): "url" parameter is required.'
