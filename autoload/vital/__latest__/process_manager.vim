@@ -98,8 +98,9 @@ function! s:status(i)
     throw printf("ProcessManager doesn't know about %s", a:i)
   endif
   let p = s:_processes[a:i]
+  call p.waitpid()
   " vimproc.kill isn't to stop but to ask for the current state.
-  return p.kill(0) ? 'inactive' : 'active'
+  return p.kill(0) || p.pid == 0 ? 'inactive' : 'active'
 endfunction
 
 function! s:debug_processes()
