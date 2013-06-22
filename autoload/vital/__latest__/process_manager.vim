@@ -48,11 +48,11 @@ function! s:read_wait(i, wait, endpatterns)
   if !has_key(s:_processes, a:i)
     throw printf("ProcessManager doesn't know about %s", a:i)
   endif
-
-  let p = s:_processes[a:i]
-  if s:_status(p) ==# 'inactive'
+  if s:status(a:i) ==# 'inactive'
     return ['', '', 'inactive']
   endif
+
+  let p = s:_processes[a:i]
   let out_memo = ''
   let err_memo = ''
   let lastchanged = reltime()
@@ -79,11 +79,11 @@ function! s:write(i, str)
   if !has_key(s:_processes, a:i)
     throw printf("ProcessManager doesn't know about %s", a:i)
   endif
-
-  let p = s:_processes[a:i]
-  if s:_status(p) ==# 'inactive'
+  if s:status(a:i) ==# 'inactive'
     return 'inactive'
   endif
+
+  let p = s:_processes[a:i]
   call p.stdin.write(a:str)
 
   return 'active'
