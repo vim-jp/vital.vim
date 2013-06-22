@@ -21,14 +21,14 @@ function! s:touch(name, cmd)
   if has_key(s:_processes, a:name)
     return 'existing'
   else
-    let p = vimproc#popen3(a:cmd)
+    let p = vimproc#pgroup_open(a:cmd)
     let s:_processes[a:name] = p
     return 'new'
   endif
 endfunction
 
 function! s:new(cmd)
-  let p = vimproc#popen3(a:cmd)
+  let p = vimproc#pgroup_open(a:cmd)
   let s:_processes_i += 1
   let s:_processes[s:_processes_i] = p
   return s:_processes_i
@@ -37,6 +37,7 @@ endfunction
 function! s:stop(i)
   let p = s:_processes[a:i]
   call p.kill(9)
+  " call p.waitpid()
   unlet s:_processes[a:i]
 endfunction
 
@@ -98,9 +99,8 @@ function! s:status(i)
     throw printf("ProcessManager doesn't know about %s", a:i)
   endif
   let p = s:_processes[a:i]
-  call p.waitpid()
   " vimproc.kill isn't to stop but to ask for the current state.
-  return p.kill(0) || p.pid == 0 ? 'inactive' : 'active'
+  return p.kill(0) ? 'inactive' : 'active'
 endfunction
 
 function! s:debug_processes()
