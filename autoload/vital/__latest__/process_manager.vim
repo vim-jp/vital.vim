@@ -97,8 +97,10 @@ function! s:status(i)
   if !has_key(s:_processes, a:i)
     throw printf("ProcessManager doesn't know about %s", a:i)
   endif
+  return s:_status(s:_processes[a:i])
+endfunction
 
-  let p = s:_processes[a:i]
+function! s:_status(p)
   let stat= p.kill(0)
 
   if stat
