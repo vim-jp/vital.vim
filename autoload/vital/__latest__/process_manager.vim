@@ -101,7 +101,7 @@ function! s:status(i)
 endfunction
 
 function! s:_status(p)
-  let stat= p.kill(0)
+  let stat= a:p.kill(0)
 
   if stat
     return 'inactive'
