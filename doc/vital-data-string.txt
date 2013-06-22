@@ -68,6 +68,9 @@ nsplit({expr}, {n} [, {pattern} [, {keepempty}]])
 chop({str}) 				*Vital.Data.String.chop()*
 	Removes last character from {str}.
 
+chomp({str}) 				*Vital.Data.String.chomp()*
+	Removes last \r,\n,\r\n from {str}.
+
 trim({str})	                	*Vital.Data.String.trim()*
 	Returns |String| removed spaces from the beginning and end of a {str}.
 
