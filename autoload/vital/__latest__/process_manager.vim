@@ -97,17 +97,13 @@ function! s:status(i)
   if !has_key(s:_processes, a:i)
     throw printf("ProcessManager doesn't know about %s", a:i)
   endif
-  return s:_status(s:_processes[a:i])
+  let p = s:_processes[a:i]
+  " vimproc.kill isn't to stop but to ask for the current state.
+  return p.kill(0) ? 'inactive' : 'active'
 endfunction
 
-function! s:_status(p)
-  let stat= a:p.kill(0)
-
-  if stat
-    return 'inactive'
-  endif
-
-  return 'active'
+function! s:debug_processes()
+  return s:_processes
 endfunction
 
 let &cpo = s:save_cpo
