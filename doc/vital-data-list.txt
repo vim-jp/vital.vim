@@ -49,13 +49,17 @@ concat({list})				*Vital.Data.List.concat()*
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
 
-flatten({list})				*Vital.Data.List.flatten()*
-	Flattens |List| {list} of lists recursively.
+flatten({list}, [, {limit}])		*Vital.Data.List.flatten()*
+	Flattens |List| {list} of lists recursively. When the {limit} argument
+	is given, the function remains nested items by the {limit} is maximum
+	size.
 >
 	:echo List.flatten([[1], [2, 3]])
 	[1, 2, 3]
 	:echo List.flatten([[1], 2, 3])
 	[1, 2, 3]
+	:echo List.flatten([[['a']], [[['b']], 'c']], 2)
+	['a', [['b']], 'c']
 <
 sort({list}, {expr})			*Vital.Data.List.sort()*
 	Sorts the items in |List| {list} in-place.  Returns {list}.  {expr}
