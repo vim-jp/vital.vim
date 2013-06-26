@@ -52,7 +52,6 @@ if s:is_windows
 
 elseif s:is_unix
   function! s:spawn(expr)
-    let cmdline = a:expr
     if type(a:expr) is type([])
       let cmdline = join(shellescape(a:expr), ' ')
     elseif type(a:expr) is type("")
