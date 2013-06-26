@@ -1,7 +1,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:_processes_i = -1
+let s:_auto_label = -1
 let s:_processes = {}
 
 function! s:_vital_loaded(V)
@@ -29,9 +29,9 @@ endfunction
 
 function! s:new(cmd)
   let p = vimproc#pgroup_open(a:cmd)
-  let s:_processes_i += 1
-  let s:_processes[s:_processes_i] = p
-  return s:_processes_i
+  let s:_auto_label += 1
+  let s:_processes[s:_auto_label] = p
+  return s:_auto_label
 endfunction
 
 function! s:stop(i)
