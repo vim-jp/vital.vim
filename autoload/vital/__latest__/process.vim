@@ -60,8 +60,9 @@ elseif s:is_unix
       throw 'Process.spawn(): invalid argument (value type:'.type(a:expr).')'
     endif
 
-    let cmdline = cmdline.(cmdline =~# '&\s*$' ? '' : ' &')
-    call system(cmdline)
+    call system(cmdline =~# '&\s*$' ?
+          \ cmdline :
+          \ printf('%s &', cmdline))
     return ''
   endfunction
 
