@@ -48,19 +48,32 @@ USAGE				*Vital.ProcessManager-usage*
 >
 	" An alternative way with label
 	function! s:f(x)
-  	  let t =  P.touch('scala1', 'scala')
-  	  if t ==# 'new'
-  	    " wait for longer time to make sure scala runs, since scala is
-  	    " really slow to run.
-  	    call P.read_wait('scala1', 2.0, [])
+	  let t = P.touch('my-scala', 'scala')
+	  if t ==# 'new'
+	    " wait for longer time to make sure scala runs, since scala is
+	    " really slow to be ready.
+	    let [out, err, type] = P.read_wait('my-scala', 2.0, ['scala> '])
+	    if type ==# 'timeout'
+	      throw 'omg it took too much time'
+	    endif
 	  endif
-	  call P.writeln('scala1', a:x)
-	  return P.read('scala1', [])
+	  call P.writeln('my-scala', a:x)
+	  let [out, err, type] = P.read('my-scala', ['scala> '])
+	  if type ==# 'timeout'
+	    throw 'something easy to do please'
+	  elseif type ==# 'inactive'
+	    throw 'scala had died...!'
+	  endif
+	  return out
 	endfunction
+
 	echo s:f('1 + 2') "=> '3' but slow
 	echo s:f('2 + 3') "=> '5' and fast!
 <
 
+MEMO
+* touch is idempotent
+* read's out split needs \r as well for windows
 
 ==============================================================================
 PRINCIPLE			*Vital.ProcessManager-principle*
