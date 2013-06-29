@@ -131,6 +131,9 @@ function! s:request(...)
       let settings.url .= '?' . getdatastr
     endif
   endif
+  if has_key(settings, 'data')
+    let settings.data = s:_postdata(settings.data)
+  endif
   let settings._file = {}
 
   let [header, content] = client.request(settings)
@@ -171,7 +174,7 @@ endfunction
 
 function! s:_make_postfile(data)
   let fname = tempname()
-  call writefile(s:_postdata(a:data), fname, 'b')
+  call writefile(a:data, fname, 'b')
   return fname
 endfunction
 
@@ -262,9 +265,6 @@ function! s:clients.python.available(settings)
 endfunction
 function! s:clients.python.request(settings)
   " TODO: maxRedirect, retry, outputFile
-  if has_key(a:settings, 'data')
-    let a:settings._postdata = s:_postdata(a:settings.data)
-  endif
   let header = ''
   let body = ''
   python << endpython
@@ -285,7 +285,7 @@ try:
 
             def access():
                 settings = vim.eval('a:settings')
-                data = vimlist2str(settings.get('_postdata'))
+                data = vimlist2str(settings.get('data'))
                 timeout = settings.get('timeout')
                 if timeout:
                     timeout = float(timeout)
