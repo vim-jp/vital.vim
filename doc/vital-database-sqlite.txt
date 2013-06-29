@@ -4,8 +4,9 @@
 CONTENTS				*Vital.Database.Sqlite-contents*
 
 INTRODUCTION			|Vital.Database.Sqlite-introduction|
-INTERFACE			|Vital.Database.Sqlite-interface|
-  Functions			  |Vital.Database.Sqlite-functions|
+PRINCIPLE			|Vital.Database.Sqlite-principle|
+EXAMPLES			|Vital.Database.Sqlite-examples|
+fUNCTIONS			|Vital.Database.Sqlite-functions|
 
 ==============================================================================
 INTRODUCTION				*Vital.Database.Sqlite-introduction*
@@ -19,7 +20,28 @@ PRINCIPLE				*Vital.Database.Sqlite-principle*
 |Vital.Database.Sqlite| won't provide ORM but provides safe query and result
 parser. ORM is a wrong way of abstracting relational database.
 
-------------------------------------------------------------------------------
+==============================================================================
+EXAMPLES				*Vital.Database.Sqlite-examples*
+
+>
+	let s:S = s:V.import('Database.Sqlite')
+	if !s:S.is_available()
+	  return 'failed'
+	endif
+	echo s:S.query(
+	      \ 'a.db',
+	      \ 'CREATE TABLE cities (name varchar(80), country_name text);')
+	echo s:S.query(
+	      \ 'a.db',
+	      \ 'INSERT INTO cities VALUES (?, ?);',
+	      \ 'Vancouver', 'Canada')
+	echo s:S.query(
+	      \ 'a.db',
+	      \ 'SELECT * FROM cities WHERE name = ?;',
+	      \ 'Vancouver')
+<
+
+==============================================================================
 FUNCTIONS				*Vital.Database.Sqlite-functions*
 
 is_available()		*Vital.Database.Sqlite.is_available()*
