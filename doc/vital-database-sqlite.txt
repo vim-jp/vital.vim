@@ -1,0 +1,34 @@
+*vital-database-string.txt*		string utilities library.
+
+==============================================================================
+CONTENTS				*Vital.Database.Sqlite-contents*
+
+INTRODUCTION			|Vital.Database.Sqlite-introduction|
+INTERFACE			|Vital.Database.Sqlite-interface|
+  Functions			  |Vital.Database.Sqlite-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Database.Sqlite-introduction*
+
+*Vital.Database.Sqlite* is Sqlite Utilities Library.
+It provides some functions to manipulate |Sqlite|.
+
+==============================================================================
+PRINCIPLE				*Vital.Database.Sqlite-principle*
+
+|Vital.Database.Sqlite| won't provide ORM but provides safe query and result
+parser. ORM is a wrong way of abstracting relational database.
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Database.Sqlite-functions*
+
+is_available()		*Vital.Database.Sqlite.is_available()*
+	1 if you can use this sqlite integration feature by checking if you
+	have sqlite3 command.
+>
+	:echo S.is_available()
+	1
+<
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
