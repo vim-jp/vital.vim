@@ -26,7 +26,7 @@ endfunction
 "  return s:P.system(printf('sqlite3 -line %s', string(query)))
 "endfunction
 
-function! s:_escape(x)
+function! s:_quote_escape(x)
   return printf('"%s"', escape(a:x, '"'))
 endfunction
 
@@ -39,19 +39,22 @@ function! s:build_line_from_query_with_placeholders(q, xs)
   endif
   let line = substitute(a:q, '?', '%s', 'g')
   if num_placeholders > 0
-    let line = call('printf', [line] + map(copy(a:xs), 's:_escape(v:val)'))
+    let line = call('printf', [line] + map(copy(a:xs), 's:_quote_escape(v:val)'))
   endif
   return line
 endfunction
 
-function! s:query(db, q, ...)
+function! s:query_rawdata(db, q, xs)
   " hmm...
   " if !filewritable(a:db)
   "   throw printf("Database.Sqlite.query() given db (%s) isn't writable.", a:db)
   " endif
-  let built = s:build_line_from_query_with_placeholders(a:q, a:000)
-  let cmd = printf('sqlite3 "%s" -line "%s"', escape(a:db, '"'), escape(built, '"'))
-  call s:debug('query', a:q, a:000,
+  let built = s:build_line_from_query_with_placeholders(a:q, a:xs)
+  let cmd = printf(
+        \ 'sqlite3 %s -line %s',
+        \ s:_quote_escape(a:db, '"'),
+        \ s:_quote_escape(built, '"'))
+  call s:debug('query', a:q, a:xs,
         \ {'built': built, 'cmd': cmd})
   return s:P.system(cmd)
 endfunction
@@ -61,7 +64,7 @@ endfunction
 "
 "    x = 999'
 " to [{'x':'123a','x','999}]
-function! s:to_vim(result)
+function! s:_to_vim(result)
   let chunks = split(a:result, "\r\\?\n\r\\?\n")
   call s:debug('parse_result', a:result, chunks)
   let l = []
@@ -75,6 +78,10 @@ function! s:to_vim(result)
     call add(l, d)
   endfor
   return l
+endfunction
+
+function! s:query(db, q, ...)
+  return s:_to_vim(s:query_rawdata(a:db, a:q, a:000))
 endfunction
 
 function! s:debug_mode_to(to)
