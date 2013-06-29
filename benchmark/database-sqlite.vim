@@ -14,16 +14,16 @@ let query = ''
 for i in range(0, 999)
   let query .= printf(
         \ 'INSERT INTO people VALUES (%s, %s);',
-        \ i, i + 1 % 1000)
+        \ i, (i + 1) % 1000)
 endfor
 call s:S.query_rawdata('a.db', query)
 let i = 1
-while i != 1
+while i != 0
   let i = s:S.query(
         \ 'a.db',
         \ 'SELECT * FROM people WHERE id = ?;',
         \ i)[0]['friend']
 endwhile
 echo reltimestr(reltime(t))
-" at ddb533883482bdd8a2735acbd95f4cd32e26047e
-" this was 20sec on ujihisa's computer (zenbook/gentoo/ssd/i5)
+" at 6932db78d9cfa7136bf35bb6919675fa078f5097
+" this was 40.749305sec on ujihisa's computer (zenbook/gentoo/ssd/i5)
