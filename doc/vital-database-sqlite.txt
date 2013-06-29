@@ -20,6 +20,12 @@ PRINCIPLE				*Vital.Database.Sqlite-principle*
 |Vital.Database.Sqlite| won't provide ORM but provides safe query and result
 parser. ORM is a wrong way of abstracting relational database.
 
+|Vital.Database.Sqlite| is
+* not an object that wraps something fancy.
+* not sqlite itself but a bridge to use a sqlite implementation.
+* encouraging you to write a good SQL query.
+* helping you to investigate what's going on by debug functions.
+
 ==============================================================================
 EXAMPLES				*Vital.Database.Sqlite-examples*
 
