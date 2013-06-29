@@ -133,6 +133,7 @@ function! s:request(...)
   endif
   if has_key(settings, 'data')
     let settings.data = s:_postdata(settings.data)
+    let settings.headers['Content-Length'] = len(join(settings.data, "\n"))
   endif
   let settings._file = {}
 
