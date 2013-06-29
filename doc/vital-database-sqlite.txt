@@ -6,7 +6,7 @@ CONTENTS				*Vital.Database.Sqlite-contents*
 INTRODUCTION			|Vital.Database.Sqlite-introduction|
 PRINCIPLE			|Vital.Database.Sqlite-principle|
 EXAMPLES			|Vital.Database.Sqlite-examples|
-fUNCTIONS			|Vital.Database.Sqlite-functions|
+FUNCTIONS			|Vital.Database.Sqlite-functions|
 
 ==============================================================================
 INTRODUCTION				*Vital.Database.Sqlite-introduction*
