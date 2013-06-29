@@ -51,7 +51,7 @@ function! s:query_rawdata(db, q, ...)
   " endif
   let built = s:build_line_from_query_with_placeholders(a:q, a:000)
   let cmd = printf(
-        \ 'sqlite3 %s -line %s',
+        \ 'sqlite3 -line %s %s',
         \ s:_quote_escape(a:db),
         \ s:_quote_escape(built))
   call s:debug('query', a:q, a:000,
