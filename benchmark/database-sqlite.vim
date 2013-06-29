@@ -10,19 +10,20 @@ call s:S.query_rawdata(
 call s:S.query_rawdata(
       \ 'a.db',
       \ 'CREATE INDEX _id ON people (id);')
-let query = ''
+let query = 'BEGIN TRANSACTION;'
 for i in range(0, 999)
   let query .= printf(
         \ 'INSERT INTO people VALUES (%s, %s);',
         \ i, (i + 1) % 1000)
 endfor
+let query .= 'COMMIT;'
 call s:S.query_rawdata('a.db', query)
 let i = 1
 while i != 0
   let i = s:S.query(
         \ 'a.db',
         \ 'SELECT * FROM people WHERE id = ?;',
-        \ i)[0]['friend']
+        \ [i])[0]['friend']
 endwhile
 echo reltimestr(reltime(t))
 " at 6932db78d9cfa7136bf35bb6919675fa078f5097

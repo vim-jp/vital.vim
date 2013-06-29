@@ -44,17 +44,23 @@ function! s:build_line_from_query_with_placeholders(q, xs)
   return line
 endfunction
 
+" s:query('a.db', 'SELECT * from b') ==
+"   s:query('a.db', 'SELECT * from b', [])
 function! s:query_rawdata(db, q, ...)
+  if a:0 > 1
+    throw 'Database.Sqlite.query() too many arguments'
+  endif
+  let xs = get(a:000, 0, [])
   " hmm...
   " if !filewritable(a:db)
   "   throw printf("Database.Sqlite.query() given db (%s) isn't writable.", a:db)
   " endif
-  let built = s:build_line_from_query_with_placeholders(a:q, a:000)
+  let built = s:build_line_from_query_with_placeholders(a:q, xs)
   let cmd = printf(
         \ 'sqlite3 -line %s %s',
         \ s:_quote_escape(a:db),
         \ s:_quote_escape(built))
-  call s:debug('query', a:q, a:000,
+  call s:debug('query', a:q, xs,
         \ {'built': built, 'cmd': cmd})
   return s:P.system(cmd)
 endfunction
@@ -82,8 +88,14 @@ function! s:_to_vim(result)
   return l
 endfunction
 
+" s:query('a.db', 'SELECT * from b') ==
+"   s:query('a.db', 'SELECT * from b', [])
 function! s:query(db, q, ...)
-  return s:_to_vim(call('s:query_rawdata', [a:db, a:q] + a:000))
+  if a:0 > 1
+    throw 'Database.Sqlite.query() too many arguments'
+  endif
+  let xs = get(a:000, 0, [])
+  return s:_to_vim(s:query_rawdata(a:db, a:q, xs))
 endfunction
 
 function! s:debug_mode_to(to)

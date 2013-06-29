@@ -40,11 +40,11 @@ EXAMPLES				*Vital.Database.Sqlite-examples*
 	echo s:S.query_rawdata(
 	      \ 'a.db',
 	      \ 'INSERT INTO cities VALUES (?, ?);',
-	      \ 'Vancouver', 'Canada')
+	      \ ['Vancouver', 'Canada'])
 	echo s:S.query(
 	      \ 'a.db',
 	      \ 'SELECT * FROM cities WHERE name = ?;',
-	      \ 'Vancouver')
+	      \ ['Vancouver'])
 <
 
 ==============================================================================
