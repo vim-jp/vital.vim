@@ -30,6 +30,8 @@ function! s:_quote_escape(x)
   return printf('"%s"', escape(a:x, '"'))
 endfunction
 
+" This function name is long on purpose to discourage people to use that
+" frequently.
 function! s:build_line_from_query_with_placeholders(q, xs)
   let num_placeholders = len(split(a:q, '?', 1)) - 1
   call s:debug('build_line_from_query_with_placeholders', a:q, a:xs,

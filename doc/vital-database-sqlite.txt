@@ -58,5 +58,29 @@ is_available()		*Vital.Database.Sqlite.is_available()*
 	1
 <
 
+query({dbfile}, {query/placeholders}, {list})	*Vital.Database.Sqlite.query()*
+	Sends an SQL query to sqlite with specifying the db file to store is
+	{dbfile}, and returns its result in list. If {query/placeholders}
+	(query with placeholders) contains placeholders "?", {list} has to
+	have same amount of string elements.  e.g.
+>
+	query(d, 'A', [])
+	query(d, 'A ?', [x])
+	query(d, 'A ? ?', [x, y])
+<
+	You don't have to give {list} if {query/placeholders} has no
+	placeholders. e.g.
+>
+	query(d, 'A', []) == query(d, 'A')
+<
+
+	This function returns a list which has multiple dictionaries. e.g.
+>
+	query('a.db', 'SELECT * FROM cities WHERE name = Vancouver;')
+	is
+	[{'country': 'Canada', 'name': 'Vancouver'},
+	 {'country': 'US', 'name': 'Vancouver'}]
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
