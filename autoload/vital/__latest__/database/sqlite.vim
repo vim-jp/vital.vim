@@ -71,7 +71,7 @@ function! s:_to_vim(result)
   for chunk in chunks
     let d = {}
     for line in split(chunk, "\r\\?\n")
-      let tmp = matchlist(line, '^\s\+\(\w\+\) = \(.*\)$')
+      let tmp = matchlist(line, '^\s*\(\w\+\) = \(.*\)$')
       call s:debug(tmp)
       if len(tmp) > 3
         let d[tmp[1]] = tmp[2]

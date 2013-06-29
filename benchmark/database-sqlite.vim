@@ -21,9 +21,9 @@ let i = 1
 while i != 1
   let i = s:S.query(
         \ 'a.db',
-        \ 'SELECT * FROM cities WHERE id = ?;',
-        \ 1)[0]['friend']
+        \ 'SELECT * FROM people WHERE id = ?;',
+        \ i)[0]['friend']
 endwhile
 echo reltimestr(reltime(t))
 " at ddb533883482bdd8a2735acbd95f4cd32e26047e
-" this was  19.225146sec on ujihisa's computer (zenbook/gentoo/ssd/i5)
+" this was 20sec on ujihisa's computer (zenbook/gentoo/ssd/i5)
