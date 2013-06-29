@@ -34,10 +34,10 @@ EXAMPLES				*Vital.Database.Sqlite-examples*
 	if !s:S.is_available()
 	  return 'failed'
 	endif
-	echo s:S.query(
+	echo s:S.query_rawdata(
 	      \ 'a.db',
 	      \ 'CREATE TABLE cities (name varchar(80), country_name text);')
-	echo s:S.query(
+	echo s:S.query_rawdata(
 	      \ 'a.db',
 	      \ 'INSERT INTO cities VALUES (?, ?);',
 	      \ 'Vancouver', 'Canada')
