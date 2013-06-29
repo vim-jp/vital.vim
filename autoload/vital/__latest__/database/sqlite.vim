@@ -44,17 +44,17 @@ function! s:build_line_from_query_with_placeholders(q, xs)
   return line
 endfunction
 
-function! s:query_rawdata(db, q, xs)
+function! s:query_rawdata(db, q, ...)
   " hmm...
   " if !filewritable(a:db)
   "   throw printf("Database.Sqlite.query() given db (%s) isn't writable.", a:db)
   " endif
-  let built = s:build_line_from_query_with_placeholders(a:q, a:xs)
+  let built = s:build_line_from_query_with_placeholders(a:q, a:000)
   let cmd = printf(
         \ 'sqlite3 %s -line %s',
-        \ s:_quote_escape(a:db, '"'),
-        \ s:_quote_escape(built, '"'))
-  call s:debug('query', a:q, a:xs,
+        \ s:_quote_escape(a:db),
+        \ s:_quote_escape(built))
+  call s:debug('query', a:q, a:000,
         \ {'built': built, 'cmd': cmd})
   return s:P.system(cmd)
 endfunction
@@ -63,7 +63,7 @@ endfunction
 "    x = 123a
 "
 "    x = 999'
-" to [{'x':'123a','x','999}]
+" to [{'x':'123a'},{'x','999}]
 function! s:_to_vim(result)
   let chunks = split(a:result, "\r\\?\n\r\\?\n")
   call s:debug('parse_result', a:result, chunks)
@@ -73,7 +73,9 @@ function! s:_to_vim(result)
     for line in split(chunk, "\r\\?\n")
       let tmp = matchlist(line, '^\s\+\(\w\+\) = \(.*\)$')
       call s:debug(tmp)
-      let d[tmp[1]] = tmp[2]
+      if len(tmp) > 3
+        let d[tmp[1]] = tmp[2]
+      endif
     endfor
     call add(l, d)
   endfor
@@ -81,7 +83,7 @@ function! s:_to_vim(result)
 endfunction
 
 function! s:query(db, q, ...)
-  return s:_to_vim(s:query_rawdata(a:db, a:q, a:000))
+  return s:_to_vim(call('s:query_rawdata', [a:db, a:q] + a:000))
 endfunction
 
 function! s:debug_mode_to(to)
