@@ -1,6 +1,7 @@
 *vital-web-http.txt*	simple HTTP client library.
 
 Maintainer: mattn <mattn.jp@gmail.com>
+            thinca <thinca+vim@gmail.com>
 
 ==============================================================================
 CONTENTS				*Vital.Web.Http-contents*
