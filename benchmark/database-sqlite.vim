@@ -26,5 +26,7 @@ while i != 0
         \ [i])[0]['friend']
 endwhile
 echo reltimestr(reltime(t))
-" at 6932db78d9cfa7136bf35bb6919675fa078f5097
-" this was 40.749305sec on ujihisa's computer (zenbook/gentoo/ssd/i5)
+" at e5b00de9a49106cffaefa90184b75cded2ca0a77
+" this was 26.262517 on ujihisa's computer (zenbook/gentoo/ssd/i5)
+" at b6a03fbc685bb789bf5afe2fe8c7bb0ddaa0cea6
+" this was 14.648742 on ujihisa'c computer. thanks ichigok!
