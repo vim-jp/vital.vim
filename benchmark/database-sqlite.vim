@@ -29,4 +29,5 @@ echo reltimestr(reltime(t))
 " at e5b00de9a49106cffaefa90184b75cded2ca0a77
 " this was 26.262517 on ujihisa's computer (zenbook/gentoo/ssd/i5)
 " at b6a03fbc685bb789bf5afe2fe8c7bb0ddaa0cea6
-" this was 14.648742 on ujihisa'c computer. thanks ichigok!
+" this was 14.648742 on ujihisa's zenbook gentoo. thanks ichigok!
+" this was 11.648742 on ujihisa's mbr gentoo. thanks ichigok!
