@@ -1,6 +1,6 @@
 8d5b0ef
 	Drastic changes, now vital.vim cease to treat foo_bar.vim as FooBar.
-	Following module are named:
+	Following module are renamed:
 		Web.Http        => Web.HTTP
 		Web.Html        => Web.HTML
 		Web.Xml         => Web.XML
