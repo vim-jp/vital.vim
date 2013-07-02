@@ -37,7 +37,7 @@ function! s:build_line_from_query_with_placeholders(q, xs)
   call s:debug('build_line_from_query_with_placeholders', a:q, a:xs,
         \ {'num_placeholders': num_placeholders})
   if len(a:xs) != num_placeholders
-    throw "Database.Sqlite.build_line_from_query_with_placeholders() number of placeholders doesn't match."
+    throw "Database.SQLite.build_line_from_query_with_placeholders() number of placeholders doesn't match."
   endif
   let line = substitute(a:q, '?', '%s', 'g')
   if num_placeholders > 0
@@ -50,12 +50,12 @@ endfunction
 "   s:query('a.db', 'SELECT * from b', [])
 function! s:query_rawdata(db, q, ...)
   if a:0 > 1
-    throw 'Database.Sqlite.query() too many arguments'
+    throw 'Database.SQLite.query() too many arguments'
   endif
   let xs = get(a:000, 0, [])
   " hmm...
   " if !filewritable(a:db)
-  "   throw printf("Database.Sqlite.query() given db (%s) isn't writable.", a:db)
+  "   throw printf("Database.SQLite.query() given db (%s) isn't writable.", a:db)
   " endif
   let built = s:build_line_from_query_with_placeholders(a:q, xs)
   let cmd = printf(
@@ -93,7 +93,7 @@ endfunction
 "   s:query('a.db', 'SELECT * from b', [])
 function! s:query(db, q, ...)
   if a:0 > 1
-    throw 'Database.Sqlite.query() too many arguments'
+    throw 'Database.SQLite.query() too many arguments'
   endif
   let xs = get(a:000, 0, [])
   return s:_to_vim(s:query_rawdata(a:db, a:q, xs))
