@@ -1,5 +1,10 @@
 8d5b0ef
-    Drastic changes, now vital.vim cease to treat foo_bar.vim as FooBar.
+	Drastic changes, now vital.vim cease to treat foo_bar.vim as FooBar.
+	Following module are named:
+		Web.Http        => Web.HTTP
+		Web.HTML        => Web.HTML
+		Text.Ltsv       => Text.LTSV
+		Database.Sqlite => Database.SQLite
 83a6526
 	Vim.Buffer.Manager was removed completely (it was deprecated.)
 f86462b
