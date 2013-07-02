@@ -1,3 +1,5 @@
+8d5b0ef
+    Drastic changes, now vital.vim cease to treat foo_bar.vim as FooBar.
 83a6526
 	Vim.Buffer.Manager was removed completely (it was deprecated.)
 f86462b
