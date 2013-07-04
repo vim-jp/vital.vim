@@ -8,7 +8,7 @@ function! s:_vital_depends()
 endfunction
 
 let s:string = s:V.import('Data.String')
-let s:http = s:V.import('Web.Http')
+let s:http = s:V.import('Web.HTTP')
 
 let s:__template = { 'name': '', 'attr': {}, 'child': [] }
 

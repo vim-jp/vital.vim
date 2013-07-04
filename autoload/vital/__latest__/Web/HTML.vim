@@ -8,8 +8,8 @@ function! s:_vital_depends()
 endfunction
 
 let s:string = s:V.import('Data.String')
-let s:xml = s:V.import('Web.Xml')
-let s:http = s:V.import('Web.Http')
+let s:xml = s:V.import('Web.XML')
+let s:http = s:V.import('Web.HTTP')
 
 function! s:decodeEntityReference(str)
   let str = a:str
