@@ -3,36 +3,36 @@
 Maintainer: ujihisa <ujihisa at gmail com>
 
 ==============================================================================
-CONTENTS				*Vital.Database.Sqlite-contents*
+CONTENTS				*Vital.Database.SQLite-contents*
 
-INTRODUCTION			|Vital.Database.Sqlite-introduction|
-PRINCIPLE			|Vital.Database.Sqlite-principle|
-EXAMPLES			|Vital.Database.Sqlite-examples|
-FUNCTIONS			|Vital.Database.Sqlite-functions|
-
-==============================================================================
-INTRODUCTION				*Vital.Database.Sqlite-introduction*
-
-*Vital.Database.Sqlite* is Sqlite Utilities Library.
-It provides some functions to manipulate |Sqlite|.
+INTRODUCTION			|Vital.Database.SQLite-introduction|
+PRINCIPLE			|Vital.Database.SQLite-principle|
+EXAMPLES			|Vital.Database.SQLite-examples|
+FUNCTIONS			|Vital.Database.SQLite-functions|
 
 ==============================================================================
-PRINCIPLE				*Vital.Database.Sqlite-principle*
+INTRODUCTION				*Vital.Database.SQLite-introduction*
 
-|Vital.Database.Sqlite| won't provide ORM but provides safe query and result
+*Vital.Database.SQLite* is SQLite Utilities Library.
+It provides some functions to manipulate |SQLite|.
+
+==============================================================================
+PRINCIPLE				*Vital.Database.SQLite-principle*
+
+|Vital.Database.SQLite| won't provide ORM but provides safe query and result
 parser. ORM is a wrong way of abstracting relational database.
 
-|Vital.Database.Sqlite| is
+|Vital.Database.SQLite| is
 * not an object that wraps something fancy.
 * not sqlite itself but a bridge to use a sqlite implementation.
 * encouraging you to write a good SQL query.
 * helping you to investigate what's going on by debug functions.
 
 ==============================================================================
-EXAMPLES				*Vital.Database.Sqlite-examples*
+EXAMPLES				*Vital.Database.SQLite-examples*
 
 >
-	let s:S = s:V.import('Database.Sqlite')
+	let s:S = s:V.import('Database.SQLite')
 	if !s:S.is_available()
 	  return 'failed'
 	endif
@@ -50,9 +50,9 @@ EXAMPLES				*Vital.Database.Sqlite-examples*
 <
 
 ==============================================================================
-FUNCTIONS				*Vital.Database.Sqlite-functions*
+FUNCTIONS				*Vital.Database.SQLite-functions*
 
-is_available()		*Vital.Database.Sqlite.is_available()*
+is_available()		*Vital.Database.SQLite.is_available()*
 	1 if you can use this sqlite integration feature by checking if you
 	have sqlite3 command.
 >
@@ -60,7 +60,7 @@ is_available()		*Vital.Database.Sqlite.is_available()*
 	1
 <
 
-query({dbfile}, {query/placeholders}, {list})	*Vital.Database.Sqlite.query()*
+query({dbfile}, {query/placeholders}, {list})	*Vital.Database.SQLite.query()*
 	Sends an SQL query to sqlite with specifying the db file to store is
 	{dbfile}, and returns its result in list. If {query/placeholders}
 	(query with placeholders) contains placeholders "?", {list} has to
