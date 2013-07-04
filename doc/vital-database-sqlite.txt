@@ -84,5 +84,27 @@ query({dbfile}, {query/placeholders}, {list})	*Vital.Database.SQLite.query()*
 	 {'country': 'US', 'name': 'Vancouver'}]
 <
 
+build_line_from_query_with_placeholders({query/placeholders}, {list})
+	*Vital.Database.SQLite.build_line_from_query_with_placeholders()*
+	Returns internal value that |Vital.Database.SQLite.query()| uses. This
+	function doesn't have side effects.
+
+	This function name is long on purpose to discourage people to use that
+	frequently. Use this only for your understanding and for debugging
+	this library itself.
+
+	Examples
+>
+	build_line_from_query_with_placeholders(
+	      \ 'SELECT * FROM cities WHERE name = ?;',
+	      \ ['Vancouver'])
+	"=> 'SELECT * FROM cities WHERE name = "Vancouver";'
+
+	echo s:S.build_line_from_query_with_placeholders(
+	      \ 'SELECT * FROM cities WHERE name = ?;',
+	      \ ["Vancouver\"; ujihisa\""])
+	"=> 'SELECT * FROM cities WHERE name = "Vancouver\"; ujihisa\"";'
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
