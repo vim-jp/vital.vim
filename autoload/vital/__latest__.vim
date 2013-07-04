@@ -87,7 +87,7 @@ function! s:_get_module_path(name)
   endif
   if a:name ==# ''
     let tailpath = printf('autoload/vital/%s.vim', s:self_version)
-  elseif a:name =~# '\v^\u\a*%(\.\u\a*)*$'
+  elseif a:name =~# '\v^\u\w*%(\.\u\w*)*$'
     let target = '/' . substitute(a:name, '\W\+', '/', 'g')
     let tailpath = printf('autoload/vital/%s%s.vim', s:self_version, target)
   else
