@@ -1,5 +1,7 @@
 *vital-database-string.txt*		string utilities library.
 
+Maintainer: ujihisa <ujihisa at gmail com>
+
 ==============================================================================
 CONTENTS				*Vital.Database.Sqlite-contents*
 
