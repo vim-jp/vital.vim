@@ -65,7 +65,14 @@ function! s:search_dependence(modules)
       if has_key(all, module)
         continue
       endif
-      let M = s:V.import(module, 1)
+      try
+        let M = s:V.import(module, 1)
+      catch
+        echohl ErrorMsg
+        echomsg printf("Module %s isn't provided from latest vital.vim", module)
+        echohl None
+        continue
+      endtry
       let all[module] = 1
       if has_key(M, '_vital_depends')
         call extend(next, M._vital_depends())
@@ -80,8 +87,6 @@ function! s:search_dependence(modules)
 endfunction
 function! s:module2file(name)
   let target = a:name ==# '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
-  let target = substitute(target, '\l\zs\ze\u', '_', 'g')
-  let target = substitute(target, '[/_]\zs\u', '\l\0', 'g')
   return printf('autoload/vital/__latest__%s.vim', target)
 endfunction
 function! s:camelize(str)
