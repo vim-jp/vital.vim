@@ -27,6 +27,7 @@ function! s:touch(name, cmd)
   endif
 endfunction
 
+" TODO use touch here
 function! s:new(cmd)
   let p = vimproc#popen3(a:cmd)
   let s:_auto_label += 1

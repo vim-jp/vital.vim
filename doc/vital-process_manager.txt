@@ -72,7 +72,7 @@ USAGE				*Vital.ProcessManager-usage*
 <
 
 MEMO
-* touch is idempotent
+* touch is almost idempotent
 * read's out split needs \r as well for windows
 
 ==============================================================================
@@ -92,6 +92,13 @@ INTERFACE			*Vital.ProcessManager-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS			*Vital.ProcessManager-functions*
 
+touch({label}, {cmd})		*Vital.ProcessManager.touch()*
+	Returns a string which is either "existing" or "new".
+	TODO
+
+new({cmd})			*Vital.ProcessManager.new()*
+	Returns a string which is either "existing" or "new".
+	TODO
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
