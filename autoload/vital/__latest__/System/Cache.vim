@@ -3,12 +3,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:is_windows = has('win16') || has('win32') || has('win64')
-let s:is_cygwin = has('win32unix')
-let s:is_mac = !s:is_windows && !s:is_cygwin
-      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
-      \   (!isdirectory('/proc') && executable('sw_vers')))
-
 function! s:getfilename(cache_dir, filename)
   return s:_encode_name(a:cache_dir, a:filename)
 endfunction
