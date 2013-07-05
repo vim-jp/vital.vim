@@ -1,3 +1,5 @@
+6e456e7
+	System.Cache.delete() -> System.Cache.deletefile(). Just renamed.
 6b937ab
 	System.Cache.create_hash() is no longer public.
 8d5b0ef
