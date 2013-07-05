@@ -1,3 +1,5 @@
+6b937ab
+	System.Cache.create_hash() is no longer public.
 8d5b0ef
 	Drastic changes, now vital.vim cease to treat foo_bar.vim as FooBar.
 	Following module are renamed:
