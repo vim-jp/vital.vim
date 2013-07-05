@@ -3,6 +3,10 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_depends(V)
+  return ['Vim.Buffer']
+endfunction
+
 function! s:_vital_loaded(V)
   let s:V = a:V
   let s:B = s:V.import('Vim.Buffer')
