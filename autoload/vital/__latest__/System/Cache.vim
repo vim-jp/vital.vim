@@ -13,23 +13,28 @@ function! s:getfilename(cache_dir, filename)
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
   return cache_name
 endfunction
+
 function! s:filereadable(cache_dir, filename)
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
   return filereadable(cache_name)
 endfunction
+
 function! s:readfile(cache_dir, filename)
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
   return filereadable(cache_name) ? readfile(cache_name) : []
 endfunction
+
 function! s:writefile(cache_dir, filename, list)
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
 
   call writefile(a:list, cache_name)
 endfunction
+
 function! s:delete(cache_dir, filename)
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
   return delete(cache_name)
 endfunction
+
 function! s:_encode_name(cache_dir, filename)
   " Check cache directory.
   if !isdirectory(a:cache_dir)
@@ -42,6 +47,7 @@ function! s:_encode_name(cache_dir, filename)
 
   return cache_dir . s:create_hash(cache_dir, a:filename)
 endfunction
+
 function! s:check_old_cache(cache_dir, filename)
   " Check old cache file.
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
