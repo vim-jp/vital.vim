@@ -24,6 +24,11 @@ function! s:writefile(cache_dir, filename, list)
 endfunction
 
 function! s:delete(cache_dir, filename)
+  echoerr 'System.Cache.delete() is obsolete. Use its deletefile() instead.'
+  return call('s:deletefile', a:cache_dir, a:filename)
+endfunction
+
+function! s:deletefile(cache_dir, filename)
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
   return delete(cache_name)
 endfunction
