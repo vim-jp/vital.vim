@@ -38,7 +38,7 @@ function! s:_encode_name(cache_dir, filename)
     let cache_dir .= '/'
   endif
 
-  return cache_dir . s:create_hash(cache_dir, a:filename)
+  return cache_dir . s:_create_hash(cache_dir, a:filename)
 endfunction
 
 function! s:check_old_cache(cache_dir, filename)
@@ -62,7 +62,7 @@ catch
   let s:exists_md5 = 0
 endtry
 
-function! s:create_hash(dir, str)
+function! s:_create_hash(dir, str)
   if len(a:dir) + len(a:str) < 150
     let hash = substitute(substitute(
           \ a:str, ':', '=-', 'g'), '[/\\]', '=+', 'g')
