@@ -10,8 +10,7 @@ let s:is_mac = !s:is_windows && !s:is_cygwin
       \   (!isdirectory('/proc') && executable('sw_vers')))
 
 function! s:getfilename(cache_dir, filename)
-  let cache_name = s:_encode_name(a:cache_dir, a:filename)
-  return cache_name
+  return s:_encode_name(a:cache_dir, a:filename)
 endfunction
 
 function! s:filereadable(cache_dir, filename)
