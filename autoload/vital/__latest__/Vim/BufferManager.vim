@@ -3,7 +3,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_depends(V)
+function! s:_vital_depends()
   return ['Vim.Buffer']
 endfunction
 
