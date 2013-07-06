@@ -252,8 +252,8 @@ endfunction
 
 " TODO: spec and doc
 function! s:dstring(expr)
-  let x = substitute(string(expr), "^'\\|'$", '', 'g')
-  let x = substitute(string(expr), "''", "'", 'g')
+  let x = substitute(string(a:expr), "^'\\|'$", '', 'g')
+  let x = substitute(x, "''", "'", 'g')
   return printf('"%s"', escape(x, '"'))
 endfunction
 
