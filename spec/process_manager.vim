@@ -10,13 +10,13 @@ Context ProcessManager.is_available()
 End
 
 Context ProcessManager.new()
-  It makes a process synchronously ans stores the info inside ProcessManager
+  It makes a process synchronously and stores the info inside ProcessManager
     " TODO
   End
 End
 
 Context ProcessManager.touch()
-  It makes a process synchronously ans stores the info inside ProcessManager
+  It makes a process synchronously and stores the info inside ProcessManager
     if g:P.is_available()
       let t = g:P.touch('aaa', 'cat')
       Should t ==# 'new'
