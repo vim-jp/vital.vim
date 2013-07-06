@@ -99,6 +99,13 @@ Context Prelude.truncate()
   End
 End
 
+Context Prelude.truncate_skipping()
+  It truncates similarly to Prelude.truncate() but shows a given letter in snip area
+    Should g:V.truncate_skipping('this is a pen', 10, 1, '/') ==# 'this is /n'
+    Should g:V.truncate_skipping('あいうえおかきくけこ.', 10, 1, '/') ==# 'あいうえ/.'
+  End
+End
+
 Context Prelude.truncate_smart()
   It truncates similarly to Prelude.truncate() but shows a given letter in snip area
     Should g:V.truncate_smart('this is a pen', 10, 1, '/') ==# 'this is /n'
