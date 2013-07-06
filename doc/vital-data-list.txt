@@ -73,13 +73,19 @@ sort({list}, {expr})			*Vital.Data.List.sort()*
 	sorts after the a:b, -1 or smaller if a:a sorts before a:b.
 >
 	function MyCompare(i1, i2)
-		return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
+	  return a:i1 ==
+	    \ a:i2 ?        0 :
+	    \ a:i1 > a:i2 ? 1 :
+	    \               -1
 	endfunction
+
 	let list = ['pineapple', 'orange', 'banana', 'apple']
 	:echo List.sort(copy(list), function('MyCompare'))
 	['apple', 'banana', 'orange', 'pineapple']
+
 	:echo List.sort([3, 1, 2], 'a:a - a:b')
 	[1, 2, 3]
+
 	:echo List.sort(copy(list), 'len(a:a)-len(a:b)')
 	['apple', 'orange', 'banana', 'pineapple']
 <
