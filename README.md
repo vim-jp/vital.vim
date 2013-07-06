@@ -33,7 +33,7 @@ and then you can call functions by `ujihisa#util#system()`, without taking care
 of `vital.vim` itself. It's all hidden.
 
 Vital has module system. The below is an example to import/load a module
-`data/ordered_set` and to call a function `f()` of the module.
+`Data.OrderedSet` and to call a function `f()` of the module.
 
     let V = vital#of('ujihisa')
     let O = V.import('Data.OrderedSet')
@@ -54,10 +54,13 @@ or
 We recommend you to use a capital letter for a Vital module dictionary to assign.
 
 ## If you want to become a vital committer
+
 [Become a vital.vim Developer](https://github.com/vim-jp/vital.vim/wiki/Become-a-vital.vim-Developer)
 
 ## References
 
+* [How to use vital.vim (in Japanese)](http://rbtnn.github.io/how-to-use-vital.vim/)
+    * This is beautiful
 * [Delegation in Vim script](http://ujihisa.blogspot.com/2011/02/delegation-in-vim-script.html)
 * [Core concept of vital (in Japanese)](http://d.hatena.ne.jp/thinca/20110310/1299768323)
 * [How to make a vital module (in Japanese)](http://d.hatena.ne.jp/thinca/20110311/1299769233)
