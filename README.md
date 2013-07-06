@@ -75,11 +75,16 @@ We recommend you to use a capital letter for a Vital module dictionary to assign
 
 ## Authors
 
-* [thinca](http://github.com/thinca)
-* [tyru](http://github.com/tyru)
-* [ujihisa](http://github.com/ujihisa) (Tatsuhiro Ujihisa)
-* [mattn](http://github.com/mattn)
-* [Shougo](http://github.com/shougo)
+* ![](https://secure.gravatar.com/avatar/3b83f8f7a25019f3ee01791df024bf3c?s=420&d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png)
+  [thinca](http://github.com/thinca)
+* ![](https://secure.gravatar.com/avatar/5fdf83c448b8503add52517c7de0e3cc?s=420&d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png)
+  [tyru](http://github.com/tyru)
+* ![](https://secure.gravatar.com/avatar/d9d0ceb387e3b6de5c4562af78e8a910?s=420&d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png)
+  [ujihisa](http://github.com/ujihisa) (Tatsuhiro Ujihisa)
+* ![](https://secure.gravatar.com/avatar/1ba93fd9e39ebf48777f217c38e768fd?s=420&d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png)
+  [mattn](http://github.com/mattn)
+* ![](https://secure.gravatar.com/avatar/7f5a1bfaf8b64cbcdfaf82a7de92506b?s=420&d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png)
+  [Shougo](http://github.com/shougo)
 * ... and lots more <https://github.com/vim-jp/vital.vim/graphs/contributors>
 
 ## License
