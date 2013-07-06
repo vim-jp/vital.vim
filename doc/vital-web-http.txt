@@ -89,7 +89,13 @@ request({method}, {url} [, {settings}])
 
 	"command"
 		Command name for a client.  You should use with "client".
-		This maybe becomes like "/usr/bin/curl".
+		This is a |Dictionary| that has client name as key and has the
+		command as value.
+		This maybe becomes like the following. >
+		{
+		  "curl": "/usr/bin/curl",
+		  "wget": "/usr/local/bin/wget",
+		}
 
 parseHeader({headers})			*Vital.Web.HTTP.parseHeader()*
 	Parse {headers} list to a dictionary.

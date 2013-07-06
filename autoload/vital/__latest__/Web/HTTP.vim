@@ -342,9 +342,12 @@ let s:clients.curl = {}
 function! s:clients.curl.available(settings)
   return executable('curl')
 endfunction
+function! s:clients.wget._command(settings)
+  return get(get(a:settings, 'command', {}), 'curl', 'curl')
+endfunction
 function! s:clients.curl.request(settings)
   let quote = s:_quote()
-  let command = get(a:settings, 'command', 'curl')
+  let command = self._command(a:settings)
   let a:settings._file.header = tr(tempname(),'\','/')
   let command .= ' --dump-header ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
@@ -390,9 +393,12 @@ let s:clients.wget = {}
 function! s:clients.wget.available(settings)
   return executable('wget')
 endfunction
+function! s:clients.wget._command(settings)
+  return get(get(a:settings, 'command', {}), 'wget', 'wget')
+endfunction
 function! s:clients.wget.request(settings)
   let quote = s:_quote()
-  let command = get(a:settings, 'command', 'wget')
+  let command = self._command(a:settings)
   let method = a:settings.method
   if method ==# 'HEAD'
     let command .= ' --spider'
