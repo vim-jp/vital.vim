@@ -1,3 +1,5 @@
+619e9ea
+	Prelude.truncate_smart() -> truncate_skipping(). Just renamed.
 ad68a83
 	Prelude.is_integer() -> Prelude.is_number(). Just renamed.
 6e456e7
