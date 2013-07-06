@@ -65,9 +65,12 @@ We recommend you to use a capital letter for a Vital module dictionary to assign
 * [Core concept of vital (in Japanese)](http://d.hatena.ne.jp/thinca/20110310/1299768323)
 * [How to make a vital module (in Japanese)](http://d.hatena.ne.jp/thinca/20110311/1299769233)
 
-## Author
+## Authors
 
-Tatsuhiro Ujihisa
+* [thinca](http://github.com/thinca)
+* [tyru](http://github.com/tyru)
+* [ujihisa](http://github.com/ujihisa) (Tatsuhiro Ujihisa)
+* [mattn](http://github.com/mattn)
 
 ## License
 
