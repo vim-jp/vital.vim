@@ -1,3 +1,5 @@
+e4e622e
+	Data.List: max() -> max_by(), min() -> min_by(). Just renamed.
 619e9ea
 	Prelude.truncate_smart() -> truncate_skipping(). Just renamed.
 ad68a83
