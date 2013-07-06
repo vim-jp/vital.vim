@@ -71,6 +71,8 @@ We recommend you to use a capital letter for a Vital module dictionary to assign
 * [tyru](http://github.com/tyru)
 * [ujihisa](http://github.com/ujihisa) (Tatsuhiro Ujihisa)
 * [mattn](http://github.com/mattn)
+* [Shougo](http://github.com/shougo)
+* ... and lots more <https://github.com/vim-jp/vital.vim/graphs/contributors>
 
 ## License
 
