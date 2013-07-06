@@ -340,7 +340,7 @@ endfunction
 
 let s:clients.curl = {}
 function! s:clients.curl.available(settings)
-  return executable('curl')
+  return executable(self._command(a:settings))
 endfunction
 function! s:clients.wget._command(settings)
   return get(get(a:settings, 'command', {}), 'curl', 'curl')
@@ -391,7 +391,7 @@ endfunction
 
 let s:clients.wget = {}
 function! s:clients.wget.available(settings)
-  return executable('wget')
+  return executable(self._command(a:settings))
 endfunction
 function! s:clients.wget._command(settings)
   return get(get(a:settings, 'command', {}), 'wget', 'wget')
