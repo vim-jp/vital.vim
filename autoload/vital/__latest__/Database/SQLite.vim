@@ -16,16 +16,6 @@ function! s:is_available()
   return executable('sqlite3')
 endfunction
 
-"function! s:create_table(name, ...)
-"  call s:debug('create', a:name, a:000)
-"  let query = printf(
-"        \ 'create table %s (%s)',
-"        \ a:name,
-"        \ join(a:000, ', '))
-"  call s:debug('query', query)
-"  return s:P.system(printf('sqlite3 -line %s', string(query)))
-"endfunction
-
 function! s:_quote_escape(x)
   return printf('"%s"', escape(a:x, '"'))
 endfunction
