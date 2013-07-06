@@ -20,7 +20,11 @@ INTERFACE				*Vital.Prelude-interface*
 FUNCTIONS				*Vital.Prelude-functions*
 
 is_integer({value})				*Vital.Prelude.is_integer()*
+	Obsolete! Use |Vital.Prelude.is_number()| instead.
 	Checks if the given {value} is an integer.
+
+is_number({value})				*Vital.Prelude.is_number()*
+	Checks if the given {value} is a number, which is not a float.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
