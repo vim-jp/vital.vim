@@ -76,7 +76,8 @@ NYSL is a very loose license like a [Beer License](http://en.wikipedia.org/wiki/
 See [NYSL](http://www.kmonos.net/nysl/NYSL.TXT) for details.  (English and Japanese)
 
 First, vital.vim is a bundling (static) library.
-We think everyone should use it easily, without the care about license.
+We think everyone should be able to use it easily, without worrying about
+licensing stuff too much.
 
 Second, In Japan, *Strict* Public Domain might be invalid.
 You outside Japan may interpret simply the license as Public Domain.
