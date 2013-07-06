@@ -2,7 +2,9 @@
 
 A comprehensive Vim utility functions for Vim plugins.
 
-This is like a plugin which has both aspects of [Bundler](http://gembundler.com/) and [jQuery](http://jquery.com/) at the same time.
+This is like a plugin which has both aspects of
+[Bundler](http://gembundler.com/) and [jQuery](http://jquery.com/) at the same
+time.
 
 ## Targets
 
@@ -13,21 +15,25 @@ If you are a Vim plugin author, please check this out.
 ## What vital.vim provides
 
 * `system()`
-    * If user has `vimproc`, this uses `vimproc#system()`, otherwise just the Vim builtin `system()`.
+    * If user has `vimproc`, this uses `vimproc#system()`, otherwise just the
+      Vim builtin `system()`.
 * ... (all public functions in [unite](https://github.com/Shougo/unite.vim)/util.
 
 ## How to use
 
-Assuming your Vim plugin name is `ujihisa`. You can define your utility function set `ujihisa#util` just by
+Assuming your Vim plugin name is `ujihisa`. You can define your utility
+function set `ujihisa#util` just by
 
     let V = vital#of('ujihisa')
     function! ujihisa#util#system(...)
       return call(V.system, a:000, V)
     endfunction
 
-and then you can call functions by `ujihisa#util#system()`, without taking care of `vital.vim` itself. It's all hidden.
+and then you can call functions by `ujihisa#util#system()`, without taking care
+of `vital.vim` itself. It's all hidden.
 
-Vital has module system. The below is an example to import/load a module `data/ordered_set` and to call a function `f()` of the module.
+Vital has module system. The below is an example to import/load a module
+`data/ordered_set` and to call a function `f()` of the module.
 
     let V = vital#of('ujihisa')
     let O = V.import('Data.OrderedSet')
@@ -69,7 +75,7 @@ Tatsuhiro Ujihisa
 NYSL is a very loose license like a [Beer License](http://en.wikipedia.org/wiki/Beerware), or more like [WTFPL](http://en.wikipedia.org/wiki/WTFPL).
 See [NYSL](http://www.kmonos.net/nysl/NYSL.TXT) for details.  (English and Japanese)
 
-First, vital.vim is a bundling(static) library.
+First, vital.vim is a bundling (static) library.
 We think everyone should use it easily, without the care about license.
 
 Second, In Japan, *Strict* Public Domain might be invalid.
