@@ -250,7 +250,7 @@ function! s:substitute_last(expr, pat, sub)
   return substitute(a:expr, printf('.*\zs%s', a:pat), a:sub, '')
 endfunction
 
-" TODO: spec and doc
+" TODO: spec
 function! s:dstring(expr)
   let x = substitute(string(a:expr), "^'\\|'$", '', 'g')
   let x = substitute(x, "''", "'", 'g')

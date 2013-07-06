@@ -1,5 +1,7 @@
 *vital-data-string.txt*		string utilities library.
 
+Maintainer: ujihisa <ujihisa at gmail com>
+
 ==============================================================================
 CONTENTS				*Vital.Data.String-contents*
 
@@ -91,6 +93,15 @@ nr2hex({nr})				*Vital.Data.String.nr2hex()*
 substitute_last({expr}, {pat}, {sub}})	*Vital.Data.String.substitute_last()*
 	Behaves like |substitute()|, but it only replaces the last matched
 	string.
+
+dstring({expr})				*Vital.Data.String.dstring()*
+	Behaves like |string()|, but this wraps the result string not with
+	single-quotes but with double-quotes.
+>
+	dstring(123) == 123
+	dstring('abc') == '"abc"'
+	dstring("abc") == '"abc"'
+<
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
