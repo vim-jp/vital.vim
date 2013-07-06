@@ -92,24 +92,25 @@ sort({list}, {expr})			*Vital.Data.List.sort()*
 sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
 	Returns a sorted |List| with key in |List| {list}.
 
-max({list}, {expr})			*Vital.Data.List.max()*
+max_by({list}, {expr})			*Vital.Data.List.max_by()*
 	Returns a maximum value in {list} through given {expr}.
 	Returns 0 if {list} is empty.
 	"v:val" can be used in {expr}.
 >
-	:echo List.max(['pineapple','orange','banana','apple'], 'len(v:val)')
+	:echo List.max_by(['pineapple','orange','banana','apple'], 'len(v:val)')
 	pineapple
-	:echo List.max([20, -50, -15, 30], 'abs(v:val)')
+	:echo List.max_by([20, -50, -15, 30], 'abs(v:val)')
 	-50
 <
-min({list}, {expr})			*Vital.Data.List.min()*
+
+min_by({list}, {expr})			*Vital.Data.List.min_by()*
 	Returns a minimum value in |List| {list} through given {expr}.
 	Returns 0 if {list} is empty.
 	"v:val" can be used in {expr}.
 >
-	:echo List.min(['pineapple','orange','banana','apple'], 'len(v:val)')
+	:echo List.min_by(['pineapple','orange','banana','apple'], 'len(v:val)')
 	apple
-	:echo List.min([20, -50, -15, 30], 'abs(v:val)')
+	:echo List.min_by([20, -50, -15, 30], 'abs(v:val)')
 	-15
 <
 char_range({from}, {to})		*Vital.Data.List.char_range()*
