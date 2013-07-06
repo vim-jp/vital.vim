@@ -50,6 +50,7 @@ endfunction
 
 " Number
 function! s:is_integer(Value)
+  echoerr 'Prelude.is_integer() is obsolete. Use its is_number() instead; they are equivalent.'
   return s:is_number(a:Value)
 endfunction
 
