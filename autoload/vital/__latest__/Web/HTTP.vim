@@ -108,14 +108,14 @@ function! s:request(...)
   call extend(settings, deepcopy(s:default_settings), 'keep')
   let settings.method = toupper(settings.method)
   if !has_key(settings, 'url')
-    throw 'Vital.Web.Http.request(): "url" parameter is required.'
+    throw 'Vital.Web.HTTP.request(): "url" parameter is required.'
   endif
   if !s:Prelude.is_list(settings.client)
     let settings.client = [settings.client]
   endif
   let client = s:_get_client(settings)
   if empty(client)
-    throw 'Vital.Web.Http.request(): Available client not found: '
+    throw 'Vital.Web.HTTP.request(): Available client not found: '
     \    . string(settings.client)
   endif
   if has_key(settings, 'contentType')

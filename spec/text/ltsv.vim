@@ -1,24 +1,24 @@
 source spec/base.vim
 
-let g:LTSV = vital#of('vital').import('Text.Ltsv')
+let g:LTSV = vital#of('vital').import('Text.LTSV')
 let g:sample_file = expand('<sfile>:p:h') . '/ltsv-sample.txt'
 let g:expect_data = [
-\   {'name': 'Web.Http', 'maintainer': 'mattn'},
-\   {'name': 'Text.Ltsv', 'maintainer': 'thinca'},
+\   {'name': 'Web.HTTP', 'maintainer': 'mattn'},
+\   {'name': 'Text.LTSV', 'maintainer': 'thinca'},
 \   {'name': 'Text.Lexer', 'maintainer': 'rbtnn'},
 \ ]
 
-Context Text.Ltsv.parse()
+Context Text.LTSV.parse()
   It parses records of LTSV
     let ltsv_data = join(readfile(g:sample_file), "\n")
     Should g:expect_data == g:LTSV.parse(ltsv_data)
   End
 End
 
-Context Text.Ltsv.parse_record()
+Context Text.LTSV.parse_record()
   It parses an LTSV file
     let ltsv_record = readfile(g:sample_file, 0, 1)[0]
-    let expect_record = {'name': 'Web.Http', 'maintainer': 'mattn'}
+    let expect_record = {'name': 'Web.HTTP', 'maintainer': 'mattn'}
     Should expect_record == g:LTSV.parse_record(ltsv_record)
   End
   It throws an exception when invalid data was passed
@@ -37,13 +37,13 @@ Context Text.Ltsv.parse_record()
   End
 End
 
-Context Text.Ltsv.parse_file()
+Context Text.LTSV.parse_file()
   It parses an LTSV file
     Should g:expect_data == g:LTSV.parse_file(g:sample_file)
   End
 End
 
-Context Text.Ltsv.dump()
+Context Text.LTSV.dump()
   It convets a list objects to a LTSV string
     Should join(readfile(g:sample_file), "\n") ==# g:LTSV.dump(g:expect_data)
   End
@@ -52,7 +52,7 @@ Context Text.Ltsv.dump()
   End
 End
 
-Context Text.Ltsv.dump_file()
+Context Text.LTSV.dump_file()
   It dumps the data to a file
     let tempfile = tempname()
     try

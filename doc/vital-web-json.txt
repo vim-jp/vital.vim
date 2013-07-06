@@ -3,26 +3,26 @@
 Maintainer: mattn <mattn.jp@gmail.com>
 
 ==============================================================================
-CONTENTS				*Vital.Web.Json-contents*
+CONTENTS				*Vital.Web.JSON-contents*
 
-INTRODUCTION				|Vital.Web.Json-introduction|
-INTERFACE				|Vital.Web.Json-interface|
-  Functions				|Vital.Web.Json-functions|
-
-==============================================================================
-INTRODUCTION				*Vital.Web.Json-introduction*
-
-*Vital.Web.Json* is JSON parser Library.
+INTRODUCTION				|Vital.Web.JSON-introduction|
+INTERFACE				|Vital.Web.JSON-interface|
+  Functions				|Vital.Web.JSON-functions|
 
 ==============================================================================
-INTERFACE				*Vital.Web.Json-interface*
+INTRODUCTION				*Vital.Web.JSON-introduction*
+
+*Vital.Web.JSON* is JSON parser Library.
+
+==============================================================================
+INTERFACE				*Vital.Web.JSON-interface*
 ------------------------------------------------------------------------------
-FUNCTIONS				*Vital.Web.Json-functions*
+FUNCTIONS				*Vital.Web.JSON-functions*
 
-encode({object})			*Vital.Web.Json.encode()*
+encode({object})			*Vital.Web.JSON.encode()*
 	Encode object into JSON string.
 
-decode({json})				*Vital.Web.Json.decode()*
+decode({json})				*Vital.Web.JSON.decode()*
 	Decode JSON string into variable that vim can treat.
 
 ==============================================================================

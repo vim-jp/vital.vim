@@ -14,7 +14,7 @@ function! s:parse_record(line)
   for field in split(a:line, "\t")
     let splitted = matchlist(field, '^\([0-9A-Za-z_.-]\+\):\(.*\)$')
     if empty(splitted)
-      throw 'vital: Text.Ltsv: Parsing a record failed: ' . field
+      throw 'vital: Text.LTSV: Parsing a record failed: ' . field
     endif
     let record[splitted[1]] = splitted[2]
   endfor

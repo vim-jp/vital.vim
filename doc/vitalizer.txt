@@ -34,7 +34,7 @@ COMMANDS					*vitalizer-commands*
 	You can use +/- prefix to {module}.  This adds or removes the
 	specified module.
 >
-	:Vitalize path/to/plugin +Web.Http -DateTime
+	:Vitalize path/to/plugin +Web.HTTP -DateTime
 <
 	options ~
 	--init

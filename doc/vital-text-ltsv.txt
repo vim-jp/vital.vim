@@ -3,16 +3,16 @@
 Maintainer: thinca <thinca+vim@gmail.com>
 
 ==============================================================================
-CONTENTS			*Vital.Text.Ltsv-contents*
+CONTENTS			*Vital.Text.LTSV-contents*
 
-INTRODUCTION			|Vital.Text.Ltsv-introduction|
-INTERFACE			|Vital.Text.Ltsv-interface|
-  FUNCTIONS			  |Vital.Text.Ltsv-functions|
+INTRODUCTION			|Vital.Text.LTSV-introduction|
+INTERFACE			|Vital.Text.LTSV-interface|
+  FUNCTIONS			  |Vital.Text.LTSV-functions|
 
 
 
 ==============================================================================
-INTRODUCTION			*Vital.Text.Ltsv-introduction*
+INTRODUCTION			*Vital.Text.LTSV-introduction*
 
 *vital-text-ltsv* is a parser and dumper for Labelled Tab-separated
 Values(LTSV).
@@ -22,24 +22,24 @@ http://ltsv.org/
 
 
 ==============================================================================
-INTERFACE			*Vital.Text.Ltsv-interface*
+INTERFACE			*Vital.Text.LTSV-interface*
 
 ------------------------------------------------------------------------------
-FUNCTIONS			*Vital.Text.Ltsv-functions*
+FUNCTIONS			*Vital.Text.LTSV-functions*
 
-parse({ltsv})			*Vital.Text.Ltsv.parse()*
+parse({ltsv})			*Vital.Text.LTSV.parse()*
 	Parses records of LTSV.  Returns a list of objects.
 
-parse_record({record})		*Vital.Text.Ltsv.parse_record()*
+parse_record({record})		*Vital.Text.LTSV.parse_record()*
 	Parses a record of LTSV.  Returns an object.
 
-parse_file({file})		*Vital.Text.Ltsv.parse_file()*
+parse_file({file})		*Vital.Text.LTSV.parse_file()*
 	Parses a LTSV file.
 
-dump({data})			*Vital.Text.Ltsv.dump()*
+dump({data})			*Vital.Text.LTSV.dump()*
 	Converts a list of objects or an object to a LTSV string.
 
-				*Vital.Text.Ltsv.dump_file()*
+				*Vital.Text.LTSV.dump_file()*
 dump_file({data}, {file} [, {append}])
 	Dumps {data} to {file}.  If {append} is true, the data is appended.
 

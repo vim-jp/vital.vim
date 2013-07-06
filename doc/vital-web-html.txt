@@ -3,34 +3,34 @@
 Maintainer: mattn <mattn.jp@gmail.com>
 
 ==============================================================================
-CONTENTS				*Vital.Web.Html-contents*
+CONTENTS				*Vital.Web.HTML-contents*
 
-INTRODUCTION				|Vital.Web.Html-introduction|
-INTERFACE				|Vital.Web.Html-interface|
-  Functions				|Vital.Web.Html-functions|
-  Structures				|Vital.Web.Html-structures|
-
-==============================================================================
-INTRODUCTION				*Vital.Web.Html-introduction*
-
-*Vital.Web.Html* is HTML parser Library. This is based on |Vital.Web.XML|.
+INTRODUCTION				|Vital.Web.HTML-introduction|
+INTERFACE				|Vital.Web.HTML-interface|
+  Functions				|Vital.Web.HTML-functions|
+  Structures				|Vital.Web.HTML-structures|
 
 ==============================================================================
-INTERFACE				*Vital.Web.Html-interface*
+INTRODUCTION				*Vital.Web.HTML-introduction*
+
+*Vital.Web.HTML* is HTML parser Library. This is based on |Vital.Web.XML|.
+
+==============================================================================
+INTERFACE				*Vital.Web.HTML-interface*
 ------------------------------------------------------------------------------
-FUNCTIONS				*Vital.Web.Html-functions*
+FUNCTIONS				*Vital.Web.HTML-functions*
 
-parse({content})			*Vital.Web.Html.parse()*
+parse({content})			*Vital.Web.HTML.parse()*
 	Parse content into DOM object.
 
-parseFile({file})			*Vital.Web.Html.parseFile()*
+parseFile({file})			*Vital.Web.HTML.parseFile()*
 	Parse html file into DOM object.
 
-parseURI({url})				*Vital.Web.Html.parseURI()*
+parseURI({url})				*Vital.Web.HTML.parseURI()*
 	Get and parse html into DOM object.
 
 ------------------------------------------------------------------------------
-STRUCTURES				*Vital.Web.Html-structures*
+STRUCTURES				*Vital.Web.HTML-structures*
 
 DOM object is structured as |Directory| like following.
 >
