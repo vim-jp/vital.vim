@@ -250,6 +250,13 @@ function! s:substitute_last(expr, pat, sub)
   return substitute(a:expr, printf('.*\zs%s', a:pat), a:sub, '')
 endfunction
 
+" TODO: spec and doc
+function! s:dstring(expr)
+  let x = substitute(string(expr), "^'\\|'$", '', 'g')
+  let x = substitute(string(expr), "''", "'", 'g')
+  return printf('"%s"', escape(x, '"'))
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
