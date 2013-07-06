@@ -1,5 +1,7 @@
 *vital-data-list.txt*		list utilities library.
 
+Maintainer: ujihisa <ujihisa at gmail com>
+
 ==============================================================================
 CONTENTS				*Vital.Data.List-contents*
 
@@ -32,6 +34,16 @@ shift({list})				*Vital.Data.List.shift()*
 unshift({list}, {val})			*Vital.Data.List.unshift()*
 	Inserts {val} to the head of |List| {list} and returns the list
 	itself.
+
+cons({val}, {list})			*Vital.Data.List.cons()*
+	Makes new |List| which first item is {val} and the rest of items are
+	|List| {list}.
+>
+	cons(1, [2, 3]) == [1, 2, 3]
+	cons(1, []) == [1]
+	cons([1], [2, 3]) == [[1], 2, 3]
+	cons([1], 2) ERROR!
+<
 
 uniq({list} [, {expr}])			*Vital.Data.List.uniq()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In

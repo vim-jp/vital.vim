@@ -20,6 +20,10 @@ function! s:unshift(list, val)
   return insert(a:list, a:val)
 endfunction
 
+function! s:cons(x, xs)
+  return [a:x] + a:xs
+endfunction
+
 " Removes duplicates from a list.
 function! s:uniq(list, ...)
   let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)

@@ -46,6 +46,14 @@ Context Data.List.unshift()
   End
 End
 
+Context Data.List.cons()
+  It makes new list which first item is {val} and the rest of items are {list}.
+    Should g:L.cons(1, [2, 3]) == [1, 2, 3]
+    Should g:L.cons(1, []) == [1]
+    Should g:L.cons([1], [2, 3]) == [[1], 2, 3]
+  End
+End
+
 Context Data.List.uniq()
   It makes a list unique
     Should ['vim', 'emacs'] == g:L.uniq(['vim', 'emacs', 'vim', 'vim'])
