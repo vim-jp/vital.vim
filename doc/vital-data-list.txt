@@ -53,7 +53,7 @@ concat({list})				*Vital.Data.List.concat()*
 
 flatten({list}, [, {limit}])		*Vital.Data.List.flatten()*
 	Flattens |List| {list} of lists recursively. When the {limit} argument
-	is given, the function remains nested items by the {limit} is maximum
+	is given, the function keeps nested items by the {limit} is maximum
 	size.
 >
 	:echo List.flatten([[1], [2, 3]])
