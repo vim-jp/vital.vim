@@ -1,0 +1,26 @@
+*vital-prelude.txt*		crucial functions
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Prelude-contents*
+
+INTRODUCTION			|Vital.Prelude-introduction|
+INTERFACE			|Vital.Prelude-interface|
+  Functions			  |Vital.Prelude-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Prelude-introduction*
+
+*Vital.Prelude* is pretty handy. TODO
+
+==============================================================================
+INTERFACE				*Vital.Prelude-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Prelude-functions*
+
+is_integer({value})				*Vital.Prelude.is_integer()*
+	Checks if the given {value} is an integer.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
