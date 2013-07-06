@@ -134,10 +134,10 @@ function! s:char_range(from, to)
   \)
 endfunction
 
-" Returns true if a:list has a:Value.
+" Returns true if a:list has a:value.
 " Returns false otherwise.
-function! s:has(list, Value)
-  return index(a:list, a:Value) isnot -1
+function! s:has(list, value)
+  return index(a:list, a:value) isnot -1
 endfunction
 
 " Returns true if a:list[a:index] exists.
