@@ -1,3 +1,5 @@
+ad68a83
+	Prelude.is_integer() -> Prelude.is_number(). Just renamed.
 6e456e7
 	System.Cache.delete() -> System.Cache.deletefile(). Just renamed.
 6b937ab
