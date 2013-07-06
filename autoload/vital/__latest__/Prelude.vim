@@ -47,13 +47,16 @@ function! s:is_numeric(Value)
   return _ ==# s:__TYPE_NUMBER
   \   || _ ==# s:__TYPE_FLOAT
 endfunction
+
 " Number
 function! s:is_integer(Value)
-  return type(a:Value) ==# s:__TYPE_NUMBER
+  return s:is_number(a:Value)
 endfunction
+
 function! s:is_number(Value)
   return type(a:Value) ==# s:__TYPE_NUMBER
 endfunction
+
 " Float
 function! s:is_float(Value)
   return type(a:Value) ==# s:__TYPE_FLOAT
