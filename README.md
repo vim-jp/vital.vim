@@ -24,10 +24,12 @@ If you are a Vim plugin author, please check this out.
 Assuming your Vim plugin name is `ujihisa`. You can define your utility
 function set `ujihisa#util` just by
 
-    let V = vital#of('ujihisa')
-    function! ujihisa#util#system(...)
-      return call(V.system, a:000, V)
-    endfunction
+```vim
+let V = vital#of('ujihisa')
+function! ujihisa#util#system(...)
+  return call(V.system, a:000, V)
+endfunction
+```
 
 and then you can call functions by `ujihisa#util#system()`, without taking care
 of `vital.vim` itself. It's all hidden.
@@ -35,21 +37,27 @@ of `vital.vim` itself. It's all hidden.
 Vital has module system. The below is an example to import/load a module
 `Data.OrderedSet` and to call a function `f()` of the module.
 
-    let V = vital#of('ujihisa')
-    let O = V.import('Data.OrderedSet')
-    call O.f()
+```vim
+let V = vital#of('ujihisa')
+let O = V.import('Data.OrderedSet')
+call O.f()
+```
 
 or
 
-    let V = vital#of('ujihisa')
-    call V.load('Data.OrderedSet')
-    call V.Data.OrderedSet.f()
+```vim
+let V = vital#of('ujihisa')
+call V.load('Data.OrderedSet')
+call V.Data.OrderedSet.f()
+```
 
 or
 
-    let V = vital#of('ujihisa')
-    call V.import('Data.OrderedSet', s:)
-    call s:f()
+```vim
+let V = vital#of('ujihisa')
+call V.import('Data.OrderedSet', s:)
+call s:f()
+```
 
 We recommend you to use a capital letter for a Vital module dictionary to assign.
 
