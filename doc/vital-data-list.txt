@@ -10,8 +10,8 @@ INTERFACE			|Vital.Data.List-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Data.List-introduction*
 
-*Vital.Data.List* is List Utilities Library.
-It provides some functions to manipulate |List|.
+*Vital.Data.List* is a list utilities library.  It provides some functions to
+manipulate |List|.
 
 ==============================================================================
 INTERFACE				*Vital.Data.List-interface*
@@ -19,10 +19,12 @@ INTERFACE				*Vital.Data.List-interface*
 FUNCTIONS				*Vital.Data.List-functions*
 
 pop({list})				*Vital.Data.List.pop()*
-	Removes the last element from |List| {list} and returns the element.
+	Removes the last element from |List| {list} and returns the element,
+	as if the {list} is a stack.
 
 push({list}, {val})			*Vital.Data.List.push()*
-	Appends {val} to the end of |List| {list} and returns the list itself.
+	Appends {val} to the end of |List| {list} and returns the list itself,
+	as if the {list} is a stack.
 
 shift({list})				*Vital.Data.List.shift()*
 	Removes the first element from |List| {list} and returns the element.
