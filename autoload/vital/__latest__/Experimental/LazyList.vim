@@ -10,17 +10,20 @@ function! s:_vital_depends()
   return ['Data.List']
 endfunction
 
-
 function! s:from_list(xs)
-  return a:xs
+  if len(a:xs) == 0
+    return 'nil'
+  else
+    return [a:xs[0], s:from_list(a:xs[1 :])]
+  endif
 endfunction
 
 function! s:is_empty(xs)
-  return !len(a:xs)
+  return s:V.is_string(a:xs) && a:xs ==# 'nil'
 endfunction
 
 function! s:unapply(xs)
-  return [a:xs[0], a:xs[1 :]]
+  return [a:xs[0], a:xs[1]]
 endfunction
 
 function! s:take(xs, n)
@@ -38,6 +41,7 @@ endfunction
 "echo s:L.take(xs, 3)
 
 " call s:_vital_loaded(g:V)
+" echo s:from_list([3, 1, 4])
 " echo s:take(s:from_list([3, 1, 4]), 2)
 " echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
 
