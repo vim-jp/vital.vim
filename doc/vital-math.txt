@@ -1,0 +1,37 @@
+*vital-math.txt*	Mathematical functions
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS					*Vital.Math-contents*
+
+INTRODUCTION			|Vital.Math-introduction|
+INTERFACE			|Vital.Math-interface|
+  FUNCTIONS			  |Vital.Math-functions|
+
+
+
+==============================================================================
+INTRODUCTION					*Vital.Math-introduction*
+
+*Vital.Math* provides some bitwise operators.
+If vim provides builtin functions, uses these directly.
+
+
+
+==============================================================================
+INTERFACE					*Vital.Math-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS					*Vital.Math-functions*
+
+fib({number})				*Vital.Math.and()*
+	{number}th fib, begins with 0, 1.
+>
+	fib(0) == 0
+	fib(1) == 1
+	fib(10) == 55
+<
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
