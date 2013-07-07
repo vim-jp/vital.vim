@@ -7,7 +7,6 @@ CONTENTS			*Vital.Experimental.LazyList-contents*
 
 INTRODUCTION			|Vital.Experimental.LazyList-introduction|
   USAGE				|Vital.Experimental.LazyList-usage|
-  PRINCIPLE			|Vital.Experimental.LazyList-principle|
 INTERFACE			|Vital.Experimental.LazyList-interface|
   FUNCTIONS			  |Vital.Experimental.LazyList-functions|
 CONFIG				|Vital.Experimental.LazyList-config|
@@ -17,75 +16,17 @@ CONFIG				|Vital.Experimental.LazyList-config|
 ==============================================================================
 INTRODUCTION			*Vital.Experimental.LazyList-introduction*
 
-*Vital.Experimental.LazyList* is a Vim's process manager library, powered by
-|vimproc|.  This manager stores external processes ran by this library, and
-provide higher layer synchronous non-blocking read/write interface.
-
-Note that this library doesn't work on Vim without vimproc; vimproc is
-required.
-
+*Vital.Experimental.LazyList* is TODO
 
 ==============================================================================
 USAGE				*Vital.Experimental.LazyList-usage*
 >
-	let P = V.import('Experimental.LazyList')
-	if !P.available " please always check if it's available.
-	  throw "omg"
-	endif
-	let i = P.new('clojure-1.5') " creates a process that runs clojure
-	" read the stdout/stderr and wait until the process's output stays
-	" same for 2.0 sec.
-	echo P.read_wait(i, 2.0, [])
-	call P.writeln(i, '(+ 2 3)')
-	" read the stdout/stderr and wait until the process's output stays
-	" same for 0.05 sec.
-	echo P.read(i, []) " ["5\nuser=>", '', 'timedout']
-	" kills the process, and let Experimental.LazyList forget it.
-	echo P.stop(i)
-	echo P.status() " 'inactive'
+	let xs = s:L.file_readlines('/tmp/a.txt')
+	let xs = s:L.map(xs, 'split(v:val, ":")')
+	let xs = s:L.filter(xs, 'v:val[1] < 3')
+	echo s:L.take(xs, 3)
 <
 
->
-	" An alternative way with label
-	function! s:f(x)
-	  let t = P.touch('my-scala', 'scala')
-	  if t ==# 'new'
-	    " wait for longer time to make sure scala runs, since scala is
-	    " really slow to be ready.
-	    let [out, err, type] = P.read_wait('my-scala', 2.0, ['scala> '])
-	    if type ==# 'timeout'
-	      throw 'omg it took too much time'
-	    endif
-	  endif
-	  call P.writeln('my-scala', a:x)
-	  let [out, err, type] = P.read('my-scala', ['scala> '])
-	  if type ==# 'timeout'
-	    throw 'something easy to do please'
-	  elseif type ==# 'inactive'
-	    throw 'scala had died...!'
-	  endif
-	  return out
-	endfunction
-
-	echo s:f('1 + 2') "=> '3' but slow
-	echo s:f('2 + 3') "=> '5' and fast!
-<
-
-MEMO
-* touch is almost idempotent
-* read's out split needs \r as well for windows
-
-==============================================================================
-PRINCIPLE			*Vital.Experimental.LazyList-principle*
-
-* Nonblocking
-  * blocking APIs should have verbose name to discourage developers to use
-* Synchronous (asynchronous in Vim always makes trouble)
-* Don't show lower layer too much easily, but don't hide completely. No
-  perfect abstraction exists in the world.
-* Avoid tricky specification. Function name and behaviour itself should
-  explain what it does.
->
 ==============================================================================
 INTERFACE			*Vital.Experimental.LazyList-interface*
 
