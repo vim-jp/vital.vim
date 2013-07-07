@@ -27,7 +27,7 @@ function! s:unapply(xs)
 endfunction
 
 function! s:take(xs, n)
-  if s:is_empty(a:xs) || a:n == 0
+  if a:n == 0 || s:is_empty(a:xs)
     return []
   else
     let [x, xs] = s:unapply(a:xs)
@@ -44,6 +44,8 @@ endfunction
 " echo s:from_list([3, 1, 4])
 " echo s:take(s:from_list([3, 1, 4]), 2)
 " echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
+
+"echo s:take(s:filter(s:from_list([3, 1, 4], 'v:val < 2'), 2), 1)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
