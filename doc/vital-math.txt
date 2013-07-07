@@ -25,13 +25,17 @@ INTERFACE					*Vital.Math-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS					*Vital.Math-functions*
 
-fib({number})				*Vital.Math.and()*
+fib({number})				*Vital.Math.fib()*
 	{number}th fib, begins with 0, 1.
 >
 	fib(0) == 0
 	fib(1) == 1
 	fib(10) == 55
+	fib(48) == 512559680
+	fib(49) == -811192543
 <
+	Note that Vim cannot handle big numbers. This is not
+	|Vital.Math.fib()|'s issue but Vim's limitation.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
