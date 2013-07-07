@@ -64,6 +64,21 @@ function! s:take(xs, n)
   endif
 endfunction
 
+function! s:take_while(xs, f)
+  if s:is_empty(a:xs)
+    return []
+  else
+    let [fs, xs] = a:xs
+    let [x, xs1] = s:unapply(xs)
+    let ex = s:_eval(fs, x)
+    if len(ex) && eval(substitute(a:f, 'v:val', ex[0], 'g'))
+      return ex + s:take_while([fs, xs1], a:f)
+    else
+      return []
+    endif
+  endif
+endfunction
+
 "let xs = s:L.file_readlines('/tmp/a.txt')
 "let xs = s:L.map(xs, 'split(v:val, ":")')
 "let xs = s:L.filter(xs, 'v:val[1] < 3')
@@ -75,6 +90,7 @@ endfunction
 " echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
 " 
 " echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
+" echo s:take_while(s:from_list([3, 1, 4, 1]), 'v:val % 2 == 1')
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
