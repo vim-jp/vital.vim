@@ -36,5 +36,13 @@ FUNCTIONS			*Vital.Data.LazyList-functions*
 from_list({list})		*Vital.Data.LazyList.from_list()*
 	Constructs lazy list based on given |List| {list}.
 
+file_readlines({fname})		*Vital.Data.LazyList.file_readlines()*
+	Constructs lazy list based on given filename |String| {fname}.
+	For example, the following line of code will read first 4 lines from
+	the given file "/tmp/a.txt".
+>
+	L.take(L.file_readlines('/tmp/a.txt'), 4)
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
