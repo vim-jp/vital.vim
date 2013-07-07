@@ -11,11 +11,7 @@ function! s:_vital_depends()
 endfunction
 
 function! s:from_list(xs)
-  if len(a:xs) == 0
-    return 'nil'
-  else
-    return [[], [{'value': a:xs[0]}, s:from_list(a:xs[1 :])]]
-  endif
+  return [[], s:L.foldr("[{'value': v:val}, v:memo]", 'nil', a:xs)]
 endfunction
 
 function! s:is_empty(xs)
@@ -51,9 +47,9 @@ function! s:filter(xs, f)
   let [fs, xs] = a:xs
   let f = printf("%s ? [v:val] : []", a:f)
   if has_key(xs[0], 'thunk')
-    return [s:L.conj(fs, f), [{'thunk': xs[0].thunk}, xs[1]]]
+    return [s:L.conj(fs, f), xs]
   else
-    return [s:L.conj(fs, f), [{'value': xs[0].value}, xs[1]]]
+    return [s:L.conj(fs, f), xs]
   end
 endfunction
 
@@ -65,9 +61,9 @@ function! s:take(xs, n)
     let [x, xs] = s:unapply(xs)
     let ex = s:_eval(fs, x)
     if len(ex)
-      return ex + s:take(xs, a:n - 1)
+      return ex + s:take([fs, xs], a:n - 1)
     else
-      return ex + s:take(xs, a:n)
+      return ex + s:take([fs, xs], a:n)
     endif
   endif
 endfunction
@@ -81,8 +77,8 @@ endfunction
 " echo s:from_list([3, 1, 4])
 " echo s:take(s:from_list([3, 1, 4]), 2)
 " echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
-
-echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
+" 
+" echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
