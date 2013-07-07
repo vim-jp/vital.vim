@@ -1,9 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" let s:V = g:V
-" let s:L = s:V.import('Data.List')
-
 function! s:_vital_loaded(V)
   let s:V = a:V
   let s:L = s:V.import('Data.List')
@@ -27,7 +24,7 @@ function! s:unapply(xs)
 endfunction
 
 function! s:take(xs, n)
-  if s:is_empty(a:xs)
+  if s:is_empty(a:xs) || a:n == 0
     return []
   else
     let [x, xs] = s:unapply(a:xs)
@@ -40,7 +37,9 @@ endfunction
 "let xs = s:L.filter(xs, 'v:val[1] < 3')
 "echo s:L.take(xs, 3)
 
+" call s:_vital_loaded(g:V)
 " echo s:take(s:from_list([3, 1, 4]), 2)
+" echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
