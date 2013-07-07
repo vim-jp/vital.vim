@@ -10,10 +10,6 @@ function! s:_vital_depends()
   return ['Data.List']
 endfunction
 
-function! s:_nil() dict
-  return [[], {}]
-endfunction
-
 function! s:from_list(list)
   return [[], {'list': a:list, 'run': function('s:_f_from_list')}]
 endfunction
@@ -24,6 +20,26 @@ function! s:_f_from_list() dict
   else
     let [x, xs] = [self.list[0], self.list[1 :]]
     return [[x], {'list': xs, 'run': function('s:_f_from_list')}]
+  endif
+endfunction
+
+function! s:file_readlines(fname)
+  if !s:V.has_vimproc()
+    throw 'Experimental.LazyList.file_readlines() requires vimproc'
+  endif
+  return [[], {
+        \ 'f': vimproc#fopen(a:fname, 'r'),
+        \ 'run': function('s:_f_file_readlines')}]
+endfunction
+
+" TODO resource management
+function! s:_f_file_readlines() dict
+  if self.f.eof
+    call self.f.close()
+    return [[], {}]
+  else
+    " caution: this is destructive!
+    return [[self.f.read_line()], self]
   endif
 endfunction
 
@@ -112,6 +128,8 @@ endfunction
 " echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
 " echo s:take_while(s:from_list([3, 1, 4, 1]), 'v:val % 2 == 1')
 " echo s:take(s:iterate(0, 'v:val + 1'), 3)
+" echo s:take(s:filter(s:iterate(0, 'v:val + 1'), 'v:val % 2 == 0'), 3)
+"echo s:take(s:file_readlines('/tmp/a.txt'), 4)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
