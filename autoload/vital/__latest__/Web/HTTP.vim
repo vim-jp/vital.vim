@@ -342,7 +342,7 @@ let s:clients.curl = {}
 function! s:clients.curl.available(settings)
   return executable(self._command(a:settings))
 endfunction
-function! s:clients.wget._command(settings)
+function! s:clients.curl._command(settings)
   return get(get(a:settings, 'command', {}), 'curl', 'curl')
 endfunction
 function! s:clients.curl.request(settings)
