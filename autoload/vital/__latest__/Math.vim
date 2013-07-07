@@ -9,7 +9,6 @@ function! s:modulo(n, m)
   return a:n + (-(a:n + (0 < a:m ? d : -d)) / a:m + d) * a:m
 endfunction
 
-" TODO: spec
 function! s:fib(n)
   let [a, b, i] = [0, 1, 0]
   while i < a:n
