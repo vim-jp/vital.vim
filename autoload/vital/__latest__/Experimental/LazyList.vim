@@ -60,7 +60,12 @@ function! s:take(xs, n)
     return []
   else
     let [x, xs] = s:unapply(a:xs)
-    return s:_eval(x) + s:take(xs, a:n - 1)
+    let ex = s:_eval(x)
+    if len(ex)
+      return ex + s:take(xs, a:n - 1)
+    else
+      return ex + s:take(xs, a:n)
+    endif
   endif
 endfunction
 
@@ -69,12 +74,12 @@ endfunction
 "let xs = s:L.filter(xs, 'v:val[1] < 3')
 "echo s:L.take(xs, 3)
 
-call s:_vital_loaded(g:V)
-echo s:from_list([3, 1, 4])
-echo s:take(s:from_list([3, 1, 4]), 2)
-echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
-
-echo s:take(s:filter(s:from_list([3, 1, 4]), 'v:val < 2'), 2)
+" call s:_vital_loaded(g:V)
+" echo s:from_list([3, 1, 4])
+" echo s:take(s:from_list([3, 1, 4]), 2)
+" echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
+" 
+" echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
