@@ -3,13 +3,13 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" XXX Simpler way?
+" TODO Simpler way?
 function! s:modulo(n, m)
   let d = a:n * a:m < 0 ? 1 : 0
   return a:n + (-(a:n + (0 < a:m ? d : -d)) / a:m + d) * a:m
 endfunction
 
-" TODO: spec and doc
+" TODO: spec
 function! s:fib(n)
   let [a, b, i] = [0, 1, 0]
   while i < a:n
