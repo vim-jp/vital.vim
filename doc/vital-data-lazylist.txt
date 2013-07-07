@@ -3,23 +3,23 @@
 Maintainer: ujihisa <ujihisa at gmail com>
 
 ==============================================================================
-CONTENTS			*Vital.Experimental.LazyList-contents*
+CONTENTS			*Vital.Data.LazyList-contents*
 
-INTRODUCTION			|Vital.Experimental.LazyList-introduction|
-  USAGE				|Vital.Experimental.LazyList-usage|
-INTERFACE			|Vital.Experimental.LazyList-interface|
-  FUNCTIONS			  |Vital.Experimental.LazyList-functions|
-CONFIG				|Vital.Experimental.LazyList-config|
+INTRODUCTION			|Vital.Data.LazyList-introduction|
+  USAGE				|Vital.Data.LazyList-usage|
+INTERFACE			|Vital.Data.LazyList-interface|
+  FUNCTIONS			  |Vital.Data.LazyList-functions|
+CONFIG				|Vital.Data.LazyList-config|
 
 
-
-==============================================================================
-INTRODUCTION			*Vital.Experimental.LazyList-introduction*
-
-*Vital.Experimental.LazyList* is TODO
 
 ==============================================================================
-USAGE				*Vital.Experimental.LazyList-usage*
+INTRODUCTION			*Vital.Data.LazyList-introduction*
+
+*Vital.Data.LazyList* is TODO
+
+==============================================================================
+USAGE				*Vital.Data.LazyList-usage*
 >
 	let xs = s:L.file_readlines('/tmp/a.txt')
 	let xs = s:L.map(xs, 'split(v:val, ":")')
@@ -28,12 +28,12 @@ USAGE				*Vital.Experimental.LazyList-usage*
 <
 
 ==============================================================================
-INTERFACE			*Vital.Experimental.LazyList-interface*
+INTERFACE			*Vital.Data.LazyList-interface*
 
 ------------------------------------------------------------------------------
-FUNCTIONS			*Vital.Experimental.LazyList-functions*
+FUNCTIONS			*Vital.Data.LazyList-functions*
 
-from_list({list})		*Vital.Experimental.LazyList.from_list()*
+from_list({list})		*Vital.Data.LazyList.from_list()*
 	Constructs lazy list based on given |List| {list}.
 
 ==============================================================================
