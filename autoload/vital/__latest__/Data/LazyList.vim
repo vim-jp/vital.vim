@@ -25,7 +25,7 @@ endfunction
 
 function! s:file_readlines(fname)
   if !s:V.has_vimproc()
-    throw 'Experimental.LazyList.file_readlines() requires vimproc'
+    throw 'Data.LazyList.file_readlines() requires vimproc'
   endif
   return [[], {
         \ 'f': vimproc#fopen(a:fname, 'r'),
@@ -129,7 +129,7 @@ endfunction
 " echo s:take_while(s:from_list([3, 1, 4, 1]), 'v:val % 2 == 1')
 " echo s:take(s:iterate(0, 'v:val + 1'), 3)
 " echo s:take(s:filter(s:iterate(0, 'v:val + 1'), 'v:val % 2 == 0'), 3)
-"echo s:take(s:file_readlines('/tmp/a.txt'), 4)
+" echo s:take(s:file_readlines('/tmp/a.txt'), 4)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
