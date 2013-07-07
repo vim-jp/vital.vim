@@ -50,16 +50,16 @@ function! s:filter(xs, f)
 endfunction
 
 function! s:take(xs, n)
-  let [fs, xs] = a:xs
-  if a:n == 0 || s:is_empty(xs)
+  if a:n == 0 || s:is_empty(a:xs)
     return []
   else
-    let [x, xs] = s:unapply(xs)
+    let [fs, xs] = a:xs
+    let [x, xs1] = s:unapply(xs)
     let ex = s:_eval(fs, x)
     if len(ex)
-      return ex + s:take([fs, xs], a:n - 1)
+      return ex + s:take([fs, xs1], a:n - 1)
     else
-      return ex + s:take([fs, xs], a:n)
+      return ex + s:take([fs, xs1], a:n)
     endif
   endif
 endfunction
