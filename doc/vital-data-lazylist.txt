@@ -38,6 +38,8 @@ from_list({list})		*Vital.Data.LazyList.from_list()*
 
 file_readlines({fname})		*Vital.Data.LazyList.file_readlines()*
 	Constructs lazy list based on given filename |String| {fname}.
+	This function requires |vimproc|.
+
 	For example, the following line of code will read first 4 lines from
 	the given file "/tmp/a.txt".
 >
