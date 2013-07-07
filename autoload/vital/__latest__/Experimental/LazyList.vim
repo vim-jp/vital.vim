@@ -18,7 +18,6 @@ function! s:from_list(list)
   return [[], {'list': a:list, 'run': function('s:_f_from_list')}]
 endfunction
 
-"return [[], s:L.foldr("[{'value': v:val}, v:memo]", 'nil', a:xs)]
 function! s:_f_from_list() dict
   if len(self.list) == 0
     return [[], {}]
@@ -28,18 +27,20 @@ function! s:_f_from_list() dict
   endif
 endfunction
 
-
-function! s:_thunk_eval_from_memo_and_f() dict
-  echomsg string(['called', self])
-  return []
+function! s:iterate(init, f)
+  let thunk = {
+        \ 'memo': a:init, 'f': a:f,
+        \ 'run': function('s:_f_iterate')}
+  return [[], thunk]
 endfunction
 
-" function! s:iterate(init, f)
-"   let thunk = {
-"         \ 'memo': a:init, 'f': a:f,
-"         \ 'eval': function('s:_thunk_eval_from_memo_and_f')}
-"   return [[], {'thunk': thunk}]
-" endfunction
+function! s:_f_iterate() dict
+  let next_thunk = {
+        \ 'memo': eval(substitute(self.f, 'v:val', self.memo, 'g')),
+        \ 'f': self.f,
+        \ 'run': self.run}
+  return [[self.memo], next_thunk]
+endfunction
 
 function! s:is_empty(xs)
   let [fs, xs] = a:xs
@@ -110,7 +111,7 @@ endfunction
 " 
 " echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
 " echo s:take_while(s:from_list([3, 1, 4, 1]), 'v:val % 2 == 1')
-"echo s:take(s:iterate(0, 'v:val + 1'), 3)
+" echo s:take(s:iterate(0, 'v:val + 1'), 3)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
