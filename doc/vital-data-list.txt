@@ -38,11 +38,23 @@ unshift({list}, {val})			*Vital.Data.List.unshift()*
 cons({val}, {list})			*Vital.Data.List.cons()*
 	Makes new |List| which first item is {val} and the rest of items are
 	|List| {list}.
+	See also: |Vital.Data.List.cons()|
 >
 	cons(1, [2, 3]) == [1, 2, 3]
 	cons(1, []) == [1]
 	cons([1], [2, 3]) == [[1], 2, 3]
 	cons([1], 2) ERROR!
+<
+
+conj({list}, {val})			*Vital.Data.List.conj()*
+	Makes new |List| which first items are |List| {list} and the final
+	item is {val}.
+	See also: |Vital.Data.List.conj()|
+>
+	conj([2, 3], 1) == [2, 3, 1]
+	conj([], 1) == [1]
+	conj([2, 3], [1]) == [2, 3, [1]]
+	conj(2, [1]) ERROR!
 <
 
 uniq({list} [, {expr}])			*Vital.Data.List.uniq()*
