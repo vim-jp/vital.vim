@@ -47,7 +47,7 @@ function! s:is_empty(xs)
 endfunction
 
 function! s:_eval(fs, x)
-  let memo = [a:x]
+  let memo = a:x
   for f in a:fs
     if len(memo)
       " f is like 'v:val < 2 ? [v:val] : []'
@@ -75,11 +75,9 @@ function! s:take(xs, n)
     return []
   else
     let [fs, xs] = a:xs
-    "let [x, xs1] = s:unapply(xs)
-    "let ex = s:_eval(fs, x)
     let [x, xs] = s:_unapply(fs, xs)
     if len(x)
-      return x[0] + s:take([fs, xs], a:n - 1)
+      return x + s:take([fs, xs], a:n - 1)
     else
       return s:take([fs, xs], a:n)
     endif
@@ -106,10 +104,10 @@ endfunction
 "let xs = s:L.filter(xs, 'v:val[1] < 3')
 "echo s:L.take(xs, 3)
 
-"call s:_vital_loaded(g:V)
-"echo s:from_list([3, 1, 4])
-"echo s:take(s:from_list([3, 1, 4]), 2)
-"echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
+" call s:_vital_loaded(g:V)
+" echo s:from_list([3, 1, 4])
+" echo s:take(s:from_list([3, 1, 4]), 2)
+" echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
 " 
 " echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
 " echo s:take_while(s:from_list([3, 1, 4, 1]), 'v:val % 2 == 1')
