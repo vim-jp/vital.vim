@@ -14,15 +14,16 @@ function! s:from_list(xs)
   if len(a:xs) == 0
     return 'nil'
   else
-    return [{'value': a:xs[0], 'fs': []}, s:from_list(a:xs[1 :])]
+    return [[], [{'value': a:xs[0]}, s:from_list(a:xs[1 :])]]
   endif
 endfunction
 
 function! s:is_empty(xs)
-  return s:V.is_string(a:xs) && a:xs ==# 'nil'
+  let [fs, xs] = a:xs
+  return s:V.is_string(xs) && xs ==# 'nil'
 endfunction
 
-function! s:_eval(x)
+function! s:_eval(fs, x)
   if has_key(a:x, 'thunk')
     let x = a:x.thunk()
   elseif has_key(a:x, 'value')
@@ -31,7 +32,7 @@ function! s:_eval(x)
     throw 'must not happen'
   endif
   let memo = [x]
-  for f in a:x.fs
+  for f in a:fs
     if len(memo)
       " f is like 'v:val < 2 ? [v:val] : []'
       let expr = substitute(f, 'v:val', memo[0], 'g')
@@ -47,20 +48,22 @@ function! s:unapply(xs)
 endfunction
 
 function! s:filter(xs, f)
+  let [fs, xs] = a:xs
   let f = printf("%s ? [v:val] : []", a:f)
-  if has_key(a:xs[0], 'thunk')
-    return [{'thunk': a:xs[0].thunk, 'fs': s:L.conj(a:xs[0].fs, f)}, a:xs[1]]
+  if has_key(xs[0], 'thunk')
+    return [s:L.conj(fs, f), [{'thunk': xs[0].thunk}, xs[1]]]
   else
-    return [{'value': a:xs[0].value, 'fs': s:L.conj(a:xs[0].fs, f)}, a:xs[1]]
+    return [s:L.conj(fs, f), [{'value': xs[0].value}, xs[1]]]
   end
 endfunction
 
 function! s:take(xs, n)
-  if a:n == 0 || s:is_empty(a:xs)
+  let [fs, xs] = a:xs
+  if a:n == 0 || s:is_empty(xs)
     return []
   else
-    let [x, xs] = s:unapply(a:xs)
-    let ex = s:_eval(x)
+    let [x, xs] = s:unapply(xs)
+    let ex = s:_eval(fs, x)
     if len(ex)
       return ex + s:take(xs, a:n - 1)
     else
@@ -78,8 +81,8 @@ endfunction
 " echo s:from_list([3, 1, 4])
 " echo s:take(s:from_list([3, 1, 4]), 2)
 " echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
-" 
-" echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
+
+echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
