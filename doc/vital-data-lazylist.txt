@@ -36,6 +36,17 @@ FUNCTIONS			*Vital.Data.LazyList-functions*
 from_list({list})		*Vital.Data.LazyList.from_list()*
 	Constructs lazy list based on given |List| {list}.
 
+iterate({init}, {f})		*Vital.Data.LazyList.iterate()*
+	Constructs lazy list based on given initial value {init} and a
+	function {f} to make new item of lazy list based on previous value,
+	described in |String|.
+>
+	L.take(L.iterate(0, 'v:val + 1'), 3) == [0, 1, 2]
+
+	L.take(L.filter(L.iterate(0, 'v:val + 1'), 'v:val % 2 == 0'), 3)
+	\ == [0, 2, 4]
+<
+
 file_readlines({fname})		*Vital.Data.LazyList.file_readlines()*
 	Constructs lazy list based on given filename |String| {fname}.
 	This function requires |vimproc|.
@@ -45,6 +56,12 @@ file_readlines({fname})		*Vital.Data.LazyList.file_readlines()*
 >
 	L.take(L.file_readlines('/tmp/a.txt'), 4)
 <
+
+take({xs}, {n})			*Vital.Data.LazyList.take()*
+	De-constructs from lazy list {xs} to |List|, but the length will be at
+	most {n}.
+	See other functions such as |Vital.Data.LazyList.iterate()| for sample
+	use case.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
