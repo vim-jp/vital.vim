@@ -46,11 +46,7 @@ endfunction
 function! s:filter(xs, f)
   let [fs, xs] = a:xs
   let f = printf("%s ? [v:val] : []", a:f)
-  if has_key(xs[0], 'thunk')
-    return [s:L.conj(fs, f), xs]
-  else
-    return [s:L.conj(fs, f), xs]
-  end
+  return [s:L.conj(fs, f), xs]
 endfunction
 
 function! s:take(xs, n)
