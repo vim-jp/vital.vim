@@ -9,6 +9,15 @@ function! s:modulo(n, m)
   return a:n + (-(a:n + (0 < a:m ? d : -d)) / a:m + d) * a:m
 endfunction
 
+" TODO: spec and doc
+function! s:fib(n)
+  let [a, b, i] = [0, 1, 0]
+  while i < a:n
+    let [a, b, i] = [b, a + b, i + 1]
+  endwhile
+  return a
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
