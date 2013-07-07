@@ -24,6 +24,10 @@ function! s:cons(x, xs)
   return [a:x] + a:xs
 endfunction
 
+function! s:conj(xs, x)
+  return a:xs + [a:x]
+endfunction
+
 " Removes duplicates from a list.
 function! s:uniq(list, ...)
   let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)
