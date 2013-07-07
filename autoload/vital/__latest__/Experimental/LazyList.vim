@@ -89,10 +89,9 @@ function! s:take_while(xs, f)
     return []
   else
     let [fs, xs] = a:xs
-    let [x, xs1] = s:_unapply(xs)
-    let ex = s:_eval(fs, x)
-    if len(ex) && eval(substitute(a:f, 'v:val', ex[0], 'g'))
-      return ex + s:take_while([fs, xs1], a:f)
+    let [x, xs1] = s:_unapply(fs, xs)
+    if len(x) && eval(substitute(a:f, 'v:val', x[0], 'g'))
+      return x + s:take_while([fs, xs1], a:f)
     else
       return []
     endif
