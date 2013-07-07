@@ -30,11 +30,29 @@ function! s:_eval(x)
   else
     throw 'must not happen'
   endif
-  return s:L.foldl('v:val(v:memo)', [x], a:x.fs)
+  let memo = [x]
+  for f in a:x.fs
+    if len(memo)
+      " f is like 'v:val < 2 ? [v:val] : []'
+      let expr = substitute(f, 'v:val', memo[0], 'g')
+      unlet memo
+      let memo = eval(expr)
+    endif
+  endfor
+  return memo
 endfunction
 
 function! s:unapply(xs)
   return [a:xs[0], a:xs[1]]
+endfunction
+
+function! s:filter(xs, f)
+  let f = printf("%s ? [v:val] : []", a:f)
+  if has_key(a:xs[0], 'thunk')
+    return [{'thunk': a:xs[0].thunk, 'fs': s:L.conj(a:xs[0].fs, f)}, a:xs[1]]
+  else
+    return [{'value': a:xs[0].value, 'fs': s:L.conj(a:xs[0].fs, f)}, a:xs[1]]
+  end
 endfunction
 
 function! s:take(xs, n)
@@ -56,7 +74,7 @@ echo s:from_list([3, 1, 4])
 echo s:take(s:from_list([3, 1, 4]), 2)
 echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
 
-"echo s:take(s:filter(s:from_list([3, 1, 4], 'v:val < 2'), 2), 1)
+echo s:take(s:filter(s:from_list([3, 1, 4]), 'v:val < 2'), 2)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
