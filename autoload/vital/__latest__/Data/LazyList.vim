@@ -160,6 +160,29 @@ function! s:rest(xs, default)
   endif
 endfunction
 
+function! s:drop(n, xs)
+  if s:is_empty(a:xs)
+    return []
+  else
+    let [fs, xs] = a:xs
+    let memo = xs.memo
+    for i in range(1,a:n)
+      let memo = s:_eval([ xs.f ], memo)
+    endfor
+    let new_xs = deepcopy(a:xs)
+    let new_xs[1].memo = memo
+    return new_xs
+  endif
+endfunction
+
+
+" echo s:L.take(10,         s:L.iterate(0, 'v:val + 1') )
+" [    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ]
+" echo s:L.take(10,s:drop(3,s:L.iterate(0, 'v:val + 1')))
+" [    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, ]
+
+
+ 
 "call s:_vital_loaded(g:V)
 "let xs = s:file_readlines('/tmp/a.txt')
 "let xs = s:map(xs, 'split(v:val, ":")')
