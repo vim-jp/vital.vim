@@ -60,7 +60,7 @@ endfunction
 
 function! s:is_empty(xs)
   let [fs, xs] = a:xs
-  return s:V.is_string(xs) && xs ==# 'nil' || len(xs) == 0
+  return xs == {}
 endfunction
 
 function! s:_eval(fs, x)
@@ -142,9 +142,8 @@ endfunction
 " echo s:take(3, s:filter(s:iterate(0, 'v:val + 1'), 'v:val % 2 == 0'))
 " echo s:take(4, s:file_readlines('/tmp/a.txt'))
 " echo s:take(3, s:map(s:iterate(0, 'v:val + 1'), 'v:val * 2'))
-"echo s:take(1, s:filter(s:from_list([3, 1, 4]), '0'))
-"echo s:first(s:from_list([3, 1, 4]), 'nil')
-"echo s:first(s:filter(s:from_list([3, 1, 4]), '0'), 'nil')
+" echo s:first(s:from_list([3, 1, 4]), 'nil')
+" echo s:first(s:filter(s:from_list([3, 1, 4]), '0'), 'nil')
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
