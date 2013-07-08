@@ -126,6 +126,16 @@ function! s:first(xs, default)
   return len(xs) == 0 ? a:default : xs[0]
 endfunction
 
+function! s:rest(xs, default)
+  if s:is_empty(a:xs)
+    return a:default
+  else
+    let [fs, xs] = a:xs
+    let [_, xs] = s:_unapply(fs, xs)
+    return [fs, xs]
+  endif
+endfunction
+
 "call s:_vital_loaded(g:V)
 "let xs = s:file_readlines('/tmp/a.txt')
 "let xs = s:map(xs, 'split(v:val, ":")')
@@ -144,6 +154,8 @@ endfunction
 " echo s:take(3, s:map(s:iterate(0, 'v:val + 1'), 'v:val * 2'))
 " echo s:first(s:from_list([3, 1, 4]), 'nil')
 " echo s:first(s:filter(s:from_list([3, 1, 4]), '0'), 'nil')
+" echo s:rest(s:from_list([3, 1, 4]), s:from_list([]))
+" echo s:first(s:rest(s:from_list([3, 1, 4]), s:from_list([])), 'nil')
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
