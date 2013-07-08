@@ -64,7 +64,7 @@ take({n}, {xs})			*Vital.Data.LazyList.take()*
 
 	You may get confused by the order of arguments, but it's on purpose.
 
-take({xs}, {ys})		*Vital.Data.LazyList.zip()*
+zip({xs}, {ys})			*Vital.Data.LazyList.zip()*
 	Constructs a new lazy list based on given 2 lazy lists {xs} and {ys}.
 >
 	let xs = s:from_list([3, 1, 4])
