@@ -9,7 +9,8 @@ INTRODUCTION			|Vital.Data.LazyList-introduction|
   USAGE				|Vital.Data.LazyList-usage|
 INTERFACE			|Vital.Data.LazyList-interface|
   FUNCTIONS			  |Vital.Data.LazyList-functions|
-CONFIG				|Vital.Data.LazyList-config|
+INTERNAL			|Vital.Data.LazyList-internal|
+  DATA STRUCTURE		  |Vital.Data.LazyList-datastructure|
 
 
 
@@ -64,6 +65,30 @@ take({n}, {xs})			*Vital.Data.LazyList.take()*
 	use case.
 
 	You may get confused by the order of arguments, but it's on purpose.
+
+==============================================================================
+INTERNAL			*Vital.Data.LazyList-internal*
+
+------------------------------------------------------------------------------
+DATA STRUCTURE			*Vital.Data.LazyList-datastructure*
+
+	This section is only for deep understanding of lazy list
+	implementation just for  debugging / developing this library itself.
+	Any application code should not depend on its internal data structure
+	since vital developers may make changes without explicitly telling.
+
+>
+	s:from_list([3, 1, 4]) ==
+	\ [[], {'list': [3, 1, 4], 'run': function('<SNR>385__f_from_list')}]
+<
+
+	A lazy list is a tuple (a 2-item |List|.) The left side is registered
+	functions to apply when you take items from lazy list. Each item is a
+	string which has "v:val" that returns an empty list or a list which
+	only has 1 item if you |eval()| it. The right side is a |Dict| which
+	either at least has "run" key where the value is a |Funcref| or an
+	empty dict {} which means the end of lazy list. This is for generating
+	an item and upcoming uncalculated next items.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
