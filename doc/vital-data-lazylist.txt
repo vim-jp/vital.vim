@@ -64,6 +64,15 @@ take({n}, {xs})			*Vital.Data.LazyList.take()*
 
 	You may get confused by the order of arguments, but it's on purpose.
 
+take({xs}, {ys})		*Vital.Data.LazyList.zip()*
+	Constructs a new lazy list based on given 2 lazy lists {xs} and {ys}.
+>
+	let xs = s:from_list([3, 1, 4])
+	let ys = s:from_list(['a', 'b', 'c'])
+	L.take(3, L.zip(s:map(xs, 'v:val + 1'), ys))
+	\ == [[4, 'a'], [2, 'b'], [5, 'c']]
+<
+
 ==============================================================================
 INTERNAL			*Vital.Data.LazyList-internal*
 
