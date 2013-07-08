@@ -57,11 +57,13 @@ file_readlines({fname})		*Vital.Data.LazyList.file_readlines()*
 	L.take(4, L.file_readlines('/tmp/a.txt'))
 <
 
-take({xs}, {n})			*Vital.Data.LazyList.take()*
+take({n}, {xs})			*Vital.Data.LazyList.take()*
 	De-constructs from lazy list {xs} to |List|, but the length will be at
 	most {n}.
 	See other functions such as |Vital.Data.LazyList.iterate()| for sample
 	use case.
+
+	You may get confused by the order of arguments, but it's on purpose.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
