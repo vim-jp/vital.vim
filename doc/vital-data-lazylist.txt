@@ -12,8 +12,6 @@ INTERFACE			|Vital.Data.LazyList-interface|
 INTERNAL			|Vital.Data.LazyList-internal|
   DATA STRUCTURE		  |Vital.Data.LazyList-datastructure|
 
-
-
 ==============================================================================
 INTRODUCTION			*Vital.Data.LazyList-introduction*
 
