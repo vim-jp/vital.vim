@@ -121,6 +121,11 @@ function! s:take_while(xs, f)
   endif
 endfunction
 
+function! s:first(xs, default)
+  let xs = s:take(1, a:xs)
+  return len(xs) == 0 ? a:default : xs[0]
+endfunction
+
 "let xs = s:L.file_readlines('/tmp/a.txt')
 "let xs = s:L.map(xs, 'split(v:val, ":")')
 "let xs = s:L.filter(xs, 'v:val[1] < 3')
@@ -137,6 +142,9 @@ endfunction
 " echo s:take(3, s:filter(s:iterate(0, 'v:val + 1'), 'v:val % 2 == 0'))
 " echo s:take(4, s:file_readlines('/tmp/a.txt'))
 " echo s:take(3, s:map(s:iterate(0, 'v:val + 1'), 'v:val * 2'))
+"echo s:filter(s:from_list([3, 1, 4]), '0')
+"echo s:first(s:from_list([3, 1, 4]), 'nil')
+"echo s:first(s:filter(s:from_list([3, 1, 4]), '0'), 'nil')
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
