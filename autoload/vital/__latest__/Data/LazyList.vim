@@ -87,6 +87,12 @@ function! s:filter(xs, f)
   return [s:L.conj(fs, f), xs]
 endfunction
 
+function! s:map(xs, f)
+  let [fs, xs] = a:xs
+  let f = printf('[%s]', a:f)
+  return [s:L.conj(fs, f), xs]
+endfunction
+
 function! s:take(xs, n)
   if a:n == 0 || s:is_empty(a:xs)
     return []
@@ -130,6 +136,7 @@ endfunction
 " echo s:take(s:iterate(0, 'v:val + 1'), 3)
 " echo s:take(s:filter(s:iterate(0, 'v:val + 1'), 'v:val % 2 == 0'), 3)
 " echo s:take(s:file_readlines('/tmp/a.txt'), 4)
+" echo s:take(s:map(s:iterate(0, 'v:val + 1'), 'v:val * 2'), 3)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
