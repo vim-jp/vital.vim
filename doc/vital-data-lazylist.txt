@@ -24,7 +24,7 @@ USAGE				*Vital.Data.LazyList-usage*
 	let xs = s:L.file_readlines('/tmp/a.txt')
 	let xs = s:L.map(xs, 'split(v:val, ":")')
 	let xs = s:L.filter(xs, 'v:val[1] < 3')
-	echo s:L.take(xs, 3)
+	echo s:L.take(3 xs)
 <
 
 ==============================================================================
@@ -41,9 +41,9 @@ iterate({init}, {f})		*Vital.Data.LazyList.iterate()*
 	function {f} to make new item of lazy list based on previous value,
 	described in |String|.
 >
-	L.take(L.iterate(0, 'v:val + 1'), 3) == [0, 1, 2]
+	L.take(3, L.iterate(0, 'v:val + 1')) == [0, 1, 2]
 
-	L.take(L.filter(L.iterate(0, 'v:val + 1'), 'v:val % 2 == 0'), 3)
+	L.take(3, L.filter(L.iterate(0, 'v:val + 1'), 'v:val % 2 == 0'))
 	\ == [0, 2, 4]
 <
 
@@ -54,7 +54,7 @@ file_readlines({fname})		*Vital.Data.LazyList.file_readlines()*
 	For example, the following line of code will read first 4 lines from
 	the given file "/tmp/a.txt".
 >
-	L.take(L.file_readlines('/tmp/a.txt'), 4)
+	L.take(4, L.file_readlines('/tmp/a.txt'))
 <
 
 take({xs}, {n})			*Vital.Data.LazyList.take()*

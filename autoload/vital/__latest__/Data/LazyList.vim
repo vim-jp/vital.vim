@@ -93,16 +93,16 @@ function! s:map(xs, f)
   return [s:L.conj(fs, f), xs]
 endfunction
 
-function! s:take(xs, n)
+function! s:take(n, xs)
   if a:n == 0 || s:is_empty(a:xs)
     return []
   else
     let [fs, xs] = a:xs
     let [x, xs] = s:_unapply(fs, xs)
     if len(x)
-      return x + s:take([fs, xs], a:n - 1)
+      return x + s:take(a:n - 1, [fs, xs])
     else
-      return s:take([fs, xs], a:n)
+      return s:take(a:n, [fs, xs])
     endif
   endif
 endfunction
@@ -124,19 +124,19 @@ endfunction
 "let xs = s:L.file_readlines('/tmp/a.txt')
 "let xs = s:L.map(xs, 'split(v:val, ":")')
 "let xs = s:L.filter(xs, 'v:val[1] < 3')
-"echo s:L.take(xs, 3)
+"echo s:L.take(3, xs)
 
 " call s:_vital_loaded(g:V)
 " echo s:from_list([3, 1, 4])
-" echo s:take(s:from_list([3, 1, 4]), 2)
-" echo s:take(s:from_list([3, 1, 4]), 2) == [3, 1]
+" echo s:take(2, s:from_list([3, 1, 4]))
+" echo s:take(2, s:from_list([3, 1, 4])) == [3, 1]
 " 
-" echo s:take(s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'), 2)
+" echo s:take(2, s:filter(s:from_list([3, 1, 4, 0]), 'v:val < 2'))
 " echo s:take_while(s:from_list([3, 1, 4, 1]), 'v:val % 2 == 1')
-" echo s:take(s:iterate(0, 'v:val + 1'), 3)
-" echo s:take(s:filter(s:iterate(0, 'v:val + 1'), 'v:val % 2 == 0'), 3)
-" echo s:take(s:file_readlines('/tmp/a.txt'), 4)
-" echo s:take(s:map(s:iterate(0, 'v:val + 1'), 'v:val * 2'), 3)
+" echo s:take(3, s:iterate(0, 'v:val + 1'))
+" echo s:take(3, s:filter(s:iterate(0, 'v:val + 1'), 'v:val % 2 == 0'))
+" echo s:take(4, s:file_readlines('/tmp/a.txt'))
+" echo s:take(3, s:map(s:iterate(0, 'v:val + 1'), 'v:val * 2'))
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
