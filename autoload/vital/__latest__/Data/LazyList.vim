@@ -58,6 +58,30 @@ function! s:_f_iterate() dict
   return [[self.memo], next_thunk]
 endfunction
 
+function! s:zip(xs, ys)
+  let [xfs, xs] = a:xs
+  let [yfs, ys] = a:ys
+  let thunk = {
+        \ 'xfs': xfs, 'yfs': yfs,
+        \ 'xs': xs, 'ys': ys,
+        \ 'run': function('s:_f_zip')}
+  return [[], thunk]
+endfunction
+
+function! s:_f_zip() dict
+  let [x, xs] = s:_unapply(self.xfs, self.xs)
+  let [y, ys] = s:_unapply(self.yfs, self.ys)
+  if len(x) == 0 || len(y) == 0
+    return [[], {}]
+  else
+    let next_thunk = {
+          \ 'xfs': self.xfs, 'yfs': self.yfs,
+          \ 'xs': xs, 'ys': ys,
+          \ 'run': self.run}
+    return [[[x[0], y[0]]], next_thunk]
+  endif
+endfunction
+
 function! s:is_empty(xs)
   let [fs, xs] = a:xs
   return xs == {}
@@ -143,6 +167,9 @@ endfunction
 "echo s:take(3, xs)
 
 " echo s:from_list([3, 1, 4])
+"let xs = s:from_list([3, 1, 4])
+"let ys = s:from_list(['a', 'b', 'c'])
+"echo s:take(3, s:zip(s:map(xs, 'v:val + 1'), ys))
 " echo s:take(2, s:from_list([3, 1, 4]))
 " echo s:take(2, s:from_list([3, 1, 4])) == [3, 1]
 " 
