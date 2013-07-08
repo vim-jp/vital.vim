@@ -68,7 +68,7 @@ function! s:_eval(fs, x)
   for f in a:fs
     if len(memo)
       " f is like 'v:val < 2 ? [v:val] : []'
-      let expr = substitute(f, 'v:val', memo[0], 'g')
+      let expr = substitute(f, 'v:val', string(memo[0]), 'g')
       unlet memo
       let memo = eval(expr)
     endif
@@ -126,12 +126,12 @@ function! s:first(xs, default)
   return len(xs) == 0 ? a:default : xs[0]
 endfunction
 
-"let xs = s:L.file_readlines('/tmp/a.txt')
-"let xs = s:L.map(xs, 'split(v:val, ":")')
-"let xs = s:L.filter(xs, 'v:val[1] < 3')
-"echo s:L.take(3, xs)
+"call s:_vital_loaded(g:V)
+"let xs = s:file_readlines('/tmp/a.txt')
+"let xs = s:map(xs, 'split(v:val, ":")')
+"let xs = s:filter(xs, 'v:val[1] < 3')
+"echo s:take(3, xs)
 
-" call s:_vital_loaded(g:V)
 " echo s:from_list([3, 1, 4])
 " echo s:take(2, s:from_list([3, 1, 4]))
 " echo s:take(2, s:from_list([3, 1, 4])) == [3, 1]
