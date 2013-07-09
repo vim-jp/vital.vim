@@ -131,7 +131,7 @@ endfunction
 " v:val is used in {expr}
 " FIXME: -0x80000000 == 0x80000000
 function! s:min_by(list, expr)
-  return s:max(a:list, '-(' . a:expr . ')')
+  return s:max_by(a:list, '-(' . a:expr . ')')
 endfunction
 
 " Returns List of character sequence between [a:from, a:to]
@@ -251,10 +251,34 @@ function! s:zip(...)
   return map(range(min(map(copy(a:000), 'len(v:val)'))), "map(copy(a:000), 'v:val['.v:val.']')")
 endfunction
 
+" similar to zip(), but goes until the longer one.
+function! s:zip_fill(xs, ys, filler)
+  if empty(a:xs) && empty(a:ys)
+    return []
+  elseif empty(a:ys)
+    return s:cons([a:xs[0], a:filler], s:zip_fill(a:xs[1 :], [], a:filler))
+  elseif empty(a:xs)
+    return s:cons([a:filler, a:ys[0]], s:zip_fill([], a:ys[1 :], a:filler))
+  else
+    return s:cons([a:xs[0], a:ys[0]], s:zip_fill(a:xs[1 :], a:ys[1: ], a:filler))
+  endif
+endfunction
+
 " Inspired by Ruby's with_index method.
 function! s:with_index(list, ...)
   let base = a:0 > 0 ? a:1 : 0
   return s:zip(a:list, range(base, len(a:list)+base-1))
+endfunction
+
+" similar to Ruby's detect or Haskell's find.
+" TODO spec and doc
+function! s:find(list, default, f)
+  for x in a:list
+    if eval(substitute(a:f, 'v:val', string(x), 'g'))
+      return x
+    endif
+  endfor
+  return a:default
 endfunction
 
 let &cpo = s:save_cpo
