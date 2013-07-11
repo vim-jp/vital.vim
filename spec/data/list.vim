@@ -278,8 +278,8 @@ Context Data.List.flatten()
     Should g:L.flatten(['a', [[['b']], 'c']]) ==# ['a', 'b', 'c']
     Should g:L.flatten(['a', [[['b']], 'c']], 1) ==# ['a', [['b']], 'c']
     Should g:L.flatten([[['a']], [[['b']], 'c']], 1) ==# [['a'], [['b']], 'c']
-    Should g:L.flatten([[['a']], [[['b']], 'c']], 2) ==# ['a', [['b']], 'c']
-    Should g:L.flatten([[['a']], [[['b']], 'c']], 3) ==# ['a', ['b'], 'c']
+    Should g:L.flatten([[['a']], [[['b']], 'c']], 2) ==# ['a', ['b'], 'c']
+    Should g:L.flatten([[['a']], [[['b']], 'c']], 3) ==# ['a', 'b', 'c']
     Should g:L.flatten([[['a']], [[['b']], 'c']], 4) ==# ['a', 'b', 'c']
     Should g:L.flatten([[['a']], [[['b']], 'c']], 10) ==# ['a', 'b', 'c']
   End
