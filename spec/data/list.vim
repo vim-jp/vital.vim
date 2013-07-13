@@ -4,7 +4,13 @@ let g:L = vital#of('vital').import('Data.List')
 
 Context Data.List.pop()
   It removes the last element from a list and returns that element
-    Should 3 == g:L.pop([1, 2, 3])
+    let a = [1,2,3]
+    Should 3 == g:L.pop(a)
+    Should [1, 2] == a
+    Should 2 == g:L.pop(a)
+    Should [1] == a
+    Should 1 == g:L.pop(a)
+    Should [] == a
     Should 9 == g:L.pop(range(10))
   End
   It causes an error when the list is empty
@@ -19,6 +25,11 @@ End
 
 Context Data.List.push()
   It appends an element to a list and returns the list itself
+    let a = []
+    Should [1] == g:L.push(a, 1)
+    Should [1] == a
+    Should [1,2] == g:L.push(a, 2)
+    Should [1,2] == a
     Should [1, 2, 3, 4] == g:L.push([1, 2, 3], 4)
     Should [7, 8, 9, 10] == g:L.push(range(7, 9), 10)
   End
@@ -26,7 +37,13 @@ End
 
 Context Data.List.shift()
   It removes the first element from a list and returns that element
-    Should 1 == g:L.shift([1, 2, 3])
+    let a = [1,2,3]
+    Should 1 == g:L.shift(a)
+    Should [2,3] == a
+    Should 2 == g:L.shift(a)
+    Should [3] == a
+    Should 3 == g:L.shift(a)
+    Should [] == a
     Should 0 == g:L.shift(range(10))
   End
   It causes an error when the list is empty
@@ -41,6 +58,11 @@ End
 
 Context Data.List.unshift()
   It inserts an element to the head of a list and returns the list itself
+    let a = []
+    Should [1] == g:L.unshift(a, 1)
+    Should [1] == a
+    Should [2,1] == g:L.unshift(a, 2)
+    Should [2,1] == a
     Should [4, 1, 2, 3] == g:L.unshift([1, 2, 3], 4)
     Should [10, 7, 8, 9] == g:L.unshift(range(7, 9), 10)
   End
@@ -48,6 +70,12 @@ End
 
 Context Data.List.cons()
   It makes new list which first item is {val} and the rest of items are {list}.
+    let a = []
+    Should g:L.cons(1, a) == [1]
+    Should [] == a
+    let a = [1]
+    Should g:L.cons(2, a) == [2, 1]
+    Should [1] == a
     Should g:L.cons(1, [2, 3]) == [1, 2, 3]
     Should g:L.cons(1, []) == [1]
     Should g:L.cons([1], [2, 3]) == [[1], 2, 3]
@@ -56,7 +84,9 @@ End
 
 Context Data.List.uniq()
   It makes a list unique
-    Should ['vim', 'emacs'] == g:L.uniq(['vim', 'emacs', 'vim', 'vim'])
+    let a = ['vim', 'emacs', 'vim', 'vim']
+    Should ['vim', 'emacs'] == g:L.uniq(a)
+    Should a == ['vim', 'emacs', 'vim', 'vim']
     Should [1.23, [1]] == g:L.uniq([1.23, [1], [1], 1.23])
     Should [{'a': 0, 'b': 1}] == g:L.uniq([{'a': 0, 'b': 1}, {'b': 1, 'a': 0}])
   End
@@ -77,16 +107,18 @@ End
 Context Data.List.clear()
   It clears the all items of a list
     let list = [1, 2, 3]
-    call g:L.clear(list)
+    Should [] == g:L.clear(list)
     Should list == []
   End
   It returns the passed list directly
     let list = [1, 2, 3]
     Should g:L.clear(list) is list
+    Should list == []
   End
   It has no effects for empty list
     let list = []
     Should g:L.clear(list) == []
+    Should list == []
   End
 End
 
@@ -278,8 +310,8 @@ Context Data.List.flatten()
     Should g:L.flatten(['a', [[['b']], 'c']]) ==# ['a', 'b', 'c']
     Should g:L.flatten(['a', [[['b']], 'c']], 1) ==# ['a', [['b']], 'c']
     Should g:L.flatten([[['a']], [[['b']], 'c']], 1) ==# [['a'], [['b']], 'c']
-    Should g:L.flatten([[['a']], [[['b']], 'c']], 2) ==# ['a', [['b']], 'c']
-    Should g:L.flatten([[['a']], [[['b']], 'c']], 3) ==# ['a', ['b'], 'c']
+    Should g:L.flatten([[['a']], [[['b']], 'c']], 2) ==# ['a', ['b'], 'c']
+    Should g:L.flatten([[['a']], [[['b']], 'c']], 3) ==# ['a', 'b', 'c']
     Should g:L.flatten([[['a']], [[['b']], 'c']], 4) ==# ['a', 'b', 'c']
     Should g:L.flatten([[['a']], [[['b']], 'c']], 10) ==# ['a', 'b', 'c']
   End
