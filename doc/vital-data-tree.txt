@@ -1,5 +1,7 @@
 *vital-data-tree.txt*		tree utilities library.
 
+Maintainer: rbtnn   <naru123456789@gmail.com>
+
 ==============================================================================
 CONTENTS				*Vital.Data.Tree-contents*
 

@@ -1,5 +1,8 @@
 *vital-system-file.txt*		filesystem utilities library.
 
+Maintainer: Shougo  <Shougo.Matsu@gmail.com>
+            tyru    <tyru.exe@gmail.com>
+
 ==============================================================================
 CONTENTS				*Vital.System.File-contents*
 

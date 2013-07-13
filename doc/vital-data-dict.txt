@@ -1,5 +1,7 @@
 *Vital.Data.Dict.txt*		dictionary utilities library.
 
+Maintainer: thinca  <thinca+vim@gmail.com>
+
 ==============================================================================
 CONTENTS				*Vital.Data.Dict-contents*
 

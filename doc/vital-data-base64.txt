@@ -1,5 +1,7 @@
 *vital-data-base64.txt*		base64 utilities library.
 
+Maintainer: mattn   <mattn.jp@gmail.com>
+
 ==============================================================================
 CONTENTS				*Vital.Data.Base64-contents*
 

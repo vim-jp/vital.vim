@@ -1,5 +1,7 @@
 *vital-bitwise.txt*	bitwise operators.
 
+Maintainer: thinca  <thinca+vim@gmail.com>
+
 ==============================================================================
 CONTENTS					*Vital.Bitwise-contents*
 
