@@ -195,7 +195,7 @@ End
 
 Context Data.String.dstring()
   It wraps the result string not with single-quotes but with double-quotes.
-    Should g:S.dstring(123) == '123'
+    Should g:S.dstring(123) == '"123"'
     Should g:S.dstring('abc') == '"abc"'
     Should g:S.dstring("abc") == '"abc"'
   End
