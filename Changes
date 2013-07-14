@@ -1,3 +1,5 @@
+e5d291c
+	Data.String: replace_once() -> replace_first(). Just renamed.
 e4e622e
 	Data.List: max() -> max_by(), min() -> min_by(). Just renamed.
 619e9ea
