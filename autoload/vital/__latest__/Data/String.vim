@@ -104,7 +104,7 @@ function! s:split3(expr, pattern)
 endfunction
 
 " Slices into strings determines the number of substrings.
-" e.g.: s:splitn("neo compl cache", 2, '\s') returns ['neo', 'compl cache']
+" e.g.: s:nsplit("neo compl cache", 2, '\s') returns ['neo', 'compl cache']
 function! s:nsplit(expr, n, ...)
   let pattern = get(a:000, 0, '\s')
   let keepempty = get(a:000, 1, 1)
