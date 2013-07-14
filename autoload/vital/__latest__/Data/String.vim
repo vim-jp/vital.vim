@@ -213,7 +213,7 @@ endfunction
 " If a ==# b, returns -1.
 " If a !=# b, returns first index of diffrent character.
 function! s:diffidx(a, b)
-  return return a:a ==# a:b ? -1 : s:common_head([a:a, a:b])
+  return a:a ==# a:b ? -1 : strlen(s:common_head([a:a, a:b]))
 endfunction
 
 function! s:substitute_last(expr, pat, sub)
