@@ -237,16 +237,7 @@ endfunction
 " If a ==# b, returns -1.
 " If a !=# b, returns first index of diffrent character.
 function! s:diffidx(a, b)
-  let [a, b] = [split(a:a, '\zs'), split(a:b, '\zs')]
-  let [al, bl] = [len(a), len(b)]
-  let l = max([al, bl])
-  for i in range(l)
-    " if `i` is out of range, a[i] returns empty string.
-    if i >= al || i >= bl || a[i] !=# b[i]
-      return i > 0 ? strlen(join(a[:i-1], '')) : 0
-    endif
-  endfor
-  return -1
+  return return a:a ==# a:b ? -1 : s:common_head([a:a, a:b])
 endfunction
 
 function! s:substitute_last(expr, pat, sub)
