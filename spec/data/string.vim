@@ -77,6 +77,8 @@ Context Data.String.scan()
     Should g:S.scan('neo compl cache', 'c\w\+') == ['compl', 'cache']
     Should g:S.scan('[](){}', '[{()}]') == ['(', ')', '{', '}']
     Should g:S.scan('string', '.*') == ['string']
+    Should g:S.scan('string', '.\zs') == ['', '', '', '', '', '']
+    Should g:S.scan('string', '') == ['', '', '', '', '', '', '']
   End
 End
 

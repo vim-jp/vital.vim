@@ -31,15 +31,7 @@ endfunction
 
 function! s:scan(str, pattern)
   let list = []
-  let pos = 0
-  let len = len(a:str)
-  while 0 <= pos && pos < len
-    let matched = matchstr(a:str, a:pattern, pos)
-    let pos = matchend(a:str, a:pattern, pos)
-    if !empty(matched)
-      call add(list, matched)
-    endif
-  endwhile
+  call substitute(a:str, a:pattern, '\=add(list, submatch(0)) == [] ? "" : ""', 'g')
   return list
 endfunction
 
