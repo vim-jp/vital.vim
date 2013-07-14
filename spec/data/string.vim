@@ -21,8 +21,7 @@ Context Data.String.replace()
     Should g:S.replace('foobar', 'ar', '') ==# 'foob'
     Should g:S.replace('', 'foo', '') ==# ''
     Should g:S.replace('foobar', '', '') ==# 'foobar'
-    " FIXME: this causes infinite loop
-    " Should g:S.replace('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
+    Should g:S.replace('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
     Should g:S.replace('foobar', 'bar', 'baz') ==# 'foobaz'
 
     " Specific tests for Data.String.replace()
@@ -35,6 +34,11 @@ Context Data.String.replace()
     Should g:S.replace('mimic', 'mi', '') ==# 'c'
     Should g:S.replace('mimic', 'mi', 'm') ==# 'mmc'
     Should g:S.replace('mimic', 'mi', 'mm') ==# 'mmmmc'
+    Should g:S.replace('\(.*\)', '.', '') ==# '\(*\)'
+    Should g:S.replace('\v.\m.\M.', '.', '') ==# '\v\m\M'
+    Should g:S.replace('\v.\m.\M.', '\', '') ==# 'v.m.M.'
+    Should g:S.replace('\(.*\)', '.', '\0') ==# '\(\0*\)'
+    Should g:S.replace('\(.*\)', '.', '\=submatch(1)') ==# '\(\=submatch(1)*\)'
   End
 End
 
@@ -47,8 +51,7 @@ Context Data.String.replace_once()
     Should g:S.replace_once('foobar', 'ar', '') ==# 'foob'
     Should g:S.replace_once('', 'foo', '') ==# ''
     Should g:S.replace_once('foobar', '', '') ==# 'foobar'
-    " FIXME: this causes infinite loop
-    " Should g:S.replace_once('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
+    Should g:S.replace_once('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
     Should g:S.replace_once('foobar', 'bar', 'baz') ==# 'foobaz'
 
     " Specific tests for Data.String.replace_once()
@@ -61,6 +64,11 @@ Context Data.String.replace_once()
     Should g:S.replace_once('mimic', 'mi', '') ==# 'mic'
     Should g:S.replace_once('mimic', 'mi', 'm') ==# 'mmic'
     Should g:S.replace_once('mimic', 'mi', 'mm') ==# 'mmmic'
+    Should g:S.replace_once('\(.*\)', '.', '') ==# '\(*\)'
+    Should g:S.replace_once('\v.\m.\M.', '.', '') ==# '\v\m.\M.'
+    Should g:S.replace_once('\v.\m.\M.', '\', '') ==# 'v.\m.\M.'
+    Should g:S.replace_once('\(.*\)', '.', '\0') ==# '\(\0*\)'
+    Should g:S.replace_once('\(.*\)', '.', '\=submatch(1)') ==# '\(\=submatch(1)*\)'
   End
 End
 

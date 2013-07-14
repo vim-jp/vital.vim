@@ -15,34 +15,18 @@ endfunction
 " Substitute a:from => a:to by string.
 " To substitute by pattern, use substitute() instead.
 function! s:replace(str, from, to)
-  if a:str ==# '' || a:from ==# ''
-    return a:str
-  endif
-  let str = a:str
-  let idx = stridx(str, a:from)
-  while idx !=# -1
-    let left  = idx ==# 0 ? '' : str[: idx - 1]
-    let right = str[idx + strlen(a:from) :]
-    let str = left . a:to . right
-    let idx = stridx(str, a:from, idx + strlen(a:to))
-  endwhile
-  return str
+  return s:_replace(a:str, a:from, a:to, 'g')
 endfunction
 
 " Substitute a:from => a:to only once.
 " cf. s:replace()
 function! s:replace_once(str, from, to)
-  if a:str ==# '' || a:from ==# ''
-    return a:str
-  endif
-  let idx = stridx(a:str, a:from)
-  if idx ==# -1
-    return a:str
-  else
-    let left  = idx ==# 0 ? '' : a:str[: idx - 1]
-    let right = a:str[idx + strlen(a:from) :]
-    return left . a:to . right
-  endif
+  return s:_replace(a:str, a:from, a:to, '')
+endfunction
+
+" implement of replace() and replace_once()
+function! s:_replace(str, from, to, flags)
+  return substitute(a:str, '\V'.escape(a:from, '\'), escape(a:to, '\'), a:flags)
 endfunction
 
 function! s:scan(str, pattern)
