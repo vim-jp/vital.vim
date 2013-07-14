@@ -69,6 +69,9 @@ function! s:common_head(strs)
   endif
   let head = a:strs[0]
   for str in a:strs[1 :]
+    if empty(strs)
+      return ''
+    endif
     let pat = substitute(str, '.', '[\0]', 'g')
     let head = matchstr(head, '^\%[' . pat . ']')
     if head ==# ''
