@@ -26,12 +26,13 @@ replace({str}, {from}, {to})		*Vital.Data.String.replace()*
 	:echo String.replace("fooba.bazbar", "ba.", "zzz")
 	foozzzbazbar
 <
-replace_once({str}, {from}, {to})	*Vital.Data.String.replace_once()*
-	Returns string replaced {from} to {to} from {str} at once.
+replace_first({str}, {from}, {to})	*Vital.Data.String.replace_first()*
+	Returns string replaced {from} to {to} from {str} only about the
+	first-match.
 >
 	:echo String.replace("foobarbazbar", "bar", "zzz")
 	foozzzbazzzz
-	:echo String.replace_once("foobarbazbar", "bar", "zzz")
+	:echo String.replace_first("foobarbazbar", "bar", "zzz")
 	foozzzbazbar
 <
 scan({str}, {pattern})			*Vital.Data.String.scan()*

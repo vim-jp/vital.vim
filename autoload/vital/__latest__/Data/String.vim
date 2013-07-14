@@ -20,11 +20,11 @@ endfunction
 
 " Substitute a:from => a:to only once.
 " cf. s:replace()
-function! s:replace_once(str, from, to)
+function! s:replace_first(str, from, to)
   return s:_replace(a:str, a:from, a:to, '')
 endfunction
 
-" implement of replace() and replace_once()
+" implement of replace() and replace_first()
 function! s:_replace(str, from, to, flags)
   return substitute(a:str, '\V'.escape(a:from, '\'), escape(a:to, '\'), a:flags)
 endfunction

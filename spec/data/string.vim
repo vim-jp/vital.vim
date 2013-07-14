@@ -15,7 +15,7 @@ End
 Context Data.String.replace()
   It substitutes arg2 to arg3 from arg1
     " TODO: Write common tests in one place
-    " Common tests for replace(), replace_once()
+    " Common tests for replace(), replace_first()
     Should g:S.replace('foobar', 'ob', '') ==# 'foar'
     Should g:S.replace('foobar', 'foo', '') ==# 'bar'
     Should g:S.replace('foobar', 'ar', '') ==# 'foob'
@@ -42,33 +42,33 @@ Context Data.String.replace()
   End
 End
 
-Context Data.String.replace_once()
+Context Data.String.replace_first()
   It is like Data.String.replace(), but this substitutes the first matching substring, not all
     " TODO: Write common tests in one place
-    " Common tests for replace(), replace_once()
-    Should g:S.replace_once('foobar', 'ob', '') ==# 'foar'
-    Should g:S.replace_once('foobar', 'foo', '') ==# 'bar'
-    Should g:S.replace_once('foobar', 'ar', '') ==# 'foob'
-    Should g:S.replace_once('', 'foo', '') ==# ''
-    Should g:S.replace_once('foobar', '', '') ==# 'foobar'
-    Should g:S.replace_once('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
-    Should g:S.replace_once('foobar', 'bar', 'baz') ==# 'foobaz'
+    " Common tests for replace(), replace_first()
+    Should g:S.replace_first('foobar', 'ob', '') ==# 'foar'
+    Should g:S.replace_first('foobar', 'foo', '') ==# 'bar'
+    Should g:S.replace_first('foobar', 'ar', '') ==# 'foob'
+    Should g:S.replace_first('', 'foo', '') ==# ''
+    Should g:S.replace_first('foobar', '', '') ==# 'foobar'
+    Should g:S.replace_first('foobar', 'bar', 'barbaz') ==# 'foobarbaz'
+    Should g:S.replace_first('foobar', 'bar', 'baz') ==# 'foobaz'
 
-    " Specific tests for Data.String.replace_once()
-    Should g:S.replace_once('hello', 'l', '') ==# 'helo'
-    Should g:S.replace_once('hello', 'l', 'L') ==# 'heLlo'
-    Should g:S.replace_once('hello', 'l', 'LL') ==# 'heLLlo'
-    Should g:S.replace_once('queue', 'ue', '') ==# 'que'
-    Should g:S.replace_once('queue', 'ue', 'u') ==# 'quue'
-    Should g:S.replace_once('queue', 'ue', 'uu') ==# 'quuue'
-    Should g:S.replace_once('mimic', 'mi', '') ==# 'mic'
-    Should g:S.replace_once('mimic', 'mi', 'm') ==# 'mmic'
-    Should g:S.replace_once('mimic', 'mi', 'mm') ==# 'mmmic'
-    Should g:S.replace_once('\(.*\)', '.', '') ==# '\(*\)'
-    Should g:S.replace_once('\v.\m.\M.', '.', '') ==# '\v\m.\M.'
-    Should g:S.replace_once('\v.\m.\M.', '\', '') ==# 'v.\m.\M.'
-    Should g:S.replace_once('\(.*\)', '.', '\0') ==# '\(\0*\)'
-    Should g:S.replace_once('\(.*\)', '.', '\=submatch(1)') ==# '\(\=submatch(1)*\)'
+    " Specific tests for Data.String.replace_first()
+    Should g:S.replace_first('hello', 'l', '') ==# 'helo'
+    Should g:S.replace_first('hello', 'l', 'L') ==# 'heLlo'
+    Should g:S.replace_first('hello', 'l', 'LL') ==# 'heLLlo'
+    Should g:S.replace_first('queue', 'ue', '') ==# 'que'
+    Should g:S.replace_first('queue', 'ue', 'u') ==# 'quue'
+    Should g:S.replace_first('queue', 'ue', 'uu') ==# 'quuue'
+    Should g:S.replace_first('mimic', 'mi', '') ==# 'mic'
+    Should g:S.replace_first('mimic', 'mi', 'm') ==# 'mmic'
+    Should g:S.replace_first('mimic', 'mi', 'mm') ==# 'mmmic'
+    Should g:S.replace_first('\(.*\)', '.', '') ==# '\(*\)'
+    Should g:S.replace_first('\v.\m.\M.', '.', '') ==# '\v\m.\M.'
+    Should g:S.replace_first('\v.\m.\M.', '\', '') ==# 'v.\m.\M.'
+    Should g:S.replace_first('\(.*\)', '.', '\0') ==# '\(\0*\)'
+    Should g:S.replace_first('\(.*\)', '.', '\=submatch(1)') ==# '\(\=submatch(1)*\)'
   End
 End
 
