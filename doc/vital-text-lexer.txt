@@ -51,17 +51,17 @@ Lexer.exec(expr)		                *Vital.Lexer-Lexer.exec()*
 ------------------------------------------------------------------------------
 Parser Object		                        *Vital.Lexer-Parser*
 
-Parser.consume()    		                *Vital.Lexer-Parser.consume()*
-	Consumes the next token from {lexed_tokens}.  Return this token.
+Parser.end()    		                        *Vital.Lexer-Parser.end()*
+	Returns 1 if next() is the end of {lexed_tokens}, otherwise zero.
 
 Parser.next()    		                *Vital.Lexer-Parser.next()*
 	Returns the next token.  This function does not consume.
 
-Parser.end()    		                        *Vital.Lexer-Parser.end()*
-	Returns 1 if next() is the end of {lexed_tokens}, otherwise zero.
-
 Parser.next_is(label)    		        *Vital.Lexer-Parser.next_is()*
 	Returns 1 if next().label is {label}, otherwise zero.
+
+Parser.consume()    		                *Vital.Lexer-Parser.consume()*
+	Consumes the next token from {lexed_tokens}.  Return this token.
 
 ==============================================================================
 EXAMPLES					*Vital.Lexer-examples*
