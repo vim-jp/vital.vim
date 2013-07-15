@@ -27,13 +27,13 @@ FUNCTIONS			                *Vital.Lexer-functions*
 lexer(patterns)		                        *Vital.Lexer.lexer()*
 	Creates a new Lexer object.
 	{patterns} is a format such as "[ [label,regex] , ... ]".
-	Lexer object has exec(expr).
+	A Lexer object has exec(expr).
 
 simple_parser(lexed_tokens)             *Vital.Lexer.simple_parser()*
 	Creates a new Parser object.
-	This Parser object is a parser interface which is related Lexer object.
+	This Parser object is a parser interface which is related a Lexer object.
 	{lexed_tokens} is a result of Lexer.exec(expr).
-	Parser object has end(), next(), next_is(label) and consume().
+	A Parser object has end(), next(), next_is(label) and consume().
 
 ==============================================================================
 OBJECTS				                *Vital.Lexer-objects*
@@ -42,8 +42,8 @@ OBJECTS				                *Vital.Lexer-objects*
 Lexer Object		                        *Vital.Lexer-Lexer*
 
 Lexer.exec(expr)		                *Vital.Lexer-Lexer.exec()*
-	Evaluate {expr}.
-        This return value is a list of dictionary which has following keys.
+	Evaluates {expr}.
+        This returns a list of dictionaries which have the following keys.
 		'matched_text' : matched text in {expr}.
 		'col' : index of 'matched_text' in {expr}.
 		'label' : label of 'matched_text'.
@@ -52,16 +52,16 @@ Lexer.exec(expr)		                *Vital.Lexer-Lexer.exec()*
 Parser Object		                        *Vital.Lexer-Parser*
 
 Lexer.consume()    		                *Vital.Lexer-Parser.consume()*
-	Consume next token from {lexed_tokens}. Return this token.
+	Consumes the next token from {lexed_tokens}.  Return this token.
 
 Lexer.next()    		                *Vital.Lexer-Parser.next()*
-	Return next token. This function does not consume.
+	Returns the next token.  This function does not consume.
 
 Lexer.end()    		                        *Vital.Lexer-Parser.end()*
-	Return 1 if next() is end of {lexed_tokens}, otherwise return 0.
+	Returns 1 if next() is the end of {lexed_tokens}, otherwise zero.
 
 Lexer.next_is(label)    		        *Vital.Lexer-Parser.next_is()*
-	Return 1 if next().label is {label}, otherwise return 0.
+	Returns 1 if next().label is {label}, otherwise zero.
 
 ==============================================================================
 EXAMPLES					*Vital.Lexer-examples*
