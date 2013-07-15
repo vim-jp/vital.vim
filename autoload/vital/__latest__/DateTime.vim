@@ -47,7 +47,7 @@ function! s:_vital_loaded(V)
   \ })
 endfunction
 
-" Creates a DateTime object with now time.
+" Creates a DateTime object with current time from system.
 function! s:now(...)
   let now = s:from_unix_time(localtime())
   if a:0
@@ -56,14 +56,14 @@ function! s:now(...)
   return now
 endfunction
 
-" Creates a DateTime object from specified unix time.
+" Creates a DateTime object from given unix time.
 function! s:from_unix_time(unix_time, ...)
   return call('s:from_date',
   \   map(split(strftime('%Y %m %d %H %M %S', a:unix_time)),
   \       'str2nr(v:val, 10)') + a:000)
 endfunction
 
-" Creates a DateTime object from specified date and time.
+" Creates a DateTime object from given date and time.
 " @param year = 1970
 " @param month = 1
 " @param day = 1
