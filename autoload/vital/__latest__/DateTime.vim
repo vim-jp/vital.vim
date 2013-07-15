@@ -742,6 +742,7 @@ function! s:_split_format(format)
   return res
 endfunction
 
+" TODO Use Prelude.is_windows() to avoid duplicate
 if has('win16') || has('win32') || has('win64')
   function! s:_default_tz()
     return s:win_tz
