@@ -2,18 +2,17 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_is_string(expr) "{{{
-  return type("") == type(a:expr)
-endfunction "}}}
-function! s:_is_list(expr) "{{{
-  return type([]) == type(a:expr)
-endfunction "}}}
+function! s:_vital_loaded(V)
+  let s:V = a:V
+  let s:Prelude = s:V.import('Prelude')
+endfunction
+
 function! s:_token(list) "{{{
-  if s:_is_list(a:list)
+  if s:Prelude.is_list(a:list)
     if len(a:list) < 2 | call s:_exception('too few arguments.') | endif
     if 2 < len(a:list) | call s:_exception('too many arguments.') | endif
-    if ! s:_is_string(a:list[0]) | call s:_exception('element of list is not string.') | endif
-    if ! s:_is_string(a:list[1]) | call s:_exception('element of list is not string.') | endif
+    if ! s:Prelude.is_string(a:list[0]) | call s:_exception('element of list is not string.') | endif
+    if ! s:Prelude.is_string(a:list[1]) | call s:_exception('element of list is not string.') | endif
     let tkn = { 'label' : a:list[0], 'regex' : a:list[1] }
     return tkn
   else
@@ -43,7 +42,7 @@ function! s:lexer(patterns) "{{{
         endif
       endfor
       if best_tkn == {}
-        call s:_exception(printf('can not match. col:%d',idx))
+        call s:_exception(printf('cannot match. col:%d',idx))
       else
         let idx += len(best_tkn.matched_text)
         let match_tokens += [best_tkn]
