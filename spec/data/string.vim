@@ -97,6 +97,12 @@ Context Data.String.common_head()
     Should g:S.common_head(['neocomplcache', 'neosnippet', 'neobundle']) ==# 'neo'
     Should g:S.common_head(['neocomplcache', 'vimshell']) ==# ''
   End
+  It returns an empty string if empty string in list
+    Should g:S.common_head(['neocomplcache', '']) ==# ''
+    Should g:S.common_head(['', 'neocomplcache']) ==# ''
+    Should g:S.common_head(['', '']) ==# ''
+    Should g:S.common_head(['']) ==# ''
+    End
   It returns an empty string with empty list
     Should g:S.common_head([]) ==# ''
   End
