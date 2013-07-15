@@ -43,18 +43,13 @@ function! s:common_head(strs)
   if empty(a:strs)
     return ''
   endif
-  let head = a:strs[0]
-  for str in a:strs[1 :]
-    if empty(str)
-      return ''
-    endif
-    let pat = substitute(str, '.', '[\0]', 'g')
-    let head = matchstr(head, '^\%[' . pat . ']')
-    if head ==# ''
-      break
-    endif
-  endfor
-  return head
+  let len = len(a:strs)
+  if len == 1
+    return a:strs[0]
+  endif
+  let strs = len == 2 ? a:strs : sort(copy(a:strs))
+  let pat = substitute(strs[0], '.', '[\0]', 'g')
+  return pat == '' ? '' : matchstr(strs[-1], '^\%[' . pat . ']')
 endfunction
 
 " Split to two elements of List. ([left, right])
