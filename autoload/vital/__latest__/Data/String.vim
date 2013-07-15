@@ -171,7 +171,7 @@ endfunction
 function! s:wrap(str,...)
   let _columns = a:0 > 0 ? a:1 : &columns
   return s:L.concat(
-        \ map(split(a:str, '\r\?\n'), 's:_split_by_wcswidth(v:val, _columns - 1)'))
+        \ map(split(a:str, '\r\n\|[\r\n]'), 's:_split_by_wcswidth(v:val, _columns - 1)'))
 endfunction
 
 function! s:nr2byte(nr)
