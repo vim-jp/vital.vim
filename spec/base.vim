@@ -20,6 +20,56 @@ function! s:_should(it, cond)
   return eval(a:cond) ? '.' : a:it
 endfunction
 
+
+" after example:
+"
+" [.] Prelude.is_windows()
+" [F] Prelude.is_numeric()
+"
+" Failure
+"   Prelude.is_numeric()
+"     - It checks if the argument is a numeric : g:V.is_numeric([]) ==# 1
+"
+function! s:_format_results(results)
+  let messages = []
+
+  " {'Prelude.truncate_smart()': ['.', '.', 'It xxx']}
+  "   -> {'Prelude.truncate_smart()': ['It xxx']}
+  let summary_results = map(copy(a:results), "filter(v:val, 'v:val !=# \".\"')")
+
+  for results in items(summary_results)
+    let mark = empty(results[1]) ? '[.] ' : '[F] '
+    call add(messages, mark . results[0])
+    unlet results
+  endfor
+
+  call add(messages, '')
+
+  " TODO dirty
+  let init = 1
+  for results in items(summary_results)
+    if !empty(results[1])
+      if init
+        call add(messages, 'Failure')
+        let init = 0
+      endif
+
+      call add(messages, '  ' . results[0])
+      for fail_message in results[1]
+        call add(messages, '    - ' . fail_message)
+      endfor
+      call add(messages, '')
+    endif
+    unlet results
+  endfor
+
+  return messages
+endfunction
+
+function! s:_update_file(lines, filename)
+  call writefile(extend(readfile(a:filename), a:lines), a:filename)
+endfunction
+
 command! -nargs=+ Context
       \ call add(s:context_stack, ['c', <q-args>])
 command! -nargs=+ It
@@ -32,4 +82,7 @@ command! -nargs=0 End
 
 command! -nargs=+ Fin
       \ call writefile([string(s:results)], <q-args>) |
+      \ qa!
+command! -nargs=+ FinUpdate
+      \ call s:_update_file(s:_format_results(s:results), <q-args>) |
       \ qa!

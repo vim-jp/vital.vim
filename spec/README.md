@@ -6,7 +6,16 @@ on vimshell
 
 for gui vim (example: MacVim):
 
+    $ cd {repository_root}
     $ /Applications/MacVim.app/Contents/MacOS/Vim -g -u NONE -i NONE -N --cmd 'filetype indent on' -S spec/prelude.vim -c 'Fin /tmp/prelude.result'
+
+unix
+
+    $ cd {repository_root}
+    # run all test
+    $ ./spec.sh
+    # run specify test
+    $ ./spec.sh spec/data/string.vim
 
 otherwise
 
