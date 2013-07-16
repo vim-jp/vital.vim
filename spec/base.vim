@@ -20,6 +20,17 @@ function! s:_should(it, cond)
   return eval(a:cond) ? '.' : a:it
 endfunction
 
+function! s:shouldthrow(args)
+	let expr = matchstr(a:args, '\zs.*\ze,\s*/.*/')
+	try
+		call eval(expr)
+		call s:should(a:args, 1)
+	catch
+		let exp = matchstr(a:args, '.*,\s*/\zs.*\ze/\s*')
+		call s:should(a:args, v:exception =~# exp)
+	endtry
+endfunction
+
 
 " after example:
 "
@@ -76,6 +87,7 @@ command! -nargs=+ It
       \ call add(s:context_stack, ['i', <q-args>])
 command! -nargs=+ Should
       \ call s:should(<q-args>, eval(<q-args>))
+command! -nargs=+ ShouldThrow call s:shouldthrow(<q-args>)
 command! -nargs=0 End
       \ call remove(s:context_stack, -1) |
       \ redraw!
