@@ -30,29 +30,73 @@ End
 
 Context Data.Dict.swap()
   It swaps keys and values
-    Should {'1': 'one', '2': 'two', '3': 'three'} == g:D.swap({'one': 1, 'two': 2, 'three': 3})
+    let a = {'one': 1, 'two': 2, 'three': 3}
+    Should {'1': 'one', '2': 'two', '3': 'three'} == g:D.swap(a)
+    Should a == {'one': 1, 'two': 2, 'three': 3}
+    Should {} == g:D.swap({})
+    unlet a
   End
+
+  It converts invalid key to a string
+    Should {'[]': 'list', '{}': 'dict', '1.0': 'float'} == g:D.swap({'list': [], 'dict': {}, 'float': 1.0})
+  End
+
 End
 
 Context Data.Dict.make_index()
   It makes an index dictionary from a list
-    Should {'apple': 1, 'orange': 1, 'banana': 1} == g:D.make_index(['apple', 'orange', 'banana'])
+    let a = []
+    let b = deepcopy(a)
+    Should {} == g:D.make_index(a)
+    Should a == b
+    Should {} == g:D.make_index(a, 5)
+    Should a == b
+    let a = ['apple', 'orange', 'banana']
+    let b = deepcopy(a)
+    Should {'apple': 1, 'orange': 1, 'banana': 1} == g:D.make_index(a)
+    Should a == b
+    unlet a
+    unlet b
   End
   It makes an index dictionary with a specified value
-    Should {'apple': 'true', 'orange': 'true', 'banana': 'true'} == g:D.make_index(['apple', 'orange', 'banana'], 'true')
+    let a = ['apple', 'orange', 'banana']
+    let b = deepcopy(a)
+    Should {'apple': 'true', 'orange': 'true', 'banana': 'true'} == g:D.make_index(a, 'true')
+    Should a == b
+    Should {'apple': 5, 'orange': 5, 'banana': 5} == g:D.make_index(a, 5)
+    Should a == b
+    unlet a
+    unlet b
+  End
+
+  It converts invalid key to a string
+    let a = [[], {}, 1.4]
+    let b = deepcopy(a)
+    Should {'[]': 1, '{}': 1, '1.4': 1} == g:D.make_index(a)
+    Should a == b
+    Should {'[]': [1,2,3], '{}': [1,2,3], '1.4': [1,2,3]} == g:D.make_index(a, [1,2,3])
+    Should a == b
+    unlet a
+    unlet b
   End
 End
 
 Context Data.Dict.pick()
-  It returns filtered dictionary that only have values for the whitelisted
+  It returns filtered dictionary that only has values for the whitelisted
     Should {'apple': 'red', 'melon': 'green'} ==
     \      g:D.pick({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
     \               ['apple', 'melon'])
+    let a = {'one': 1, 'two': 2, 'three': 3}
+    let b = deepcopy(a)
+    Should {'one': 1, 'three': 3} == g:D.pick(a, ['one', 'three'])
+    Should a == b
   End
   It ignores unexisting item of whitelist
     Should {'apple': 'red', 'melon': 'green'} ==
     \      g:D.pick({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
     \               ['apple', 'orange', 'lemon', 'melon'])
+    unlet a
+    unlet b
   End
   It returns new dictionary
     let dict = {}
@@ -61,14 +105,16 @@ Context Data.Dict.pick()
   End
   It doesn't change the passed dictionary
     let dict = {'apple': 'red', 'banana': 'yellow', 'melon': 'green'}
+    let dict2 = deepcopy(dict)
     Should {} == g:D.pick(dict, [])
-    Should {'apple': 'red', 'banana': 'yellow', 'melon': 'green'} == dict
+    Should dict2 == dict
     unlet dict
+    unlet dict2
   End
 End
 
 Context Data.Dict.omit()
-  It returns filtered dictionary that omit the blacklisted
+  It returns filtered dictionary that omits the blacklisted
     Should {'banana': 'yellow'} ==
     \      g:D.omit({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
     \               ['apple', 'melon'])
@@ -94,7 +140,7 @@ End
 Context Data.Dict.clear()
   It clears the all items of a dictionary
     let dict = {'one': 1, 'two': 2, 'three': 3}
-    call g:D.clear(dict)
+    Should {} == g:D.clear(dict)
     Should dict == {}
   End
   It returns the passed dictionary directly
