@@ -17,6 +17,14 @@ unix
     # run specify test
     $ ./spec.sh spec/data/string.vim
 
+windows
+
+    > cd {repository_root}
+    # run all test
+    > spec.bat
+    # run specify test
+    > spec.bat spec¥data¥string.vim
+
 otherwise
 
     :VimProcBang vim -u NONE -i NONE -N --cmd 'filetype indent on' -S spec/prelude.vim -c 'Fin /tmp/prelude.result'
