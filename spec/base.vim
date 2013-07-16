@@ -24,7 +24,7 @@ function! s:shouldthrow(args)
 	let expr = matchstr(a:args, '\zs.*\ze,\s*/.*/')
 	try
 		call eval(expr)
-		call s:should(a:args, 1)
+		call s:should(a:args, 0)
 	catch
 		let exp = matchstr(a:args, '.*,\s*/\zs.*\ze/\s*')
 		call s:should(a:args, v:exception =~# exp)
