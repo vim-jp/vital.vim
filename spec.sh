@@ -15,19 +15,28 @@ if [ -n "$SPEC_FILE" ]; then
   $VIM -u NONE -i NONE -N --cmd 'filetype indent on' -S $SPEC_FILE -c "FinUpdate $OUTFILE" > /dev/null 2>&1
 else
   # all test
-  find spec -type f -name "*.vim" | while read FILE
+  for FILE in `find spec -type f -name "*.vim"`
   do
     if [ $FILE != "spec/base.vim" ]; then
       echo Testing... $FILE
       # required '&'(background process)
-      $VIM -u NONE -i NONE -N --cmd 'filetype indent on' -S $FILE -c "FinUpdate $OUTFILE" >/dev/null 2>&1 &
-
-      # it waits to complete vim.
-      # when not waiting, starting of the next vim goes wrong.
-      wait
+      OFILE="$OUTFILE.`basename ${FILE}`"
+      cat /dev/null > ${OFILE}
+      $VIM -u NONE -i NONE -N --cmd 'filetype indent on' -S $FILE -c "FinUpdate $OFILE" >/dev/null 2>&1 &
     fi
   done
+  wait
   echo Done.
+
+  find spec -type f -name "*.vim" | while read FILE
+  do
+    OFILE="$OUTFILE.`basename ${FILE}`"
+    if [ -f ${OFILE} ]
+    then
+      cat ${OFILE} >> ${OUTFILE}
+      rm -f ${OFILE}
+    fi
+  done
 fi
 
 cat $OUTFILE
