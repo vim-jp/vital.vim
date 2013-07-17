@@ -3,6 +3,19 @@
 VIM="vim -u NONE -i NONE -N"
 OUTFILE=/tmp/vital_spec.result
 
+check_spec()
+{
+  (cd autoload/vital/__latest__;
+  for file in `find . -name "*.vim" | \
+	  sed 's/\([a-z]\)\([A-Z]\)/\1_\2/g' | tr "[:upper:]" "[:lower:]"`
+  do
+    if [ ! -f ../../../spec/$file ]; then
+      echo "$file" | sed 's/^../spec\//'
+    fi
+done)
+  exit 0
+}
+
 do_test()
 {
   $VIM --cmd 'filetype indent on' -S "$1" -c "FinUpdate $2" > /dev/null 2>&1
@@ -19,9 +32,12 @@ EOF
 
 OPT=
 QUIET=0
-while getopts hq OPT
+while getopts hqx OPT
 do
   case $OPT in
+  x)
+    check_spec
+    exit 0;;
   q)
     QUIET=1 ;;
   h)
