@@ -1,18 +1,49 @@
 #!/bin/bash
 
+VIM="vim -u NONE -i NONE -N"
+OUTFILE=/tmp/vital_spec.result
+
+do_test()
+{
+  $VIM --cmd 'filetype indent on' -S "$1" -c "FinUpdate $2" > /dev/null 2>&1
+}
+
+usage()
+{
+  cat <<- EOF 1>&2
+  Usage $0 [-h] [spec_file]
+    -h: display usage text
+EOF
+}
+
+OPT=
+while getopts h OPT
+do
+  case $OPT in
+  h)
+    usage
+    exit 1;;
+  \?)
+    usage "invalid option"
+    exit 1 ;;
+  esac
+done
+shift `expr $OPTIND - 1`
+
 if [ $# -gt 1 ]; then
-  echo "Usage: spec.sh {spec_file}" 1>&2
+  usage "too many argument"
   exit 1
 fi
 
-VIM=vim
-SPEC_FILE=$1
-OUTFILE=/tmp/vital_spec.result
-echo '' > $OUTFILE
-
-if [ -n "$SPEC_FILE" ]; then
+cat /dev/null > $OUTFILE
+if [ $# -eq 1 ]; then
   # not required '&'(background process)
-  $VIM -u NONE -i NONE -N --cmd 'filetype indent on' -S $SPEC_FILE -c "FinUpdate $OUTFILE" > /dev/null 2>&1
+  SPEC_FILE=$1
+  if [ ! -r "${SPEC_FILE}" ]; then
+    echo "Error: file not found: ${SPEC_FILE}" 1>&2
+    exit 1
+  fi
+  do_test "${SPEC_FILE}" "${OUTFILE}"
 else
   # all test
   for FILE in `find spec -type f -name "*.vim"`
@@ -21,8 +52,8 @@ else
       echo Testing... $FILE
       # required '&'(background process)
       OFILE="$OUTFILE.`basename ${FILE}`"
-      cat /dev/null > ${OFILE}
-      $VIM -u NONE -i NONE -N --cmd 'filetype indent on' -S $FILE -c "FinUpdate $OFILE" >/dev/null 2>&1 &
+      cat /dev/null > "${OFILE}"
+      do_test "${FILE}" "${OFILE}" &
     fi
   done
   wait
@@ -31,15 +62,14 @@ else
   find spec -type f -name "*.vim" | while read FILE
   do
     OFILE="$OUTFILE.`basename ${FILE}`"
-    if [ -f ${OFILE} ]
-    then
+    if [ -f "${OFILE}" ]; then
       cat ${OFILE} >> ${OUTFILE}
-      rm -f ${OFILE}
+      rm -f "${OFILE}"
     fi
   done
 fi
 
-cat $OUTFILE
+cat "$OUTFILE"
 
 ALL_TEST_NUM=`grep "\[.\]" $OUTFILE | wc -l`
 FAILED_TEST_NUM=`grep "\[F\]" $OUTFILE | wc -l`
