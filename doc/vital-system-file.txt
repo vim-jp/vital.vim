@@ -22,7 +22,7 @@ INTERFACE				*Vital.System.File-interface*
 FUNCTIONS				*Vital.System.File-functions*
 
 open({filename})			*Vital.System.File.open()*
-	Open a file specified as {filename}. It can be a file or folder.
+	Open a file specified as {filename}.  It can be a file or a directory.
 
 move_file({src}, {dest})		*Vital.System.File.move_file()*
 	Move a file {src} to {dest}
@@ -32,10 +32,10 @@ copy_file({src}, {dest})		*Vital.System.File.copy_file()*
 
 mkdir_nothrow({name} [, {path} [, {prot}]])
 					*Vital.System.File.mkdir_nothrow()*
-	Mkdir. But don't throw if it fails.
+	Creates a directory {name} without throwing any exception.
 
 rmdir({path}, [{flags}])		*Vital.System.File.rmdir()*
-	Remove a directory.
+	Remove a directory {path}.
 	If {flags} contains "r", this removes the directory and its contents
 	recursively.
 
