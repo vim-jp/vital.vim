@@ -1,3 +1,11 @@
+b262f75
+	System.File: several functions were renamed:
+		* move_file()      => move()
+		* move_file_exe()  => move_exe()
+		* move_file_pure() => move_vim()
+		* copy_file()      => copy()
+		* copy_file_exe()  => copy_exe()
+		* copy_file_pure() => copy_vim()
 baed85e
 	System.File: rmdir() removes an empty directory not a file
 	when no 2nd arg or 'r' flag was given.

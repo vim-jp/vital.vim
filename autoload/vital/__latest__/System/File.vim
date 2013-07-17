@@ -51,19 +51,19 @@ endfunction "}}}
 
 
 " Move a file.
-" Dispatch s:move_file_exe() or s:move_file_pure().
-function! s:move_file(src, dest) "{{{
+" Dispatch s:move_exe() or s:move_vim().
+function! s:move(src, dest) "{{{
   if executable('mv')
-    return s:move_file_exe(a:src, a:dest)
+    return s:move_exe(a:src, a:dest)
   else
-    return s:move_file_pure(a:src, a:dest)
+    return s:move_vim(a:src, a:dest)
   endif
 endfunction "}}}
 
 " Move a file.
 " Implemented by external program.
 " TODO: Support non-*nix like system.
-function! s:move_file_exe(src, dest)
+function! s:move_exe(src, dest)
   if !executable('mv') | return 0 | endif
   silent execute '!mv' shellescape(a:src) shellescape(a:dest)
   if v:shell_error
@@ -74,24 +74,24 @@ endfunction
 
 " Move a file.
 " Implemented by pure vimscript.
-function! s:move_file_pure(src, dest) "{{{
+function! s:move_vim(src, dest) "{{{
   return !rename(a:src, a:dest)
 endfunction "}}}
 
 " Copy a file.
-" Dispatch s:copy_file_exe() or s:copy_file_pure().
-function! s:copy_file(src, dest) "{{{
+" Dispatch s:copy_exe() or s:copy_vim().
+function! s:copy(src, dest) "{{{
   if executable('cp')
-    return s:copy_file_exe(a:src, a:dest)
+    return s:copy_exe(a:src, a:dest)
   else
-    return s:copy_file_pure(a:src, a:dest)
+    return s:copy_vim(a:src, a:dest)
   endif
 endfunction "}}}
 
 " Copy a file.
 " Implemented by external program.
 " TODO: Support non-*nix like system.
-function! s:copy_file_exe(src, dest)
+function! s:copy_exe(src, dest)
   if !executable('cp') | return 0 | endif
   silent execute '!cp' shellescape(a:src) shellescape(a:dest)
   if v:shell_error
@@ -102,7 +102,7 @@ endfunction
 
 " Copy a file.
 " Implemented by pure vimscript.
-function! s:copy_file_pure(src, dest) "{{{
+function! s:copy_vim(src, dest) "{{{
   let ret = writefile(readfile(a:src, "b"), a:dest, "b")
   if ret == -1
     return 0
