@@ -11,15 +11,19 @@ do_test()
 usage()
 {
   cat <<- EOF 1>&2
-  Usage $0 [-h] [spec_file]
+  Usage $0 [-h][-q] [spec_file]
     -h: display usage text
+    -q: quiet mode
 EOF
 }
 
 OPT=
-while getopts h OPT
+QUIET=0
+while getopts hq OPT
 do
   case $OPT in
+  q)
+    QUIET=1 ;;
   h)
     usage
     exit 1;;
@@ -69,7 +73,12 @@ else
   done
 fi
 
-cat "$OUTFILE"
+if [ $QUIET -eq 0 ]; then
+  cat $OUTFILE
+else
+  grep -v "\[.\]" $OUTFILE | grep -v '^$'
+  echo ""
+fi
 
 ALL_TEST_NUM=`grep "\[.\]" $OUTFILE | wc -l`
 FAILED_TEST_NUM=`grep "\[F\]" $OUTFILE | wc -l`
@@ -85,3 +94,4 @@ else
   echo
   exit 1
 fi
+
