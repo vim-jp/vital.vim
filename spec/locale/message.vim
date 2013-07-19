@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 source spec/base.vim
 
 let g:M = vital#of('vital').import('Locale.Message')
