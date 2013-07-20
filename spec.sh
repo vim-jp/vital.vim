@@ -1,4 +1,5 @@
 #!/bin/bash
+#set -x
 
 VIM="vim -u NONE -i NONE -N"
 OUTFILE=/tmp/vital_spec.result
@@ -18,21 +19,30 @@ done)
 
 do_test()
 {
-  $VIM --cmd 'filetype indent on' -S "$1" -c "FinUpdate $2" > /dev/null 2>&1
+  if [ $VERBOSE -eq 0 ]; then
+	  FIN="FinUpdate"
+  else
+	  FIN="Fin"
+  fi
+  $VIM  \
+    --cmd 'filetype indent on' \
+	-S "$1" -c "${FIN} $2" > /dev/null 2>&1
 }
 
 usage()
 {
   cat <<- EOF 1>&2
-  Usage $0 [-h][-q] [spec_file]
+  Usage $0 [-h][-q][-v] [spec_file]
     -h: display usage text
     -q: quiet mode
+    -v: verbose mode
 EOF
 }
 
 OPT=
 QUIET=0
-while getopts hqx OPT
+VERBOSE=0
+while getopts hqxv OPT
 do
   case $OPT in
   x)
@@ -40,6 +50,8 @@ do
     exit 0;;
   q)
     QUIET=1 ;;
+  v)
+    VERBOSE=1 ;;
   h)
     usage
     exit 1;;
