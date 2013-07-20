@@ -1,4 +1,7 @@
 let &runtimepath = expand('<sfile>:h:h')
+if exists('g:vimproc_path')
+	let &runtimepath .= ',' . g:vimproc_path
+endif
 
 let s:results = {}
 let s:context_stack = []

@@ -13,7 +13,7 @@ check_spec()
     if [ ! -f ../../../spec/$file ]; then
       echo "$file" | sed 's/^../spec\//'
     fi
-done)
+  done)
   exit 0
 }
 
@@ -24,15 +24,27 @@ do_test()
   else
 	  FIN="Fin"
   fi
-  $VIM  \
-    --cmd 'filetype indent on' \
-	-S "$1" -c "${FIN} $2" > /dev/null 2>&1
+  if [ "x$VIMPROC" != "x" ]; then
+    $VIM \
+      --cmd "let g:vimproc_path='${VIMPROC}'" \
+      --cmd 'filetype indent on' \
+	  -S "$1" -c "${FIN} $2" > /dev/null 2>&1
+  else
+    $VIM  \
+      --cmd 'filetype indent on' \
+	  -S "$1" -c "${FIN} $2" > /dev/null 2>&1
+  fi
+
 }
 
 usage()
 {
+  if [ $# -ne 0 ]; then
+    echo "$@" 1>&2
+  fi
   cat <<- EOF 1>&2
-  Usage $0 [-h][-q][-v] [spec_file]
+Usage $0 [-h][-q][-v][-p dir] [spec_file]
+    -p: vimproc directory
     -h: display usage text
     -q: quiet mode
     -v: verbose mode
@@ -42,9 +54,12 @@ EOF
 OPT=
 QUIET=0
 VERBOSE=0
-while getopts hqxv OPT
+VIMPROC=""
+while getopts hqxvp: OPT
 do
   case $OPT in
+  p)
+    VIMPROC=$OPTARG ;;
   x)
     check_spec
     exit 0;;
@@ -66,6 +81,14 @@ if [ $# -gt 1 ]; then
   usage "too many argument"
   exit 1
 fi
+
+if [ "x${VIMPROC}" != "x" ]; then
+	if [ ! -d "${VIMPROC}" -o ! -f "${VIMPROC}/autoload/vimproc.vim" ]; then
+		usage "invalid argument -p"
+		exit 1
+	fi
+fi
+
 
 cat /dev/null > $OUTFILE
 if [ $# -eq 1 ]; then
