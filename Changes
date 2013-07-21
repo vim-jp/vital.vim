@@ -1,3 +1,6 @@
+baed85e
+	System.File: rmdir() removes an empty directory not a file
+	when no 2nd arg or 'r' flag was given.
 e5d291c
 	Data.String: replace_once() -> replace_first(). Just renamed.
 e4e622e

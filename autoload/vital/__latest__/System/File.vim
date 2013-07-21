@@ -3,7 +3,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:is_windows = has('win16') || has('win32') || has('win64')
+let s:is_unix = has('unix')
+let s:is_windows = has("win16") || has("win95") || has("win32") || has("win64")
 let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
@@ -117,36 +118,30 @@ function! s:mkdir_nothrow(...) "{{{
 endfunction "}}}
 
 
-" rmdir recursively.
-if exists("*rmdir")
-  function! s:rmdir(path, ...)
-    return call('rmdir', [a:path] + a:000)
-  endfunction
-
-elseif has('unix')
+" Delete a file/directory.
+if s:is_unix
   function! s:rmdir(path, ...)
     let flags = a:0 ? a:1 : ''
-    let option = ''
-    let option .= flags =~# 'f' ? ' -f' : ''
-    let option .= flags =~# 'r' ? ' -r' : ''
-    let ret = system("/bin/rm" . option . ' ' . shellescape(a:path))
+    let cmd = flags =~# 'r' ? 'rm -r' : 'rmdir'
+    let cmd .= flags =~# 'f' && cmd ==# 'rm -r' ? ' -f' : ''
+    let ret = system(cmd . ' ' . shellescape(a:path))
     if v:shell_error
       throw substitute(iconv(ret, 'char', &encoding), '\n', '', 'g')
     endif
   endfunction
 
-elseif has("win32") || has("win95") || has("win64") || has("win16")
+elseif s:is_windows
   function! s:rmdir(path, ...)
     let flags = a:0 ? a:1 : ''
-    let option = ''
     if &shell =~? "sh$"
-      let option .= flags =~# 'f' ? ' -f' : ''
-      let option .= flags =~# 'r' ? ' -r' : ''
-      let ret = system("/bin/rm" . option . ' ' . shellescape(a:path))
+      let cmd = flags =~# 'r' ? 'rm -r' : 'rmdir'
+      let cmd .= flags =~# 'f' && cmd ==# 'rm -r' ? ' -f' : ''
+      let ret = system(cmd . ' ' . shellescape(a:path))
     else
-      let option .= flags =~# 'f' ? ' /Q' : ''
-      let option .= flags =~# 'r' ? ' /S' : ''
-      let ret = system("rmdir" . option . ' "' . a:path . '"')
+      " 'f' flag does not make sense.
+      let cmd = 'rmdir /Q'
+      let cmd .= flags =~# 'r' ? ' /S' : ''
+      let ret = system(cmd . ' "' . a:path . '"')
     endif
     if v:shell_error
       throw substitute(iconv(ret, 'char', &encoding), '\n', '', 'g')
