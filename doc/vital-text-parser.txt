@@ -1,0 +1,55 @@
+*vital-text-paerser.txt*	parser library.
+
+Maintainer: rbtnn <naru123456789@gmail.com>
+
+==============================================================================
+CONTENTS			                *Vital.Text.Parser-contents*
+
+INTRODUCTION		                 |Vital.Text.Parser-introduction|
+INTERFACE		                 |Vital.Text.Parser-interface|
+  FUNCTIONS			         |Vital.Text.Parser-functions|
+OBJECTS			                 |Vital.Text.Parser-objects|
+  Parser Object   	                 |Vital.Text.Parser-Parser|
+EXAMPLES	                 	 |Vital.Text.Parser-examples|
+
+==============================================================================
+INTRODUCTION			                *Vital.Text.Parser-introduction*
+
+*Vital.Text.Parser* is parser library.
+
+==============================================================================
+INTERFACE			                *Vital.Text.Parser-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			                *Vital.Text.Parser-functions*
+
+parser()         	                        *Vital.Text.Parser.lexer()*
+	Creates a new Parser object.
+	A Parser object has exec(expr).
+
+==============================================================================
+OBJECTS				                *Vital.Text.Parser-objects*
+
+------------------------------------------------------------------------------
+Parser Object		                        *Vital.Text.Parser-Parser*
+
+Parser.exec(expr)		                *Vital.Text.Parser-Parser.exec()*
+
+
+Parser.end()    		                *Vital.Text.Parser-Parser.end()*
+	Returns 1 if next() is the end of {lexed_tokens}, otherwise zero.
+
+Parser.next()    		                *Vital.Text.Parser-Parser.next()*
+	Returns the next token.  This function does not consume.
+
+Parser.next_is(label)    		        *Vital.Text.Parser-Parser.next_is()*
+	Returns 1 if next().label is {label}, otherwise zero.
+
+Parser.consume()    		                *Vital.Text.Parser-Parser.consume()*
+	Consumes the next token from {lexed_tokens}.  Return this token.
+
+==============================================================================
+EXAMPLES					*Vital.Text.Parser-examples*
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

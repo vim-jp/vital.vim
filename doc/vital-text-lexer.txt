@@ -10,7 +10,6 @@ INTERFACE		                 |Vital.Lexer-interface|
   FUNCTIONS			         |Vital.Lexer-functions|
 OBJECTS			                 |Vital.Lexer-objects|
   Lexer Object   	                 |Vital.Lexer-Lexer|
-  Parser Object   	                 |Vital.Lexer-Parser|
 EXAMPLES	                 	 |Vital.Lexer-examples|
 
 ==============================================================================
@@ -29,12 +28,6 @@ lexer(patterns)		                        *Vital.Lexer.lexer()*
 	{patterns} is a format such as "[ [label,regex] , ... ]".
 	A Lexer object has exec(expr).
 
-simple_parser(lexed_tokens)             *Vital.Lexer.simple_parser()*
-	Creates a new Parser object.
-	This Parser object is a parser interface which is related a Lexer object.
-	{lexed_tokens} is a result of Lexer.exec(expr).
-	A Parser object has end(), next(), next_is(label) and consume().
-
 ==============================================================================
 OBJECTS				                *Vital.Lexer-objects*
 
@@ -47,21 +40,6 @@ Lexer.exec(expr)		                *Vital.Lexer-Lexer.exec()*
 		'matched_text' : matched text in {expr}.
 		'col' : index of 'matched_text' in {expr}.
 		'label' : label of 'matched_text'.
-
-------------------------------------------------------------------------------
-Parser Object		                        *Vital.Lexer-Parser*
-
-Parser.end()    		                        *Vital.Lexer-Parser.end()*
-	Returns 1 if next() is the end of {lexed_tokens}, otherwise zero.
-
-Parser.next()    		                *Vital.Lexer-Parser.next()*
-	Returns the next token.  This function does not consume.
-
-Parser.next_is(label)    		        *Vital.Lexer-Parser.next_is()*
-	Returns 1 if next().label is {label}, otherwise zero.
-
-Parser.consume()    		                *Vital.Lexer-Parser.consume()*
-	Consumes the next token from {lexed_tokens}.  Return this token.
 
 ==============================================================================
 EXAMPLES					*Vital.Lexer-examples*
@@ -77,50 +55,6 @@ lexer example                    		*Vital.Lexer-lexer-example*
 	  "   {'col': 2, 'label': 'whitespace', 'matched_text': '  '},
 	  "   {'col': 4, 'label': 'digit', 'matched_text': '4'}
 	  " ]
-	catch  '[Text.Lexer]'
-	  echo v:exception
-	endtry
-<
-
-simple_parser example		        	*Vital.Lexer-simple_parser-example*
->
-	try
-	  let lexed_tokens = L.lexer(
-	  \   [['plus','+'],['digit','\d\+'],['whitespace','\s\+']]
-	  \ ).exec('53 +  4 + 9')
-	  let obj = L.simple_parser(lexed_tokens)
-	  function! obj.ignore() dict "{{{
-	    if ! self.end()
-	      if self.next_is('whitespace')
-		call self.consume()
-	      endif
-	    endif
-	  endfunction "}}}
-	  function! obj.digit() dict "{{{
-	    let tokens = []
-	    call self.ignore()
-	    if self.next_is('digit')
-	      let tokens += [self.consume()]
-	    elseif ! self.end()
-	      throw '[lexer] expect digit.'
-	    endif
-	    return tokens
-	  endfunction "}}}
-	  function! obj.statement() dict "{{{
-	    let tokens = []
-	    let lhs = str2nr(self.digit()[0].matched_text)
-	    while ! self.end()
-	      if self.next_is('plus')
-		call self.consume()
-		let rhs = str2nr(self.digit()[0].matched_text)
-		let lhs = lhs + rhs
-	      endif
-	      call self.ignore()
-	    endwhile
-	    return lhs
-	  endfunction "}}}
-	  echo obj.statement()
-	  " 66
 	catch  '[Text.Lexer]'
 	  echo v:exception
 	endtry
