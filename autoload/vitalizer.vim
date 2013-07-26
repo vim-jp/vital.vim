@@ -41,7 +41,7 @@ function! s:git_current_hash()
   return s:git('rev-parse HEAD')
 endfunction
 function! s:git_checkout(hash)
-  return s:git('checkout ' . hash)
+  return s:git('checkout ' . a:hash)
 endfunction
 function! s:copy(from, to)
   let todir = substitute(s:FP.dirname(a:to), '//', '/', 'g')
