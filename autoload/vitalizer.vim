@@ -15,10 +15,20 @@ let s:V = vital#of('vital')
 let s:L = s:V.import('Data.List')
 let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
+" See s:init_vars() for the following variables.
 let s:vital_dir = expand('<sfile>:h:h:p')
 let s:git_dir = s:vital_dir . '/.git'
 let s:changes_file = s:vital_dir . '/Changes'
 
+function! s:init_vars()
+  if exists('g:vitalizer_vital_dir')
+    let s:vital_dir = g:vitalizer_vital_dir
+  else
+    let s:vital_dir = expand('<sfile>:h:h:p')
+  endif
+  let s:git_dir = s:vital_dir . '/.git'
+  let s:changes_file = s:vital_dir . '/Changes'
+endfunction
 function! s:check_system()
   if !executable('git')
     throw 'vitalizer: git is required by vitalizer.'
@@ -273,6 +283,7 @@ function! vitalizer#complete(arglead, cmdline, cursorpos)
   endif
 endfunction
 function! vitalizer#command(args)
+  call s:init_vars()
   try
     call s:check_system()
   catch
