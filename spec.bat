@@ -10,6 +10,7 @@ if not "%TEMP%" == "" (
 )
 
 set VIM=vim
+set FIND=%windir%\system32\find.exe
 :: %1 may be empty.
 set SPEC_FILE=%1
 set OUTFILE=%_TEMP%\vital_spec.result
@@ -70,7 +71,7 @@ set NUM=0
 ::
 :: > find /c "[.]" %OUTFILE%
 :: ---------- C:\USERS\IT_USER\APPDATA\LOCAL\TEMP\VITAL_SPEC.RESULT: 96
-for /f "usebackq tokens=3" %%n in (`find /c "%PATTERN%" %OUTFILE%`) do (
+for /f "usebackq tokens=3" %%n in (`%FIND% /c "%PATTERN%" %OUTFILE%`) do (
   :: example: %%n = 96
   set NUM=%%n
 )
