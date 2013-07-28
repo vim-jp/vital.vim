@@ -24,8 +24,8 @@ function! s:init_vars()
   if s:vital_dir !=# ''
     return
   endif
-  if exists('g:vitalizer_vital_dir')
-    let s:vital_dir = g:vitalizer_vital_dir
+  if exists('g:vitalizer#vital_dir')
+    let s:vital_dir = g:vitalizer#vital_dir
   else
     let s:vital_dir = expand('<sfile>:h:h:p')
   endif
