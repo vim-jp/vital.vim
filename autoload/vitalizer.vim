@@ -139,7 +139,7 @@ function! s:show_changes(vital_file, installing_modules)
     for key in keys
       if has_key(changes, key)
       \ && (empty(changes[key].modules)
-      \ || s:has_common_items(changes[key].modules, a:installing_modules))
+      \ || s:L.has_common_items(changes[key].modules, a:installing_modules))
         echomsg key
         for line in split(changes[key].text, "\n")
           echomsg '    '.line
@@ -149,9 +149,6 @@ function! s:show_changes(vital_file, installing_modules)
     endfor
   endif
   return confirm_required
-endfunction
-function! s:has_common_items(list1, list2)
-  return !empty(filter(copy(a:list1), 'index(a:list2, v:val) isnot -1'))
 endfunction
 function! s:echoerr(msg)
   echohl ErrorMsg
