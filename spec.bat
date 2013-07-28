@@ -19,11 +19,11 @@ type nul > %OUTFILE%
 if not "%SPEC_FILE%" == "" (
   %VIM% -u NONE -i NONE -N --cmd "filetype indent on" -S "%SPEC_FILE%" -c "FinUpdate %OUTFILE%"
 ) else (
-  :: all test
-  :: %%i = relative filepath
-  :: TODO but fullpath on Windows7(32bit). why?
+  rem all test
+  rem %%i = relative filepath
+  rem TODO but fullpath on Windows7(32bit). why?
   for /r spec %%i in (*.vim) do (
-    :: %%~ni = filename
+    rem %%~ni = filename
     if not "%%~ni" == "base" (
       echo Testing... %%i
       %VIM% -u NONE -i NONE -N --cmd "filetype indent on" -S "%%i" -c "FinUpdate %OUTFILE%"
@@ -72,7 +72,7 @@ set NUM=0
 :: > find /c "[.]" %OUTFILE%
 :: ---------- C:\USERS\IT_USER\APPDATA\LOCAL\TEMP\VITAL_SPEC.RESULT: 96
 for /f "usebackq tokens=3" %%n in (`%FIND% /c "%PATTERN%" %OUTFILE%`) do (
-  :: example: %%n = 96
+  rem example: %%n = 96
   set NUM=%%n
 )
 exit /b %NUM%
