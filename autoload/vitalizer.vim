@@ -16,11 +16,14 @@ let s:L = s:V.import('Data.List')
 let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
 " See s:init_vars() for the following variables.
-let s:vital_dir = expand('<sfile>:h:h:p')
-let s:git_dir = s:vital_dir . '/.git'
-let s:changes_file = s:vital_dir . '/Changes'
+let s:vital_dir = ''
+let s:git_dir = ''
+let s:changes_file = ''
 
 function! s:init_vars()
+  if s:vital_dir !=# ''
+    return
+  endif
   if exists('g:vitalizer_vital_dir')
     let s:vital_dir = g:vitalizer_vital_dir
   else
