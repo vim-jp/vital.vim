@@ -122,6 +122,9 @@ function! s:get_changes()
     if text ==# ''
       throw 'vitalizer: parse error in Changes file'
     endif
+    " If "Modules: *" is specified, or "Modules: ..." line is
+    " not specified, show the change always.
+    let modules = modules ==# '*' ? '' : modules
     let changes[lines[0]] = {'text': text, 'modules': split(modules, '\s*,\s*')}
   endfor
   return changes
@@ -135,7 +138,7 @@ function! s:show_changes(vital_file, installing_modules)
     let changes = s:get_changes()
     for key in keys
       if has_key(changes, key)
-      \ && (get(changes[key].modules, 0, '') ==# '*'
+      \ && (empty(changes[key].modules)
       \ || s:has_common_items(changes[key].modules, a:installing_modules))
         echomsg key
         for line in split(changes[key].text, "\n")
