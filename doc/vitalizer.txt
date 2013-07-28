@@ -7,6 +7,7 @@ INTRODUCTION			|vitalizer-introduction|
 INTERFACE			|vitalizer-interface|
   COMMANDS			  |vitalizer-commands|
   FUNCTIONS			  |vitalizer-functions|
+CUSTOMIZING			|vitalizer-customizing|
 
 
 
@@ -54,6 +55,16 @@ FUNCTIONS					*vitalizer-functions*
 						*vitalizer#vitalize()*
 vitalizer#vitalize({name}, {target-dir}, {modules}, {hash})
 	Function version of |:Vitalize|.
+
+
+
+==============================================================================
+CUSTOMIZING					*vitalizer-customizing*
+
+g:vitalizer#vital_dir				*g:vitalizer#vital_dir*
+	Base directory of Vital.  This is usually set automatically.
+	When you are using the Vital by Git submodule and symbolic link on MS
+	Windows, it may be necessary to set this.
 
 
 

@@ -16,21 +16,27 @@ let s:L = s:V.import('Data.List')
 let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
 let s:vital_dir = expand('<sfile>:h:h:p')
-let s:git_dir = s:vital_dir . '/.git'
 let s:changes_file = s:vital_dir . '/Changes'
 
+let g:vitalizer#vital_dir =
+\     get(g:, 'vitalizer#vital_dir', expand('<sfile>:h:h:p'))
+
+function! s:git_dir()
+  return g:vitalizer#vital_dir . '/.git'
+endfunction
 function! s:check_system()
   if !executable('git')
     throw 'vitalizer: git is required by vitalizer.'
   endif
-  " NOTE: s:git_dir is a file with recent git
+  let git_dir = s:git_dir()
+  " NOTE: git_dir is a file with recent git
   " when vital.vim repository is a submodule.
-  if !isdirectory(s:git_dir) && !filereadable(s:git_dir)
+  if !isdirectory(git_dir) && !filereadable(git_dir)
     throw 'vitalizer: vital directory must be a git work directory.'
   endif
 endfunction
 function! s:git(cmd)
-  let cmd = printf('git --git-dir "%s" %s', s:git_dir, a:cmd)
+  let cmd = printf('git --git-dir "%s" %s', s:git_dir(), a:cmd)
   let output = system(cmd)
   if v:shell_error
     throw "vitalizer: '" . cmd . "' failed: ".output
@@ -98,14 +104,16 @@ function! s:file2module(file)
 endfunction
 function! s:all_modules()
   let pat = '^.*\zs\<autoload/vital/.*'
-  return filter(map(split(glob(s:vital_dir . '/autoload/vital/**/*.vim', 1), "\n"),
+  return filter(map(split(glob(
+  \          g:vitalizer#vital_dir . '/autoload/vital/**/*.vim', 1), "\n"),
   \          'matchstr(s:FP.unify_separator(v:val), pat)'), 'v:val!=""')
 endfunction
 function! s:get_changes()
-  if !filereadable(s:changes_file)
+  let changes_file = g:vitalizer#vital_dir . '/Changes'
+  if !filereadable(changes_file)
     return {}
   endif
-  let sections = split(join(readfile(s:changes_file), "\n"), '\n\ze[a-z0-9]\+\n')
+  let sections = split(join(readfile(changes_file), "\n"), '\n\ze[a-z0-9]\+\n')
   let changes = {}
   for section in sections
     let lines = split(section, "\n")
@@ -239,7 +247,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     let short_hash = hash[: s:HASH_SIZE]
     for f in files + s:REQUIRED_FILES
       let after = substitute(f, '__latest__', '_' . short_hash, '')
-      call s:copy(s:vital_dir . '/' . f, a:to . '/' . after)
+      call s:copy(g:vitalizer#vital_dir . '/' . f, a:to . '/' . after)
     endfor
     call writefile([short_hash, ''] + installing_modules, vital_file)
 
