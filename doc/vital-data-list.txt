@@ -286,5 +286,17 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 		echo idx.': '.line
 	endfor
 <
+has_common_items({list1} {list2})		*Vital.Data.List.has_common_items()*
+	Return non-zero if a:list1 and a:list2 have any common item(s).
+	Return zero otherwise.
+>
+	:echo List.has_common_items(['a', 'b', 'c'], ['b', 'c'])
+	1
+	:echo List.has_common_items(['a', 'c'], ['b', 'c'])
+	1
+	:echo List.has_common_items(['a'], ['b', 'c'])
+	0
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
