@@ -16,7 +16,6 @@ let s:L = s:V.import('Data.List')
 let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
 let s:vital_dir = expand('<sfile>:h:h:p')
-let s:changes_file = s:vital_dir . '/Changes'
 
 let g:vitalizer#vital_dir =
 \     get(g:, 'vitalizer#vital_dir', expand('<sfile>:h:h:p'))
