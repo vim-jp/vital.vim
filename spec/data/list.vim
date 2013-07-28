@@ -168,7 +168,7 @@ Context Data.List.break()
   End
 End
 
-Context data.list.take_while()
+Context Data.List.take_while()
   It creates a list from another one, it inspects the original list and takes from its elements to the moment when the condition fails, then it stops processing
     Should [1, 3] == g:L.take_while('v:val < 5', [1, 3, 5, 2])
     Should [] == g:L.take_while('v:val > 3', [1, 2, 3, 4, 5])
@@ -288,7 +288,7 @@ Context Data.List.foldr1()
 End
 
 Context Data.List.zip()
-  It return mixed list from arguments
+  It returns mixed list from arguments
     Should g:L.zip([1,2,3]) ==# [[1],[2],[3]]
     Should g:L.zip([1,2,3],[4,5,6],[7,8,9]) ==# [[1,4,7],[2,5,8],[3,6,9]]
     Should g:L.zip([1,2,3],[4,5],[7,8,9]) ==# [[1,4,7],[2,5,8]]
@@ -296,14 +296,14 @@ Context Data.List.zip()
 End
 
 Context Data.List.with_index()
-  It return list with index
+  It returns list with index
     Should g:L.with_index(['a', 'b', 'c']) ==# [['a', 0], ['b', 1], ['c', 2]]
     Should g:L.with_index(['a', 'b', 'c'], 3) ==# [['a', 3], ['b', 4], ['c', 5]]
   End
 End
 
 Context Data.List.flatten()
-  It return list flatten
+  It returns list flatten
     Should g:L.flatten(['a', ['b'], 'c']) ==# ['a', 'b', 'c']
     Should g:L.flatten(['a', [['b'], 'c']]) ==# ['a', 'b', 'c']
     Should g:L.flatten([['a', ['b']], 'c']) ==# ['a', 'b', 'c']
