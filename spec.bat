@@ -9,6 +9,12 @@ if not "%TEMP%" == "" (
   goto end
 )
 
+where /q vim
+if not errorlevel 0 (
+  echo ERROR: vim is not found in your PATH
+  goto end
+)
+
 set VIM=vim
 set FIND=%windir%\system32\find.exe
 :: %1 may be empty.
