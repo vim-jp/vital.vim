@@ -125,7 +125,7 @@ function! s:get_changes()
     " If "Modules: *" is specified, or "Modules: ..." line is
     " not specified, show the change always.
     let modules = modules ==# '*' ? '' : modules
-    let changes[lines[0]] = {'text': text, 'modules': split(modules, '\s*,\s*')}
+    let changes[lines[0]] = {'text': text, 'modules': split(modules, '[^[:alnum:].]\+')}
   endfor
   return changes
 endfunction
