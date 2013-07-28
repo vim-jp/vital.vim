@@ -1,4 +1,5 @@
 b262f75
+	Modules: System.File
 	System.File: several functions were renamed:
 		* move_file()      => move()
 		* move_file_exe()  => move_exe()
@@ -7,21 +8,29 @@ b262f75
 		* copy_file_exe()  => copy_exe()
 		* copy_file_pure() => copy_vim()
 baed85e
+	Modules: System.File
 	System.File: rmdir() removes an empty directory not a file
 	when no 2nd arg or 'r' flag was given.
 e5d291c
+	Modules: Data.String
 	Data.String: replace_once() -> replace_first(). Just renamed.
 e4e622e
+	Modules: Data.List
 	Data.List: max() -> max_by(), min() -> min_by(). Just renamed.
 619e9ea
+	Modules: Prelude
 	Prelude.truncate_smart() -> truncate_skipping(). Just renamed.
 ad68a83
+	Modules: Prelude
 	Prelude.is_integer() -> Prelude.is_number(). Just renamed.
 6e456e7
+	Modules: System.Cache
 	System.Cache.delete() -> System.Cache.deletefile(). Just renamed.
 6b937ab
+	Modules: System.Cache
 	System.Cache.create_hash() is no longer public.
 8d5b0ef
+	Modules: Web.Http, Web.Html, Web.Xml, Web.Json, Text.Ltsv, Database.Sqlite
 	Drastic changes, now vital.vim cease to treat foo_bar.vim as FooBar.
 	Following module are renamed:
 		Web.Http        => Web.HTTP
@@ -31,14 +40,19 @@ ad68a83
 		Text.Ltsv       => Text.LTSV
 		Database.Sqlite => Database.SQLite
 83a6526
+	Modules: Vim.Buffer.Manager
 	Vim.Buffer.Manager was removed completely (it was deprecated.)
 f86462b
+	Modules: Prelude
 	'Prelude.{iconv,has_vimproc,system}()' are deprecated.
 	(not removed but will be removed after a while)
 	use 'Process.{iconv,has_vimproc,system}()' instead.
 572a2db
+	Modules: Prelude
 	Removed Prelude.strchars(). use Data.String.strchars() instead.
 ce22f3b
+	Modules: Vim.Buffer.Manager
 	Vim.Buffer.Manager was moved to Vim.BufferManager
 0c76985
+	Modules: *
 	A version file '*.vital' contains '\r'. all plugins using vital.vim must upgrade.
