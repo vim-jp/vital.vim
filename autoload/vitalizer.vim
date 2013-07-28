@@ -118,7 +118,7 @@ function! s:get_changes()
     let lines = split(section, "\n")
     let text = join(
     \  map(lines[1:], 'matchstr(v:val, "^\\s*\\zs.*")'), "\n")
-    let [modules, text] = matchlist(text, '\%(Modules:\s*\(.\+\)\n\)\?\(.\+\)')[1:2]
+    let [modules, text] = matchlist(text, '\%(Modules:\s*\([^\n]\+\)\n\)\?\(.\+\)')[1:2]
     if text ==# ''
       throw 'vitalizer: parse error in Changes file'
     endif
