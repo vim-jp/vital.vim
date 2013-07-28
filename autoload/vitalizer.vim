@@ -15,10 +15,23 @@ let s:V = vital#of('vital')
 let s:L = s:V.import('Data.List')
 let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
-let s:vital_dir = expand('<sfile>:h:h:p')
-let s:git_dir = s:vital_dir . '/.git'
-let s:changes_file = s:vital_dir . '/Changes'
+" See s:init_vars() for the following variables.
+let s:vital_dir = ''
+let s:git_dir = ''
+let s:changes_file = ''
 
+function! s:init_vars()
+  if s:vital_dir !=# ''
+    return
+  endif
+  if exists('g:vitalizer#vital_dir')
+    let s:vital_dir = g:vitalizer#vital_dir
+  else
+    let s:vital_dir = expand('<sfile>:h:h:p')
+  endif
+  let s:git_dir = s:vital_dir . '/.git'
+  let s:changes_file = s:vital_dir . '/Changes'
+endfunction
 function! s:check_system()
   if !executable('git')
     throw 'vitalizer: git is required by vitalizer.'
@@ -141,6 +154,8 @@ function! s:echoerr(msg)
   echohl None
 endfunction
 function! vitalizer#vitalize(name, to, modules, hash)
+  call s:init_vars()
+
   " FIXME: Should check if a working tree is dirty.
 
   try
@@ -259,6 +274,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
   endtry
 endfunction
 function! vitalizer#complete(arglead, cmdline, cursorpos)
+  call s:init_vars()
   let options = ['--init', '--name=', '--hash=', '--help']
   let args = filter(split(a:cmdline[: a:cursorpos], '[^\\]\zs\s\+'), 'v:val!~"^--"')
   if a:arglead =~ '^--'
@@ -273,6 +289,7 @@ function! vitalizer#complete(arglead, cmdline, cursorpos)
   endif
 endfunction
 function! vitalizer#command(args)
+  call s:init_vars()
   try
     call s:check_system()
   catch
