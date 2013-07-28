@@ -154,6 +154,8 @@ function! s:echoerr(msg)
   echohl None
 endfunction
 function! vitalizer#vitalize(name, to, modules, hash)
+  call s:init_vars()
+
   " FIXME: Should check if a working tree is dirty.
 
   try
@@ -272,6 +274,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
   endtry
 endfunction
 function! vitalizer#complete(arglead, cmdline, cursorpos)
+  call s:init_vars()
   let options = ['--init', '--name=', '--hash=', '--help']
   let args = filter(split(a:cmdline[: a:cursorpos], '[^\\]\zs\s\+'), 'v:val!~"^--"')
   if a:arglead =~ '^--'
