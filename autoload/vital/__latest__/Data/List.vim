@@ -281,6 +281,12 @@ function! s:find(list, default, f)
   return a:default
 endfunction
 
+" Return non-zero if a:list1 and a:list2 have any common item(s).
+" Return zero otherwise.
+function! s:has_common_items(list1, list2)
+  return !empty(filter(copy(a:list1), 'index(a:list2, v:val) isnot -1'))
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

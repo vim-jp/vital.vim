@@ -116,12 +116,20 @@ function! s:get_changes()
   let changes = {}
   for section in sections
     let lines = split(section, "\n")
-    let changes[lines[0]] = join(
+    let text = join(
     \  map(lines[1:], 'matchstr(v:val, "^\\s*\\zs.*")'), "\n")
+    let [modules, text] = matchlist(text, '\%(Modules:\s*\([^\n]\+\)\n\)\?\(.\+\)')[1:2]
+    if text ==# ''
+      throw 'vitalizer: parse error in Changes file'
+    endif
+    " If "Modules: *" is specified, or "Modules: ..." line is
+    " not specified, show the change always.
+    let modules = modules ==# '*' ? '' : modules
+    let changes[lines[0]] = {'text': text, 'modules': split(modules, '[^[:alnum:].]\+')}
   endfor
   return changes
 endfunction
-function! s:show_changes(vital_file)
+function! s:show_changes(vital_file, installing_modules)
   let [ver] = readfile(a:vital_file, 'b', 1)
   let current = substitute(ver, '\W', '', 'g')
   let confirm_required = 0
@@ -130,8 +138,10 @@ function! s:show_changes(vital_file)
     let changes = s:get_changes()
     for key in keys
       if has_key(changes, key)
+      \ && (empty(changes[key].modules)
+      \ || s:L.has_common_items(changes[key].modules, a:installing_modules))
         echomsg key
-        for line in split(changes[key], "\n")
+        for line in split(changes[key].text, "\n")
           echomsg '    '.line
         endfor
         let confirm_required = 1
@@ -224,7 +234,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Show critical changes.
     " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
     " TODO: Support changes in a limit range by passing 'hash' value.
-    if filereadable(vital_file) && s:show_changes(vital_file)
+    if filereadable(vital_file) && s:show_changes(vital_file, installing_modules)
       echohl WarningMsg
       echomsg "*** WARNING *** There are critical changes from previous vital you installed."
       echohl None
