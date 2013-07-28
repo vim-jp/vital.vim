@@ -316,3 +316,14 @@ Context Data.List.flatten()
     Should g:L.flatten([[['a']], [[['b']], 'c']], 10) ==# ['a', 'b', 'c']
   End
 End
+
+Context Data.List.has_common_items()
+  It returns true/false if given Lists does/doesn't have any common item(s)
+    Should g:L.has_common_items(['a', 'b', 'c'], ['b', 'c'])
+    Should g:L.has_common_items(['a', 'c'], ['b', 'c'])
+    Should !g:L.has_common_items(['a'], ['b', 'c'])
+    Should !g:L.has_common_items([], ['b', 'c'])
+    Should !g:L.has_common_items(['a'], [])
+    Should !g:L.has_common_items([], [])
+  End
+End
