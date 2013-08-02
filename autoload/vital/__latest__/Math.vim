@@ -4,9 +4,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " TODO Simpler way?
-function! s:modulo(n, m)
-  let d = a:n * a:m < 0 ? 1 : 0
-  return a:n + (-(a:n + (0 < a:m ? d : -d)) / a:m + d) * a:m
+function! s:modulo(m, n)
+  let d = a:m * a:n < 0 ? 1 : 0
+  return a:m + (-(a:m + (0 < a:n ? d : -d)) / a:n + d) * a:n
 endfunction
 
 function! s:fib(n)

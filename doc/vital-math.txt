@@ -37,5 +37,15 @@ fib({number})				*Vital.Math.fib()*
 	Note that Vim cannot handle big numbers. This is not
 	|Vital.Math.fib()|'s issue but Vim's limitation.
 
+modulo({m}, {n})			*Vital.Math.modulo()*
+	Return modulo.  This behaves like Scheme's one.
+>
+	modulo(10, 3) == 1
+	modulo(-10, 3) == 2
+	modulo(10, -3) == -2
+	modulo(-10, -3) == -1
+<
+
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
