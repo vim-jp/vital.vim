@@ -27,25 +27,20 @@ let s:is_unix = has('unix')
 if s:is_windows
   function! s:spawn(expr)
     if type(a:expr) is type([])
-      let cmdline = join(a:expr, ' ')
+      let args = a:expr
     elseif type(a:expr) is type("")
-      let cmdline = a:expr
+      let args = [a:expr]
     else
       throw 'Process.spawn(): invalid argument (value type:'.type(a:expr).')'
     endif
 
-    " Escape:
-    " * cmdline-special (:help cmdline-special, :help expand())
-    " * '!' (:help :!)
-    let pat = '[%#<>!]'
-    let sub = '\\\0'
-    let cmdline = substitute(cmdline, pat, sub, "g")
     " Spawning 'expr' with 'noshellslash'
     " avoids above characters' expansion. (e.g., '\' -> '/')
     let shellslash = &l:shellslash
     setlocal noshellslash
     try
-      execute '!start' cmdline
+      let special = 1
+      execute '!start' join(map(args, 'shellescape(v:val, special)'), ' ')
     finally
       let &l:shellslash = shellslash
     endtry
