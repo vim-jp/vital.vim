@@ -40,7 +40,7 @@ if s:is_windows
     setlocal noshellslash
     try
       let special = 1
-      execute '!start' join(map(args, 'shellescape(v:val, special)'), ' ')
+      silent execute '!start' join(map(args, 'shellescape(v:val, special)'), ' ')
     finally
       let &l:shellslash = shellslash
     endtry
