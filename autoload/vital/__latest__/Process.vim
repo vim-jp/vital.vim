@@ -26,7 +26,6 @@ let s:is_unix = has('unix')
 " If a:expr is a String, just pass the argument to system().
 if s:is_windows
   function! s:spawn(expr)
-    let cmdline = a:expr
     if type(a:expr) is type([])
       let cmdline = join(a:expr, ' ')
     elseif type(a:expr) is type("")
