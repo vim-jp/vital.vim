@@ -24,51 +24,31 @@ let s:is_unix = has('unix')
 " Unix:
 " If a:expr is a List, shellescape() each argument.
 " If a:expr is a String, just pass the argument to system().
-if s:is_windows
-  function! s:spawn(expr)
-    if type(a:expr) is type([])
-      let args = a:expr
-    elseif type(a:expr) is type("")
-      let args = [a:expr]
-    else
-      throw 'Process.spawn(): invalid argument (value type:'.type(a:expr).')'
-    endif
-
-    " Spawning 'expr' with 'noshellslash'
-    " avoids above characters' expansion. (e.g., '\' -> '/')
+"
+" Spawning 'expr' with 'noshellslash'
+" avoids above characters' expansion. (e.g., '\' -> '/')
+function! s:spawn(expr)
+  if s:is_windows
     let shellslash = &l:shellslash
     setlocal noshellslash
-    try
-      let special = 1
-      silent execute '!start' join(map(args, 'shellescape(v:val, special)'), ' ')
-    finally
-      let &l:shellslash = shellslash
-    endtry
-    return ''
-  endfunction
-
-elseif s:is_unix
-  function! s:spawn(expr)
+  endif
+  try
     if type(a:expr) is type([])
-      let cmdline = join(shellescape(a:expr), ' ')
+      let special = 1
+      let cmdline = join(map(args, 'shellescape(v:val, special)'), ' ')
     elseif type(a:expr) is type("")
       let cmdline = a:expr
     else
       throw 'Process.spawn(): invalid argument (value type:'.type(a:expr).')'
     endif
-
-    call system(cmdline =~# '&\s*$' ?
-          \ cmdline :
-          \ printf('%s &', cmdline))
-    return ''
-  endfunction
-
-else
-  " XXX: Should :throw when this script file is loaded?
-  function! s:spawn(expr)
-    throw 'Process.spawn(): does not support your platform.'
-  endfunction
-endif
+    silent execute (s:is_windows ? '!start' : '!') cmdline
+  finally
+    if s:is_windows
+      let &l:shellslash = shellslash
+    endif
+  endtry
+  return ''
+endfunction
 
 " iconv() wrapper for safety.
 function! s:iconv(expr, from, to)
