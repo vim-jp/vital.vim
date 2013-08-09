@@ -35,7 +35,7 @@ function! s:spawn(expr)
   try
     if type(a:expr) is type([])
       let special = 1
-      let cmdline = join(map(args, 'shellescape(v:val, special)'), ' ')
+      let cmdline = join(map(a:expr, 'shellescape(v:val, special)'), ' ')
     elseif type(a:expr) is type("")
       let cmdline = a:expr
     else
