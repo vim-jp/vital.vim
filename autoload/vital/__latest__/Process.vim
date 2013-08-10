@@ -41,7 +41,11 @@ function! s:spawn(expr)
     else
       throw 'Process.spawn(): invalid argument (value type:'.type(a:expr).')'
     endif
-    silent execute (s:is_windows ? '!start' : '!') cmdline
+    if s:is_windows
+      silent execute '!start' cmdline
+    else
+      silent execute '!' cmdline '&'
+    endif
   finally
     if s:is_windows
       let &l:shellslash = shellslash
