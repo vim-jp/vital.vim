@@ -307,7 +307,6 @@ endfunction
 
 function! s:_path2project_directory_git(path)
   let parent = a:path
-  let directory = ''
 
   while 1
     let path = parent . '/.git'
@@ -320,7 +319,6 @@ function! s:_path2project_directory_git(path)
     endif
     let parent = next
   endwhile
-  return directory
 endfunction
 
 function! s:_path2project_directory_svn(path)
