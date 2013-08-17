@@ -2,7 +2,7 @@
 	Modules: *
 	If file 'Prelude' exists in current directory,
 	vital#of('...') causes an error.
-	All plugins using vital.vim must upgrade.
+	** All plugins using vital.vim must upgrade. **
 b262f75
 	Modules: System.File
 	System.File: several functions were renamed:
@@ -60,4 +60,5 @@ ce22f3b
 	Vim.Buffer.Manager was moved to Vim.BufferManager
 0c76985
 	Modules: *
-	A version file '*.vital' contains '\r'. all plugins using vital.vim must upgrade.
+	A version file '*.vital' contains '\r'.
+	** All plugins using vital.vim must upgrade. **
