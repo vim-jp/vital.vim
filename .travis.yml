@@ -1,4 +1,6 @@
 before_script:
+  - echo echo ja_JP.UTF-8 UTF-8 | sudo tee -a /etc/locale.gen
+  - sudo /usr/sbin/locale-gen
   - git clone https://github.com/Shougo/vimproc.vim /tmp/vimproc
   - (cd /tmp/vimproc && make)
 script:
