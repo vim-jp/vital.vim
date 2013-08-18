@@ -1,3 +1,6 @@
+
+[![Build Status](https://travis-ci.org/vim-jp/vital.vim.png)](https://travis-ci.org/vim-jp/vital.vim)
+
 # vital.vim
 
 A comprehensive Vim utility functions for Vim plugins.
