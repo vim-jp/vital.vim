@@ -1,4 +1,4 @@
 before_script:
   - git clone https://github.com/Shougo/vimproc.vim /tmp/vimproc
   - (cd /tmp/vimproc && make)
-script: ./spec.sh -p /tmp/vimproc
+script: ./spec.sh -q -p /tmp/vimproc
