@@ -1,3 +1,8 @@
+114b44e
+	Modules: *
+	If file 'Prelude' exists in current directory,
+	vital#of('...') causes an error.
+	All plugins using vital.vim must upgrade.
 b262f75
 	Modules: System.File
 	System.File: several functions were renamed:
