@@ -141,11 +141,19 @@ function! s:show_changes(vital_file, installing_modules)
       if has_key(changes, key)
       \ && (empty(changes[key].modules)
       \ || s:L.has_common_items(changes[key].modules, a:installing_modules))
+        echohl None
         echomsg key
         for line in split(changes[key].text, "\n")
-          echomsg '    '.line
+          if line =~# '^\*\*.*\*\*$'
+            echohl SpellBad
+            echomsg '    '.substitute(line, '^\*\*\s*\(.\{-}\)\s*\*\*$', '\1', '')
+            echohl None
+          else
+            echomsg '    '.line
+          endif
         endfor
         let confirm_required = 1
+        echohl None
       endif
     endfor
   endif
