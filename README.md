@@ -1,6 +1,4 @@
-# vital.vim
-
-[![Build Status](https://travis-ci.org/vim-jp/vital.vim.png)](https://travis-ci.org/vim-jp/vital.vim) 
+# vital.vim [![Build Status](https://travis-ci.org/vim-jp/vital.vim.png)](https://travis-ci.org/vim-jp/vital.vim) 
 
 A comprehensive Vim utility functions for Vim plugins.
 
@@ -63,7 +61,7 @@ call s:f()
 
 We recommend you to use a capital letter for a Vital module dictionary to assign.
 
-## If you want to become a vital committer
+## If you want to become a vital developer
 
 [Become a vital.vim Developer](https://github.com/vim-jp/vital.vim/wiki/Become-a-vital.vim-Developer)
 

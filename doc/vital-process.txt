@@ -1,23 +1,23 @@
-*vital-proccess.txt*		Utilities for proccess.
+*vital-process.txt*		Utilities for process.
 
 Maintainer: tyru    <tyru.exe@gmail.com>
 
 ==============================================================================
-CONTENTS				*Vital.Proccess-contents*
+CONTENTS				*Vital.Process-contents*
 
-INTRODUCTION			|Vital.Proccess-introduction|
-INTERFACE			|Vital.Proccess-interface|
-  Functions			  |Vital.Proccess-functions|
-
-==============================================================================
-INTRODUCTION				*Vital.Proccess-introduction*
-
-*Vital.Proccess* is TODO
+INTRODUCTION			|Vital.Process-introduction|
+INTERFACE			|Vital.Process-interface|
+  Functions			  |Vital.Process-functions|
 
 ==============================================================================
-INTERFACE				*Vital.Proccess-interface*
+INTRODUCTION				*Vital.Process-introduction*
+
+*Vital.Process* is TODO
+
+==============================================================================
+INTERFACE				*Vital.Process-interface*
 ------------------------------------------------------------------------------
-FUNCTIONS				*Vital.Proccess-functions*
+FUNCTIONS				*Vital.Process-functions*
 
 TODO
 
