@@ -53,7 +53,8 @@ function! s:copy(from, to)
   if !isdirectory(todir)
     call mkdir(todir, 'p')
   endif
-  call writefile(readfile(a:from, "b"), a:to, "b")
+  let convert_newline = 'substitute(v:val, "\\r$", "", "")'
+  call writefile(map(readfile(a:from, "b"), convert_newline), a:to, "b")
 endfunction
 function! s:search_dependence(modules)
   " XXX Not smart...

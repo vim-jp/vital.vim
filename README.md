@@ -1,5 +1,7 @@
 # vital.vim
 
+[![Build Status](https://travis-ci.org/vim-jp/vital.vim.png)](https://travis-ci.org/vim-jp/vital.vim) 
+
 A comprehensive Vim utility functions for Vim plugins.
 
 This is like a plugin which has both aspects of

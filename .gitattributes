@@ -1,0 +1,2 @@
+# Always commit newlines as LF (ref #102)
+* text eol=lf
