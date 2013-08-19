@@ -1,3 +1,6 @@
+7998c7c
+	Modules: Prelude
+    path2project_directory recognize git submodule.
 114b44e
 	Modules: *
 	If file 'Prelude' exists in current directory,
