@@ -5,7 +5,7 @@ if not "%TEMP%" == "" (
 ) else if not "%TMP%" == "" (
   set _TEMP=%TMP%
 ) else (
-  echo ERROR: Please set enviroment TEMP or TMP
+  echo ERROR: Please set environment TEMP or TMP
   goto end
 )
 
