@@ -14,15 +14,7 @@ function! s:_vital_depends()
 endfunction
 
 function! s:__urlencode_char(c)
-  let utf = iconv(a:c, &encoding, "utf-8")
-  if utf == ""
-    let utf = a:c
-  endif
-  let s = ""
-  for i in range(strlen(utf))
-    let s .= printf("%%%02X", char2nr(utf[i]))
-  endfor
-  return s
+  return printf("%%%02X", char2nr(a:c))
 endfunction
 
 function! s:decodeURI(str)
@@ -33,23 +25,35 @@ function! s:decodeURI(str)
 endfunction
 
 function! s:escape(str)
-  return substitute(a:str, '[^a-zA-Z0-9_.~/-]', '\=s:__urlencode_char(submatch(0))', 'g')
+  let result = ''
+  for i in range(len(a:str))
+    if a:str[i] =~# '^[a-zA-Z0-9_.~-]$'
+      let result .= a:str[i]
+    else
+      let result .= s:__urlencode_char(a:str[i])
+    endif
+  endfor
+  return result
 endfunction
 
 function! s:encodeURI(items)
   let ret = ''
   if s:Prelude.is_dict(a:items)
     for key in sort(keys(a:items))
-      if strlen(ret) | let ret .= "&" | endif
+      if strlen(ret)
+        let ret .= "&"
+      endif
       let ret .= key . "=" . s:encodeURI(a:items[key])
     endfor
   elseif s:Prelude.is_list(a:items)
     for item in sort(a:items)
-      if strlen(ret) | let ret .= "&" | endif
+      if strlen(ret)
+        let ret .= "&"
+      endif
       let ret .= item
     endfor
   else
-    let ret = substitute(a:items, '[^a-zA-Z0-9_.~-]', '\=s:__urlencode_char(submatch(0))', 'g')
+    let ret = s:escape(a:items)
   endif
   return ret
 endfunction
