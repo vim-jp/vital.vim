@@ -14,9 +14,9 @@ INTERFACE			|Vital.Random.Xor128-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Random.Xor128-introduction*
 
-*Vital.Random.Xor128* provides a Random Number Generator(RNG) using a xorshift
-algorithm. Although xorshift has a reasonable period(2^128-1), it is fast and
-has less internal states.
+*Vital.Random.Xor128* provides a Random Number Generator (RNG) using an xorshift
+algorithm.  Although xorshift has a reasonable period (2^128-1), it is fast
+and has less internal states.
 The paper about xorshift is http://www.jstatsoft.org/v08/i14/paper .
 
 
@@ -28,13 +28,13 @@ INTERFACE				*Vital.Random.Xor128-interface*
 FUNCTIONS				*Vital.Random.Xor128-functions*
 
 srand([{seed}])					*Vital.Random.Xor128.srand()*
-	Set a seed of generator. If {seed} is omitted, a return value of
-	|reltime()| is used. If {seed} is omitted and vim doesn't have
-	|reltime()|, a return value of |localtime()| will be used.
+	Set a seed of generator.  When {seed} is omitted, a return value of
+	|reltime()| is used.  When {seed} is omitted and vim doesn't have
+	|reltime()|, a return value of |localtime()| is used.
 
 rand()						*Vital.Random.Xor128.rand()*
 	Generate a random number.
-	Note: A return value is possibly negative. This is because Vim script
+	Note: A return value is possibly negative.  This is because Vim script
 	doesn't have an unsigned integer type.
 
 
