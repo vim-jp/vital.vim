@@ -218,3 +218,13 @@ Context Data.String.dstring()
     Should g:S.dstring("abc") == '"abc"'
   End
 End
+
+Context Data.String.contains_multibyte()
+  It returns 1 if the string contains multibyte
+    Should g:S.contains_multibyte('あ') == 1
+    Should g:S.contains_multibyte('a') == 0
+    Should g:S.contains_multibyte('aあ') == 1
+    Should g:S.contains_multibyte('aあa') == 1
+    Should g:S.contains_multibyte('') == 0
+  End
+End
