@@ -12,7 +12,7 @@ INTERFACE			|Vital.Prelude-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Prelude-introduction*
 
-*Vital.Prelude* is pretty handy. TODO
+*Vital.Prelude* is pretty handy.  TODO
 
 ==============================================================================
 INTERFACE				*Vital.Prelude-interface*
@@ -21,10 +21,81 @@ FUNCTIONS				*Vital.Prelude-functions*
 
 is_integer({value})				*Vital.Prelude.is_integer()*
 	Obsolete! Use |Vital.Prelude.is_number()| instead.
-	Checks if the given {value} is an integer.
+	Returns non-zero if {value} is an integer, zero otherwise.
 
 is_number({value})				*Vital.Prelude.is_number()*
-	Checks if the given {value} is a number, which is not a float.
+	Returns non-zero if {value} is a |Number|, zero otherwise.
+		Examples: >
+		:let g:V = vital#of('vital')
+		:echo g:V.is_number(123)
+<		1 >
+		:echo g:V.is_number(1.23)
+<		0 >
+		:echo g:V.is_number("hoge")
+<		0
+
+is_float({value})				*g:V.Prelude.is_float()*
+	Returns non-zero if {value} is a |Float|, zero otherwise.
+		Examples: >
+		:let g:V = vital#of('vital')
+		:echo g:V.is_number(123)
+<		0 >
+		:echo g:V.is_number(1.23)
+<		1 >
+		:echo g:V.is_number("hoge")
+<		0
+
+is_numeric({value})				*g:V.Prelude.is_numeric()*
+	Returns non-zero if {value} is a |Number| or a |Float|, zero otherwise.
+		Examples: >
+		:let g:V = vital#of('vital')
+		:echo g:V.is_number(123)
+<		1 >
+		:echo g:V.is_number(1.23)
+<		1 >
+		:echo g:V.is_number("hoge")
+<		0
+
+is_string({value})				*g:V.Prelude.is_string()*
+	Returns non-zero if {value} is a |String|, zero otherwise.
+
+is_funcref({value})				*Vital.Prelude.is_funcref()*
+	Returns non-zero if {value} is a |Funcref|, zero otherwise.
+
+is_list({value})				*Vital.Prelude.is_list()*
+	Returns non-zero if {value} is a |List|, zero otherwise.
+
+is_dict({value})				*Vital.Prelude.is_dict()*
+	Returns non-zero if {value} is a |Dictionary|, zero otherwise.
+
+is_windows()					*Vital.Prelude.is_windows()*
+	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
+	Note that this returns zero if Vim is a Cygwin version.
+
+is_cygwin()					*Vital.Prelude.is_cygwin()*
+	Returns non-zero if Vim is a Cygwin version, zero otherwise.
+
+is_mac()					*Vital.Prelude.is_mac()*
+	Returns non-zero if Vim is a Macintosh version, zero otherwise.
+
+is_unix()					*Vital.Prelude.is_unix()*
+	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
+	Note that this returns non-zero if Vim is a Cygwin version.
+
+has_vimproc()					*Vital.Prelude.has_vimproc()*
+	Returns non-zero if |vimproc| is installed, zero otherwise.
+	You can download the |vimproc| from http://github.com/Shougo/vimproc/.
+
+system({expr} [, {input} [, {timeout}]])	*Vital.Prelude.system()*
+	Gets the output of the shell command {expr}.
+	This function calls |vimproc#system()| if |has_vimproc()| returns
+	non-zero, otherwise |system()|.
+	If {timeout} is specified, the command will be killed after {timeout}
+	milliseconds.  Note that {timeout} is available only when
+	|has_vimproc()| returns non-zero.
+
+get_last_status()			*Vital.Prelude.get_last_status()*
+	Returns the result of the last shell command.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
