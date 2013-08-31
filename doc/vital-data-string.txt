@@ -105,7 +105,7 @@ dstring({expr})				*Vital.Data.String.dstring()*
 <
 
 contains_multibyte({str})		*Vital.Data.String.contains_multibyte()*
-	Return 1 if |a:str| contains multi-byte character.
+	Return 1 if {str} contains multi-byte character.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
