@@ -127,7 +127,7 @@ else
   endfunction
 endif "}}}
 
-" Returns the bool of contains any Multibyte character in s:str
+" Returns the bool of contains any multibyte character in s:str
 function! s:contains_multibyte(str) "{{{
   return strlen(a:str) != s:strchars(a:str)
 endfunction "}}}
