@@ -25,11 +25,11 @@ function! s:srand(...)
 endfunction
 
 function! s:rand()
-  let t = xor(s:x, s:B.lshift(s:x, 11))
+  let t = s:B.xor(s:x, s:B.lshift(s:x, 11))
   let s:x = s:y
   let s:y = s:z
   let s:z = s:w
-  let s:w = xor(xor(s:w, s:B.rshift(s:w, 19)), xor(t, s:B.rshift(t, 8)))
+  let s:w = s:B.xor(s:B.xor(s:w, s:B.rshift(s:w, 19)), s:B.xor(t, s:B.rshift(t, 8)))
   return s:w
 endfunction
 
