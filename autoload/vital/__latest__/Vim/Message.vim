@@ -3,7 +3,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-function! s:echomsg(hl, msg)
+function! s:echomsg(hl, msg) abort
   execute 'echohl' a:hl
   try
     echomsg a:msg
