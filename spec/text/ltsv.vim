@@ -25,13 +25,13 @@ Context Text.LTSV.parse_record()
     try
       call g:LTSV.parse_record("hoge:huga\thehehe")  " colon missed
       Should 0
-    catch /^vital: Text\.Ltsv:/
+    catch /^vital: Text\.LTSV:/
       Should 1
     endtry
     try
       call g:LTSV.parse_record("hoge:huga\tfoo/bar:hey")  " invalid label
       Should 0
-    catch /^vital: Text\.Ltsv:/
+    catch /^vital: Text\.LTSV:/
       Should 1
     endtry
   End
