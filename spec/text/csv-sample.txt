@@ -1,0 +1,18 @@
+foo,bar
+"foo","bar"
+
+ 
+	
+ ,bar
+foo, 
+,
+"",
+,""
+"foo""bar",baz
+"""foobar",baz
+"foobar""",baz
+"""foobar""",baz
+"foo,bar",baz
+",foobar",baz
+"foobar,",baz
+",foobar,",baz
