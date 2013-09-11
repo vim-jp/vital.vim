@@ -28,7 +28,7 @@ let s:is_unix = has('unix')
 "
 " Unix:
 " using :! , execute program in the background by shell.
-function! s:spawn(expr)
+function! s:spawn(expr, ...)
   if s:is_windows
     let shellslash = &l:shellslash
     setlocal noshellslash
@@ -39,6 +39,9 @@ function! s:spawn(expr)
       let cmdline = join(map(a:expr, 'shellescape(v:val, special)'), ' ')
     elseif type(a:expr) is type("")
       let cmdline = a:expr
+      if a:0 && a:1
+        let cmdline = substitute(cmdline, '\([!%#]\|<[^<>]\+>\)', '\\\1', 'g')
+      endif
     else
       throw 'Process.spawn(): invalid argument (value type:'.type(a:expr).')'
     endif
