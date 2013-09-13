@@ -20,7 +20,7 @@ function! s:_sandbox_call(fn, args, nothrow, NothrowValue) "{{{
   try
     return call(a:fn, a:args)
   catch
-    if a:nothrow && s:_is_urilib_exception(v:exception)
+    if a:nothrow && s:_is_own_exception(v:exception)
       return a:NothrowValue
     else
       throw substitute(v:exception, '^Vim([^()]\+):', '', '')
@@ -28,7 +28,7 @@ function! s:_sandbox_call(fn, args, nothrow, NothrowValue) "{{{
   endtry
 endfunction "}}}
 
-function! s:_is_urilib_exception(str) "{{{
+function! s:_is_own_exception(str) "{{{
   return a:str =~# '^uri parse error:'
 endfunction "}}}
 
@@ -114,7 +114,7 @@ endfunction "}}}
 function! s:_uri_opaque(...) dict "{{{
   if a:0
     " TODO
-    throw 'urilib: uri.opaque(value) does not support yet.'
+    throw 'vital: Web.URI: uri.opaque(value) does not support yet.'
   endif
   return printf('//%s%s/%s',
   \           self.__host,
