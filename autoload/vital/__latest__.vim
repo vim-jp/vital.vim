@@ -75,7 +75,7 @@ function! s:_import(name, scripts)
       " Ignore.
     endtry
 
-    let sid = len(a:scripts) + 1  " We expect that the file newly read is +1.
+    let sid = s:_scripts()[path]
     let a:scripts[path] = sid
   endif
   return s:_build_module(sid)
@@ -106,7 +106,8 @@ endfunction
 
 function! s:_scripts()
   let scripts = {}
-  for line in split(s:_redir('scriptnames'), "\n")
+  for line in filter(split(s:_redir('scriptnames'), "\n"),
+  \                  'stridx(v:val, s:self_version) > 0')
     let list = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
     if !empty(list)
       let scripts[s:_unify_path(list[2])] = list[1] - 0
@@ -148,7 +149,8 @@ function! s:_build_module(sid)
   let funcs = s:_redir('function')
   let filter_pat = '^\s*function ' . prefix
   let map_pat = prefix . '\zs\w\+'
-  let functions = map(filter(split(funcs, "\n"), 'v:val =~# filter_pat'),
+  let functions = map(filter(split(funcs, "\n"),
+  \          'stridx(v:val, prefix) > 0 && v:val =~# filter_pat'),
   \          'matchstr(v:val, map_pat)')
 
   let module = {}
