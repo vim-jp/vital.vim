@@ -1,5 +1,8 @@
 let s:self_version = expand('<sfile>:t:r')
 
+" Note: The extra argument to globpath() was added in Patch 7.2.051.
+let s:globpath_third_arg = v:version > 702 || v:version == 702 && has('patch51')
+
 let s:loaded = {}
 
 function! s:import(name, ...)
@@ -92,8 +95,7 @@ function! s:_get_module_path(name)
     let tailpath = a:name
   endif
 
-  " Note: The extra argument to globpath() was added in Patch 7.2.051.
-  if v:version > 702 || v:version == 702 && has('patch51')
+  if s:globpath_third_arg
     let paths = split(globpath(&runtimepath, tailpath, 1), "\n")
   else
     let paths = split(globpath(&runtimepath, tailpath), "\n")
