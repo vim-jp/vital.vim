@@ -92,7 +92,7 @@ function! s:_get_module_path(name)
     let target = '/' . substitute(a:name, '\W\+', '/', 'g')
     let tailpath = printf('autoload/vital/%s%s.vim', s:self_version, target)
   else
-    let tailpath = a:name
+    throw 'vital: Invalid module name: ' . a:name
   endif
 
   if s:globpath_third_arg
