@@ -13,7 +13,7 @@ function! s:import(name, ...)
     endif
     unlet a
   endfor
-  let module = s:_import(a:name, s:_scripts())
+  let module = s:_import(a:name)
   if empty(functions)
     call extend(target, module, 'keep')
   else
@@ -27,7 +27,6 @@ function! s:import(name, ...)
 endfunction
 
 function! s:load(...) dict
-  let scripts = s:_scripts()
   for arg in a:000
     let [name; as] = type(arg) == type([]) ? arg[: 1] : [arg, arg]
     let target = split(join(as, ''), '\W\+')
@@ -46,7 +45,7 @@ function! s:load(...) dict
     endwhile
 
     if exists('dict')
-      call extend(dict, s:_import(name, scripts))
+      call extend(dict, s:_import(name))
     endif
     unlet arg
   endfor
@@ -57,7 +56,7 @@ function! s:unload()
   let s:loaded = {}
 endfunction
 
-function! s:_import(name, scripts)
+function! s:_import(name)
   if type(a:name) == type(0)
     return s:_build_module(a:name)
   endif
@@ -65,7 +64,7 @@ function! s:_import(name, scripts)
   if path ==# ''
     throw 'vital: module not found: ' . a:name
   endif
-  let sid = get(a:scripts, path, 0)
+  let sid = get(s:_scripts(), path, 0)
   if !sid
     try
       execute 'source' fnameescape(path)
@@ -76,7 +75,6 @@ function! s:_import(name, scripts)
     endtry
 
     let sid = s:_scripts()[path]
-    let a:scripts[path] = sid
   endif
   return s:_build_module(sid)
 endfunction
@@ -186,5 +184,5 @@ function! s:_redir(cmd)
 endfunction
 
 function! vital#{s:self_version}#new()
-  return s:_import('', s:_scripts()).load(['Prelude', ''])
+  return s:_import('').load(['Prelude', ''])
 endfunction
