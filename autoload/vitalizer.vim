@@ -247,7 +247,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       echohl WarningMsg
       echomsg "*** WARNING *** There are critical changes from previous vital you installed."
       echohl None
-      if confirm("Would you like to install a new version?", "&Y\n&n", "Y") !=# 1
+      if confirm("Would you like to install a new version?", "&Y\n&n", 1) !=# 1
         echomsg "Canceled"
         return
       endif
