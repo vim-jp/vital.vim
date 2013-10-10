@@ -148,3 +148,37 @@ Context Data.Dict.clear()
     Should g:D.clear(dict) is dict
   End
 End
+
+Context Data.Dict.max_by()
+  It returns a key-and-value list which derives a maximum value in the dictionary through the given expr.
+    Should ['foo', -5] == g:D.max_by({'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}, 'len(v:key) * abs(v:val)')
+    Should ['bob', '/1/2/3/4'] == g:D.max_by({'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}, 'len(v:val)')
+  End
+  It throws an exception if the dictionary is empty.
+    ShouldThrow g:D.max_by({}, 'len(v:key . v:val)'), /.*/
+  End
+End
+
+Context Data.Dict.min_by()
+  It returns a key-and-value list which derives a minimum value in the dictionary through the given expr.
+    Should ['hehehe', 1] == g:D.min_by({'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}, 'len(v:key) * abs(v:val)')
+    Should ['dave', '/1'] == g:D.min_by({'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}, 'len(v:val)')
+  End
+  It throws an exception if the dictionary is empty.
+    ShouldThrow g:D.min_by({}, 'len(v:key . v:val)'), /.*/
+  End
+End
+
+Context Data.Dict.foldl()
+  It returns a value gotten from folding the keys and values in the dictionary using the given left-associative expr.
+    Should 43 == g:D.foldl('len(v:key) * abs(v:val) + v:memo', 0, {'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2})
+    Should 80 == g:D.foldl('v:memo - len(v:val)', 100, {'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'})
+  End
+End
+
+Context Data.Dict.foldr()
+  It returns a value gotten from folding the keys and values in the dictionary using the given right-associative expr.
+    Should 43 == g:D.foldr('len(v:key) * abs(v:val) + v:memo', 0, {'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2})
+    Should 80 == g:D.foldr('v:memo - len(v:val)', 100, {'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'})
+  End
+End

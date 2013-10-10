@@ -55,6 +55,46 @@ function! s:clear(dict)
   return a:dict
 endfunction
 
+function! s:_max_by(dict, expr)
+  let dict = s:swap(map(copy(a:dict), a:expr))
+  let key = dict[max(keys(dict))]
+  return [key, a:dict[key]]
+endfunction
+
+function! s:max_by(dict, expr)
+  if empty(a:dict)
+    throw 'Data.Dict.max_by(): empty dictionary'
+  endif
+  return s:_max_by(a:dict, a:expr)
+endfunction
+
+function! s:min_by(dict, expr)
+  if empty(a:dict)
+    throw 'Data.Dict.min_by(): empty dictionary'
+  endif
+  return s:_max_by(a:dict, '-(' . a:expr . ')')
+endfunction
+
+function! s:_foldl(f, init, xs)
+  let memo = a:init
+  for [k, v] in a:xs
+    let expr = substitute(a:f, 'v:key', string(k), 'g')
+    let expr = substitute(expr, 'v:val', string(v), 'g')
+    let expr = substitute(expr, 'v:memo', string(memo), 'g')
+    unlet memo
+    let memo = eval(expr)
+  endfor
+  return memo
+endfunction
+
+function! s:foldl(f, init, dict)
+  return s:_foldl(a:f, a:init, items(a:dict))
+endfunction
+
+function! s:foldr(f, init, dict)
+  return s:_foldl(a:f, a:init, reverse(items(a:dict)))
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
