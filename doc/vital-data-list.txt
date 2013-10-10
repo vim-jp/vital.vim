@@ -118,7 +118,7 @@ sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
 
 max_by({list}, {expr})			*Vital.Data.List.max_by()*
 	Returns a maximum value in {list} through given {expr}.
-	Returns 0 if {list} is empty.
+	Throws an exception if {list} is empty.
 	"v:val" can be used in {expr}.
 >
 	:echo List.max_by(['pineapple','orange','banana','apple'], 'len(v:val)')
@@ -129,7 +129,7 @@ max_by({list}, {expr})			*Vital.Data.List.max_by()*
 
 min_by({list}, {expr})			*Vital.Data.List.min_by()*
 	Returns a minimum value in |List| {list} through given {expr}.
-	Returns 0 if {list} is empty.
+	Throws an exception if {list} is empty.
 	"v:val" can be used in {expr}.
 >
 	:echo List.min_by(['pineapple','orange','banana','apple'], 'len(v:val)')

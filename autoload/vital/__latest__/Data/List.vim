@@ -110,15 +110,19 @@ function! s:max(list, expr)
   return s:max_by(a:list, a:expr)
 endfunction
 
+function! s:_max_by(list, expr)
+  let list = map(copy(a:list), a:expr)
+  return a:list[index(list, max(list))]
+endfunction
+
 " Returns a maximum value in {list} through given {expr}.
 " Returns 0 if {list} is empty.
 " v:val is used in {expr}
 function! s:max_by(list, expr)
   if empty(a:list)
-    return 0
+    throw 'Data.List.max_by(): empty list'
   endif
-  let list = map(copy(a:list), a:expr)
-  return a:list[index(list, max(list))]
+  return s:_max_by(a:list, a:expr)
 endfunction
 
 function! s:min(list, expr)
@@ -131,7 +135,10 @@ endfunction
 " v:val is used in {expr}
 " FIXME: -0x80000000 == 0x80000000
 function! s:min_by(list, expr)
-  return s:max_by(a:list, '-(' . a:expr . ')')
+  if empty(a:list)
+    throw 'Data.List.min_by(): empty list'
+  endif
+  return s:_max_by(a:list, '-(' . a:expr . ')')
 endfunction
 
 " Returns List of character sequence between [a:from, a:to]
@@ -219,8 +226,8 @@ endfunction
 
 " similar to Haskell's Prelude.foldl1
 function! s:foldl1(f, xs)
-  if len(a:xs) == 0
-    throw 'foldl1'
+  if empty(a:xs)
+    throw 'Data.List.foldl1(): empty list'
   endif
   return s:foldl(a:f, a:xs[0], a:xs[1:])
 endfunction
@@ -240,8 +247,8 @@ endfunction
 
 " similar to Haskell's Prelude.fold11
 function! s:foldr1(f, xs)
-  if len(a:xs) == 0
-    throw 'foldr1'
+  if empty(a:xs)
+    throw 'Data.List.foldr1(): empty list'
   endif
   return s:foldr(a:f, a:xs[-1], a:xs[0:-2])
 endfunction

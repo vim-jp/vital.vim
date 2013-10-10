@@ -127,8 +127,8 @@ Context Data.List.max()
     Should 'hehehe' ==# g:L.max(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
     Should -50 == g:L.max([20, -50, -15, 30], 'abs(v:val)')
   End
-  It returns 0 if the list is empty.
-    Should 0 == g:L.max([], 'v:val')
+  It throws an exception if the list is empty.
+    ShouldThrow g:L.max([], 'v:val'), /.*/
   End
 End
 
@@ -137,8 +137,8 @@ Context Data.List.min()
     Should 'foo' ==# g:L.min(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
     Should -15 == g:L.min([20, -50, -15, 30], 'abs(v:val)')
   End
-  It returns 0 if the list is empty.
-    Should 0 == g:L.min([], 'v:val')
+  It throws an exception if the list is empty.
+    ShouldThrow g:L.min([], 'v:val'), /.*/
   End
 End
 
