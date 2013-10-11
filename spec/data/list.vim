@@ -250,13 +250,8 @@ Context Data.List.foldl1()
     Should [1, 2] == g:L.foldl1('[v:memo, v:val]', [1, 2])
   End
 
-  It causes an error when the list is empty
-    try
-      call g:L.foldl1('123', [])
-      Should 0
-    catch /^foldl1$/
-      Should 1
-    endtry
+  It throws an exception when the list is empty
+    ShouldThrow g:L.foldl1('123', []), /.*/
   End
 End
 
@@ -277,13 +272,8 @@ Context Data.List.foldr1()
     Should [2, 1] == g:L.foldr1('[v:memo, v:val]', [1, 2])
   End
 
-  It causes an error when the list is empty
-    try
-      call g:L.foldr1('123', [])
-      Should 0
-    catch /^foldr1$/
-      Should 1
-    endtry
+  It throws an exception when the list is empty
+    ShouldThrow g:L.foldr1('123', []), /.*/
   End
 End
 
