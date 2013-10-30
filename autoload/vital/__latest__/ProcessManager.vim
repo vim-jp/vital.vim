@@ -49,11 +49,13 @@ function! s:read_wait(i, wait, endpatterns)
   if !has_key(s:_processes, a:i)
     throw printf("ProcessManager doesn't know about %s", a:i)
   endif
-  if s:status(a:i) ==# 'inactive'
-    return ['', '', 'inactive']
-  endif
 
   let p = s:_processes[a:i]
+
+  if s:status(a:i) ==# 'inactive'
+    return [p.stdout.read(), p.stderr.read(), 'inactive']
+  endif
+
   let out_memo = ''
   let err_memo = ''
   let lastchanged = reltime()
@@ -101,7 +103,7 @@ function! s:status(i)
   let p = s:_processes[a:i]
   " vimproc.kill isn't to stop but to ask for the current state.
   " return p.kill(0) ? 'inactive' : 'active'
-  " ... checkpid() checks if the process is running AND does waitpid() in C, 
+  " ... checkpid() checks if the process is running AND does waitpid() in C,
   " so it solves zombie processes.
   return get(p.checkpid(), 0, '') ==# 'run' ?
         \ 'active' : 'inactive'
