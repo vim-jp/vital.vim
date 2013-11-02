@@ -1,0 +1,192 @@
+*vital-option_parser.txt*	Option parser library for Vim.
+
+Maintainer: rhysd <lin90162@yahoo.co.jp>
+
+==============================================================================
+CONTENTS				*Vital.OptionParser-contents*
+
+INTRODUCTION			|Vital.OptionParser-introduction|
+USAGE				|Vital.OptionParser-usage|
+INTERFACE			|Vital.OptionParser-interface|
+  FUNCTIONS			|Vital.OptionParser-funcitons|
+OBJECTS				|Vital.OptionParser-objects|
+  PARSER OBJECT				|Vital.OptionParser-Parser|
+SPECIAL OPTIONS			|Vital.OptionParser-special-options|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.OptionParser-introduction*
+
+*Vital.OptionParser* is an option parser library for Vim script.
+It can parse key-value style options(like --foo=bar) in Vim commands and
+|:command| attributes like <count>, <bang>, <range> and so on.
+A great advantage of key-value type options is that you need not take care of
+the order of options.
+
+
+
+==============================================================================
+USAGE					*Vital.OptionParser-usage*
+
+At first, make new instance of a parser with |Vital.OptionParser.new()|, then
+define options you want to parse with |Vital.OptionParser::on()|.  At last,
+define command with |Vital.OptionParser::parse()|.
+This library's interface is inspired by OptionParser in Ruby.
+>
+  " make option parser instance
+  let s:V = vital#of('vital')
+  let s:O = s:V.import('OptionParser')
+  let s:parser = s:O.new()
+
+  " define option
+  call s:parser.on('--foo=VALUE', 'description of foo, must have value')
+  call s:parser.on('--foo', 'description of foo')
+  " definitions can chain
+  call s:parser.on('--[no-]bar', 'description of bar, deniable')
+           \.on('--baz', '-b', 'description of baz, has short option')
+
+  " define command with the parser
+  command! -nargs=* -count -bang Foo echo s:parser.parse(<q-args>, <count>, <q-bang>)
+
+  " execute!
+  :Foo! --foo=aaa --no-bar bbb -b
+  " => {
+  "      '__count__' : 0,
+  "      '__bang__' : '!',
+  "      'foo' : 'aaa',
+  "      'bar' : 0,
+  "      'baz' : 1,
+  "      '__unknown_args__' : ['bbb'],
+  "    }
+
+  " show help
+  :Foo --help
+  " echo following message
+  "   Options:
+  "     --foo=VALUE : description of foo, must have value
+  "     --foo        : description of foo
+  "     --[no-]bar   : description of bar, deniable
+  "     --baz, -b    : description of baz, has short option
+  "
+  " => {
+  "      '__count__' : 0,
+  "      'help' : 1,
+  "    }
+<
+
+
+==============================================================================
+INTERFACE				*Vital.OptionParser-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.OptionParser-functions*
+
+new()					*Vital.OptionParser.new()*
+
+	Make an option parser instance.  It returns |Dictionary| which is like
+	an object in OOP.  You can define options in this instance and parse
+	arguments with this instance.
+
+
+
+==============================================================================
+OBJECTS					*Vital.OptionParser-objects*
+
+------------------------------------------------------------------------------
+PARSER OBJECT				*Vital.OptionParser-Parser*
+
+					*Vital.OptionParser-Parser.on()*
+Parser.on({name} [, {short-name}], {description})
+
+	Define a option to parse.  You should call this function every option.
+
+	- {name} (required)
+	  |String| value.  A name of option.
+	  {name} can be one of the below patterns.  foo is an example of
+	  option name.
+
+		- "--foo"
+		  Option whose name is "foo".  If it is used with value like
+		  "--foo=bar", value of "foo" will be "bar".  If a value is
+		  omitted,  value of "foo" will be 1.
+
+		- "--foo=VALUE"
+		  Option whose name is "foo" and it must have a value with
+		  "--foo=bar" style.  In that case, Value of "foo" will be
+		  "bar".  Name of value, VALUE is only an example of names.
+		  It can be any names.  If a value is omitted, it occurs an
+		  error.
+
+		- "--[no-]foo"
+		  Option whose name is "foo" and it is deniable with "no-"
+		  prefix.  When it is used like "--no-foo", value of "foo"
+		  will be 0.
+
+	- {short-name} (optional)
+	  |String| value.  Alias of {name}.  It must starts with "-" and one
+	  alphabet must follow it like "-f".
+
+	- {description} (required)
+	  |String| value.  Description of option.  This is used for "--help"
+	  argument.
+
+					*Vital.OptionParser-Parser.parse()*
+Parser.parse({q-args} [, {cmd-attributes}...])
+
+	Parse command options.
+	{q-args} is |String| value and you must pass <q-arg> to this argument.
+	{cmd-attributes} are command attributes like <range>, <count>, <bang>
+	and so on.  You need not take care of the order of attributes.
+	Arguments not parsed result in "__unknown_args__" key's value as |List|
+	of |String|.
+
+	- {range}
+	  You must use |List| of <line1> and <line2>.
+	  "__range__" key's value is parsed result for {range}.
+
+	- {count}
+	  You must use <count>.
+	  "__count__" key's value is parsed result for {count}.
+
+	- {bang}
+	  You must use <q-bang>.
+	  "__bang__" key's value is parsed result for {bang}.
+
+	- {reg}
+	  You must use <reg> or <register>.
+	  "__reg__" key's value is parsed result for {reg}.
+>
+  command! -range -bang -register Foo
+      \ echo OptionParser.parse(<q-args>, [<line1>, <line2>], <q-bang>, <reg>)
+
+Parser.help()				*Vital.OptionParser-Parser.help()*
+
+	Make output for "--help" option and return it as |String|.
+
+
+
+==============================================================================
+SPECIAL OPTIONS				*Vital.OptionParser-special-options*
+
+"--help" option is a special option which is available in all commands
+parsed by |Vital.OptionParser|.  If "--help" echos usage of the command.  Below
+is an output example.
+>
+ Options:
+   --foo=VALUE : description of foo, must have value
+   --foo        : description of foo
+   --[no-]bar   : description of bar, deniable
+   --baz, -b    : description of baz, has short option
+<
+If you don't want to use "--help", set OptionParser.disable_auto_help to 1.
+>
+  let s:V = vital#of('vital')
+  let s:O = s:V.import('OptionParser')
+  let s:parser = s:O.new()
+  let s:parser.disable_auto_help = 1
+<
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
