@@ -14,6 +14,10 @@ function! s:_vital_loaded(V)
   let s:w = 88675123
 endfunction
 
+function! s:_vital_depends()
+  return ['Bitwise']
+endfunction
+
 function! s:srand(...)
   if a:0 == 0
     let s:x = has('reltime') ? reltime()[1] : localtime()
