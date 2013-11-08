@@ -150,8 +150,8 @@ function! s:_DEFAULT_PARSER.parse(...)
   if ! get(self, 'disable_auto_help', 0)
         \  && opts.q_args ==# '--help'
         \  && ! has_key(self.options, 'help')
-    echo call('s:_help_message', [], self)
-    return extend(opts.specials, {'help' : 1})
+    echo self.help()
+    return extend(opts.specials, {'help' : 1, '__unknown_args__' : []})
   endif
 
   let parsed_args = s:_parse_args(opts.q_args, self.options)
