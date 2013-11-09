@@ -160,7 +160,7 @@ Context parse() in OptionParser object
     Should o.parse('--hoge') == {'__unknown_args__' : [], 'hoge' : 1}
   End
 
-  It parses --hoge=VALUE as 'hoge' : 'VALUE' and echos an error when VALUE is omitted
+  It parses --hoge=VALUE as 'hoge' : 'VALUE' and echoes an error when VALUE is omitted
     let o = g:O.new()
     call o.on('--hoge=VALUE', 'huga')
     Should o.parse('--hoge=huga') == {'__unknown_args__' : [], 'hoge' : 'huga'}
@@ -205,7 +205,7 @@ Context parse() in OptionParser object
     endfor
   End
 
-  It 'parses all options defined with on() and command options at one time refardless of the order of arguments'
+  It 'parses all options defined with on() and command options at one time regardless of the order of arguments'
     let o = g:O.new()
     call o.on('--hoge', '')
     call o.on('--huga=VALUE', '')
