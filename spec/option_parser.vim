@@ -45,7 +45,7 @@ Context on() funcref in OptionParser object
     Should o.options.hoge == {'description': 'huga', 'definition': '--hoge'}
     " non alphabetical characters
     call o.on('--!"#$?', 'huga')
-    Should o.options to_have_key '!"#$?'
+    Should has_key(o.options, '!"#$?')
     Should o.options['!"#$?'] == {'description': 'huga', 'definition': '--!"#$?'}
   End
 
@@ -53,13 +53,13 @@ Context on() funcref in OptionParser object
     let o = g:O.new()
 
     call o.on('--hoge', '-h', 'huga')
-    Should o.options.hoge to_have_key 'short_option_definition'
+    Should has_key(o.options.hoge, 'short_option_definition')
     Should o.options.hoge.short_option_definition ==# '-h'
 
     " non alphabetical characters
     for na in ['!', '"', '#', '$', '%', '&', '''', '(', ')', '~', '\', '[', ']', ';', ':', '+', '*', ',', '.', '/', '1', '2', '_']
         call g:Opt.on('--'.na, '-'.na, 'huga')
-        Should o.options[na] to_have_key 'short_option_definition'
+        Should has_key(o.options[na], 'short_option_definition')
         Should o.options[na].short_option_definition ==# '-'.na
     endfor
   End
@@ -68,14 +68,14 @@ Context on() funcref in OptionParser object
     let o = g:O.new()
 
     call o.on('--hoge=VALUE', 'huga')
-    Should o.options to_have_key 'hoge'
+    Should has_key(o.options, 'hoge')
     Should o.options.hoge == {'description': 'huga', 'definition': '--hoge=VALUE', 'has_value': 1}
   End
 
   It defines --[no-]hoge option
     let o = g:O.new()
     call o.on('--[no-]hoge', 'huga')
-    Should o.options to_have_key 'hoge'
+    Should has_key(o.options, 'hoge')
     Should o.options.hoge == {'description': 'huga', 'definition': '--[no-]hoge', 'no': 1}
   End
 
@@ -85,10 +85,10 @@ Context on() funcref in OptionParser object
          \.on('--huga', '')
          \.on('--piyo', '')
          \.on('--poyo', '')
-    Should o.options to_have_key 'hoge'
-    Should o.options to_have_key 'huga'
-    Should o.options to_have_key 'piyo'
-    Should o.options to_have_key 'poyo'
+    Should has_key(o.options, 'hoge')
+    Should has_key(o.options, 'huga')
+    Should has_key(o.options, 'piyo')
+    Should has_key(o.options, 'poyo')
   End
 
   It occurs an error when invalid option name is specified
