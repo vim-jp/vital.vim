@@ -19,10 +19,10 @@ function! s:parse_record(line)
     if line[0] ==# '"'
       let m = matchlist(line, rx_quotecol)
     else
-      if line =~# '[",]'
+      let m = matchlist(line, rx_nonquotecol)
+      if m[1] =~# '[",]'
         throw 'vital: Text.CSV: [",] must be wrapped by double-quotes: ' . line
       endif
-      let m = matchlist(line, rx_nonquotecol)
     endif
     if empty(m)
       throw 'vital: Text.CSV: Parsing a record failed: ' . line
