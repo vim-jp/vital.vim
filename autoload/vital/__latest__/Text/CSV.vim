@@ -13,7 +13,7 @@ function! s:parse_record(line)
   let line = a:line
   let records = []
   let rx_rest = '\(,\|$\)\(.*\)'
-  let rx_quotecol = '^"\(\|.\{-}\%(""\)*\)"' . rx_rest
+  let rx_quotecol = '^"\(\|\%(.\{-}"\@<!\)\?\%(""\)*\)"' . rx_rest
   let rx_nonquotecol = '^\([^,]*\)' . rx_rest
   while line !=# ''
     if line[0] ==# '"'
@@ -28,6 +28,9 @@ function! s:parse_record(line)
       throw 'vital: Text.CSV: Parsing a record failed: ' . line
     endif
     if line[0] ==# '"'
+      if m[1] =~# '\%("\)\@<!"\%(""\)*\%("\)\@!'
+        throw 'vital: Text.CSV: Parsing a record failed: ' . line
+      endif
       let m[1] = substitute(m[1], '""', '"', 'g')
     endif
     call add(records, m[1])
