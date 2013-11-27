@@ -53,13 +53,13 @@ USAGE				*Vital.ProcessManager-usage*
 	    " wait for longer time to make sure scala runs, since scala is
 	    " really slow to be ready.
 	    let [out, err, type] = P.read_wait('my-scala', 2.0, ['scala> '])
-	    if type ==# 'timeout'
+	    if type ==# 'timedout'
 	      throw 'omg it took too much time'
 	    endif
 	  endif
 	  call P.writeln('my-scala', a:x)
 	  let [out, err, type] = P.read('my-scala', ['scala> '])
-	  if type ==# 'timeout'
+	  if type ==# 'timedout'
 	    throw 'something easy to do please'
 	  elseif type ==# 'inactive'
 	    throw 'scala had died...!'
