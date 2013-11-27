@@ -17,12 +17,15 @@ if not errorlevel 0 (
 
 set VIM=vim
 set FIND=%windir%\system32\find.exe
-:: %1 may be empty.
-set SPEC_FILE=%1
+set SPEC_FILE=nul
+set VIMPROC=nul
 set OUTFILE=%_TEMP%\vital_spec.result
 type nul > %OUTFILE%
 
-if not "%SPEC_FILE%" == "" (
+
+call :parse_args %1 %2 %3 %4 %5 %6 %7 %8 %9
+
+if not "%SPEC_FILE%" == "nul" (
   %VIM% -u NONE -i NONE -N --cmd "filetype indent on" -S "%SPEC_FILE%" -c "FinUpdate %OUTFILE%"
 ) else (
   rem all test
@@ -32,7 +35,11 @@ if not "%SPEC_FILE%" == "" (
     rem %%~ni = filename
     if not "%%~ni" == "base" (
       echo Testing... %%i
-      %VIM% -u NONE -i NONE -N --cmd "filetype indent on" -S "%%i" -c "FinUpdate %OUTFILE%"
+      if not "%VIMPROC%" == "nul" (
+        %VIM% -u NONE -i NONE -N --cmd "let g:vimproc_path='%VIMPROC%'" --cmd "filetype indent on" -S "%%i" -c "FinUpdate %OUTFILE%"
+      ) else (
+        %VIM% -u NONE -i NONE -N --cmd "filetype indent on" -S "%%i" -c "FinUpdate %OUTFILE%"
+      )
     )
   )
 )
@@ -82,5 +89,22 @@ for /f "usebackq tokens=3" %%n in (`%FIND% /c "%PATTERN%" %OUTFILE%`) do (
   set NUM=%%n
 )
 exit /b %NUM%
+
+:: parsing arguments
+:parse_args
+
+if "%1" == "" (
+  goto parse_args_end
+) else if /i "%1" == "/p" (
+  set VIMPROC=%2
+  shift
+) else (
+  set SPEC_FILE=%1
+)
+shift
+goto :parse_args
+
+:parse_args_end
+exit /b
 
 :end
