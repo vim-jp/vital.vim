@@ -1,0 +1,37 @@
+*vital-vim-message.txt*	Vim message functions
+
+Maintainer: tyru  <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS					*Vital.Vim.Message-contents*
+
+INTRODUCTION			|Vital.Vim.Message-introduction|
+INTERFACE			|Vital.Vim.Message-interface|
+  FUNCTIONS			  |Vital.Vim.Message-functions|
+
+
+
+==============================================================================
+INTRODUCTION					*Vital.Vim.Message-introduction*
+
+*Vital.Vim.Message* provides some utility functions about message.
+
+
+==============================================================================
+INTERFACE					*Vital.Vim.Message-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS					*Vital.Vim.Message-functions*
+
+echomsg({hl}, {msg})				*Vital.Vim.Message.echomsg()*
+	Execute |:echomsg| with {hl} (|highlight-groups|).
+
+warn({msg})				*Vital.Vim.Message.warn()*
+	Execute |:echomsg| with |hl-WarningMsg|
+
+error({msg})				*Vital.Vim.Message.error()*
+	Execute |:echomsg| with |hl-ErrorMsg|
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
