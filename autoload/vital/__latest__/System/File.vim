@@ -4,7 +4,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:is_unix = has('unix')
-let s:is_windows = has("win16") || has("win95") || has("win32") || has("win64")
+let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
