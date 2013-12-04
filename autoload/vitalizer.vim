@@ -1,4 +1,4 @@
-" vitalizer by vim script.
+" vitalizer in vim script.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -23,6 +23,7 @@ let g:vitalizer#vital_dir =
 function! s:git_dir()
   return g:vitalizer#vital_dir . '/.git'
 endfunction
+
 function! s:check_system()
   if !executable('git')
     throw 'vitalizer: git is required by vitalizer.'
@@ -34,6 +35,7 @@ function! s:check_system()
     throw 'vitalizer: vital directory must be a git work directory.'
   endif
 endfunction
+
 function! s:git(cmd)
   let cmd = printf('git --git-dir "%s" %s', s:git_dir(), a:cmd)
   let output = system(cmd)
@@ -42,12 +44,15 @@ function! s:git(cmd)
   endif
   return output
 endfunction
+
 function! s:git_current_hash()
   return s:git('rev-parse HEAD')
 endfunction
+
 function! s:git_checkout(hash)
   return s:git('checkout ' . a:hash)
 endfunction
+
 function! s:copy(from, to)
   let todir = substitute(s:FP.dirname(a:to), '//', '/', 'g')
   if !isdirectory(todir)
@@ -56,6 +61,7 @@ function! s:copy(from, to)
   let convert_newline = 'substitute(v:val, "\\r$", "", "")'
   call writefile(map(readfile(a:from, "b"), convert_newline), a:to, "b")
 endfunction
+
 function! s:search_dependence(modules)
   " XXX Not smart...
   if exists('g:vital_debug')
@@ -91,23 +97,28 @@ function! s:search_dependence(modules)
   endif
   return sort(keys(all))
 endfunction
+
 function! s:module2file(name)
   let target = a:name ==# '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
   return printf('autoload/vital/__latest__%s.vim', target)
 endfunction
+
 function! s:camelize(str)
   return substitute(a:str, '\%(^\|_\)\(\l\)', '\u\1', 'g')
 endfunction
+
 function! s:file2module(file)
   let tail = matchstr(a:file, 'autoload/vital/_\w\+/\zs.*\ze\.vim$')
   return join(map(split(tail, '[\\/]\+'), 's:camelize(v:val)'), '.')
 endfunction
+
 function! s:all_modules()
   let pat = '^.*\zs\<autoload/vital/.*'
   return filter(map(split(glob(
   \          g:vitalizer#vital_dir . '/autoload/vital/**/*.vim', 1), "\n"),
   \          'matchstr(s:FP.unify_separator(v:val), pat)'), 'v:val!=""')
 endfunction
+
 function! s:get_changes()
   let changes_file = g:vitalizer#vital_dir . '/Changes'
   if !filereadable(changes_file)
@@ -130,6 +141,7 @@ function! s:get_changes()
   endfor
   return changes
 endfunction
+
 function! s:show_changes(vital_file, installing_modules)
   let [ver] = readfile(a:vital_file, 'b', 1)
   let current = substitute(ver, '\W', '', 'g')
@@ -159,6 +171,7 @@ function! s:show_changes(vital_file, installing_modules)
   endif
   return confirm_required
 endfunction
+
 function! s:echoerr(msg)
   echohl ErrorMsg
   for line in split(a:msg, "\n")
@@ -166,6 +179,7 @@ function! s:echoerr(msg)
   endfor
   echohl None
 endfunction
+
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
 
@@ -284,6 +298,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     endif
   endtry
 endfunction
+
 function! vitalizer#complete(arglead, cmdline, cursorpos)
   let options = ['--init', '--name=', '--hash=', '--help']
   let args = filter(split(a:cmdline[: a:cursorpos], '[^\\]\zs\s\+'), 'v:val!~"^--"')
@@ -298,6 +313,7 @@ function! vitalizer#complete(arglead, cmdline, cursorpos)
     \  'isdirectory(v:val)'), 'escape(v:val, " ")')
   endif
 endfunction
+
 function! vitalizer#command(args)
   try
     call s:check_system()
