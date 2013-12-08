@@ -61,7 +61,7 @@ function! s:options_chars2dict(chars)
   \   'script' : (stridx(a:chars, 'S') isnot -1),
   \   'unique': (stridx(a:chars, 'u') isnot -1),
   \   'noremap': (stridx(a:chars, 'r') is -1),
-  \   'nowait': (stridx(a:chars, 'n') is -1),
+  \   'nowait': (stridx(a:chars, 'n') isnot -1),
   \}
 endfunction
 
