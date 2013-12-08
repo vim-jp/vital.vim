@@ -35,6 +35,7 @@ function! s:options_dict2raw(dict)
   \   . (get(a:dict, 'silent') ? '<silent>' : '')
   \   . (get(a:dict, 'script') ? '<script>' : '')
   \   . (get(a:dict, 'unique') ? '<unique>' : '')
+  \   . (get(a:dict, 'nowait') ? '<nowait>' : '')
 endfunction
 
 function! s:options_dict2chars(dict)
@@ -45,6 +46,7 @@ function! s:options_dict2chars(dict)
   \   . (get(a:dict, 'script')  ? 'S' : '')
   \   . (get(a:dict, 'unique')  ? 'u' : '')
   \   . (get(a:dict, 'noremap') ? ''  : 'r')
+  \   . (get(a:dict, 'nowait') ? ''  : 'n')
 endfunction
 
 function! s:options_chars2raw(chars)
@@ -59,6 +61,7 @@ function! s:options_chars2dict(chars)
   \   'script' : (stridx(a:chars, 'S') isnot -1),
   \   'unique': (stridx(a:chars, 'u') isnot -1),
   \   'noremap': (stridx(a:chars, 'r') is -1),
+  \   'nowait': (stridx(a:chars, 'n') is -1),
   \}
 endfunction
 
