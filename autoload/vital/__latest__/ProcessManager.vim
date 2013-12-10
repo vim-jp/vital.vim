@@ -34,11 +34,24 @@ function! s:new(cmd)
   return s:_auto_label
 endfunction
 
-function! s:stop(i, ...)
+function! s:stop(i)
+  echomsg "Vital.ProcessManager.stop() is deprecated! Please use kill() or term() instead."
+  return s:kill(a:i)
+endfunction
+
+function! s:_stop(i, ...)
   let p = s:_processes[a:i]
   call p.kill(get(a:000, 0, 0) ? g:vimproc#SIGKILL : g:vimproc#SIGTERM)
   " call p.waitpid()
   unlet s:_processes[a:i]
+endfunction
+
+function! s:term(i)
+  return s:_stop(a:i, 0)
+endfunction
+
+function! s:kill(i)
+  return s:_stop(a:i, 1)
 endfunction
 
 function! s:read(i, endpatterns)
