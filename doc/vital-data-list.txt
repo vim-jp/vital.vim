@@ -15,6 +15,27 @@ INTRODUCTION				*Vital.Data.List-introduction*
 *Vital.Data.List* is a list utilities library.  It provides some functions to
 manipulate |List|.
 
+>
+	let V = vital#of("vital")
+	let L = V.import("Data.List")
+
+	let s = []
+	echo L.push(s, 1)
+	" [1]
+	echo L.push(s, 2)
+	" [1, 2]
+	echo L.push(s, 3)
+	" [1, 2, 3]
+	echo s
+	" [1, 2, 3]
+	echo L.pop(s)
+	" 3
+	echo L.pop(s)
+	" 2
+	echo s
+	" [1]
+<
+
 ==============================================================================
 INTERFACE				*Vital.Data.List-interface*
 ------------------------------------------------------------------------------
@@ -40,10 +61,14 @@ cons({val}, {list})			*Vital.Data.List.cons()*
 	|List| {list}.
 	See also: |Vital.Data.List.cons()|
 >
-	cons(1, [2, 3]) == [1, 2, 3]
-	cons(1, []) == [1]
-	cons([1], [2, 3]) == [[1], 2, 3]
-	cons([1], 2) ERROR!
+	echo L.cons(1, [2, 3])
+	" [1, 2, 3]
+	echo L.cons(1, [])
+	" [1]
+	echo L.cons([1], [2, 3])
+	" [[1], 2, 3]
+	echo L.cons([1], 2)
+	" ERROR: E745
 <
 
 conj({list}, {val})			*Vital.Data.List.conj()*
@@ -51,10 +76,14 @@ conj({list}, {val})			*Vital.Data.List.conj()*
 	item is {val}.
 	See also: |Vital.Data.List.conj()|
 >
-	conj([2, 3], 1) == [2, 3, 1]
-	conj([], 1) == [1]
-	conj([2, 3], [1]) == [2, 3, [1]]
-	conj(2, [1]) ERROR!
+	echo L.conj([2, 3], 1)
+	" [2, 3, 1]
+	echo L.conj([], 1)
+	" [1]
+	echo L.conj([2, 3], [1])
+	" [2, 3, [1]]
+	echo L.conj(2, [1])
+	" ERROR: E745
 <
 
 uniq({list} [, {expr}])			*Vital.Data.List.uniq()*
@@ -69,23 +98,23 @@ clear({list})				*Vital.Data.List.clear()*
 concat({list})				*Vital.Data.List.concat()*
 	Concatenates |List| {list} of lists.
 >
-	:echo List.concat([[1], [2, 3]])
-	[1, 2, 3]
+	echo L.concat([[1], [2, 3]])
+	" [1, 2, 3]
 <
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
 
 flatten({list}, [, {limit}])		*Vital.Data.List.flatten()*
-	Flattens |List| {list} of lists recursively. When the {limit} argument
+	Flattens |List| {list} of lists recursively.  When the {limit} argument
 	is given, the function keeps nested items by the {limit} is maximum
 	size.
 >
-	:echo List.flatten([[1], [2, 3]])
-	[1, 2, 3]
-	:echo List.flatten([[1], 2, 3])
-	[1, 2, 3]
-	:echo List.flatten([[['a']], [[['b']], 'c']], 2)
-	['a', [['b']], 'c']
+	echo L.flatten([[1], [2, 3]])
+	" [1, 2, 3]
+	echo L.flatten([[1], 2, 3])
+	" [1, 2, 3]
+	echo L.flatten([[['a']], [[['b']], 'c']], 2)
+	" ['a', ['b'], 'c']
 <
 sort({list}, {expr})			*Vital.Data.List.sort()*
 	Sorts the items in |List| {list} in-place.  Returns {list}.  {expr}
@@ -96,7 +125,7 @@ sort({list}, {expr})			*Vital.Data.List.sort()*
 	result of {expr} must have zero if they are equal, 1 or bigger if a:a
 	sorts after the a:b, -1 or smaller if a:a sorts before a:b.
 >
-	function MyCompare(i1, i2)
+	function! MyCompare(i1, i2)
 	  return a:i1 ==
 	    \ a:i2 ?        0 :
 	    \ a:i1 > a:i2 ? 1 :
@@ -104,14 +133,14 @@ sort({list}, {expr})			*Vital.Data.List.sort()*
 	endfunction
 
 	let list = ['pineapple', 'orange', 'banana', 'apple']
-	:echo List.sort(copy(list), function('MyCompare'))
-	['apple', 'banana', 'orange', 'pineapple']
+	echo L.sort(copy(list), function('MyCompare'))
+	" ['apple', 'banana', 'orange', 'pineapple']
 
-	:echo List.sort([3, 1, 2], 'a:a - a:b')
-	[1, 2, 3]
+	echo L.sort([3, 1, 2], 'a:a - a:b')
+	" [1, 2, 3]
 
-	:echo List.sort(copy(list), 'len(a:a)-len(a:b)')
-	['apple', 'orange', 'banana', 'pineapple']
+	echo L.sort(copy(list), 'len(a:a)-len(a:b)')
+	" ['apple', 'orange', 'banana', 'pineapple']
 <
 sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
 	Returns a sorted |List| with key in |List| {list}.
@@ -121,10 +150,10 @@ max_by({list}, {expr})			*Vital.Data.List.max_by()*
 	Returns 0 if {list} is empty.
 	"v:val" can be used in {expr}.
 >
-	:echo List.max_by(['pineapple','orange','banana','apple'], 'len(v:val)')
-	pineapple
-	:echo List.max_by([20, -50, -15, 30], 'abs(v:val)')
-	-50
+	echo L.max_by(['pineapple','orange','banana','apple'], 'len(v:val)')
+	" pineapple
+	echo L.max_by([20, -50, -15, 30], 'abs(v:val)')
+	" -50
 <
 
 min_by({list}, {expr})			*Vital.Data.List.min_by()*
@@ -132,10 +161,10 @@ min_by({list}, {expr})			*Vital.Data.List.min_by()*
 	Returns 0 if {list} is empty.
 	"v:val" can be used in {expr}.
 >
-	:echo List.min_by(['pineapple','orange','banana','apple'], 'len(v:val)')
-	apple
-	:echo List.min_by([20, -50, -15, 30], 'abs(v:val)')
-	-15
+	echo L.min_by(['pineapple','orange','banana','apple'], 'len(v:val)')
+	" apple
+	echo L.min_by([20, -50, -15, 30], 'abs(v:val)')
+	" -15
 <
 char_range({from}, {to})		*Vital.Data.List.char_range()*
 	Returns a |List| of letters from {from} to {to}.
@@ -155,14 +184,14 @@ span({string}, {list})			*Vital.Data.List.span()*
 
 	Behaves like Haskell's Data.List.span().
 >
-	:echo List.span("v:val==1", [1, 2])
-	[[1], [2]]
-	:echo List.span('v:val < 5', [1, 3, 5, 2])
-	[[1, 3], [5, 2]]
-	:echo List.span('v:val > 3', [1, 2, 3, 4, 5])
-	[[], [1, 2, 3, 4, 5]]
-	:echo List.span('v:val < 3', [1, 2, 3, 4, 5])
-	[[1, 2], [3, 4, 5]]
+	echo L.span("v:val==1", [1, 2])
+	" [[1], [2]]
+	echo L.span('v:val < 5', [1, 3, 5, 2])
+	" [[1, 3], [5, 2]]
+	echo L.span('v:val > 3', [1, 2, 3, 4, 5])
+	" [[], [1, 2, 3, 4, 5]]
+	echo L.span('v:val < 3', [1, 2, 3, 4, 5])
+	" [[1, 2], [3, 4, 5]]
 <
 break({expr}, {list})			*Vital.Data.List.break()*
 	Returns a list of two lists where concatenation of them is
@@ -172,14 +201,14 @@ break({expr}, {list})			*Vital.Data.List.break()*
 
 	Behaves like Haskell's Data.List.break().
 >
-	:echo List.break("v:val==1", [1, 2])
-	[[], [1, 2]]
-	:echo List.break('v:val == 5', [1, 3, 5, 2])
-	[[1, 3], [5, 2]]
-	:echo List.break('v:val > 3', [1, 2, 3, 4, 5])
-	[[1, 2, 3], [4, 5]]
-	:echo List.break('v:val < 3', [1, 2, 3, 4, 5])
-	[[], [1, 2, 3, 4, 5]]
+	echo L.break("v:val==1", [1, 2])
+	" [[], [1, 2]]
+	echo L.break('v:val == 5', [1, 3, 5, 2])
+	" [[1, 3], [5, 2]]
+	echo L.break('v:val > 3', [1, 2, 3, 4, 5])
+	" [[1, 2, 3], [4, 5]]
+	echo L.break('v:val < 3', [1, 2, 3, 4, 5])
+	" [[], [1, 2, 3, 4, 5]]
 <
 all({expr}, {list})			*Vital.Data.List.all()*
 	Returns Number 1 if all the items in |List| {list} fulfill the
@@ -188,16 +217,16 @@ all({expr}, {list})			*Vital.Data.List.all()*
 
 	This function behaves like Haskell's Prelude.all().
 >
-	:echo List.all('v:val % 2 == 0', [2, 8, 4, 6])
-	1
-	:echo List.all('v:val % 2 == 1', [2, 8, 4, 6])
-	0
-	:echo List.all('v:val % 2 == 0', [2, 8, 5, 6])
-	0
-	:echo List.all('0 < v:val', [2, 8, 4, 6])
-	1
-	:echo List.all('0 < v:val', [2, 0, 4, 6])
-	0
+	echo L.all('v:val % 2 == 0', [2, 8, 4, 6])
+	" 1
+	echo L.all('v:val % 2 == 1', [2, 8, 4, 6])
+	" 0
+	echo L.all('v:val % 2 == 0', [2, 8, 5, 6])
+	" 0
+	echo L.all('0 < v:val', [2, 8, 4, 6])
+	" 1
+	echo L.all('0 < v:val', [2, 0, 4, 6])
+	" 0
 <
 any({expr}, {list})			*Vital.Data.List.any()*
 	Returns Number 1 if at least one item in |List| {list} fulfills the
@@ -206,16 +235,16 @@ any({expr}, {list})			*Vital.Data.List.any()*
 
 	This function behaves like Haskell's Prelude.any().
 >
-	:echo List.any('v:val % 2 == 0', [2, 8, 4, 6])
-	1
-	:echo List.all('v:val % 2 == 1', [2, 8, 4, 6])
-	0
-	:echo List.any('v:val % 2 == 0', [2, 8, 5, 6])
-	1
-	:echo List.any('0 < v:val', [2, 8, 4, 6])
-	1
-	:echo List.any('0 < v:val', [2, 0, 4, 6])
-	1
+	echo L.any('v:val % 2 == 0', [2, 8, 4, 6])
+	" 1
+	echo L.any('v:val % 2 == 1', [2, 8, 4, 6])
+	" 0
+	echo L.any('v:val % 2 == 0', [2, 8, 5, 6])
+	" 1
+	echo L.any('0 < v:val', [2, 8, 4, 6])
+	" 1
+	echo L.any('0 < v:val', [2, 0, 4, 6])
+	" 1
 <
 and({list})				*Vital.Data.List.and()*
 	Returns Number 1 if all the items of |List| {list} are non-zero
@@ -223,12 +252,12 @@ and({list})				*Vital.Data.List.and()*
 
 	This function behaves like Haskell's Prelude.and().
 >
-	:echo List.and([1, 2, 3, 1])
-	1
-	:echo List.and([1, 0, 3, 1])
-	0
-	:echo List.and([0, 0, 0, 0])
-	0
+	echo L.and([1, 2, 3, 1])
+	" 1
+	echo L.and([1, 0, 3, 1])
+	" 0
+	echo L.and([0, 0, 0, 0])
+	" 0
 <
 or({list})				*Vital.Data.List.or()*
 	Returns Number 1 if at least one item in List {list} is non-zero,
@@ -236,12 +265,12 @@ or({list})				*Vital.Data.List.or()*
 
 	This function behaves like Haskell's Prelude.or().
 >
-	:echo List.or([1, 2, 3, 1])
-	1
-	:echo List.or([1, 0, 3, 1])
-	1
-	:echo List.or([0, 0, 0, 0])
-	0
+	echo L.or([1, 2, 3, 1])
+	" 1
+	echo L.or([1, 0, 3, 1])
+	" 1
+	echo L.or([0, 0, 0, 0])
+	" 0
 <
 partition({expr}, {list})		*Vital.Data.List.partition()*
 	Behaves like Haskell's Data.List.partition().
@@ -249,28 +278,56 @@ partition({expr}, {list})		*Vital.Data.List.partition()*
 foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 	Behaves like Haskell's Data.List.foldl().
 
+>
+	echo L.foldl('v:memo + v:val', 0, range(1, 10))
+	" 55 := 1+2+3+4+5+6+7+8+9+10
+	echo L.foldl('v:memo + v:val', 20, range(1, 10))
+	" 75 := 20 + 1+2+3+4+5+6+7+8+9+10
+	echo L.foldl('[v:memo, v:val]', [], [1, 2])
+	" [[[], 1], 2]
+<
 foldl1({f}, {xs})			*Vital.Data.List.foldl1()*
 	Behaves like Haskell's Data.List.foldl1().
-
+>
+	echo L.foldl1('v:memo + v:val', range(1, 10))
+	" 55
+	echo L.foldl1('[v:memo, v:val]', [1, 2])
+	" [1, 2]
+<
 foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
 	Behaves like Haskell's Data.List.foldr().
-
+>
+	echo L.foldr('v:memo + v:val', 0, range(1, 10))
+	" 55
+	echo L.foldr('v:memo + v:val', 20, range(1, 10))
+	" 75
+	echo L.foldr('[v:memo, v:val]', [], [1, 2])
+	" [[[], 2], 1]
+<
 foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
 	Behaves like Haskell's Data.List.foldr1().
-
+>
+	echo L.foldr1('v:memo + v:val', range(1, 10))
+	" 55
+	echo L.foldr1('[v:memo, v:val]', [1, 2])
+	" [1, 2]
+<
 zip(...)				*Vital.Data.List.zip()*
 	Behaves like python's zip().
 >
-	:echo List.zip([1, 2, 3], [4, 5, 6], [7, 8, 9])
-	[[1, 4, 7], [2, 5, 8], [3, 6, 9]]
+	echo L.zip([1, 2, 3], [4, 5, 6])
+	" [[1, 4], [2, 5], [3, 6]]
+	echo L.zip([1, 2, 3], [4, 5, 6], [7, 8, 9])
+	" [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 <
-
 with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 	Returns {list} with index. {offset} means the base of index.
 	If you specify {offset}, index starts with {offset}.
 >
-	:echo List.with_index(['a', 'b', 'c'])
-	[['a', 0], ['b', 1], ['c', 2]]
+	echo L.with_index(['a', 'b', 'c'])
+	" [['a', 0], ['b', 1], ['c', 2]]
+	echo L.with_index(['a', 'b', 'c'], 2)
+	" [['a', 2], ['b', 3], ['c', 4]]
 <
 	This function is useful when used with |:for|.
 	For example, when you have lines as a list of string and you want to
@@ -286,16 +343,16 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 		echo idx.': '.line
 	endfor
 <
-has_common_items({list1} {list2})		*Vital.Data.List.has_common_items()*
-	Return non-zero if a:list1 and a:list2 have any common item(s).
-	Return zero otherwise.
+has_common_items({list1} {list2})	*Vital.Data.List.has_common_items()*
+	Returns non-zero if a:list1 and a:list2 have a common item, otherwise
+	zero.
 >
-	:echo List.has_common_items(['a', 'b', 'c'], ['b', 'c'])
-	1
-	:echo List.has_common_items(['a', 'c'], ['b', 'c'])
-	1
-	:echo List.has_common_items(['a'], ['b', 'c'])
-	0
+	echo L.has_common_items(['a', 'b', 'c'], ['b', 'c'])
+	" 1
+	echo L.has_common_items(['a', 'c'], ['b', 'c'])
+	" 1
+	echo L.has_common_items(['a'], ['b', 'c'])
+	" 0
 <
 
 ==============================================================================
