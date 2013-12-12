@@ -19,6 +19,19 @@ algorithm.  Although xorshift has a reasonable period (2^128-1), it is fast
 and has less internal states.
 The paper about xorshift is http://www.jstatsoft.org/v08/i14/paper .
 
+>
+	let V = vital#of("vital")
+	let X = V.import("Random.Xor128")
+
+	call X.srand(1)
+	echo X.rand()
+	" 88677267
+	echo X.rand()
+	" -1027910750
+	call X.srand(1)
+	echo X.rand()
+	" 88677267
+<
 
 
 ==============================================================================
