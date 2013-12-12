@@ -24,8 +24,11 @@ function! s:srand(...)
   elseif a:0 == 1
     let s:x = a:1
   else
-    throw 'Random.Xor128.srand() too many arguments'
+    throw 'vital: Random.Xor128.srand(): too many arguments'
   endif
+  let s:y = 362436069
+  let s:z = 521288629
+  let s:w = 88675123
 endfunction
 
 function! s:rand()
