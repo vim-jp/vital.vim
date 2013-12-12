@@ -81,7 +81,9 @@ if s:is_unix
     if !s:_has_move_exe() | return 0 | endif
     let [src, dest] = [a:src, a:dest]
     silent execute '!mv' shellescape(src) shellescape(dest)
-    return !v:shell_error
+    let ret = !v:shell_error
+    redraw!
+    return ret
   endfunction
 elseif s:is_windows
   function! s:move_exe(src, dest)
@@ -135,7 +137,9 @@ if s:is_unix
     if !s:_has_copy_exe() | return 0 | endif
     let [src, dest] = [a:src, a:dest]
     silent execute '!cp' shellescape(src) shellescape(dest)
-    return !v:shell_error
+    let ret = !v:shell_error
+    redraw!
+    return ret
   endfunction
 elseif s:is_windows
   function! s:copy_exe(src, dest)
