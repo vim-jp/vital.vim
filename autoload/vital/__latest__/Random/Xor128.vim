@@ -24,7 +24,7 @@ function! s:srand(...)
   elseif a:0 == 1
     let s:x = a:1
   else
-    throw 'Random.Xor128.srand() too many arguments'
+    throw 'vital: Random.Xor128.srand(): too many arguments'
   endif
 endfunction
 
