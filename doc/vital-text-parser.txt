@@ -1,4 +1,4 @@
-*vital-text-paerser.txt*	parser library.
+*vital-text-parser.txt*		parser library.
 
 Maintainer: rbtnn <naru123456789@gmail.com>
 
@@ -23,7 +23,7 @@ INTERFACE			                *Vital.Text.Parser-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS			                *Vital.Text.Parser-functions*
 
-parser()         	                        *Vital.Text.Parser.lexer()*
+parser()         	                        *Vital.Text.Parser.parser()*
 	Creates a new Parser object.
 	A Parser object has exec(expr).
 
