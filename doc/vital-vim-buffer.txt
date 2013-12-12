@@ -32,7 +32,7 @@ INTERFACE			*Vital.Vim.Buffer-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS			*Vital.Vim.Buffer-functions*
 
-				*Vital.Vim.Buffer.is_cmdwin()*
+is_cmdwin()			*Vital.Vim.Buffer.is_cmdwin()*
 	gives you a boolean value about the current buffer is in
 	|command-line-window| or now.
 
