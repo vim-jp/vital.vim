@@ -63,14 +63,14 @@ endfunction
 
 function! s:max_by(dict, expr)
   if empty(a:dict)
-    throw 'Data.Dict.max_by(): empty dictionary'
+    throw 'vital: Data.Dict: Empty dictionary'
   endif
   return s:_max_by(a:dict, a:expr)
 endfunction
 
 function! s:min_by(dict, expr)
   if empty(a:dict)
-    throw 'Data.Dict.min_by(): empty dictionary'
+    throw 'vital: Data.Dict: Empty dictionary'
   endif
   return s:_max_by(a:dict, '-(' . a:expr . ')')
 endfunction
