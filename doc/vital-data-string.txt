@@ -14,6 +14,10 @@ INTRODUCTION				*Vital.Data.String-introduction*
 
 *Vital.Data.String* is String Utilities Library.
 It provides some functions to manipulate |String|.
+>
+	let V = vital#of("vital")
+	let S = V.import("Data.String")
+<
 
 ==============================================================================
 INTERFACE				*Vital.Data.String-interface*
@@ -23,17 +27,17 @@ FUNCTIONS				*Vital.Data.String-functions*
 replace({str}, {from}, {to})		*Vital.Data.String.replace()*
 	Returns string replaced {from} to {to} from {str}.
 >
-	:echo String.replace("fooba.bazbar", "ba.", "zzz")
-	foozzzbazbar
+	echo S.replace("fooba.bazbar", "ba.", "zzz")
+	" foozzzbazbar
 <
 replace_first({str}, {from}, {to})	*Vital.Data.String.replace_first()*
 	Returns string replaced {from} to {to} from {str} only about the
 	first-match.
 >
-	:echo String.replace("foobarbazbar", "bar", "zzz")
-	foozzzbazzzz
-	:echo String.replace_first("foobarbazbar", "bar", "zzz")
-	foozzzbazbar
+	echo S.replace("foobarbazbar", "bar", "zzz")
+	" foozzzbazzzz
+	echo S.replace_first("foobarbazbar", "bar", "zzz")
+	" foozzzbazbar
 <
 scan({str}, {pattern})			*Vital.Data.String.scan()*
 	Returns |List| which matched {pattern} in {str}.
@@ -41,27 +45,27 @@ scan({str}, {pattern})			*Vital.Data.String.scan()*
 reverse({str})				*Vital.Data.String.reverse()*
 	Returns a reversed string.  This works on character base.
 >
-	:echo String.reverse("string")
-	gnirts
+	echo S.reverse("string")
+	" gnirts
 <
 common_head({strs})			*Vital.Data.String.common_head()*
 	Returns a common part of head of strings.
 >
-	:echo String.common_head(['neocomplcache', 'neosnippet', 'neobundle'])
-	'neo'
+	echo S.common_head(['neocomplcache', 'neosnippet', 'neobundle'])
+	" 'neo'
 <
 split_leftright({expr}, {pattern})	*Vital.Data.String.split_leftright()*
 	Returns |List| that contains two |String| split by {pattern}.
 >
-	:echo String.split_leftright('neocomplcache', 'neo\zs.....')
-	['neo', 'cache']
+	echo S.split_leftright('neocomplcache', 'neo\zs.....')
+	" ['neo', 'cache']
 <
 split3({expr}, {pattern})		*Vital.Data.String.split3()*
 	Like |Vital.Data.String.split_leftright()|, but this function returns
 	[left, middle, right] not only [left, right].
 >
-	:echo String.split3('neocomplcache', 'neo\zs.....')
-	['neo', 'compl', 'cache']
+	echo S.split3('neocomplcache', 'neo\zs.....')
+	" ['neo', 'compl', 'cache']
 <
 					*Vital.Data.String.nsplit()*
 nsplit({expr}, {n} [, {pattern} [, {keepempty}]])
@@ -77,7 +81,7 @@ chomp({str}) 				*Vital.Data.String.chomp()*
 trim({str})	                	*Vital.Data.String.trim()*
 	Returns |String| removed spaces from the beginning and end of a {str}.
 
-wrap({str}[, {columns}])		*Vital.Data.String.wrap()*
+wrap({str} [, {columns}])		*Vital.Data.String.wrap()*
 	Returns |String| wrapped to fit to |columns| width.
         Default: {columns} = &columns
 
@@ -99,9 +103,12 @@ dstring({expr})				*Vital.Data.String.dstring()*
 	Behaves like |string()|, but this wraps the result string not with
 	single-quotes but with double-quotes.
 >
-	dstring(123) == 123
-	dstring('abc') == '"abc"'
-	dstring("abc") == '"abc"'
+	echo S.dstring(123)
+	" 123
+	echo S.dstring('abc')
+	" '"abc"'
+	echo S.dstring("abc")
+	" '"abc"'
 <
 
 contains_multibyte({str})		*Vital.Data.String.contains_multibyte()*
