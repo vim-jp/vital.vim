@@ -80,10 +80,8 @@ if s:is_unix
   function! s:move_exe(src, dest)
     if !s:_has_move_exe() | return 0 | endif
     let [src, dest] = [a:src, a:dest]
-    silent execute '!mv' shellescape(src) shellescape(dest)
-    let ret = !v:shell_error
-    redraw!
-    return ret
+    call system('mv ' . shellescape(src) . ' ' . shellescape(dest))
+    return !v:shell_error
   endfunction
 elseif s:is_windows
   function! s:move_exe(src, dest)
@@ -91,7 +89,7 @@ elseif s:is_windows
     let [src, dest] = [a:src, a:dest]
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
-    silent execute '!cmd /c move' src dest
+    call system('cmd /c move ' . src  . ' ' . dest)
     return !v:shell_error
   endfunction
 else
@@ -136,10 +134,8 @@ if s:is_unix
   function! s:copy_exe(src, dest)
     if !s:_has_copy_exe() | return 0 | endif
     let [src, dest] = [a:src, a:dest]
-    silent execute '!cp' shellescape(src) shellescape(dest)
-    let ret = !v:shell_error
-    redraw!
-    return ret
+    call system('cp ' . shellescape(src) . ' ' . shellescape(dest))
+    return !v:shell_error
   endfunction
 elseif s:is_windows
   function! s:copy_exe(src, dest)
@@ -147,7 +143,7 @@ elseif s:is_windows
     let [src, dest] = [a:src, a:dest]
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
-    silent execute '!cmd /c copy' src dest
+    call system('copy ' . src . ' ' . dest)
     return !v:shell_error
   endfunction
 else
@@ -209,7 +205,7 @@ elseif s:is_windows
   endfunction
 
 else
-  function! s:rmdir(path, ...)
+  function! s:rmdir(...)
     throw 'vital: System.File.rmdir(): your platform is not supported'
   endfunction
 endif
