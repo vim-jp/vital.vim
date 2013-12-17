@@ -127,8 +127,8 @@ Context Data.List.max()
     Should 'hehehe' ==# g:L.max(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
     Should -50 == g:L.max([20, -50, -15, 30], 'abs(v:val)')
   End
-  It returns 0 if the list is empty.
-    Should 0 == g:L.max([], 'v:val')
+  It throws an exception if the list is empty.
+    ShouldThrow g:L.max([], 'v:val'), /.*/
   End
 End
 
@@ -137,8 +137,8 @@ Context Data.List.min()
     Should 'foo' ==# g:L.min(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
     Should -15 == g:L.min([20, -50, -15, 30], 'abs(v:val)')
   End
-  It returns 0 if the list is empty.
-    Should 0 == g:L.min([], 'v:val')
+  It throws an exception if the list is empty.
+    ShouldThrow g:L.min([], 'v:val'), /.*/
   End
 End
 
@@ -250,13 +250,8 @@ Context Data.List.foldl1()
     Should [1, 2] == g:L.foldl1('[v:memo, v:val]', [1, 2])
   End
 
-  It causes an error when the list is empty
-    try
-      call g:L.foldl1('123', [])
-      Should 0
-    catch /^foldl1$/
-      Should 1
-    endtry
+  It throws an exception when the list is empty
+    ShouldThrow g:L.foldl1('123', []), /.*/
   End
 End
 
@@ -277,13 +272,8 @@ Context Data.List.foldr1()
     Should [2, 1] == g:L.foldr1('[v:memo, v:val]', [1, 2])
   End
 
-  It causes an error when the list is empty
-    try
-      call g:L.foldr1('123', [])
-      Should 0
-    catch /^foldr1$/
-      Should 1
-    endtry
+  It throws an exception when the list is empty
+    ShouldThrow g:L.foldr1('123', []), /.*/
   End
 End
 
