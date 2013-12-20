@@ -104,7 +104,7 @@ concat({list})				*Vital.Data.List.concat()*
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
 
-flatten({list}, [, {limit}])		*Vital.Data.List.flatten()*
+flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 	Take each {list} elements in |List| {list} into a new {list}
 	recursively.  When the {limit} argument is given, the function keeps
 	nested items by the {limit} is maximum size.
@@ -343,7 +343,7 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 		echo idx.': '.line
 	endfor
 <
-has_common_items({list1} {list2})	*Vital.Data.List.has_common_items()*
+has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	Returns non-zero if a:list1 and a:list2 have a common item, otherwise
 	zero.
 >
