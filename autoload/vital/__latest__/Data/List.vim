@@ -72,11 +72,10 @@ function! s:flatten(list, ...)
   endif
   let limit -= 1
   for Value in a:list
-    if type(Value) == type([])
-      let list += s:flatten(Value, limit)
-    else
-      call add(list, Value)
-    endif
+    let list +=
+          \ type(Value) == type([]) ?
+          \   s:flatten(Value, limit) :
+          \   [Value]
     unlet! Value
   endfor
   return list
