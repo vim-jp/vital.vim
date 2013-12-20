@@ -73,15 +73,16 @@ endfunction
 function! s:Manager.config(...)
   if a:0 == 0
     return self._config
+  elseif a:0 == 1 && s:V.is_dict(a:1)
+    call extend(self._config, a:1)
+    return self
   elseif a:0 == 1
-    if s:V.is_dict(a:1)
-      call extend(self._config, a:1)
-    else
-      return get(self._config, a:1)
-    endif
+    return get(self._config, a:1)
   elseif a:0 == 2
     let self._config[a:1] = a:2
+    return self
   endif
+  " TODO handle error
   return self
 endfunction
 
