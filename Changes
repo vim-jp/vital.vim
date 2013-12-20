@@ -1,8 +1,11 @@
+1eadb4b
+	Modules: ProcessManager
+	Abandon ProcessManager.new(). Use its touch() instead.
 36985f8
 	Modules: ProcessManager
-  ProcessManager.stop() is now deprecated.
-  Use ProcessManager.kill() and ProcessManager.term() instead.
-  Previous stop() is same to kill().
+	ProcessManager.stop() is now deprecated.
+	Use ProcessManager.kill() and ProcessManager.term() instead.
+	Previous stop() is same to kill().
 7998c7c
 	Modules: Prelude
     path2project_directory recognize git submodule.
