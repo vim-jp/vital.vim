@@ -9,12 +9,6 @@ Context ProcessManager.is_available()
   End
 End
 
-Context ProcessManager.new()
-  It makes a process synchronously and stores the info inside ProcessManager
-    " TODO
-  End
-End
-
 Context ProcessManager.touch()
   It makes a process synchronously and stores the info inside ProcessManager
     if g:P.is_available()
@@ -31,9 +25,9 @@ End
 
 Context ProcessManager.status()
   It is 'stopped' when the process is not working
-    let i = g:P.new('ls') " assuming you have ls command
+    call g:P.new('spec-status', 'ls') " assuming you have ls command
     sleep " TODO it's evil.
-    Should g:P.status(i) == 'inactive'
+    Should g:P.status('spec-status') == 'inactive'
   End
   " TODO make new test case about 'active'
 End
