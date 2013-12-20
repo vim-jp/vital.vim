@@ -25,7 +25,7 @@ End
 
 Context ProcessManager.status()
   It is 'stopped' when the process is not working
-    call g:P.new('spec-status', 'ls') " assuming you have ls command
+    call g:P.touch('spec-status', 'ls') " assuming you have ls command
     sleep " TODO it's evil.
     Should g:P.status('spec-status') == 'inactive'
   End
