@@ -71,16 +71,16 @@ function! s:Manager.opened(bufname)
 endfunction
 
 function! s:Manager.config(...)
-  if a:0 == 2
-    let self._config[a:1] = a:2
+  if a:0 == 0
+    return self._config
   elseif a:0 == 1
     if s:V.is_dict(a:1)
       call extend(self._config, a:1)
     else
       return get(self._config, a:1)
     endif
-  elseif a:0 == 0
-    return self._config
+  elseif a:0 == 2
+    let self._config[a:1] = a:2
   endif
   return self
 endfunction
@@ -140,7 +140,9 @@ function! s:Manager.move(...)
 endfunction
 
 function! s:Manager.do(cmd)
-  let cmd = a:cmd =~ '%s' ? a:cmd : a:cmd . ' %s'
+  let cmd =
+        \ a:cmd =~ '%s' ? a:cmd
+        \               : a:cmd . ' %s'
   for bufnr in self.list()
     execute substitute(cmd, '%s', bufnr, '')
   endfor
