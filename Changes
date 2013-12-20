@@ -1,3 +1,6 @@
+40718a7
+	Modules: Prelude
+	Removed obsolete is_integer().
 39974f3
 	Modules: Vim.BufferManager, Vim.Buffer
 	move open() from Vim.BufferManager to Vim.Buffer,
