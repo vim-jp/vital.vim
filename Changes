@@ -1,3 +1,7 @@
+39974f3
+	Modules: Vim.BufferManager, Vim.Buffer
+	move open() from Vim.BufferManager to Vim.Buffer,
+	with deprecating BufferManager's one
 1eadb4b
 	Modules: ProcessManager
 	Abandon ProcessManager.new(). Use its touch() instead.
