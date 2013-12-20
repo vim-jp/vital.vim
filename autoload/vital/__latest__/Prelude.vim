@@ -49,11 +49,6 @@ function! s:is_numeric(Value)
 endfunction
 
 " Number
-function! s:is_integer(Value)
-  echoerr 'Prelude.is_integer() is obsolete. Use its is_number() instead; they are equivalent.'
-  return s:is_number(a:Value)
-endfunction
-
 function! s:is_number(Value)
   return type(a:Value) ==# s:__TYPE_NUMBER
 endfunction

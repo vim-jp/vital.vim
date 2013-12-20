@@ -15,17 +15,6 @@ Context Prelude.is_numeric()
   End
 End
 
-Context Prelude.is_integer()
-  It checks if the argument is an integer
-    Should g:V.is_integer(3) ==# 1
-    Should g:V.is_integer(3.14159) ==# 0
-    Should g:V.is_integer("") ==# 0
-    Should g:V.is_integer(function('tr')) ==# 0
-    Should g:V.is_integer([]) ==# 0
-    Should g:V.is_integer({}) ==# 0
-  End
-End
-
 Context Prelude.is_number()
   It checks if the argument is a number
     Should g:V.is_number(3) ==# 1

@@ -19,10 +19,6 @@ INTERFACE				*Vital.Prelude-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Prelude-functions*
 
-is_integer({value})				*Vital.Prelude.is_integer()*
-	Obsolete! Use |Vital.Prelude.is_number()| instead.
-	Returns non-zero if {value} is an integer, zero otherwise.
-
 is_number({value})				*Vital.Prelude.is_number()*
 	Returns non-zero if {value} is a |Number|, zero otherwise.
 		Examples: >
