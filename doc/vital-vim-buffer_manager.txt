@@ -70,6 +70,7 @@ Manager.open({bufname} [, {config}])
 	opener(|Vital.Vim.BufferManager-config-opener|).
 
 Manager.opened({bufname})	*Vital.Vim.BufferManager-Manager.opened()*
+	Not implemented yet.
 
 Manager.close([{range}])	*Vital.Vim.BufferManager-Manager.close()*
 	Closes the {range} buffer if it exists.
