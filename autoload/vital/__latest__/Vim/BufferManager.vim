@@ -82,8 +82,7 @@ function! s:Manager.config(...)
     let self._config[a:1] = a:2
     return self
   endif
-  " TODO handle error
-  return self
+  throw new 'Vital.Vim.BufferManager: invalid argument for config()'
 endfunction
 
 function! s:Manager.user_config(config)
