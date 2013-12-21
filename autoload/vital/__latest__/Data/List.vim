@@ -63,7 +63,7 @@ function! s:concat(list)
   return list
 endfunction
 
-" Flattens a list.
+" Take each elements from lists to a new list.
 function! s:flatten(list, ...)
   let limit = a:0 > 0 ? a:1 : -1
   let list = []
