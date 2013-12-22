@@ -126,16 +126,6 @@ End
   "IS unite#util#wcswidth('あいうえお'), 10
   "IS unite#util#is_win(), 0
 
-Context Prelude.print_error()
-  It prints error message
-    redir => output
-      silent call g:V.print_error('hi')
-    redir END
-    " TODO: how to check `echohl ErrorMsg`?
-    Should output ==# "\nhi"
-  End
-End
-
   "call unite#util#smart_execute_command('echo', '') " hmm
 
   "let tempname = tempname()
