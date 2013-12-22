@@ -1,6 +1,6 @@
-
 let s:save_cpo = &cpo
 set cpo&vim
+
 
 
 function! s:echomsg(hl, msg) abort
@@ -12,12 +12,16 @@ function! s:echomsg(hl, msg) abort
   endtry
 endfunction
 
-function! s:warn(msg)
-  call s:echomsg('WarningMsg', a:msg)
+function! s:error(msg)
+  echohl ErrorMsg
+  for m in split(a:msg, "\n")
+    echomsg m
+  endfor
+  echohl None
 endfunction
 
-function! s:error(msg)
-  call s:echomsg('ErrorMsg', a:msg)
+function! s:warn(msg)
+  call s:echomsg('WarningMsg', a:msg)
 endfunction
 
 
