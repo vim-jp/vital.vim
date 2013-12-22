@@ -110,8 +110,9 @@ function! s:status(i)
   " return p.kill(0) ? 'inactive' : 'active'
   " ... checkpid() checks if the process is running AND does waitpid() in C,
   " so it solves zombie processes.
-  return get(p.checkpid(), 0, '') ==# 'run' ?
-        \ 'active' : 'inactive'
+  return get(p.checkpid(), 0, '') ==# 'run'
+        \ ? 'active'
+        \ : 'inactive'
 endfunction
 
 function! s:debug_processes()
