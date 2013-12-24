@@ -43,6 +43,7 @@ Context Text.Lexer.lexer()
 End
 
 
+" TODO move this to Text.Parser's spec
 Context Text.Lexer.simple_parser()
   It makes simple_parser
     let g:parser = g:L.simple_parser(tokens)
