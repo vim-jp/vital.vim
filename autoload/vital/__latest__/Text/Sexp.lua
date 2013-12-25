@@ -105,7 +105,7 @@ function public.lua.parse_progress(tokens, parse_rules, context)
   end
 end
 
-function public.vim.parse(sexp)
+function public.lua.parse(sexp)
   local lex_rule = {
     {'whitespace', '%s+'},
     {'list-open', '%('},
@@ -129,10 +129,15 @@ function public.vim.parse(sexp)
   local ast, rest_tokens =
     public.lua.parse_progress(tokens, parse_rules, 'many-expr')
   if #rest_tokens == 0 then
-    return P.from_lua(ast)
+    return ast
   else
     print("Failed to consume all tokens.")
   end
+end
+
+function public.vim.parse(sexp)
+  local ast = public.lua.parse(sexp)
+  return P.from_lua(ast)
 end
 
 _G[vital_context] = public
