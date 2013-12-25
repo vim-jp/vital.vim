@@ -1,5 +1,9 @@
 " Lua.Prelude
 " Author: Tatsuhiro Ujihisa
+"
+"
+" todo
+" * If the vital dir has " this won't work.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -28,8 +32,8 @@ function! s:mapinc(list)
   return luaeval('_G[_A[0]].vim.map(_A[1], function(x) return x + 1 end)', [s:sfile, a:list])
 endfunction
 
-function! s:debug_sfile()
-  return s:sfile
+function! s:lua_namespace()
+  return printf('_G["%s.lua"]', s:sfile)
 endfunction
 
 let &cpo = s:save_cpo

@@ -1,3 +1,6 @@
+-- Lua.Prelude
+-- Author: Tatsuhiro Ujihisa
+
 local public = {lua = {}, vim = {}}
 
 function public.lua.plus(x, y)
@@ -7,7 +10,6 @@ end
 public.vim.plus = public.lua.plus
 
 function public.lua.map(list, f)
-  print("lua.map", list, f)
   local memo = {}
   for _, v in ipairs(list) do
     table.insert(memo, f(v))
