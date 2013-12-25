@@ -33,7 +33,7 @@ function! s:mapinc(list)
 endfunction
 
 function! s:lua_namespace()
-  return printf('_G["%s.lua"]', s:sfile)
+  return s:sfile
 endfunction
 
 let &cpo = s:save_cpo
