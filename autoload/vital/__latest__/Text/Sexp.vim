@@ -45,35 +45,6 @@ local find_one = function(str, patterns, idx)
   end
 end
 
-local lualist2vimlist = function(lualist)
-  local memo = vim.list()
-  for _, v in ipairs(lualist) do
-    memo:add(P.from_lua(v))
-  end
-  return memo
-end
-
-local luadict2vimdict = function(luadict)
-  local memo = vim.dict()
-  for k, v in pairs(luadict) do
-    memo[k] = P.from_lua(v)
-  end
-  return memo
-end
-
-local is_list = function(tbl)
-  -- http://stackoverflow.com/questions/6077006/how-can-i-check-if-a-lua-table-contains-only-sequential-numeric-indices
-  local numKeys = 0
-  for _, _ in pairs(tbl) do
-    numKeys = numKeys+1
-  end
-  local numIndices = 0
-  for _, _ in ipairs(tbl) do
-    numIndices = numIndices+1
-  end
-  return numKeys == numIndices
-end
-
 -- local size_iterator = function(iter)
 --   local i = 0
 --   for _ in iter do
@@ -156,7 +127,6 @@ end
 
 function vital_text_sexp.parse(sexp)
   local tokens = vital_text_sexp.tokenize(sexp)
-  -- return lualist2vimlist(P.map(tokens, luadict2vimdict))
   local parse_rules = {}
   parse_rules['expr'] = {
     {'list-open', 'many-expr', 'list-close'},
