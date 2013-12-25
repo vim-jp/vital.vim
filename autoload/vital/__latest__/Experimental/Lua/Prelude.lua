@@ -21,11 +21,11 @@ local is_list = function(tbl)
   -- http://stackoverflow.com/questions/6077006/how-can-i-check-if-a-lua-table-contains-only-sequential-numeric-indices
   local numKeys = 0
   for _, _ in pairs(tbl) do
-    numKeys = numKeys+1
+    numKeys = numKeys + 1
   end
   local numIndices = 0
   for _, _ in ipairs(tbl) do
-    numIndices = numIndices+1
+    numIndices = numIndices + 1
   end
   return numKeys == numIndices
 end
@@ -37,6 +37,8 @@ function public.lua.to_lua(vobj)
       table.insert(memo, v)
     end
     return memo
+  elseif vim.type(vobj) == 'dict' then
+    print('not implemented yet')
   end
 end
 
@@ -69,7 +71,6 @@ function public.lua.from_lua(x)
 end
 
 function public.vim.map(list, f)
-  print("vim.map", list, f)
   return public.lua.from_lua(public.lua.map(public.lua.to_lua(list), f))
 end
 
