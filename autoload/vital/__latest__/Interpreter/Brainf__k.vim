@@ -41,36 +41,33 @@ function! s:_parse(tokens)
 endfunction
 
 function! s:_execute(asts, pointer, tape)
-  if len(a:asts) == 0
-    return [a:pointer, a:tape]
-  endif
+  let [asts, pointer, tape] = [a:asts, a:pointer, a:tape]
+  while len(asts) > 0
+    unlet! ast
+    let [ast, asts] = [asts[0], asts[1:]]
 
-  let [ast, asts] = [a:asts[0], a:asts[1:]]
-
-  if s:V.is_list(ast)
-    " echomsg string([a:tape, a:pointer, get(a:tape, a:pointer, 0)])
-    if get(a:tape, a:pointer, 0) == 0
-      return s:_execute(asts, a:pointer, a:tape)
+    if s:V.is_list(ast)
+      if get(tape, pointer, 0) == 0
+        " go next
+      else
+        let [pointer, tape] = s:_execute(ast, pointer, tape)
+        let asts = [ast] + asts
+      endif
     else
-      let [pointer, tape] = s:_execute(ast, a:pointer, a:tape)
-      return s:_execute(a:asts, pointer, tape)
+      if ast == '+'
+        let tape[pointer] = get(tape, pointer, 0) + 1
+      elseif ast == '-'
+        let tape[pointer] = get(tape, pointer, 0) - 1
+      elseif ast == '>'
+        let pointer += 1
+      elseif ast == '<'
+        let pointer -= 1
+      elseif ast == '.'
+        echon nr2char(get(tape, pointer, 0))
+      endif
     endif
-  else
-    if ast == '+'
-      let a:tape[a:pointer] = get(a:tape, a:pointer, 0) + 1
-      return s:_execute(asts, a:pointer, a:tape)
-    elseif ast == '-'
-      let a:tape[a:pointer] = get(a:tape, a:pointer, 0) - 1
-      return s:_execute(asts, a:pointer, a:tape)
-    elseif ast == '>'
-      return s:_execute(asts, a:pointer + 1, a:tape)
-    elseif ast == '<'
-      return s:_execute(asts, a:pointer - 1, a:tape)
-    elseif ast == '.'
-      echon nr2char(get(a:tape, a:pointer, 0))
-      return s:_execute(asts, a:pointer, a:tape)
-    endif
-  endif
+  endwhile
+  return [pointer, tape]
 endfunction
 
 " let s:hello_world = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
