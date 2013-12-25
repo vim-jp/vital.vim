@@ -43,17 +43,7 @@ end
 --   return i
 -- end
 
-function public.lua.tokenize(sexp)
-  local lex_rule = {
-    {'whitespace', '%s+'},
-    {'list-open', '%('},
-    {'list-close', '%)'},
-    {'vec-open', '%['},
-    {'vec-close', '%]'},
-    {'digit', '%d+'},
-    {'string', '".-[^%\\]"'},
-    {'keyword', ':[%-%+%*<>!=.:/%w]+'},
-    {'identifier', "['%-%+%*<>!=.:/%w]+"}}
+function public.lua.tokenize(lex_rule, sexp)
   -- for x in sexp:gmatch('[%(%)]') do
   --   print("ok", x)
   -- end
@@ -116,7 +106,17 @@ function public.lua.parse_progress(tokens, parse_rules, context)
 end
 
 function public.vim.parse(sexp)
-  local tokens = public.lua.tokenize(sexp)
+  local lex_rule = {
+    {'whitespace', '%s+'},
+    {'list-open', '%('},
+    {'list-close', '%)'},
+    {'vec-open', '%['},
+    {'vec-close', '%]'},
+    {'digit', '%d+'},
+    {'string', '".-[^%\\]"'},
+    {'keyword', ':[%-%+%*<>!=.:/%w]+'},
+    {'identifier', "['%-%+%*<>!=.:/%w]+"}}
+  local tokens = public.lua.tokenize(lex_rule, sexp)
   local parse_rules = {}
   parse_rules['expr'] = {
     {'list-open', 'many-expr', 'list-close'},
