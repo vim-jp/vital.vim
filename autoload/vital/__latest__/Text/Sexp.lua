@@ -45,7 +45,7 @@ end
 --   return i
 -- end
 
-function vital_text_sexp.tokenize(sexp)
+function public.lua.tokenize(sexp)
   local lex_rule = {
     {'whitespace', '%s+'},
     {'list-open', '%('},
@@ -118,7 +118,7 @@ function public.lua.parse_progress(tokens, parse_rules, context)
 end
 
 function public.vim.parse(sexp)
-  local tokens = vital_text_sexp.tokenize(sexp)
+  local tokens = public.lua.tokenize(sexp)
   local parse_rules = {}
   parse_rules['expr'] = {
     {'list-open', 'many-expr', 'list-close'},
