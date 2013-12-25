@@ -23,8 +23,6 @@ function _.cons(x, xs)
   return memo
 end
 
-vital_text_sexp = {}
-
 local find_one = function(str, patterns, idx)
   for _, labelpattern in ipairs(patterns) do
     local label = labelpattern[1]
@@ -136,14 +134,5 @@ function public.vim.parse(sexp)
     print("Failed to consume all tokens.")
   end
 end
-
--- function vital_text_sexp.parse(tokens)
---   local memo = {}
---   for _, token in pairs(tokens) do
---     memo:add(token['label'])
---   end
---   return memo
--- end
---
 
 _G[vital_context] = public
