@@ -74,7 +74,7 @@ function vital_text_sexp.tokenize(sexp)
   return tokens
 end
 
-function vital_text_sexp.parse_progress(tokens, parse_rules, context)
+function public.lua.parse_progress(tokens, parse_rules, context)
   if #tokens == 0 then
     return {}, ""
   end
@@ -88,7 +88,7 @@ function vital_text_sexp.parse_progress(tokens, parse_rules, context)
   --         print("truetrue")
   --         -- local new_context = parse_rules[v][1][1]
   --         -- print("new_context: ", new_context)
-  --         -- return vital_text_sexp.parse_progress(tokens, parse_rules, new_context)
+  --         -- return public.lua.parse_progress(tokens, parse_rules, new_context)
   --       else -- a token
   --         local token = tokens[1]
   --         print("token: ", token)
@@ -104,21 +104,20 @@ function vital_text_sexp.parse_progress(tokens, parse_rules, context)
 
   if token.label == 'list-open' then
     local parsed1, tokens1 =
-      vital_text_sexp.parse_progress(tokens, parse_rules, context)
+      public.lua.parse_progress(tokens, parse_rules, context)
     local parsed2, tokens2 =
-      vital_text_sexp.parse_progress(tokens1, parse_rules, context)
+      public.lua.parse_progress(tokens1, parse_rules, context)
     return _.cons(parsed1, parsed2), tokens2
   elseif token.label == 'list-close' then
     return {}, tokens
   else
     local parsed, tokens =
-      vital_text_sexp.parse_progress(tokens, parse_rules, context)
+      public.lua.parse_progress(tokens, parse_rules, context)
     return _.cons(token, parsed), tokens
   end
 end
 
 function public.vim.parse(sexp)
-  print("calling vim.parse")
   local tokens = vital_text_sexp.tokenize(sexp)
   local parse_rules = {}
   parse_rules['expr'] = {
@@ -130,7 +129,7 @@ function public.vim.parse(sexp)
     {'expr', 'many-expr'},
     {'expr'}}
   local ast, rest_tokens =
-    vital_text_sexp.parse_progress(tokens, parse_rules, 'many-expr')
+    public.lua.parse_progress(tokens, parse_rules, 'many-expr')
   if #rest_tokens == 0 then
     return P.from_lua(ast)
   else
