@@ -40,6 +40,13 @@ function! s:_parse(tokens)
   endif
 endfunction
 
+" args:
+"   asts: a list of parsed ASTs
+"   pointer: where to refer in tape (give 0 when you start)
+"   tape: storage for BF (give {} when you start)
+" return: [pointer, tape]
+"   the final state of pointer and tape to continue if you have more ASTs that
+"   you didn't pass to the call.
 function! s:_execute(asts, pointer, tape)
   let [asts, pointer, tape] = [a:asts, a:pointer, a:tape]
   while len(asts) > 0
