@@ -67,7 +67,7 @@ function! s:_vim_parse(tokens)
 endfunction
 
 function! s:_lua_parse(bfcode)
-  echomsg string(['not implemented yet'])
+  return luaeval('_G[_A[0]].vim.lua_parse(_A[1])', [s:sfile, a:bfcode])
 endfunction
 
 " args:
