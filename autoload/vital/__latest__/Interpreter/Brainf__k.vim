@@ -3,8 +3,26 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:sfile = expand('<sfile>:p')
+
 function! s:_vital_loaded(V)
   let s:V = a:V
+
+  if has('lua')
+    let s:P = s:V.import('Experimental.Lua.Prelude')
+    let s:LuaP = s:P.lua_namespace()
+
+    execute printf('lua vital_context = "%s"', s:sfile)
+    call luaeval('dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
+  endif
+endfunction
+
+function! s:_vital_depends()
+  if has('lua')
+    return ['Experimental.Lua.Prelude']
+  else
+    return []
+  endif
 endfunction
 
 function! s:run(bfcode)
@@ -91,6 +109,7 @@ endfunction
 
 function! s:_lua_execute(asts, pointer, tape)
   echomsg string(['not implemented yet'])
+  return s:_vim_execute(a:asts, a:pointer, a:tape)
 endfunction
 
 " let s:hello_world = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
