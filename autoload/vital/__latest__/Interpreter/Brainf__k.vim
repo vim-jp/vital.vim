@@ -12,11 +12,11 @@ function! s:run(bfcode)
 endfunction
 
 function! s:run_vim_parse_execute(bfcode)
-  let [asts, rest] = s:_parse(a:bfcode)
+  let [asts, rest] = s:_vim_parse(a:bfcode)
   if rest !=# ''
     throw 'Vital.Interpreter.Brainf__k.run_vim_parse_execute(): parser failed to consume'
   endif
-  call s:_execute(asts, 0, {})
+  call s:_vim_execute(asts, 0, {})
 endfunction
 
 function s:run_lua_parse_execute(bfcode)
@@ -27,7 +27,7 @@ function s:run_lua_parse_execute(bfcode)
   call s:_lua_execute(asts, 0, {})
 endfunction
 
-function! s:_parse(tokens)
+function! s:_vim_parse(tokens)
   if a:tokens ==# ''
     return [[], '']
   endif
@@ -35,16 +35,16 @@ function! s:_parse(tokens)
   let [t, tokens] = [a:tokens[0], a:tokens[1:]]
 
   if t ==# '['
-    let [ast1, rest1] = s:_parse(tokens)
-    let [ast2, rest2] = s:_parse(rest1)
+    let [ast1, rest1] = s:_vim_parse(tokens)
+    let [ast2, rest2] = s:_vim_parse(rest1)
     return [[ast1] + ast2, rest2]
   elseif t ==# ']'
     return [[], tokens]
   elseif t =~ '[+-><,\.]'
-    let [asts, rest] = s:_parse(tokens)
+    let [asts, rest] = s:_vim_parse(tokens)
     return [[t] + asts, rest]
   else
-    return s:_parse(tokens)
+    return s:_vim_parse(tokens)
   endif
 endfunction
 
@@ -59,7 +59,7 @@ endfunction
 " return: [pointer, tape]
 "   the final state of pointer and tape to continue if you have more ASTs that
 "   you didn't pass to the call.
-function! s:_execute(asts, pointer, tape)
+function! s:_vim_execute(asts, pointer, tape)
   let [asts, pointer, tape] = [a:asts, a:pointer, a:tape]
   while len(asts) > 0
     unlet! ast
@@ -69,7 +69,7 @@ function! s:_execute(asts, pointer, tape)
       if get(tape, pointer, 0) == 0
         " go next
       else
-        let [pointer, tape] = s:_execute(ast, pointer, tape)
+        let [pointer, tape] = s:_vim_execute(ast, pointer, tape)
         let asts = [ast] + asts
       endif
     else
