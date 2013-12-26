@@ -19,6 +19,14 @@ function! s:run_vim_parse_execute(bfcode)
   call s:_execute(asts, 0, {})
 endfunction
 
+function s:run_lua_parse_execute(bfcode)
+  let [asts, rest] = s:_lua_parse(a:bfcode)
+  if rest !=# ''
+    throw 'Vital.Interpreter.Brainf__k.run_vim_parse_execute(): parser failed to consume'
+  endif
+  call s:_lua_execute(asts, 0, {})
+endfunction
+
 function! s:_parse(tokens)
   if a:tokens ==# ''
     return [[], '']
@@ -38,6 +46,10 @@ function! s:_parse(tokens)
   else
     return s:_parse(tokens)
   endif
+endfunction
+
+function! s:_lua_parse(bfcode)
+  echomsg string(['not implemented yet'])
 endfunction
 
 " args:
@@ -75,6 +87,10 @@ function! s:_execute(asts, pointer, tape)
     endif
   endwhile
   return [pointer, tape]
+endfunction
+
+function! s:_lua_execute(asts, pointer, tape)
+  echomsg string(['not implemented yet'])
 endfunction
 
 " let s:hello_world = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
