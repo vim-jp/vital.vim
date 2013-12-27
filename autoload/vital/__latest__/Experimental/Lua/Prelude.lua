@@ -74,4 +74,25 @@ function public.vim.map(list, f)
   return public.lua.from_lua(public.lua.map(public.lua.to_lua(list), f))
 end
 
+-- only for lua
+function public.lua.rest(array, index)
+  -- TODO Text.Sexp also has one
+  index = index or 2
+  local rest = {}
+  for i = index, #array do
+    rest[#rest + 1] = array[i]
+  end
+  return rest
+end
+
+-- only for lua
+function public.lua.cons(x, xs)
+  -- TODO Text.Sexp also has one
+  local memo = {x}
+  for _, v in ipairs(xs) do
+    table.insert(memo, v)
+  end
+  return memo
+end
+
 _G[vital_context] = public
