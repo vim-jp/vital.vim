@@ -38,7 +38,7 @@ function! s:run_vim_parse_execute(bfcode)
 endfunction
 
 function s:run_lua_parse_execute(bfcode)
-  let [asts, rest] = s:_lua_parse(a:bfcode)
+  let [asts, rest] =  s:_lua_parse(a:bfcode)
   if rest !=# ''
     throw 'Vital.Interpreter.Brainf__k.run_vim_parse_execute(): parser failed to consume'
   endif
