@@ -53,7 +53,7 @@ Parser.ignore()                            *Vital.Text.Parser-Parser.ignore()*
 
 Parser.config(dict)                        *Vital.Text.Parser-Parser.config()*
         {dict} is options of this Parser object.
-        {dict} can have following keys. 
+        {dict} can have following keys.
 
                 'ignore_labels' : It is used Parser.ignore().
 
@@ -65,8 +65,8 @@ EXAMPLES				          *Vital.Text.Parser-examples*
         let s:V = vital#of('vital')
         let s:L = s:V.import('Text.Lexer')
         let s:P = s:V.import('Text.Parser')
-        
-        
+
+
         let s:rules = [
               \ [ 'NUMBER', '[0-9]\+' ],
               \ [ 'PLUS', '+' ],
@@ -75,21 +75,21 @@ EXAMPLES				          *Vital.Text.Parser-examples*
               \ [ 'DIV', '/' ],
               \ [ 'WS', '\s\+' ],
               \ ]
-        
+
         let s:lexed_obj = s:L.lexer(s:rules).exec('12 + 2 - 9 * 3 - 18 / 3 * 2')
         let s:parser_obj = s:P.parser().exec(s:lexed_obj)
-        
+
         call s:parser_obj.config({ 'ignore_labels' : ['WS'] })
-        
+
         function! s:parser_obj.number() dict
           call self.ignore()
           if self.next_is('NUMBER')
             return eval(self.consume().matched_text)
           else
-            throw 'syntax error' 
+            throw 'syntax error'
           endif
         endfunction
-        
+
         function! s:parser_obj.term() dict
           let lhs = self.number()
           while ! self.end()
@@ -102,11 +102,11 @@ EXAMPLES				          *Vital.Text.Parser-examples*
               let lhs = lhs / self.number()
             else
               break
-            endif  
-          endwhile  
+            endif
+          endwhile
           return lhs
         endfunction
-        
+
         function! s:parser_obj.expression() dict
           let lhs = self.term()
           while ! self.end()
@@ -119,11 +119,11 @@ EXAMPLES				          *Vital.Text.Parser-examples*
               let lhs = lhs - self.term()
             else
               break
-            endif  
+            endif
           endwhile
           return lhs
         endfunction
-        
+
         echo s:parser_obj.expression()
         " -25
 <
