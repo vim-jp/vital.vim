@@ -34,15 +34,17 @@ function public.lua.to_lua(vobj)
   if vim.type(vobj) == 'list' then
     local memo = {}
     for v in vobj() do
-      table.insert(memo, v)
+      table.insert(memo, public.lua.to_lua(v))
     end
     return memo
   elseif vim.type(vobj) == 'dict' then
     local memo = {}
     for k, v in vobj() do
-      memo[k] = v
+      memo[k] = public.lua.to_lua(v)
     end
     return memo
+  else
+    return vobj
   end
 end
 
