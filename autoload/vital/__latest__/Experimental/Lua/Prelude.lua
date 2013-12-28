@@ -38,7 +38,11 @@ function public.lua.to_lua(vobj)
     end
     return memo
   elseif vim.type(vobj) == 'dict' then
-    print('not implemented yet')
+    local memo = {}
+    for k, v in vobj() do
+      memo[k] = v
+    end
+    return memo
   end
 end
 
