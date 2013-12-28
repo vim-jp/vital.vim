@@ -21,9 +21,61 @@ function public.lua.lua_parse(tokens)
   end
 end
 
+local _ = {}
+
+function _.get(table, key, default)
+  local x = table[key]
+  if x then
+    return x
+  else
+    return default
+  end
+end
+
+function public.lua.lua_execute(asts, pointer, tape)
+  if #asts == 0 then
+    return pointer, tape
+  end
+  local ast = asts[1]
+  local asts = P.rest(asts)
+
+  if type(ast) == "table" then
+    if _.get(tape, pointer, 0) == 0 then
+      return public.lua.lua_execute(asts, pointer, tape)
+    else
+      local pointer, tape = public.lua.lua_execute(ast, pointer, tape)
+      return public.lua.lua_execute(P.cons(ast, asts), pointer, tape)
+    end
+  else
+    if ast == '+' then
+      tape[pointer] = _.get(tape, pointer, 0) + 1
+      return public.lua.lua_execute(asts, pointer, tape)
+    elseif ast == '-' then
+      tape[pointer] = _.get(tape, pointer, 0) - 1
+      return public.lua.lua_execute(asts, pointer, tape)
+    elseif ast == '>' then
+      return public.lua.lua_execute(asts, pointer + 1, tape)
+    elseif ast == '<' then
+      return public.lua.lua_execute(asts, pointer - 1, tape)
+    elseif ast == '.' then
+      print(_.get(tape, pointer, 0))
+      return public.lua.lua_execute(asts, pointer, tape)
+    else
+      return public.lua.lua_execute(asts, pointer, tape)
+    end
+  end
+end
+
 function public.vim.lua_parse(tokens)
   local asts, rest = public.lua.lua_parse(tokens)
   return P.from_lua({asts, rest})
+end
+
+function public.vim.lua_execute(asts, pointer, tape)
+  local tape = P.to_lua(tape)
+  local asts = P.to_lua(asts)
+  local pointer, tape = public.lua.lua_execute(asts, pointer, tape)
+  return P.from_lua({pointer, tape})
 end
 
 _G[vital_context] = public

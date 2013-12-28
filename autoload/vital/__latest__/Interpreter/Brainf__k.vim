@@ -108,8 +108,7 @@ function! s:_vim_execute(asts, pointer, tape)
 endfunction
 
 function! s:_lua_execute(asts, pointer, tape)
-  echomsg string(['not implemented yet'])
-  return s:_vim_execute(a:asts, a:pointer, a:tape)
+  return luaeval('_G[_A[0]].vim.lua_execute(_A[1], _A[2], _A[3])', [s:sfile, a:asts, a:pointer, a:tape])
 endfunction
 
 " let s:hello_world = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
