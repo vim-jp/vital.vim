@@ -32,6 +32,11 @@ function _.get(table, key, default)
   end
 end
 
+function _.print_without_newline(str)
+  -- TODO currently if_lua's io.write doesn't work as print since it's special
+  vim.command(string.format('echon "%s"', str))
+end
+
 function public.lua.lua_execute(asts, pointer, tape)
   if #asts == 0 then
     return pointer, tape
@@ -58,7 +63,7 @@ function public.lua.lua_execute(asts, pointer, tape)
     elseif ast == '<' then
       return public.lua.lua_execute(asts, pointer - 1, tape)
     elseif ast == '.' then
-      print(_.get(tape, pointer, 0))
+      _.print_without_newline(string.char(_.get(tape, pointer, 0)))
       return public.lua.lua_execute(asts, pointer, tape)
     else
       return public.lua.lua_execute(asts, pointer, tape)
