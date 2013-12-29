@@ -6,15 +6,6 @@ local _ = {}
 
 local P = _G[vim.eval('s:LuaP')].lua
 
-function _.rest(array, index)
-  index = index or 2
-  local rest = {}
-  for i = index, #array do
-    rest[#rest + 1] = array[i]
-  end
-  return rest
-end
-
 function _.cons(x, xs)
   local memo = {x}
   for _, v in ipairs(xs) do
@@ -88,7 +79,7 @@ function public.lua.parse_progress(tokens, parse_rules, context)
   -- end
 
   local token = tokens[1]
-  local tokens = _.rest(tokens)
+  local tokens = P.rest(tokens)
 
   if token.label == 'list-open' then
     local parsed1, tokens1 =
