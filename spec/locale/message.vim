@@ -40,7 +40,7 @@ End
 Context Locale.Message.Message._()
   language message ja_JP.UTF-8
   let m = g:M.new(s:text_path)
-  It should be able to use like `get()`
+  It uses like `get()`
     Should m._('hello') ==# 'こんにちは'
     Should m._('world') ==# 'world'
   End
@@ -59,7 +59,7 @@ Context Locale.Message.Message.load()
 End
 
 Context Locale.Message.Message.missing()
-  It should be called when the text was not found
+  It is called when the text is not found
     let m = g:M.new(s:text_path)
     call m.load('ja')
     Should m.get('world') ==# 'world'
