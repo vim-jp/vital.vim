@@ -24,7 +24,7 @@ function! s:encode(val)
   if type(a:val) == 0
     return a:val
   elseif type(a:val) == 1
-    let json = '"' . escape(a:val, '"') . '"'
+    let json = '"' . escape(a:val, '\"') . '"'
     let json = substitute(json, "\r", '\\r', 'g')
     let json = substitute(json, "\n", '\\n', 'g')
     let json = substitute(json, "\t", '\\t', 'g')
