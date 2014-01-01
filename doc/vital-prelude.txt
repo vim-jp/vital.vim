@@ -93,7 +93,8 @@ system({expr} [, {input} [, {timeout}]])	*Vital.Prelude.system()*
 	|has_vimproc()| returns non-zero.
 
 get_last_status()			*Vital.Prelude.get_last_status()*
-	Returns the result of the last shell command.
+	Returns the result of the last shell command either via |vimproc| or
+	not.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
