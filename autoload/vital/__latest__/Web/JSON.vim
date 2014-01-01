@@ -1,13 +1,14 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
+function! s:_vital_loaded(V)
+  let s:V = a:V
+  let s:string = s:V.import('Data.String')
+endfunction
 
 function! s:_vital_depends()
   return ['Data.String']
 endfunction
-
-let s:string = s:V.import('Data.String')
 
 function! s:decode(json)
   let json = iconv(a:json, "utf-8", &encoding)
