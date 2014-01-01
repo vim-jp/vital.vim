@@ -8,7 +8,7 @@ let s:sfile = expand('<sfile>:p')
 
 function! s:_vital_loaded(V)
   let s:V = a:V
-  let s:P = s:V.import('Experimental.Lua.Prelude')
+  let s:P = s:V.import('Lua.Prelude')
   let s:LuaP = s:P.lua_namespace()
 
   if has('lua')
@@ -20,7 +20,7 @@ function! s:_vital_loaded(V)
 endfunction
 
 function! s:_vital_depends()
-  return ['Experimental.Lua.Prelude']
+  return ['Lua.Prelude']
 endfunction
 
 function! s:parse(sexp)

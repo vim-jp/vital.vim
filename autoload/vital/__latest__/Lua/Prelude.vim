@@ -15,7 +15,7 @@ function! s:_vital_loaded(V)
     execute printf('lua vital_context = "%s"', s:sfile)
     call luaeval('dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
   else
-    throw "Vital.Experimental.Lua.Prelude: You don't have if_lua."
+    throw "Vital.Lua.Prelude: You don't have if_lua."
   endif
 endfunction
 

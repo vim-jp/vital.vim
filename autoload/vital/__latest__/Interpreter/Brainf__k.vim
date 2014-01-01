@@ -9,7 +9,7 @@ function! s:_vital_loaded(V)
   let s:V = a:V
 
   if has('lua')
-    let s:P = s:V.import('Experimental.Lua.Prelude')
+    let s:P = s:V.import('Lua.Prelude')
     let s:LuaP = s:P.lua_namespace()
 
     execute printf('lua vital_context = "%s"', s:sfile)
@@ -19,7 +19,7 @@ endfunction
 
 function! s:_vital_depends()
   if has('lua')
-    return ['Experimental.Lua.Prelude']
+    return ['Lua.Prelude']
   else
     return []
   endif
