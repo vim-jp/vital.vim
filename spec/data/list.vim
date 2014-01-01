@@ -146,13 +146,13 @@ Context Data.List.max_by()
   End
 End
 
-Context Data.List.min()
+Context Data.List.min_by()
   It returns a minimum value in the list through the given expr.
-    Should 'foo' ==# g:L.min(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
-    Should -15 == g:L.min([20, -50, -15, 30], 'abs(v:val)')
+    Should 'foo' ==# g:L.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
+    Should -15 == g:L.min_by([20, -50, -15, 30], 'abs(v:val)')
   End
   It returns 0 if the list is empty.
-    Should 0 == g:L.min([], 'v:val')
+    Should 0 == g:L.min_by([], 'v:val')
   End
 End
 
