@@ -1,0 +1,25 @@
+*vital-lua-prelude.txt*		crucial functions for lua integration
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Lua.Prelude-contents*
+
+INTRODUCTION			|Vital.Lua.Prelude-introduction|
+INTERFACE			|Vital.Lua.Prelude-interface|
+  Functions			  |Vital.Lua.Prelude-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Lua.Prelude-introduction*
+
+*Vital.Lua.Prelude* is pretty handy.  TODO
+
+==============================================================================
+INTERFACE				*Vital.Lua.Prelude-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Lua.Prelude-functions*
+
+TODO
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
