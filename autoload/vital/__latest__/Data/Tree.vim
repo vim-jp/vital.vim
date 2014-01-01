@@ -1,12 +1,11 @@
-
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:new(token,...)
+function! s:new(token, ...)
   if type(a:token) == type({}) && has_key(a:token,'token') && has_key(a:token,'children')
     let obj = a:token
   else
-    let obj = { 'token' : a:token , 'children' : a:0 > 0
+    let obj = { 'token': a:token , 'children': a:0 > 0
     \ ? ( a:0 == 1 ? (type(a:1) == type([]) ? a:1 : [(a:1)])
     \              : a:000
     \   )
@@ -39,11 +38,11 @@ function! s:new(token,...)
   function! obj.inorder_traversal() dict
     let tkns = []
     if ! empty(self.children)
-      let tkns += s:new(get(self.children,0,'')).inorder_traversal()
+      let tkns += s:new(get(self.children, 0, '')).inorder_traversal()
     endif
     let tkns += [(self.token)]
     if ! empty(self.children)
-      let tkns += s:new(get(self.children,1,'')).inorder_traversal()
+      let tkns += s:new(get(self.children, 1, '')).inorder_traversal()
     endif
     return tkns
   endfunction
@@ -63,4 +62,3 @@ endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
