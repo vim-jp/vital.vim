@@ -24,7 +24,6 @@ function! s:cons(x, xs)
   return [a:x] + a:xs
 endfunction
 
-" TODO spec
 function! s:conj(xs, x)
   return a:xs + [a:x]
 endfunction

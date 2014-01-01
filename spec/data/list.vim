@@ -82,6 +82,20 @@ Context Data.List.cons()
   End
 End
 
+Context Data.List.conj()
+  It makes new list which last items are {val} and the preceding items remain {list}.
+    let a = []
+    Should g:L.conj(a, 1) == [1]
+    Should [] == a
+    let a = [1]
+    Should g:L.conj(a, 2) == [1, 2]
+    Should [1] == a
+    Should g:L.conj([2, 3], 1) == [2, 3, 1]
+    Should g:L.conj([], 1) == [1]
+    Should g:L.conj([2, 3], [1]) == [2, 3, [1]]
+  End
+End
+
 Context Data.List.uniq()
   It makes a list unique
     let a = ['vim', 'emacs', 'vim', 'vim']
