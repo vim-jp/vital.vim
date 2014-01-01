@@ -80,6 +80,10 @@ is_unix()					*Vital.Prelude.is_unix()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
 	Note that this returns non-zero if Vim is a Cygwin version.
 
+				*Vital.Prelude.path2project_directory()*
+path2project_directory({path}[, {is_allow_empty}])
+	TODO
+
 has_vimproc()					*Vital.Prelude.has_vimproc()*
 	Returns non-zero if |vimproc| is installed, zero otherwise.
 	You can download the |vimproc| from http://github.com/Shougo/vimproc/.
