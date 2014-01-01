@@ -3,16 +3,16 @@ set cpo&vim
 
 " Imports {{{
 
-let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
+function! s:_vital_loaded(V)
+  let s:V = a:V
+  let s:HTTP = s:V.import('Web.HTTP')
+endfunction
 
 function! s:_vital_depends()
   return ['Web.HTTP']
 endfunction
 
-let s:HTTP = s:V.import('Web.HTTP')
-
 " }}}
-
 
 " Autoload Functions {{{
 
