@@ -13,7 +13,7 @@ INTERFACE				|Vital.Web.XML-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Web.XML-introduction*
 
-*Vital.Web.XML* is XML parser Library.
+*Vital.Web.XML* is an XML parser library.
 
 ==============================================================================
 INTERFACE				*Vital.Web.XML-interface*
