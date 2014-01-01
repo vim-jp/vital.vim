@@ -267,10 +267,10 @@ endfunction
 
 function! s:parse(xml)
   let top = deepcopy(s:__template)
-  let oldmaxmempattern=&maxmempattern
-  let oldmaxfuncdepth=&maxfuncdepth
-  let &maxmempattern=2000000
-  let &maxfuncdepth=2000
+  let oldmaxmempattern = &maxmempattern
+  let oldmaxfuncdepth = &maxfuncdepth
+  let &maxmempattern = 2000000
+  let &maxfuncdepth = 2000
   try
     call s:__parse_tree({'xml': a:xml, 'encoding': ''}, top)
     for node in top.child
@@ -280,8 +280,8 @@ function! s:parse(xml)
       unlet node
     endfor
   finally
-    let &maxmempattern=oldmaxmempattern
-    let &maxfuncdepth=oldmaxfuncdepth
+    let &maxmempattern = oldmaxmempattern
+    let &maxfuncdepth = oldmaxfuncdepth
   endtry
   throw "Parse Error"
 endfunction
