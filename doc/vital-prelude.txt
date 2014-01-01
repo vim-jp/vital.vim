@@ -55,7 +55,7 @@ is_numeric({value})				*g:V.Prelude.is_numeric()*
 <		0
 
 is_string({value})				*g:V.Prelude.is_string()*
-	Returns non-zero if {value} is a |String|, zero otherwise.
+	Returns non-zero if {value} is a String (|expr-string|), zero otherwise.
 
 is_funcref({value})				*Vital.Prelude.is_funcref()*
 	Returns non-zero if {value} is a |Funcref|, zero otherwise.
