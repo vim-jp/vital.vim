@@ -80,6 +80,20 @@ is_unix()					*Vital.Prelude.is_unix()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
 	Note that this returns non-zero if Vim is a Cygwin version.
 
+set_default({var}, {val})			*Vital.Prelude.set_default()*
+	TODO
+
+				*Vital.Prelude.set_dictionary_helper()*
+set_dictionary_helper({variable}, {keys}, {pattern})
+	TODO
+
+				*Vital.Prelude.substitute_path_separator()*
+substitute_path_separator({path})
+	TODO
+
+path2directory({path})			*Vital.Prelude.path2directory()*
+	TODO
+
 				*Vital.Prelude.path2project_directory()*
 path2project_directory({path}[, {is_allow_empty}])
 	TODO
