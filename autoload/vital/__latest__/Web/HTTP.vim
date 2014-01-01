@@ -253,6 +253,7 @@ endfunction
 let s:clients = {}
 
 let s:clients.python = {}
+
 function! s:clients.python.available(settings)
   if !has('python')
     return 0
@@ -267,6 +268,7 @@ function! s:clients.python.available(settings)
   endif
   return 1
 endfunction
+
 function! s:clients.python.request(settings)
   " TODO: maxRedirect, retry, outputFile
   let header = ''
@@ -342,12 +344,15 @@ endpython
 endfunction
 
 let s:clients.curl = {}
+
 function! s:clients.curl.available(settings)
   return executable(self._command(a:settings))
 endfunction
+
 function! s:clients.curl._command(settings)
   return get(get(a:settings, 'command', {}), 'curl', 'curl')
 endfunction
+
 function! s:clients.curl.request(settings)
   let quote = s:_quote()
   let command = self._command(a:settings)
@@ -393,12 +398,15 @@ function! s:clients.curl.request(settings)
 endfunction
 
 let s:clients.wget = {}
+
 function! s:clients.wget.available(settings)
   return executable(self._command(a:settings))
 endfunction
+
 function! s:clients.wget._command(settings)
   return get(get(a:settings, 'command', {}), 'wget', 'wget')
 endfunction
+
 function! s:clients.wget.request(settings)
   let quote = s:_quote()
   let command = self._command(a:settings)
