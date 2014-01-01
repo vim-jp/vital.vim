@@ -13,9 +13,7 @@ function! s:new(token, ...)
   endif
 
   function! obj.addchild(...) dict
-    for node in a:000
-      let self.children += [copy(node)]
-    endfor
+    let self.children += map(a:000, 'copy(v:val)')
     return self
   endfunction
 
