@@ -20,7 +20,7 @@ INTERFACE				*Vital.Data.Tree-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Data.Tree-functions*
 
-new({token},...)      			*Vital.Data.Tree.new()*
+new({token},...)			*Vital.Data.Tree.new()*
 	Create a new Tree object. There are 2 ways to create a new Tree
 	object.
 	(1) Give a dict that contains token and children in its key as
@@ -47,9 +47,9 @@ EXAMPLES   				*Vital.Data.Tree-examples*
 >
     let V = vital#of('vital')
     let T = V.import('Data.Tree')
-    
+
     let tree_obj = T.new('+',1,T.new('-',2,3))
-    " or 
+    " or
     let tree_obj = T.new('+', [1,T.new('-',2,3)] )
     "
     "    +
@@ -64,7 +64,7 @@ EXAMPLES   				*Vital.Data.Tree-examples*
 
     echo tree_obj.children
     " [1,T.new('-',2,3)]
-    
+
     echo tree_obj.tostring()
     " {'+': ['1', {'-': ['2', '3']}]}
 
@@ -76,7 +76,7 @@ EXAMPLES   				*Vital.Data.Tree-examples*
 
     echo tree_obj.postorder_traversal()
     " [1, '-', 2, 3, '+']
-     
+
     echo tree_obj.addchild(4).tostring()
     " {'+': ['1', {'-': ['2', '3']}, '4']}
     "
