@@ -21,7 +21,15 @@ INTERFACE				*Vital.Data.Tree-interface*
 FUNCTIONS				*Vital.Data.Tree-functions*
 
 new({token},...)      			*Vital.Data.Tree.new()*
-	Create new Tree Object.
+	Create a new Tree object. There are 2 ways to create a new Tree
+	object.
+	(1) Give a dict that contains token and children in its key as
+	{token}
+	(2) Give a string as token in {token}, and multiple of children nodes
+	in later arguments.
+
+	Note that if you choose the (1) way, all the rest of arguments will be
+	silently ignored.
 
 ------------------------------------------------------------------------------
 
