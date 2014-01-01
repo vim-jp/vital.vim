@@ -58,7 +58,7 @@ function! s:new(token,...)
     return tkns
   endfunction
 
-  return deepcopy(obj)
+  return copy(obj)
 endfunction
 
 let &cpo = s:save_cpo
