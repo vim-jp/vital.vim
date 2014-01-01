@@ -4,8 +4,8 @@ set cpo&vim
 function! s:_vital_loaded(V)
   let s:V = a:V
 
-  let s:string = s:V.import('Data.String')
-  let s:http = s:V.import('Web.HTTP')
+  let s:S = s:V.import('Data.String')
+  let s:H = s:V.import('Web.HTTP')
 
   let s:__template = { 'name': '', 'attr': {}, 'child': [] }
 endfunction
@@ -22,8 +22,8 @@ function! s:decodeEntityReference(str)
   "let str = substitute(str, '&apos;', "'", 'g')
   "let str = substitute(str, '&nbsp;', ' ', 'g')
   "let str = substitute(str, '&yen;', '\&#65509;', 'g')
-  let str = substitute(str, '&#x\([0-9a-fA-F]\+\);', '\=s:string.nr2enc_char("0x".submatch(1))', 'g')
-  let str = substitute(str, '&#\(\d\+\);', '\=s:string.nr2enc_char(submatch(1))', 'g')
+  let str = substitute(str, '&#x\([0-9a-fA-F]\+\);', '\=s:S.nr2enc_char("0x".submatch(1))', 'g')
+  let str = substitute(str, '&#\(\d\+\);', '\=s:S.nr2enc_char(submatch(1))', 'g')
   let str = substitute(str, '&amp;', '\&', 'g')
   return str
 endfunction
@@ -291,7 +291,7 @@ function! s:parseFile(fname)
 endfunction
 
 function! s:parseURL(url)
-  return s:parse(s:http.get(a:url).content)
+  return s:parse(s:H.get(a:url).content)
 endfunction
 
 let &cpo = s:save_cpo
