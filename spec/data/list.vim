@@ -136,13 +136,13 @@ Context Data.List.clear()
   End
 End
 
-Context Data.List.max()
+Context Data.List.max_by()
   It returns a maximum value in the list through the given expr.
-    Should 'hehehe' ==# g:L.max(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
-    Should -50 == g:L.max([20, -50, -15, 30], 'abs(v:val)')
+    Should 'hehehe' ==# g:L.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)')
+    Should -50 == g:L.max_by([20, -50, -15, 30], 'abs(v:val)')
   End
   It returns 0 if the list is empty.
-    Should 0 == g:L.max([], 'v:val')
+    Should 0 == g:L.max_by([], 'v:val')
   End
 End
 
