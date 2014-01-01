@@ -12,7 +12,9 @@ INTERFACE			|Vital.Prelude-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Prelude-introduction*
 
-*Vital.Prelude* is pretty handy.  TODO
+*Vital.Prelude* is a special module that you don't have to explicitly import
+but can use anywhere. Some Vital modules implicitly depend on Prelude
+functions.
 
 ==============================================================================
 INTERFACE				*Vital.Prelude-interface*
