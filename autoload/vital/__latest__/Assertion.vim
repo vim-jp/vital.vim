@@ -40,6 +40,8 @@ function! s:_outputter(dict) " {{{
 		echo  printf("> lhs: %s", a:dict.lhs)
 		echo  printf("> rhs: %s", a:dict.rhs)
 		echohl None
+
+		throw 'vital: Assertion: EXIT_FAILURE'
 	endif
 endfunction " }}}
 function! s:_redir(cmd) " {{{
