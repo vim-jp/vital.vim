@@ -8,7 +8,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:sfile = expand('<sfile>:p')
+let s:sfile = tr(expand('<sfile>:p'),'\','/')
 
 function! s:_vital_loaded(V)
   if has('lua')
