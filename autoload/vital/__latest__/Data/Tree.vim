@@ -13,14 +13,14 @@ function! s:new(token, ...)
   endif
 
   function! obj.addchild(...) dict
-    let self.children += map(a:000, 'copy(v:val)')
+    let self.children += map(copy(a:000), 'copy(v:val)')
     return self
   endfunction
 
-  function! obj.tostring() dict
+  function! obj.todict() dict
     return { type(self.token) == type('')
     \  ? self.token : string(self.token)
-    \  : map(copy(self.children),'type(v:val) == type({}) ? v:val.tostring() : string(v:val)') }
+    \  : map(copy(self.children),'type(v:val) == type({}) ? v:val.todict() : string(v:val)') }
   endfunction
 
   function! obj.preorder_traversal() dict
