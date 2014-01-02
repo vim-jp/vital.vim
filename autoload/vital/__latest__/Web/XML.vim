@@ -166,7 +166,6 @@ endfunction
 function! s:__parse_tree(ctx, top)
   let node = a:top
   let stack = [a:top]
-  let pos = 0
   " content accumulates the text only tags
   let content = ""
   let append_content_to_parent = 'if len(stack) && content != "" | call add(stack[-1].child, content) | let content ="" | endif'
