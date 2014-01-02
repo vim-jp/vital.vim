@@ -115,10 +115,13 @@ endfunction " }}}
 
 function! s:define(cmd_name,...) " {{{
 	if (0 < len(a:000)) ? a:1 : 0
-		execute 'command! -nargs=1 '.a:cmd_name.' try | throw 1 | catch | call s:_assertion(<q-args>,(exists(''l:'')?eval(''l:''):{}),expand(''%''), v:throwpoint, '.string(a:cmd_name).') | endtry'
+		execute 'command! -buffer -bar -nargs=1 '.a:cmd_name.' try | throw 1 | catch | call s:_assertion(<q-args>,(exists(''l:'')?eval(''l:''):{}),expand(''%''), v:throwpoint, '.string(a:cmd_name).') | endtry'
 	else
-		execute 'command! -nargs=1 '.a:cmd_name
+		execute 'command! -buffer -bar -nargs=1 '.a:cmd_name
 	endif
+endfunction " }}}
+function! s:set_config(config) " {{{
+	" TODO
 endfunction " }}}
 
 let &cpo = s:save_cpo
