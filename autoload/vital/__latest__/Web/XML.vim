@@ -6,13 +6,13 @@ function! s:_vital_loaded(V)
 
   let s:S = s:V.import('Data.String')
   let s:H = s:V.import('Web.HTTP')
-
-  let s:__template = { 'name': '', 'attr': {}, 'child': [] }
 endfunction
 
 function! s:_vital_depends()
   return ['Data.String', 'Web.HTTP']
 endfunction
+
+let s:__template = { 'name': '', 'attr': {}, 'child': [] }
 
 function! s:decodeEntityReference(str)
   let str = a:str
