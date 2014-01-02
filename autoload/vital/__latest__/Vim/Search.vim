@@ -2,20 +2,22 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " [I wrapper
-function! s:finddef(pos)
+" known issue: it messes undo tree slightly
+function! s:finddef(str)
   let before = getpos('.')
+  call append(0, a:str) " ugh
   try
-    call setpos('.', a:pos)
+    call setpos('.', getpos('1'))
     redir => result
-      normal! [I
+      silent! normal! [I
     redir END
 
     " tokenizing phase
     let lines = s:lines(result)
     let tokens = []
     for line in lines
-      if line =~ '^\s'
-        let [_, lnum, body ; _2] = matchlist(line, '\s\+\d\+:\s\+\(\d\+\)\(.*\)')
+      if line =~ '^\s*\d'
+        let [_, lnum, body ; _2] = matchlist(line, '\s*\d\+:\s\+\(\d\+\)\(.*\)')
         let tokens += [['item', lnum, body]]
       else
         let tokens += [['file', line]]
@@ -35,6 +37,7 @@ function! s:finddef(pos)
     endfor
     return parsed
   finally
+    silent! undo
     call setpos('.', before)
   endtry
 endfunction
@@ -44,8 +47,6 @@ endfunction
 function! s:lines(str)
   return split(a:str, '\r\?\n')
 endfunction
-
-echo s:finddef(getpos('.'))
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
