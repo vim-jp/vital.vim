@@ -76,9 +76,9 @@ function public.lua.from_lua(x)
   end
 end
 
-function public.vim.map(list, f)
-  return public.lua.from_lua(public.lua.map(public.lua.to_lua(list), f))
-end
+-- function public.vim.map(list, f)
+--   return public.lua.from_lua(public.lua.map(public.lua.to_lua(list), f))
+-- end
 
 -- only for lua
 function public.lua.rest(array, index)

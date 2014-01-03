@@ -23,14 +23,14 @@ function! s:plus(x, y)
   return luaeval('_G[_A[0]].vim.plus(_A[1], _A[2])', [s:sfile, a:x, a:y])
 endfunction
 
-function! s:map(list, f)
-  return luaeval('_G[_A[0]].vim.map(_A[1], _A[2])', [s:sfile, a:list, a:f])
-endfunction
-
-" for testing
-function! s:mapinc(list)
-  return luaeval('_G[_A[0]].vim.map(_A[1], function(x) return x + 1 end)', [s:sfile, a:list])
-endfunction
+" function! s:map(list, f)
+"   return luaeval('_G[_A[0]].vim.map(_A[1], _A[2])', [s:sfile, a:list, a:f])
+" endfunction
+"
+" " for testing
+" function! s:mapinc(list)
+"   return luaeval('_G[_A[0]].vim.map(_A[1], function(x) return x + 1 end)', [s:sfile, a:list])
+" endfunction
 
 function! s:lua_namespace()
   return s:sfile
