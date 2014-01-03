@@ -221,7 +221,7 @@ End
 
 Context Data.String.lines()
   It splits into list of strings of each lines of {str}.
-    Should g:S.lines('a\nb\r\nc') == ['a', 'b', 'c']
+    Should g:S.lines("a\nb\r\nc") == ['a', 'b', 'c']
   End
 End
 
