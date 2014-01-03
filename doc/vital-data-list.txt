@@ -195,8 +195,6 @@ span({string}, {list})			*Vital.Data.List.span()*
 	equal to {list}, all the items of the first list satisfy {string} and
 	the first item of the second list does not satisfy {string}.
 	Inside {string} |v:val| has the value of the current item.
-
-	Behaves like Haskell's Data.List.span().
 >
 	echo L.span("v:val==1", [1, 2])
 	" [[1], [2]]
@@ -207,13 +205,14 @@ span({string}, {list})			*Vital.Data.List.span()*
 	echo L.span('v:val < 3', [1, 2, 3, 4, 5])
 	" [[1, 2], [3, 4, 5]]
 <
+	If you know Haskell, this span() is like Haskell's Data.List.span just
+	for your info.
+
 break({expr}, {list})			*Vital.Data.List.break()*
 	Returns a list of two lists where concatenation of them is
 	equal to {list}, all the items of the first list do not satisfy
 	{string} and the first item of the second list satisfies {string}.
 	Inside {string} |v:val| has the value of the current item.
-
-	Behaves like Haskell's Data.List.break().
 >
 	echo L.break("v:val==1", [1, 2])
 	" [[], [1, 2]]
@@ -224,12 +223,13 @@ break({expr}, {list})			*Vital.Data.List.break()*
 	echo L.break('v:val < 3', [1, 2, 3, 4, 5])
 	" [[], [1, 2, 3, 4, 5]]
 <
+	If you know Haskell, this break() is like Haskell's Data.List.break
+	just for your info.
+
 all({expr}, {list})			*Vital.Data.List.all()*
 	Returns Number 1 if all the items in |List| {list} fulfill the
 	condition {expr}, zero otherwise.
 	If {list} is empty, this function returns 1.
-
-	This function behaves like Haskell's Prelude.all().
 >
 	echo L.all('v:val % 2 == 0', [2, 8, 4, 6])
 	" 1
@@ -242,12 +242,13 @@ all({expr}, {list})			*Vital.Data.List.all()*
 	echo L.all('0 < v:val', [2, 0, 4, 6])
 	" 0
 <
+	If you know Haskell, this all() is like Haskell's Prelude.all just for
+	your info.
+
 any({expr}, {list})			*Vital.Data.List.any()*
 	Returns Number 1 if at least one item in |List| {list} fulfills the
 	condition {expr}, zero otherwise.  If {list} is empty, this function
 	returns 1.
-
-	This function behaves like Haskell's Prelude.any().
 >
 	echo L.any('v:val % 2 == 0', [2, 8, 4, 6])
 	" 1
@@ -260,11 +261,12 @@ any({expr}, {list})			*Vital.Data.List.any()*
 	echo L.any('0 < v:val', [2, 0, 4, 6])
 	" 1
 <
+	If you know Haskell, this any() is like Haskell's Prelude.any just for
+	your info.
+
 and({list})				*Vital.Data.List.and()*
 	Returns Number 1 if all the items of |List| {list} are non-zero
 	Numbers, zero otherwise.  If {list} is empty, this function returns 1.
-
-	This function behaves like Haskell's Prelude.and().
 >
 	echo L.and([1, 2, 3, 1])
 	" 1
@@ -273,11 +275,12 @@ and({list})				*Vital.Data.List.and()*
 	echo L.and([0, 0, 0, 0])
 	" 0
 <
+	If you know Haskell, this and() is like Haskell's Prelude.and just for
+	your info.
+
 or({list})				*Vital.Data.List.or()*
 	Returns Number 1 if at least one item in List {list} is non-zero,
 	zero otherwise.  If {list} is empty, this function returns 1.
-
-	This function behaves like Haskell's Prelude.or().
 >
 	echo L.or([1, 2, 3, 1])
 	" 1
@@ -286,6 +289,9 @@ or({list})				*Vital.Data.List.or()*
 	echo L.or([0, 0, 0, 0])
 	" 0
 <
+	If you know Haskell, this or() is like Haskell's Prelude.or just for
+	your info.
+
 partition({expr}, {list})		*Vital.Data.List.partition()*
 	Behaves like Haskell's Data.List.partition().
 
