@@ -219,6 +219,12 @@ Context Data.String.dstring()
   End
 End
 
+Context Data.String.lines()
+  It splits into list of strings of each lines of {str}.
+    Should g:S.lines('a\nb\r\nc') == ['a', 'b', 'c']
+  End
+End
+
 Context Data.String.contains_multibyte()
   It returns 1 if the string contains multibyte
     Should g:S.contains_multibyte('あ') == 1
