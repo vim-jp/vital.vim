@@ -6,6 +6,7 @@ Maintainer: ujihisa <ujihisa at gmail com>
 CONTENTS				*Vital.Lua.Prelude-contents*
 
 INTRODUCTION			|Vital.Lua.Prelude-introduction|
+  USAGE				|Vital.Lua.Prelude-usage|
 INTERFACE			|Vital.Lua.Prelude-interface|
   Functions			  |Vital.Lua.Prelude-functions|
 
@@ -13,6 +14,38 @@ INTERFACE			|Vital.Lua.Prelude-interface|
 INTRODUCTION				*Vital.Lua.Prelude-introduction*
 
 *Vital.Lua.Prelude* is pretty handy.  TODO
+
+==============================================================================
+USAGE					*Vital.Lua.Prelude-usage*
+
+sample.vim
+>
+	let s:V = vital#of('sample')
+	let s:P = s:V.import('Lua.Prelude')
+	let s:LuaP = s:P.lua_namespace()
+	let s:sfile = expand('<sfile>:p')
+
+	function! s:f(x, y)
+	  return luaeval('_G[_A[0]].vim.lua_execute(_A[1], _A[2])', [s:sfile, a:x, a:y])
+	endfunction
+<
+sample.lua
+>
+	local public = {lua = {}, vim = {}}
+	local P = _G[vim.eval('s:LuaP')].lua
+
+	function public.lua.f(x, y)
+	  ...
+	end
+	...
+	function public.vim.f(x, y)
+	  -- type conversion and call lua.f
+	  ...
+	end
+	...
+
+	_G[vital_context] = public
+<
 
 ==============================================================================
 INTERFACE				*Vital.Lua.Prelude-interface*
