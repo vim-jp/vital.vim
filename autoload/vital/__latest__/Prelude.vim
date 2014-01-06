@@ -251,14 +251,14 @@ function! s:iconv(expr, from, to)
   return result != '' ? result : a:expr
 endfunction
 
-" Like builtin getchar() but returns string always.
+" This is like builtin getchar() but always returns string.
 function! s:getchar(...)
   let c = call('getchar', a:000)
   return type(c) == type(0) ? nr2char(c) : c
 endfunction
 
-" Like builtin getchar() but returns string always.
-" and do inputsave()/inputrestore() before/after getchar().
+" This is like builtin getchar() but always returns string,
+" and also does inputsave()/inputrestore() before/after getchar().
 function! s:getchar_safe(...)
   let c = s:input_helper('getchar', a:000)
   return type(c) == type("") ? c : nr2char(c)
