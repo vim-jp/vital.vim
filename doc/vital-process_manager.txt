@@ -96,8 +96,5 @@ touch({label}, {cmd})		*Vital.ProcessManager.touch()*
 	Returns a string which is either "existing" or "new".
 	TODO
 
-new({cmd})			*Vital.ProcessManager.new()*
-	Returns a label which is a natural number.
-
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
