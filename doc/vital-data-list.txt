@@ -86,15 +86,22 @@ conj({list}, {val})			*Vital.Data.List.conj()*
 	" ERROR: E745
 <
 
-uniq({list} [, {expr}])			*Vital.Data.List.uniq()*
+uniq({list})			*Vital.Data.List.uniq()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In
 	particular, it keeps only the first occurrence of each element.
-	If {expr} is given, uniqueness is judged with the value to which a
-	formula is applied.
+	See also: |Vital.Data.List.uniq_by()|
 >
 	uniq(['vim', 'emacs', 'vim', 'vim']) == ['vim', 'emacs']
+<
 
-	uniq(
+uniq_by({list}, {str})			*Vital.Data.List.uniq_by()*
+	Removes duplicate elements from |List| {list}, nondestructively.  In
+	particular, it keeps only the first occurrence of each element.  The
+	uniqueness is judged with the value {str} to which a formula is
+	applied.
+	See also: |Vital.Data.List.uniq()|
+>
+	uniq_by(
 	\ ['vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'],
 	\ 'tolower(v:val)') == ['vim', 'emacs', 'gVim']
 <
