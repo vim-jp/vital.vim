@@ -30,11 +30,21 @@ endfunction
 
 " Removes duplicates from a list.
 function! s:uniq(list, ...)
-  let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)
+  if a:0
+    return s:uniq_by(a:list, a:1)
+  else
+    return s:uniq_by(a:list, 'v:val')
+  endif
+endfunction
+
+" Removes duplicates from a list.
+" TODO not documented yet
+function! s:uniq_by(list, f)
+  let list = map(copy(a:list), printf('[v:val, %s]', a:f))
   let i = 0
   let seen = {}
   while i < len(list)
-    let key = string(a:0 ? list[i][1] : list[i])
+    let key = string(list[i][1])
     if has_key(seen, key)
       call remove(list, i)
     else
@@ -42,7 +52,7 @@ function! s:uniq(list, ...)
       let i += 1
     endif
   endwhile
-  return a:0 ? map(list, 'v:val[0]') : list
+  return map(list, 'v:val[0]')
 endfunction
 
 function! s:clear(list)
