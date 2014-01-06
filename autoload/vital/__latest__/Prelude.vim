@@ -267,22 +267,22 @@ endfunction
 " Like builtin getchar() but
 " do inputsave()/inputrestore() before/after input().
 function! s:input_safe(...)
-    return s:input_helper('input', a:000)
+  return s:input_helper('input', a:000)
 endfunction
 
 " Do inputsave()/inputrestore() before/after calling a:funcname.
 function! s:input_helper(funcname, args)
-    let success = 0
-    if inputsave() !=# success
-        throw 'inputsave() failed'
+  let success = 0
+  if inputsave() !=# success
+    throw 'inputsave() failed'
+  endif
+  try
+    return call(a:funcname, a:args)
+  finally
+    if inputrestore() !=# success
+      throw 'inputrestore() failed'
     endif
-    try
-        return call(a:funcname, a:args)
-    finally
-        if inputrestore() !=# success
-            throw 'inputrestore() failed'
-        endif
-    endtry
+  endtry
 endfunction
 
 function! s:set_default(var, val)
