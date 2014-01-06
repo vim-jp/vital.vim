@@ -80,6 +80,27 @@ is_unix()					*Vital.Prelude.is_unix()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
 	Note that this returns non-zero if Vim is a Cygwin version.
 
+escape_file_searching({str})		*Vital.Prelude.escape_file_searching()*
+	TODO
+
+escape_pattern({str})			*Vital.Prelude.escape_pattern()*
+	TODO
+
+iconv({expr}, {from}, {to})			*Vital.Prelude.iconv()*
+	TODO
+
+getchar(...)					*Vital.Prelude.getchar()*
+	TODO
+
+getchar_safe(...)				*Vital.Prelude.getchar_safe()*
+	TODO
+
+input_safe(...)					*Vital.Prelude.input_safe()*
+	TODO
+
+input_helper({funcname}, {args})		*Vital.Prelude.input_helper()*
+	TODO
+
 set_default({var}, {val})			*Vital.Prelude.set_default()*
 	TODO
 
