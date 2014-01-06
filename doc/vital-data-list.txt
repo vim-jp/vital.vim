@@ -91,6 +91,13 @@ uniq({list} [, {expr}])			*Vital.Data.List.uniq()*
 	particular, it keeps only the first occurrence of each element.
 	If {expr} is given, uniqueness is judged with the value to which a
 	formula is applied.
+>
+	uniq(['vim', 'emacs', 'vim', 'vim']) == ['vim', 'emacs']
+
+	uniq(
+	\ ['vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'],
+	\ 'tolower(v:val)') == ['vim', 'emacs', 'gVim']
+<
 
 clear({list})				*Vital.Data.List.clear()*
 	Removes all the items of |List| {list}.  Returns the empty list.
