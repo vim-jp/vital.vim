@@ -108,11 +108,13 @@ Context Data.List.uniq()
   It supports empty strings as well
     Should ['', 'v', 'vv'] == g:L.uniq(['', '', 'v', 'vv', '', 'vv', 'v'])
   End
+End
 
+Context Data.List.uniq_by()
   It makes a list unique based on given expression
     Should [
     \ 'vim', 'emacs', 'gVim'
-    \ ] == g:L.uniq([
+    \ ] == g:L.uniq_by([
     \ 'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
     \ ], 'tolower(v:val)')
   End

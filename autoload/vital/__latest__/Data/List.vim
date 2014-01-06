@@ -33,6 +33,7 @@ function! s:uniq(list, ...)
   if a:0
     return s:uniq_by(a:list, a:1)
   else
+    echomsg printf("Vital.Data.List.uniq() with 2 arguments is deprecated! Please use uniq_by() instead, if you still want to use the 2nd argument.")
     return s:uniq_by(a:list, 'v:val')
   endif
 endfunction
