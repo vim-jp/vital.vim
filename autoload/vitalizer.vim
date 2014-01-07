@@ -249,7 +249,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     if empty(installing_modules)
       let files = s:all_modules()
     else
-      let installing_modules = s:L.uniq(installing_modules)
+      let installing_modules = s:L.uniq_by(installing_modules, 'v:val')
       let files = map(s:search_dependence(installing_modules + s:REQUIRED_MODULES),
       \               's:module2file(v:val)')
     endif
