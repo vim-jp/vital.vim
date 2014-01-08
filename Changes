@@ -1,6 +1,6 @@
 960f5f4
 	Modules: Data.List
-	uniq() with 2nd argument is deprecated. Please us uniq_by() instead.
+	uniq() with 2nd argument is deprecated. Please use uniq_by() instead.
 f82a6fc
 	Modules: Prelude
 	print_error() is deprecated. Please use Vim.Message.error() instead.
