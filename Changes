@@ -1,3 +1,6 @@
+3a85a26
+	Modules: Data.List
+	Data.List: Removed deprecated max() and min().
 960f5f4
 	Modules: Data.List
 	uniq() with 2nd argument is deprecated. Please use uniq_by() instead.
