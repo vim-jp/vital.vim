@@ -114,11 +114,6 @@ function! s:sort_by(list, expr)
   \      'a:a[1] ==# a:b[1] ? 0 : a:a[1] ># a:b[1] ? 1 : -1'), 'v:val[0]')
 endfunction
 
-function! s:max(list, expr)
-  echoerr 'Data.List.max() is obsolete. Use its max_by() instead.'
-  return s:max_by(a:list, a:expr)
-endfunction
-
 " Returns a maximum value in {list} through given {expr}.
 " Returns 0 if {list} is empty.
 " v:val is used in {expr}
@@ -128,11 +123,6 @@ function! s:max_by(list, expr)
   endif
   let list = map(copy(a:list), a:expr)
   return a:list[index(list, max(list))]
-endfunction
-
-function! s:min(list, expr)
-  echoerr 'Data.List.min() is obsolete. Use its min_by() instead.'
-  return s:min_by(a:list, a:expr)
 endfunction
 
 " Returns a minimum value in {list} through given {expr}.
