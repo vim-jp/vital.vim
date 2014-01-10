@@ -66,29 +66,29 @@ endfunction
 " Concatenates a list of lists.
 " XXX: Should we verify the input?
 function! s:concat(list)
-  let list = []
+  let memo = []
   for Value in a:list
-    let list += Value
+    let memo += Value
   endfor
-  return list
+  return memo
 endfunction
 
 " Take each elements from lists to a new list.
 function! s:flatten(list, ...)
   let limit = a:0 > 0 ? a:1 : -1
-  let list = []
+  let memo = []
   if limit == 0
     return a:list
   endif
   let limit -= 1
   for Value in a:list
-    let list +=
+    let memo +=
           \ type(Value) == type([]) ?
           \   s:flatten(Value, limit) :
           \   [Value]
     unlet! Value
   endfor
-  return list
+  return memo
 endfunction
 
 " Sorts a list with expression to compare each two values.
