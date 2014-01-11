@@ -27,8 +27,8 @@ COMMANDS					*vitalizer-commands*
 :Vitalize [options] {target-dir} [{module} ...]	*:Vitalize*
 	{target-dir} is root directory of your plugin.  It must be like a
 	one of 'runtimepath'.
-	List of {module} is module names you want.  If omitted, all modules
-	are included.
+	List of {module} is module names you want.  It is necessary to
+	specify one or more.
 	The Prelude module(|Vital.Prelude|) is always included.
 	List of {module} is recorded to your Vital.  This is used after next
 	time if {module} is omitted.
@@ -38,8 +38,6 @@ COMMANDS					*vitalizer-commands*
 	:Vitalize path/to/plugin +Web.HTTP -DateTime
 <
 	options ~
-	--init
-		Uses all modules forcedly.
 	--name={name}
 		Specifies a name of your Vital.  If omitted, name of
 		{target-dir} is used.

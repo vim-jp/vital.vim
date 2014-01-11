@@ -247,7 +247,8 @@ function! vitalizer#vitalize(name, to, modules, hash)
       endfor
     endif
     if empty(installing_modules)
-      let files = s:all_modules()
+      call s:echoerr('Please specify the modules to install.')
+      return
     else
       let installing_modules = s:L.uniq_by(installing_modules, 'v:val')
       let files = map(s:search_dependence(installing_modules + s:REQUIRED_MODULES),
@@ -332,10 +333,7 @@ function! vitalizer#command(args)
   endif
   let hash = ''
   for option in options
-    if option =~ '^--init'
-      let modules = filter(map(s:all_modules(), 's:file2module(v:val)'),
-      \  'v:val!=""')
-    elseif option =~ '^--help'
+    if option =~ '^--help'
       echo "Usage :Vitalize [options ...] {target-dir} [module ...]"
       return
     elseif option =~ '^--name=\S'
