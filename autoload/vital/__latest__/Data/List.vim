@@ -39,7 +39,6 @@ function! s:uniq(list, ...)
 endfunction
 
 " Removes duplicates from a list.
-" TODO not documented yet
 function! s:uniq_by(list, f)
   let list = map(copy(a:list), printf('[v:val, %s]', a:f))
   let i = 0
