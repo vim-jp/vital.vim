@@ -6,18 +6,16 @@ set cpo&vim
 function! s:echomsg(hl, msg) abort
   execute 'echohl' a:hl
   try
-    echomsg a:msg
+    for m in split(a:msg, "\n")
+      echomsg m
+    endfor
   finally
     echohl None
   endtry
 endfunction
 
 function! s:error(msg)
-  echohl ErrorMsg
-  for m in split(a:msg, "\n")
-    echomsg m
-  endfor
-  echohl None
+  call s:echomsg('ErrorMsg', a:msg)
 endfunction
 
 function! s:warn(msg)
