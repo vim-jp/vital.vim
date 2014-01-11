@@ -80,9 +80,7 @@ function! s:search_dependence(modules)
       try
         let M = s:V.import(module, 1)
       catch
-        echohl ErrorMsg
-        echomsg printf("Module %s isn't provided from latest vital.vim", module)
-        echohl None
+        call s:echoerr(printf("Module %s isn't provided from latest vital.vim", module))
         continue
       endtry
       let all[module] = 1
@@ -221,9 +219,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     let all_modules = s:all_modules()
     call filter(missing, 'index(all_modules, s:module2file(v:val)) is -1')
     if !empty(missing)
-      echohl ErrorMsg
-      echomsg "Some modules don't exist: " . join(missing, ', ')
-      echohl None
+      call s:echoerr("Some modules don't exist: " . join(missing, ', '))
       return
     endif
 
