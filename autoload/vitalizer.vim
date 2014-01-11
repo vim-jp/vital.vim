@@ -15,6 +15,7 @@ let s:V = vital#of('vital')
 let s:L = s:V.import('Data.List')
 let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
+let s:Mes = s:V.import('Vim.Message')
 let s:vital_dir = expand('<sfile>:h:h:p')
 
 let g:vitalizer#vital_dir =
@@ -80,7 +81,7 @@ function! s:search_dependence(modules)
       try
         let M = s:V.import(module, 1)
       catch
-        call s:echoerr(printf("Module %s isn't provided from latest vital.vim", module))
+        call s:Mes.error(printf("Module %s isn't provided from latest vital.vim", module))
         continue
       endtry
       let all[module] = 1
@@ -155,9 +156,8 @@ function! s:show_changes(vital_file, installing_modules)
         echomsg key
         for line in split(changes[key].text, "\n")
           if line =~# '^\*\*.*\*\*$'
-            echohl SpellBad
-            echomsg '    '.substitute(line, '^\*\*\s*\(.\{-}\)\s*\*\*$', '\1', '')
-            echohl None
+            let mes = '    ' . matchstr(line, '^\*\*\s*\zs.\{-}\ze\s*\*\*$')
+            call s:Mes.echomsg('SpellBad', mes)
           else
             echomsg '    '.line
           endif
@@ -170,14 +170,6 @@ function! s:show_changes(vital_file, installing_modules)
   return confirm_required
 endfunction
 
-function! s:echoerr(msg)
-  echohl ErrorMsg
-  for line in split(a:msg, "\n")
-    echomsg line
-  endfor
-  echohl None
-endfunction
-
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
 
@@ -185,7 +177,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Save current HEAD to restore a working tree later.
     let cur = s:git_current_hash()
   catch
-    call s:echoerr('Could not retrieve current HEAD: ' . v:exception)
+    call s:Mes.error('Could not retrieve current HEAD: ' . v:exception)
     return
   endtry
 
@@ -196,7 +188,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     try
       call s:git_checkout(a:hash)
     catch
-      call s:echoerr("'git checkout' failed: " . v:exception)
+      call s:Mes.error("'git checkout' failed: " . v:exception)
       return
     endtry
     let hash = a:hash
@@ -219,7 +211,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     let all_modules = s:all_modules()
     call filter(missing, 'index(all_modules, s:module2file(v:val)) is -1')
     if !empty(missing)
-      call s:echoerr("Some modules don't exist: " . join(missing, ', '))
+      call s:Mes.error("Some modules don't exist: " . join(missing, ', '))
       return
     endif
 
@@ -243,7 +235,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       endfor
     endif
     if empty(installing_modules)
-      call s:echoerr('Please specify the modules to install.')
+      call s:Mes.error('Please specify the modules to install.')
       return
     else
       let installing_modules = s:L.uniq_by(installing_modules, 'v:val')
@@ -255,9 +247,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
     " TODO: Support changes in a limit range by passing 'hash' value.
     if filereadable(vital_file) && s:show_changes(vital_file, installing_modules)
-      echohl WarningMsg
-      echomsg "*** WARNING *** There are critical changes from previous vital you installed."
-      echohl None
+      call s:Mes.warn('*** WARNING *** There are critical changes from previous vital you installed.')
       if confirm("Would you like to install a new version?", "&Y\n&n", 1) !=# 1
         echomsg "Canceled"
         return
@@ -281,7 +271,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     call writefile([short_hash, ''] + installing_modules, vital_file)
 
   catch
-    call s:echoerr(v:exception)
+    call s:Mes.error(v:exception)
 
   finally
     " Go back to HEAD if previously checked-out.
@@ -289,7 +279,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       try
         call s:git_checkout(cur)
       catch
-        call s:echoerr("'git checkout' failed: " . v:exception)
+        call s:Mes.error("'git checkout' failed: " . v:exception)
         return
       endtry
     endif
@@ -315,7 +305,7 @@ function! vitalizer#command(args)
   try
     call s:check_system()
   catch
-    call s:echoerr(v:exception)
+    call s:Mes.error(v:exception)
     return
   endtry
   let options = filter(copy(a:args), 'v:val=~"^--"')
@@ -337,12 +327,12 @@ function! vitalizer#command(args)
     elseif option =~ '^--hash=\S'
       let hash = option[7:]
     else
-      call s:echoerr("Invalid argument: " . option)
+      call s:Mes.error("Invalid argument: " . option)
       return
     endif
   endfor
   if len(args) == 0
-    call s:echoerr("Argument required")
+    call s:Mes.error("Argument required")
     return
   endif
   call vitalizer#vitalize(name, to, modules, hash)
