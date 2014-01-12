@@ -51,7 +51,11 @@ function! s:git_current_hash()
 endfunction
 
 function! s:git_checkout(hash)
-  return s:git('checkout ' . a:hash)
+  try
+    return s:git('checkout ' . a:hash)
+  catch
+    throw "vitalizer: 'git checkout' failed: " . v:exception
+  endtry
 endfunction
 
 function! s:copy(from, to)
@@ -81,8 +85,7 @@ function! s:search_dependence(modules)
       try
         let M = s:V.import(module, 1)
       catch
-        call s:Mes.error(printf("Module %s isn't provided from latest vital.vim", module))
-        continue
+        throw printf("vitalizer: Module %s isn't provided from latest vital.vim", module)
       endtry
       let all[module] = 1
       if has_key(M, '_vital_depends')
@@ -177,20 +180,14 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Save current HEAD to restore a working tree later.
     let cur = s:git_current_hash()
   catch
-    call s:Mes.error('Could not retrieve current HEAD: ' . v:exception)
-    return
+    throw 'vitalizer: Could not retrieve current HEAD: ' . v:exception
   endtry
 
   if a:hash ==# ''
     let hash = cur
     unlet cur
   elseif cur !=? a:hash
-    try
-      call s:git_checkout(a:hash)
-    catch
-      call s:Mes.error("'git checkout' failed: " . v:exception)
-      return
-    endtry
+    call s:git_checkout(a:hash)
     let hash = a:hash
   else
     let hash = a:hash
@@ -211,8 +208,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     let all_modules = s:all_modules()
     call filter(missing, 'index(all_modules, s:module2file(v:val)) is -1')
     if !empty(missing)
-      call s:Mes.error("Some modules don't exist: " . join(missing, ', '))
-      return
+      throw "vitalizer: Some modules don't exist: " . join(missing, ', ')
     endif
 
     " Determine installing modules.
@@ -235,8 +231,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       endfor
     endif
     if empty(installing_modules)
-      call s:Mes.error('Please specify the modules to install.')
-      return
+      throw 'vitalizer: Please specify the modules to install.'
     else
       let installing_modules = s:L.uniq_by(installing_modules, 'v:val')
       let files = map(s:search_dependence(installing_modules + s:REQUIRED_MODULES),
@@ -270,18 +265,10 @@ function! vitalizer#vitalize(name, to, modules, hash)
     endfor
     call writefile([short_hash, ''] + installing_modules, vital_file)
 
-  catch
-    call s:Mes.error(v:exception)
-
   finally
     " Go back to HEAD if previously checked-out.
     if exists('cur')
-      try
-        call s:git_checkout(cur)
-      catch
-        call s:Mes.error("'git checkout' failed: " . v:exception)
-        return
-      endtry
+      call s:git_checkout(cur)
     endif
   endtry
 endfunction
@@ -335,7 +322,11 @@ function! vitalizer#command(args)
     call s:Mes.error("Argument required")
     return
   endif
-  call vitalizer#vitalize(name, to, modules, hash)
+  try
+    call vitalizer#vitalize(name, to, modules, hash)
+  catch /^vitalizer:/
+    call s:Mes.error(v:exception)
+  endtry
 endfunction
 
 let &cpo = s:save_cpo
