@@ -85,5 +85,31 @@ clear({dict})				*Vital.Datal.Dict.clear()*
 	{}
 <
 
+max_by({dict}, {expr})			*Vital.Data.Dict.max_by()*
+	Returns a list [key, val] which is maximum value in {dict} through given
+	{expr}.
+	Throws an exception if {dict} is empty.
+	both "v:key" and "v:val" can be used in {expr}.
+>
+	:echo Dict.max_by({'alice' : 1, 'bob' : 2, 'carol' : 3}, 'len(v:key) - v:val')
+	['alice', 1]
+<
+
+min_by({dict}, {expr})			*Vital.Data.Dict.min_by()*
+	Returns a list [key, val] which is minimum value in {dict} through given
+	{expr}.
+	Throws an exception if {dict} is empty.
+	both "v:key" and "v:val" can be used in {expr}.
+>
+	:echo Dict.min_by({'alice' : 1, 'bob' : 2, 'carol' : 3}, 'len(v:key) - v:val')
+	['bob', 2]
+<
+
+foldl({f}, {init}, {dict})		*Vital.Data.Dict.foldl()*
+	Behaves like Haskell's Data.Map.Lazy.foldlWithKey().
+
+foldr({f}, {init}, {dict})		*Vital.Data.Dict.foldr()*
+	Behaves like Haskell's Data.Map.Lazy.foldrWithKey().
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
