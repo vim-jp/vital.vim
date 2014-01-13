@@ -288,11 +288,12 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Install vital.
     let short_hash = hash[: s:HASH_SIZE]
     for f in files + s:REQUIRED_FILES
-      let after = substitute(f, '__latest__', '_' . short_hash, '')
+      let after = substitute(f, '__latest__', '_' . a:name, '')
       call s:copy(s:FP.join(g:vitalizer#vital_dir, f),
       \           s:FP.join(a:to, after))
     endfor
-    call writefile([short_hash, ''] + installing_modules, vital_file_name)
+    let content = [a:name, short_hash, ''] + installing_modules
+    call writefile(content, vital_file_name)
 
     return {
     \ 'prev_hash': vital_file.hash,
