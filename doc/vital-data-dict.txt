@@ -106,9 +106,11 @@ min_by({dict}, {expr})			*Vital.Data.Dict.min_by()*
 <
 
 foldl({f}, {init}, {dict})		*Vital.Data.Dict.foldl()*
+	TODO
 	Behaves like Haskell's Data.Map.Lazy.foldlWithKey().
 
 foldr({f}, {init}, {dict})		*Vital.Data.Dict.foldr()*
+	TODO
 	Behaves like Haskell's Data.Map.Lazy.foldrWithKey().
 
 ==============================================================================
