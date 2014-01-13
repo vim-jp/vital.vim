@@ -3,7 +3,7 @@
 Maintainer: tyru  <tyru.exe@gmail.com>
 
 ==============================================================================
-CONTENTS					*Vital.Vim.Message-contents*
+CONTENTS				*Vital.Vim.Message-contents*
 
 INTRODUCTION			|Vital.Vim.Message-introduction|
 INTERFACE			|Vital.Vim.Message-interface|
@@ -12,18 +12,18 @@ INTERFACE			|Vital.Vim.Message-interface|
 
 
 ==============================================================================
-INTRODUCTION					*Vital.Vim.Message-introduction*
+INTRODUCTION				*Vital.Vim.Message-introduction*
 
 *Vital.Vim.Message* provides some utility functions about message.
 
 
 ==============================================================================
-INTERFACE					*Vital.Vim.Message-interface*
+INTERFACE				*Vital.Vim.Message-interface*
 
 ------------------------------------------------------------------------------
-FUNCTIONS					*Vital.Vim.Message-functions*
+FUNCTIONS				*Vital.Vim.Message-functions*
 
-echomsg({hl}, {msg})				*Vital.Vim.Message.echomsg()*
+echomsg({hl}, {msg})			*Vital.Vim.Message.echomsg()*
 	Execute |:echomsg| with {hl} (|highlight-groups|).
 
 warn({msg})				*Vital.Vim.Message.warn()*
