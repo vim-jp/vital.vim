@@ -173,6 +173,16 @@ function! s:show_changes(vital_file, installing_modules)
   return confirm_required
 endfunction
 
+" Uninstall vital from {target-dir}.
+function! s:uninstall(target_dir)
+  if isdirectory(a:target_dir . '/autoload/vital')
+    call s:F.rmdir(a:target_dir . '/autoload/vital', 'rf')
+  endif
+  if filereadable(a:target_dir . '/autoload/vital.vim')
+    call delete(a:target_dir . '/autoload/vital.vim')
+  endif
+endfunction
+
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
 
@@ -258,12 +268,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     endif
 
     " Remove previous vital.
-    if isdirectory(a:to . '/autoload/vital')
-      call s:F.rmdir(a:to . '/autoload/vital', 'rf')
-    endif
-    if filereadable(a:to . '/autoload/vital.vim')
-      call delete(a:to . '/autoload/vital.vim')
-    endif
+    call s:uninstall(a:to)
 
     " Install vital.
     let short_hash = hash[: s:HASH_SIZE]
