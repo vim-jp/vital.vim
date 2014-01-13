@@ -176,6 +176,14 @@ endfunction
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
 
+  " Check arguments
+  if empty(a:name)
+    throw 'vitalizer: {name} must not be empty.'
+  endif
+  if !isdirectory(a:to)
+    throw 'vitalizer: {target-dir} must exist.'
+  endif
+
   try
     " Save current HEAD to restore a working tree later.
     let cur = s:git_current_hash()
