@@ -274,7 +274,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
 endfunction
 
 function! vitalizer#complete(arglead, cmdline, cursorpos)
-  let options = ['--init', '--name=', '--hash=', '--help']
+  let options = ['--name=', '--hash=', '--help']
   let args = filter(split(a:cmdline[: a:cursorpos], '[^\\]\zs\s\+'), 'v:val!~"^--"')
   if a:arglead =~ '^--'
     return filter(options, 'stridx(v:val, a:arglead)!=-1')
