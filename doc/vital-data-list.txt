@@ -190,11 +190,11 @@ has_index({list}, {index})		*Vital.Data.List.has_index()*
 	Returns Number 1 if can point to {index} for |List| {list}, otherwise
 	zero.  If {index} is negative Number, this function returns zero.
 
-span({string}, {list})			*Vital.Data.List.span()*
+span({expr}, {list})			*Vital.Data.List.span()*
 	Returns a list of two lists where concatenation of them is
-	equal to {list}, all the items of the first list satisfy {string} and
-	the first item of the second list does not satisfy {string}.
-	Inside {string} |v:val| has the value of the current item.
+	equal to {list}, all the items of the first list satisfy {expr} and
+	the first item of the second list does not satisfy {expr}.
+	Inside {expr} |v:val| has the value of the current item.
 >
 	echo L.span("v:val==1", [1, 2])
 	" [[1], [2]]
@@ -211,8 +211,8 @@ span({string}, {list})			*Vital.Data.List.span()*
 break({expr}, {list})			*Vital.Data.List.break()*
 	Returns a list of two lists where concatenation of them is
 	equal to {list}, all the items of the first list do not satisfy
-	{string} and the first item of the second list satisfies {string}.
-	Inside {string} |v:val| has the value of the current item.
+	{expr} and the first item of the second list satisfies {expr}.
+	Inside {expr} |v:val| has the value of the current item.
 >
 	echo L.break("v:val==1", [1, 2])
 	" [[], [1, 2]]
