@@ -293,9 +293,11 @@ or({list})				*Vital.Data.List.or()*
 	your info.
 
 partition({expr}, {list})		*Vital.Data.List.partition()*
+	TODO
 	Behaves like Haskell's Data.List.partition().
 
 foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
+	TODO
 	Behaves like Haskell's Data.List.foldl().
 
 >
@@ -307,6 +309,7 @@ foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 	" [[[], 1], 2]
 <
 foldl1({f}, {xs})			*Vital.Data.List.foldl1()*
+	TODO
 	Behaves like Haskell's Data.List.foldl1().
 >
 	echo L.foldl1('v:memo + v:val', range(1, 10))
@@ -315,6 +318,7 @@ foldl1({f}, {xs})			*Vital.Data.List.foldl1()*
 	" [1, 2]
 <
 foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
+	TODO
 	Behaves like Haskell's Data.List.foldr().
 >
 	echo L.foldr('v:memo + v:val', 0, range(1, 10))
@@ -325,6 +329,7 @@ foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
 	" [[[], 2], 1]
 <
 foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
+	TODO
 	Behaves like Haskell's Data.List.foldr1().
 >
 	echo L.foldr1('v:memo + v:val', range(1, 10))
@@ -333,6 +338,7 @@ foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
 	" [1, 2]
 <
 zip(...)				*Vital.Data.List.zip()*
+	TODO
 	Behaves like python's zip().
 >
 	echo L.zip([1, 2, 3], [4, 5, 6])
