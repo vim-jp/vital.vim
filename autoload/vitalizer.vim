@@ -144,12 +144,10 @@ function! s:get_changes()
   return changes
 endfunction
 
-function! s:show_changes(vital_file, installing_modules)
-  let [ver] = readfile(a:vital_file, 'b', 1)
-  let current = substitute(ver, '\W', '', 'g')
+function! s:show_changes(current, installing_modules)
   let confirm_required = 0
-  if current != '_latest__'
-    let keys = split(s:git(printf("log --format=format:%%h %s..HEAD", current)), "\n")
+  if a:current != '_latest__'
+    let keys = split(s:git(printf("log --format=format:%%h %s..HEAD", a:current)), "\n")
     let changes = s:get_changes()
     for key in keys
       if has_key(changes, key)
@@ -183,6 +181,29 @@ function! s:uninstall(target_dir)
   endif
 endfunction
 
+" Search *.vital file in a target directory.
+function! s:get_vital_file_name(to, name)
+  let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
+  if !filereadable(vital_file)
+    let filelist = glob(a:to . '/autoload/vital/*.vital', 1)
+    if filelist != ''
+      let vital_file = split(filelist, '\n')[0]
+    endif
+  endif
+  return vital_file
+endfunction
+
+function! s:read_vital_file(vital_file)
+  let content = {'hash': '', 'modules': []}
+  if filereadable(a:vital_file)
+    let lines = readfile(a:vital_file)
+    let [head, modules] = s:L.break('v:val ==# ""', lines)
+    let content.hash = head[-1]
+    let content.modules = modules[1 :]
+  endif
+  return content
+endfunction
+
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
 
@@ -213,12 +234,8 @@ function! vitalizer#vitalize(name, to, modules, hash)
   endif
 
   try
-    " Search *.vital file in a target directory.
-    let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
-    let filelist = glob(a:to . '/autoload/vital/*.vital', 1)
-    if !filereadable(vital_file) && filelist != ''
-      let vital_file = split(filelist, '\n')[0]
-    endif
+    let vital_file_name = s:get_vital_file_name(a:to, a:name)
+    let vital_file = s:read_vital_file(vital_file_name)
 
     " Check if all of specified modules exist.
     let missing = copy(a:modules)
@@ -230,10 +247,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     endif
 
     " Determine installing modules.
-    let installing_modules = []
-    if filereadable(vital_file)
-      let installing_modules = readfile(vital_file)[2 :]
-    endif
+    let installing_modules = copy(vital_file.modules)
     if !empty(a:modules)
       let [diff, modules] = s:L.partition('v:val =~# "^[+-]"', a:modules)
       if !empty(modules)
@@ -259,7 +273,8 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Show critical changes.
     " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
     " TODO: Support changes in a limit range by passing 'hash' value.
-    if filereadable(vital_file) && s:show_changes(vital_file, installing_modules)
+    if !empty(vital_file.hash) &&
+    \   s:show_changes(vital_file.hash, installing_modules)
       call s:Mes.warn('*** WARNING *** There are critical changes from previous vital you installed.')
       if confirm("Would you like to install a new version?", "&Y\n&n", 1) !=# 1
         echomsg "Canceled"
@@ -277,7 +292,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       call s:copy(s:FP.join(g:vitalizer#vital_dir, f),
       \           s:FP.join(a:to, after))
     endfor
-    call writefile([short_hash, ''] + installing_modules, vital_file)
+    call writefile([short_hash, ''] + installing_modules, vital_file_name)
 
   finally
     " Go back to HEAD if previously checked-out.
