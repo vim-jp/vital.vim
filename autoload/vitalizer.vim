@@ -22,7 +22,7 @@ let g:vitalizer#vital_dir =
 \     get(g:, 'vitalizer#vital_dir', expand('<sfile>:h:h:p'))
 
 function! s:git_dir()
-  return g:vitalizer#vital_dir . '/.git'
+  return s:FP.join(g:vitalizer#vital_dir, '.git')
 endfunction
 
 function! s:check_system()
@@ -122,7 +122,7 @@ function! s:all_modules()
 endfunction
 
 function! s:get_changes()
-  let changes_file = g:vitalizer#vital_dir . '/Changes'
+  let changes_file = s:FP.join(g:vitalizer#vital_dir, 'Changes')
   if !filereadable(changes_file)
     return {}
   endif
@@ -269,7 +269,8 @@ function! vitalizer#vitalize(name, to, modules, hash)
     let short_hash = hash[: s:HASH_SIZE]
     for f in files + s:REQUIRED_FILES
       let after = substitute(f, '__latest__', '_' . short_hash, '')
-      call s:copy(g:vitalizer#vital_dir . '/' . f, a:to . '/' . after)
+      call s:copy(s:FP.join(g:vitalizer#vital_dir, f),
+      \           s:FP.join(a:to, after))
     endfor
     call writefile([short_hash, ''] + installing_modules, vital_file)
 
