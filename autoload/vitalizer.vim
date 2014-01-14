@@ -100,25 +100,29 @@ function! s:search_dependence(modules)
   return sort(keys(all))
 endfunction
 
+function! s:is_camel_case(str)
+  return !empty(matchstr(a:str, '^\%([0-9A-Z]\l*\)\+$'))
+endfunction
+
+function! s:is_module_name(str)
+  return s:L.and(map(split(a:str, '\.'), 's:is_camel_case(v:val)'))
+endfunction
+
 function! s:module2file(name)
   let target = a:name ==# '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
   return printf('autoload/vital/__latest__%s.vim', target)
 endfunction
 
-function! s:camelize(str)
-  return substitute(a:str, '\%(^\|_\)\(\l\)', '\u\1', 'g')
-endfunction
-
 function! s:file2module(file)
-  let tail = matchstr(a:file, 'autoload/vital/_\w\+/\zs.*\ze\.vim$')
-  return join(map(split(tail, '[\\/]\+'), 's:camelize(v:val)'), '.')
+  let filename = s:FP.unify_separator(a:file)
+  let tail = matchstr(filename, 'autoload/vital/_\w\+/\zs.*\ze\.vim$')
+  return join(split(tail, '[\\/]\+'), '.')
 endfunction
 
-function! s:all_modules()
-  let pat = '^.*\zs\<autoload/vital/.*'
-  return filter(map(split(glob(
-  \          g:vitalizer#vital_dir . '/autoload/vital/**/*.vim', 1), "\n"),
-  \          'matchstr(s:FP.unify_separator(v:val), pat)'), 'v:val!=""')
+function! s:available_module_names()
+  return sort(s:L.uniq(filter(map(split(globpath(&runtimepath,
+  \          'autoload/vital/__latest__/**/*.vim', 1), "\n"),
+  \          's:file2module(v:val)'), 's:is_module_name(v:val)')))
 endfunction
 
 function! s:get_changes()
@@ -240,8 +244,8 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Check if all of specified modules exist.
     let missing = copy(a:modules)
     call map(missing, 'substitute(v:val, "^[+-]", "", "")')
-    let all_modules = s:all_modules()
-    call filter(missing, 'index(all_modules, s:module2file(v:val)) is -1')
+    let all_modules = s:available_module_names()
+    call filter(missing, 'index(all_modules, v:val) is -1')
     if !empty(missing)
       throw "vitalizer: Some modules don't exist: " . join(missing, ', ')
     endif
@@ -282,15 +286,25 @@ function! vitalizer#vitalize(name, to, modules, hash)
       endif
     endif
 
+    " List and check the installing files.
+    let install_files = []
+    for f in files + s:REQUIRED_FILES
+      let after = substitute(f, '__latest__', '_' . a:name, '')
+      let paths = globpath(g:vitalizer#vital_dir . ',' . &runtimepath, f, 1)
+      let from = get(split(paths, "\n"), 0)
+      if !filereadable(from)
+        throw 'vitalizer: Can not read the installing file: ' . file
+      endif
+      call add(install_files, [from, s:FP.join(a:to, after)])
+    endfor
+
     " Remove previous vital.
     call s:uninstall(a:to)
 
     " Install vital.
     let short_hash = hash[: s:HASH_SIZE]
-    for f in files + s:REQUIRED_FILES
-      let after = substitute(f, '__latest__', '_' . a:name, '')
-      call s:copy(s:FP.join(g:vitalizer#vital_dir, f),
-      \           s:FP.join(a:to, after))
+    for [from, to] in install_files
+      call s:copy(from, to)
     endfor
     let content = [a:name, short_hash, ''] + installing_modules
     call writefile(content, vital_file_name)
@@ -315,7 +329,7 @@ function! vitalizer#complete(arglead, cmdline, cursorpos)
     return filter(options, 'stridx(v:val, a:arglead)!=-1')
   elseif len(args) > 2 || (len(args) == 2 && a:cmdline =~# '\s$')
     let prefix = a:arglead =~# '^[+-]' ? a:arglead[0] : ''
-    return filter(map(s:all_modules(), 'prefix . s:file2module(v:val)'),
+    return filter(map(s:available_module_names(), 'prefix . v:val'),
     \  'stridx(v:val, a:arglead)!=-1')
   else
     return map(filter(split(glob(a:arglead . "*", 1), "\n"),
