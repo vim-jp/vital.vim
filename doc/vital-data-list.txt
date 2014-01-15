@@ -297,17 +297,28 @@ partition({expr}, {list})		*Vital.Data.List.partition()*
 	Behaves like Haskell's Data.List.partition().
 
 foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
-	TODO
-	Behaves like Haskell's Data.List.foldl().
+	Reduces the list {xs} using the binary operator {f}, from left to
+	right. The starting value of the reduction (typically the
+	left-identity of the operator) is {init}.
 
+	foldl(f, z, [x1, x2, ..., xn]) ==
+	  f(... f(f(z, x1), x2) ..., xn)
+
+	Examples:
 >
 	echo L.foldl('v:memo + v:val', 0, range(1, 10))
 	" 55 := 1+2+3+4+5+6+7+8+9+10
+
 	echo L.foldl('v:memo + v:val', 20, range(1, 10))
 	" 75 := 20 + 1+2+3+4+5+6+7+8+9+10
+
 	echo L.foldl('[v:memo, v:val]', [], [1, 2])
 	" [[[], 1], 2]
 <
+	See also: foldl1, foldr, foldr1
+	If you know Haskell, this foldl() is like Haskell's Data.List.foldl
+	just for your info.
+
 foldl1({f}, {xs})			*Vital.Data.List.foldl1()*
 	TODO
 	Behaves like Haskell's Data.List.foldl1().
