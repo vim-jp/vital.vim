@@ -52,7 +52,18 @@ INTERFACE				*Vital.Lua.Prelude-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Lua.Prelude-functions*
 
-TODO
+map({list}, {f})				*Vital.Lua.Prelude.map()*
+
+	Only as a lua interface; Vim script can't call this function directly.
+>
+	map({10, 20, 30}, function(e) return e + 1 end)
+	# == {11, 21, 31}
+<
+
+to_lua({vobj})					*Vital.Lua.Prelude.to_lua()*
+
+	Only as a lua interface; Vim script can't call this function directly.
+	TODO
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
