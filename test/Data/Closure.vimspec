@@ -1,0 +1,326 @@
+Describe Data.Closure
+  Before all
+    let g:C = vital#of('vital').import('Data.Closure')
+  End
+
+  Describe .build()
+    It can build a Closure object from funcref
+      let closure = g:C.build(function('type'))
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(''), type(''))
+    End
+
+    It can build a Closure object from function name
+      let closure = g:C.build('*type')
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(''), type(''))
+    End
+
+    It can build a Closure object from operator string
+      let closure = g:C.build('+')
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(13, 8), 21)
+    End
+
+    It can build a Closure object from ex command
+      let closure = g:C.build(':return type(a:1)')
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(''), type(''))
+    End
+
+    It can build a Closure object from list of ex commands
+      let closure = g:C.build([':let t = type(a:1)', ':return t'])
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(''), type(''))
+    End
+
+    It can build a Closure object from expr
+      let closure = g:C.build('=type(a:1)')
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(''), type(''))
+    End
+
+    It can build a Closure object from Closure object
+      let closure_org = g:C.build(function('type'))
+      let closure = g:C.build(closure_org)
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(''), type(''))
+    End
+  End
+
+  Describe .call()
+    It builds a Closure object and calls it with {args}
+      Assert Equals(g:C.call('*join', ['a', 'b', 'c'], ':'), 'a:b:c')
+    End
+  End
+
+  Describe .apply()
+    It builds a Closure object and calls it
+      Assert Equals(g:C.apply('=10 + 20'), 30)
+    End
+
+    Context with {arglist}
+      It builds a Closure object and calls it with {arglist}
+        Assert Equals(g:C.apply('*join', [['a', 'b', 'c'], ':']), 'a:b:c')
+      End
+    End
+
+    Context with {context}
+      It builds a Closure object with {context} and calls it
+        let obj = {'value': 10}
+        function! obj.get()
+          return self.value
+        endfunction
+        Assert Equals(g:C.apply(obj.get, obj), 10)
+      End
+    End
+  End
+
+  Describe .from_funcref()
+    It builds a Closure object from a Funcref
+      let closure = g:C.from_funcref(function('type'))
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(''), type(''))
+    End
+  End
+
+  Describe .from_funcname()
+    It builds a Closure object from a function name
+      let closure = g:C.from_funcname('type')
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(''), type(''))
+    End
+  End
+
+  Describe .from_expr()
+    It builds a Closure object from an expression string
+      let closure = g:C.from_expr('type(a:1)')
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(''), type(''))
+    End
+
+    Context with {binding}
+      It can access to variables of binding
+        let foo = 10
+        let closure = g:C.from_expr('a:1 == foo', l:)
+        Assert True(closure.call(10))
+        Assert False(closure.call(20))
+      End
+    End
+  End
+
+  Describe .from_command()
+    Context with String
+      It builds a Closure object from a command string
+        let closure = g:C.from_command('return type(a:1)')
+        Assert True(g:C.is_closure(closure))
+        Assert Equals(closure.call(''), type(''))
+      End
+    End
+
+    Context with List of Strings
+      It builds a Closure object from a List of command Strings
+        let closure = g:C.from_command(['let t = type(a:1)', 'return t'])
+        Assert True(g:C.is_closure(closure))
+        Assert Equals(closure.call(''), type(''))
+      End
+    End
+
+    Context with {binding}
+      It can access to variables of binding
+        let foo = 10
+        let closure = g:C.from_command('return a:1 == foo', l:)
+        Assert True(closure.call(10))
+        Assert False(closure.call(20))
+      End
+
+      It can change the variables of binding
+        let foo = 10
+        let closure = g:C.from_command('let foo = a:1', l:)
+        Assert Equals(foo, 10)
+        call closure.call(20)
+        Assert Equals(foo, 20)
+      End
+    End
+  End
+
+  Describe .from_operator()
+    It builds a Closure object from an operator string
+      let plus = g:C.from_operator('+')
+      call g:Expect(plus.call(1, 2)).to_equal(3)
+
+      let dot = g:C.from_operator('.')
+      Assert Equals(dot.call(1, 2), '12')
+      Assert Equals(dot.call('hello', 'world'), 'helloworld')
+    End
+
+    It throws an error when the argument is not an operator
+      Throws /^vital: Data.Closure:/ g:C.from_operator('**')
+    End
+  End
+
+  Describe .from_method()
+    It builds a Closure object from Dictionary and name of method
+      let obj = {'value': 10}
+      function! obj.get()
+        return self.value
+      endfunction
+      let closure = g:C.from_method(obj, 'get')
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(), 10)
+    End
+  End
+
+  Describe .compose()
+    It makes a composed Closure object from one or more callables
+      let closure = g:C.compose(['=a:1 + 10', '=a:1 * 2', '=a:1 - 10'])
+      Assert Equals(closure.call(15), 20)
+      Assert Equals(closure.call(5), 0)
+    End
+
+    It returns empty function when the {callables} is empty
+      let closure = g:C.compose([])
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(), 0)
+    End
+  End
+
+  Describe .is_closure()
+    It returns true if the argument is a Closure object
+      Assert True(g:C.is_closure(g:C.build('=1')))
+      Assert True(g:C.is_closure(g:C.from_operator('+')))
+    End
+
+    It returns false if the argument is not a Closure object
+      Assert False(g:C.is_closure(function('type')))
+      let obj = {}
+      function! obj.call(...)
+      endfunction
+      Assert False(g:C.is_closure(obj))
+    End
+  End
+
+  Describe .is_callable()
+    It returns true if the argument is a Closure object
+      Assert True(g:C.is_callable(function('type')))
+      Assert True(g:C.is_callable('*'))
+      Assert True(g:C.is_callable('*type'))
+      Assert True(g:C.is_callable(':return type(a:1)'))
+      Assert True(g:C.is_callable([':let t = type(a:1)', ':return t']))
+      Assert True(g:C.is_callable('=type(a:1)'))
+      Assert True(g:C.is_callable(g:C.build('*')))
+    End
+
+    It returns false if the argument is not a Closure object
+      Assert False(g:C.is_callable(10))
+      Assert False(g:C.is_callable(10.0))
+      Assert False(g:C.is_callable({}))
+      Assert False(g:C.is_callable('foo'))
+      Assert False(g:C.is_callable([10]))
+    End
+  End
+
+  Describe .sweep_functions()
+    It sweeps garbage functions
+      let closure1 = g:C.from_expr('a:1 + 10')
+      let closure2 = g:C.from_expr('a:1 * 2')
+      let Func1 = closure1.to_function(1)
+      let Func2 = closure2.to_function(1)
+      call Func1(20)
+      call Func2(20)
+      Throws /^vital: Data.Closure:/ Func1(20)
+      Throws /^vital: Data.Closure:/ Func2(20)
+      call g:C.sweep_functions()
+      Throws /^Vim(\w\+):E117:/ Func1(20)
+      Throws /^Vim(\w\+):E117:/ Func2(20)
+    End
+  End
+
+  Describe Closure Object
+    Describe .call()
+      It calls this Closure object with {args}
+        let closure = g:C.from_funcname('join')
+        Assert Equals(closure.call(['a', 'b', 'c'], ':'), 'a:b:c')
+      End
+    End
+
+    Describe .apply()
+      It calls this Closure object with {arglist}
+        let closure = g:C.from_expr('join(a:000, ":")')
+        Assert Equals(closure.apply(['a', 'b', 'c']), 'a:b:c')
+      End
+    End
+
+    Describe .with_args()
+      It creates a new Closure object which has the {args}
+        let get_win_var = g:C.from_funcname('getwinvar')
+        let get_current_win_var = get_win_var.with_args(0)
+        let get_current_win_scope = get_current_win_var.with_args('')
+        Assert Same(get_current_win_scope.call(), getwinvar(0, ''))
+      End
+    End
+
+    Describe .with_arglist()
+      It creates a new Closure object which has the {arglist}
+        let get_win_var = g:C.from_funcname('getwinvar')
+        let get_current_win_var = get_win_var.with_arglist([0])
+        let get_current_win_scope = get_current_win_var.with_arglist([''])
+        Assert Same(get_current_win_scope.call(), getwinvar(0, ''))
+      End
+    End
+
+    Describe .with_context()
+      It Creates a new Closure object which has the {context}
+        let obj = {'value': 10}
+        function! obj.get()
+          return self.value
+        endfunction
+        let closure_org = g:C.from_method(obj, 'get')
+        let closure = closure_org.with_context({'value': 20})
+        Assert NotSame(closure_org, closure)
+        Assert Equals(closure_org.call(), 10)
+        Assert Equals(closure.call(), 20)
+      End
+    End
+
+    Describe .compose()
+      It makes a composed Closure object
+        let closure = g:C.from_expr('a:1 + 10')
+        let composed = closure.compose('=a:1 * 2')
+        Assert Equals(composed.call(5), 30)
+      End
+    End
+
+    Describe .to_function()
+      It defines a new function for this closure and return its Funcref
+        let closure = g:C.from_expr('a:1 + 10')
+        let Func = closure.to_function()
+        Assert IsFunc(Func)
+        Assert Equals(Func(20), 30)
+      End
+
+      Context with {limit}
+        It will mark to delete the function after the function is called {limit} times
+          let closure = g:C.from_expr('a:1 + 10')
+          let Func = closure.to_function(1)
+          Assert IsFunc(Func)
+          Assert Equals(Func(20), 30)
+          Throws /^vital: Data.Closure:/ Equals(Func(20), 30)
+          call g:C.sweep_functions()
+          Throws /^Vim(\w\+):E117:/ Equals(Func(20), 30)
+        End
+      End
+    End
+
+    Describe .delete_function()
+      It deletes the function mode by .to_function()
+        let closure = g:C.from_expr('a:1 + 10')
+        let Func = closure.to_function()
+        Assert IsFunc(Func)
+        Assert Equals(Func(20), 30)
+        call closure.delete_function()
+        Throws /^Vim(\w\+):E117:/ Equals(Func(20), 30)
+      End
+    End
+  End
+End

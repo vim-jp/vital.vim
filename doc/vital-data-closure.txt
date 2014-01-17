@@ -1,0 +1,211 @@
+*vital-data-closure.txt*	Provide Closure object.
+
+Maintainer: thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Closure-contents*
+
+INTRODUCTION			|Vital.Data.Closure-introduction|
+INTERFACE			|Vital.Data.Closure-interface|
+  FUNCTIONS			  |Vital.Data.Closure-functions|
+OBJECTS				|Vital.Data.Closure-objects|
+  Closure Object		  |Vital.Data.Closure-Closure|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Closure-introduction*
+
+*Vital.Data.Closure* provides Closure object.
+>
+	let C = vital#of('vital').import('Data.Closure')
+<
+
+
+==============================================================================
+TERM					*Vital.Data.Closure-term*
+
+{callable}				*Vital.Data.Closure-term-callable*
+	A {callable} is one of the followings.
+	- A |Funcref|
+	  - |Vital.Data.Closure.from_funcref()|
+	- A string of function name
+	  - |Vital.Data.Closure.from_funcname()|
+	- An ex command string which begins from ":"
+	  - |Vital.Data.Closure.from_command()|
+	- A |List| of ex command strings
+	  - |Vital.Data.Closure.from_command()|
+	- An operator string such as '+', '%', or '=~#'
+	  - |Vital.Data.Closure.from_operator()|
+	- An |expr| string
+	  - |Vital.Data.Closure.from_expr()|
+	- A Closure object(|Vital.Data.Closure-Closure|)
+
+{arglist}				*Vital.Data.Closure-term-arglist*
+	This is a |List| for the arguments of the function.
+
+{args}...				*Vital.Data.Closure-term-args*
+	This is variadic for the function.
+
+{context}				*Vital.Data.Closure-term-context*
+	This is a |Dictionary| that is treated as |self| of {function}.
+
+{binding}				*Vital.Data.Closure-term-binding*
+	{binding} is a |Dictionary|.  You can access to this Dictionary from
+	{expr} or {command} as local variables.
+	Note that the key for |Funcref| must start with a capital.
+	If local variable is changed, {binding} will change similarly.
+	When {binding} is a |List| of |Dictionary|, a new |Dictionary| will be
+	created as new {binding}, and all dictionaries are extended to the new
+	dictionary.
+
+
+
+==============================================================================
+INTERFACE				*Vital.Data.Closure-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Closure-functions*
+
+					*Vital.Data.Closure.build()*
+build({callable} [, {arglist}][, {context}])
+	Builds a Closure object(|Vital.Data.Closure-Closure|) from {callable}.
+
+	It is {arglist} when the second argument or subsequent ones is a list.
+	It is {context} when the second argument or subsequent ones is a
+	dictionary.
+	See |Vital.Data.Closure-Closure| for detail of {arglist} and
+	{context}.
+
+call({callable}, {args}...)		*Vital.Data.Closure.call()*
+	Shortcut version of |Vital.Data.Closure.apply()|.
+	{args}... is treated as {arglist}.
+
+					*Vital.Data.Closure.apply()*
+apply({callable} [, {arglist}][, {context}])
+	Builds a Closure object by |Vital.Data.Closure.build()| and calls it.
+	See |Vital.Data.Closure.build()| for detail of arguments.
+
+					*Vital.Data.Closure.from_funcref()*
+from_funcref({funcref} [, {arglist}][, {context}])
+	Builds a Closure object from {funcref}.
+	See |Vital.Data.Closure-Closure| for detail of {arglist} and
+	{context}.
+
+					*Vital.Data.Closure.from_funcname()*
+from_funcname({funcname} [, {arglist}][, {context}])
+	Builds a Closure object from {funcname}.
+	{funcname} is a buildin function or global function.
+	See |Vital.Data.Closure-Closure| for detail of {arglist} and
+	{context}.
+
+from_expr({expr} [, {binding}])		*Vital.Data.Closure.from_expr()*
+	Builds a Closure object from {expr} string.
+	You can use |a:| as the arguments.
+	See |Vital.Data.Closure-term-binding| about {binding}.
+
+from_command({command} [, {binding}])	*Vital.Data.Closure.from_command()*
+	Builds a Closure object from {command}.
+	{command} is a String or a List of strings.
+	You can use |a:| as the arguments.
+	See |Vital.Data.Closure-term-binding| about {binding}.
+
+from_operator({operator})		*Vital.Data.Closure.from_operator()*
+	Builds a Closure object from {operator}.
+	{operator} is a operator string such as '+', '%', or '=~#'
+
+from_method({object}, {method})		*Vital.Data.Closure.from_method()*
+	Builds a Closure object from {object}(Dictionary) and the name of
+	{method}.
+
+compose({callables})			*Vital.Data.Closure.compose()*
+	Builds a new composed Closure objects from {callables}.
+	{callables} is a List of callable(|Vital.Data.Closure-callable|).
+
+	For example, there are the functions named "F", "G", "H":
+>
+	compose(['F', 'G', 'H']).call({args}) == F(G(H({args})))
+<
+	Other example:
+>
+	let sortuniq = C.compose('uniq', 'sort')
+	echo sortuniq.call([2, 4, 2, 1, 3, 4, 5, 1, 5, 3])
+	" => [1, 2, 3, 4, 5]
+
+is_closure({expr})			*Vital.Data.Closure.is_closure()*
+	Returns true when the {expr} is a Closure object.
+
+is_callable({expr})			*Vital.Data.Closure.is_callable()*
+	Returns true when the {expr} is callable.
+	See also |Vital.Data.Closure-term-callable|.
+
+sweep_functions()			*Vital.Data.Closure.sweep_functions()*
+	Sweeps garbage functions.
+	|Vital.Data.Closure-Closure.to_function()| with {limit} creates a
+	function, but can not delete the function itself.
+	As a result, the function remains as garbage.
+	This function sweeps it.
+	This is automatically called by |Vital.Data.Closure.build()|.
+
+
+
+==============================================================================
+OBJECTS					*Vital.Data.Closure-objects*
+
+------------------------------------------------------------------------------
+Closure Object			*Vital.Data.Closure-Closure*
+
+A Closure object has following members.
+
+- function(|Funcref|)
+- arglist(|Vital.Data.Closure-term-arglist|)
+  - Part of head of arguments.
+- context(|Vital.Data.Closure-term-context|)
+
+Closure object can call the {function} with {arglist}, and with {context}.
+Example: >
+	let closure = C.from_funcname('strftime', ['%Y%m%d'])
+	echo closure.call(1412686257)
+
+Closure.call({args}...)		*Vital.Data.Closure-Closure.call()*
+	Shortcut version of |Vital.Data.Closure-Closure.apply()|.
+	{args}... is treated as {arglist}.
+
+Closure.apply({arglist})	*Vital.Data.Closure-Closure.apply()*
+	Calls this Closure object with {arglist}.
+
+Closure.with_args({args}...)	*Vital.Data.Closure-Closure.with_args()*
+	Shortcut version of |Vital.Data.Closure-Closure.with_arglist()|.
+	{args}... is treated as {arglist}.
+
+Closure.with_arglist({arglist})	*Vital.Data.Closure-Closure.with_arglist()*
+	Creates a new Closure object which has the {arglist}.
+	{arglist} is appended to the existing arglist.
+>
+	let get_win_var = C.from_funcname('getwinvar')
+	let get_current_win_var = get_win_var.with_arglist([0])
+	let get_current_win_scope = get_current_win_var.with_arglist([''])
+	echo get_current_win_scope.call() is getwinvar(0, '')
+
+Closure.with_context({context})	*Vital.Data.Closure-Closure.with_context()*
+	Creates a new Closure object which has the {context}.
+	{context} is replaced by the argument.
+
+Closure.compose({callable})	*Vital.Data.Closure-Closure.compose()*
+	Same as `C.compose([{callable}, self])`.
+	See also |Vital.Data.Closure.compose()|.
+
+Closure.to_function([{limit}])	*Vital.Data.Closure-Closure.to_function()*
+	Defines a new function for this closure and return its |Funcref|.
+	Note that the function remains after this closure was deleted.
+	When the {limit} is supplied, the function will be marked as delete
+	after the function is called {limit} times.
+	See also |Vital.Data.Closure.sweep_functions()|.
+
+Closure.delete_function()	*Vital.Data.Closure-Closure.delete_function()*
+	Deletes the function made by |Vital.Data.Closure-Closure.to_function()|.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
