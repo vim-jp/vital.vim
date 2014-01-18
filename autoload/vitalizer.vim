@@ -359,13 +359,12 @@ function! vitalizer#command(args)
   try
     let result = vitalizer#vitalize(name, to, modules, hash)
     if !empty(result)
-      echohl MoreMsg
       let hash_stat = result.prev_hash !=# '' ?
       \               result.prev_hash . '->' . result.installed_hash :
       \               result.installed_hash
-      echomsg printf("vitalizer: updated vital of '%s'. (%s)",
+      let mes = printf("vitalizer: updated vital of '%s'. (%s)",
       \                                           to, hash_stat)
-      echohl None
+      call s:Mes.echomsg('MoreMsg', mes)
     endif
   catch /^vitalizer:/
     call s:Mes.error(v:exception)
