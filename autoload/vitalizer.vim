@@ -363,7 +363,7 @@ function! vitalizer#command(args)
       let hash_stat = result.prev_hash !=# '' ?
       \               result.prev_hash . '->' . result.installed_hash :
       \               result.installed_hash
-      echomsg printf("vitalizer: updated vital to '%s'. (%s)",
+      echomsg printf("vitalizer: updated vital of '%s'. (%s)",
       \                                           to, hash_stat)
       echohl None
     endif
