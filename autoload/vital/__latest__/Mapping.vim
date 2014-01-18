@@ -46,7 +46,7 @@ function! s:options_dict2chars(dict)
   \   . (get(a:dict, 'script')  ? 'S' : '')
   \   . (get(a:dict, 'unique')  ? 'u' : '')
   \   . (get(a:dict, 'noremap') ? ''  : 'r')
-  \   . (get(a:dict, 'nowait') ? ''  : 'n')
+  \   . (get(a:dict, 'nowait')  ? 'n' : '')
 endfunction
 
 function! s:options_chars2raw(chars)
