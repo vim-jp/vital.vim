@@ -82,19 +82,20 @@ endfunction
 
 function! s:system(str, ...)
   let command = a:str
-  let input = a:0 >= 1 ? a:1 : ''
+  let input = get(a:000, 0, '')
+  let use_vimproc = get(a:000, 1, s:has_vimproc())
   let command = s:iconv(command, &encoding, 'char')
   let input = s:iconv(input, &encoding, 'char')
 
   if a:0 == 0
-    let output = s:has_vimproc() ?
+    let output = use_vimproc ?
           \ vimproc#system(command) : system(command)
   elseif a:0 == 1
-    let output = s:has_vimproc() ?
+    let output = use_vimproc ?
           \ vimproc#system(command, input) : system(command, input)
   else
     " ignores 3rd argument unless you have vimproc.
-    let output = s:has_vimproc() ?
+    let output = use_vimproc ?
           \ vimproc#system(command, input, a:2) : system(command, input)
   endif
 
