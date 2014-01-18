@@ -22,6 +22,16 @@ function! s:warn(msg)
   call s:echomsg('WarningMsg', a:msg)
 endfunction
 
+function! s:capture(command)
+  try
+    redir => out
+    silent execute a:command
+  finally
+    redir END
+  endtry
+  return out
+endfunction
+
 
 
 let &cpo = s:save_cpo
