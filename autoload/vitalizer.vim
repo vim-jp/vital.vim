@@ -278,7 +278,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       call s:Mes.warn('*** WARNING *** There are critical changes from previous vital you installed.')
       if confirm("Would you like to install a new version?", "&Y\n&n", 1) !=# 1
         echomsg "Canceled"
-        return
+        return {}
       endif
     endif
 
@@ -293,6 +293,11 @@ function! vitalizer#vitalize(name, to, modules, hash)
       \           s:FP.join(a:to, after))
     endfor
     call writefile([short_hash, ''] + installing_modules, vital_file_name)
+
+    return {
+    \ 'prev_hash': vital_file.hash,
+    \ 'installed_hash': short_hash,
+    \}
 
   finally
     " Go back to HEAD if previously checked-out.
@@ -352,8 +357,16 @@ function! vitalizer#command(args)
     return
   endif
   try
-    call vitalizer#vitalize(name, to, modules, hash)
-    echomsg 'updated vital.'
+    let result = vitalizer#vitalize(name, to, modules, hash)
+    if !empty(result)
+      echohl MoreMsg
+      let hash_stat = result.prev_hash !=# '' ?
+      \               result.prev_hash . '->' . result.installed_hash :
+      \               result.installed_hash
+      echomsg printf("vitalizer: updated vital to '%s'. (%s)",
+      \                                           to, hash_stat)
+      echohl None
+    endif
   catch /^vitalizer:/
     call s:Mes.error(v:exception)
   endtry
