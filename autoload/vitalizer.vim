@@ -353,6 +353,7 @@ function! vitalizer#command(args)
   endif
   try
     call vitalizer#vitalize(name, to, modules, hash)
+    echomsg 'updated vital.'
   catch /^vitalizer:/
     call s:Mes.error(v:exception)
   endtry
