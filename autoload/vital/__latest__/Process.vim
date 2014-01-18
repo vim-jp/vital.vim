@@ -80,6 +80,13 @@ function! s:has_vimproc()
   return s:exists_vimproc
 endfunction
 
+" * {command} [, {input} [, {timeout}]]
+" * {command} [, {dict}]
+"   {dict} = {
+"     use_vimproc: bool,
+"     input: string,
+"     timeout: bool,
+"   }
 function! s:system(str, ...)
   let command = a:str
   let command = s:iconv(command, &encoding, 'char')
