@@ -105,6 +105,7 @@ function! s:system(str, ...)
         " ignores timeout unless you have vimproc.
         let args += [a:1.timeout]
       endif
+    endif
   elseif a:0 >= 2
     let [input; rest] = a:000
     let input = s:iconv(a:1, &encoding, 'char')
