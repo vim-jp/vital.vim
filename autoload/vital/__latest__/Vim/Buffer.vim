@@ -37,6 +37,19 @@ function! s:open(buffer, opener)
   return loaded
 endfunction
 
+" Get selected text in visual mode.
+function! s:get_selected_text()
+    let save_z = getreg('z', 1)
+    let save_z_type = getregtype('z')
+
+    try
+        normal! gv"zy
+        return @z
+    finally
+        call setreg('z', save_z, save_z_type)
+    endtry
+endfunction
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
