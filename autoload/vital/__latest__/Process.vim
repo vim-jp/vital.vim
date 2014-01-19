@@ -88,8 +88,7 @@ endfunction
 "     timeout: bool,
 "   }
 function! s:system(str, ...)
-  let command = a:str
-  let command = s:iconv(command, &encoding, 'char')
+  let command = s:iconv(a:str, &encoding, 'char')
   let input = ''
   let use_vimproc = s:has_vimproc()
   let args = [command]
