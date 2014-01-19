@@ -12,14 +12,47 @@ INTERFACE			|Vital.Process-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Process-introduction*
 
-*Vital.Process* is TODO
+*Vital.Process* provides utility functions
+which manipulates process.
 
 ==============================================================================
 INTERFACE				*Vital.Process-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Process-functions*
 
-TODO
+                        *Vital.Process.spawn()*
+spawn({command} [, {special}])
+	{command} is |List| or |String|
+	to run as background process.
+	This function returns nothing.
+	If {command} is |String| and
+	{special} was given and non-zero,
+	escape special characters.
+	See |shellescape()|'s {special} argument for the details.
+
+                        *Vital.Process.iconv()*
+iconv({expr}, {from}, {to})
+	|iconv()| wrapper for safety.
+	Built-in |iconv()| returns an empty string
+	when the conversion completely fails.
+
+                        *Vital.Process.has_vimproc()*
+has_vimproc()
+	Returns non-zero value if vimproc is installed.
+
+                        *Vital.Process.system()*
+system({command} [, {input} [, {timeout}]])
+system({command} [, {dict}])
+	|system()| or |vimproc#system()| wrapper.
+	Do |iconv()| for {command} and {input}.
+	
+	{dict} is:
+>
+	{dict} = {
+		use_vimproc: bool,
+		input: string,
+		timeout: bool,
+	}
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
