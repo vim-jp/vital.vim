@@ -108,6 +108,18 @@ Context Data.String.common_head()
   It returns an empty string with empty list
     Should g:S.common_head([]) ==# ''
   End
+  It is safe for regexp characters
+    try
+      Should g:S.common_head(['^o^', '^oo^']) ==# '^o'
+      Should g:S.common_head(['\', '\']) ==# '\'
+      Should g:S.common_head(['*_*', '*_*']) ==# '*_*'
+      Should g:S.common_head(['...-..--', '...-..--']) ==# '...-..--'
+      Should g:S.common_head(['[', '[']) ==# '['
+      Should g:S.common_head([']', ']']) ==# ']'
+    catch
+      Should 0
+    endtry
+  End
 End
 
 Context Data.String.split3()
