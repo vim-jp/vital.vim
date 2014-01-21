@@ -58,7 +58,7 @@ Context on() funcref in OptionParser object
 
     " non alphabetical characters
     for na in ['!', '"', '#', '$', '%', '&', '''', '(', ')', '~', '\', '[', ']', ';', ':', '+', '*', ',', '.', '/', '1', '2', '_']
-        call g:Opt.on('--'.na, '-'.na, 'huga')
+        call o.on('--'.na, '-'.na, 'huga')
         Should has_key(o.options[na], 'short_option_definition')
         Should o.options[na].short_option_definition ==# '-'.na
     endfor
@@ -235,7 +235,7 @@ Context parse() in OptionParser object
     " command with <range>
     for a in args
       for or in opts_range
-        Expect call(o.parse, [a] + or, o) ==
+        Should call(o.parse, [a] + or, o) ==
               \ {
               \   '__unknown_args__' : ['unknown_arg'],
               \   '__range__' : [1, 100],
