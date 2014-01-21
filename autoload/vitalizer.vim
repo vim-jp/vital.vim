@@ -215,6 +215,9 @@ function! vitalizer#vitalize(name, to, modules, hash)
   if empty(a:name)
     throw 'vitalizer: {name} must not be empty.'
   endif
+  if a:name !~# '^\w\+$'
+    throw 'vitalizer: {name} can contain only alphabets and numbers.'
+  endif
   if !isdirectory(a:to)
     throw 'vitalizer: {target-dir} must exist.'
   endif
