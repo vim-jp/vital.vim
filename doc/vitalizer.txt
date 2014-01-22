@@ -30,8 +30,8 @@ COMMANDS					*vitalizer-commands*
 	List of {module} is module names you want.  It is necessary to
 	specify one or more.
 	The Prelude module(|Vital.Prelude|) is always included.
-	List of {module} is recorded to your Vital.  This is used after next
-	time if {module} is omitted.
+	{name}(see below) and list of {module} is recorded to your Vital.
+	This is used after next time if they are omitted.
 	You can use +/- prefix to {module}.  This adds or removes the
 	specified module.
 >

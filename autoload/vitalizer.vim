@@ -186,38 +186,42 @@ function! s:uninstall(target_dir)
 endfunction
 
 " Search *.vital file in a target directory.
-function! s:get_vital_file_name(to, name)
-  let vital_file = a:to . '/autoload/vital/' . a:name . '.vital'
-  if !filereadable(vital_file)
-    let filelist = glob(a:to . '/autoload/vital/*.vital', 1)
-    if filelist != ''
-      let vital_file = split(filelist, '\n')[0]
-    endif
-  endif
-  return vital_file
+function! s:search_old_vital_file(to)
+  let filelist = split(glob(a:to . '/autoload/vital/*.vital', 1), "\n")
+  return len(filelist) == 1 ? filelist[0] : ''
 endfunction
 
-function! s:read_vital_file(vital_file)
-  let content = {'hash': '', 'modules': []}
-  if filereadable(a:vital_file)
-    let lines = readfile(a:vital_file)
+function! s:build_vital_data(to, name)
+  let name = a:name
+  let hash = ''
+  let modules = []
+
+  let old_vital_file = s:search_old_vital_file(a:to)
+  if filereadable(old_vital_file)
+    let lines = readfile(old_vital_file)
     let [head, modules] = s:L.break('v:val ==# ""', lines)
-    let content.hash = head[-1]
-    let content.modules = modules[1 :]
+    if 2 <= len(head) && empty(name)
+      let name = head[0]
+    endif
+    let hash = head[-1]
+    let modules = modules[1 :]
   endif
-  return content
+  if empty(name)
+    let name = s:FP.basename(a:to)
+  endif
+  let vital_file = s:FP.join(a:to, 'autoload', 'vital', name . '.vital')
+  return {
+  \   'name': name,
+  \   'vital_file': vital_file,
+  \   'hash': hash,
+  \   'modules': modules,
+  \ }
 endfunction
 
 function! vitalizer#vitalize(name, to, modules, hash)
   " FIXME: Should check if a working tree is dirty.
 
   " Check arguments
-  if empty(a:name)
-    throw 'vitalizer: {name} must not be empty.'
-  endif
-  if a:name !~# '^\w\+$'
-    throw 'vitalizer: {name} can contain only alphabets and numbers.'
-  endif
   if !isdirectory(a:to)
     throw 'vitalizer: {target-dir} must exist.'
   endif
@@ -241,8 +245,14 @@ function! vitalizer#vitalize(name, to, modules, hash)
   endif
 
   try
-    let vital_file_name = s:get_vital_file_name(a:to, a:name)
-    let vital_file = s:read_vital_file(vital_file_name)
+    let vital_data = s:build_vital_data(a:to, a:name)
+
+    if empty(vital_data.name)
+      throw 'vitalizer: {name} must not be empty.'
+    endif
+    if vital_data.name !~# '^\w\+$'
+      throw 'vitalizer: {name} can contain only alphabets and numbers.'
+    endif
 
     " Check if all of specified modules exist.
     let missing = copy(a:modules)
@@ -254,7 +264,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     endif
 
     " Determine installing modules.
-    let installing_modules = copy(vital_file.modules)
+    let installing_modules = copy(vital_data.modules)
     if !empty(a:modules)
       let [diff, modules] = s:L.partition('v:val =~# "^[+-]"', a:modules)
       if !empty(modules)
@@ -280,8 +290,8 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Show critical changes.
     " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
     " TODO: Support changes in a limit range by passing 'hash' value.
-    if !empty(vital_file.hash) &&
-    \   s:show_changes(vital_file.hash, installing_modules)
+    if !empty(vital_data.hash) &&
+    \   s:show_changes(vital_data.hash, installing_modules)
       call s:Mes.warn('*** WARNING *** There are critical changes from previous vital you installed.')
       if confirm("Would you like to install a new version?", "&Y\n&n", 1) !=# 1
         echomsg "Canceled"
@@ -292,7 +302,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " List and check the installing files.
     let install_files = []
     for f in files + s:REQUIRED_FILES
-      let after = substitute(f, '__latest__', '_' . a:name, '')
+      let after = substitute(f, '__latest__', '_' . vital_data.name, '')
       let paths = globpath(g:vitalizer#vital_dir . ',' . &runtimepath, f, 1)
       let from = get(split(paths, "\n"), 0)
       if !filereadable(from)
@@ -309,11 +319,11 @@ function! vitalizer#vitalize(name, to, modules, hash)
     for [from, to] in install_files
       call s:copy(from, to)
     endfor
-    let content = [a:name, short_hash, ''] + installing_modules
-    call writefile(content, vital_file_name)
+    let content = [vital_data.name, short_hash, ''] + installing_modules
+    call writefile(content, vital_data.vital_file)
 
     return {
-    \ 'prev_hash': vital_file.hash,
+    \ 'prev_hash': vital_data.hash,
     \ 'installed_hash': short_hash,
     \}
 
@@ -354,7 +364,7 @@ function! vitalizer#command(args)
   else
     let to = fnamemodify(args[0], ':p')
     let modules = args[1 :]
-    let name = fnamemodify(to, ':h:t')
+    let name = ''
   endif
   let hash = ''
   for option in options
