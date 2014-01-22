@@ -46,8 +46,8 @@ function! s:git(cmd)
   return output
 endfunction
 
-function! s:git_current_hash()
-  return s:git('rev-parse HEAD')
+function! s:git_hash(rev)
+  return s:git('rev-parse ' . a:rev)
 endfunction
 
 function! s:git_checkout(hash)
@@ -226,22 +226,16 @@ function! vitalizer#vitalize(name, to, modules, hash)
     throw 'vitalizer: {target-dir} must exist.'
   endif
 
+  let need_checkout = !empty(a:hash)
+  let rev = need_checkout ? a:hash : 'HEAD'
   try
-    " Save current HEAD to restore a working tree later.
-    let cur = s:git_current_hash()
+    let hash = s:git_hash(rev)
   catch
-    throw 'vitalizer: Could not retrieve current HEAD: ' . v:exception
+    throw 'vitalizer: Could not retrieve target revision: ' . v:exception
   endtry
 
-  if a:hash ==# ''
-    let hash = cur
-    unlet cur
-  elseif cur !=? a:hash
-    call s:git_checkout(a:hash)
-    let hash = a:hash
-  else
-    let hash = a:hash
-    unlet cur
+  if need_checkout
+    call s:git_checkout(hash)
   endif
 
   try
@@ -328,9 +322,9 @@ function! vitalizer#vitalize(name, to, modules, hash)
     \}
 
   finally
-    " Go back to HEAD if previously checked-out.
-    if exists('cur')
-      call s:git_checkout(cur)
+    " Restore the HEAD
+    if need_checkout
+      call s:git_checkout('-')
     endif
   endtry
 endfunction
