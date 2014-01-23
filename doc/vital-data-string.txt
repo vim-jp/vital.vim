@@ -99,7 +99,7 @@ diffidx({str1}, {str2})				*Vital.Data.String.diffidx()*
 	Returns first index of different character if two strings are not
 	equal, otherwise returns number -1 if the strings are equal.
 
-substitute_last({expr}, {pat}, {sub}})	*Vital.Data.String.substitute_last()*
+substitute_last({expr}, {pat}, {sub})	*Vital.Data.String.substitute_last()*
 	Behaves like |substitute()|, but it only replaces the last matched
 	string.
 
