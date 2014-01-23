@@ -211,7 +211,7 @@ function! s:nr2hex(nr)
 endfunction
 
 " If a ==# b, returns -1.
-" If a !=# b, returns first index of diffrent character.
+" If a !=# b, returns first index of different character.
 function! s:diffidx(a, b)
   return a:a ==# a:b ? -1 : strlen(s:common_head([a:a, a:b]))
 endfunction
