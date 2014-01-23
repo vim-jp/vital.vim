@@ -21,7 +21,7 @@ INTERFACE				*Vital.Data.Dict-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Data.Dict-functions*
 
-make({keys}, {values} [, {fill}])	*Vital.Datal.Dict.make()*
+make({keys}, {values} [, {fill}])	*Vital.Data.Dict.make()*
 	Makes a dictionary from {keys} and {values}.
 	If the length of {keys} is less than {values}, tails of {values} are
 	ignored.
@@ -39,14 +39,14 @@ make({keys}, {values} [, {fill}])	*Vital.Datal.Dict.make()*
 	{'one': 1, 'two': 2, 'three': 9}
 <
 
-swap({dict})				*Vital.Datal.Dict.swap()*
+swap({dict})				*Vital.Data.Dict.swap()*
 	Makes a dictionary that swapped keys and values.
 >
 	:echo Dict.swap({'one': 1, 'two': 2, 'three': 3})
 	{'1': 'one', '2': 'two', '3': 'three'}
 <
 
-make_index({list} [, {value}])		*Vital.Datal.Dict.make_index()*
+make_index({list} [, {value}])		*Vital.Data.Dict.make_index()*
 	Makes an index dictionary.  This dictionary has {list} as key, and has
 	{value} as each value.
 	If {value} is omitted, 1 is used.
@@ -57,7 +57,7 @@ make_index({list} [, {value}])		*Vital.Datal.Dict.make_index()*
 	{'apple': 5, 'orange': 5, 'banana': 5}
 <
 
-pick({dict}, {keys})			*Vital.Datal.Dict.pick()*
+pick({dict}, {keys})			*Vital.Data.Dict.pick()*
 	Returns a copy of the {dict}, filtered to only have entries for the
 	whitelisted {keys}.
 >
@@ -66,7 +66,7 @@ pick({dict}, {keys})			*Vital.Datal.Dict.pick()*
 	{'one': 1, 'three': 3}
 <
 
-omit({dict}, {keys})			*Vital.Datal.Dict.omit()*
+omit({dict}, {keys})			*Vital.Data.Dict.omit()*
 	Returns a copy of the {dict}, filtered to omit the blacklisted {keys}.
 >
 	:let d = {'one' : 1, 'two' : 2, 'three' : 3}
@@ -74,7 +74,7 @@ omit({dict}, {keys})			*Vital.Datal.Dict.omit()*
 	{'two': 2}
 <
 
-clear({dict})				*Vital.Datal.Dict.clear()*
+clear({dict})				*Vital.Data.Dict.clear()*
 	Remove all the elements of {dict}.  Returns the empty dictionary
 	{dict}.
 >
@@ -86,8 +86,8 @@ clear({dict})				*Vital.Datal.Dict.clear()*
 <
 
 max_by({dict}, {expr})			*Vital.Data.Dict.max_by()*
-	Returns a list [key, val] which is maximum value in {dict} through given
-	{expr}.
+	Returns a list [key, val] which is maximum value in {dict} through
+	given {expr}.
 	Throws an exception if {dict} is empty.
 	both "v:key" and "v:val" can be used in {expr}.
 >
@@ -96,8 +96,8 @@ max_by({dict}, {expr})			*Vital.Data.Dict.max_by()*
 <
 
 min_by({dict}, {expr})			*Vital.Data.Dict.min_by()*
-	Returns a list [key, val] which is minimum value in {dict} through given
-	{expr}.
+	Returns a list [key, val] which is minimum value in {dict} through
+	given {expr}.
 	Throws an exception if {dict} is empty.
 	both "v:key" and "v:val" can be used in {expr}.
 >
