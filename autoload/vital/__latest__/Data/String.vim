@@ -277,6 +277,22 @@ function! s:pad_between_letters(str, width, ...)
   return str
 endfunction
 
+function! s:justify_equal_spacing(str, width, ...)
+  let char = get(a:, 1, ' ')
+  if strdisplaywidth(char) != 1
+    throw "vital: Data.String: Can't use non-half-width characters for padding."
+  endif
+  let letters = split(a:str, '\zs')
+  let first_letter = letters[0]
+  " {width w/o the first letter} / {length w/o the first letter}
+  let each_width = (a:width - strdisplaywidth(first_letter)) / (len(letters) - 1)
+  let remainder = (a:width - strdisplaywidth(first_letter)) % (len(letters) - 1)
+  return first_letter. join(s:L.concat([
+\     map(letters[1:remainder], 's:pad_left(v:val, each_width + 1, char)'),
+\     map(letters[remainder + 1:], 's:pad_left(v:val, each_width, char)')
+\   ]), '')
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

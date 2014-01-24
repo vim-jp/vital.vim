@@ -311,3 +311,20 @@ Context Data.String.pad_between_letters()
   End
 End
 
+Context Data.String.justify_equal_spacing()
+  It returns a string justified equal spacing with the given half-width character or white-space, considering non-half-width characters.
+    Should g:S.justify_equal_spacing("sushi", 12, '_') == 's__u__s__h_i'
+    Should g:S.justify_equal_spacing("中トロ", 12)     == '中   ト   ロ'
+    Should g:S.justify_equal_spacing("サーモン", 12)   == 'サ  ー モ ン'
+    Should g:S.justify_equal_spacing("ウニ", 12)       == 'ウ        ニ'
+    Should g:S.justify_equal_spacing("イクラ", 12)     == 'イ   ク   ラ'
+    " Can't use non-half-width characters for padding.
+    try
+      call g:S.justify_equal_spacing('test', 11, '―')
+      Should 1
+    catch
+      Should 0
+    endtry
+  End
+End
+

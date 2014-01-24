@@ -163,5 +163,16 @@ pad_between_letters({str}, {width} [, {char}])
 	" '  t e s t  '
 <
 
+				*Vital.Data.String.justify_equal_spacing()*
+justify_equal_spacing({str}, {width} [, {char}])
+	It returns a string justified equal spacing until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo g:S.justify_equal_spacing('test', 11)
+	" 't   e  s  t'
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
