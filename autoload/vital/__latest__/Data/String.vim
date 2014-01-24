@@ -271,7 +271,7 @@ function! s:pad_between_letters(str, width, ...)
   let letters = split(a:str, '\zs')
   let each_width = a:width / len(letters)
   let str = join(map(letters, 's:pad_both_sides(v:val, each_width, char)'), '')
-  if a:width - strdisplaywidth(str)
+  if a:width - strdisplaywidth(str) > 0
     return char. s:pad_both_sides(str, a:width - 1, char)
   endif
   return str
