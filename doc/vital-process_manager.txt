@@ -29,7 +29,7 @@ required.
 USAGE				*Vital.ProcessManager-usage*
 >
 	let P = V.import('ProcessManager')
-	if !P.available() " please always check if it's available.
+	if !P.is_available() " please always check if it's available.
 	  throw "omg"
 	endif
 	call P.touch('i', 'clojure-1.5') " creates a process that runs clojure
