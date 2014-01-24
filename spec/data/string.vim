@@ -246,3 +246,68 @@ Context Data.String.contains_multibyte()
     Should g:S.contains_multibyte('') == 0
   End
 End
+
+Context Data.String.pad_left()
+  It returns a string padded left side until given width with the given half-width character or white-space, considering non-half-width characters.
+    Should g:S.pad_left('test', 11)        == '       test'
+    Should g:S.pad_left('テスト', 11)      == '     テスト'
+    Should g:S.pad_left('テスト', 11, '-') == '-----テスト'
+    " Can't use non-half-width characters for padding.
+    try
+      call g:S.pad_left('test', 11, '―')
+      Should 1
+    catch
+      Should 0
+    endtry
+  End
+End
+
+Context Data.String.pad_right()
+  It returns a string padded right side until given width with the given half-width character or white-space, considering non-half-width characters.
+    Should g:S.pad_right('test', 11)        == 'test       '
+    Should g:S.pad_right('テスト', 11)      == 'テスト     '
+    Should g:S.pad_right('テスト', 11, '-') == 'テスト-----'
+    " Can't use non-half-width characters for padding.
+    try
+      call g:S.pad_right('test', 11, '―')
+      Should 1
+    catch
+      Should 0
+    endtry
+  End
+End
+
+Context Data.String.pad_both_sides()
+  It returns a string padded left and right side until given width with the given half-width character or white-space, considering non-half-width characters.
+    Should g:S.pad_both_sides('test', 11)        == '   test    '
+    Should g:S.pad_both_sides('テスト', 11)      == '  テスト   '
+    Should g:S.pad_both_sides('テスト', 11, '-') == '--テスト---'
+    " Can't use non-half-width characters for padding.
+    try
+      call g:S.pad_both_sides('test', 11, '―')
+      Should 1
+    catch
+      Should 0
+    endtry
+  End
+End
+
+Context Data.String.pad_between_letters()
+  It returns a string padded between letters until given width with the given half-width character or white-space, considering non-half-width characters.
+    Should g:S.pad_between_letters('test', 11)        == '  t e s t  '
+    Should g:S.pad_between_letters('テスト', 11)      == ' テ ス ト  '
+    Should g:S.pad_between_letters('テスト', 12, '-') == '-テ--ス--ト-'
+    Should g:S.pad_between_letters('テスト', 13, '-') == '--テ--ス--ト-'
+    Should g:S.pad_between_letters('テスト', 14, '-') == '--テ--ス--ト--'
+    Should g:S.pad_between_letters('テスト', 15, '-') == '-テ---ス---ト--'
+    Should g:S.pad_between_letters('テスト', 16, '-') == '--テ---ス---ト--'
+    " Can't use non-half-width characters for padding.
+    try
+      call g:S.pad_between_letters('test', 11, '―')
+      Should 1
+    catch
+      Should 0
+    endtry
+  End
+End
+
