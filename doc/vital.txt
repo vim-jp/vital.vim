@@ -16,7 +16,7 @@ LINKS				|Vital-links|
 ==============================================================================
 INTRODUCTION				*Vital-introduction*
 
-This is like a plugin which has both aspects of Bundler and jQuery at the
+*Vital* is like a plugin which has both aspects of Bundler and jQuery at the
 same time.
 
  Bundler: http://gembundler.com/

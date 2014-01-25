@@ -5,36 +5,36 @@ Maintainer: rbtnn <naru123456789@gmail.com>
 ==============================================================================
 CONTENTS			                *Vital.Text.Lexer-contents*
 
-INTRODUCTION		                 |Vital.Lexer-introduction|
-INTERFACE		                 |Vital.Lexer-interface|
-  FUNCTIONS			         |Vital.Lexer-functions|
-OBJECTS			                 |Vital.Lexer-objects|
-  Lexer Object   	                 |Vital.Lexer-Lexer|
-EXAMPLES	                 	 |Vital.Lexer-examples|
+INTRODUCTION		                 |Vital.Text.Lexer-introduction|
+INTERFACE		                 |Vital.Text.Lexer-interface|
+  FUNCTIONS			         |Vital.Text.Lexer-functions|
+OBJECTS			                 |Vital.Text.Lexer-objects|
+  Lexer Object   	                 |Vital.Text.Lexer-Lexer|
+EXAMPLES	                 	 |Vital.Text.Lexer-examples|
 
 ==============================================================================
-INTRODUCTION			                *Vital.Lexer-introduction*
+INTRODUCTION			                *Vital.Text.Lexer-introduction*
 
-*Vital.Lexer* is lexer library.
+*Vital.Text.Lexer* is lexer library.
 
 ==============================================================================
-INTERFACE			                *Vital.Lexer-interface*
+INTERFACE			                *Vital.Text.Lexer-interface*
 
 ------------------------------------------------------------------------------
-FUNCTIONS			                *Vital.Lexer-functions*
+FUNCTIONS			                *Vital.Text.Lexer-functions*
 
-lexer(patterns)		                        *Vital.Lexer.lexer()*
+lexer(patterns)		                        *Vital.Text.Lexer.lexer()*
 	Creates a new Lexer object.
 	{patterns} is a format such as "[ [label,regex] , ... ]".
 	A Lexer object has exec(expr).
 
 ==============================================================================
-OBJECTS				                *Vital.Lexer-objects*
+OBJECTS				                *Vital.Text.Lexer-objects*
 
 ------------------------------------------------------------------------------
-Lexer Object		                        *Vital.Lexer-Lexer*
+Lexer Object		                        *Vital.Text.Lexer-Lexer*
 
-Lexer.exec(expr)		                *Vital.Lexer-Lexer.exec()*
+Lexer.exec(expr)		                *Vital.Text.Lexer-Lexer.exec()*
 	Evaluates {expr}.
         This returns a list of dictionaries which have the following keys.
 		'matched_text' : matched text in {expr}.
@@ -42,9 +42,9 @@ Lexer.exec(expr)		                *Vital.Lexer-Lexer.exec()*
 		'label' : label of 'matched_text'.
 
 ==============================================================================
-EXAMPLES					*Vital.Lexer-examples*
+EXAMPLES					*Vital.Text.Lexer-examples*
 
-lexer example                    		*Vital.Lexer-lexer-example*
+lexer example                    		*Vital.Text.Lexer-lexer-example*
 >
 	let V = vital#of('vital')
 	let L = V.import('Text.Lexer')
