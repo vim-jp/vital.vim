@@ -118,6 +118,11 @@ function! s:system(str, ...)
   return output
 endfunction
 
+function! s:get_last_status()
+  return s:has_vimproc() ?
+        \ vimproc#get_last_status() : v:shell_error
+endfunction
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

@@ -5,6 +5,7 @@ set cpo&vim
 
 function! s:_vital_loaded(V)
   let s:V = a:V
+  let s:P = s:V.import('Process')
 
   let s:NUM_SECONDS = 60
   let s:NUM_MINUTES = 60
@@ -25,7 +26,7 @@ function! s:_vital_loaded(V)
 
   if s:V.is_windows()
     let key = 'HKLM\System\CurrentControlSet\Control\TimeZoneInformation'
-    let regs = s:V.system(printf('reg query "%s" /v Bias', key))
+    let regs = s:P.system(printf('reg query "%s" /v Bias', key))
     let time = matchstr(regs, 'REG_DWORD\s*\zs0x\x\+')
     let s:win_tz = empty(time) ? 0 : time / -s:NUM_MINUTES
   endif

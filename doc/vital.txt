@@ -31,9 +31,9 @@ USAGE					*Vital-usage*
 Assuming your Vim plugin name is "ujihisa", you can define your utility
 function set 'ujihisa#util' just by
 >
-    let V = vital#of('ujihisa')
+    let P = vital#of('ujihisa').import('Process')
     function! ujihisa#util#system(...)
-      return call(V.system, a:000, V)
+      return call(P.system, a:000, P)
     endfunction
 <
 and then you can call functions by 'ujihisa#util#system()', without taking

@@ -4,6 +4,7 @@ set cpo&vim
 function! s:_vital_loaded(V)
   let s:V = a:V
   let s:L = s:V.import('Data.List')
+  let s:P = s:V.import('Process')
 endfunction
 
 function! s:_vital_depends()
@@ -24,7 +25,7 @@ function! s:_f_from_list() dict
 endfunction
 
 function! s:file_readlines(fname)
-  if !s:V.has_vimproc()
+  if !s:P.has_vimproc()
     throw 'Data.LazyList.file_readlines() requires vimproc'
   endif
   return [[], {

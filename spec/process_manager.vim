@@ -1,20 +1,21 @@
 source spec/base.vim
 
 let g:V = vital#of('vital')
-let g:P = g:V.import('ProcessManager')
+let g:P = g:V.import('Process')
+let g:PM = g:V.import('ProcessManager')
 
 Context ProcessManager.is_available()
   It behaves same to has_vimproc
-    Should g:V.has_vimproc() == g:P.is_available()
+    Should g:P.has_vimproc() == g:PM.is_available()
   End
 End
 
 Context ProcessManager.touch()
   It makes a process synchronously and stores the info inside ProcessManager
-    if g:P.is_available()
-      let t = g:P.touch('aaa', 'cat')
+    if g:PM.is_available()
+      let t = g:PM.touch('aaa', 'cat')
       Should t ==# 'new'
-      let t = g:P.touch('aaa', 'cat')
+      let t = g:PM.touch('aaa', 'cat')
       Should t ==# 'existing'
     else
       Should "Hey I can't test! install vimproc."
@@ -25,9 +26,9 @@ End
 
 Context ProcessManager.status()
   It is 'stopped' when the process is not working
-    call g:P.touch('spec-status', 'ls') " assuming you have ls command
+    call g:PM.touch('spec-status', 'ls') " assuming you have ls command
     sleep " TODO it's evil.
-    Should g:P.status('spec-status') == 'inactive'
+    Should g:PM.status('spec-status') == 'inactive'
   End
   " TODO make new test case about 'active'
 End
