@@ -54,5 +54,26 @@ system({command} [, {dict}])
 		timeout: bool,
 	}
 
+has_vimproc()					*Vital.Process.has_vimproc()*
+	Returns non-zero if |vimproc| is installed, zero otherwise.
+	You can download the |vimproc| from http://github.com/Shougo/vimproc/.
+
+system({expr} [, {input} [, {timeout}]])	*Vital.Process.system()*
+	Gets the output of the shell command {expr}.
+	This function calls |vimproc#system()| if |has_vimproc()| returns
+	non-zero, otherwise |system()|.
+	If {timeout} is specified, the command will be killed after {timeout}
+	milliseconds.  Note that {timeout} is available only when
+	|has_vimproc()| returns non-zero.
+
+get_last_status()			*Vital.Process.get_last_status()*
+	Returns the result of the last shell command either via |vimproc| or
+	not.
+
+iconv({expr}, {from}, {to})			*Vital.Process.iconv()*
+	iconv() wrapper for safety.
+	This won't return an original string
+	not an empty string when failure.
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

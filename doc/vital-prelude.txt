@@ -92,9 +92,6 @@ escape_file_searching({str})		*Vital.Prelude.escape_file_searching()*
 escape_pattern({str})			*Vital.Prelude.escape_pattern()*
 	TODO
 
-iconv({expr}, {from}, {to})			*Vital.Prelude.iconv()*
-	TODO
-
 getchar(...)					*Vital.Prelude.getchar()*
 	TODO
 
@@ -124,22 +121,6 @@ path2directory({path})			*Vital.Prelude.path2directory()*
 				*Vital.Prelude.path2project_directory()*
 path2project_directory({path}[, {is_allow_empty}])
 	TODO
-
-has_vimproc()					*Vital.Prelude.has_vimproc()*
-	Returns non-zero if |vimproc| is installed, zero otherwise.
-	You can download the |vimproc| from http://github.com/Shougo/vimproc/.
-
-system({expr} [, {input} [, {timeout}]])	*Vital.Prelude.system()*
-	Gets the output of the shell command {expr}.
-	This function calls |vimproc#system()| if |has_vimproc()| returns
-	non-zero, otherwise |system()|.
-	If {timeout} is specified, the command will be killed after {timeout}
-	milliseconds.  Note that {timeout} is available only when
-	|has_vimproc()| returns non-zero.
-
-get_last_status()			*Vital.Prelude.get_last_status()*
-	Returns the result of the last shell command either via |vimproc| or
-	not.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
