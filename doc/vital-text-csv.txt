@@ -14,7 +14,7 @@ INTERFACE			|Vital.Text.CSV-interface|
 ==============================================================================
 INTRODUCTION			*Vital.Text.CSV-introduction*
 
-*vital-text-csv* is a CSV parser and dumper.
+*Vital.Text.CSV* is a CSV parser and dumper.
 
 
 

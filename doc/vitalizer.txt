@@ -14,7 +14,7 @@ CUSTOMIZING			|vitalizer-customizing|
 ==============================================================================
 INTRODUCTION					*vitalizer-introduction*
 
-*vitalizer* is a Vim plugin to vitalize the |Vital| to your plugin.
+*Vitalizer* is a Vim plugin to vitalize the |Vital| to your plugin.
 
 
 
