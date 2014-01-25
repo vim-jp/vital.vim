@@ -1,3 +1,7 @@
+5d9134d
+	Modules: Prelude
+	'Prelude.{iconv,has_vimproc,system,get_last_status}()'
+	are moved to Process module.
 3a85a26
 	Modules: Data.List
 	Data.List: Removed deprecated max() and min().
