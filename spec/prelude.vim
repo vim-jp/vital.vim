@@ -138,14 +138,6 @@ End
   "echohl None
   "sleep 1
 
-Context Prelude.system()
-  It runs an external command and returns the stdout
-    " assuming you have echo command
-    Should g:V.system('echo 1234') ==# "1234\n"
-  End
-End
-
-
 Context Prelude.is_cygwin()
   It is true only when the platform is cygwin
     Should g:V.is_cygwin() ==# has('win32unix')
