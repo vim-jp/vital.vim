@@ -6,6 +6,7 @@ let s:_processes = {}
 function! s:_vital_loaded(V)
   let s:V = a:V
   let s:S = s:V.import('Data.String')
+  let s:P = s:V.import('Process')
 endfunction
 
 function! s:_vital_depends()
@@ -13,7 +14,7 @@ function! s:_vital_depends()
 endfunction
 
 function! s:is_available()
-  return s:V.has_vimproc()
+  return s:P.has_vimproc()
 endfunction
 
 function! s:touch(name, cmd)

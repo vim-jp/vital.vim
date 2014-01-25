@@ -4,7 +4,7 @@ set cpo&vim
 
 function! s:_vital_loaded(V)
   let s:V = a:V
-
+  let s:P = s:V.import('Process')
   let s:String = s:V.import('Data.String')
 endfunction
 
@@ -446,7 +446,7 @@ function! s:clients.wget.request(settings)
     let command .= ' --post-file=' . quote . a:settings._file.post . quote
   endif
 
-  call s:V.system(command)
+  call s:P.system(command)
 
   if filereadable(a:settings._file.header)
     let header_lines = readfile(a:settings._file.header, 'b')
