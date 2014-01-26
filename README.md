@@ -14,10 +14,48 @@ If you are a Vim plugin author, please check this out.
 
 ## What vital.vim provides
 
-* `system()`
-    * If user has `vimproc`, this uses `vimproc#system()`, otherwise just the
-      Vim builtin `system()`.
-* ... (all public functions in [unite](https://github.com/Shougo/unite.vim)/util.
+* Assertion
+* Bitwise
+* Data.Base64
+* Data.Collection
+* Data.Dict
+* Data.LazyList
+* Data.List
+* Data.OrderedSet
+* Data.String
+* Data.Tree
+* Database.SQLite
+* DateTime
+* Experimental.Functor
+* Interpreter.Brainf__k
+* Locale.Message
+* Lua.Prelude
+* Mapping
+* Math
+* OptionParser
+* Prelude
+* Process
+* ProcessManager
+* Random.Xor128
+* System.Cache
+* System.File
+* System.Filepath
+* Text.CSV
+* Text.Lexer
+* Text.LTSV
+* Text.Parser
+* Text.Sexp
+* Vim.Buffer
+* Vim.BufferManager
+* Vim.Compat
+* Vim.Message
+* Vim.Search
+* Web.HTML
+* Web.HTTP
+* Web.JSON
+* Web.URI
+* Web.XML
+* ... and more ...
 
 ## How to use
 
