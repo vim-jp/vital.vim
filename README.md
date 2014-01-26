@@ -58,7 +58,25 @@ If you are a Vim plugin author, please check this out.
 * ... and more ...
 
 
-## How to use
+## Let's get started
+
+### Install modules for your own plugin
+
+Use `:Vitalize` to install modules.
+Please see [the help](https://github.com/vim-jp/vital.vim/blob/master/doc/vitalizer.txt) for more details.
+
+```vim
+:Vitalize --name=your_plugin_name $HOME/.vim/bundle/your_plugin_dir/
+```
+
+You can also install only specified modules.
+(recommended for your repo size, if you are going to upload to remote repo)
+
+```vim
+:Vitalize --name=your_plugin_name $HOME/.vim/bundle/your_plugin_dir/ Data.String Data.List
+```
+
+### Use vital functions
 
 Assuming your Vim plugin name is `ujihisa`. You can define your utility
 function set `ujihisa#util` just by
