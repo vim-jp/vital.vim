@@ -15,47 +15,48 @@ If you are a Vim plugin author, please check this out.
 ## What vital.vim provides
 
 * Assertion
-* Bitwise
-* Data.Base64
-* Data.Collection
-* Data.Dict
-* Data.LazyList
-* Data.List
-* Data.OrderedSet
-* Data.String
-* Data.Tree
-* Database.SQLite
-* DateTime
-* Experimental.Functor
-* Interpreter.Brainf__k
-* Locale.Message
-* Lua.Prelude
-* Mapping
-* Math
-* OptionParser
-* Prelude
-* Process
-* ProcessManager
-* Random.Xor128
-* System.Cache
-* System.File
-* System.Filepath
-* Text.CSV
-* Text.Lexer
-* Text.LTSV
-* Text.Parser
+* [Bitwise](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-bitwise.txt)
+* [Data.Base64](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-base64.txt)
+* [Data.Collection](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-collection.txt)
+* [Data.Dict](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-dict.txt)
+* [Data.LazyList](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-lazylist.txt)
+* [Data.List](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-list.txt)
+* [Data.OrderedSet](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-ordered_set.txt)
+* [Data.String](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-string.txt)
+* [Data.Tree](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-tree.txt)
+* [Database.SQLite](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-database-sqlite.txt)
+* [DateTime](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-date_time.txt)
+* [Experimental.Functor](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-experimental-functor.txt)
+* [Interpreter.Brainf__k](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-interpreter-brainf__k.txt)
+* [Locale.Message](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-locale-message.txt)
+* [Lua.Prelude](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-lua-prelude.txt)
+* [Mapping](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-mapping.txt)
+* [Math](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-math.txt)
+* [OptionParser](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-option_parser.txt)
+* [Prelude](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-prelude.txt)
+* [Process](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-process.txt)
+* [ProcessManager](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-process_manager.txt)
+* [Random.Xor128](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-random-xor128.txt)
+* [System.Cache](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-system-cache.txt)
+* [System.File](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-system-file.txt)
+* [System.Filepath](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-system-filepath.txt)
+* [Text.CSV](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-csv.txt)
+* [Text.Lexer](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-lexer.txt)
+* [Text.LTSV](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-ltsv.txt)
+* [Text.Parser](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-parser.txt)
 * Text.Sexp
-* Vim.Buffer
-* Vim.BufferManager
-* Vim.Compat
-* Vim.Message
+* [Vim.Buffer](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-vim-buffer.txt)
+* [Vim.BufferManager](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-vim-buffer_manager.txt)
+* [Vim.Compat](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-vim-compat.txt)
+* [Vim.Message](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-vim-message.txt)
 * Vim.Search
-* Web.HTML
-* Web.HTTP
-* Web.JSON
+* [Web.HTML](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-web-html.txt)
+* [Web.HTTP](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-web-http.txt)
+* [Web.JSON](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-web-json.txt)
 * Web.URI
-* Web.XML
+* [Web.XML](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-web-xml.txt)
 * ... and more ...
+
 
 ## How to use
 
