@@ -89,7 +89,14 @@ endfunction
 "     timeout: bool,
 "   }
 function! s:system(str, ...)
-  let command = s:iconv(a:str, &encoding, 'char')
+  if type(a:str) is type([])
+    let command = join(map(copy(a:str), 's:shellescape(v:val)'), ' ')
+  elseif type(a:str) is type("")
+    let command = a:str
+  else
+    throw 'Process.system(): invalid argument (value type:'.type(a:str).')'
+  endif
+  let command = s:iconv(command, &encoding, 'char')
   let input = ''
   let use_vimproc = s:has_vimproc()
   let args = [command]
