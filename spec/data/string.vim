@@ -254,10 +254,10 @@ Context Data.String.pad_left()
     Should g:S.pad_left('テスト', 11, '-') == '-----テスト'
     " Can't use non-half-width characters for padding.
     try
-      call g:S.pad_left('test', 11, '―')
-      Should 1
-    catch
+      call g:S.pad_left('test', 11, '＋')
       Should 0
+    catch
+      Should 1
     endtry
   End
 End
@@ -269,10 +269,10 @@ Context Data.String.pad_right()
     Should g:S.pad_right('テスト', 11, '-') == 'テスト-----'
     " Can't use non-half-width characters for padding.
     try
-      call g:S.pad_right('test', 11, '―')
-      Should 1
-    catch
+      call g:S.pad_right('test', 11, '＋')
       Should 0
+    catch
+      Should 1
     endtry
   End
 End
@@ -284,10 +284,10 @@ Context Data.String.pad_both_sides()
     Should g:S.pad_both_sides('テスト', 11, '-') == '--テスト---'
     " Can't use non-half-width characters for padding.
     try
-      call g:S.pad_both_sides('test', 11, '―')
-      Should 1
-    catch
+      call g:S.pad_both_sides('test', 11, '＋')
       Should 0
+    catch
+      Should 1
     endtry
   End
 End
@@ -303,10 +303,10 @@ Context Data.String.pad_between_letters()
     Should g:S.pad_between_letters('テスト', 16, '-') == '--テ---ス---ト--'
     " Can't use non-half-width characters for padding.
     try
-      call g:S.pad_between_letters('test', 11, '―')
-      Should 1
-    catch
+      call g:S.pad_between_letters('test', 11, '＋')
       Should 0
+    catch
+      Should 1
     endtry
   End
 End
@@ -320,10 +320,10 @@ Context Data.String.justify_equal_spacing()
     Should g:S.justify_equal_spacing("イクラ", 12)     == 'イ   ク   ラ'
     " Can't use non-half-width characters for padding.
     try
-      call g:S.justify_equal_spacing('test', 11, '―')
-      Should 1
-    catch
+      call g:S.justify_equal_spacing('test', 11, '＋')
       Should 0
+    catch
+      Should 1
     endtry
   End
 End
