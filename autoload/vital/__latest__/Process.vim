@@ -40,6 +40,7 @@ function! s:spawn(expr, ...)
     elseif type(a:expr) is type("")
       let cmdline = a:expr
       if a:0 && a:1
+        " for :! command
         let cmdline = substitute(cmdline, '\([!%#]\|<[^<>]\+>\)', '\\\1', 'g')
       endif
     else
