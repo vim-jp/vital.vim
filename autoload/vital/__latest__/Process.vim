@@ -123,6 +123,16 @@ function! s:get_last_status()
         \ vimproc#get_last_status() : v:shell_error
 endfunction
 
+if s:is_windows
+  function! s:shellescape(command)
+    return substitute(a:command, '[&()[\]{}^=;!''+,`~]', '^\0', 'g')
+  endfunction
+else
+  function! s:shellescape(...)
+    return call('shellescape', a:000)
+  endfunction
+endif
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
