@@ -27,11 +27,6 @@ function! s:touch(name, cmd)
   endif
 endfunction
 
-function! s:stop(i)
-  echomsg "Vital.ProcessManager.stop() is deprecated! Please use kill() or term() instead."
-  return s:kill(a:i)
-endfunction
-
 function! s:_stop(i, ...)
   let p = s:_processes[a:i]
   call p.kill(get(a:000, 0, 0) ? g:vimproc#SIGKILL : g:vimproc#SIGTERM)
