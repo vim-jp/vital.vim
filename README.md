@@ -96,6 +96,7 @@ Vital has module system. The below is an example to import/load a module
 `Data.OrderedSet` and to call a function `f()` of the module.
 
 ```vim
+" Recommented way
 let V = vital#of('ujihisa')
 let O = V.import('Data.OrderedSet')
 call O.f()
@@ -104,6 +105,7 @@ call O.f()
 or
 
 ```vim
+" Recommended way only if you rarely use the module
 let V = vital#of('ujihisa')
 call V.load('Data.OrderedSet')
 call V.Data.OrderedSet.f()
@@ -112,6 +114,7 @@ call V.Data.OrderedSet.f()
 or
 
 ```vim
+" Available, but we don't recommend this very much
 let V = vital#of('ujihisa')
 call V.import('Data.OrderedSet', s:)
 call s:f()
@@ -152,7 +155,7 @@ We recommend you to use a capital letter for a Vital module dictionary to assign
 
 Japanese original text: <http://www.kmonos.net/nysl/>
 
-### What's NYSL? and Why you chose it?
+### What's NYSL? and Why did we chose it?
 
 NYSL is a very loose license like a [Beer License](http://en.wikipedia.org/wiki/Beerware), or more like [WTFPL](http://en.wikipedia.org/wiki/WTFPL).
 See [NYSL](http://www.kmonos.net/nysl/NYSL.TXT) for details.  (English and Japanese)
