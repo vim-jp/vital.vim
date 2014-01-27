@@ -5,11 +5,12 @@ set cpo&vim
 
 function! s:_vital_loaded(V)
   let s:V = a:V
+  let s:P = s:V.import('Prelude')
   let s:L = s:V.import('Data.List')
 endfunction
 
 function! s:_vital_depends()
-  return ['Data.List']
+  return ['Prelude', 'Data.List']
 endfunction
 
 " Substitute a:from => a:to by string.
@@ -153,15 +154,15 @@ endfunction "}}}
 " NOTE _concat() is just a copy of Data.List.concat().
 " FIXME don't repeat yourself
 function! s:_split_by_wcswidth_once(body, x)
-  let fst = s:V.strwidthpart(a:body, a:x)
-  let snd = s:V.strwidthpart_reverse(a:body, s:V.wcswidth(a:body) - s:V.wcswidth(fst))
+  let fst = s:P.strwidthpart(a:body, a:x)
+  let snd = s:P.strwidthpart_reverse(a:body, s:P.wcswidth(a:body) - s:P.wcswidth(fst))
   return [fst, snd]
 endfunction
 
 function! s:_split_by_wcswidth(body, x)
   let memo = []
   let body = a:body
-  while s:V.wcswidth(body) > a:x
+  while s:P.wcswidth(body) > a:x
     let [tmp, body] = s:_split_by_wcswidth_once(body, a:x)
     call add(memo, tmp)
   endwhile

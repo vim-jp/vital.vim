@@ -4,11 +4,12 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! s:_vital_depends()
-  return ['Vim.Buffer']
+  return ['Prelude', 'Vim.Buffer']
 endfunction
 
 function! s:_vital_loaded(V)
   let s:V = a:V
+  let s:P = s:V.import('Prelude')
   let s:B = s:V.import('Vim.Buffer')
 endfunction
 
@@ -38,7 +39,7 @@ function! s:Manager.open(bufname, ...)
   let moved = self.move(config.range)
 
   let Opener = moved ? 'edit' : config.opener
-  while s:V.is_string(Opener) && Opener[0] ==# '='
+  while s:P.is_string(Opener) && Opener[0] ==# '='
     let Opener = eval(Opener[1 :])
   endwhile
 
@@ -73,7 +74,7 @@ endfunction
 function! s:Manager.config(...)
   if a:0 == 0
     return self._config
-  elseif a:0 == 1 && s:V.is_dict(a:1)
+  elseif a:0 == 1 && s:P.is_dict(a:1)
     call extend(self._config, a:1)
     return self
   elseif a:0 == 1
@@ -172,9 +173,9 @@ endfunction
 function! s:_make_config(manager, configs)
   let configs = [a:manager._config]
   let user = a:manager._user_config
-  if s:V.is_string(user)
+  if s:P.is_string(user)
     let configs += [exists(user) ? {user} : {}]
-  elseif s:V.is_dict(user)
+  elseif s:P.is_dict(user)
     let configs += [map(copy(user), 'exists(v:val) ? {v:val} : {}')]
   endif
 
@@ -186,9 +187,9 @@ function! s:_make_config(manager, configs)
 endfunction
 
 function! s:_config(c)
-  if s:V.is_dict(a:c)
+  if s:P.is_dict(a:c)
     return a:c
-  elseif s:V.is_string(a:c) || s:V.is_funcref(a:c)
+  elseif s:P.is_string(a:c) || s:P.is_funcref(a:c)
     return {'opener': a:c}
   endif
   return {}

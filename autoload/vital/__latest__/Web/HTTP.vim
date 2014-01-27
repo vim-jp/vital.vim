@@ -4,12 +4,13 @@ set cpo&vim
 
 function! s:_vital_loaded(V)
   let s:V = a:V
-  let s:P = s:V.import('Process')
+  let s:Prelude = s:V.import('Prelude')
+  let s:Process = s:V.import('Process')
   let s:String = s:V.import('Data.String')
 endfunction
 
 function! s:_vital_depends()
-  return ['Data.String']
+  return ['Prelude', 'Data.String']
 endfunction
 
 function! s:__urlencode_char(c)
@@ -37,14 +38,14 @@ endfunction
 
 function! s:encodeURI(items)
   let ret = ''
-  if s:V.is_dict(a:items)
+  if s:Prelude.is_dict(a:items)
     for key in sort(keys(a:items))
       if strlen(ret)
         let ret .= "&"
       endif
       let ret .= key . "=" . s:encodeURI(a:items[key])
     endfor
-  elseif s:V.is_list(a:items)
+  elseif s:Prelude.is_list(a:items)
     for item in sort(a:items)
       if strlen(ret)
         let ret .= "&"
@@ -59,12 +60,12 @@ endfunction
 
 function! s:encodeURIComponent(items)
   let ret = ''
-  if s:V.is_dict(a:items)
+  if s:Prelude.is_dict(a:items)
     for key in sort(keys(a:items))
       if strlen(ret) | let ret .= "&" | endif
       let ret .= key . "=" . s:encodeURIComponent(a:items[key])
     endfor
-  elseif s:V.is_list(a:items)
+  elseif s:Prelude.is_list(a:items)
     for item in sort(a:items)
       if strlen(ret) | let ret .= "&" | endif
       let ret .= item
@@ -98,9 +99,9 @@ let s:default_settings = {
 function! s:request(...)
   let settings = {}
   for arg in a:000
-    if s:V.is_dict(arg)
+    if s:Prelude.is_dict(arg)
       let settings = extend(settings, arg, 'keep')
-    elseif s:V.is_string(arg)
+    elseif s:Prelude.is_string(arg)
       if has_key(settings, 'url')
         let settings.method = settings.url
       endif
@@ -113,7 +114,7 @@ function! s:request(...)
   if !has_key(settings, 'url')
     throw 'Vital.Web.HTTP.request(): "url" parameter is required.'
   endif
-  if !s:V.is_list(settings.client)
+  if !s:Prelude.is_list(settings.client)
     let settings.client = [settings.client]
   endif
   let client = s:_get_client(settings)
@@ -125,7 +126,7 @@ function! s:request(...)
     let settings.headers['Content-Type'] = settings.contentType
   endif
   if has_key(settings, 'param')
-    if s:V.is_dict(settings.param)
+    if s:Prelude.is_dict(settings.param)
       let getdatastr = s:encodeURI(settings.param)
     else
       let getdatastr = settings.param
@@ -183,9 +184,9 @@ function! s:_make_postfile(data)
 endfunction
 
 function! s:_postdata(data)
-  if s:V.is_dict(a:data)
+  if s:Prelude.is_dict(a:data)
     return [s:encodeURI(a:data)]
-  elseif s:V.is_list(a:data)
+  elseif s:Prelude.is_list(a:data)
     return a:data
   else
     return split(a:data, "\n")
@@ -218,7 +219,7 @@ endfunction
 function! s:_make_header_args(headdata, option, quote)
   let args = ''
   for [key, value] in items(a:headdata)
-    if s:V.is_windows()
+    if s:Prelude.is_windows()
       let value = substitute(value, '"', '"""', 'g')
     endif
     let args .= " " . a:option . a:quote . key . ": " . value . a:quote
@@ -242,7 +243,7 @@ endfunction
 " Clients
 function! s:_get_client(settings)
   let candidates = a:settings.client
-  let names = s:V.is_list(candidates) ? candidates : [candidates]
+  let names = s:Prelude.is_list(candidates) ? candidates : [candidates]
   for name in names
     if has_key(s:clients, name) && s:clients[name].available(a:settings)
       return s:clients[name]
@@ -384,7 +385,7 @@ function! s:clients.curl.request(settings)
     let command .= ' --data-binary @' . quote . a:settings._file.post . quote
   endif
 
-  call s:V.system(command)
+  call s:Process.system(command)
 
   let headerstr = s:_readfile(a:settings._file.header)
   let header_chunks = split(headerstr, "\r\n\r\n")
@@ -446,7 +447,7 @@ function! s:clients.wget.request(settings)
     let command .= ' --post-file=' . quote . a:settings._file.post . quote
   endif
 
-  call s:P.system(command)
+  call s:Process.system(command)
 
   if filereadable(a:settings._file.header)
     let header_lines = readfile(a:settings._file.header, 'b')

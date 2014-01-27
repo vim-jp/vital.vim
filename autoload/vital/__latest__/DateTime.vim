@@ -5,7 +5,8 @@ set cpo&vim
 
 function! s:_vital_loaded(V)
   let s:V = a:V
-  let s:P = s:V.import('Process')
+  let s:Prelude = s:V.import('Prelude')
+  let s:Process = s:V.import('Process')
 
   let s:NUM_SECONDS = 60
   let s:NUM_MINUTES = 60
@@ -24,9 +25,9 @@ function! s:_vital_loaded(V)
   let s:AM_PM_TIMES = map([0, 12],
   \   's:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
 
-  if s:V.is_windows()
+  if s:Prelude.is_windows()
     let key = 'HKLM\System\CurrentControlSet\Control\TimeZoneInformation'
-    let regs = s:P.system(printf('reg query "%s" /v Bias', key))
+    let regs = s:Process.system(printf('reg query "%s" /v Bias', key))
     let time = matchstr(regs, 'REG_DWORD\s*\zs0x\x\+')
     let s:win_tz = empty(time) ? 0 : time / -s:NUM_MINUTES
   endif
@@ -46,6 +47,10 @@ function! s:_vital_loaded(V)
   \   '_time': 0,
   \   '_sign': 0,
   \ })
+endfunction
+
+function! s:_vital_depends()
+  return ['Prelude']
 endfunction
 
 " Creates a DateTime object with current time from system.
@@ -87,7 +92,7 @@ function! s:from_format(string, format, ...)
   let remain = a:string
   let skip_pattern = ''
   for f in s:_split_format(a:format)
-    if s:V.is_string(f)
+    if s:Prelude.is_string(f)
       let pat = '^' . skip_pattern . '\V' . escape(f, '\')
       let matched_len = len(matchstr(remain, pat))
       if matched_len == 0
@@ -96,7 +101,7 @@ function! s:from_format(string, format, ...)
         break
       endif
       let remain = remain[matched_len :]
-    else  " if s:V.is_list(f)
+    else  " if s:Prelude.is_list(f)
       let info = f[0]
       if info[0] ==# '#skip'
         let skip_pattern = info[1]
@@ -119,14 +124,14 @@ function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale)
     let key = '_'
   endif
   let Captor = info[1]
-  if s:V.is_funcref(Captor)
+  if s:Prelude.is_funcref(Captor)
     let pattern = call(Captor, [a:locale], {})
-    if s:V.is_list(pattern)
+    if s:Prelude.is_list(pattern)
       let candidates = pattern
       unlet pattern
       let pattern = '\%(' . join(candidates, '\|') . '\)'
     endif
-  elseif s:V.is_list(Captor)
+  elseif s:Prelude.is_list(Captor)
     if width ==# ''
       let width = Captor[1]
     endif
@@ -134,7 +139,7 @@ function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale)
     if flag == '_'
       let pattern = '\s*' . pattern
     endif
-  else  " if s:V.is_string(Captor)
+  else  " if s:Prelude.is_string(Captor)
     let pattern = Captor
   endif
 
@@ -143,7 +148,7 @@ function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale)
 
   if exists('candidates')
     let value = index(candidates, value)
-  elseif s:V.is_list(Captor)
+  elseif s:Prelude.is_list(Captor)
     let value = str2nr(value, 10)
   endif
 
@@ -160,7 +165,7 @@ endfunction
 function! s:from_julian_day(jd, ...)
   let tz = call('s:timezone', a:000)
   let second = 0
-  if s:V.is_float(a:jd)
+  if s:Prelude.is_float(a:jd)
     let jd = float2nr(floor(a:jd))
     let second = float2nr(s:SECONDS_OF_DAY * (a:jd - jd))
   else
@@ -176,12 +181,12 @@ function! s:timezone(...)
   if s:_is_class(info, 'TimeZone')
     return info
   endif
-  if !s:V.is_number(info) && empty(info)
+  if !s:Prelude.is_number(info) && empty(info)
     unlet info
     let info = s:_default_tz()
   endif
   let tz = copy(s:TimeZone)
-  if s:V.is_number(info)
+  if s:Prelude.is_number(info)
     let tz._offset = info * s:NUM_MINUTES * s:NUM_SECONDS
   else
     let list = matchlist(info, '\v^([+-])?(\d{1,2}):?(\d{1,2})?$')
@@ -203,12 +208,12 @@ function! s:delta(...)
     return info
   endif
   let d = copy(s:TimeDelta)
-  if a:0 == 2 && s:V.is_number(a:1) && s:V.is_number(a:2)
+  if a:0 == 2 && s:Prelude.is_number(a:1) && s:Prelude.is_number(a:2)
     let d._days = a:1
     let d._time = a:2
   else
     let a = copy(a:000)
-    while 2 <= len(a) && s:V.is_number(a[0]) && s:V.is_string(a[1])
+    while 2 <= len(a) && s:Prelude.is_number(a[0]) && s:Prelude.is_string(a[1])
       let [value, unit] = remove(a, 0, 1)
       if unit =~? '^seconds\?$'
         let d._time += value
@@ -266,7 +271,7 @@ function! s:_new_class(class)
   return extend({'class': a:class}, s:Class)
 endfunction
 function! s:_is_class(obj, class)
-  return s:V.is_dict(a:obj) && get(a:obj, 'class', '') ==# a:class
+  return s:Prelude.is_dict(a:obj) && get(a:obj, 'class', '') ==# a:class
 endfunction
 
 " ----------------------------------------------------------------------------
@@ -381,12 +386,12 @@ function! s:DateTime.format(format, ...)
   let locale = a:0 ? a:1 : ''
   let result = ''
   for f in s:_split_format(a:format)
-    if s:V.is_string(f)
+    if s:Prelude.is_string(f)
       let result .= f
-    elseif s:V.is_list(f)
+    elseif s:Prelude.is_list(f)
       let [info, flag, width] = f
       let padding = ''
-      if s:V.is_list(info[1])
+      if s:Prelude.is_list(info[1])
         let [padding, w] = info[1]
         if width ==# ''
           let width = w
@@ -733,7 +738,7 @@ function! s:_split_format(format)
     let [matched, flag, width, d] = matchlist(format, pat)[: 3]
     let format = format[len(matched) :]
     let info = s:format_info[d]
-    if s:V.is_string(info)
+    if s:Prelude.is_string(info)
       let format = info . format
     else
       let res += [[info, flag, width]]

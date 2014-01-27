@@ -3,6 +3,11 @@ set cpo&vim
 
 function! s:_vital_loaded(V)
   let s:V = a:V
+  let s:P = s:V.import('Prelude')
+endfunction
+
+function! s:_vital_depends()
+  return ['Prelude']
 endfunction
 
 function! s:is_cmdwin()
@@ -13,7 +18,7 @@ function! s:open(buffer, opener)
   let save_wildignore = &wildignore
   let &wildignore = ''
   try
-    if s:V.is_funcref(a:opener)
+    if s:P.is_funcref(a:opener)
       let loaded = !bufloaded(a:buffer)
       call a:opener(a:buffer)
     elseif a:buffer is 0 || a:buffer is ''
@@ -22,9 +27,9 @@ function! s:open(buffer, opener)
       enew
     else
       let loaded = !bufloaded(a:buffer)
-      if s:V.is_string(a:buffer)
+      if s:P.is_string(a:buffer)
         execute a:opener '`=a:buffer`'
-      elseif s:V.is_number(a:buffer)
+      elseif s:P.is_number(a:buffer)
         silent execute a:opener
         execute a:buffer 'buffer'
       else
