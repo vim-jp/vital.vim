@@ -1,3 +1,6 @@
+88b8aa6
+	Modules: ProcessManager
+	Removed deprecated stop()
 5d9134d
 	Modules: Prelude
 	'Prelude.{iconv,has_vimproc,system,get_last_status}()'
