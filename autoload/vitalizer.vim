@@ -7,9 +7,6 @@ let s:REQUIRED_FILES = [
 \   'autoload/vital.vim',
 \   'autoload/vital/__latest__.vim',
 \ ]
-let s:REQUIRED_MODULES = [
-\   'Prelude',
-\ ]
 let s:HASH_SIZE = 6
 let s:V = vital#of('vital')
 let s:L = s:V.import('Data.List')
@@ -277,7 +274,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       throw 'vitalizer: Please specify the modules to install.'
     else
       let installing_modules = s:L.uniq(installing_modules)
-      let files = map(s:search_dependence(installing_modules + s:REQUIRED_MODULES),
+      let files = map(s:search_dependence(installing_modules),
       \               's:module2file(v:val)')
     endif
 
