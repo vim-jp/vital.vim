@@ -12,9 +12,12 @@ INTERFACE			|Vital.Prelude-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Prelude-introduction*
 
-*Vital.Prelude* is a special module that you don't have to explicitly import
+*Vital.Prelude* is a module for basic functions in Vimscript.
+NOTE: Before, this is a special module that you don't have to explicitly import
 but can use anywhere. Some Vital modules implicitly depend on Prelude
 functions.
+See #140 for the details (Japanese).
+https://github.com/vim-jp/vital.vim/issues/140
 
 ==============================================================================
 INTERFACE				*Vital.Prelude-interface*
