@@ -1,3 +1,8 @@
+5d02123
+	Modules: *
+	Prelude module becomes optional.
+	If you use the feature of Prelude module,
+	you must use ":Vitalize" command with "+Prelude"
 88b8aa6
 	Modules: ProcessManager
 	Removed deprecated stop()
