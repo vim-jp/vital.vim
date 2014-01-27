@@ -7,6 +7,7 @@ let s:sfile = expand('<sfile>:p')
 
 function! s:_vital_loaded(V)
   let s:V = a:V
+  let s:Prelude = s:V.import('Prelude')
 
   if has('lua')
     let s:P = s:V.import('Lua.Prelude')
@@ -18,11 +19,8 @@ function! s:_vital_loaded(V)
 endfunction
 
 function! s:_vital_depends()
-  if has('lua')
-    return ['Lua.Prelude']
-  else
-    return []
-  endif
+  return ['Prelude']
+  \    + (has('lua') ? ['Lua.Prelude'] : [])
 endfunction
 
 function! s:run(bfcode)
@@ -83,7 +81,7 @@ function! s:_vim_execute(asts, pointer, tape)
     unlet! ast
     let [ast, asts] = [asts[0], asts[1:]]
 
-    if s:V.is_list(ast)
+    if s:Prelude.is_list(ast)
       if get(tape, pointer, 0) == 0
         " go next
       else
