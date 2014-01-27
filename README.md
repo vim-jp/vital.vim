@@ -69,8 +69,9 @@ Please see [the help](https://github.com/vim-jp/vital.vim/blob/master/doc/vitali
 :Vitalize --name=your_plugin_name $HOME/.vim/bundle/your_plugin_dir/
 ```
 
-You can also install only specified modules.
-(recommended for your repo size, if you are going to upload to remote repo)
+You can also install only specified modules; recommended for making your
+repository size small, assuming you are going to upload it to a remote
+repository
 
 ```vim
 :Vitalize --name=your_plugin_name $HOME/.vim/bundle/your_plugin_dir/ Data.String Data.List
