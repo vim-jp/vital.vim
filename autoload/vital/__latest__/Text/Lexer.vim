@@ -6,6 +6,10 @@ function! s:_vital_loaded(V)
   let s:Prelude = s:V.import('Prelude')
 endfunction
 
+function! s:_vital_depends()
+  return ['Prelude']
+endfunction
+
 function! s:_list2dict(list)
   if s:Prelude.is_list(a:list)
     if len(a:list) < 2 | call s:_exception('too few arguments.') | endif
