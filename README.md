@@ -148,7 +148,9 @@ We recommend you to use a capital letter for a Vital module dictionary to assign
 
 ## License
 
-[NYSL](http://www.kmonos.net/nysl/)
+[NYSL](http://www.kmonos.net/nysl/index.en.html)
+
+Japanese original text: <http://www.kmonos.net/nysl/>
 
 ### What's NYSL? and Why you chose it?
 
