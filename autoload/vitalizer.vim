@@ -242,7 +242,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       throw 'vitalizer: {name} must not be empty.'
     endif
     if vital_data.name !~# '^\w\+$'
-      throw 'vitalizer: {name} can contain only alphabets and numbers.'
+      throw 'vitalizer: {name} can contain only alphabets, numbers, underbar.'
     endif
 
     " Check if all of specified modules exist.
