@@ -86,9 +86,6 @@ is_unix()					*Vital.Prelude.is_unix()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
 	Note that this returns non-zero if Vim is a Cygwin version.
 
-print_error({message})				*Vital.Prelude.print_error()*
-	TODO
-
 smart_execute_command({action}, {word})	*Vital.Prelude.smart_execute_command()*
 	TODO
 
