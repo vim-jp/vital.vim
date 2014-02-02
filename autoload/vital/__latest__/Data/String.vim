@@ -231,6 +231,69 @@ function! s:lines(str)
   return split(a:str, '\r\?\n')
 endfunction
 
+function! s:_pad_with_char(str, left, right, char)
+  return repeat(a:char, a:left). a:str. repeat(a:char, a:right)
+endfunction
+
+function! s:pad_left(str, width, ...)
+  let char = get(a:, 1, ' ')
+  if strdisplaywidth(char) != 1
+    throw "vital: Data.String: Can't use non-half-width characters for padding."
+  endif
+  let left = max([0, a:width - strdisplaywidth(a:str)])
+  return s:_pad_with_char(a:str, left, 0, char)
+endfunction
+
+function! s:pad_right(str, width, ...)
+  let char = get(a:, 1, ' ')
+  if strdisplaywidth(char) != 1
+    throw "vital: Data.String: Can't use non-half-width characters for padding."
+  endif
+  let right = max([0, a:width - strdisplaywidth(a:str)])
+  return s:_pad_with_char(a:str, 0, right, char)
+endfunction
+
+function! s:pad_both_sides(str, width, ...)
+  let char = get(a:, 1, ' ')
+  if strdisplaywidth(char) != 1
+    throw "vital: Data.String: Can't use non-half-width characters for padding."
+  endif
+  let space = max([0, a:width - strdisplaywidth(a:str)])
+  let left = space / 2
+  let right = space - left
+  return s:_pad_with_char(a:str, left, right, char)
+endfunction
+
+function! s:pad_between_letters(str, width, ...)
+  let char = get(a:, 1, ' ')
+  if strdisplaywidth(char) != 1
+    throw "vital: Data.String: Can't use non-half-width characters for padding."
+  endif
+  let letters = split(a:str, '\zs')
+  let each_width = a:width / len(letters)
+  let str = join(map(letters, 's:pad_both_sides(v:val, each_width, char)'), '')
+  if a:width - strdisplaywidth(str) > 0
+    return char. s:pad_both_sides(str, a:width - 1, char)
+  endif
+  return str
+endfunction
+
+function! s:justify_equal_spacing(str, width, ...)
+  let char = get(a:, 1, ' ')
+  if strdisplaywidth(char) != 1
+    throw "vital: Data.String: Can't use non-half-width characters for padding."
+  endif
+  let letters = split(a:str, '\zs')
+  let first_letter = letters[0]
+  " {width w/o the first letter} / {length w/o the first letter}
+  let each_width = (a:width - strdisplaywidth(first_letter)) / (len(letters) - 1)
+  let remainder = (a:width - strdisplaywidth(first_letter)) % (len(letters) - 1)
+  return first_letter. join(s:L.concat([
+\     map(letters[1:remainder], 's:pad_left(v:val, each_width + 1, char)'),
+\     map(letters[remainder + 1:], 's:pad_left(v:val, each_width, char)')
+\   ]), '')
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

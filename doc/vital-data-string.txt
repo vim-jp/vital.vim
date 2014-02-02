@@ -121,5 +121,58 @@ contains_multibyte({str})		*Vital.Data.String.contains_multibyte()*
 	Return Number 1 if String {str} contains a multi-byte character,
 	otherwise zero.
 
+pad_left({str}, {width} [, {char}])		*Vital.Data.String.pad_left()*
+	It returns a string padded {str}'s left side until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo g:S.pad_left('test', 11)
+	" '       test'
+<
+
+pad_right({str}, {width} [, {char}])		*Vital.Data.String.pad_right()*
+	It returns a string padded {str}'s right side until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo g:S.pad_right('test', 11)
+	" 'test       '
+<
+
+					*Vital.Data.String.pad_both_sides()*
+pad_both_sides({str}, {width} [, {char}])
+	It returns a string padded {str}'s left and right side until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo g:S.pad_both_sides('test', 11)
+	" '   test    '
+<
+
+				*Vital.Data.String.pad_between_letters()*
+pad_between_letters({str}, {width} [, {char}])
+	It returns a string padded between {str}'s letters until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo g:S.pad_between_letters('test', 11)
+	" '  t e s t  '
+<
+
+				*Vital.Data.String.justify_equal_spacing()*
+justify_equal_spacing({str}, {width} [, {char}])
+	It returns a string justified equal spacing until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo g:S.justify_equal_spacing('test', 11)
+	" 't   e  s  t'
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
