@@ -87,7 +87,15 @@ is_unix()					*Vital.Prelude.is_unix()*
 	Note that this returns non-zero if Vim is a Cygwin version.
 
 smart_execute_command({action}, {word})	*Vital.Prelude.smart_execute_command()*
-	TODO
+	Like a combination of |printf()| and |:execute|.
+>
+	let x = 123
+	call smart_execute_command('echo', x)
+<
+	becomes
+>
+	execute 'echo' 123
+<
 
 escape_file_searching({str})		*Vital.Prelude.escape_file_searching()*
 	TODO
