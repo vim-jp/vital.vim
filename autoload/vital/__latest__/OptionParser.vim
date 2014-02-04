@@ -3,6 +3,7 @@ set cpo&vim
 
 let s:_STRING_TYPE = type('')
 let s:_LIST_TYPE = type([])
+let s:_DICT_TYPE = type({})
 
 function! s:_vital_loaded(V)
   let s:L = a:V.import('Data.List')
@@ -10,6 +11,14 @@ endfunction
 
 function! s:_vital_depends()
   return ['Data.List']
+endfunction
+
+function! s:_make_option_description_for_help(opt)
+  let desc = a:opt.description
+  if has_key(a:opt, 'default_value')
+    let desc .= ' (DEFAULT: ' . string(a:opt.default_value) . ')'
+  endif
+  return desc
 endfunction
 
 function! s:_make_option_definition_for_help(opt)
@@ -66,6 +75,15 @@ function! s:_expand_short_option(arg, options)
   return a:arg
 endfunction
 
+function! s:_set_default_values(parsed_args, options)
+    for [name, default_value] in map(items(filter(copy(a:options), 'has_key(v:val, "default_value")')), '[v:val[0], v:val[1].default_value]')
+        if ! has_key(a:parsed_args, name)
+            let a:parsed_args[name] = default_value
+        endif
+        unlet default_value
+    endfor
+endfunction
+
 function! s:_parse_arg(arg, options)
   " if --no-hoge pattern
   if a:arg =~# '^--no-[^= ]\+'
@@ -75,7 +93,7 @@ function! s:_parse_arg(arg, options)
       return [key, 0]
     endif
 
-    " if --hoge pattern
+  " if --hoge pattern
   elseif a:arg =~# '^--[^= ]\+$'
     " get hoge from --hoge
     let key = matchstr(a:arg, '^--\zs[^= ]\+')
@@ -86,7 +104,7 @@ function! s:_parse_arg(arg, options)
       return [key, 1]
     endif
 
-    " if --hoge=poyo pattern
+  " if --hoge=poyo pattern
   else
     " get hoge from --hoge=poyo
     let key = matchstr(a:arg, '^--\zs[^= ]\+')
@@ -123,6 +141,7 @@ function! s:_parse_args(cmd_args, options)
     else
       call add(unknown_args, parsed_arg)
     endif
+    unlet parsed_arg
   endfor
 
   return [parsed_args, unknown_args]
@@ -131,7 +150,7 @@ endfunction
 let s:_DEFAULT_PARSER = {'options' : {}}
 
 function! s:_DEFAULT_PARSER.help()
-  let definitions = map(values(self.options), "[s:_make_option_definition_for_help(v:val), v:val.description]")
+  let definitions = map(values(self.options), "[s:_make_option_definition_for_help(v:val), s:_make_option_description_for_help(v:val)]")
   let key_width = len(s:L.max_by(definitions, 'len(v:val[0])')[0])
   return "Options:\n" .
         \ join(map(definitions, '
@@ -157,18 +176,19 @@ function! s:_DEFAULT_PARSER.parse(...)
   let parsed_args = s:_parse_args(opts.q_args, self.options)
 
   let ret = parsed_args[0]
+  call s:_set_default_values(ret, self.options)
   call extend(ret, opts.specials)
   let ret.__unknown_args__ = parsed_args[1]
   return ret
 endfunction
 
-function! s:_DEFAULT_PARSER.on(...)
-  if ! (a:0 == 2 || a:0 == 3)
-    throw 'vital: OptionParser: Wrong number of arguments: ' . a:0 . ' for 2 or 3'
+function! s:_DEFAULT_PARSER.on(def, desc, ...)
+  if a:0 > 1
+    throw 'vital: OptionParser: Wrong number of arguments: ' . a:0 + 2 . ' for 2 or 3'
   endif
 
   " get hoge and huga from --hoge=huga
-  let [name, value] = matchlist(a:1, '^--\([^= ]\+\)\(=\S\+\)\=$')[1:2]
+  let [name, value] = matchlist(a:def, '^--\([^= ]\+\)\(=\S\+\)\=$')[1:2]
   if value != ''
     let has_value = 1
   endif
@@ -179,10 +199,10 @@ function! s:_DEFAULT_PARSER.on(...)
   endif
 
   if name == ''
-    throw 'vital: OptionParser: Option of key is invalid: ' . a:1
+    throw 'vital: OptionParser: Option of key is invalid: ' . a:def
   endif
 
-  let self.options[name] = {'definition' : a:1, 'description' : a:000[-1]}
+  let self.options[name] = {'definition' : a:def, 'description' : a:desc}
   if exists('l:no')
     let self.options[name].no = 1
   endif
@@ -191,12 +211,17 @@ function! s:_DEFAULT_PARSER.on(...)
   endif
 
   " if short option is specified
-  if a:0 == 3
-    if a:2 !~# '^-[^- =]$'
-      throw 'vital: OptionParser: Short option is invalid: ' . a:2
+  if a:0 == 1
+    if type(a:1) == type({})
+      if has_key(a:1, 'short')
+        let self.options[name].short_option_definition = a:1.short
+      endif
+      if has_key(a:1, 'default')
+        let self.options[name].default_value = a:1.default
+      endif
+    else
+      let self.options[name].default_value = a:1
     endif
-
-    let self.options[name].short_option_definition = a:2
   endif
 
   return self
