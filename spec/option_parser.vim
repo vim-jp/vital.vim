@@ -52,13 +52,13 @@ Context on() funcref in OptionParser object
   It defines short option
     let o = g:O.new()
 
-    call o.on('--hoge', '-h', 'huga')
+    call o.on('--hoge', 'huga', {'short' : '-h'})
     Should has_key(o.options.hoge, 'short_option_definition')
     Should o.options.hoge.short_option_definition ==# '-h'
 
     " non alphabetical characters
     for na in ['!', '"', '#', '$', '%', '&', '''', '(', ')', '~', '\', '[', ']', ';', ':', '+', '*', ',', '.', '/', '1', '2', '_']
-        call o.on('--'.na, '-'.na, 'huga')
+        call o.on('--' . na, 'huga', {'short' : '-' . na})
         Should has_key(o.options[na], 'short_option_definition')
         Should o.options[na].short_option_definition ==# '-'.na
     endfor
@@ -106,6 +106,20 @@ Context on() funcref in OptionParser object
     ShouldThrow call o.on('--valid', '- ', ''), /.*/
   End
 
+  It sets default values if specified
+    let o = g:O.new()
+    call o.on('--hoge', '')
+         \.on('--huga', '', {'default' : 3})
+         \.on('--tsura', '', 'aaa')
+         \.on('--poyo', 'a', 3)
+    Should ! has_key(o.options.hoge, 'default_value')
+    Should has_key(o.options.huga, 'default_value')
+    Should o.options.huga.default_value == 3
+    Should has_key(o.options.tsura, 'default_value')
+    Should o.options.tsura.default_value == 'aaa'
+    Should has_key(o.options.poyo, 'default_value')
+    Should o.options.poyo.default_value == 3
+  End
 End
 
 Context parse() in OptionParser object
@@ -174,9 +188,17 @@ Context parse() in OptionParser object
 
   It parses short option -h as 'hoge'
     let o = g:O.new()
-    call o.on('--hoge', '-h', 'huga')
+    call o.on('--hoge', 'huga', {'short' : '-h'})
     Should o.parse('-h') == {'__unknown_args__' : [], 'hoge' : 1}
     Should o.parse('--hoge') == {'__unknown_args__' : [], 'hoge' : 1}
+  End
+
+  It parses default values if they are set in on() and they are not specified by user
+    let o = g:O.new()
+    call o.on('--hoge', '', {'default' : 3.14})
+    call o.on('--huga', '', 'default value')
+    Should o.parse('') == {'__unknown_args__' : [], 'hoge' : 3.14, 'huga' : 'default value'}
+    Should o.parse('--hoge --huga --piyo') == {'__unknown_args__' : ['--piyo'], 'hoge' : 1, 'huga' : 1}
   End
 
   It doesn't parse arguments not defined with on()
@@ -195,20 +217,23 @@ Context parse() in OptionParser object
     call o.on('--hoge', '')
     call o.on('--huga=VALUE', '')
     call o.on('--[no-]poyo', '')
+    call o.on('--piyo', '', {'default' : 'aaa'})
     let args = ['--hoge', '--huga=foo', '--no-poyo', 'unknown_arg']
     let perms = s:permutation(args)
     for p in perms
       Should o.parse(join(p, ' ')) ==
-            \ {'__unknown_args__' : ['unknown_arg'], 'hoge' : 1, 'huga' : 'foo', 'poyo' : 0}
+            \ {'__unknown_args__' : ['unknown_arg'], 'hoge' : 1, 'huga' : 'foo', 'poyo' : 0, 'piyo' : 'aaa'}
     endfor
   End
 
-  It 'parses all options defined with on() and command options at one time regardless of the order of arguments'
+  It parses all options defined with on() and command options at one time regardless of the order of arguments
     let o = g:O.new()
     call o.on('--hoge', '')
     call o.on('--huga=VALUE', '')
-    call o.on('--tsura', '-t', '')
+    call o.on('--tsura', '', {'short' : '-t'})
     call o.on('--[no-]poyo', '')
+    call o.on('--piyo', '', {'default' : 42})
+    call o.on('--puyo', '', 3.14)
     let args = map(s:permutation(['--hoge', '--huga=foo', '--no-poyo', '-t', 'unknown_arg']), 'join(v:val, " ")')
     let opts_count = s:permutation(['g', 42, '!'])
     let opts_range = s:permutation(['g', [1, 100], '!'])
@@ -226,6 +251,8 @@ Context parse() in OptionParser object
               \   'huga' : 'foo',
               \   'tsura' : 1,
               \   'poyo' : 0,
+              \   'piyo' : 42,
+              \   'puyo' : 3.14,
               \ }
       endfor
     endfor
@@ -242,7 +269,9 @@ Context parse() in OptionParser object
               \   'hoge' : 1,
               \   'huga' : 'foo',
               \   'tsura' : 1,
-              \   'poyo' : 0
+              \   'poyo' : 0,
+              \   'piyo' : 42,
+              \   'puyo' : 3.14,
               \ }
       endfor
     endfor
@@ -264,7 +293,8 @@ Context help() funcref in OptionParser object
     call o.on('--hoge=VALUE', 'description of hoge, must have value')
     call o.on('--foo', 'description of foo')
     call o.on('--[no-]bar', 'description of bar, contradictable')
-    call o.on('--baz', '-b', 'description of baz, has short option')
+    call o.on('--baz', 'description of baz, has short option', {'short' : '-b'})
+    call o.on('--qux', 'description of qux, has default value', {'default' : 3.14})
 
     Should o.help() ==# join([
           \   "Options:",
@@ -272,6 +302,7 @@ Context help() funcref in OptionParser object
           \   "  --baz, -b    : description of baz, has short option",
           \   "  --hoge=VALUE : description of hoge, must have value",
           \   "  --[no-]bar   : description of bar, contradictable",
+          \   "  --qux        : description of qux, has default value (DEFAULT: 3.14)",
           \ ], "\n")
   End
 
