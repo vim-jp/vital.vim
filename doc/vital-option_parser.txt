@@ -44,7 +44,8 @@ This library's interface is inspired by OptionParser in Ruby.
   call s:parser.on('--foo', 'description of foo')
   " definitions can chain
   call s:parser.on('--[no-]bar', 'description of bar, deniable')
-           \.on('--baz', '-b', 'description of baz, has short option')
+              \.on('--baz', 'description of baz, has short option', {'short' : '-b'})
+              \.on('--qux', 'description of qux, defaults to "aaa"', {'default' : 'aaa'})
 
   " define command with the parser
   command! -nargs=* -count -bang Foo echo s:parser.parse(<q-args>, <count>, <q-bang>)
@@ -65,9 +66,10 @@ This library's interface is inspired by OptionParser in Ruby.
   " echo following message
   "   Options:
   "     --foo=VALUE : description of foo, must have value
-  "     --foo        : description of foo
-  "     --[no-]bar   : description of bar, deniable
-  "     --baz, -b    : description of baz, has short option
+  "     --foo       : description of foo
+  "     --[no-]bar  : description of bar, deniable
+  "     --baz, -b   : description of baz, has short option
+  "     --qux       : description of qux, defaults to "aaa" (DEFAULT: 'aaa')
   "
   " => {
   "      '__count__' : 0,
@@ -97,7 +99,7 @@ OBJECTS					*Vital.OptionParser-objects*
 PARSER OBJECT				*Vital.OptionParser-Parser*
 
 					*Vital.OptionParser-Parser.on()*
-Parser.on({name} [, {short-name}], {description})
+Parser.on({name}, {description} [, {extra}])
 
 	Define a option to parse.  You should call this function every option.
 
@@ -124,12 +126,25 @@ Parser.on({name} [, {short-name}], {description})
 		  will be 0.
 
 	- {short-name} (optional)
-	  |String| value.  Alias of {name}.  It must starts with "-" and one
-	  alphabet must follow it like "-f".
+	  |String| value.  Alias of {name}.  
 
 	- {description} (required)
 	  |String| value.  Description of option.  This is used for "--help"
 	  argument.
+
+	- {extra} (optional)
+	  If {extra} is |Dictionary| value, it can contain below keys.
+	  Otherwise, {extra} is dealt with a default value of the option.
+
+	  - "short"
+	    If {extra} has "short" key, its value should be |String| and means
+	    an alias of {name}.  It must start with "-" and one alphabet must
+	    follow it like "-f".
+
+	  - "default"
+	  If {extra} has "default" key, its value means a default value of the
+	  option.  When the option is omitted, the default value would be
+	  used.
 
 					*Vital.OptionParser-Parser.parse()*
 Parser.parse({q-args} [, {cmd-attributes}...])
