@@ -242,7 +242,6 @@ function! s:escape_pattern(str)
   return escape(a:str, '~"\.^$[]*')
 endfunction
 
-" This is like builtin getchar() but always returns string.
 function! s:getchar(...)
   let c = call('getchar', a:000)
   return type(c) == type(0) ? nr2char(c) : c

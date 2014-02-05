@@ -104,7 +104,7 @@ escape_pattern({str})			*Vital.Prelude.escape_pattern()*
 	TODO
 
 getchar(...)					*Vital.Prelude.getchar()*
-	TODO
+	This is like builtin |getchar()| but always returns string.
 
 getchar_safe(...)				*Vital.Prelude.getchar_safe()*
 	TODO
