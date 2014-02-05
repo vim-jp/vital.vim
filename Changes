@@ -1,3 +1,8 @@
+d62f1b7
+	Modules: OptionParser
+	Arguments of on() Funcref is changed.
+	on({name}, {short}, {description})
+	-> on({name}, {description}, {extra})
 5d02123
 	Modules: *
 	Prelude module becomes optional.
