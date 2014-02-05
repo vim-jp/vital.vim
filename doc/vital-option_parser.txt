@@ -126,7 +126,7 @@ Parser.on({name}, {description} [, {extra}])
 		  will be 0.
 
 	- {short-name} (optional)
-	  |String| value.  Alias of {name}.  
+	  |String| value.  Alias of {name}.
 
 	- {description} (required)
 	  |String| value.  Description of option.  This is used for "--help"
