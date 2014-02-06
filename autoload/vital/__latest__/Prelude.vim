@@ -247,8 +247,6 @@ function! s:getchar(...)
   return type(c) == type(0) ? nr2char(c) : c
 endfunction
 
-" This is like builtin getchar() but always returns string,
-" and also does inputsave()/inputrestore() before/after getchar().
 function! s:getchar_safe(...)
   let c = s:input_helper('getchar', a:000)
   return type(c) == type("") ? c : nr2char(c)

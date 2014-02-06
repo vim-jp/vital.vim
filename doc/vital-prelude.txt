@@ -107,7 +107,8 @@ getchar(...)					*Vital.Prelude.getchar()*
 	This is like builtin |getchar()| but always returns string.
 
 getchar_safe(...)				*Vital.Prelude.getchar_safe()*
-	TODO
+	This is like builtin |getchar()| but always returns string,
+	and also does |inputsave()|/|inputrestore()| before/after |getchar()|.
 
 input_safe(...)					*Vital.Prelude.input_safe()*
 	TODO
