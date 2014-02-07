@@ -58,6 +58,7 @@ This library's interface is inspired by OptionParser in Ruby.
   "      'foo' : 'aaa',
   "      'bar' : 0,
   "      'baz' : 1,
+  "      'qux' : 'aaa',
   "      '__unknown_args__' : ['bbb'],
   "    }
 
