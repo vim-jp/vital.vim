@@ -117,7 +117,21 @@ input_helper({funcname}, {args})		*Vital.Prelude.input_helper()*
 	TODO
 
 set_default({var}, {val})			*Vital.Prelude.set_default()*
-	TODO
+	Assign a {val} to a variable which name is {var} if the {var} is
+	undefined. Even if the {var} is already defined, if the type of {val}
+	is different to the value of {var}, it'll assign anyways.
+
+	For example,
+>
+	" not exactly same!
+	call set_default('g:aaa', 'bbb')
+<
+	Is similar to
+>
+	" not exactly same!
+	let g:aaa = get(g:, 'aaa', 'bbb')
+<
+	But not exactly same when the type of aaa is not |expr-string|.
 
 				*Vital.Prelude.set_dictionary_helper()*
 set_dictionary_helper({variable}, {keys}, {pattern})
