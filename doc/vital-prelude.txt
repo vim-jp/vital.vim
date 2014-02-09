@@ -111,11 +111,11 @@ getchar_safe(...)				*Vital.Prelude.getchar_safe()*
 	and also does |inputsave()|/|inputrestore()| before/after |getchar()|.
 
 input_safe(...)					*Vital.Prelude.input_safe()*
-	TODO
-
-input_helper({funcname}, {args})		*Vital.Prelude.input_helper()*
 	Like builtin getchar() but do |inputsave()|/|inputrestore()|
 	before/after |input()|.
+
+input_helper({funcname}, {args})		*Vital.Prelude.input_helper()*
+	TODO
 
 set_default({var}, {val})			*Vital.Prelude.set_default()*
 	Assign a {val} to a variable which name is {var} if the {var} is
