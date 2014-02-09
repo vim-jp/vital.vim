@@ -13,6 +13,7 @@ OBJECTS				|Vital.OptionParser-objects|
   PARSER OBJECT				|Vital.OptionParser-Parser|
 SPECIAL OPTIONS			|Vital.OptionParser-special-options|
 BUILT-IN COMPLETERS		|Vital.OptionParser-built-in-completer|
+REAL WORLD EXAMPLES		|Vital.OptionParser-real-world-examples|
 
 
 
@@ -271,6 +272,20 @@ BUILT-IN COMPLETERS			*Vital.OptionParser-built-in-completer*
 
 - 'file'
   It completes file or directory names.
+
+
+
+==============================================================================
+REAL WORLD EXAMPLES			*Vital.OptionParser-real-world-examples*
+
+- wandbox-vim
+https://github.com/rhysd/wandbox-vim
+
+- vim-duzzle
+https://github.com/deris/vim-duzzle
+
+- translategoogle.vim
+https://github.com/daisuzu/translategoogle.vim
 
 
 
