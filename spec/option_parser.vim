@@ -32,10 +32,11 @@ Context OptionParser.new()
     Should type(o.parse) == func_type
     Should has_key(o, 'help')
     Should type(o.help) == func_type
+    Should has_key(o, 'complete')
+    Should type(o.help) == func_type
   End
 
 End
-
 
 Context on() funcref in OptionParser object
   It defines "--hoge" options with on()
@@ -119,6 +120,18 @@ Context on() funcref in OptionParser object
     Should o.options.tsura.default_value == 'aaa'
     Should has_key(o.options.poyo, 'default_value')
     Should o.options.poyo.default_value == 3
+  End
+
+  It sets function for completion with "completion" key
+    let o = g:O.new()
+    call o.on('--hoge', '', {'completion' : 'file'})
+         \.on('--huga', '', {'completion' : function('dummyfunc')})
+         \.on('--piyo', '')
+    Expect o.options.hoge to_have_key 'completion'
+    Expect o.options.huga to_have_key 'completion'
+    Expect o.options.piyo not to_have_key 'completion'
+    Expect o.options.hoge.completion to_be_funcref
+    Expect o.options.huga.completion to_be_funcref
   End
 End
 
@@ -312,3 +325,78 @@ Context help() funcref in OptionParser object
   End
 
 End
+
+function! CompleteTest(optlead, cmdline, pos)
+    return filter(['sushi', 'yakiniku', 'yakitori'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
+endfunction
+
+function! CompleteTest2(optlead, cmdline, pos)
+    return filter(['inu', 'manbou', 'momonga'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
+endfunction
+
+function! CompleteUnknownOptionTest(optlead, cmdline, pos)
+    return filter(['vim', 'vimmer', 'kowai'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
+endfunction
+
+Context complete() funcref in OptionParser object
+
+    It completes long options
+        let o = g:O.new()
+        call o.on('--[no-]huga=VALUE', '', {'short' : '-h', 'completion' : function('CompleteTest')})
+             \.on('--hoge', '')
+             \.on('--piyo', '', {'short' : '-p'})
+             \.on('--tsura=VALUE', '', {'completion' : function('CompleteTest2')})
+             \.on('--[no-]poyo', '')
+        let o.unknown_options_completion = function('CompleteUnknownOptionTest')
+        Should o.complete('--', 'Hoge --', 7) == ['--tsura=', '--hoge', '--huga=', '--no-huga=', '--piyo', '--poyo', '--no-poyo']
+        Should o.complete('--h', 'Hoge --h', 8) == ['--hoge', '--huga=']
+        Should o.complete('--hu', 'Hoge --hu', 9) == ['--huga=']
+        Should o.complete('--ho', 'Hoge --ho', 9) == ['--hoge']
+        Should o.complete('--p', 'Hoge --p', 8) == ['--piyo', '--poyo']
+        Should o.complete('--po', 'Hoge --po', 9) == ['--poyo']
+        Should o.complete('--pi', 'Hoge --pi', 9) == ['--piyo']
+        Should o.complete('--f', 'Hoge --f', 8) == []
+        Should o.complete('--no', 'Hoge --no', 9) == ['--no-huga=', '--no-poyo']
+    End
+
+    It completes short options
+        let o = g:O.new()
+        call o.on('--[no-]huga=VALUE', '', {'short' : '-h', 'completion' : function('CompleteTest')})
+             \.on('--hoge', '')
+             \.on('--piyo', '', {'short' : '-p'})
+             \.on('--tsura=VALUE', '', {'completion' : function('CompleteTest2')})
+             \.on('--[no-]poyo', '')
+        let o.unknown_options_completion = function('CompleteUnknownOptionTest')
+        Should o.complete('-', 'Hoge -', 6) == ['-h=', '-no-h=', '-p']
+        Should o.complete('-h', 'Hoge -h', 7) == ['-h=']
+        Should o.complete('-p', 'Hoge -p', 7) == ['-p']
+        Should o.complete('-f', 'Hoge -f', 7) == []
+    End
+
+    It completes values of options with specified complete function
+        let o = g:O.new()
+        call o.on('--[no-]huga=VALUE', '', {'short' : '-h', 'completion' : function('CompleteTest')})
+             \.on('--hoge', '')
+             \.on('--piyo', '', {'short' : '-p'})
+             \.on('--tsura=VALUE', '', {'completion' : function('CompleteTest2')})
+             \.on('--[no-]poyo', '')
+        let o.unknown_options_completion = function('CompleteUnknownOptionTest')
+        Should o.complete('--huga=', 'Hoge --huga=', 12) == ['--huga=sushi', '--huga=yakiniku', '--huga=yakitori']
+        Should o.complete('--huga=yaki', 'Hoge --hoge=yaki', 16) == ['--huga=yakiniku', '--huga=yakitori']
+        Should o.complete('--tsura=', 'Hoge --tsura=', 13) == ['--tsura=inu', '--tsura=manbou', '--tsura=momonga']
+        Should o.complete('--hoge=', 'Hoge --hoge=', 12) == []
+    End
+
+    It completes unknown argument if "unknown_options_completion" is specified
+        let o = g:O.new()
+        call o.on('--[no-]huga=VALUE', '', {'short' : '-h', 'completion' : function('CompleteTest')})
+             \.on('--hoge', '')
+             \.on('--piyo', '', {'short' : '-p'})
+             \.on('--tsura=VALUE', '', {'completion' : function('CompleteTest2')})
+             \.on('--[no-]poyo', '')
+        let o.unknown_options_completion = function('CompleteUnknownOptionTest')
+        Should o.complete('', 'Hoge ', 5) == ['vim', 'vimmer', 'kowai']
+        Should o.complete('vim', 'Hoge vim', 8) == ['vim', 'vimmer']
+    End
+End
+
