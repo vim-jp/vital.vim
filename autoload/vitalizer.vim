@@ -297,7 +297,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
       let paths = globpath(g:vitalizer#vital_dir . ',' . &runtimepath, f, 1)
       let from = get(split(paths, "\n"), 0)
       if !filereadable(from)
-        throw 'vitalizer: Can not read the installing file: ' . file
+        throw 'vitalizer: Can not read the installing file: ' . from
       endif
       call add(install_files, [from, s:FP.join(a:to, after)])
     endfor
