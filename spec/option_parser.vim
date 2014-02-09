@@ -19,6 +19,18 @@ function! s:permutation(args)
   return ret
 endfunction
 
+function! CompleteTest(optlead, cmdline, pos)
+  return filter(['sushi', 'yakiniku', 'yakitori'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
+endfunction
+
+function! CompleteTest2(optlead, cmdline, pos)
+  return filter(['inu', 'manbou', 'momonga'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
+endfunction
+
+function! CompleteUnknownOptionTest(optlead, cmdline, pos)
+  return filter(['vim', 'vimmer', 'kowai'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
+endfunction
+
 Context OptionParser.new()
 
   It makes parser object
@@ -125,13 +137,13 @@ Context on() funcref in OptionParser object
   It sets function for completion with "completion" key
     let o = g:O.new()
     call o.on('--hoge', '', {'completion' : 'file'})
-         \.on('--huga', '', {'completion' : function('dummyfunc')})
+         \.on('--huga', '', {'completion' : function('CompleteTest')})
          \.on('--piyo', '')
-    Expect o.options.hoge to_have_key 'completion'
-    Expect o.options.huga to_have_key 'completion'
-    Expect o.options.piyo not to_have_key 'completion'
-    Expect o.options.hoge.completion to_be_funcref
-    Expect o.options.huga.completion to_be_funcref
+    Should has_key(o.options.hoge, 'completion')
+    Should has_key(o.options.huga, 'completion')
+    Should ! has_key(o.options.piyo, 'completion')
+    Should type(o.options.hoge.completion) == type(function('empty'))
+    Should type(o.options.huga.completion) == type(function('empty'))
   End
 End
 
@@ -325,18 +337,6 @@ Context help() funcref in OptionParser object
   End
 
 End
-
-function! CompleteTest(optlead, cmdline, pos)
-    return filter(['sushi', 'yakiniku', 'yakitori'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
-endfunction
-
-function! CompleteTest2(optlead, cmdline, pos)
-    return filter(['inu', 'manbou', 'momonga'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
-endfunction
-
-function! CompleteUnknownOptionTest(optlead, cmdline, pos)
-    return filter(['vim', 'vimmer', 'kowai'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
-endfunction
 
 Context complete() funcref in OptionParser object
 
