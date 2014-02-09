@@ -252,8 +252,6 @@ function! s:getchar_safe(...)
   return type(c) == type("") ? c : nr2char(c)
 endfunction
 
-" Like builtin getchar() but
-" do inputsave()/inputrestore() before/after input().
 function! s:input_safe(...)
   return s:input_helper('input', a:000)
 endfunction
