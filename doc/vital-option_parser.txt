@@ -169,7 +169,7 @@ Parser.on({name}, {description} [, {extra}])
 
 	  - "completion"
 	  Value of "completion" key must be |Funcref| or |String|. If |String|, it
-	  means a name of default completer.  See 
+	  means a name of default completer.  See
 	  |Vital.OptionParser-built-in-completer| to know default completers.  If
 	  |Funcref|, it is called when the value of the option should be completed.
 	  The |Funcref| should have 3 arguments, {optlead}, {cmdline}, {cursorpos}.
