@@ -256,7 +256,6 @@ function! s:input_safe(...)
   return s:input_helper('input', a:000)
 endfunction
 
-" Do inputsave()/inputrestore() before/after calling a:funcname.
 function! s:input_helper(funcname, args)
   let success = 0
   if inputsave() !=# success
