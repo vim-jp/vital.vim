@@ -137,6 +137,16 @@ set_default({var}, {val})			*Vital.Prelude.set_default()*
 				*Vital.Prelude.set_dictionary_helper()*
 set_dictionary_helper({variable}, {keys}, {pattern})
 	TODO
+>
+	let x = {'b': 123}
+	call V.set_dictionary_helper('x', 'a, b, c', 999)
+<
+	is same to
+>
+	let x = {'b': 123}
+	let x.a = 999
+	let x.c = 999
+<
 
 				*Vital.Prelude.substitute_path_separator()*
 substitute_path_separator({path})
