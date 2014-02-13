@@ -220,6 +220,11 @@ function! s:_deprecated(fname, newname)
         \ a:fname, a:newname)
 endfunction
 
+function! s:_deprecated2(fname)
+  echomsg printf("Vital.Prelude.%s is deprecated!",
+        \ a:fname)
+endfunction
+
 function! s:print_error(message)
   call s:_deprecated('print_error', 'Vital.Vim.Message.error')
 
@@ -277,6 +282,8 @@ function! s:set_default(var, val)
 endfunction
 
 function! s:set_dictionary_helper(variable, keys, pattern)
+  call s:_deprecated2('set_dictionary_helper')
+
   for key in split(a:keys, '\s*,\s*')
     if !has_key(a:variable, key)
       let a:variable[key] = a:pattern

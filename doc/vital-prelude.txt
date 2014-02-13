@@ -136,7 +136,7 @@ set_default({var}, {val})			*Vital.Prelude.set_default()*
 
 				*Vital.Prelude.set_dictionary_helper()*
 set_dictionary_helper({variable}, {keys}, {pattern})
-	TODO
+	TODO (deprecated)
 >
 	let x = {'b': 123}
 	call V.set_dictionary_helper('x', 'a, b, c', 999)
