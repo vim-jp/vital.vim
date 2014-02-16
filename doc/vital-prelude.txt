@@ -151,6 +151,17 @@ set_dictionary_helper({variable}, {keys}, {pattern})
 				*Vital.Prelude.substitute_path_separator()*
 substitute_path_separator({path})
 	TODO
+>
+	echo V.substitute_path_separator('a/b/c')
+<
+	is same to
+>
+	echo 'a/b/c'
+<
+	in most cases but only on Windows it is same to the following.
+>
+	echo 'a\\b\\c'
+<
 
 path2directory({path})			*Vital.Prelude.path2directory()*
 	TODO
