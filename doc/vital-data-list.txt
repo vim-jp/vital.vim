@@ -296,6 +296,15 @@ partition({expr}, {list})		*Vital.Data.List.partition()*
 	TODO
 	Behaves like Haskell's Data.List.partition().
 
+map_accum({expr}, {xs}, {init})		*Vital.Data.List.map_accum()*
+	This is similar to |map()| but the followings are different:
+	* it doesn't destroy {xs}
+	* it holds previous accumulator
+	* you also have to specify initial accumulator value
+	* you also have to let {expr} return the next accumulator value
+	
+	TODO usage
+
 foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 	Reduces the list {xs} using the binary operator {f}, from left to
 	right. The starting value of the reduction (typically the

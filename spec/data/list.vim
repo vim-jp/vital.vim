@@ -249,6 +249,13 @@ Context Data.List.and()
   End
 End
 
+Context Data.List.map_accum()
+  It is TODO
+    Should [11, 12, 13] == g:L.map_accum('[v:val + v:memo, v:memo]', [1, 2, 3], 10)
+    Should [11, 13, 15] == g:L.map_accum('[v:val + v:memo, v:memo + 1]', [1, 2, 3], 10)
+  End
+End
+
 Context Data.List.foldl()
   It folds a list from left
     Should 55 == g:L.foldl('v:memo + v:val', 0, range(1, 10))
