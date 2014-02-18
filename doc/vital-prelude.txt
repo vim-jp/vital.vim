@@ -27,6 +27,17 @@ INTERFACE				*Vital.Prelude-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Prelude-functions*
 
+is_numeric({value})				*g:V.Prelude.is_numeric()*
+	Returns non-zero if {value} is a |Number| or a |Float|, zero otherwise.
+		Examples: >
+		:let g:V = vital#of('vital')
+		:echo g:V.is_number(123)
+<		1 >
+		:echo g:V.is_number(1.23)
+<		1 >
+		:echo g:V.is_number("hoge")
+<		0
+
 is_number({value})				*Vital.Prelude.is_number()*
 	Returns non-zero if {value} is a |Number|, zero otherwise.
 		Examples: >
@@ -44,17 +55,6 @@ is_float({value})				*g:V.Prelude.is_float()*
 		:let g:V = vital#of('vital')
 		:echo g:V.is_number(123)
 <		0 >
-		:echo g:V.is_number(1.23)
-<		1 >
-		:echo g:V.is_number("hoge")
-<		0
-
-is_numeric({value})				*g:V.Prelude.is_numeric()*
-	Returns non-zero if {value} is a |Number| or a |Float|, zero otherwise.
-		Examples: >
-		:let g:V = vital#of('vital')
-		:echo g:V.is_number(123)
-<		1 >
 		:echo g:V.is_number(1.23)
 <		1 >
 		:echo g:V.is_number("hoge")
