@@ -82,7 +82,8 @@ is_dict({value})				*Vital.Prelude.is_dict()*
 
 					*Vital.Prelude.truncate_smart()*
 truncate_smart({str}, {max}, {footer-width}, {separator})
-	Deprecated.
+	Deprecated. Use Prelude.truncate_skipping() instead; they are
+	equivalent.
 
 					*Vital.Prelude.truncate_skipping()*
 truncate_skipping({str}, {max}, {footer-width}, {separator})
