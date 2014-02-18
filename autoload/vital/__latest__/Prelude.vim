@@ -1,9 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" glob() wrapper which returns List
-" and 'wildignore' does not affect
-" this function's return value.
 if v:version ># 703 ||
 \  (v:version is 703 && has('patch465'))
   function! s:glob(expr)
