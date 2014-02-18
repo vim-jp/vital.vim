@@ -80,6 +80,10 @@ is_list({value})				*Vital.Prelude.is_list()*
 is_dict({value})				*Vital.Prelude.is_dict()*
 	Returns non-zero if {value} is a |Dictionary|, zero otherwise.
 
+					*Vital.Prelude.truncate_smart()*
+truncate_smart({str}, {max}, {footer-width}, {separator})
+	Deprecated.
+
 is_windows()					*Vital.Prelude.is_windows()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
 	Note that this returns zero if Vim is a Cygwin version.
