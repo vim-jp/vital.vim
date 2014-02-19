@@ -31,6 +31,10 @@ glob({expr})					*g:V.Prelude.glob()*
 	A |glob()| wrapper which returns List and 'wildignore' does not affect
 	this function's return value.
 
+globpath({path}, {expr})			*g:V.Prelude.globpath()*
+	globpath() wrapper which returns List and 'suffixes' and 'wildignore'
+	does not affect this function's return value.
+
 is_numeric({value})				*g:V.Prelude.is_numeric()*
 	Returns non-zero if {value} is a |Number| or a |Float|, zero otherwise.
 		Examples: >

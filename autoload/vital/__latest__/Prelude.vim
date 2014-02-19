@@ -13,9 +13,6 @@ else
   endfunction
 endif
 
-" globpath() wrapper which returns List
-" and 'suffixes' and 'wildignore' does not affect
-" this function's return value.
 function! s:globpath(path, expr)
   let R = globpath(a:path, a:expr, 1)
   return split(R, '\n')
