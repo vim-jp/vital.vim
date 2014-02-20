@@ -182,6 +182,21 @@ substitute_path_separator({path})
 
 path2directory({path})			*Vital.Prelude.path2directory()*
 	TODO
+>
+	P.path2directory('a/b/c.txt')
+<
+	is equivalent to
+>
+	P.substitute_path_separator(fnamemodify('a/b/c.txt', ':p:h'))
+<
+	and
+>
+	P.path2directory('a/b/d') " d is a directory
+<
+	is equivalent to
+>
+	P.substitute_path_separator('a/b/d')
+>
 
 				*Vital.Prelude.path2project_directory()*
 path2project_directory({path}[, {is_allow_empty}])
