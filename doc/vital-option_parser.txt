@@ -21,7 +21,7 @@ REAL WORLD EXAMPLES		|Vital.OptionParser-real-world-examples|
 INTRODUCTION				*Vital.OptionParser-introduction*
 
 *Vital.OptionParser* is an option parser library for Vim script.
-It can parse key-value style options(like --foo=bar) in Vim commands and
+It can parse key-value style options (like --foo=bar) in Vim commands and
 |:command| attributes like <count>, <bang>, <range> and so on.
 A great advantage of key-value type options is that you need not take care of
 the order of options.  And it provides completion for option names and you can
@@ -32,9 +32,9 @@ add your own completion for the option values.
 ==============================================================================
 USAGE					*Vital.OptionParser-usage*
 
-At first, make new instance of a parser with |Vital.OptionParser.new()|, then
-define options you want to parse with |Vital.OptionParser::on()|.  At last,
-define command with |Vital.OptionParser::parse()|.
+At first, make a new instance of a parser with |Vital.OptionParser.new()|, then
+define options you want to parse with |Vital.OptionParser-Parser.on()|.  At last,
+define a command with |Vital.OptionParser-Parser.parse()|.
 This library's interface is inspired by OptionParser in Ruby.
 >
   " make option parser instance
@@ -122,7 +122,7 @@ PARSER OBJECT				*Vital.OptionParser-Parser*
 					*Vital.OptionParser-Parser.on()*
 Parser.on({name}, {description} [, {extra}])
 
-	Define a option to parse.  You should call this function every option.
+	Define an option to parse.  You should call this function every option.
 
 	- {name} (required)
 	  |String| value.  A name of option.
@@ -169,15 +169,15 @@ Parser.on({name}, {description} [, {extra}])
 	    used.
 
 	  - "completion"
-	  Value of "completion" key must be |Funcref| or |String|. If |String|, it
+	  Value of "completion" key must be |Funcref| or |String|.  If |String|, it
 	  means a name of default completer.  See
 	  |Vital.OptionParser-built-in-completer| to know default completers.  If
 	  |Funcref|, it is called when the value of the option should be completed.
 	  The |Funcref| should have 3 arguments, {optlead}, {cmdline}, {cursorpos}.
 	  {optlead} is the lead portion of the VALUE of the option.  {cmdline}
-	  is the |String| of command line. {cursorpos} is the place of cursor.
+	  is the |String| of command line.  {cursorpos} is the place of cursor.
 	  For example, if you set |Funcref| for "--hoge=VALUE" option, it will be
-	  called when a user inputs "--hoge=". When the user inputs "--hoge=h",
+	  called when a user inputs "--hoge=".  When the user inputs "--hoge=h",
 	  "h" will be passed to {optlead}.  {optlead} is NOT ArgLead of
 	  |:command-completion-custom|.
 
