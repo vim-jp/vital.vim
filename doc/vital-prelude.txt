@@ -92,6 +92,9 @@ truncate_skipping({str}, {max}, {footer-width}, {separator})
 truncate({str}, {width})			*Vital.Prelude.truncate()*
 	TODO
 
+strwidthpart({str}, {width})			*Vital.Prelude.strwidthpart()*
+	TODO
+
 is_windows()					*Vital.Prelude.is_windows()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
 	Note that this returns zero if Vim is a Cygwin version.
