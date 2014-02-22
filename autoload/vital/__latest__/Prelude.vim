@@ -209,24 +209,9 @@ function! s:is_unix()
   return s:is_unix
 endfunction
 
-function! s:_deprecated(fname, newname)
-  echomsg printf("Vital.Prelude.%s is deprecated! Please use %s instead.",
-        \ a:fname, a:newname)
-endfunction
-
 function! s:_deprecated2(fname)
   echomsg printf("Vital.Prelude.%s is deprecated!",
         \ a:fname)
-endfunction
-
-function! s:print_error(message)
-  call s:_deprecated('print_error', 'Vital.Vim.Message.error')
-
-  echohl ErrorMsg
-  for m in split(a:message, "\n")
-    echomsg m
-  endfor
-  echohl None
 endfunction
 
 function! s:smart_execute_command(action, word)
