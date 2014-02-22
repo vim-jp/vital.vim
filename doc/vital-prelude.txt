@@ -98,6 +98,9 @@ strwidthpart({str}, {width})			*Vital.Prelude.strwidthpart()*
 strwidthpart_reverse({str}, {width})	*Vital.Prelude.strwidthpart_reverse()*
 	TODO
 
+wcswidth({str})					*Vital.Prelude.wcswidth()*
+	TODO
+
 is_windows()					*Vital.Prelude.is_windows()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
 	Note that this returns zero if Vim is a Cygwin version.
