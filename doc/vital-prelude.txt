@@ -95,6 +95,9 @@ truncate({str}, {width})			*Vital.Prelude.truncate()*
 strwidthpart({str}, {width})			*Vital.Prelude.strwidthpart()*
 	TODO
 
+strwidthpart_reverse({str}, {width})	*Vital.Prelude.strwidthpart_reverse()*
+	TODO
+
 is_windows()					*Vital.Prelude.is_windows()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
 	Note that this returns zero if Vim is a Cygwin version.
