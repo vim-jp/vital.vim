@@ -1,3 +1,6 @@
+dab52f0
+	Modules: Prelude
+	print_error() is removed; this has been deprecated since f82a6fc
 86a8abd
 	Modules: Data.List
 	uniq() with 2nd argument is removed (it has been deprecated.)
