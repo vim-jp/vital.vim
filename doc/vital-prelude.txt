@@ -27,48 +27,51 @@ INTERFACE				*Vital.Prelude-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Prelude-functions*
 
-glob({expr})					*g:V.Prelude.glob()*
+glob({expr})					*Vital.Prelude.glob()*
 	A |glob()| wrapper which returns List and 'wildignore' does not affect
 	this function's return value.
 
-globpath({path}, {expr})			*g:V.Prelude.globpath()*
+globpath({path}, {expr})			*Vital.Prelude.globpath()*
 	globpath() wrapper which returns List and 'suffixes' and 'wildignore'
 	does not affect this function's return value.
 
-is_numeric({value})				*g:V.Prelude.is_numeric()*
+is_numeric({value})				*Vital.Prelude.is_numeric()*
 	Returns non-zero if {value} is a |Number| or a |Float|, zero otherwise.
 		Examples: >
 		:let g:V = vital#of('vital')
-		:echo g:V.is_number(123)
-<		1 >
-		:echo g:V.is_number(1.23)
-<		1 >
-		:echo g:V.is_number("hoge")
+		:let g:P = g:V.import('Prelude')
+		:echo g:P.is_numeric(123)
+    <		1 >
+		:echo g:P.is_numeric(1.23)
+    <		1 >
+		:echo g:P.is_numeric("hoge")
 <		0
 
 is_number({value})				*Vital.Prelude.is_number()*
 	Returns non-zero if {value} is a |Number|, zero otherwise.
 		Examples: >
 		:let g:V = vital#of('vital')
-		:echo g:V.is_number(123)
+		:let g:P = g:V.import('Prelude')
+		:echo g:P.is_number(123)
 <		1 >
-		:echo g:V.is_number(1.23)
+		:echo g:P.is_number(1.23)
 <		0 >
-		:echo g:V.is_number("hoge")
+		:echo g:P.is_number("hoge")
 <		0
 
-is_float({value})				*g:V.Prelude.is_float()*
+is_float({value})				*Vital.Prelude.is_float()*
 	Returns non-zero if {value} is a |Float|, zero otherwise.
 		Examples: >
 		:let g:V = vital#of('vital')
-		:echo g:V.is_number(123)
+		:let g:P = g:V.import('Prelude')
+		:echo g:P.is_float(123)
 <		0 >
-		:echo g:V.is_number(1.23)
+		:echo g:P.is_float(1.23)
 <		1 >
-		:echo g:V.is_number("hoge")
+		:echo g:P.is_float("hoge")
 <		0
 
-is_string({value})				*g:V.Prelude.is_string()*
+is_string({value})				*Vital.Prelude.is_string()*
 	Returns non-zero if {value} is a String (|expr-string|), zero otherwise.
 
 is_funcref({value})				*Vital.Prelude.is_funcref()*
