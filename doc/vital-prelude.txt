@@ -211,7 +211,7 @@ path2directory({path})			*Vital.Prelude.path2directory()*
 	is equivalent to
 >
 	P.substitute_path_separator('a/b/d')
->
+<
 
 				*Vital.Prelude.path2project_directory()*
 path2project_directory({path}[, {is_allow_empty}])
