@@ -95,7 +95,7 @@ nr2enc_char({charcode})			*Vital.Data.String.nr2enc_char()*
 nr2hex({nr})				*Vital.Data.String.nr2hex()*
 	Returns a hex string which has the number value {nr}.
 
-diffidx({str1}, {str2})				*Vital.Data.String.diffidx()*
+diffidx({str1}, {str2})			*Vital.Data.String.diffidx()*
 	Returns first index of different character if two strings are not
 	equal, otherwise returns number -1 if the strings are equal.
 
@@ -117,11 +117,11 @@ dstring({expr})				*Vital.Data.String.dstring()*
 lines({str})				*Vital.Data.String.lines()*
 	Splits into list of strings of each lines of {str}.
 
-contains_multibyte({str})		*Vital.Data.String.contains_multibyte()*
+contains_multibyte({str})	*Vital.Data.String.contains_multibyte()*
 	Return Number 1 if String {str} contains a multi-byte character,
 	otherwise zero.
 
-pad_left({str}, {width} [, {char}])		*Vital.Data.String.pad_left()*
+pad_left({str}, {width} [, {char}])	*Vital.Data.String.pad_left()*
 	It returns a string padded {str}'s left side until given
 	{width} with the given half-width {char} or white-space,
 	considering non-half-width characters.
@@ -131,7 +131,7 @@ pad_left({str}, {width} [, {char}])		*Vital.Data.String.pad_left()*
 	" '       test'
 <
 
-pad_right({str}, {width} [, {char}])		*Vital.Data.String.pad_right()*
+pad_right({str}, {width} [, {char}])	*Vital.Data.String.pad_right()*
 	It returns a string padded {str}'s right side until given
 	{width} with the given half-width {char} or white-space,
 	considering non-half-width characters.
