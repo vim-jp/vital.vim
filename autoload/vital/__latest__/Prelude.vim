@@ -327,7 +327,7 @@ function! s:_path2project_directory_editorconfig(path)
   endif
   for line in readfile(file)
     let m = matchlist(line, '^\s*root\s*=\s*\(\w\+\)')
-    if !empty(m) && m[1] == 'true'
+    if !empty(m) && m[1] ==? 'true'
       return fnamemodify(file, ':h')
     endif
   endfor
