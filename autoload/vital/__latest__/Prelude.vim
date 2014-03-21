@@ -319,6 +319,21 @@ function! s:_path2project_directory_svn(path)
   return directory
 endfunction
 
+function! s:_path2project_directory_editorconfig(path)
+  let find_directory = s:escape_file_searching(fnamemodify(a:path, ':p:h'))
+  let file = findfile('.editorconfig', find_directory . ';')
+  if file == ''
+    return ''
+  endif
+  for line in readfile(file)
+    let m = matchlist(line, '^\s*root\s*=\s*\(\w\+\)')
+    if !empty(m) && m[1] == 'true'
+      return fnamemodify(file, ':h')
+    endif
+  endfor
+  return ''
+endfunction
+
 function! s:_path2project_directory_others(vcs, path)
   let vcs = a:vcs
   let search_directory = a:path
@@ -338,11 +353,13 @@ function! s:path2project_directory(path, ...)
   let directory = ''
 
   " Search VCS directory.
-  for vcs in ['.git', '.bzr', '.hg', '.svn']
+  for vcs in ['.git', '.bzr', '.hg', '.svn', '.editorconfig']
     if vcs ==# '.git'
       let directory = s:_path2project_directory_git(search_directory)
     elseif vcs ==# '.svn'
       let directory = s:_path2project_directory_svn(search_directory)
+    elseif vcs ==# '.editorconfig'
+      let directory = s:_path2project_directory_editorconfig(search_directory)
     else
       let directory = s:_path2project_directory_others(vcs, search_directory)
     endif
