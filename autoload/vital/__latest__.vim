@@ -101,7 +101,8 @@ function! s:_get_module_path(name)
     let paths = split(globpath(&runtimepath, tailpath), "\n")
   endif
   call filter(paths, 'filereadable(v:val)')
-  return s:_unify_path(get(paths, 0, ''))
+  let path = get(paths, 0, '')
+  return path !=# '' ? s:_unify_path(path) : ''
 endfunction
 
 function! s:_scripts()
