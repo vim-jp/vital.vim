@@ -59,6 +59,10 @@ function! s:unload()
   let s:loaded = {}
 endfunction
 
+function! s:exists(name)
+  return s:_get_module_path(a:name) !=# ''
+endfunction
+
 function! s:_import(name)
   if type(a:name) == type(0)
     return s:_build_module(a:name)
