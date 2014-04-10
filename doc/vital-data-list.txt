@@ -248,7 +248,7 @@ all({expr}, {list})			*Vital.Data.List.all()*
 any({expr}, {list})			*Vital.Data.List.any()*
 	Returns Number 1 if at least one item in |List| {list} fulfills the
 	condition {expr}, zero otherwise.  If {list} is empty, this function
-	returns 1.
+	returns 0.
 >
 	echo L.any('v:val % 2 == 0', [2, 8, 4, 6])
 	" 1
@@ -280,7 +280,7 @@ and({list})				*Vital.Data.List.and()*
 
 or({list})				*Vital.Data.List.or()*
 	Returns Number 1 if at least one item in List {list} is non-zero,
-	zero otherwise.  If {list} is empty, this function returns 1.
+	zero otherwise.  If {list} is empty, this function returns 0.
 >
 	echo L.or([1, 2, 3, 1])
 	" 1
