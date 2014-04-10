@@ -89,6 +89,18 @@ Vital.load({module-name})		*Vital-Vital.load()*
 	call V.load('Data.List')
 	echo V.Data.List.uniq([1,1,2])
 
+Vital.exists({module-name})		*Vital-Vital.exists()*
+	Checks whether a module specified by {module-name} exists.
+
+Vital.search({pattern})			*Vital-Vital.search()*
+	Searches available modules.  Returns module names by |List|.
+	Wildcard '*' is available in {pattern}.
+>
+	echo V.search('Data.*')
+	echo V.search('Data.*List')
+
+
+
 ------------------------------------------------------------------------------
 VARIABLES 				*Vital-variables*
 
