@@ -64,7 +64,7 @@ function! s:copy(from, to)
   call writefile(map(readfile(a:from, "b"), convert_newline), a:to, "b")
 endfunction
 
-function! s:search_dependence(modules)
+function! s:search_dependence(depends_info)
   " XXX Not smart...
   if exists('g:vital_debug')
     let vital_debug = g:vital_debug
@@ -72,24 +72,39 @@ function! s:search_dependence(modules)
   let g:vital_debug = 1
   call s:V.unload()
   let all = {}
-  let modules = a:modules
-  while !empty(modules)
-    let next = []
+  let entries = copy(a:depends_info)
+  while !empty(entries)
+    call s:L.sort_by(entries, 'type(v:val) == type([]) ? len(v:val) : 0')
+    unlet! entry
+    let entry = remove(entries, 0)
+
+    if type(entry) == type([])
+      let candidates = s:L.concat(map(copy(entry), 's:V.search(v:val)'))
+      if empty(candidates)
+        throw printf('vitalizer: Any of module %s is not found', string(entry))
+      endif
+      if s:L.or(map(copy(candidates), 'has_key(all, v:val)'))
+        continue
+      endif
+      let modules = [candidates[0]]
+    else
+      let modules = s:V.search(entry)
+      if empty(modules)
+        throw printf('vitalizer: Module %s is not found', entry)
+      endif
+    endif
+
     for module in modules
       if has_key(all, module)
         continue
       endif
-      try
-        let M = s:V.import(module, 1)
-      catch
-        throw printf("vitalizer: Module %s isn't provided from latest vital.vim", module)
-      endtry
+
+      let M = s:V.import(module, 1)
       let all[module] = 1
       if has_key(M, '_vital_depends')
-        call extend(next, M._vital_depends())
+        call extend(entries, M._vital_depends())
       endif
     endfor
-    let modules = next
   endwhile
   if exists('vital_debug')
     let g:vital_debug = vital_debug
