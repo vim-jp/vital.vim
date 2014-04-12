@@ -14,9 +14,9 @@ INTERFACE			|Vital.Random.Xor128-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Random.Xor128-introduction*
 
-*Vital.Random.Xor128* provides a Random Number Generator (RNG) using an xorshift
-algorithm.  Although xorshift has a reasonable period (2^128-1), it is fast
-and has less internal states.
+*Vital.Random.Xor128* provides a Random Number Generator (RNG) using an
+xorshift algorithm.  Although xorshift has a reasonable period (2^128-1), it
+is fast and has less internal states.
 The paper about xorshift is http://www.jstatsoft.org/v08/i14/paper .
 
 >
@@ -50,6 +50,28 @@ rand()						*Vital.Random.Xor128.rand()*
 	Note: A return value is possibly negative.  This is because Vim script
 	doesn't have an unsigned integer type.
 
+new()						*Vital.Random.Xor128.new()*
+	Create a new Generator object(|Vital.Random.Xor128-Generator|).
+
+
+
+==============================================================================
+OBJECTS					*Vital.Random.Xor128-objects*
+
+------------------------------------------------------------------------------
+Generator Object		*Vital.Random.Xor128-Generator*
+
+Generator.next()		*Vital.Random.Xor128-Generator.next()*
+	Gets the next random number in the sequence.
+
+Generator.min()			*Vital.Random.Xor128-Generator.min()*
+	Gets the smallest possible value in the output range.
+
+Generator.max()			*Vital.Random.Xor128-Generator.max()*
+	Gets the largest possible value in the output range.
+
+Generator.seed({seeds})		*Vital.Random.Xor128-Generator.seed()*
+	Set seeds by array of numbers.
 
 
 ==============================================================================
