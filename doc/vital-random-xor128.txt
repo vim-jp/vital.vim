@@ -14,9 +14,9 @@ INTERFACE			|Vital.Random.Xor128-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Random.Xor128-introduction*
 
-*Vital.Random.Xor128* provides a Random Number Generator (RNG) using an xorshift
-algorithm.  Although xorshift has a reasonable period (2^128-1), it is fast
-and has less internal states.
+*Vital.Random.Xor128* provides a Random Number Generator (RNG) using an
+xorshift algorithm.  Although xorshift has a reasonable period (2^128-1), it
+is fast and has less internal states.
 The paper about xorshift is http://www.jstatsoft.org/v08/i14/paper .
 
 >
@@ -40,16 +40,39 @@ INTERFACE				*Vital.Random.Xor128-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Random.Xor128-functions*
 
-srand([{seed}])					*Vital.Random.Xor128.srand()*
+srand([{seed}])				*Vital.Random.Xor128.srand()*
 	Set a seed of generator.  When {seed} is omitted, a return value of
 	|reltime()| is used.  When {seed} is omitted and vim doesn't have
 	|reltime()|, a return value of |localtime()| is used.
 
-rand()						*Vital.Random.Xor128.rand()*
+rand()					*Vital.Random.Xor128.rand()*
 	Generate a random number.
 	Note: A return value is possibly negative.  This is because Vim script
 	doesn't have an unsigned integer type.
 
+new_generator()				*Vital.Random.Xor128.new_generator()*
+	Create a new Generator object(|Vital.Random.Xor128-Generator|).
+
+
+
+==============================================================================
+OBJECTS					*Vital.Random.Xor128-objects*
+
+------------------------------------------------------------------------------
+Generator Object		*Vital.Random.Xor128-Generator*
+
+Generator.next()		*Vital.Random.Xor128-Generator.next()*
+	Gets the next random number in the sequence.
+
+Generator.min()			*Vital.Random.Xor128-Generator.min()*
+	Gets the smallest possible value in the output range.
+
+Generator.max()			*Vital.Random.Xor128-Generator.max()*
+	Gets the largest possible value in the output range.
+
+Generator.seed({seeds})		*Vital.Random.Xor128-Generator.seed()*
+	Set seeds by array of numbers which initializes the generator.  The
+	size of the array should be between 0 to 4.
 
 
 ==============================================================================

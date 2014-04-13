@@ -6,38 +6,63 @@ set cpo&vim
 
 
 function! s:_vital_loaded(V)
-  let s:V = a:V
-  let s:B = s:V.import('Bitwise')
-  let s:x = 123456789
-  let s:y = 362436069
-  let s:z = 521288629
-  let s:w = 88675123
+  let s:B = a:V.import('Bitwise')
 endfunction
 
 function! s:_vital_depends()
   return ['Bitwise']
 endfunction
 
+
+let s:Generator = {}
+
+function! s:Generator.next()
+  let t = s:B.xor(self._x, s:B.lshift(self._x, 11))
+  let w = self._w
+  let self._x = self._y
+  let self._y = self._z
+  let self._z = self._w
+  let self._w = s:B.xor(s:B.xor(w, s:B.rshift(w, 19)), s:B.xor(t, s:B.rshift(t, 8)))
+  return self._w
+endfunction
+
+function! s:Generator.min()
+  return 0x80000000
+endfunction
+
+function! s:Generator.max()
+  return 0x7FFFFFFF
+endfunction
+
+function! s:Generator.seed(seeds)
+  if 4 < len(a:seeds)
+    throw 'vital: Random.Xor128: too many seed parameters'
+  endif
+  let [self._x, self._y, self._z, self._w] =
+  \ a:seeds + [123456789, 362436069, 521288629, 88675123][len(a:seeds) :]
+endfunction
+
+function! s:new_generator()
+  let gen = deepcopy(s:Generator)
+  call gen.seed([])
+  return gen
+endfunction
+
+
+let s:common_generator = s:new()
 function! s:srand(...)
   if a:0 == 0
-    let s:x = has('reltime') ? reltime()[1] : localtime()
+    let x = has('reltime') ? reltime()[1] : localtime()
   elseif a:0 == 1
-    let s:x = a:1
+    let x = a:1
   else
     throw 'vital: Random.Xor128.srand(): too many arguments'
   endif
-  let s:y = 362436069
-  let s:z = 521288629
-  let s:w = 88675123
+  call s:common_generator.seed([x])
 endfunction
 
 function! s:rand()
-  let t = s:B.xor(s:x, s:B.lshift(s:x, 11))
-  let s:x = s:y
-  let s:y = s:z
-  let s:z = s:w
-  let s:w = s:B.xor(s:B.xor(s:w, s:B.rshift(s:w, 19)), s:B.xor(t, s:B.rshift(t, 8)))
-  return s:w
+  return s:common_generator.next()
 endfunction
 
 
