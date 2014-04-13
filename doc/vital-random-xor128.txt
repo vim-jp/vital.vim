@@ -71,7 +71,8 @@ Generator.max()			*Vital.Random.Xor128-Generator.max()*
 	Gets the largest possible value in the output range.
 
 Generator.seed({seeds})		*Vital.Random.Xor128-Generator.seed()*
-	Set seeds by array of numbers.
+	Set seeds by array of numbers which initializes the generator.  The
+	size of the array should be between 0 to 4.
 
 
 ==============================================================================
