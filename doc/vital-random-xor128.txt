@@ -40,17 +40,17 @@ INTERFACE				*Vital.Random.Xor128-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Random.Xor128-functions*
 
-srand([{seed}])					*Vital.Random.Xor128.srand()*
+srand([{seed}])				*Vital.Random.Xor128.srand()*
 	Set a seed of generator.  When {seed} is omitted, a return value of
 	|reltime()| is used.  When {seed} is omitted and vim doesn't have
 	|reltime()|, a return value of |localtime()| is used.
 
-rand()						*Vital.Random.Xor128.rand()*
+rand()					*Vital.Random.Xor128.rand()*
 	Generate a random number.
 	Note: A return value is possibly negative.  This is because Vim script
 	doesn't have an unsigned integer type.
 
-new()						*Vital.Random.Xor128.new()*
+new_generator()				*Vital.Random.Xor128.new_generator()*
 	Create a new Generator object(|Vital.Random.Xor128-Generator|).
 
 

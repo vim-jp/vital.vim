@@ -42,7 +42,7 @@ function! s:Generator.seed(seeds)
   \ a:seeds + [123456789, 362436069, 521288629, 88675123][len(a:seeds) :]
 endfunction
 
-function! s:new()
+function! s:new_generator()
   let gen = deepcopy(s:Generator)
   call gen.seed([])
   return gen
