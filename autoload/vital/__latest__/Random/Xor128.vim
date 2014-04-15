@@ -49,7 +49,7 @@ function! s:new_generator()
 endfunction
 
 
-let s:common_generator = s:new()
+let s:common_generator = s:new_generator()
 function! s:srand(...)
   if a:0 == 0
     let x = has('reltime') ? reltime()[1] : localtime()
