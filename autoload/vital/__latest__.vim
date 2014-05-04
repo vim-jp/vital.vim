@@ -151,7 +151,7 @@ function! s:_scripts()
 endfunction
 
 function! s:_file2module(file)
-  let filename = s:_unify_path(a:file)
+  let filename = fnamemodify(a:file, ':p:gs?[\\/]\+?/?')
   let tail = matchstr(filename, 'autoload/vital/_\w\+/\zs.*\ze\.vim$')
   return join(split(tail, '[\\/]\+'), '.')
 endfunction
@@ -162,7 +162,7 @@ if filereadable(expand('<sfile>:r') . '.VIM')
     " So if getting full path via <sfile> and $HOME was set as 8.3 format,
     " vital load duplicated scripts. Below's :~ avoid this issue.
     return tolower(fnamemodify(resolve(fnamemodify(
-    \              a:path, ':p:gs?[\\/]\+?/?')), ':~'))
+    \              a:path, ':p')), ':~:gs?[\\/]\+?/?'))
   endfunction
 else
   function! s:_unify_path(path)
