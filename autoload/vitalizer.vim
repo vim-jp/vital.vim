@@ -78,29 +78,10 @@ function! s:search_dependence(depends_info)
     unlet! entry
     let entry = remove(entries, 0)
 
-    if type(entry) == type([])
-      let candidates = s:L.concat(map(copy(entry), 's:V.search(v:val)'))
-      if empty(candidates)
-        throw printf('vitalizer: Any of module %s is not found', string(entry))
-      endif
-      if s:L.or(map(copy(candidates), 'has_key(all, v:val)'))
-        continue
-      endif
-      let modules = [candidates[0]]
-    else
-      let modules = s:V.search(entry)
-      if empty(modules)
-        throw printf('vitalizer: Module %s is not found', entry)
-      endif
-    endif
+    let modules = s:V._expand_modules(entry, all)
 
     for module in modules
-      if has_key(all, module)
-        continue
-      endif
-
       let M = s:V.import(module, 1)
-      let all[module] = 1
       if has_key(M, '_vital_depends')
         call extend(entries, M._vital_depends())
       endif
