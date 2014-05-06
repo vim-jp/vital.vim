@@ -51,14 +51,10 @@ function! s:Random.bool()
 endfunction
 
 function! s:Random.sample(list, ...)
-  let n = a:0 ? a:1 : 1
-  if n == 0
-    return []
-  elseif n == 1
+  if a:0 == 0
     return a:list[self.range(len(a:list))]
-  else
-    return self.shuffle(copy(a:list))[: n - 1]
   endif
+  return a:1 == 0 ? [] : self.shuffle(copy(a:list))[: a:1 - 1]
 endfunction
 
 function! s:Random.shuffle(list)

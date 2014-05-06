@@ -71,6 +71,7 @@ Context Random.sample()
     for _ in range(100)
       let n = _ % len(list)
       let xs = random.sample(list, n)
+      Should type(xs) == type([])
       Should len(xs) == n
       let copy_list = copy(list)
       for x in xs
