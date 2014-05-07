@@ -18,9 +18,45 @@ OBJECTS				|Vital.Random-objects|
 INTRODUCTION				*Vital.Random-introduction*
 
 *Vital.Random* is a Random utility frontend library.
+
+					*Vital.Random-synopsis*
 >
 	let s:V = vital#of('vital')
 	let s:Random = s:V.import('Random')
+
+	" Generate a random number.
+	echo s:Random.next()
+	" => 854122453
+
+	" Generate 1 or more and 6 or less random number.
+	echo s:Random.range(1, 7)
+	" => 1
+
+	" Get a sample value from a list.
+	echo s:Random.sample(range(10))
+	" => 8
+
+	" Shuffle a list.
+	echo s:Random.shuffle(range(10))
+	" => [2, 3, 0, 9, 1, 6, 7, 5, 8, 4]
+
+	" Make a new Random Object.
+	let s:R = s:Random.new()
+
+	" Make a new Random Object with Generator.
+	let s:R = s:Random.new('Xor128')
+
+	" Make a new Random Object with seed.
+	let s:seed = s:Random.next()
+	let s:R = s:Random.new('', s:seed)
+	echo s:R.next(3)
+	" => [-962538367, 815574453, 655578969]
+
+	" Reset the seed.
+	call s:R.seed(s:seed)
+	echo s:R.next(3)
+	" => [-962538367, 815574453, 655578969]
+
 
 
 ==============================================================================
@@ -36,8 +72,6 @@ new([{generator} [, {seed}]])	*Vital.Random-new()*
 	"Random.*".  For example, "Xor128".
 	See |Vital.Random-Generator| about a generator object.
 	If {seed} is omitted, this is created from |Vital.Random-next()|.
->
-	let s:R = s:Random.new()
 
 make_seed()			*Vital.Random-make_seed()*
 	Make a seed from current time and so on.
@@ -47,18 +81,33 @@ make_seed()			*Vital.Random-make_seed()*
 
 next()				*Vital.Random-next()*
 next({n})
+	Shortcut to |Vital.Random-Random.next()|.
+
 min()				*Vital.Random-min()*
+	Shortcut to |Vital.Random-Random.min()|.
+
 max()				*Vital.Random-max()*
+	Shortcut to |Vital.Random-Random.max()|.
+
 seed({seeds})			*Vital.Random-seed()*
+	Shortcut to |Vital.Random-Random.seed()|.
+
 generate_canonical()		*Vital.Random-generate_canonical()*
+	Shortcut to |Vital.Random-Random.generate_canonical()|.
+
 range({to})			*Vital.Random-range()*
 range({from}, {to})
+	Shortcut to |Vital.Random-Random.range()|.
+
 bool()				*Vital.Random-bool()*
+	Shortcut to |Vital.Random-Random.bool()|.
+
 sample({list})			*Vital.Random-sample()*
 sample({list}, {n})
+	Shortcut to |Vital.Random-Random.sample()|.
+
 shuffle({list})			*Vital.Random-shuffle()*
-	The above functions are wrappers for using the function of Random
-	Object(|Vital.Random-Random|) simply.
+	Shortcut to |Vital.Random-Random.shuffle()|.
 
 
 
