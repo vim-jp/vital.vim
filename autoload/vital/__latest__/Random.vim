@@ -14,7 +14,10 @@ let s:loaded_generator_modules = {}
 
 let s:Random = {}
 
-function! s:Random.next()
+function! s:Random.next(...)
+  if a:0
+    return map(range(a:1), 'self._generator.next()')
+  endif
   return self._generator.next()
 endfunction
 

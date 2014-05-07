@@ -2,6 +2,26 @@ source spec/base.vim
 
 let g:R = vital#of('vital').import('Random')
 
+Context Random.next()
+  It returns a random number.
+    let random = R.new('Xor128', [])
+    for _ in range(10)
+      let x = random.next()
+      Should type(x) == type(0)
+    endfor
+    unlet x
+  End
+  It returns n random numbers.
+    let random = R.new('Xor128', [])
+    for n in range(10)
+      let x = random.next(n)
+      Should type(x) == type([])
+      Should len(x) == n
+    endfor
+    unlet x
+  End
+End
+
 Context Random.generate_canonical()
   It returns a random float number in 0.0 - 1.0.
     let random = R.new('Xor128', [])

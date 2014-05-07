@@ -46,6 +46,7 @@ make_seed()			*Vital.Random-make_seed()*
 	You can use |Vital.Random-next()| to initialize your Random Object.
 
 next()				*Vital.Random-next()*
+next({n})
 min()				*Vital.Random-min()*
 max()				*Vital.Random-max()*
 seed({seeds})			*Vital.Random-seed()*
@@ -71,7 +72,8 @@ A Random Object generates some useful random numbers from a generator.
 You can choose the generator to be used freely.
 
 Random.next()			*Vital.Random-Random.next()*
-	Get the next random number in the sequence.
+Random.next({n})
+	Get a next random number or {n} next random numbers in the sequence.
 
 Random.min()			*Vital.Random-Random.min()*
 	Get the smallest value in the output range.
