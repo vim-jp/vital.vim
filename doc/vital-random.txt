@@ -8,6 +8,9 @@ CONTENTS				*Vital.Random-contents*
 INTRODUCTION			|Vital.Random-introduction|
 INTERFACE			|Vital.Random-interface|
   FUNCTIONS			  |Vital.Random-functions|
+OBJECTS				|Vital.Random-objects|
+  Random Object			  |Vital.Random-Random|
+  Generator Object		  |Vital.Random-Generator|
 
 
 
@@ -26,12 +29,13 @@ INTERFACE				*Vital.Random-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Random-functions*
 
-new([{generator}])		*Vital.Random-new()*
+new([{generator} [, {seed}]])	*Vital.Random-new()*
 	Create a new Random Object(|Vital.Random-Random|).
 	{generator} is a generator name or a generator object.
 	A name of a generator is a portion of the last of a module name like
 	"Random.*".  For example, "Xor128".
 	See |Vital.Random-Generator| about a generator object.
+	If {seed} is omitted, this is created from |Vital.Random-next()|.
 >
 	let s:R = s:Random.new()
 
@@ -56,11 +60,15 @@ shuffle({list})			*Vital.Random-shuffle()*
 	Object(|Vital.Random-Random|) simply.
 
 
+
 ==============================================================================
 OBJECTS					*Vital.Random-objects*
 
 ------------------------------------------------------------------------------
 Random Object			*Vital.Random-Random*
+
+A Random Object generates some useful random numbers from a generator.
+You can choose the generator to be used freely.
 
 Random.next()			*Vital.Random-Random.next()*
 	Get the next random number in the sequence.
@@ -73,6 +81,13 @@ Random.max()			*Vital.Random-Random.max()*
 
 Random.seed({seeds})		*Vital.Random-Random.seed()*
 	Set seeds by a |Number| or a |List| of numbers.
+>
+	" Create two objects which generate the same random number sequence.
+	let s:player1 = s:Random.new()
+	let s:player2 = s:Random.new()
+	let s:seed = s:Random.next()
+	call s:player1.seed(s:seed)
+	call s:player2.seed(s:seed)
 
 Random.generate_canonical()	*Vital.Random-Random.generate_canonical()*
 	Get a random float number in [0.0, 1.0).
@@ -130,6 +145,8 @@ Random.shuffle({list})		*Vital.Random-Random.shuffle()*
 
 ------------------------------------------------------------------------------
 Generator Object		*Vital.Random-Generator*
+
+A Generator Object generates random number sequence.
 
 Generator.next()		*Vital.Random-Generator.next()*
 	Get the next random number in the sequence.
