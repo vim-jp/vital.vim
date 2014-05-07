@@ -83,12 +83,6 @@ next()				*Vital.Random-next()*
 next({n})
 	Shortcut to |Vital.Random-Random.next()|.
 
-min()				*Vital.Random-min()*
-	Shortcut to |Vital.Random-Random.min()|.
-
-max()				*Vital.Random-max()*
-	Shortcut to |Vital.Random-Random.max()|.
-
 seed({seeds})			*Vital.Random-seed()*
 	Shortcut to |Vital.Random-Random.seed()|.
 
@@ -123,12 +117,6 @@ You can choose the generator to be used freely.
 Random.next()			*Vital.Random-Random.next()*
 Random.next({n})
 	Get a next random number or {n} next random numbers in the sequence.
-
-Random.min()			*Vital.Random-Random.min()*
-	Get the smallest value in the output range.
-
-Random.max()			*Vital.Random-Random.max()*
-	Get the largest value in the output range.
 
 Random.seed({seeds})		*Vital.Random-Random.seed()*
 	Set seeds by a |Number| or a |List| of numbers.
