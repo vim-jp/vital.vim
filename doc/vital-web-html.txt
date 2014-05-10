@@ -26,7 +26,7 @@ parse({content})			*Vital.Web.HTML.parse()*
 parseFile({file})			*Vital.Web.HTML.parseFile()*
 	Parse html file into DOM object.
 
-parseURI({url})				*Vital.Web.HTML.parseURI()*
+parseURL({url})				*Vital.Web.HTML.parseURL()*
 	Get and parse html into DOM object.
 
 ------------------------------------------------------------------------------
