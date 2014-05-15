@@ -57,7 +57,12 @@ function! s:Random.sample(list, ...)
   if a:0 == 0
     return a:list[self.range(len(a:list))]
   endif
-  return a:1 == 0 ? [] : self.shuffle(copy(a:list))[: a:1 - 1]
+  let list = copy(a:list)
+  let result = []
+  for i in range(a:1)
+    let result += [remove(list, self.range(len(list)))]
+  endfor
+  return result
 endfunction
 
 function! s:Random.shuffle(list)
