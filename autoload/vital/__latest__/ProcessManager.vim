@@ -10,7 +10,7 @@ function! s:_vital_loaded(V)
 endfunction
 
 function! s:_vital_depends()
-  return ['Data.String']
+  return ['Data.String', 'Process']
 endfunction
 
 function! s:is_available()
