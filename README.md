@@ -1,4 +1,4 @@
-# vital.vim [![Build Status](https://travis-ci.org/vim-jp/vital.vim.png?branch=master)](https://travis-ci.org/vim-jp/vital.vim)
+# vital.vim [![Build Status](https://travis-ci.org/vim-jp/vital.vim.svg?branch=master)](https://travis-ci.org/vim-jp/vital.vim)
 
 A comprehensive Vim utility functions for Vim plugins.
 
