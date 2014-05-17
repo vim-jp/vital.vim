@@ -8,7 +8,7 @@ function! s:_vital_loaded(V)
 endfunction
 
 function! s:_vital_depends()
-  return ['Data.List']
+  return ['Data.List', 'Process']
 endfunction
 
 function! s:from_list(list)
