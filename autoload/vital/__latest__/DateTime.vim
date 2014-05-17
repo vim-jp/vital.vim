@@ -50,7 +50,7 @@ function! s:_vital_loaded(V)
 endfunction
 
 function! s:_vital_depends()
-  return ['Prelude']
+  return ['Prelude', 'Process']
 endfunction
 
 " Creates a DateTime object with current time from system.
