@@ -4,6 +4,7 @@ set cpo&vim
 function! s:_vital_loaded(V)
   let s:V = a:V
   let s:P = s:V.import('Process')
+  let s:S = s:V.import('Data.String')
 endfunction
 
 function! s:_vital_depends()
@@ -17,7 +18,10 @@ function! s:is_available()
 endfunction
 
 function! s:_quote_escape(x)
-  return printf('"%s"', escape(a:x, '"'))
+  let x = a:x
+  let x = s:S.replace(x, "'", "'\\''")
+  let x = s:S.replace(x, '"', '""')
+  return printf('"%s"', x)
 endfunction
 
 " This function name is long on purpose to discourage people to use that
@@ -49,11 +53,11 @@ function! s:query_rawdata(db, q, ...)
   " endif
   let built = s:build_line_from_query_with_placeholders(a:q, xs)
   let cmd = printf(
-        \ 'sqlite3 -batch -line %s',
-        \ s:_quote_escape(a:db))
+        \ 'sqlite3 -batch -line %s ''%s''',
+        \ s:_quote_escape(a:db), built)
   call s:debug('query', a:q, xs,
         \ {'built': built, 'cmd': cmd})
-  return s:P.system(cmd, built)
+  return s:P.system(cmd)
 endfunction
 
 " '
