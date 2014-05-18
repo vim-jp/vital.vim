@@ -17,6 +17,25 @@ INTRODUCTION					*vitalizer-introduction*
 *Vitalizer* is a Vim plugin to vitalize the |Vital| to your plugin.
 
 
+						*vitalizer-synopsis*
+>
+	:cd /path/to/my-plugin
+
+	" First, install the Vital to your plugin with some modules.
+	:Vitalize --name=my_plugin . Data.List DateTime
+
+	" You can update the Vital by omitting modules the 2nd time and
+	" afterwards.
+	:Vitalize .
+
+	" If you specify a module list, all modules are replaced.
+	:Vitalize . Data.Dict
+	" => Data.List and DateTime will be removed!
+
+	" Specifies a module with '+' prefix to add a module.
+	:Vitalize . +Data.List +DateTime
+
+
 
 ==============================================================================
 INTERFACE					*vitalizer-interface*
