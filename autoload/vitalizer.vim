@@ -78,7 +78,7 @@ function! s:search_dependence(depends_info)
     unlet! entry
     let entry = remove(entries, 0)
 
-    let modules = s:V._expand_modules(entry, all)
+    let modules = s:V.expand_modules(entry, all)
 
     for module in modules
       let M = s:V.import(module, 1)

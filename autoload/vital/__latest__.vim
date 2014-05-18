@@ -72,7 +72,7 @@ function! s:search(pattern)
   return s:_uniq(modules)
 endfunction
 
-function! s:_expand_modules(entry, all)
+function! s:expand_modules(entry, all)
   if type(a:entry) == type([])
     let candidates = s:_concat(map(copy(a:entry), 's:search(v:val)'))
     if empty(candidates)
@@ -208,7 +208,7 @@ function! s:_build_module(sid)
       let all = {}
       let modules =
       \     s:_concat(map(module._vital_depends(),
-      \                   's:_expand_modules(v:val, all)'))
+      \                   's:expand_modules(v:val, all)'))
       call call(V.load, modules, V)
     endif
     try
