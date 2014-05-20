@@ -8,7 +8,7 @@ function! s:_vital_loaded(V)
 endfunction
 
 function! s:_vital_depends()
-  return ['Process']
+  return ['Process', 'Data.String']
 endfunction
 
 let s:_debug_mode = 0
