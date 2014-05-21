@@ -112,6 +112,10 @@ function! s:system(str, ...)
         " ignores timeout unless you have vimproc.
         let args += [a:1.timeout]
       endif
+    elseif type(a:1) is type("")
+      let args += [s:iconv(a:1, &encoding, 'char')]
+    else
+      throw 'Process.system(): invalid argument (value type:'.type(a:1).')'
     endif
   elseif a:0 >= 2
     let [input; rest] = a:000
