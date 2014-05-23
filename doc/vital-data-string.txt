@@ -174,5 +174,14 @@ justify_equal_spacing({str}, {width} [, {char}])
 	" 't   e  s  t'
 <
 
+				*Vital.Data.String.levenshtein_distance()*
+levenshtein_distance({str1}, {str2})
+        It returns a minimum edit distance of two given strings {str1} and
+        {str2}.
+>
+	echo g:S.levenshtein_distance('kitten', 'sitting')
+	" 3
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
