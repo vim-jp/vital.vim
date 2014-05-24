@@ -91,9 +91,15 @@ elseif s:is_windows
   function! s:move_exe(src, dest)
     if !s:_has_move_exe() | return 0 | endif
     let [src, dest] = [a:src, a:dest]
-    let src  = substitute(src, '/', '\', 'g')
-    let dest = substitute(dest, '/', '\', 'g')
-    silent execute '!cmd /c move /y' src dest
+    " Normalize successive slashes to one slash.
+    let src  = substitute(src, '[/\\]\+', '\', 'g')
+    let dest = substitute(dest, '[/\\]\+', '\', 'g')
+    " src must not have trailing '\'.
+    let src  = substitute(src, '\\$', '', 'g')
+    " All characters must be encoded to system encoding.
+    let src  = iconv(src, &encoding, 'char')
+    let dest = iconv(dest, &encoding, 'char')
+    silent execute '!move /y' src dest
     return !v:shell_error
   endfunction
 else
