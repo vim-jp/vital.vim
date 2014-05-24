@@ -91,7 +91,7 @@ elseif s:is_windows
     let [src, dest] = [a:src, a:dest]
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
-    silent execute '!cmd /c move' src dest
+    silent execute '!cmd /c move /y' src dest
     return !v:shell_error
   endfunction
 else
