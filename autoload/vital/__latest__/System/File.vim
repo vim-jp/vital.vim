@@ -54,8 +54,10 @@ endfunction "}}}
 
 " Move a file.
 " Dispatch s:move_exe() or s:move_vim().
+" FIXME: Currently s:move_vim() does not support
+" moving a directory.
 function! s:move(src, dest) "{{{
-  if s:_has_move_exe()
+  if s:_has_move_exe() || isdirectory(a:src)
     return s:move_exe(a:src, a:dest)
   else
     return s:move_vim(a:src, a:dest)
