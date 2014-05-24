@@ -294,6 +294,35 @@ function! s:justify_equal_spacing(str, width, ...)
 \   ]), '')
 endfunction
 
+function! s:levenshtein_distance(str1, str2)
+  let letters1 = split(a:str1, '\zs')
+  let letters2 = split(a:str2, '\zs')
+  let length1 = len(letters1)
+  let length2 = len(letters2)
+  let distances = map(range(1, length1 + 1), 'map(range(1, length2 + 1), "0")')
+
+  for i1 in range(0, length1)
+    let distances[i1][0] = i1
+  endfor
+  for i2 in range(0, length2)
+    let distances[0][i2] = i2
+  endfor
+
+  for i1 in range(1, length1)
+    for i2 in range(1, length2)
+      let cost = (letters1[i1 - 1] ==# letters2[i2 - 1]) ? 0 : 1
+
+      let distances[i1][i2] = min([
+      \ distances[i1 - 1][i2    ] + 1,
+      \ distances[i1    ][i2 - 1] + 1,
+      \ distances[i1 - 1][i2 - 1] + cost,
+      \])
+    endfor
+  endfor
+
+  return distances[length1][length2]
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

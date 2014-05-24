@@ -328,3 +328,13 @@ Context Data.String.justify_equal_spacing()
   End
 End
 
+Context Data.String.levenshtein_distance()
+  It returns a minimum edit distance.
+    Should g:S.levenshtein_distance('kitten', 'sitting') == 3
+    Should g:S.levenshtein_distance('', '') == 0
+    Should g:S.levenshtein_distance('中トロ', '') == 3
+    Should g:S.levenshtein_distance('', '大トロ') == 3
+    Should g:S.levenshtein_distance('ちからうどん', 'からげんき') == 4
+  End
+End
+
