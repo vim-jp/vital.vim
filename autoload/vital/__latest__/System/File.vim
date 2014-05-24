@@ -89,7 +89,7 @@ elseif s:is_windows
     let [src, dest] = [a:src, a:dest]
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
-    call system('cmd /c move ' . src  . ' ' . dest)
+    call system('move ' . src  . ' ' . dest)
     return !v:shell_error
   endfunction
 else
