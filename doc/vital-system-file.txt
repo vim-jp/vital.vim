@@ -16,26 +16,49 @@ INTRODUCTION				*Vital.System.File-introduction*
 *Vital.System.File* is Filesystem Utilities Library.
 It provides some functions for file system.
 
+>
+	let V = vital#of("vital")
+	let F = V.import("System.File")
+<
+
 ==============================================================================
 INTERFACE				*Vital.System.File-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.System.File-functions*
 
 open({filename})			*Vital.System.File.open()*
-	Open a file specified as {filename}.  It can be a file or a directory.
+	Opens a file specified as {filename}.  {filename} is a file or a
+	directory.
+>
+	call F.open("/tmp/file")
+<
 
-move_file({src}, {dest})		*Vital.System.File.move_file()*
-	Move a file {src} to {dest}
+move({src}, {dest})			*Vital.System.File.move()*
+	Renames a file {src} to {dest}. Returns non-zero if successful,
+	otherwise 0.
+>
+	call F.move("/tmp/old", "/tmp/new")
+<
 
-copy_file({src}, {dest})		*Vital.System.File.copy_file()*
-	Copy a file {src} to {dest}
+copy({src}, {dest})			*Vital.System.File.copy()*
+	Copies a file {src} to {dest}. Returns non-zero if successful,
+	otherwise 0.
+>
+	call F.copy("/tmp/old", "/tmp/new")
+<
 
 mkdir_nothrow({name} [, {path} [, {prot}]])
 					*Vital.System.File.mkdir_nothrow()*
-	Creates a directory {name} without throwing any exception.
+	Creates a directory {name} without throwing any exception.  The
+	arguments are used like with |mkdir()|.  Returns a non-zero Number
+	if successful, otherwise 0.
+>
+	echo F.mkdir_nothrow("/tmp/exists_file")
+	" 0
+<
 
-rmdir({path}, [{flags}])		*Vital.System.File.rmdir()*
-	Remove a directory {path}.
+rmdir({path} [, {flags}])		*Vital.System.File.rmdir()*
+	Removes a directory {path}.
 	If {flags} contains "r", this removes the directory and its contents
 	recursively.
 
