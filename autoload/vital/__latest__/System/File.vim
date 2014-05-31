@@ -97,8 +97,10 @@ elseif s:is_windows
     " src must not have trailing '\'.
     let src  = substitute(src, '\\$', '', 'g')
     " All characters must be encoded to system encoding.
-    let src  = iconv(src, &encoding, 'char')
-    let dest = iconv(dest, &encoding, 'char')
+    if v:version < 704 || (v:version == 704 && !has('patch122'))
+      let src  = iconv(src, &encoding, 'char')
+      let dest = iconv(dest, &encoding, 'char')
+    endif
     call system('move /y ' . src  . ' ' . dest)
     return !v:shell_error
   endfunction
@@ -192,7 +194,10 @@ if s:is_unix
     let cmd .= flags =~# 'f' && cmd ==# 'rm -r' ? ' -f' : ''
     let ret = system(cmd . ' ' . shellescape(a:path))
     if v:shell_error
-      throw substitute(iconv(ret, 'char', &encoding), '\n', '', 'g')
+      if v:version < 704 || (v:version == 704 && !has('patch122'))
+        let ret = iconv(ret, 'char', &encoding)
+      endif
+      throw substitute(ret, '\n', '', 'g')
     endif
   endfunction
 
@@ -210,7 +215,10 @@ elseif s:is_windows
       let ret = system(cmd . ' "' . a:path . '"')
     endif
     if v:shell_error
-      throw substitute(iconv(ret, 'char', &encoding), '\n', '', 'g')
+      if v:version < 704 || (v:version == 704 && !has('patch122'))
+        let ret = iconv(ret, 'char', &encoding)
+      endif
+      throw substitute(ret, '\n', '', 'g')
     endif
   endfunction
 
