@@ -12,9 +12,9 @@ set cpo&vim
 " Because these variables are used when this script file is loaded.
 let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 let s:is_unix = has('unix')
-" As of 7.4.122, system()'s 1st argument is converted internally by Vim.
+" As of 7.4.122, the system()'s 1st argument is converted internally by Vim.
 " Note that Patch 7.4.122 does not convert system()'s 2nd argument and
-" return-value is not converted. We must convert them manually.
+" return-value. We must convert them manually.
 let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 
 

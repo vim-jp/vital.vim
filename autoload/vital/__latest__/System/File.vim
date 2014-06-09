@@ -9,9 +9,9 @@ let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
-" As of 7.4.122, system()'s 1st argument is converted internally by Vim.
+" As of 7.4.122, the system()'s 1st argument is converted internally by Vim.
 " Note that Patch 7.4.122 does not convert system()'s 2nd argument and
-" return-value is not converted. We must convert them manually.
+" return-value. We must convert them manually.
 let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 
 " Open a file.
