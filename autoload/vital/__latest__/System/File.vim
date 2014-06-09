@@ -99,7 +99,8 @@ elseif s:is_windows
     " All characters must be encoded to system encoding.
     let src  = iconv(src, &encoding, 'char')
     let dest = iconv(dest, &encoding, 'char')
-    call system('move /y ' . src  . ' ' . dest)
+    let cmd_exe = (&shell =~? 'cmd\.exe$' ? '' : 'cmd /c ')
+    call system(cmd_exe . 'move /y ' . src  . ' ' . dest)
     return !v:shell_error
   endfunction
 else
@@ -153,7 +154,8 @@ elseif s:is_windows
     let [src, dest] = [a:src, a:dest]
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
-    call system('copy /y ' . src . ' ' . dest)
+    let cmd_exe = (&shell =~? 'cmd\.exe$' ? '' : 'cmd /c ')
+    call system(cmd_exe . 'copy /y ' . src . ' ' . dest)
     return !v:shell_error
   endfunction
 else
