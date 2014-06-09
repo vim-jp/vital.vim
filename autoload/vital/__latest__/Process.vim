@@ -89,6 +89,7 @@ endfunction
 "     timeout: bool,
 "   }
 function! s:system(str, ...)
+  let need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
   if type(a:str) is type([])
     let command = join(map(copy(a:str), 's:shellescape(v:val)'), ' ')
   elseif type(a:str) is type("")
@@ -96,7 +97,9 @@ function! s:system(str, ...)
   else
     throw 'Process.system(): invalid argument (value type:'.type(a:str).')'
   endif
-  let command = s:iconv(command, &encoding, 'char')
+  if need_trans
+    let command = s:iconv(command, &encoding, 'char')
+  endif
   let input = ''
   let use_vimproc = s:has_vimproc()
   let args = [command]
@@ -106,26 +109,28 @@ function! s:system(str, ...)
         let use_vimproc = a:1.use_vimproc
       endif
       if has_key(a:1, 'input')
-        let args += [s:iconv(a:1.input, &encoding, 'char')]
+        let args += [need_trans ? s:iconv(a:1.input, &encoding, 'char') : a:1.input]
       endif
       if use_vimproc && has_key(a:1, 'timeout')
         " ignores timeout unless you have vimproc.
         let args += [a:1.timeout]
       endif
     elseif type(a:1) is type("")
-      let args += [s:iconv(a:1, &encoding, 'char')]
+      let args += [need_trans ? s:iconv(a:1, &encoding, 'char') : a:1]
     else
       throw 'Process.system(): invalid argument (value type:'.type(a:1).')'
     endif
   elseif a:0 >= 2
     let [input; rest] = a:000
-    let input = s:iconv(a:1, &encoding, 'char')
+    let input = need_trans ? s:iconv(a:1, &encoding, 'char') : a:1
     let args += [input] + rest
   endif
 
   let funcname = use_vimproc ? 'vimproc#system' : 'system'
   let output = call(funcname, args)
-  let output = s:iconv(output, 'char', &encoding)
+  if need_trans
+    let output = s:iconv(output, 'char', &encoding)
+  endif
 
   return output
 endfunction
