@@ -200,9 +200,7 @@ if s:is_unix
     let cmd .= flags =~# 'f' && cmd ==# 'rm -r' ? ' -f' : ''
     let ret = system(cmd . ' ' . shellescape(a:path))
     if v:shell_error
-      if s:need_trans
-        let ret = iconv(ret, 'char', &encoding)
-      endif
+      let ret = iconv(ret, 'char', &encoding)
       throw substitute(ret, '\n', '', 'g')
     endif
   endfunction
@@ -221,9 +219,7 @@ elseif s:is_windows
       let ret = system(cmd . ' "' . a:path . '"')
     endif
     if v:shell_error
-      if s:need_trans
-        let ret = iconv(ret, 'char', &encoding)
-      endif
+      let ret = iconv(ret, 'char', &encoding)
       throw substitute(ret, '\n', '', 'g')
     endif
   endfunction

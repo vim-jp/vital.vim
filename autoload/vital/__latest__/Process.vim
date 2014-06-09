@@ -112,7 +112,7 @@ function! s:system(str, ...)
         let use_vimproc = a:1.use_vimproc
       endif
       if has_key(a:1, 'input')
-        let args += [s:need_trans ? s:iconv(a:1.input, &encoding, 'char') : a:1.input]
+        let args += [s:iconv(a:1.input, &encoding, 'char')]
       endif
       if use_vimproc && has_key(a:1, 'timeout')
         " ignores timeout unless you have vimproc.
@@ -124,16 +124,15 @@ function! s:system(str, ...)
       throw 'Process.system(): invalid argument (value type:'.type(a:1).')'
     endif
   elseif a:0 >= 2
-    let [input; rest] = a:000
-    let input = s:need_trans ? s:iconv(a:1, &encoding, 'char') : a:1
-    let args += [input] + rest
+    let [command, input; rest] = a:000
+    let command = s:need_trans ? s:iconv(command, &encoding, 'char') : command
+    let input   = s:iconv(input, &encoding, 'char')
+    let args += [command, input] + rest
   endif
 
   let funcname = use_vimproc ? 'vimproc#system' : 'system'
   let output = call(funcname, args)
-  if s:need_trans
-    let output = s:iconv(output, 'char', &encoding)
-  endif
+  let output = s:iconv(output, 'char', &encoding)
 
   return output
 endfunction
