@@ -153,7 +153,7 @@ elseif s:is_windows
     let [src, dest] = [a:src, a:dest]
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
-    call system('copy ' . src . ' ' . dest)
+    call system('copy /y ' . src . ' ' . dest)
     return !v:shell_error
   endfunction
 else
