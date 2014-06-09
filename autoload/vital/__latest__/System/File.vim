@@ -9,6 +9,10 @@ let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
+" As of 7.4.122, system()'s 1st argument is converted internally by Vim.
+" Note that Patch 7.4.122 does not convert system()'s 2nd argument and
+" return-value is not converted. We must convert them manually.
+let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 
 " Open a file.
 function! s:open(filename) "{{{
@@ -17,7 +21,7 @@ function! s:open(filename) "{{{
   " Detect desktop environment.
   if s:is_windows
     " For URI only.
-    if v:version < 704 || (v:version == 704 && !has('patch122'))
+    if s:need_trans
       let filename = iconv(filename, &encoding, 'char')
     endif
     silent execute '!start rundll32 url.dll,FileProtocolHandler' filename
@@ -97,7 +101,7 @@ elseif s:is_windows
     " src must not have trailing '\'.
     let src  = substitute(src, '\\$', '', 'g')
     " All characters must be encoded to system encoding.
-    if v:version < 704 || (v:version == 704 && !has('patch122'))
+    if s:need_trans
       let src  = iconv(src, &encoding, 'char')
       let dest = iconv(dest, &encoding, 'char')
     endif
@@ -196,7 +200,7 @@ if s:is_unix
     let cmd .= flags =~# 'f' && cmd ==# 'rm -r' ? ' -f' : ''
     let ret = system(cmd . ' ' . shellescape(a:path))
     if v:shell_error
-      if v:version < 704 || (v:version == 704 && !has('patch122'))
+      if s:need_trans
         let ret = iconv(ret, 'char', &encoding)
       endif
       throw substitute(ret, '\n', '', 'g')
@@ -217,7 +221,7 @@ elseif s:is_windows
       let ret = system(cmd . ' "' . a:path . '"')
     endif
     if v:shell_error
-      if v:version < 704 || (v:version == 704 && !has('patch122'))
+      if s:need_trans
         let ret = iconv(ret, 'char', &encoding)
       endif
       throw substitute(ret, '\n', '', 'g')
