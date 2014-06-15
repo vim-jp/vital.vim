@@ -2,6 +2,16 @@ source spec/base.vim
 
 let g:J = vital#of('vital').import('Web.JSON')
 
+Context Web.JSON.token()
+  It returns corresponding functions
+    Should 1 == g:J.token('true')()
+    Should 0 == g:J.token('false')()
+    Should 0 == g:J.token('null')()
+    " there should be 'throw' test but I don't know how to write the test...
+  End
+End
+
+
 Context Web.JSON.decode()
   It decode numbers
     Should 0 == g:J.decode(0)
@@ -17,6 +27,13 @@ Context Web.JSON.decode()
     Should "a\tb" == g:J.decode('"a\tb"')
     " double quotation
     Should 'He said "I''m a vimmer"' == g:J.decode('"He said \"I''m a vimmer\""')
+    " true/false/null
+    " Note: (by Alisue)
+    "   The following behaviors are backward compatble but I think these value
+    "   should be distinctive to determine what JSON actually said.
+    Should 1 == g:J.decode('true')
+    Should 0 == g:J.decode('false')
+    Should 0 == g:J.decode('null')
     " there should be iconv tests as well
   End
 End
@@ -59,6 +76,13 @@ Context Web.JSON.encode()
     Should '{"a":{"b":{"c":[0,1,2]}}}' == g:J.encode(
           \ {'a': {'b': {'c': [0, 1, 2]}}}
           \)
+  End
+
+  " JavaScript special tokens
+  It encoes special tokens (true/false/null)
+    Should 'true' == g:J.encode(g:J.token('true'))
+    Should 'false' == g:J.encode(g:J.token('false'))
+    Should 'null' == g:J.encode(g:J.token('null'))
   End
 End
 
