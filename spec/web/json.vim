@@ -2,14 +2,23 @@ source spec/base.vim
 
 let g:J = vital#of('vital').import('Web.JSON')
 
+Context Web.JSON.constants
+  It should have constant variables which indicate the special tokens
+    Should string(g:J.true) =~ "function('\.*_true')"
+    Should string(g:J.false) =~ "function('\.*_false')"
+    Should string(g:J.null) =~ "function('\.*_null')"
+  End
+End
+
+
 Context Web.JSON.decode()
-  It decode numbers
+  It decodes numbers
     Should 0 == g:J.decode(0)
     Should 10 == g:J.decode(10)
     Should 100 == g:J.decode(100)
   End
 
-  It decode strings
+  It decodes strings
     Should "" == g:J.decode('""')
     Should "a" == g:J.decode('"a"')
     Should "a\rb" == g:J.decode('"a\rb"')
@@ -20,7 +29,7 @@ Context Web.JSON.decode()
     " there should be iconv tests as well
   End
 
-  It decode lists
+  It decodes lists
     Should [] == g:J.decode('[]')
     Should [0,1,2] == g:J.decode('[0, 1, 2]')
     Should ["a","b","c"] == g:J.decode('["a", "b", "c"]')
@@ -28,18 +37,18 @@ Context Web.JSON.decode()
     Should [[0,1,2],["a","b","c"]] == g:J.decode('[[0,1,2],["a","b","c"]]')
   End
 
-  It encodes dictionaries
+  It decodes dictionaries
     Should {} == g:J.decode('{}')
     Should {"a":0,"b":1,"c":2} == g:J.decode('{"a":0,"b":1,"c":2}')
     Should {'a':'0','b':'1','c':'2'} == g:J.decode('{"a":"0","b":"1","c":"2"}')
-    " dictionay should be encoded recursively
+    " dictionary should be encoded recursively
     Should {"a":{"b":{"c":[0,1,2]}}} == g:J.decode('{"a":{"b":{"c":[0,1,2]}}}')
   End
 
-  It encodes javascript special tokens
+  It decodes special tokens (true/false/null)
     " true/false/null
     " Note: (by Alisue)
-    "   The following behaviors are backward compatble but I think these value
+    "   The following behaviors are backward compatible but I think these value
     "   should be distinctive to determine what JSON actually said.
     Should 1 == g:J.decode('true')
     Should 0 == g:J.decode('false')
@@ -81,10 +90,17 @@ Context Web.JSON.encode()
     Should '{}' == g:J.encode({})
     Should '{"a":0,"b":1,"c":2}' == g:J.encode({'a': 0, 'b': 1, 'c': 2})
     Should '{"a":"0","b":"1","c":"2"}' == g:J.encode({'a': '0', 'b': '1', 'c': '2'})
-    " dictionay should be encoded recursively
+    " dictionary should be encoded recursively
     Should '{"a":{"b":{"c":[0,1,2]}}}' == g:J.encode(
           \ {'a': {'b': {'c': [0, 1, 2]}}}
           \)
+  End
+
+  " JavaScript special tokens
+  It encodes special tokens (true/false/null)
+    Should 'true' == g:J.encode(g:J.true)
+    Should 'false' == g:J.encode(g:J.false)
+    Should 'null' == g:J.encode(g:J.null)
   End
 End
 

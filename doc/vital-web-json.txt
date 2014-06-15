@@ -7,6 +7,7 @@ CONTENTS				*Vital.Web.JSON-contents*
 
 INTRODUCTION				|Vital.Web.JSON-introduction|
 INTERFACE				|Vital.Web.JSON-interface|
+  Consts				|Vital.Web.JSON-consts|
   Functions				|Vital.Web.JSON-functions|
 
 ==============================================================================
@@ -17,10 +18,23 @@ INTRODUCTION				*Vital.Web.JSON-introduction*
 ==============================================================================
 INTERFACE				*Vital.Web.JSON-interface*
 ------------------------------------------------------------------------------
+CONSTS					*Vital.Web.JSON-consts*
+
+true					*Vital.Web.JSON.true*
+	It is used to indicate 'true' in JSON string.
+
+false					*Vital.Web.JSON.false*
+	It is used to indicate 'false' in JSON string.
+
+null					*Vital.Web.JSON.null*
+	It is used to indicate 'null' in JSON string.
+
+------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.JSON-functions*
 
 encode({object})			*Vital.Web.JSON.encode()*
-	Encode object into JSON string.
+	Encode object into JSON string. Special tokens (e.g. Web.JSON.true)
+	are encoded into a corresponding javascript code (e.g. 'true').
 
 decode({json})				*Vital.Web.JSON.decode()*
 	Decode JSON string into variable that vim can treat.

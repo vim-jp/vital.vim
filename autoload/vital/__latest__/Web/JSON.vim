@@ -1,9 +1,28 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_true()
+  return 1
+endfunction
+
+function! s:_false()
+  return 0
+endfunction
+
+function! s:_null()
+  return 0
+endfunction
+
+let s:const = {}
+let s:const.true = function('s:_true')
+let s:const.false = function('s:_false')
+let s:const.null = function('s:_null')
+
+function! s:_vital_loaded(V) dict
   let s:V = a:V
   let s:string = s:V.import('Data.String')
+  " define constant variables
+  call extend(self, s:const)
 endfunction
 
 function! s:_vital_depends()
@@ -29,6 +48,17 @@ function! s:encode(val)
     let json = substitute(json, "\n", '\\n', 'g')
     let json = substitute(json, "\t", '\\t', 'g')
     return iconv(json, &encoding, "utf-8")
+  elseif type(a:val) == 2
+    if s:const.true == a:val
+      return 'true'
+    elseif s:const.false == a:val
+      return 'false'
+    elseif s:const.null == a:val
+      return 'null'
+    else
+      " backward compatibility
+      return string(a:val)
+    endif
   elseif type(a:val) == 3
     return '[' . join(map(copy(a:val), 's:encode(v:val)'), ',') . ']'
   elseif type(a:val) == 4
