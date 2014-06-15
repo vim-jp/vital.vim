@@ -4,9 +4,9 @@ let g:J = vital#of('vital').import('Web.JSON')
 
 Context Web.JSON.token()
   It returns corresponding functions
-    Should 1 == g:J.token('true')()
-    Should 0 == g:J.token('false')()
-    Should 0 == g:J.token('null')()
+    Should string(g:J.token('true')) =~ "function('\.*_true')"
+    Should string(g:J.token('false')) =~ "function('\.*_false')"
+    Should string(g:J.token('null')) =~ "function('\.*_null')"
     " there should be 'throw' test but I don't know how to write the test...
   End
 End
