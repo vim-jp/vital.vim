@@ -27,6 +27,26 @@ Context Web.JSON.decode()
     Should "a\tb" == g:J.decode('"a\tb"')
     " double quotation
     Should 'He said "I''m a vimmer"' == g:J.decode('"He said \"I''m a vimmer\""')
+    " there should be iconv tests as well
+  End
+
+  It decode lists
+    Should [] == g:J.decode('[]')
+    Should [0,1,2] == g:J.decode('[0, 1, 2]')
+    Should ["a","b","c"] == g:J.decode('["a", "b", "c"]')
+    " list should be encoded recursively
+    Should [[0,1,2],["a","b","c"]] == g:J.decode('[[0,1,2],["a","b","c"]]')
+  End
+
+  It encodes dictionaries
+    Should {} == g:J.decode('{}')
+    Should {"a":0,"b":1,"c":2} == g:J.decode('{"a":0,"b":1,"c":2}')
+    Should {'a':'0','b':'1','c':'2'} == g:J.decode('{"a":"0","b":"1","c":"2"}')
+    " dictionay should be encoded recursively
+    Should {"a":{"b":{"c":[0,1,2]}}} == g:J.decode('{"a":{"b":{"c":[0,1,2]}}}')
+  End
+
+  It encodes javascript special tokens
     " true/false/null
     " Note: (by Alisue)
     "   The following behaviors are backward compatble but I think these value
