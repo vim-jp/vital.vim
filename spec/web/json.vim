@@ -38,7 +38,7 @@ Context Web.JSON.decode()
     Should [[0,1,2],["a","b","c"]] == g:J.decode('[[0,1,2],["a","b","c"]]')
   End
 
-  It encodes dictionaries
+  It decodes dictionaries
     Should {} == g:J.decode('{}')
     Should {"a":0,"b":1,"c":2} == g:J.decode('{"a":0,"b":1,"c":2}')
     Should {'a':'0','b':'1','c':'2'} == g:J.decode('{"a":"0","b":"1","c":"2"}')
@@ -46,15 +46,14 @@ Context Web.JSON.decode()
     Should {"a":{"b":{"c":[0,1,2]}}} == g:J.decode('{"a":{"b":{"c":[0,1,2]}}}')
   End
 
-  It encodes javascript special tokens
+  It decodes special tokens (true/false/null)
     " true/false/null
     " Note: (by Alisue)
-    "   The following behaviors are backward compatble but I think these value
+    "   The following behaviors are backward compatible but I think these value
     "   should be distinctive to determine what JSON actually said.
     Should 1 == g:J.decode('true')
     Should 0 == g:J.decode('false')
     Should 0 == g:J.decode('null')
-    " there should be iconv tests as well
   End
 End
 
@@ -99,7 +98,7 @@ Context Web.JSON.encode()
   End
 
   " JavaScript special tokens
-  It encoes special tokens (true/false/null)
+  It encodes special tokens (true/false/null)
     Should 'true' == g:J.encode(g:J.token('true'))
     Should 'false' == g:J.encode(g:J.token('false'))
     Should 'null' == g:J.encode(g:J.token('null'))
