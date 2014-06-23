@@ -33,11 +33,18 @@ null					*Vital.Web.JSON.null*
 FUNCTIONS				*Vital.Web.JSON-functions*
 
 encode({object})			*Vital.Web.JSON.encode()*
-	Encode object into JSON string. Special tokens (e.g. Web.JSON.true)
-	are encoded into a corresponding javascript code (e.g. 'true').
+	Encode object into a JSON string. Special tokens
+	(e.g. |Vital.Web.JSON.true|) are encoded into corresponding javascript
+	tokens (e.g. 'true').
 
-decode({json})				*Vital.Web.JSON.decode()*
-	Decode JSON string into variable that vim can treat.
+decode({json} [, {settings}])  		*Vital.Web.JSON.decode()*
+	Decode a JSON string into a variable that vim can treat.
+	{settings} is a |Dictionary| which contains the following items:
+
+	"use_token"	    Default: 0
+		Use special tokens (e.g. |Vital.Web.JSON.true|) to
+		represent coresponding javascript tokens (e.g. 'true').
+		Otherwise 1 or 0 are used to represent these.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

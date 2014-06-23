@@ -47,12 +47,13 @@ Context Web.JSON.decode()
 
   It decodes special tokens (true/false/null)
     " true/false/null
-    " Note: (by Alisue)
-    "   The following behaviors are backward compatible but I think these value
-    "   should be distinctive to determine what JSON actually said.
     Should 1 == g:J.decode('true')
     Should 0 == g:J.decode('false')
     Should 0 == g:J.decode('null')
+
+    Should g:J.true == g:J.decode('true', {'use_token': 1})
+    Should g:J.false == g:J.decode('false', {'use_token': 1})
+    Should g:J.null == g:J.decode('null', {'use_token': 1})
   End
 End
 

@@ -18,23 +18,34 @@ let s:const.true = function('s:_true')
 let s:const.false = function('s:_false')
 let s:const.null = function('s:_null')
 
+
 function! s:_vital_loaded(V) dict
   let s:V = a:V
   let s:string = s:V.import('Data.String')
   " define constant variables
   call extend(self, s:const)
+  for name in keys(s:const)
+    lockvar self[name]
+  endfor
 endfunction
 
 function! s:_vital_depends()
   return ['Data.String']
 endfunction
 
-function! s:decode(json)
+function! s:decode(json, ...)
+  let settings = extend({
+        \ 'use_token': 0,
+        \}, get(a:000, 0, {}))
   let json = iconv(a:json, "utf-8", &encoding)
   let json = substitute(json, '\n', '', 'g')
   let json = substitute(json, '\\u34;', '\\"', 'g')
   let json = substitute(json, '\\u\(\x\x\x\x\)', '\=s:string.nr2enc_char("0x".submatch(1))', 'g')
-  let [null,true,false] = [0,1,0]
+  if settings.use_token
+    let [null,true,false] = [s:const.null,s:const.true,s:const.false]
+  else
+    let [null,true,false] = [s:const.null(),s:const.true(),s:const.false()]
+  endif
   sandbox let ret = eval(json)
   return ret
 endfunction
