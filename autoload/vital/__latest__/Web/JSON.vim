@@ -24,9 +24,6 @@ function! s:_vital_loaded(V) dict
   let s:string = s:V.import('Data.String')
   " define constant variables
   call extend(self, s:const)
-  for name in keys(s:const)
-    lockvar self[name]
-  endfor
 endfunction
 
 function! s:_vital_depends()
