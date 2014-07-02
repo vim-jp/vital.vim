@@ -7,6 +7,7 @@ CONTENTS				*Vital.Web.JSON-contents*
 
 INTRODUCTION				|Vital.Web.JSON-introduction|
 INTERFACE				|Vital.Web.JSON-interface|
+  Consts				|Vital.Web.JSON-consts|
   Functions				|Vital.Web.JSON-functions|
 
 ==============================================================================
@@ -17,13 +18,54 @@ INTRODUCTION				*Vital.Web.JSON-introduction*
 ==============================================================================
 INTERFACE				*Vital.Web.JSON-interface*
 ------------------------------------------------------------------------------
+CONSTS					*Vital.Web.JSON-consts*
+
+true					*Vital.Web.JSON.true*
+	It is used to indicate 'true' in JSON string. It is represented as a
+	|Funcref| thus if you assign the value to a variable which name does not
+	start with a capital, "s:", "w:", "t:" or "b:" will raise an exception.
+	This returns 1 when you use it as a function.
+
+false					*Vital.Web.JSON.false*
+	It is used to indicate 'false' in JSON string. It is represented as a
+	|Funcref| thus if you assign the value to a variable which name does not
+	start with a capital, "s:", "w:", "t:" or "b:" will raise an exception.
+	This returns 0 when you use it as a function.
+
+null					*Vital.Web.JSON.null*
+	It is used to indicate 'null' in JSON string. It is represented as a
+	|Funcref| thus if you assign the value to a variable which name does not
+	start with a capital, "s:", "w:", "t:" or "b:" will raise an exception.
+	This returns 0 when you use it as a function.
+
+------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.JSON-functions*
 
 encode({object})			*Vital.Web.JSON.encode()*
-	Encode object into JSON string.
+	Encode an object into a JSON string. Special tokens
+	(e.g. |Vital.Web.JSON.true|) are encoded into corresponding javascript
+	tokens (e.g. 'true').
+>
+    " it will echo '[true, false, null]'
+    echo s:JSON.encode([s:JSON.true, s:JSON.false, s:JSON.null])
+>
 
-decode({json})				*Vital.Web.JSON.decode()*
-	Decode JSON string into variable that vim can treat.
+decode({json} [, {settings}])  		*Vital.Web.JSON.decode()*
+	Decode a JSON string into an object that vim can treat.
+	{settings} is a |Dictionary| which contains the following items:
 
-==============================================================================
+	"use_token"	    Default: 0
+		Use special tokens (e.g. |Vital.Web.JSON.true|) to
+		represent coresponding javascript tokens (e.g. 'true').
+		Otherwise 1 or 0 are used to represent these.
+
+>
+    " a == [1, 0, 0]
+    let a = s:JSON.decode('[true, false, null]')
+    " b == [s:JSON.true, s:JSON.false, s:JSON.null]
+    let b = s:JSON.decode('[true, false, null]', {'use_token': 1})
+<
+
+
+=============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

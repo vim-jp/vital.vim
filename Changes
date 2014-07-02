@@ -1,3 +1,15 @@
+47f7c5b
+	Modules: Web.JSON
+	encode({val}) and decode({val} [, {settings}]) behaviors are changed to
+	support 'true', 'false', and 'null' tokens.
+	encode({val}) returns 'true', 'false', or 'null' when the corresponding
+	tokens (e.g. Web.JSON.true) are specified.
+	decode({val} [, {settings}]) returns Web.JSON.true, Web.JSON.false, or
+	Web.JSON.null for the corresponding javascript tokens when {'use_token': 1}
+	is specified in a {settings} argument. Otherwise it returns 1, 0, 0
+	respectively.
+	The tokens (e.g. Web.JSON.true) are represented as a Funcref which returns
+	a corresponding number (true=1, false=0, null=0).
 dab52f0
 	Modules: Prelude
 	print_error() is removed; this has been deprecated since f82a6fc
