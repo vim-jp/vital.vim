@@ -84,8 +84,7 @@ function! s:_f_zip() dict
 endfunction
 
 function! s:is_empty(xs)
-  let [fs, xs] = a:xs
-  return xs == {}
+  return a:xs[1] == {}
 endfunction
 
 function! s:_eval(fs, x)
@@ -156,16 +155,17 @@ function! s:rest(xs, default)
     return a:default
   else
     let [fs, xs] = a:xs
-    let [_, xs] = s:_unapply(fs, xs)
+    let xs = s:_unapply(fs, xs)[1]
     return [fs, xs]
   endif
 endfunction
 
+" @vimlint(EVL102, 1, l:i)
 function! s:drop(n, xs)
   if s:is_empty(a:xs)
     return []
   else
-    let [fs, xs] = a:xs
+    let xs = a:xs[1]
     let memo = xs.memo
     for i in range(1,a:n)
       let memo = s:_eval([ xs.f ], memo)
@@ -175,6 +175,7 @@ function! s:drop(n, xs)
     return new_xs
   endif
 endfunction
+" @vimlint(EVL102, 0, l:i)
 
 
 " echo s:L.take(10,         s:L.iterate(0, 'v:val + 1') )
