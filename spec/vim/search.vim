@@ -17,7 +17,7 @@ Context Vim.Search.finddef()
     let result = {}
     try
       new
-	  call setline(1, ['', '', '', '', 'foo'])
+      call setline(1, ['', '', '', '', 'foo'])
       let result = g:S.finddef('foo')
     finally
       bw!
