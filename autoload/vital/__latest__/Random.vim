@@ -53,6 +53,7 @@ function! s:Random.bool()
   return self.range(2)
 endfunction
 
+" @vimlint(EVL102, 1, l:i)
 function! s:Random.sample(list, ...)
   if a:0 == 0
     return a:list[self.range(len(a:list))]
@@ -64,6 +65,7 @@ function! s:Random.sample(list, ...)
   endfor
   return result
 endfunction
+" @vimlint(EVL102, 0, l:i)
 
 function! s:Random.shuffle(list)
   let pos = len(a:list)
