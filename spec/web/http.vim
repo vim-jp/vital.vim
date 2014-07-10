@@ -1,3 +1,4 @@
+scriptencoding utf-8
 source spec/base.vim
 
 let g:H = vital#of('vital').import('Web.HTTP')
