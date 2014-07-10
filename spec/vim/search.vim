@@ -4,25 +4,25 @@ let g:S = vital#of('vital').import('Vim.Search')
 
 Context Vim.Search.finddef()
   It returns parsed value
-    let result = 0
+    let result = {}
     try
       new
-      let result = g:S.finddef('foo') == {'1': {}}
+      let result = g:S.finddef('foo')
     finally
       bw!
     endtry
-    Should result
+    Should result == {'1': {}}
   End
   It returns parsed value found
-    let result = 0
+    let result = {}
     try
       new
 	  call setline(1, ['', '', '', '', 'foo'])
-      let result = g:S.finddef('foo') == {'1': {'6': ' foo'}}
+      let result = g:S.finddef('foo')
     finally
       bw!
     endtry
-    Should result
+    Should result == {'1': {'6': ' foo'}}
   End
 End
 
