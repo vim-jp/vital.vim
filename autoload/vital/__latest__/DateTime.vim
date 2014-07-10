@@ -113,9 +113,11 @@ function! s:from_format(string, format, ...)
   endfor
   return o._normalize()
 endfunction
+" @vimlint(EVL102, 1, l:locale)
 function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale)
   " "o", "key", "value" and "locale" is used by parse_conv
   let o = a:datetime
+  let locale = a:locale " for parse_conv
   let [info, flag, width] = a:descriptor
   let key = '_' . info[0]
   if !has_key(o, key)
@@ -158,6 +160,7 @@ function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale)
   endif
   return a:remain[matched_len :]
 endfunction
+" @vimlint(EVL102, 0, l:locale)
 
 " Creates a DateTime object from Julian day.
 function! s:from_julian_day(jd, ...)
@@ -380,7 +383,9 @@ function! s:DateTime.to(...)
   let dt._second += delta.seconds() * delta.sign()
   return dt._normalize()
 endfunction
+" @vimlint(EVL102, 1, l:locale)
 function! s:DateTime.format(format, ...)
+  let locale = a:0 ? a:1 : ''
   let result = ''
   for f in s:_split_format(a:format)
     if s:Prelude.is_string(f)
@@ -394,7 +399,6 @@ function! s:DateTime.format(format, ...)
           let width = w
         endif
       endif
-      let value = ''
       if has_key(self, info[0])
         let value = self[info[0]]()
         if 2 < len(info)
@@ -402,6 +406,8 @@ function! s:DateTime.format(format, ...)
         endif
       elseif 2 < len(info)
         let value = info[2]
+      else
+        let value = ''
       endif
       if flag ==# '^'
         let value = toupper(value)
@@ -419,6 +425,7 @@ function! s:DateTime.format(format, ...)
   endfor
   return result
 endfunction
+" @vimlint(EVL102, 0, l:locale)
 function! s:DateTime.strftime(format)
   let expr = printf('strftime(%s, %d)', string(a:format), self.unix_time())
   return s:_with_locale(expr, a:0 ? a:1 : '')
