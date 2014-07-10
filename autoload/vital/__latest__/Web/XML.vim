@@ -163,6 +163,7 @@ function! s:createElement(name)
   return node
 endfunction
 
+" @vimlint(EVL102, 1, l:content)
 function! s:__parse_tree(ctx, top)
   let node = a:top
   let stack = [a:top]
@@ -263,6 +264,7 @@ function! s:__parse_tree(ctx, top)
     let a:ctx['xml'] = m[9]
   endwhile
 endfunction
+" @vimlint(EVL102, 0, l:content)
 
 function! s:parse(xml)
   let top = deepcopy(s:__template)

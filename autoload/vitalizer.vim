@@ -346,12 +346,14 @@ function! vitalizer#command(args)
   endtry
   let options = filter(copy(a:args), 'v:val=~"^--"')
   let args = filter(copy(a:args), 'v:val!~"^--"')
+  let to = ''
+  let modules = []
+  let name = ''
   if empty(args)
     call insert(options, '--help')
   else
     let to = fnamemodify(args[0], ':p')
     let modules = args[1 :]
-    let name = ''
   endif
   let hash = ''
   for option in options

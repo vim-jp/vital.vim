@@ -83,6 +83,7 @@ function! s:simple_parser(expr)
   function! obj.next_is(label) dict
     return self.next().label ==# a:label
   endfunction
+  " @vimlint(EVL104, 1, l:next)
   function! obj.consume() dict
     if ! self.end()
       let next = self.next()
@@ -92,6 +93,7 @@ function! s:simple_parser(expr)
     endif
     return next
   endfunction
+  " @vimlint(EVL104, 0, l:next)
   return deepcopy(obj)
 endfunction
 

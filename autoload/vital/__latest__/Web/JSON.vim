@@ -30,6 +30,9 @@ function! s:_vital_depends()
   return ['Data.String']
 endfunction
 
+" @vimlint(EVL102, 1, l:null)
+" @vimlint(EVL102, 1, l:true)
+" @vimlint(EVL102, 1, l:false)
 function! s:decode(json, ...)
   let settings = extend({
         \ 'use_token': 0,
@@ -46,6 +49,9 @@ function! s:decode(json, ...)
   sandbox let ret = eval(json)
   return ret
 endfunction
+" @vimlint(EVL102, 0, l:null)
+" @vimlint(EVL102, 0, l:true)
+" @vimlint(EVL102, 0, l:false)
 
 function! s:encode(val)
   if type(a:val) == 0

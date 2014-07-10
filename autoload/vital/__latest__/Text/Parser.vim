@@ -47,6 +47,7 @@ function! s:obj.ignore() dict
   return self
 endfunction
 
+" @vimlint(EVL104, 1, l:next)
 function! s:obj.consume() dict
   if ! self.end()
     let next = self.next()
@@ -56,6 +57,7 @@ function! s:obj.consume() dict
   endif
   return next
 endfunction
+" @vimlint(EVL104, 0, l:next)
 
 function! s:obj.tostring() dict
   if ! self.end()

@@ -98,7 +98,6 @@ function! s:from_format(string, format, ...)
       if matched_len == 0
         throw "Vital.DateTime: Parse error:\n" .
         \     'input: ' . a:string . "\nformat: " . a:format
-        break
       endif
       let remain = remain[matched_len :]
     else  " if s:Prelude.is_list(f)
@@ -117,7 +116,6 @@ endfunction
 function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale)
   " "o", "key", "value" and "locale" is used by parse_conv
   let o = a:datetime
-  let locale = a:locale  " for parse_conv
   let [info, flag, width] = a:descriptor
   let key = '_' . info[0]
   if !has_key(o, key)
@@ -383,7 +381,6 @@ function! s:DateTime.to(...)
   return dt._normalize()
 endfunction
 function! s:DateTime.format(format, ...)
-  let locale = a:0 ? a:1 : ''
   let result = ''
   for f in s:_split_format(a:format)
     if s:Prelude.is_string(f)
@@ -397,6 +394,7 @@ function! s:DateTime.format(format, ...)
           let width = w
         endif
       endif
+      let value = ''
       if has_key(self, info[0])
         let value = self[info[0]]()
         if 2 < len(info)
@@ -610,6 +608,7 @@ function! s:_names(dates, format, locale)
 endfunction
 
 function! s:_with_locale(expr, locale, ...)
+  let current_locale = ''
   if a:locale !=# ''
     let current_locale = v:lc_time
     execute 'language time' a:locale

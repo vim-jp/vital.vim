@@ -215,7 +215,7 @@ function! s:_parse_uri(str) "{{{
   " scheme
   let [scheme, rest] = s:_eat_scheme(rest)
 
-  let [_, rest] = s:_eat_em(rest, '^://')
+  let rest = s:_eat_em(rest, '^://')[1]
 
   " TODO: userinfo
 

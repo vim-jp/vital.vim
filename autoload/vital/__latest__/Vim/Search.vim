@@ -17,7 +17,9 @@ function! s:finddef(str)
     let tokens = []
     for line in lines
       if line =~ '^\s*\d'
-        let [_, lnum, body ; _2] = matchlist(line, '\s*\d\+:\s\+\(\d\+\)\(.*\)')
+        let matches = matchlist(line, '\s*\d\+:\s\+\(\d\+\)\(.*\)')
+        let lnum = matches[1]
+        let body = matches[2]
         let tokens += [['item', lnum, body]]
       else
         let tokens += [['file', line]]

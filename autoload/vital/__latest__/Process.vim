@@ -33,6 +33,7 @@ let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 " Unix:
 " using :! , execute program in the background by shell.
 function! s:spawn(expr, ...)
+  let shellslash = 0
   if s:is_windows
     let shellslash = &l:shellslash
     setlocal noshellslash

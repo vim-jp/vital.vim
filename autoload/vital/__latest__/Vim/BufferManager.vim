@@ -83,7 +83,7 @@ function! s:Manager.config(...)
     let self._config[a:1] = a:2
     return self
   endif
-  throw new 'Vital.Vim.BufferManager: invalid argument for config()'
+  throw 'Vital.Vim.BufferManager: invalid argument for config()'
 endfunction
 
 function! s:Manager.user_config(config)
