@@ -200,12 +200,10 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...)
 
   " get hoge and huga from --hoge=huga
   let [name, value] = matchlist(a:def, '^--\([^= ]\+\)\(=\S\+\)\=$')[1:2]
-  if value != ''
-    let has_value = 1
-  endif
+  let has_value = value != ''
 
-  if name =~# '^\[no-]'
-    let no = 1
+  let no = name =~# '^\[no-]'
+  if no
     let name = matchstr(name, '^\[no-]\zs.\+')
   endif
 
@@ -214,10 +212,10 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...)
   endif
 
   let self.options[name] = {'definition' : a:def, 'description' : a:desc}
-  if exists('l:no')
+  if no
     let self.options[name].no = 1
   endif
-  if exists('l:has_value')
+  if has_value
     let self.options[name].has_value = 1
   endif
 
