@@ -30,7 +30,7 @@ function! s:finddef(str)
     let parsed = {}
     let current_file = '*undefined*'
     for [label ; xs] in tokens
-      if label ==# 'file'
+      if label ==# 'file' || !has_key(parsed, current_file)
         let current_file = xs[0]
         let parsed[current_file] = {}
       else
