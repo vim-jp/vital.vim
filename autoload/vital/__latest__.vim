@@ -64,10 +64,7 @@ function! s:exists(name)
 endfunction
 
 function! s:search(pattern)
-  let target = substitute(a:pattern, '\.', '/', 'g')
-  let tailpath = printf('autoload/vital/%s/%s.vim', s:self_version, target)
-
-  let paths = s:_runtime_files(tailpath)
+  let paths = s:_vital_files(a:pattern)
   let modules = sort(map(paths, 's:_file2module(v:val)'))
   return s:_uniq(modules)
 endfunction
@@ -124,16 +121,14 @@ function! s:_get_module_path(name)
     return a:name
   endif
   if a:name ==# ''
-    let tailpath = printf('autoload/vital/%s.vim', s:self_version)
+    let paths = [s:self_file]
   elseif a:name =~# '\v^\u\w*%(\.\u\w*)*$'
-    let target = substitute(a:name, '\W\+', '/', 'g')
-    let tailpath = printf('autoload/vital/%s/%s.vim', s:self_version, target)
+    let paths = s:_vital_files(a:name)
   else
     throw 'vital: Invalid module name: ' . a:name
   endif
 
-  let paths = s:_runtime_files(tailpath)
-  call filter(paths, 'filereadable(v:val)')
+  call filter(paths, 'filereadable(expand(v:val))')
   let path = get(paths, 0, '')
   return path !=# '' ? path : ''
 endfunction
@@ -186,6 +181,22 @@ else
     return split(globpath(&runtimepath, a:path), "\n")
   endfunction
 endif
+
+let s:_vital_files_cache_runtimepath = ''
+let s:_vital_files_cache = []
+function! s:_vital_files(pattern)
+  if s:_vital_files_cache_runtimepath !=# &runtimepath
+    let path = printf('autoload/vital/%s/**/*.vim', s:self_version)
+    let s:_vital_files_cache = s:_runtime_files(path)
+    let mod = ':p:gs?[\\/]\+?/?'
+    call map(s:_vital_files_cache, 'fnamemodify(v:val, mod)')
+    let s:_vital_files_cache_runtimepath = &runtimepath
+  endif
+  let target = substitute(a:pattern, '\.', '/', 'g')
+  let target = substitute(target, '\*', '[^/]*', 'g')
+  let regexp = printf('autoload/vital/%s/%s.vim', s:self_version, target)
+  return filter(copy(s:_vital_files_cache), 'v:val =~# regexp')
+endfunction
 
 " Copy from System.Filepath
 if has('win16') || has('win32') || has('win64')
@@ -289,3 +300,5 @@ endfunction
 function! vital#{s:self_version}#new()
   return s:_import('')
 endfunction
+
+let s:self_file = s:_unify_path(expand('<sfile>'))
