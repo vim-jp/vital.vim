@@ -157,12 +157,19 @@ function! s:_file2module(file)
 endfunction
 
 if filereadable(expand('<sfile>:r') . '.VIM')
+  " resolve() is slow, so we cache results.
+  let s:_unify_path_cache = {}
+  " Note: On windows, vim can't expand path names from 8.3 formats.
+  " So if getting full path via <sfile> and $HOME was set as 8.3 format,
+  " vital load duplicated scripts. Below's :~ avoid this issue.
   function! s:_unify_path(path)
-    " Note: On windows, vim can't expand path names from 8.3 formats.
-    " So if getting full path via <sfile> and $HOME was set as 8.3 format,
-    " vital load duplicated scripts. Below's :~ avoid this issue.
-    return tolower(fnamemodify(resolve(fnamemodify(
-    \              a:path, ':p')), ':~:gs?[\\/]\+?/?'))
+    if has_key(s:_unify_path_cache, a:path)
+      return s:_unify_path_cache[a:path]
+    endif
+    let value = tolower(fnamemodify(resolve(fnamemodify(
+    \                   a:path, ':p')), ':~:gs?[\\/]\+?/?'))
+    let s:_unify_path_cache[a:path] = value
+    return value
   endfunction
 else
   function! s:_unify_path(path)
