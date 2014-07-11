@@ -104,7 +104,7 @@ function! s:_import(name)
   if path ==# ''
     throw 'vital: module not found: ' . a:name
   endif
-  let sid = get(s:_scripts(), path, 0)
+  let sid = s:_get_sid_by_script(path)
   if !sid
     try
       execute 'source' fnameescape(path)
@@ -114,14 +114,14 @@ function! s:_import(name)
       " Ignore.
     endtry
 
-    let sid = s:_scripts()[path]
+    let sid = s:_get_sid_by_script(path)
   endif
   return s:_build_module(sid)
 endfunction
 
 function! s:_get_module_path(name)
   if s:_is_absolute_path(a:name) && filereadable(a:name)
-    return s:_unify_path(a:name)
+    return a:name
   endif
   if a:name ==# ''
     let tailpath = printf('autoload/vital/%s.vim', s:self_version)
@@ -135,19 +135,19 @@ function! s:_get_module_path(name)
   let paths = s:_runtime_files(tailpath)
   call filter(paths, 'filereadable(v:val)')
   let path = get(paths, 0, '')
-  return path !=# '' ? s:_unify_path(path) : ''
+  return path !=# '' ? path : ''
 endfunction
 
-function! s:_scripts()
-  let scripts = {}
+function! s:_get_sid_by_script(path)
+  let path = s:_unify_path(a:path)
   for line in filter(split(s:_redir('scriptnames'), "\n"),
   \                  'stridx(v:val, s:self_version) > 0')
     let list = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
-    if !empty(list)
-      let scripts[s:_unify_path(list[2])] = list[1] - 0
+    if !empty(list) && s:_unify_path(list[2]) ==# path
+      return list[1] - 0
     endif
   endfor
-  return scripts
+  return 0
 endfunction
 
 function! s:_file2module(file)
