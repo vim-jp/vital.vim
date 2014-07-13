@@ -356,5 +356,6 @@ Context Data.List.group_by()
     Should g:L.group_by([], 'len(v:val)') ==# {}
     Should g:L.group_by(['a', 'b', 'ab', 'bc'], 'len(v:val)') ==# {'1': ['a', 'b'], '2': ['ab', 'bc']}
     Should g:L.group_by(['a', 'b', 'ab', 'bc'], 'v:val[0]') ==# {'a': ['a', 'ab'], 'b': ['b', 'bc']}
+    Should g:L.group_by(range(4), 'v:val % 2 == 0 ? "aa" : 1.0') ==# {'aa': [0, 2], '1.0': [1, 3]}
   End
 End
