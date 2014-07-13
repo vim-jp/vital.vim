@@ -296,8 +296,8 @@ function! s:group_by(xs, f)
     else
       let result[key] = [val]
     endif
+    unlet val
   endfor
-  unlet x
   return result
 endfunction
 
