@@ -284,6 +284,20 @@ function! s:has_common_items(list1, list2)
   return !empty(filter(copy(a:list1), 'index(a:list2, v:val) isnot -1'))
 endfunction
 
+" similar to Ruby's group_by.
+function! s:group_by(xs, f)
+  let result = {}
+  let list = map(copy(a:xs), printf('[v:val, %s]', a:f))
+  for [x, key] in list
+    if has_key(result, key)
+      call add(result[key], x)
+    else
+      let result[key] = [x]
+    endif
+  endfor
+  return result
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

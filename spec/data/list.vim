@@ -350,3 +350,11 @@ Context Data.List.has_common_items()
     Should !g:L.has_common_items([], [])
   End
 End
+
+Context Data.List.group_by()
+  It returns grouped dictionary
+    Should g:L.group_by([], 'len(v:val)') ==# {}
+    Should g:L.group_by(['a', 'b', 'ab', 'bc'], 'len(v:val)') ==# {'1': ['a', 'b'], '2': ['ab', 'bc']}
+    Should g:L.group_by(['a', 'b', 'ab', 'bc'], 'v:val[0]') ==# {'a': ['a', 'ab'], 'b': ['b', 'bc']}
+  End
+End
