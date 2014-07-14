@@ -160,14 +160,13 @@ function! s:rest(xs, default)
   endif
 endfunction
 
-" @vimlint(EVL102, 1, l:i)
 function! s:drop(n, xs)
   if s:is_empty(a:xs)
     return []
   else
     let xs = a:xs[1]
     let memo = xs.memo
-    for i in range(1,a:n)
+    for _ in range(1,a:n)
       let memo = s:_eval([ xs.f ], memo)
     endfor
     let new_xs = deepcopy(a:xs)
@@ -175,7 +174,6 @@ function! s:drop(n, xs)
     return new_xs
   endif
 endfunction
-" @vimlint(EVL102, 0, l:i)
 
 
 " echo s:L.take(10,         s:L.iterate(0, 'v:val + 1') )
