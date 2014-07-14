@@ -289,14 +289,14 @@ function! s:group_by(xs, f)
   let result = {}
   let list = map(copy(a:xs), printf('[v:val, %s]', a:f))
   for x in list
-    let val = x[0]
+    let Val = x[0]
     let key = type(x[1]) !=# type('') ? string(x[1]) : x[1]
     if has_key(result, key)
-      call add(result[key], val)
+      call add(result[key], Val)
     else
-      let result[key] = [val]
+      let result[key] = [Val]
     endif
-    unlet val
+    unlet Val
   endfor
   return result
 endfunction
