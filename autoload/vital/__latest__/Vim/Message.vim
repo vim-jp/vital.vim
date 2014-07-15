@@ -38,7 +38,7 @@ endfunction
 " XXX: Those fixed values may be different between different OSes?
 "      Currently tested on only Windows.
 function! s:get_hit_enter_max_length()
-    let maxlen = &columns - 1
+    let maxlen = &columns * &cmdheight - 1
     if &ruler
         " TODO
     endif
