@@ -32,6 +32,22 @@ function! s:capture(command)
   return out
 endfunction
 
+" * Get max length of |hit-enter|.
+"   If a message exceeds the max length,
+"   Vim waits for user input according to |hit-enter|.
+" XXX: Those fixed values may be different between different OSes?
+"      Currently tested on only Windows.
+function! s:get_hit_enter_max_length()
+    let maxcol = &columns
+    if &ruler
+        " TODO
+    endif
+    if &showcmd
+        let maxcol -= 11
+    endif
+    return maxcol
+endfunction
+
 
 
 let &cpo = s:save_cpo
