@@ -33,7 +33,7 @@ function! s:capture(command)
 endfunction
 
 " * Get max length of |hit-enter|.
-"   If a message exceeds the max length,
+"   If a string length of a message is equals or greater than the max length,
 "   Vim waits for user input according to |hit-enter|.
 " XXX: Those fixed values may be different between different OSes?
 "      Currently tested on only Windows.
