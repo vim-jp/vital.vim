@@ -8,9 +8,7 @@ Context Data.String.wrap()
     Should ['a', 'hello, world!'] ==# g:S.wrap("a\nhello, world!")
     Should ['a', 'hello, world!'] ==# g:S.wrap("a\r\nhello, world!")
     Should ['a', 'hello, world!'] ==# g:S.wrap("a\rhello, world!")
-    let [&columns, columns] = [12, &columns]
-    Should ['a', 'hello, worl', 'd!'] ==# g:S.wrap("a\nhello, world!")
-    let &columns = columns
+    Should ['a', 'hello, worl', 'd!'] ==# g:S.wrap("a\nhello, world!", 12)
   End
 End
 
