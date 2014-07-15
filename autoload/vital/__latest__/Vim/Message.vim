@@ -38,14 +38,14 @@ endfunction
 " XXX: Those fixed values may be different between different OSes?
 "      Currently tested on only Windows.
 function! s:get_hit_enter_max_length()
-    let maxcol = &columns
+    let maxlen = &columns
     if &ruler
         " TODO
     endif
     if &showcmd
-        let maxcol -= 11
+        let maxlen -= 11
     endif
-    return maxcol
+    return maxlen
 endfunction
 
 
