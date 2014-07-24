@@ -32,6 +32,7 @@ function! s:_stop(i, ...)
   call p.kill(get(a:000, 0, 0) ? g:vimproc#SIGKILL : g:vimproc#SIGTERM)
   " call p.waitpid()
   unlet s:_processes[a:i]
+  unlet s:state[a:i]
 endfunction
 
 function! s:term(i)
