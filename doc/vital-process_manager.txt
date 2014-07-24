@@ -96,5 +96,8 @@ touch({label}, {cmd})		*Vital.ProcessManager.touch()*
 	Returns a string which is either "existing" or "new".
 	TODO
 
+state({label})			*Vital.ProcessManager.state()*
+	Returns either "undefined", "inactive", "reading", or "idle".
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
