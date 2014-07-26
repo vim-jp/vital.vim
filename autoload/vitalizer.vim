@@ -13,7 +13,6 @@ let s:L = s:V.import('Data.List')
 let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
 let s:Mes = s:V.import('Vim.Message')
-let s:vital_dir = expand('<sfile>:h:h:p')
 
 let g:vitalizer#vital_dir =
 \     get(g:, 'vitalizer#vital_dir', expand('<sfile>:h:h:p'))
