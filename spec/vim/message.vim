@@ -13,3 +13,28 @@ Context Vim.Message.error()
     Should output ==# "\nhi"
   End
 End
+
+Context Vim.Message.capture()
+  It returns output string of Vim {command}
+    let output = g:M.capture('echo "hi"')
+    " Ignore blank lines.
+    let keepempty = 0
+    let output = join(split(output, '\n', keepempty), '')
+    Should output ==# "hi"
+  End
+End
+
+Context Vim.Message.get_hit_enter_max_length()
+  It gets max length of |hit-enter|
+    let cmdheight = &cmdheight
+    try
+        set cmdheight=1
+        Should g:M.get_hit_enter_max_length() < &columns * &cmdheight
+        set cmdheight=2
+        Should g:M.get_hit_enter_max_length() > &columns
+        Should g:M.get_hit_enter_max_length() < &columns * &cmdheight
+    finally
+        let &cmdheight = cmdheight
+    endtry
+  End
+End
