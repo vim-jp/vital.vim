@@ -62,7 +62,9 @@ We recommend you to use a capital letter for a Vital module dictionary to
 assign as Vital convention. That makes your code more readable among Vital
 programmers.
 
-
+When you start using vital for your own Vim plugin for the first time, you
+have to embed vital. See |vitalizer.txt| about the defails how to embed and
+keep it updated.
 
 ==============================================================================
 INTERFACE				*Vital-interface*
@@ -130,6 +132,49 @@ LINKS					*Vital-links*
    http://d.hatena.ne.jp/thinca/20110311/1299769233
  API Reference (in Japanese):
    http://d.hatena.ne.jp/kanno_kanno/20120107/1325949855
+
+ Vitalize command
+  |vitalizer.txt|
+
+ Vital modules
+  |vital-bitwise.txt|
+  |vital-data-base64.txt|
+  |vital-database-sqlite.txt|
+  |vital-data-collection.txt|
+  |vital-data-dict.txt|
+  |vital-data-lazylist.txt|
+  |vital-data-list.txt|
+  |vital-data-ordered_set.txt|
+  |vital-data-string.txt|
+  |vital-data-tree.txt|
+  |vital-date_time.txt|
+  |vital-experimental-functor.txt|
+  |vital-interpreter-brainf__k.txt|
+  |vital-locale-message.txt|
+  |vital-lua-prelude.txt|
+  |vital-mapping.txt|
+  |vital-math.txt|
+  |vital-option_parser.txt|
+  |vital-prelude.txt|
+  |vital-process_manager.txt|
+  |vital-process.txt|
+  |vital-random.txt|
+  |vital-random-xor128.txt|
+  |vital-system-cache.txt|
+  |vital-system-filepath.txt|
+  |vital-system-file.txt|
+  |vital-text-csv.txt|
+  |vital-text-lexer.txt|
+  |vital-text-ltsv.txt|
+  |vital-text-parser.txt|
+  |vital-vim-buffer_manager.txt|
+  |vital-vim-buffer.txt|
+  |vital-vim-compat.txt|
+  |vital-vim-message.txt|
+  |vital-web-html.txt|
+  |vital-web-http.txt|
+  |vital-web-json.txt|
+  |vital-web-xml.txt|
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
