@@ -266,8 +266,17 @@ function! vitalizer#vitalize(name, to, modules, hash)
       endfor
     endif
     if empty(installing_modules)
-      throw 'vitalizer: Please specify the modules to install.'
+      if confirm("vitalizer: Are you sure you want to uninstall vital?", "&Yes\n&No") == 2
+        return {
+        \ 'action': 'canceled',
+        \ 'prev_hash': '',
+        \ 'installed_hash': '',
+        \}
+      endif
+      let action = 'uninstall'
+      let files = []
     else
+      let action = 'install'
       let installing_modules = s:L.uniq(installing_modules)
       let files = map(s:search_dependence(installing_modules),
       \               's:module2file(v:val)')
@@ -300,18 +309,31 @@ function! vitalizer#vitalize(name, to, modules, hash)
     " Remove previous vital.
     call s:uninstall(a:to)
 
-    " Install vital.
-    let short_hash = hash[: s:HASH_SIZE]
-    for [from, to] in install_files
-      call s:copy(from, to)
-    endfor
-    let content = [vital_data.name, short_hash, ''] + installing_modules
-    call writefile(content, vital_data.vital_file)
+    if action ==# 'install'
+      " Install vital.
+      let short_hash = hash[: s:HASH_SIZE]
+      for [from, to] in install_files
+        call s:copy(from, to)
+      endfor
+      let content = [vital_data.name, short_hash, ''] + installing_modules
+      call writefile(content, vital_data.vital_file)
 
-    return {
-    \ 'prev_hash': vital_data.hash,
-    \ 'installed_hash': short_hash,
-    \}
+      return {
+      \ 'action': 'install',
+      \ 'prev_hash': vital_data.hash,
+      \ 'installed_hash': short_hash,
+      \}
+    elseif action ==# 'uninstall'
+      " Uninstall vital.
+      " Do nothing already removed.
+      return {
+      \ 'action': 'uninstall',
+      \ 'prev_hash': '',
+      \ 'installed_hash': '',
+      \}
+    else
+      throw 'vitalizer: Internal error, unknown action'
+    endif
 
   finally
     " Restore the HEAD
@@ -374,7 +396,7 @@ function! vitalizer#command(args)
   endif
   try
     let result = vitalizer#vitalize(name, to, modules, hash)
-    if !empty(result)
+    if !empty(result) && result.action ==# 'install'
       if result.prev_hash ==# ''
         let mes = printf("vitalizer: installed vital to '%s'. (%s)",
         \                to, result.installed_hash)
@@ -384,6 +406,8 @@ function! vitalizer#command(args)
         \                to, hash_stat)
       endif
       call s:Mes.echomsg('MoreMsg', mes)
+    elseif !empty(result) && result.action ==# 'uninstall'
+      call s:Mes.echomsg('MoreMsg', "vitalizer: uninstalled vital. You can specify the name on next time.")
     endif
   catch /^vitalizer:/
     call s:Mes.error(v:exception)
