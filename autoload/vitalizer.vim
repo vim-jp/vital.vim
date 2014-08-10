@@ -331,7 +331,9 @@ function! vitalizer#complete(arglead, cmdline, cursorpos)
     return filter(map(s:available_module_names(), 'prefix . v:val'),
     \  'stridx(v:val, a:arglead)!=-1')
   else
-    return map(filter(split(glob(a:arglead . "*", 1), "\n"),
+    let pattern = a:arglead
+    let pattern .= isdirectory(a:arglead) ? s:FP.separator() : ''
+    return map(filter(split(glob(pattern . "*", 1), "\n"),
     \  'isdirectory(v:val)'), 'escape(v:val, " ")')
   endif
 endfunction
