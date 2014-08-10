@@ -19,7 +19,7 @@ function! s:has_version(version)
   endif
   let vim_version = versions[0] * 100 + versions[1]
   let patch_level = versions[2]
-  return v:version < vim_version ||
+  return v:version > vim_version ||
   \     (v:version == vim_version &&
   \       (patch_level == 0 || has('patch' . patch_level)))
 endfunction
