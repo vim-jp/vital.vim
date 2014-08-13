@@ -35,13 +35,13 @@ OrderedSet.push({elem})		*Vital.Data.OrderedSet-OrderedSet.push()*
 	Pushes an element to OrderedSet.
 	This adds the element to set.
 	But if the element exists in the set,
-	it does not adds the element.
+	it does not add the element.
 
 OrderedSet.unshift({elem})	*Vital.Data.OrderedSet-OrderedSet.unshift()*
 	Unshifts an element to OrderedSet.
 	This adds the element to set.
 	But if the element exists in the set,
-	it does not adds the element.
+	it does not add the element.
 
 OrderedSet.size({elem})		*Vital.Data.OrderedSet-OrderedSet.size()*
 	Gets the number of elements in OrderedSet.

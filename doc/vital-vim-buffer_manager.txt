@@ -132,7 +132,7 @@ opener				*Vital.Vim.BufferManager-config-opener*
 	- A |Funcref| to open a window.
 	  This |Funcref| receives {bufname} as first argument.
 	- A |String| that starts with "=".
-	  This is treated as |expr|, and result is a opener.
+	  This is treated as |expr|, and result is an opener.
 
 range				*Vital.Vim.BufferManager-config-range*
 	Range which searches a window.
