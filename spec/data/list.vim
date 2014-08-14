@@ -359,3 +359,66 @@ Context Data.List.group_by()
     Should g:L.group_by(range(4), 'v:val % 2 == 0 ? "aa" : 1.0') ==# {'aa': [0, 2], '1.0': [1, 3]}
   End
 End
+
+function! My_predicate(a, b)
+    return a:a - a:b
+endfunction
+
+Context Data.List.binary_search()
+  It search a list and return the index if success
+    Should g:L.binary_search([1, 3, 5, 7], 1) == 0
+    Should g:L.binary_search([1, 3, 5, 7], 3) == 1
+    Should g:L.binary_search([1, 3, 5, 7], 5) == 2
+    Should g:L.binary_search([1, 3, 5, 7], 7) == 3
+
+    Should g:L.binary_search([1, 3, 5, 7], 1, 'My_predicate') == 0
+    Should g:L.binary_search([1, 3, 5, 7], 3, 'My_predicate') == 1
+    Should g:L.binary_search([1, 3, 5, 7], 5, 'My_predicate') == 2
+    Should g:L.binary_search([1, 3, 5, 7], 7, 'My_predicate') == 3
+
+    let f = {}
+    function! f.func(a, b) dict
+      return a:a - a:b
+    endfunction
+
+    Should g:L.binary_search([1, 3, 5, 7], 1, f.func, f) == 0
+    Should g:L.binary_search([1, 3, 5, 7], 3, f.func, f) == 1
+    Should g:L.binary_search([1, 3, 5, 7], 5, f.func, f) == 2
+    Should g:L.binary_search([1, 3, 5, 7], 7, f.func, f) == 3
+
+    Should g:L.binary_search([1, 3, 5, 7], 1, f.func) == 0
+    Should g:L.binary_search([1, 3, 5, 7], 3, f.func) == 1
+    Should g:L.binary_search([1, 3, 5, 7], 5, f.func) == 2
+    Should g:L.binary_search([1, 3, 5, 7], 7, f.func) == 3
+
+    function! f.bylength(a, b) dict
+      return len(a:a) - len(a:b)
+    endfunction
+
+    Should g:L.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'a', f.bylength) == 0
+    Should g:L.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'aa', f.bylength) == 1
+    Should g:L.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'aaa', f.bylength) == 2
+    Should g:L.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'aaaa', f.bylength) == 3
+    Should g:L.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'aaaaa', f.bylength) == -1
+
+    " Corner cases
+    Should g:L.binary_search([1], 1) == 0
+  End
+
+  It returns -1 if failed
+    Should g:L.binary_search([1, 3, 5, 7], 2) == -1
+    Should g:L.binary_search([1, 3, 5, 7], 2, 'My_predicate') == -1
+    Should g:L.binary_search([], 1) == -1
+    Should g:L.binary_search([], 1, 'My_predicate') == -1
+
+    let f = {}
+    function! f.func(a, b) dict
+        return a:a - a:b
+    endfunction
+
+    Should g:L.binary_search([1, 3, 5, 7], 2, f.func, f) == -1
+    Should g:L.binary_search([], 1, f.func, f) == -1
+    Should g:L.binary_search([1, 3, 5, 7], 2, f.func) == -1
+    Should g:L.binary_search([], 1, f.func) == -1
+  End
+End
