@@ -14,7 +14,7 @@ If you are a Vim plugin author, please check this out.
 
 ## What vital.vim provides
 
-* Assertion
+* [Assertion](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-assertion.txt)
 * [Bitwise](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-bitwise.txt)
 * [Data.Base64](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-base64.txt)
 * [Data.Collection](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-collection.txt)
