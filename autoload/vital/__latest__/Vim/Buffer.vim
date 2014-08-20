@@ -55,6 +55,19 @@ function! s:get_selected_text()
   endtry
 endfunction
 
+function! s:put_selected_text(text)
+  let save_z = getreg('z', 1)
+  let save_z_type = getregtype('z')
+  call setreg('z', a:text, save_z_type)
+
+  try
+    silent normal! gv"zp
+    return @z
+  finally
+    call setreg('z', save_z, save_z_type)
+  endtry
+endfunction
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
