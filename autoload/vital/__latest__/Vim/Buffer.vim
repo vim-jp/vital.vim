@@ -44,15 +44,28 @@ endfunction
 
 " Get selected text in visual mode.
 function! s:get_selected_text()
-    let save_z = getreg('z', 1)
-    let save_z_type = getregtype('z')
+  let save_z = getreg('z', 1)
+  let save_z_type = getregtype('z')
 
-    try
-        normal! gv"zy
-        return @z
-    finally
-        call setreg('z', save_z, save_z_type)
-    endtry
+  try
+    silent normal! gv"zy
+    return @z
+  finally
+    call setreg('z', save_z, save_z_type)
+  endtry
+endfunction
+
+function! s:put_selected_text(text)
+  let save_z = getreg('z', 1)
+  let save_z_type = getregtype('z')
+  call setreg('z', a:text, save_z_type)
+
+  try
+    silent normal! gv"zp
+    return @z
+  finally
+    call setreg('z', save_z, save_z_type)
+  endtry
 endfunction
 
 
