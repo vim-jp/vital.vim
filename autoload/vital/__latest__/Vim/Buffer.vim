@@ -42,16 +42,16 @@ function! s:open(buffer, opener)
   return loaded
 endfunction
 
-" Get selected text in visual mode.
+" Get the last selected text in visual mode.
 function! s:get_selected_text()
-    let save_z = getreg('z', 1)
-    let save_z_type = getregtype('z')
+    let save = getreg('"', 1)
+    let save_type = getregtype('"')
 
     try
-        normal! gv"zy
-        return @z
+        normal! gv""y
+        return @"
     finally
-        call setreg('z', save_z, save_z_type)
+        call setreg('"', save, save_type)
     endtry
 endfunction
 
