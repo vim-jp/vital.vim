@@ -51,15 +51,15 @@ endfunction
 
 " Get the last selected text in visual mode.
 function! s:get_last_selected()
-    let save = getreg('"', 1)
-    let save_type = getregtype('"')
+  let save = getreg('"', 1)
+  let save_type = getregtype('"')
 
-    try
-        normal! gv""y
-        return @"
-    finally
-        call setreg('"', save, save_type)
-    endtry
+  try
+    normal! gv""y
+    return @"
+  finally
+    call setreg('"', save, save_type)
+  endtry
 endfunction
 
 
