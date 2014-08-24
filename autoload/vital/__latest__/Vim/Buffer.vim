@@ -42,8 +42,15 @@ function! s:open(buffer, opener)
   return loaded
 endfunction
 
+function! s:get_selected_text(...)
+  echohl WarningMsg
+  echom "[WARN] s:get_selected_text() is deprecated. Use 's:get_last_selected()'."
+  echohl None
+  return call('s:get_last_selected', a:000)
+endfunction
+
 " Get the last selected text in visual mode.
-function! s:get_selected_text()
+function! s:get_last_selected()
     let save = getreg('"', 1)
     let save_type = getregtype('"')
 
