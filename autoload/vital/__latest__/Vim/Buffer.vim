@@ -53,10 +53,17 @@ endfunction
 function! s:get_last_selected()
   let save = getreg('"', 1)
   let save_type = getregtype('"')
-
+  let [begin, end] = [getpos("'<"), getpos("'>")]
+  " TODO: Support blockwise-visual
   try
-    normal! gv""y
-    return @"
+    if begin[1] ==# end[1]
+      let lines = [getline(begin[1])[begin[2]-1 : end[2]-1]]
+    else
+      let lines = [getline(begin[1])[begin[2]-1 :]]
+      \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
+      \         + [getline(end[1])[: end[2]-1]]
+    endif
+    return join(lines, "\n")
   finally
     call setreg('"', save, save_type)
   endtry
