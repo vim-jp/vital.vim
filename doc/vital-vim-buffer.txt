@@ -36,5 +36,12 @@ is_cmdwin()			*Vital.Vim.Buffer.is_cmdwin()*
 	gives you a boolean value about the current buffer is in
 	|command-line-window| or now.
 
+get_last_selected()			*Vital.Vim.Buffer.get_last_selected()*
+	Get the last selected text in visual mode.
+	This is almost the same as >
+                :normal! gvy
+<	without changing unnamed register.
+	But this function can work in |textlock|.
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
