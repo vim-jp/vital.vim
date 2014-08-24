@@ -1,3 +1,6 @@
+24b96f5
+	Modules: Vim.Buffer
+	's:get_selected_text()' is deprecated. Use 's:get_last_selected()'.
 47f7c5b
 	Modules: Web.JSON
 	encode({val}) and decode({val} [, {settings}]) behaviors are changed to
