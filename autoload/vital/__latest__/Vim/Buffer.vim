@@ -54,14 +54,27 @@ function! s:get_last_selected()
   let save = getreg('"', 1)
   let save_type = getregtype('"')
   let [begin, end] = [getpos("'<"), getpos("'>")]
-  " TODO: Support blockwise-visual
   try
-    if begin[1] ==# end[1]
-      let lines = [getline(begin[1])[begin[2]-1 : end[2]-1]]
+    if visualmode() ==# "\<C-v>"
+      if begin[2]+begin[3] ># end[2]+end[3]
+        " end's col must be greater than begin.
+        let tmp = begin[2:3]
+        let begin[2:3] = end[2:3]
+        let end[2:3] = tmp
+      endif
+      let virtpadchar = ' '
+      let lines = map(getline(begin[1], end[1]), '
+      \ (v:val[begin[2]+begin[3]-1 : end[2]+end[3]-1])
+      \ . repeat(virtpadchar, end[2]+end[3]-len(v:val))
+      \')
     else
-      let lines = [getline(begin[1])[begin[2]-1 :]]
-      \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
-      \         + [getline(end[1])[: end[2]-1]]
+      if begin[1] ==# end[1]
+        let lines = [getline(begin[1])[begin[2]-1 : end[2]-1]]
+      else
+        let lines = [getline(begin[1])[begin[2]-1 :]]
+        \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
+        \         + [getline(end[1])[: end[2]-1]]
+      endif
     endif
     return join(lines, "\n")
   finally
