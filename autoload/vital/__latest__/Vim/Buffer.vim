@@ -56,7 +56,9 @@ function! s:get_last_selected()
   let [begin, end] = [getpos("'<"), getpos("'>")]
   try
     if visualmode() ==# "\<C-v>"
-      if begin[2]+begin[3] ># end[2]+end[3]
+      let begincol = begin[2] + (begin[2] ># getline('.') ? begin[3] : 0)
+      let endcol   =   end[2] + (  end[2] ># getline('.') ?   end[3] : 0)
+      if begincol ># endcol
         " end's col must be greater than begin.
         let tmp = begin[2:3]
         let begin[2:3] = end[2:3]
@@ -64,8 +66,8 @@ function! s:get_last_selected()
       endif
       let virtpadchar = ' '
       let lines = map(getline(begin[1], end[1]), '
-      \ (v:val[begin[2]+begin[3]-1 : end[2]+end[3]-1])
-      \ . repeat(virtpadchar, end[2]+end[3]-len(v:val))
+      \ (v:val[begincol-1 : endcol-1])
+      \ . repeat(virtpadchar, endcol-len(v:val))
       \')
     else
       if begin[1] ==# end[1]
