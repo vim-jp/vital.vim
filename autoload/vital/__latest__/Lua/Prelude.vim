@@ -13,7 +13,7 @@ let s:sfile = tr(expand('<sfile>:p'), '\', '/')
 function! s:_vital_loaded(V)
   if has('lua')
     execute printf('lua vital_context = "%s"', s:sfile)
-    call luaeval('dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
+    call luaeval('dofile(_A)', s:luafile_of(s:sfile))
   else
     throw "Vital.Lua.Prelude: You don't have if_lua."
   endif
@@ -34,6 +34,10 @@ endfunction
 
 function! s:lua_namespace()
   return s:sfile
+endfunction
+
+function! s:luafile_of(sfile)
+  return substitute(tr(a:sfile, '\', '/'), '.vim$', '.lua', '')
 endfunction
 
 let &cpo = s:save_cpo
