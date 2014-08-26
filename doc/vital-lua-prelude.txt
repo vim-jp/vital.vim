@@ -13,7 +13,13 @@ INTERFACE			|Vital.Lua.Prelude-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Lua.Prelude-introduction*
 
-*Vital.Lua.Prelude* is pretty handy.  TODO
+*Vital.Lua.Prelude* provides
+
+* common way to make your own function available both from Vim script and from
+  Lua.
+* automatic loading of corresponding files; this loads a Lua file autoload/foo.lua when you use a Vim script file autoload/foo.vim which both can be used from Lua/Vim.
+* useful functions defined in Lua.Prelude, like from_lua() and to_lua().
+* easy way to call Lua function from Vim script.
 
 ==============================================================================
 USAGE					*Vital.Lua.Prelude-usage*
