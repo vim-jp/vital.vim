@@ -65,42 +65,42 @@ INTERFACE				*Vital.Random-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Random-functions*
 
-new([{generator} [, {seed}]])	*Vital.Random-new()*
+new([{generator} [, {seed}]])	*Vital.Random.new()*
 	Create a new Random Object(|Vital.Random-Random|).
 	{generator} is a generator name or a generator object.
 	A name of a generator is a portion of the last of a module name like
 	"Random.*".  For example, "Xor128".
 	See |Vital.Random-Generator| about a generator object.
-	If {seed} is omitted, this is created from |Vital.Random-next()|.
+	If {seed} is omitted, this is created from |Vital.Random.next()|.
 
-make_seed()			*Vital.Random-make_seed()*
+make_seed()			*Vital.Random.make_seed()*
 	Make a seed from current time and so on.
 	This does not assume being used continuously.
 	This is used to initialize the internal common random generator.
-	You can use |Vital.Random-next()| to initialize your Random Object.
+	You can use |Vital.Random.next()| to initialize your Random Object.
 
-next()				*Vital.Random-next()*
+next()				*Vital.Random.next()*
 next({n})
 	Shortcut to |Vital.Random-Random.next()|.
 
-seed({seeds})			*Vital.Random-seed()*
+seed({seeds})			*Vital.Random.seed()*
 	Shortcut to |Vital.Random-Random.seed()|.
 
-generate_canonical()		*Vital.Random-generate_canonical()*
+generate_canonical()		*Vital.Random.generate_canonical()*
 	Shortcut to |Vital.Random-Random.generate_canonical()|.
 
-range({to})			*Vital.Random-range()*
+range({to})			*Vital.Random.range()*
 range({from}, {to})
 	Shortcut to |Vital.Random-Random.range()|.
 
-bool()				*Vital.Random-bool()*
+bool()				*Vital.Random.bool()*
 	Shortcut to |Vital.Random-Random.bool()|.
 
-sample({list})			*Vital.Random-sample()*
+sample({list})			*Vital.Random.sample()*
 sample({list}, {n})
 	Shortcut to |Vital.Random-Random.sample()|.
 
-shuffle({list})			*Vital.Random-shuffle()*
+shuffle({list})			*Vital.Random.shuffle()*
 	Shortcut to |Vital.Random-Random.shuffle()|.
 
 
