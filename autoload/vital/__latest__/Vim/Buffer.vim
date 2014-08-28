@@ -10,9 +10,16 @@ function! s:_vital_depends()
   return ['Prelude']
 endfunction
 
-function! s:is_cmdwin()
-  return bufname('%') ==# '[Command Line]'
-endfunction
+breakadd func *is_cmdwin
+if exists('*getcmdwintype')
+  function! s:is_cmdwin()
+    return getcmdwintype() !=# ''
+  endfunction
+else
+  function! s:is_cmdwin()
+    return bufname('%') ==# '[Command Line]'
+  endfunction
+endif
 
 function! s:open(buffer, opener)
   let save_wildignore = &wildignore
