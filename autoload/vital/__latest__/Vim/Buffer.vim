@@ -85,7 +85,7 @@ function! s:get_last_selected()
         \         + [getline(end[1])[: end[2]-1]]
       endif
     endif
-    return join(lines, "\n")
+    return join(lines, "\n") . (visualmode() ==# "V" ? "\n" : "")
   finally
     call setreg('"', save, save_type)
   endtry
