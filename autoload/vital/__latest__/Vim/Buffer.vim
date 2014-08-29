@@ -10,7 +10,6 @@ function! s:_vital_depends()
   return ['Prelude']
 endfunction
 
-breakadd func *is_cmdwin
 if exists('*getcmdwintype')
   function! s:is_cmdwin()
     return getcmdwintype() !=# ''
