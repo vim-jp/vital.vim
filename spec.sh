@@ -14,7 +14,6 @@ check_spec()
       echo "$file" | sed 's/^../spec\//'
     fi
   done)
-  exit 0
 }
 
 do_test()
