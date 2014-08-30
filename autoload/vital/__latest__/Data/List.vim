@@ -280,7 +280,7 @@ endfunction
 
 " similar to Ruby's find_index or Haskell's findIndex.
 function! s:find_index(xs, f, ...)
-  let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1)  : 0
+  let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1) : 0
   let default = a:0 > 1 ? a:2 : -1
   for i in range(start, len(a:xs) - 1)
     if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
@@ -291,7 +291,7 @@ function! s:find_index(xs, f, ...)
 endfunction
 
 function! s:find_last_index(xs, f, ...)
-  let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1)  : len(a:xs) - 1
+  let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1) : len(a:xs) - 1
   let default = a:0 > 1 ? a:2 : -1
   for i in range(start, 0, -1)
     if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
@@ -303,7 +303,7 @@ endfunction
 
 " similar to Haskell's findIndices.
 function! s:find_indices(xs, f, ...)
-  let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1)  : 0
+  let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1) : 0
   let result = []
   for i in range(start, len(a:xs) - 1)
     if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
