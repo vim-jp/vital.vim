@@ -4,6 +4,8 @@
 VIM="vim -u NONE -i NONE -N"
 OUTFILE=/tmp/vital_spec.result
 
+fatal=false
+
 check_spec()
 {
   (cd autoload/vital/__latest__;
@@ -33,6 +35,7 @@ do_test()
       --cmd 'filetype indent on' \
     -S "$1" -c "${FIN} $2" > /dev/null 2>&1
   fi
+  [ $? -eq 0 ] || fatal=true
 
 }
 
@@ -136,12 +139,20 @@ FAILED_TEST_NUM=`grep "\[F\]" $OUTFILE | wc -l`
 if [ $FAILED_TEST_NUM -eq 0 ]; then
   echo $ALL_TEST_NUM tests success
   echo
+  if [ $fatal = true ]; then
+    echo "error: ...but Vim exits with non-zero value."
+    exit 1
+  fi
   exit 0
 else
   FAILED_ASSERT_NUM=`grep " - " $OUTFILE | wc -l`
   echo FAILURE!
   echo $ALL_TEST_NUM tests. Failure: $FAILED_TEST_NUM tests, $FAILED_ASSERT_NUM assertions
   echo
+  if [ $fatal = true ]; then
+    echo "error: Vim exits with non-zero value."
+    exit 1
+  fi
   exit 1
 fi
 
