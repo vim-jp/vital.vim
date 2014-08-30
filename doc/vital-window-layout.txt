@@ -1,0 +1,109 @@
+*vital-window-layout.txt*		window layout library.
+
+Maintainer: kamichidu <c.kamunagi at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Window.Layout-contents*
+
+INTRODUCTION			|Vital.Window.Layout-introduction|
+INTERFACE			|Vital.Window.Layout-interface|
+  Functions			  |Vital.Window.Layout-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Window.Layout-introduction*
+
+*Vital.Window.Layout* is a window layout library. It provides useful way to
+lay out your plugin's layout.
+
+>
+	let V = vital#of("vital")
+	let WL = V.import("Window.Layout")
+
+	let layout = WL.new()
+
+	call layout.apply(
+	\   [
+	\	{'id': 'hoge', 'bufname': 'HOGE'},
+	\	{'id': 'fuga', 'bufname': 'FUGA'},
+	\	{'id': 'piyo', 'bufname': 'PIYO'},
+	\   ],
+	\   {
+	\	'layout': 'border',
+	\	'north':  {'bufref': 'hoge', 'height': 0.5, 'walias': 'one'},
+	\	'center': {'bufref': 'fuga', 'width':  100, 'walias': 'two'},
+	\	'east':   {
+	\	    'layout': 'border',
+	\	    'north':  {'bufref': 'piyo', 'height': 0.333, 'walias': 'three'},
+	\	    'center': {'bufref': 'piyo', 'height': 0.333, 'walias': 'four'},
+	\	    'south':  {'bufref': 'piyo', 'height': 0.333, 'walias': 'five'},
+	\	},
+	\   }
+	\)
+	" to be shown layouted tabpage below
+	"
+	" +--------------------------+
+	" |			     |
+	" |			     |
+	" |			     |
+	" |			     |
+	" |			     |
+	" +------------+-------------+
+	" |	       |	     |
+	" |	       +-------------+
+	" |	       |	     |
+	" |	       +-------------+
+	" |	       |	     |
+	" +------------+-------------+
+<
+
+==============================================================================
+INTERFACE				*Vital.Window.Layout-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Window.Layout-functions*
+
+apply({buffers}, {layoutdata})		*Vital.Window.Layout.apply()*
+	Lays out the current tabpage using {buffers} and {layoutdata}.
+	{buffers} is a |List| of |Dictionary| (buffer definition). It has
+	several attributes below:
+
+	id (required)
+		A buffer id will be referenced in {layoutdata}.
+
+	bufname
+		A new buffer name.
+		(Default: '')
+
+	range
+		Same to |Vital.Vim.BufferManager-config-range|.
+
+	bufnr
+		A buffer number will be placed.
+		If you give this attribute, |Vital.Window.Layout| will not
+		create new buffer.
+
+	initializer
+		It's |Funcref| or |List|.
+		It will be used for buffer initialization when a buffer
+		created.
+		|Vital.Window.Layout| calls given |Funcref| with no argument.
+		When initializer is a |List|, |Vital.Window.Layout| calls
+		first element (|Funcref|) with second argument (|Dictionary|).
+
+	{layoutdata} is a |Dictionary| (layout definition). It has several
+	attributes below:
+
+	layout (required)
+		Indicates a layout manager. Currently only supports `border'.
+		See |Vital.Window.Layout.BorderLayout| for more details.
+
+	walias
+		An alias of its window. It is for
+		|Vital.Window.Layout.winnr()|.
+
+winnr({walias})				*Vital.Window.Layout.winnr()*
+	Gets a window number by given {walias}. It returns a window number if
+	found it, otherwise returns -1.
+	You want to use this function, you have to specify || attribute.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
