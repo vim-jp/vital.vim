@@ -20,6 +20,8 @@ set FIND=%windir%\system32\find.exe
 set SPEC_FILE=nul
 set VIMPROC=nul
 set OUTFILE=%_TEMP%\vital_spec.result
+set FATAL=false
+
 type nul > %OUTFILE%
 
 
@@ -27,6 +29,7 @@ call :parse_args %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 if not "%SPEC_FILE%" == "nul" (
   %VIM% -u NONE -i NONE -N --cmd "filetype indent on" -S "%SPEC_FILE%" -c "FinUpdate %OUTFILE%"
+  if not %errorlevel% == 0 set FATAL=true
 ) else (
   rem all test
   rem %%i = relative filepath
@@ -40,6 +43,7 @@ if not "%SPEC_FILE%" == "nul" (
       ) else (
         %VIM% -u NONE -i NONE -N --cmd "filetype indent on" -S "%%i" -c "FinUpdate %OUTFILE%"
       )
+      if not %errorlevel% == 0 set FATAL=true
     )
   )
 )
@@ -108,3 +112,9 @@ goto :parse_args
 exit /b
 
 :end
+
+if %FATAL% == "true" (
+  exit 1
+) else (
+  exit 0
+)
