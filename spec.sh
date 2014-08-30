@@ -35,7 +35,6 @@ do_test()
       --cmd 'filetype indent on' \
     -S "$1" -c "${FIN} $2" > /dev/null 2>&1
   fi
-  [ $? -eq 0 ] || fatal=true
 
 }
 
@@ -111,9 +110,18 @@ else
       OFILE="$OUTFILE.`basename ${FILE}`"
       cat /dev/null > "${OFILE}"
       do_test "${FILE}" "${OFILE}" &
+      pids="$pids $!"
     fi
   done
-  wait
+  # From man bash(1)
+  # If n is not given, all currently active child processes are waited for,
+  # and the return status is zero. If n specifies a non-existent process or
+  # job, the return status is 127. Otherwise, the return status is the exit
+  # status of the last process or job waited for.
+  for p in $pids; do
+    wait
+    [ $# -ne 127 -a -ne 0 ] && fatal=true
+  done
   echo Done.
 
   find spec -type f -name "*.vim" | while read FILE
