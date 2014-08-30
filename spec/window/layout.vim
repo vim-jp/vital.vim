@@ -38,6 +38,31 @@ Context Window.Layout
     Should layout.winnr('five') == 5
   End
 
+  It lays out without center region.
+    tabnew
+    tabonly
+    let buffers = [
+    \ {'id': 'hoge'},
+    \]
+    let layout_data = {
+    \ 'layout': 'border',
+    \ 'west': {
+    \   'layout': 'border',
+    \   'north':  {'bufref': 'hoge', 'walias': 'one'},
+    \   'south':  {'bufref': 'hoge', 'walias': 'two'},
+    \ 'east': {'bufref': 'hoge', 'walias': 'three'}
+    \}
+
+    let layout = g:WL.new()
+
+    call layout.apply(buffers, layout_data)
+
+    Should winnr('$') == 3
+    Should layout.winnr('one') == 1
+    Should layout.winnr('two') == 2
+    Should layout.winnr('three') == 3
+  End
+
   It uses a own buffer.
     tabnew
     tabonly

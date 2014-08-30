@@ -64,14 +64,14 @@ function! s:border_layout.apply(wl, data)
   endif
 
   " split horizontal
-  if has_key(a:data, 'center')
-    let openers+= [self.make_opener('', a:data.center)]
-  endif
   if has_key(a:data, 'east')
     let openers+= [self.make_opener('belowright vsplit', a:data.east)]
   endif
   if has_key(a:data, 'west')
     let openers+= [self.make_opener('aboveleft vsplit', a:data.west)]
+  endif
+  if has_key(a:data, 'center')
+    let openers+= [self.make_opener('', a:data.center)]
   endif
 
   let self.__size_list= []
