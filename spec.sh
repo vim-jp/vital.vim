@@ -8,7 +8,7 @@ check_spec()
 {
   (cd autoload/vital/__latest__;
   for file in `find . -name "*.vim" | \
-	  sed 's/\([a-z]\)\([A-Z]\)/\1_\2/g' | tr "[:upper:]" "[:lower:]"`
+    sed 's/\([a-z]\)\([A-Z]\)/\1_\2/g' | tr "[:upper:]" "[:lower:]"`
   do
     if [ ! -f ../../../spec/$file ]; then
       echo "$file" | sed 's/^../spec\//'
@@ -20,19 +20,19 @@ check_spec()
 do_test()
 {
   if [ $VERBOSE -eq 0 ]; then
-	  FIN="FinUpdate"
+    FIN="FinUpdate"
   else
-	  FIN="Fin"
+    FIN="Fin"
   fi
   if [ "x$VIMPROC" != "x" ]; then
     $VIM \
       --cmd "let g:vimproc_path='${VIMPROC}'" \
       --cmd 'filetype indent on' \
-	  -S "$1" -c "${FIN} $2" > /dev/null 2>&1
+    -S "$1" -c "${FIN} $2" > /dev/null 2>&1
   else
     $VIM  \
       --cmd 'filetype indent on' \
-	  -S "$1" -c "${FIN} $2" > /dev/null 2>&1
+    -S "$1" -c "${FIN} $2" > /dev/null 2>&1
   fi
 
 }
@@ -83,10 +83,10 @@ if [ $# -gt 1 ]; then
 fi
 
 if [ "x${VIMPROC}" != "x" ]; then
-	if [ ! -d "${VIMPROC}" -o ! -f "${VIMPROC}/autoload/vimproc.vim" ]; then
-		usage "invalid argument -p"
-		exit 1
-	fi
+  if [ ! -d "${VIMPROC}" -o ! -f "${VIMPROC}/autoload/vimproc.vim" ]; then
+    usage "invalid argument -p"
+    exit 1
+  fi
 fi
 
 
