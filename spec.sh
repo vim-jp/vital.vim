@@ -120,7 +120,7 @@ else
   # status of the last process or job waited for.
   for p in $pids; do
     wait
-    [ $# -ne 127 -a -ne 0 ] && fatal=true
+    [ $# -ne 127 -a $# -ne 0 ] && fatal=true
   done
   echo Done.
 
