@@ -1,148 +1,129 @@
 #!/bin/bash
 #set -x
 
-VIM="vim -u NONE -i NONE -N"
-OUTFILE=/tmp/vital_spec.result
+T="$(mktemp -d --tmpdir vital_spec.XXXXXXXXXX)" || exit 1
+trap "rm -rf '${T}'" EXIT
 
-check_spec()
-{
-  (cd autoload/vital/__latest__;
-  for file in `find . -name "*.vim" | \
-	  sed 's/\([a-z]\)\([A-Z]\)/\1_\2/g' | tr "[:upper:]" "[:lower:]"`
-  do
-    if [ ! -f ../../../spec/$file ]; then
-      echo "$file" | sed 's/^../spec\//'
+trap "exit 1" HUP INT QUIT TERM
+
+VIM="vim -u NONE -i NONE -N -e -s"
+SPEC_RESULT="${T}"/vital_spec.result
+
+check_spec() {
+  local file
+  cd autoload/vital/__latest__
+  for file in $(find . -name "*.vim" | \
+                sed 's/\([a-z]\)\([A-Z]\)/\1_\2/g' | \
+                tr "[A-Z]" "[a-z]"); do
+    file=${file#.*/}
+    if [[ ! -f ../../../spec/${file} ]]; then
+      echo "spec/${file}"
     fi
-  done)
+  done
+  cd - >/dev/null
   exit 0
 }
 
-do_test()
-{
-  if [ $VERBOSE -eq 0 ]; then
-	  FIN="FinUpdate"
-  else
-	  FIN="Fin"
+do_test() {
+  local Fin="Fin"
+  if (( VERBOSE == 0 )); then
+    Fin+="Update"
   fi
-  if [ "x$VIMPROC" != "x" ]; then
-    $VIM \
-      --cmd "let g:vimproc_path='${VIMPROC}'" \
-      --cmd 'filetype indent on' \
-	  -S "$1" -c "${FIN} $2" > /dev/null 2>&1
-  else
-    $VIM  \
-      --cmd 'filetype indent on' \
-	  -S "$1" -c "${FIN} $2" > /dev/null 2>&1
+  local args=()
+  if [[ -n ${VIMPROC} ]]; then
+    args+=(--cmd "let g:vimproc_path='${VIMPROC}'")
   fi
-
+  args+=(--cmd "filetype indent on")
+  args+=(-S "${1}")
+  args+=(-c "${Fin} ${2}")
+  ${VIM} "${args[@]}"
 }
 
-usage()
-{
-  if [ $# -ne 0 ]; then
-    echo "$@" 1>&2
+usage() {
+  if (( ${#} != 0 )); then
+    echo "${@}" 1>&2
   fi
-  cat <<- EOF 1>&2
-Usage $0 [-h][-q][-v][-p dir] [spec_file]
+  cat <<-EOF 1>&2
+Usage ${0} [-h][-q][-v][-p <dir>] [spec_file]
     -p: vimproc directory
     -h: display usage text
     -q: quiet mode
     -v: verbose mode
 EOF
+  exit 1
 }
 
-OPT=
 QUIET=0
 VERBOSE=0
-VIMPROC=""
-while getopts hqxvp: OPT
-do
-  case $OPT in
+VIMPROC=
+while getopts hqxvp: OPT; do
+  case ${OPT} in
+  \?) usage "invalid option" ;;
+  h)  usage ;;
+  x)  check_spec ;;
+  q)  (( QUIET++ )) ;;
+  v)  (( VERBOSE++ )) ;;
   p)
-    VIMPROC=$OPTARG ;;
-  x)
-    check_spec
-    exit 0;;
-  q)
-    QUIET=1 ;;
-  v)
-    VERBOSE=1 ;;
-  h)
-    usage
-    exit 1;;
-  \?)
-    usage "invalid option"
-    exit 1 ;;
+    VIMPROC="${OPTARG}"
+    if [[ ! -f ${VIMPROC}/autoload/vimproc.vim ]]; then
+      usage "invalid argument -p"
+    fi ;;
   esac
 done
-shift `expr $OPTIND - 1`
+shift $(( OPTIND - 1 ))
 
-if [ $# -gt 1 ]; then
-  usage "too many argument"
-  exit 1
+if (( ${#} > 1 )); then
+  usage "too many arguments"
 fi
 
-if [ "x${VIMPROC}" != "x" ]; then
-	if [ ! -d "${VIMPROC}" -o ! -f "${VIMPROC}/autoload/vimproc.vim" ]; then
-		usage "invalid argument -p"
-		exit 1
-	fi
-fi
-
-
-cat /dev/null > $OUTFILE
-if [ $# -eq 1 ]; then
-  # not required '&'(background process)
-  SPEC_FILE=$1
-  if [ ! -r "${SPEC_FILE}" ]; then
-    echo "Error: file not found: ${SPEC_FILE}" 1>&2
+if (( ${#} == 1 )); then
+  spec="${1}"
+  if [[ ! -f ${spec} ]]; then
+    echo "Error: file not found: ${spec}" 1>&2
     exit 1
   fi
-  do_test "${SPEC_FILE}" "${OUTFILE}"
+  do_test "${spec}" "${SPEC_RESULT}"
 else
   # all test
-  for FILE in `find spec -type f -name "*.vim"`
-  do
-    if [ $FILE != "spec/base.vim" ]; then
-      echo Testing... $FILE
-      # required '&'(background process)
-      OFILE="$OUTFILE.`basename ${FILE}`"
-      cat /dev/null > "${OFILE}"
-      do_test "${FILE}" "${OFILE}" &
+  files=()
+  for spec in $(find spec -type f -name "*.vim" -a ! -name "base.vim"); do
+    echo "Testing... ${spec}"
+    # spec/*.vim -> ${T}/*.out
+    f=${spec/spec\/}
+    f="${T}"/${spec%%.vim}.out
+    dir="$(dirname "${f}")"
+    if [[ ! -d ${dir} ]]; then
+      mkdir -p "${dir}"
     fi
+    files+=("${f}")
+    do_test "${spec}" "${f}"
   done
-  wait
+  for f in "${files[@]}"; do
+    if [[ ! -f ${f} ]]; then
+      echo "Error: Vim aborted!"
+      exit 1
+    fi
+    cat "${f}" >>"${SPEC_RESULT}"
+    rm -f "${f}"
+  done
   echo Done.
-
-  find spec -type f -name "*.vim" | while read FILE
-  do
-    OFILE="$OUTFILE.`basename ${FILE}`"
-    if [ -f "${OFILE}" ]; then
-      cat ${OFILE} >> ${OUTFILE}
-      rm -f "${OFILE}"
-    fi
-  done
 fi
 
-if [ $QUIET -eq 0 ]; then
-  cat $OUTFILE
-else
-  grep -v "\[.\]" $OUTFILE | grep -v '^$'
-  echo ""
-fi
-
-ALL_TEST_NUM=`grep "\[.\]" $OUTFILE | wc -l`
-FAILED_TEST_NUM=`grep "\[F\]" $OUTFILE | wc -l`
-
-if [ $FAILED_TEST_NUM -eq 0 ]; then
-  echo $ALL_TEST_NUM tests success
+echo
+if (( QUIET == 0 )); then
+  cat "${SPEC_RESULT}"
+elif grep -v "^\(\[.\]\|$\)" "${SPEC_RESULT}"; then
   echo
+fi
+
+TESTS=$(grep "^\[.\]" "${SPEC_RESULT}" | wc -l)
+FAILED_TESTS=$(grep "^\[F\]" "${SPEC_RESULT}" | wc -l)
+if (( FAILED_TESTS == 0 )); then
+  echo "${TESTS} tests success"
   exit 0
 else
-  FAILED_ASSERT_NUM=`grep " - " $OUTFILE | wc -l`
-  echo FAILURE!
-  echo $ALL_TEST_NUM tests. Failure: $FAILED_TEST_NUM tests, $FAILED_ASSERT_NUM assertions
-  echo
+  FAILED_ASSERTS=$(grep " - " "${SPEC_RESULT}" | wc -l)
+  echo "FAILURE!"
+  echo "${TESTS} tests. Failure: ${FAILED_TESTS} tests, ${FAILED_ASSERTS} assertions"
   exit 1
 fi
-
