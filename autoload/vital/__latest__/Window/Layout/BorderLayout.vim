@@ -76,6 +76,7 @@ function! s:border_layout.do_layout(wl, data)
     let openers+= [self.make_opener('', a:data.center)]
   endif
 
+  let prev_winvar= getwinvar('.', '')
   let winsize= {'width': winwidth('.'), 'height': winheight('.')}
   " do layout
   for opener in openers
@@ -90,7 +91,7 @@ function! s:border_layout.do_layout(wl, data)
   endfor
 
   for nr in range(1, winnr('$'))
-    if getwinvar(nr, '') is winvar
+    if getwinvar(nr, '') is prev_winvar
       execute nr 'wincmd w'
       break
     endif
