@@ -108,12 +108,28 @@ function! s:layout.apply(buffers, layout_data, ...)
   set nosplitbelow
 
   try
-    let engine= deepcopy(self.__layouts[a:layout_data.layout])
-    call engine.apply(self, deepcopy(a:layout_data))
+    let self.__layouts_working= deepcopy(self.__layouts)
+
+    call self.do_layout(a:layout_data)
+    call self.adjust_size(a:layout_data)
+
+    unlet self.__layouts_working
   finally
     let &splitright= save_splitright
     let &splitbelow= save_splitbelow
   endtry
+endfunction
+
+function! s:layout.do_layout(layout_data)
+  let engine= self.__layouts_working[a:layout_data.layout]
+
+  call engine.do_layout(self, deepcopy(a:layout_data))
+endfunction
+
+function! s:layout.adjust_size(layout_data)
+  let engine= self.__layouts_working[a:layout_data.layout]
+
+  call engine.adjust_size(self, deepcopy(a:layout_data))
 endfunction
 
 function! s:layout.winnr(walias)

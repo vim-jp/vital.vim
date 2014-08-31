@@ -22,7 +22,9 @@ endfunction
 " north.width = south.width = west.width + center.width + east.width
 " north.height + south.height + center.height = parent.height
 "
-let s:border_layout= {}
+let s:border_layout= {
+\ '__size_list': [],
+\}
 
 function! s:new()
   return deepcopy(s:border_layout)
@@ -36,7 +38,7 @@ function! s:border_layout.validate_layout_data(wl, data, workbuf)
   endfor
 endfunction
 
-function! s:border_layout.apply(wl, data)
+function! s:border_layout.do_layout(wl, data)
   " adjust
   if !has_key(a:data, 'center')
     if has_key(a:data, 'west')
@@ -74,7 +76,6 @@ function! s:border_layout.apply(wl, data)
     let openers+= [self.make_opener('', a:data.center)]
   endif
 
-  let self.__size_list= []
   let winsize= {'width': winwidth('.'), 'height': winheight('.')}
   " do layout
   for opener in openers
@@ -88,6 +89,15 @@ function! s:border_layout.apply(wl, data)
     endfor
   endfor
 
+  for nr in range(1, winnr('$'))
+    if getwinvar(nr, '') is winvar
+      execute nr 'wincmd w'
+      break
+    endif
+  endfor
+endfunction
+
+function! s:border_layout.adjust_size(wl, data)
   " adjust size
   let winvar= getwinvar('.', '')
   for size in self.__size_list
@@ -104,6 +114,7 @@ function! s:border_layout.apply(wl, data)
       endif
     endfor
   endfor
+
   for nr in range(1, winnr('$'))
     if getwinvar(nr, '') is winvar
       execute nr 'wincmd w'
@@ -151,7 +162,7 @@ function! s:border_layout.make_opener(opener, data)
     if has_key(self.data, 'north') || has_key(self.data, 'south') ||
     \  has_key(self.data, 'east') || has_key(self.data, 'west') ||
     \  has_key(self.data, 'center')
-      call a:wl.apply(a:wl.buffers(), self.data, 0)
+      call a:wl.do_layout(self.data)
     endif
   endfunction
 
