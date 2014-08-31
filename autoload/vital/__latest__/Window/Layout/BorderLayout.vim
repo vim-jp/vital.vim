@@ -159,9 +159,7 @@ function! s:border_layout.make_opener(opener, data)
       let self.engine.__size_list+= [size]
     endif
 
-    if has_key(self.data, 'north') || has_key(self.data, 'south') ||
-    \  has_key(self.data, 'east') || has_key(self.data, 'west') ||
-    \  has_key(self.data, 'center')
+    if has_key(self.data, 'layout')
       call a:wl.do_layout(self.data)
     endif
   endfunction
