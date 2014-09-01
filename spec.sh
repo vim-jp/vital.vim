@@ -37,6 +37,23 @@ do_test() {
   args+=(-S "${1}")
   args+=(-c "${Fin} ${2}")
   ${VIM} "${args[@]}"
+  # report error when Vim was aborted
+  local rv="${?}"
+  if [[ ! -f ${2} ]]; then
+    local M="$(grep "\.import(.*)" "${1}" | head -n 1 | sed "s/.*\.import(.\([^)]\+\).).*/\1/")"
+    if (( VERBOSE == 0 )); then
+      cat <<-EOF >"${2}"
+[E] ${M}
+
+Error
+  ${M}
+    ! Vim exited with status ${rv}
+
+EOF
+    else
+      echo "{'${M}': ['exit status ${rv}']}" >"${2}"
+    fi
+  fi
 }
 
 usage() {
@@ -85,26 +102,13 @@ if (( ${#} == 1 )); then
   do_test "${spec}" "${SPEC_RESULT}"
 else
   # all test
-  files=()
+  spec_out="${T}"/spec.out
   for spec in $(find spec -type f -name "*.vim" -a ! -name "base.vim"); do
     echo "Testing... ${spec}"
-    # spec/*.vim -> ${T}/*.out
-    f=${spec/spec\/}
-    f="${T}"/${spec%%.vim}.out
-    dir="$(dirname "${f}")"
-    if [[ ! -d ${dir} ]]; then
-      mkdir -p "${dir}"
-    fi
-    files+=("${f}")
-    do_test "${spec}" "${f}"
-  done
-  for f in "${files[@]}"; do
-    if [[ ! -f ${f} ]]; then
-      echo "Error: Vim aborted!"
-      exit 1
-    fi
-    cat "${f}" >>"${SPEC_RESULT}"
-    rm -f "${f}"
+    do_test "${spec}" "${spec_out}"
+
+    cat "${spec_out}" >>"${SPEC_RESULT}"
+    rm -f "${spec_out}"
   done
   echo Done.
 fi
@@ -117,13 +121,19 @@ elif grep -v "^\(\[.\]\|$\)" "${SPEC_RESULT}"; then
 fi
 
 TESTS=$(grep "^\[.\]" "${SPEC_RESULT}" | wc -l)
-FAILED_TESTS=$(grep "^\[F\]" "${SPEC_RESULT}" | wc -l)
-if (( FAILED_TESTS == 0 )); then
+F_TESTS=$(grep "^\[F\]" "${SPEC_RESULT}" | wc -l)
+E_SPECS=$(grep "^\[E\]" "${SPEC_RESULT}" | wc -l)
+if (( F_TESTS == 0 && E_SPECS == 0 )); then
   echo "${TESTS} tests success"
   exit 0
 else
-  FAILED_ASSERTS=$(grep " - " "${SPEC_RESULT}" | wc -l)
+  F_ASSERTS=$(grep " - " "${SPEC_RESULT}" | wc -l)
   echo "FAILURE!"
-  echo "${TESTS} tests. Failure: ${FAILED_TESTS} tests, ${FAILED_ASSERTS} assertions"
+  echo -n "${TESTS} tests. Failure: ${F_TESTS} tests, ${F_ASSERTS} assertions"
+  if (( E_SPECS > 0 )); then
+    echo ". Error: ${E_SPECS} specs"
+  else
+    echo
+  fi
   exit 1
 fi
