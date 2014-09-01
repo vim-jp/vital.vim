@@ -301,6 +301,35 @@ function! s:group_by(xs, f)
   return result
 endfunction
 
+function! s:_default_compare(a, b)
+  return a:a <# a:b ? -1 : a:a ># a:b ? 1 : 0
+endfunction
+
+function! s:binary_search(list, value, ...)
+  let Predicate = a:0 >= 1 ? a:1 : 's:_default_compare'
+  let dic = a:0 >= 2 ? a:2 : {}
+  let start = 0
+  let end = len(a:list) - 1
+
+  while 1
+    if start > end
+      return -1
+    endif
+
+    let middle = (start + end) / 2
+
+    let compared = call(Predicate, [a:value, a:list[middle]], dic)
+
+    if compared < 0
+      let end = middle - 1
+    elseif compared > 0
+      let start = middle + 1
+    else
+      return middle
+    endif
+  endwhile
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
