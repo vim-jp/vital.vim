@@ -278,7 +278,7 @@ function! s:find(list, default, f)
   return a:default
 endfunction
 
-" similar to Ruby's find_index or Haskell's findIndex.
+" Returns the index of the first element which satisfies the given expr.
 function! s:find_index(xs, f, ...)
   let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1) : 0
   let default = a:0 > 1 ? a:2 : -1
@@ -290,6 +290,7 @@ function! s:find_index(xs, f, ...)
   return default
 endfunction
 
+" Returns the index of the last element which satisfies the given expr.
 function! s:find_last_index(xs, f, ...)
   let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1) : len(a:xs) - 1
   let default = a:0 > 1 ? a:2 : -1
@@ -301,7 +302,7 @@ function! s:find_last_index(xs, f, ...)
   return default
 endfunction
 
-" similar to Haskell's findIndices.
+" Similar to find_index but returns the list of indices satisfying the given expr.
 function! s:find_indices(xs, f, ...)
   let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1) : 0
   let result = []
