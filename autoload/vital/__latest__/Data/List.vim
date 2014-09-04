@@ -280,9 +280,13 @@ endfunction
 
 " Returns the index of the first element which satisfies the given expr.
 function! s:find_index(xs, f, ...)
-  let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1) : 0
+  let len = len(a:xs)
+  let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : 0
   let default = a:0 > 1 ? a:2 : -1
-  for i in range(start, len(a:xs) - 1)
+  if start >=# len
+    return default
+  endif
+  for i in range(start, len - 1)
     if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
       return i
     endif
@@ -292,8 +296,12 @@ endfunction
 
 " Returns the index of the last element which satisfies the given expr.
 function! s:find_last_index(xs, f, ...)
-  let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1) : len(a:xs) - 1
+  let len = len(a:xs)
+  let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : len - 1
   let default = a:0 > 1 ? a:2 : -1
+  if start >=# len
+    return default
+  endif
   for i in range(start, 0, -1)
     if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
       return i
@@ -304,9 +312,13 @@ endfunction
 
 " Similar to find_index but returns the list of indices satisfying the given expr.
 function! s:find_indices(xs, f, ...)
-  let start = a:0 > 0 ? (a:1 < 0 ? len(a:xs) + a:1 : a:1) : 0
+  let len = len(a:xs)
+  let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : 0
   let result = []
-  for i in range(start, len(a:xs) - 1)
+  if start >=# len
+    return result
+  endif
+  for i in range(start, len - 1)
     if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
       call add(result, i)
     endif
