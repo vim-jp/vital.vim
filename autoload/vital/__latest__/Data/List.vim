@@ -283,7 +283,7 @@ function! s:find_index(xs, f, ...)
   let len = len(a:xs)
   let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : 0
   let default = a:0 > 1 ? a:2 : -1
-  if start >=# len
+  if start >=# len || start < 0
     return default
   endif
   for i in range(start, len - 1)
@@ -299,7 +299,7 @@ function! s:find_last_index(xs, f, ...)
   let len = len(a:xs)
   let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : len - 1
   let default = a:0 > 1 ? a:2 : -1
-  if start >=# len
+  if start >=# len || start < 0
     return default
   endif
   for i in range(start, 0, -1)
@@ -315,7 +315,7 @@ function! s:find_indices(xs, f, ...)
   let len = len(a:xs)
   let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : 0
   let result = []
-  if start >=# len
+  if start >=# len || start < 0
     return result
   endif
   for i in range(start, len - 1)
