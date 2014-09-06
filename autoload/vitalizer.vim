@@ -265,7 +265,8 @@ function! vitalizer#vitalize(name, to, modules, hash)
         endif
       endfor
     endif
-    if empty(installing_modules)
+    let initial_install = !isdirectory(s:FP.join(a:to, 'autoload', 'vital'))
+    if empty(installing_modules) && !initial_install
       if confirm("vitalizer: Are you sure you want to uninstall vital?", "&Yes\n&No") == 2
         return {
         \ 'action': 'canceled',
