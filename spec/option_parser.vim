@@ -106,17 +106,17 @@ Context on() funcref in OptionParser object
 
   It occurs an error when invalid option name is specified
     let o = g:O.new()
-    ShouldThrow call o.on('invalid_name', ''), /.*/
-    ShouldThrow call o.on('--invalid name', ''), /.*/
+    ShouldThrow o.on('invalid_name', ''), /.*/
+    ShouldThrow o.on('--invalid name', ''), /.*/
   End
 
   It occurs an error when invalid short option name is specified
     let o = g:O.new()
-    ShouldThrow call o.on('--valid', '-but_invalid', ''), /.*/
-    ShouldThrow call o.on('--valid', '--', ''), /.*/
-    ShouldThrow call o.on('--valid', 'a', ''), /.*/
-    ShouldThrow call o.on('--valid', '-=', ''), /.*/
-    ShouldThrow call o.on('--valid', '- ', ''), /.*/
+    ShouldThrow o.on('--valid', '-but_invalid', ''), /.*/
+    ShouldThrow o.on('--valid', '--', ''), /.*/
+    ShouldThrow o.on('--valid', 'a', ''), /.*/
+    ShouldThrow o.on('--valid', '-=', ''), /.*/
+    ShouldThrow o.on('--valid', '- ', ''), /.*/
   End
 
   It sets default values if specified
@@ -201,7 +201,7 @@ Context parse() in OptionParser object
     let o = g:O.new()
     call o.on('--hoge=VALUE', 'huga')
     Should o.parse('--hoge=huga') == {'__unknown_args__' : [], 'hoge' : 'huga'}
-    ShouldThrow call g:O.parse('--hoge'), /.*/
+    ShouldThrow g:O.parse('--hoge'), /.*/
   End
 
   It parses --[no-]hoge as 'hoge' : 0 or 1
