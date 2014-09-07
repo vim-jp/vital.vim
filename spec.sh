@@ -25,24 +25,19 @@ check_spec() {
 }
 
 do_test() {
-  local Fin="Fin"
-  if (( VERBOSE == 0 )); then
-    Fin+="Update"
-  fi
   local args=()
   if [[ -n ${VIMPROC} ]]; then
     args+=(--cmd "let g:vimproc_path='${VIMPROC}'")
   fi
   args+=(--cmd "filetype indent on")
   args+=(-S "${1}")
-  args+=(-c "${Fin} ${2}")
+  args+=(-c "FinUpdate ${2}")
   ${VIM} "${args[@]}"
   # report error when Vim was aborted
   local rv="${?}"
   if [[ ! -f ${2} ]]; then
     local M="$(grep "\.import(.*)" "${1}" | head -n 1 | sed "s/.*\.import(.\([^)]\+\).).*/\1/")"
-    if (( VERBOSE == 0 )); then
-      cat <<-EOF >"${2}"
+    cat <<-EOF >"${2}"
 [E] ${M}
 
 Error
@@ -50,9 +45,6 @@ Error
     ! Vim exited with status ${rv}
 
 EOF
-    else
-      echo "{'${M}': ['exit status ${rv}']}" >"${2}"
-    fi
   fi
 }
 
@@ -61,16 +53,14 @@ usage() {
     echo "${@}" 1>&2
   fi
   cat <<-EOF 1>&2
-Usage ${0} [-h][-q][-v][-p <dir>] [spec_file]
+Usage ${0} [-h][-v][-p <dir>] [spec_file]
     -p: vimproc directory
     -h: display usage text
-    -q: quiet mode
     -v: verbose mode
 EOF
   exit 1
 }
 
-QUIET=0
 VERBOSE=0
 VIMPROC=
 while getopts hqxvp: OPT; do
@@ -78,7 +68,6 @@ while getopts hqxvp: OPT; do
   \?) usage "invalid option" ;;
   h)  usage ;;
   x)  check_spec ;;
-  q)  (( QUIET++ )) ;;
   v)  (( VERBOSE++ )) ;;
   p)
     VIMPROC="${OPTARG}"
@@ -114,7 +103,7 @@ else
 fi
 
 echo
-if (( QUIET == 0 )); then
+if (( VERBOSE > 0 )); then
   cat "${SPEC_RESULT}"
 elif grep -v "^\(\[.\]\|$\)" "${SPEC_RESULT}"; then
   echo
