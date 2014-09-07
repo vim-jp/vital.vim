@@ -36,7 +36,7 @@ parse_file({file})		*Vital.Text.CSV.parse_file()*
 dump({listofdata})			*Vital.Text.CSV.dump()*
 	Converts a list of records to a CSV string.
 
-dump_record({data})			*Vital.Text.CSV.dump()*
+dump_record({data})			*Vital.Text.CSV.dump_record()*
 	Converts an record (|List|) to a CSV string.
 
 				*Vital.Text.CSV.dump_file()*
