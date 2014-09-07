@@ -148,7 +148,7 @@ function! s:table.stringify()
     let def = extend(deepcopy(s:default_column_def), orig)
 
     if def.width == 0
-      let def.width = max(map(copy(context.rows), 'strdisplaywidth(s:_to_string(v:val[col]))'))
+      let def.width = max(map(copy([context.header] + context.rows + [context.footer]), 'strdisplaywidth(s:_to_string(v:val[col]))'))
     endif
 
     let context.column_defs += [def]
