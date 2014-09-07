@@ -104,13 +104,11 @@ endfunction
 function! s:table.rows(...)
   if a:0 == 0
     return deepcopy(self.__rows)
-  elseif empty(self.__header) && empty(self.__footer) && empty(self.__rows)
+  else
     let self.__rows = []
     for row in a:1
       call self.add_row(row)
     endfor
-  else
-    throw 'vital: Text.Table: Already added header, footer or rows.'
   endif
 endfunction
 

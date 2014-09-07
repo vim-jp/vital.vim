@@ -247,4 +247,47 @@ Context Text.Table.new()
     \ '+------+------+------+',
     \]
   End
+
+  It make a table only header and footer
+    let table = g:T.new({
+    \ 'columns': [{}, {}, {}],
+    \ 'header':  ['header1', 'header2', 'header3'],
+    \ 'footer':  ['footer1', 'footer2', 'footer3'],
+    \})
+
+    Should table.stringify() == [
+    \ '+---------+---------+---------+',
+    \ '| header1 | header2 | header3 |',
+    \ '+---------+---------+---------+',
+    \ '+---------+---------+---------+',
+    \ '| footer1 | footer2 | footer3 |',
+    \ '+---------+---------+---------+',
+    \]
+  End
+
+  It has initial header and footer, and rows later
+    let table = g:T.new({
+    \ 'columns': [{}, {}, {}],
+    \ 'header':  ['header1', 'header2', 'header3'],
+    \ 'footer':  ['footer1', 'footer2', 'footer3'],
+    \})
+
+    call table.rows([
+    \ ['r1c1', 'r1c2', 'r1c3'],
+    \ ['r2c1', 'r2c2', 'r2c3'],
+    \ ['r3c1', 'r3c2', 'r3c3'],
+    \])
+
+    Should table.stringify() == [
+    \ '+---------+---------+---------+',
+    \ '| header1 | header2 | header3 |',
+    \ '+---------+---------+---------+',
+    \ '| r1c1    | r1c2    | r1c3    |',
+    \ '| r2c1    | r2c2    | r2c3    |',
+    \ '| r3c1    | r3c2    | r3c3    |',
+    \ '+---------+---------+---------+',
+    \ '| footer1 | footer2 | footer3 |',
+    \ '+---------+---------+---------+',
+    \]
+  End
 End
