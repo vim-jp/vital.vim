@@ -406,6 +406,39 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 		echo idx.': '.line
 	endfor
 <
+					*Vital.Data.List.find_index()*
+find_index({list}, {expr} [, {start} [, {default}]]) 
+	Returns the lowest index in {list} where the given {expr} is
+	satisfied.
+	If you specify {start}, start looking at the item with index {start}
+	(may be negative for an item relative to the end).
+	{default} is returned when no item satisfies {expr}. If {default} is
+	omitted, -1 is used.
+>
+	echo L.find_index([0, 1, 2, 3], 'v:val%2 == 1')
+	" 1
+	echo L.find_index([0, 1, 2, 3], 'v:val > 10')
+	" -1
+<
+					*Vital.Data.List.find_last_index()*
+find_last_index({list}, {expr} [, {start} [, {default}]]) 
+	Similar to find_index but this returns the highest index.
+	Traversing is done in reverse order.
+>
+	echo L.find_last_index([0, 1, 2, 3], 'v:val%2 == 1')
+	" 3
+<
+					*Vital.Data.List.find_indices()*
+find_indices({list}, {expr} [, {start}]) 
+	Similar to find_index but this returns all of indices specifing
+	{expr}.
+	When no indices found, empty list is returned.
+>
+	echo L.find_indices([0, 1, 2, 3], 'v:val%2 == 1')
+	" [1, 3]
+	echo L.find_indices([0, 1, 2, 3], 'v:val > 10')
+	" []
+<
 has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	Returns non-zero if a:list1 and a:list2 have a common item, otherwise
 	zero.

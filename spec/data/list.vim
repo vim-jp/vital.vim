@@ -340,6 +340,46 @@ Context Data.List.flatten()
   End
 End
 
+Context Data.List.find_index()
+  It returns the index if found
+    Should g:L.find_index([1, 2, 3], 'v:val % 2 == 0') == 1
+    Should g:L.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"') == 0
+    Should g:L.find_index([1, 2, 3], 'v:val % 2 == 1', 1) == 2
+    Should g:L.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"', -2) == 2
+  End
+  It returns -1 or default value if not found
+    Should g:L.find_index([], '1') == -1
+    Should g:L.find_index(["hoge", "fuga", "piyo"], 'v:val =~# x') == -1
+    Should g:L.find_index([], '1', 0, 999) == 999
+    Should g:L.find_index(["hoge", "fuga", "piyo"], 'v:val =~# x', 0, "not found") == "not found"
+  End
+End
+
+Context Data.List.find_last_index()
+  It returns the index if found
+    Should g:L.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0') == 3
+    Should g:L.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"') == 2
+    Should g:L.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0', 1) == 1
+    Should g:L.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"', -2) == 0
+  End
+  It returns -1 or default value if not found
+    Should g:L.find_last_index([], '1') == -1
+    Should g:L.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# x') == -1
+    Should g:L.find_last_index([], '1', 0, 999) == 999
+    Should g:L.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# x', 0, "not found") == "not found"
+  End
+End
+
+Context Data.List.find_indices()
+  It returns index list if found
+    Should g:L.find_indices([1, 2, 3], 'v:val % 2 == 1') == [0, 2]
+    Should g:L.find_indices(["hoge", "fuga", "piyo"], 'v:val =~# "o"') == [0, 2]
+    Should g:L.find_indices([1, 2, 3], 'v:val % 2 == 1', 1) == [2]
+    Should g:L.find_indices([], '1') == []
+    Should g:L.find_indices(["hoge", "fuga", "piyo"], 'v:val =~# x') == []
+  End
+End
+
 Context Data.List.has_common_items()
   It returns true/false if given Lists does/doesn't have any common item(s)
     Should g:L.has_common_items(['a', 'b', 'c'], ['b', 'c'])
