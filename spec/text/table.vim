@@ -1,10 +1,10 @@
 source spec/base.vim
 
-let g:T= vital#of('vital').import('Text.Table')
+let g:T = vital#of('vital').import('Text.Table')
 
 Context Text.Table.new()
   It instantiates a new object without configuration
-    let table= g:T.new()
+    let table = g:T.new()
 
     Should table.hborder() == 1
     Should table.vborder() == 1
@@ -15,7 +15,7 @@ Context Text.Table.new()
   End
 
   It instantiates a new object with configuration
-    let table= g:T.new({
+    let table = g:T.new({
     \ 'hborder': 0,
     \ 'vborder': 0,
     \ 'columns': [{}, {}, {}],
@@ -33,7 +33,7 @@ Context Text.Table.new()
   End
 
   It configures properties
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.hborder(0)
     call table.vborder(0)
@@ -51,7 +51,7 @@ Context Text.Table.new()
   End
 
   It remove previous state
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.columns([{}, {}, {}])
     call table.header(['h1', 'h2', 'h3'])
@@ -75,7 +75,7 @@ Context Text.Table.new()
   End
 
   It configures properties step by step
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.add_column({})
     call table.add_column({})
@@ -88,7 +88,7 @@ Context Text.Table.new()
   End
 
   It makes a table
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.columns([{}, {}, {}])
     call table.header(['h1', 'h2', 'h3'])
@@ -107,7 +107,7 @@ Context Text.Table.new()
   End
 
   It makes a table without horizontal border
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.hborder(0)
     call table.columns([{}, {}, {}])
@@ -123,7 +123,7 @@ Context Text.Table.new()
   End
 
   It makes a table without vertical border
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.vborder(0)
     call table.columns([{}, {}, {}])
@@ -143,7 +143,7 @@ Context Text.Table.new()
   End
 
   It makes a table without horizontal and vertical border
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.hborder(0)
     call table.vborder(0)
@@ -160,7 +160,7 @@ Context Text.Table.new()
   End
 
   It makes a table even if there are multi-byte characters
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.columns([{}, {}, {}])
     call table.header(['h1', 'h2', 'h3'])
@@ -183,7 +183,7 @@ Context Text.Table.new()
   End
 
   It makes a table which wraps each cells
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.columns([{'width': 4}, {'width': 4}, {'width': 4}])
     call table.header(['h1', 'h2', 'h3'])
@@ -207,7 +207,7 @@ Context Text.Table.new()
   End
 
   It makes a table with horizontal and vertical alignment
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.columns([{'halign': 'right', 'valign': 'bottom', 'width': 4}, {'width': 4}, {'halign': 'center', 'valign': 'center', 'width': 4}])
     call table.header(['h1', 'h2', 'h3'])
@@ -228,7 +228,7 @@ Context Text.Table.new()
   End
 
   It makes a table with auto wrapping in the cell
-    let table= g:T.new()
+    let table = g:T.new()
 
     call table.columns([{'halign': 'right', 'valign': 'bottom', 'width': 4}, {'width': 4}, {'halign': 'center', 'valign': 'center', 'width': 4}])
     call table.header(['h1', 'h2', 'h3'])
