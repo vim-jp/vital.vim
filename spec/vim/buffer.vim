@@ -54,7 +54,6 @@ baz
     Should text ==# "fo\nba"
 
     echom string(getline(1, '$'))
-    call input('waiting your input...')
   End
 
   It does not destroy unnamed register content
