@@ -215,7 +215,25 @@ path2directory({path})			*Vital.Prelude.path2directory()*
 
 				*Vital.Prelude.path2project_directory()*
 path2project_directory({path}[, {is_allow_empty}])
-	TODO
+	Look up project root path and return it.
+
+	Project root = <VCS directory> or <Project directory>
+	VCS directory = The directory which has
+			".git" or ".bzr" or ".hg" or ".svn"
+	Project directory = The directory which has
+			"build.xml" or "prj.el" or ".project"
+			or "pom.xml" or "package.json" or "Makefile"
+			or "configure" or "Rakefile" or "NAnt.build"
+			or "P4CONFIG" or "tags" or "gtags"
+
+	After failing looking up directory,
+	And if {is_allow_empty} was given and non-zero,
+	returns {path} which is:
+		1. Full Path
+		2. On MS Windows, all path separator
+		   is replaced by '/'
+	Otherwise, empty string was returned.
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
