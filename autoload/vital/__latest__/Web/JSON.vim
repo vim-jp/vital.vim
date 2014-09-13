@@ -18,6 +18,19 @@ let s:const.true = function('s:_true')
 let s:const.false = function('s:_false')
 let s:const.null = function('s:_null')
 
+function! s:_resolve(val, prefix)
+  let t = type(a:val)
+  if t == type('')
+    let m = matchlist(a:val, '^' . a:prefix . '\(null\|true\|false\)$')
+    if !empty(m)
+      return s:const[m[1]]
+    endif
+  elseif t == type([]) || t == type({})
+    return map(a:val, 's:_resolve(v:val, a:prefix)')
+  endif
+  return a:val
+endfunction
+
 
 function! s:_vital_loaded(V) dict
   let s:V = a:V
@@ -42,12 +55,16 @@ function! s:decode(json, ...)
   let json = substitute(json, '\\u34;', '\\"', 'g')
   let json = substitute(json, '\\u\(\x\x\x\x\)', '\=s:string.nr2enc_char("0x".submatch(1))', 'g')
   if settings.use_token
-    let [null,true,false] = [s:const.null,s:const.true,s:const.false]
+    let prefix = '__Web.JSON__'
+    while stridx(json, prefix) != -1
+      let prefix .= '_'
+    endwhile
+    let [null,true,false] = map(['null','true','false'], 'prefix . v:val')
+    sandbox return s:_resolve(eval(json), prefix)
   else
     let [null,true,false] = [s:const.null(),s:const.true(),s:const.false()]
+    sandbox return eval(json)
   endif
-  sandbox let ret = eval(json)
-  return ret
 endfunction
 " @vimlint(EVL102, 0, l:null)
 " @vimlint(EVL102, 0, l:true)
