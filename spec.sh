@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -x
 
-T="$(mktemp -d --tmpdir vital_spec.XXXXXXXXXX)" || exit 1
+T="$(mktemp -d ${TMPDIR:-/tmp}/vital_spec.XXXXXXXXXX)" || exit 1
 trap "rm -rf '${T}'" EXIT
 
 trap "exit 1" HUP INT QUIT TERM
