@@ -15,13 +15,13 @@ endfunction
 
 let s:_PRESET_COMPLETER = {}
 function! s:_PRESET_COMPLETER.file(optlead, cmdline, cursorpos)
-    let candidates = glob(a:optlead . '*', 0, 1)
-    if a:optlead =~# '^\~'
-        let home_matcher = '^' . expand('~') . '/'
-        call map(candidates, "substitute(v:val, home_matcher, '~/', '')")
-    endif
-    call map(candidates, "escape(isdirectory(v:val) ? v:val.'/' : v:val, ' \\')")
-    return candidates
+  let candidates = glob(a:optlead . '*', 0, 1)
+  if a:optlead =~# '^\~'
+    let home_matcher = '^' . expand('~') . '/'
+    call map(candidates, "substitute(v:val, home_matcher, '~/', '')")
+  endif
+  call map(candidates, "escape(isdirectory(v:val) ? v:val.'/' : v:val, ' \\')")
+  return candidates
 endfunction
 
 function! s:_make_option_description_for_help(opt)
@@ -87,12 +87,12 @@ function! s:_expand_short_option(arg, options)
 endfunction
 
 function! s:_set_default_values(parsed_args, options)
-    for [name, default_value] in map(items(filter(copy(a:options), 'has_key(v:val, "default_value")')), '[v:val[0], v:val[1].default_value]')
-        if ! has_key(a:parsed_args, name)
-            let a:parsed_args[name] = default_value
-        endif
-        unlet default_value
-    endfor
+  for [name, default_value] in map(items(filter(copy(a:options), 'has_key(v:val, "default_value")')), '[v:val[0], v:val[1].default_value]')
+    if ! has_key(a:parsed_args, name)
+      let a:parsed_args[name] = default_value
+    endif
+    unlet default_value
+  endfor
 endfunction
 
 function! s:_parse_arg(arg, options)
@@ -104,7 +104,7 @@ function! s:_parse_arg(arg, options)
       return [key, 0]
     endif
 
-  " if --hoge pattern
+    " if --hoge pattern
   elseif a:arg =~# '^--[^= ]\+$'
     " get hoge from --hoge
     let key = matchstr(a:arg, '^--\zs[^= ]\+')
@@ -115,7 +115,7 @@ function! s:_parse_arg(arg, options)
       return [key, 1]
     endif
 
-  " if --hoge=poyo pattern
+    " if --hoge=poyo pattern
   else
     " get hoge from --hoge=poyo
     let key = matchstr(a:arg, '^--\zs[^= ]\+')
@@ -244,88 +244,88 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...)
 endfunction
 
 function! s:_long_option_completion(arglead, options)
-    let candidates = []
-    for [name, option] in items(a:options)
-        let has_value = get(option, 'has_value', 0)
-        call add(candidates, '--' . name . (has_value ? '=' : ''))
-        if get(option, 'no', 0)
-            call add(candidates, '--no-' . name . (has_value ? '=' : ''))
-        endif
-    endfor
-    let lead_pattern = '^' . a:arglead
-    return filter(candidates, 'v:val =~# lead_pattern')
+  let candidates = []
+  for [name, option] in items(a:options)
+    let has_value = get(option, 'has_value', 0)
+    call add(candidates, '--' . name . (has_value ? '=' : ''))
+    if get(option, 'no', 0)
+      call add(candidates, '--no-' . name . (has_value ? '=' : ''))
+    endif
+  endfor
+  let lead_pattern = '^' . a:arglead
+  return filter(candidates, 'v:val =~# lead_pattern')
 endfunction
 
 function! s:_short_option_completion(arglead, options)
-    let candidates = []
-    for option in values(a:options)
-        let has_value = get(option, 'has_value', 0)
-        if has_key(option, 'short_option_definition')
-            call add(candidates, option.short_option_definition . (has_value ? '=' : ''))
-            if get(option, 'no', 0)
-                call add(candidates, '-no' . option.short_option_definition . (has_value ? '=' : ''))
-            endif
-        endif
-    endfor
-    let lead_pattern = '^' . a:arglead
-    return filter(candidates, 'v:val =~# lead_pattern')
+  let candidates = []
+  for option in values(a:options)
+    let has_value = get(option, 'has_value', 0)
+    if has_key(option, 'short_option_definition')
+      call add(candidates, option.short_option_definition . (has_value ? '=' : ''))
+      if get(option, 'no', 0)
+        call add(candidates, '-no' . option.short_option_definition . (has_value ? '=' : ''))
+      endif
+    endif
+  endfor
+  let lead_pattern = '^' . a:arglead
+  return filter(candidates, 'v:val =~# lead_pattern')
 endfunction
 
 function! s:_user_defined_completion(lead, name, options, cmdline, cursorpos)
-    if ! has_key(a:options, a:name) || ! has_key(a:options[a:name], 'completion')
-        return []
-    endif
-    return a:options[a:name].completion(a:lead, a:cmdline, a:cursorpos)
+  if ! has_key(a:options, a:name) || ! has_key(a:options[a:name], 'completion')
+    return []
+  endif
+  return a:options[a:name].completion(a:lead, a:cmdline, a:cursorpos)
 endfunction
 
 function! s:_user_defined_short_option_completion(lead, def, options, cmdline, cursorpos)
-    for option in values(a:options)
-        if has_key(option, 'short_option_definition')
-            \ && option.short_option_definition ==# a:def
-            \ && has_key(option, 'completion')
-            return option.completion(a:lead, a:cmdline, a:cursorpos)
-        endif
-    endfor
-    return []
+  for option in values(a:options)
+    if has_key(option, 'short_option_definition')
+          \ && option.short_option_definition ==# a:def
+          \ && has_key(option, 'completion')
+      return option.completion(a:lead, a:cmdline, a:cursorpos)
+    endif
+  endfor
+  return []
 endfunction
 
 
 function! s:_DEFAULT_PARSER.complete(arglead, cmdline, cursorpos)
-    if a:arglead =~# '^--[^=]*$'
-        " when long option
-        return s:_long_option_completion(a:arglead, self.options)
+  if a:arglead =~# '^--[^=]*$'
+    " when long option
+    return s:_long_option_completion(a:arglead, self.options)
 
-    elseif a:arglead =~# '^-[^-=]\?$'
-        " when short option
-        return s:_short_option_completion(a:arglead, self.options)
+  elseif a:arglead =~# '^-[^-=]\?$'
+    " when short option
+    return s:_short_option_completion(a:arglead, self.options)
 
-    elseif a:arglead =~# '^--.\+=.*$'
-        let lead = matchstr(a:arglead, '=\zs.*$')
-        let name = matchstr(a:arglead, '^--\zs[^=]\+')
-        let prefix = matchstr(a:arglead, '^.\+=')
-        return map(
-            \  s:_user_defined_completion(lead, name, self.options, a:cmdline, a:cursorpos),
-            \ 'prefix . v:val'
-            \ )
+  elseif a:arglead =~# '^--.\+=.*$'
+    let lead = matchstr(a:arglead, '=\zs.*$')
+    let name = matchstr(a:arglead, '^--\zs[^=]\+')
+    let prefix = matchstr(a:arglead, '^.\+=')
+    return map(
+          \  s:_user_defined_completion(lead, name, self.options, a:cmdline, a:cursorpos),
+          \ 'prefix . v:val'
+          \ )
 
-    elseif a:arglead =~# '^-[^-=]=.*$'
-        let lead = matchstr(a:arglead, '=\zs.*$')
-        let def = matchstr(a:arglead, '^-[^-=]')
-        let prefix = def . '='
-        return map(
-             \ s:_user_defined_short_option_completion(lead, def, self.options, a:cmdline, a:cursorpos),
-             \ 'prefix . v:val'
-             \ )
+  elseif a:arglead =~# '^-[^-=]=.*$'
+    let lead = matchstr(a:arglead, '=\zs.*$')
+    let def = matchstr(a:arglead, '^-[^-=]')
+    let prefix = def . '='
+    return map(
+          \ s:_user_defined_short_option_completion(lead, def, self.options, a:cmdline, a:cursorpos),
+          \ 'prefix . v:val'
+          \ )
 
-    elseif has_key(self, 'unknown_options_completion')
-        if type(self.unknown_options_completion) == s:_STRING_TYPE
-            return s:_PRESET_COMPLETER[self.unknown_options_completion](a:arglead, a:cmdline, a:cursorpos)
-        else
-            return self.unknown_options_completion(a:arglead, a:cmdline, a:cursorpos)
-        endif
+  elseif has_key(self, 'unknown_options_completion')
+    if type(self.unknown_options_completion) == s:_STRING_TYPE
+      return s:_PRESET_COMPLETER[self.unknown_options_completion](a:arglead, a:cmdline, a:cursorpos)
+    else
+      return self.unknown_options_completion(a:arglead, a:cmdline, a:cursorpos)
     endif
+  endif
 
-    return []
+  return []
 endfunction
 
 lockvar! s:_DEFAULT_PARSER
