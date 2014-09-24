@@ -400,3 +400,28 @@ Context complete() funcref in OptionParser object
     End
 End
 
+Context complete_greedily() funcref in OptionParser object
+    It completes all kinds of candidates
+        let o = g:O.new()
+        call o.on('--[no-]huga=VALUE', '', {'short' : '-h', 'completion' : function('CompleteTest')})
+             \.on('--hoge', '')
+             \.on('--piyo', '', {'short' : '-p'})
+             \.on('--tsura=VALUE', '', {'completion' : function('CompleteTest2')})
+             \.on('--[no-]poyo', '')
+        let o.unknown_options_completion = function('CompleteUnknownOptionTest')
+        Should o.complete_greedily('--', 'Hoge --', 7) == ['--tsura=', '--hoge', '--huga=', '--no-huga=', '--piyo', '--poyo', '--no-poyo']
+        Should o.complete_greedily('--h', 'Hoge --h', 8) == ['--hoge', '--huga=']
+        Should o.complete_greedily('--hu', 'Hoge --hu', 9) == ['--huga=']
+        Should o.complete_greedily('--ho', 'Hoge --ho', 9) == ['--hoge']
+        Should o.complete_greedily('--p', 'Hoge --p', 8) == ['--piyo', '--poyo']
+        Should o.complete_greedily('--po', 'Hoge --po', 9) == ['--poyo']
+        Should o.complete_greedily('--pi', 'Hoge --pi', 9) == ['--piyo']
+        Should o.complete_greedily('--f', 'Hoge --f', 8) == []
+        Should o.complete_greedily('--no', 'Hoge --no', 9) == ['--no-huga=', '--no-poyo']
+        Should o.complete_greedily('-', 'Hoge -', 6) == ['--tsura=', '--hoge', '--huga=', '--no-huga=', '--piyo', '--poyo', '--no-poyo']
+        Should o.complete_greedily('-h', 'Hoge -h', 7) == []
+        Should o.complete_greedily('-p', 'Hoge -p', 7) == []
+        Should o.complete_greedily('-f', 'Hoge -f', 7) == []
+        Should o.complete_greedily('', 'Hoge ', 5) == ['--tsura=', '--hoge', '--huga=', '--no-huga=', '--piyo', '--poyo', '--no-poyo', 'vim', 'vimmer', 'kowai']
+    End
+End
