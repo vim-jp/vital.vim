@@ -230,6 +230,14 @@ Parser.complete({arglead}, {cmdline}, {cursorpos})
 	And this function return |List| of candidates.  You must use "customlist"
 	and must not use "custom" in |:command|.
 
+				*Vital.OptionParser-Parser.complete_greedily()*
+Parser.complete_greedily({arglead}, {cmdline}, {cursorpos})
+
+	It is |Funcref| to complete options in command line.  This |Funcref| is
+	different from |Vital.OptionParser-Parser.complete()| in terms of
+	candidates of the completion.  This |Funcref| shows all possible
+	candidates greedily.
+
 			*Vital.OptionParser-Parser.unknown_options_completion*
 Parser.unknown_options_completion
 
