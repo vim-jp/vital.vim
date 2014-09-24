@@ -367,4 +367,88 @@ Context Text.Table.new()
     \ '+-------+------------+-----------------+',
     \]
   End
+
+  It can changes joints and borders
+    let table = g:T.new({
+    \ 'columns': [{'min_width': 5}, {'min_width': 5}, {'min_width': 5}],
+    \})
+
+    call table.border_style({
+    \ 'joint': {
+    \   'top_left': 'tl',
+    \   'top': '*',
+    \   'top_right': 'tr',
+    \   'head_left': '<',
+    \   'head': '+*+',
+    \   'head_right': '>',
+    \   'left': '<<<<',
+    \   'row': '+',
+    \   'right': '>>>>',
+    \   'foot_left': '<',
+    \   'foot': '+*+',
+    \   'foot_right': '>',
+    \   'bottom_left': 'bl',
+    \   'bottom': '*',
+    \   'bottom_right': 'br',
+    \ },
+    \ 'border': {
+    \   'top': 'tt',
+    \   'head': '^',
+    \   'row': 'rr',
+    \   'column': '///',
+    \   'left': '<<',
+    \   'right': '>>',
+    \   'foot': 'v',
+    \   'bottom': 'bb',
+    \ },
+    \})
+    call table.header(['', '', ''])
+    call table.rows([
+    \ ['', '', ''],
+    \ ['', '', ''],
+    \])
+    call table.footer(['', '', ''])
+
+    Should table.stringify() == [
+    \ 'tltttttttt*tttttttttt*tttttttttr',
+    \ '<<       ///        ///       >>',
+    \ '<^^^^^^^^+*+^^^^^^^^+*+^^^^^^^^>',
+    \ '<<       ///        ///       >>',
+    \ '<<<<rrrrrr+rrrrrrrrrr+rrrrrr>>>>',
+    \ '<<       ///        ///       >>',
+    \ '<vvvvvvvv+*+vvvvvvvv+*+vvvvvvvv>',
+    \ '<<       ///        ///       >>',
+    \ 'blbbbbbbbb*bbbbbbbbbb*bbbbbbbbbr',
+    \]
+  End
+
+  It can use for sudden death
+    let table = g:T.new({
+    \ 'columns': [{}],
+    \})
+
+    call table.border_style({
+    \ 'joint': {
+    \   'top_left':     '＿',
+    \   'top_right':    '＿',
+    \   'bottom_left':  '￣Y',
+    \   'bottom_right': '￣',
+    \ },
+    \ 'border': {
+    \   'top':    '人',
+    \   'left':   '＞',
+    \   'right':  '＜',
+    \   'bottom': '^Y',
+    \ },
+    \})
+    call table.rows([
+    \ ['突然の死'],
+    \])
+
+    Should table.stringify() == [
+    \ '＿人人人人人＿',
+    \ '＞ 突然の死 ＜',
+    \ '￣Y^Y^Y^Y^Y ￣',
+    \]
+  End
 End
