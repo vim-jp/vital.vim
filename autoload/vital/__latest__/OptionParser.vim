@@ -289,6 +289,13 @@ function! s:_user_defined_short_option_completion(lead, def, options, cmdline, c
   return []
 endfunction
 
+function! s:_unknown_option_completion(Completer, arglead, cmdline, cursorpos)
+  if type(a:Completer) == s:_STRING_TYPE
+    return s:_PRESET_COMPLETER[a:Completer](a:arglead, a:cmdline, a:cursorpos)
+  else
+    return a:Completer(a:arglead, a:cmdline, a:cursorpos)
+  endif
+endfunction
 
 function! s:_DEFAULT_PARSER.complete(arglead, cmdline, cursorpos)
   if a:arglead =~# '^--[^=]*$'
@@ -318,14 +325,24 @@ function! s:_DEFAULT_PARSER.complete(arglead, cmdline, cursorpos)
           \ )
 
   elseif has_key(self, 'unknown_options_completion')
-    if type(self.unknown_options_completion) == s:_STRING_TYPE
-      return s:_PRESET_COMPLETER[self.unknown_options_completion](a:arglead, a:cmdline, a:cursorpos)
-    else
-      return self.unknown_options_completion(a:arglead, a:cmdline, a:cursorpos)
-    endif
+    return s:_unknown_option_completion(self.unknown_options_completion, a:arglead, a:cmdline, a:cursorpos)
   endif
 
   return []
+endfunction
+
+function! s:_DEFAULT_PARSER.complete_greedily(arglead, cmdline, cursorpos)
+  let long_opts = s:_long_option_completion(a:arglead, self.options)
+  if has_key(self, 'unknown_options_completion')
+    return long_opts + s:_unknown_option_completion(
+          \   self.unknown_options_completion,
+          \   a:arglead,
+          \   a:cmdline,
+          \   a:cursorpos
+          \ )
+  else
+    return long_opts
+  endif
 endfunction
 
 lockvar! s:_DEFAULT_PARSER
