@@ -25,8 +25,12 @@ function! s:_lcm(m, n)
 endfunction
 
 function! s:_gcd(m, n)
-  if a:m == 0 || a:n == 0
+  if a:m == 0 && a:n == 0
     return 0
+  elseif a:m == 0
+    return a:n
+  elseif a:n == 0
+    return a:m
   endif
   let tmp = 0
   let m = a:m
