@@ -60,7 +60,7 @@ lcm({values})				*Vital.Math.lcm()*
 gcd({values})				*Vital.Math.gcd()*
 	Return greatest common divisor of elements in {values}.
 
-	If all elements of {values} is 0, gcd returns 0.
+	If all elements of {values} are 0, gcd returns 0.
 	If at least one of {values} is not 0, gcd returns greatest common
 	divisor of non zero elements.
 >
