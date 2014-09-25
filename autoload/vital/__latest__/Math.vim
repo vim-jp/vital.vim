@@ -17,6 +17,50 @@ function! s:fib(n)
   return a
 endfunction
 
+function! s:_lcm(m, n)
+  if a:m == 0 || a:n == 0
+    return 0
+  endif
+  return (a:m / s:_gcd(a:m, a:n)) * a:n
+endfunction
+
+function! s:_gcd(m, n)
+  if a:m == 0 || a:n == 0
+    return 0
+  endif
+  let tmp = 0
+  let m = a:m
+  let n = a:n
+  while m % n != 0
+    let tmp = n
+    let n = m % n
+    let m = tmp
+  endwhile
+  return n
+endfunction
+
+function! s:lcm(list)
+  let list = map(a:list, 'abs(v:val)')
+  if len(list) == 0
+    throw 'vital: Math: Empty list'
+  endif
+  while len(list) > 1
+    let list = [s:_lcm(list[0], list[1])] + list[2:]
+  endwhile
+  return list[0]
+endfunction
+
+function! s:gcd(list)
+  let list = map(a:list, 'abs(v:val)')
+  if len(list) == 0
+    throw 'vital: Math: Empty list'
+  endif
+  while len(list) > 1
+    let list = [s:_gcd(list[0], list[1])] + list[2:]
+  endwhile
+  return list[0]
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

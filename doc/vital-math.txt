@@ -46,6 +46,25 @@ modulo({m}, {n})			*Vital.Math.modulo()*
 	modulo(-10, -3) == -1
 <
 
+lcm({values})				*Vital.Math.lcm()*
+	Return least common multiple number of elements in {values}.
+>
+	lcm([2, 3]) == 6
+	lcm([2, -3]) == 6
+	lcm([7, 2, 3, 2]) == 42
+	lcm([0]) == 0
+	lcm([2, 3, 0]) == 0
+<
+
+gcd({values})				*Vital.Math.gcd()*
+	Return greatest common divisor of elements in {values}.
+>
+	gcd([2, 3]) == 1
+	gcd([20, -30]) == 10
+	gcd([5, 20, 30]) == 5
+	gcd([0]) == 0
+	gcd([2, 3, 0]) == 0
+<
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
