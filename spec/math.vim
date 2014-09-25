@@ -19,3 +19,23 @@ Context Math.fib()
     Should g:M.fib(48) == 512559680
   End
 End
+
+Context Math.lcm()
+  It returns least common multiple number.
+    Should 6  == g:M.lcm([2, 3])
+    Should 6  == g:M.lcm([2, -3])
+    Should 42 == g:M.lcm([7, 2, 3, 2])
+    Should 0  == g:M.lcm([0])
+    Should 0  == g:M.lcm([2, 3, 0])
+  End
+End
+
+Context Math.gcd()
+  It returns greatest common divisor.
+    Should 1  == g:M.gcd([2, 3])
+    Should 10 == g:M.gcd([20, -30])
+    Should 5  == g:M.gcd([5, 20, 30])
+    Should 0  == g:M.gcd([0])
+    Should 0  == g:M.gcd([2, 3, 0])
+  End
+End
