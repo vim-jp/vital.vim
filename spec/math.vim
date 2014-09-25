@@ -36,6 +36,7 @@ Context Math.gcd()
     Should 10 == g:M.gcd([20, -30])
     Should 5  == g:M.gcd([5, 20, 30])
     Should 0  == g:M.gcd([0])
-    Should 0  == g:M.gcd([2, 3, 0])
+    Should 2  == g:M.gcd([4, 0, 6])
+    Should 0  == g:M.gcd([0, 0, 0])
   End
 End
