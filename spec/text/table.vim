@@ -50,7 +50,7 @@ Context Text.Table.new()
     Should table.footer()  == ['f1', 'f2', 'f3']
   End
 
-  It remove previous state
+  It throws when already added columns
     let table = g:T.new()
 
     call table.columns([{}, {}, {}])
@@ -58,20 +58,12 @@ Context Text.Table.new()
     call table.rows([['r1c1', 'r1c2', 'r1c3']])
     call table.footer(['f1', 'f2', 'f3'])
 
-    Should table.columns() == [{}, {}, {}]
-    Should table.header()  == ['h1', 'h2', 'h3']
-    Should table.rows()    == [['r1c1', 'r1c2', 'r1c3']]
-    Should table.footer()  == ['f1', 'f2', 'f3']
+    ShouldThrow table.header(['h1', 'h2'])
+    ShouldThrow table.rows([['r1c1', 'r1c2']])
+    ShouldThrow table.footer(['f1', 'f2'])
 
-    call table.columns([{}, {}])
-    call table.header(['h1', 'h2'])
-    call table.rows([['r1c1', 'r1c2']])
-    call table.footer(['f1', 'f2'])
-
-    Should table.columns() == [{}, {}]
-    Should table.header()  == ['h1', 'h2']
-    Should table.rows()    == [['r1c1', 'r1c2']]
-    Should table.footer()  == ['f1', 'f2']
+    ShouldThrow table.columns([{}])
+    ShouldThrow table.add_column({})
   End
 
   It configures properties step by step
@@ -288,6 +280,175 @@ Context Text.Table.new()
     \ '+---------+---------+---------+',
     \ '| footer1 | footer2 | footer3 |',
     \ '+---------+---------+---------+',
+    \]
+  End
+
+  It has no header and footer
+    let table = g:T.new({
+    \ 'columns': [{}, {}, {}],
+    \})
+
+    call table.rows([
+    \ ['r1c1', 'r1c2', 'r1c3'],
+    \ ['r2c1', 'r2c2', 'r2c3'],
+    \ ['r3c1', 'r3c2', 'r3c3'],
+    \])
+
+    Should table.stringify() == [
+    \ '+------+------+------+',
+    \ '| r1c1 | r1c2 | r1c3 |',
+    \ '| r2c1 | r2c2 | r2c3 |',
+    \ '| r3c1 | r3c2 | r3c3 |',
+    \ '+------+------+------+',
+    \]
+  End
+
+  It lays out by cell style and column style
+    let table = g:T.new({
+    \ 'columns': [{'halign': 'center', 'valign': 'center', 'width': 10}],
+    \})
+
+    call table.header([{'text': 0, 'style': {'halign': 'right'}}])
+    call table.footer([{'text': 0, 'style': {'halign': 'right'}}])
+    call table.rows([
+    \ [{'text': 'r1c1'}],
+    \ [{'text': 'r2c1', 'style': {'halign': 'left'}}],
+    \ [{'text': 'r3c1', 'style': {'halign': 'right'}}],
+    \])
+
+    Should table.stringify() == [
+    \ '+------------+',
+    \ '|          0 |',
+    \ '+------------+',
+    \ '|    r1c1    |',
+    \ '| r2c1       |',
+    \ '|       r3c1 |',
+    \ '+------------+',
+    \ '|          0 |',
+    \ '+------------+',
+    \]
+  End
+
+  It automatically resizes width for each column
+    let table = g:T.new({
+    \ 'columns': [{'width': 5}, {'max_width': 10}, {'min_width': 3}],
+    \})
+
+    call table.header(['', '', ''])
+    call table.footer(['', '', ''])
+    call table.rows([
+    \ ['', 'あいうえをかきくけ', ''],
+    \])
+
+    Should table.stringify() == [
+    \ '+-------+------------+-----+',
+    \ '|       |            |     |',
+    \ '+-------+------------+-----+',
+    \ '|       | あいうえを |     |',
+    \ '|       | かきくけ   |     |',
+    \ '+-------+------------+-----+',
+    \ '|       |            |     |',
+    \ '+-------+------------+-----+',
+    \]
+  End
+
+  It supresses resizes if specified table style
+    let table = g:T.new({
+    \ 'columns': [{'width': 5}, {'width': 10}, {'max_width': 30}],
+    \})
+
+    call table.rows([
+    \ ['', '', ''],
+    \])
+
+    Should table.stringify({'max_width': 40}) == [
+    \ '+-------+------------+-----------------+',
+    \ '|       |            |                 |',
+    \ '+-------+------------+-----------------+',
+    \]
+  End
+
+  It can changes joints and borders
+    let table = g:T.new({
+    \ 'columns': [{'min_width': 5}, {'min_width': 5}, {'min_width': 5}],
+    \})
+
+    call table.border_style({
+    \ 'joint': {
+    \   'top_left': 'tl',
+    \   'top': '*',
+    \   'top_right': 'tr',
+    \   'head_left': '<',
+    \   'head': '+*+',
+    \   'head_right': '>',
+    \   'left': '<<<<',
+    \   'row': '+',
+    \   'right': '>>>>',
+    \   'foot_left': '<',
+    \   'foot': '+*+',
+    \   'foot_right': '>',
+    \   'bottom_left': 'bl',
+    \   'bottom': '*',
+    \   'bottom_right': 'br',
+    \ },
+    \ 'border': {
+    \   'top': 'tt',
+    \   'head': '^',
+    \   'row': 'rr',
+    \   'column': '///',
+    \   'left': '<<',
+    \   'right': '>>',
+    \   'foot': 'v',
+    \   'bottom': 'bb',
+    \ },
+    \})
+    call table.header(['', '', ''])
+    call table.rows([
+    \ ['', '', ''],
+    \ ['', '', ''],
+    \])
+    call table.footer(['', '', ''])
+
+    Should table.stringify() == [
+    \ 'tltttttttt*tttttttttt*tttttttttr',
+    \ '<<       ///        ///       >>',
+    \ '<^^^^^^^^+*+^^^^^^^^+*+^^^^^^^^>',
+    \ '<<       ///        ///       >>',
+    \ '<<<<rrrrrr+rrrrrrrrrr+rrrrrr>>>>',
+    \ '<<       ///        ///       >>',
+    \ '<vvvvvvvv+*+vvvvvvvv+*+vvvvvvvv>',
+    \ '<<       ///        ///       >>',
+    \ 'blbbbbbbbb*bbbbbbbbbb*bbbbbbbbbr',
+    \]
+  End
+
+  It can use for sudden death
+    let table = g:T.new({
+    \ 'columns': [{}],
+    \})
+
+    call table.border_style({
+    \ 'joint': {
+    \   'top_left':     '＿',
+    \   'top_right':    '＿',
+    \   'bottom_left':  '￣Y',
+    \   'bottom_right': '￣',
+    \ },
+    \ 'border': {
+    \   'top':    '人',
+    \   'left':   '＞',
+    \   'right':  '＜',
+    \   'bottom': '^Y',
+    \ },
+    \})
+    call table.rows([
+    \ ['突然の死'],
+    \])
+
+    Should table.stringify() == [
+    \ '＿人人人人人＿',
+    \ '＞ 突然の死 ＜',
+    \ '￣Y^Y^Y^Y^Y ￣',
     \]
   End
 End

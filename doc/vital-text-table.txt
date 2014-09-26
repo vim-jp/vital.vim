@@ -64,6 +64,8 @@ by:
 
     echo s:table.stringify()
 <
+And you can customize the style of table by
+|Vital.Text.Table-Table.border_style()|.
 
 ==============================================================================
 INTERFACE			*Vital.Text.Table-interface*
@@ -104,6 +106,24 @@ Table.hborder({hborder})
 	table.hborder(1)
 <
 
+				*Vital.Text.Table-Table.border_style()*
+Table.border_style()
+	Returns a border style object(|Vital.Text.Table-BorderStyle|).
+Table.border_style({style})
+	Sets a border style object(). See |Vital.Text.Table-BorderStyle|
+	section for more details.
+	e.g. >
+	table.border_style({
+	\ 'joint': {
+	\   'row': '+',
+	\ },
+	\ 'border': {
+	\   'left':  '<',
+	\   'right': '>',
+	\ },
+	\})
+<
+
 				*Vital.Text.Table-Table.vborder()*
 Table.vborder()
 	Returns 1 If vertical border will be drawn. Otherwise, 0.
@@ -140,9 +160,9 @@ Table.add_column({column})
 
 				*Vital.Text.Table-Table.header()*
 Table.header()
-	Returns a header row object(|Vital.Text.Table-RowObject|).
+	Returns a header row object(|Vital.Text.Table-Row|).
 Table.header({headers})
-	Sets a header row object(|Vital.Text.Table-RowObject|). If given
+	Sets a header row object(|Vital.Text.Table-Row|). If given
 	{headers} size is greater than its columns size, it will throws an
 	exception.
 	e.g. >
@@ -151,11 +171,10 @@ Table.header({headers})
 
 				*Vital.Text.Table-Table.rows()*
 Table.rows()
-	Returns a row object(|Vital.Text.Table-RowObject|).
+	Returns a row object(|Vital.Text.Table-Row|).
 Table.rows({rows})
-	Sets a row object(|Vital.Text.Table-RowObject|). If given any row of
-	{rows} size is greater than its columns size, it will throws an
-	exception.
+	Sets a row object(|Vital.Text.Table-Row|). If given any row of {rows}
+	size is greater than its columns size, it will throws an exception.
 	e.g. >
 	table.rows([
 	\ ['row1column1', 'row1column2', 'row1column3'],
@@ -166,27 +185,27 @@ Table.rows({rows})
 
 				*Vital.Text.Table-Table.add_row()*
 Table.add_row({row})
-	Adds a row object(|Vital.Text.Table-RowObject|). If given {row} size
-	is greater than its columns size, it will throws an exception.
+	Adds a row object(|Vital.Text.Table-Row|). If given {row} size is
+	greater than its columns size, it will throws an exception.
 	e.g. >
 	table.add_row(['column1', 'column2', 'column3'])
 <
 
 				*Vital.Text.Table-Table.footer()*
 Table.footer()
-	Returns a footer row object(|Vital.Text.Table-RowObject|).
+	Returns a footer row object(|Vital.Text.Table-Row|).
 Table.footer({footers})
-	Sets a footer row object(|Vital.Text.Table-RowObject|). If given
-	{footer} size is greater than its columns size, it will throws an
-	exception.
+	Sets a footer row object(|Vital.Text.Table-Row|). If given {footer}
+	size is greater than its columns size, it will throws an exception.
 	e.g. >
 	table.footer(['footer1', 'footer2', 'footer3'])
 <
 
 				*Vital.Text.Table-Table.stringify()*
-Table.stringify()
+Table.stringify([{tstyle}])
 	Makes a table by configuration. Returns a |List| which has each table
-	row strings.
+	row strings. And it can takes a table style object
+	(|Vital.Text.Table-TableStyle|).
 	e.g. >
 	" [
 	"   ['+------+------+------+'],
@@ -235,6 +254,62 @@ ColumnConfig.width		*Vital.Text.Table-ColumnConfig.width*
 	+----------+
 	|          |
 	+----------+
+
+------------------------------------------------------------------------------
+Table Style Object		*Vital.Text.Table-TableStyle*
+
+TableStyle.max_width		*Vital.Text.Table-TableStyle.max_width*
+	Specify a table width for whole table. It is number of characters
+	similar to |'columns'|. Default is 0 (unlimited).
+
+	<- width   ->
+	+---+---+---+
+	|   |   |   |
+	+---+---+---+
+
+------------------------------------------------------------------------------
+Border Style Object		*Vital.Text.Table-BorderStyle*
+
+BorderStyle.joint		*Vital.Text.Table-BorderStyle.joint*
+	Configures a border joint character(s). It's okay to use multi-byte
+	characters and multiple characters. The kinds of joint you can specify
+	by |Dictionary| are described below:
+
+	(A) top_left      (B) top      (C) top_right
+	(D) head_left     (E) head     (F) head_right
+	(G) left          (H) row      (I) right
+	(J) foot_left     (K) foot     (L) foot_right
+	(M) bottom_left   (N) bottom   (O) bottom_right
+
+	(A)------(B)------(B)------(C)
+	 |        |        |        |
+	(D)------(E)------(E)------(F)
+	 |        |        |        |
+	(G)------(H)------(H)------(I)
+	 |        |        |        |
+	(J)------(K)------(K)------(L)
+	 |        |        |        |
+	(M)------(N)------(N)------(O)
+
+BorderStyle.border		*Vital.Text.Table-BorderStyle.border*
+
+	Configures a border character(s). It's okay to use multi-byte
+	characters and multiple characters. The kinds of border you can
+	specify by |Dictionary| are described below:
+
+	(a) top      (b) head     (c) row
+	(d) foot     (e) bottom   (f) left
+	(g) column   (h) right
+
+	 +---(a)---+---(a)---+---(a)---+
+	(f)       (g)       (g)       (h)
+	 +---(b)---+---(b)---+---(b)---+
+	(f)       (g)       (g)       (h)
+	 +---(c)---+---(c)---+---(c)---+
+	(f)       (g)       (g)       (h)
+	 +---(d)---+---(d)---+---(d)---+
+	(f)       (g)       (g)       (h)
+	 +---(e)---+---(e)---+---(e)---+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

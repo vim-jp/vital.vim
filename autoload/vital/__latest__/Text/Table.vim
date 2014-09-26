@@ -17,12 +17,52 @@ let s:table = {
 \ '__header': [],
 \ '__rows': [],
 \ '__footer': [],
+\ '__border_style': {},
 \}
 
-let s:default_column_def = {
+let s:default_table_style = {
+\ 'max_width': 0,
+\}
+let s:default_column_style = {
 \ 'halign': 'left',
 \ 'valign': 'top',
 \ 'width':  0,
+\ 'min_width': 0,
+\ 'max_width': 0,
+\}
+let s:default_cell_style = {
+\ 'halign': 'left',
+\ 'valign': 'top',
+\}
+" TODO: dictionary or funcref
+let s:default_border_style = {
+\ 'joint': {
+\   'top_left':     '+',
+\   'top':          '+',
+\   'top_right':    '+',
+\   'head_left':    '+',
+\   'head':         '+',
+\   'head_right':   '+',
+\   'left':         '+',
+\   'row':          '+',
+\   'right':        '+',
+\   'foot_left':    '+',
+\   'foot':         '+',
+\   'foot_right':   '+',
+\   'bottom_left':  '+',
+\   'bottom':       '+',
+\   'bottom_right': '+',
+\ },
+\ 'border': {
+\   'top':    '-',
+\   'head':   '-',
+\   'row':    '',
+\   'column': '|',
+\   'left':   '|',
+\   'right':  '|',
+\   'foot':   '-',
+\   'bottom': '-',
+\ },
 \}
 
 function! s:new(...)
@@ -48,6 +88,9 @@ function! s:new(...)
     endif
     if has_key(config, 'footer')
       call obj.footer(config.footer)
+    endif
+    if has_key(config, 'border_style')
+      call obj.border_style(config.border_style)
     endif
   endif
 
@@ -87,17 +130,25 @@ endfunction
 function! s:table.columns(...)
   if a:0 == 0
     return deepcopy(self.__column_defs)
-  elseif empty(self.__header) && empty(self.__footer) && empty(self.__rows)
-    let self.__column_defs = []
-    for column_def in a:1
-      call self.add_column(column_def)
-    endfor
   else
-    throw 'vital: Text.Table: Already added header, footer or rows.'
+    let save_column_defs = self.__column_defs
+    try
+      let self.__column_defs = []
+      for column_def in a:1
+        call self.add_column(column_def)
+      endfor
+    catch /^vital: Text\.Table:/
+      let self.__column_defs = save_column_defs
+      throw v:exception
+    endtry
   endif
 endfunction
 
 function! s:table.add_column(def)
+  if !(empty(self.__header) && empty(self.__footer) && empty(self.__rows))
+    throw 'vital: Text.Table: Already added header, footer or rows.'
+  endif
+
   let self.__column_defs += [deepcopy(a:def)]
 endfunction
 
@@ -136,139 +187,389 @@ function! s:table.footer(...)
   endif
 endfunction
 
-function! s:table.stringify()
+function! s:table.border_style(...)
+  if a:0 == 0
+    return deepcopy(self.__border_style)
+  else
+    let self.__border_style = deepcopy(a:1)
+  endif
+endfunction
+
+function! s:table.stringify(...)
   let context = {}
 
-  let context.header = self.__header
-  let context.footer = self.__footer
-  let context.rows =   self.__rows
-  let context.column_defs = []
-  for col in range(len(self.__column_defs))
-    let orig = self.__column_defs[col]
-    let def = extend(deepcopy(s:default_column_def), orig)
-
-    if def.width == 0
-      let def.width = max(map(copy([context.header] + context.rows + [context.footer]), 'strdisplaywidth(s:_to_string(v:val[col]))'))
-    endif
-
-    let context.column_defs += [def]
-  endfor
   let context.hborder = self.__hborder
   let context.vborder = self.__vborder
+  let context.hpadding = 1
+  let context.table_style = extend(deepcopy(s:default_table_style), get(a:000, 0, {}))
+  let context.ncolumns = len(self.__column_defs)
+  let context.column_styles = map(copy(self.__column_defs), 'extend(deepcopy(s:default_column_style), v:val)')
+  let context.border_style = s:_make_border_style(self.__border_style)
+
+  " trans header
+  let context.has_header = !empty(self.__header)
+  if context.has_header
+    let context.header = s:_make_internal_row_object(context.column_styles, self.__header)
+  endif
+  " trans rows
+  let context.rows = []
+  for row in self.__rows
+    let context.rows += [s:_make_internal_row_object(context.column_styles, row)]
+  endfor
+  " trans footer
+  let context.has_footer = !empty(self.__footer)
+  if context.has_footer
+    let context.footer = s:_make_internal_row_object(context.column_styles, self.__footer)
+  endif
+
+  " compute each column width
+  let context.widths = s:_compute_widths(context)
 
   return s:_stringify(context)
+endfunction
+
+function! s:_make_border_style(style)
+  let style = deepcopy(a:style)
+
+  let style.joint = extend(deepcopy(s:default_border_style.joint), get(style, 'joint', {}))
+  let style.border = extend(deepcopy(s:default_border_style.border), get(style, 'border', {}))
+
+  return style
+endfunction
+
+function! s:_compute_width_ranges(context)
+  let rows = []
+  if a:context.has_header
+    let rows += [a:context.header]
+  endif
+  let rows += a:context.rows
+  if a:context.has_footer
+    let rows += [a:context.footer]
+  endif
+
+  let ranges = []
+  for colidx in range(a:context.ncolumns)
+    " texts = [[''], ...]
+    let texts = map(copy(rows), 'v:val[colidx].text')
+    " TODO: see word length
+    let min = 2
+    let max = max(map(copy(texts), "max(map(copy(v:val), 'strdisplaywidth(v:val)'))"))
+
+    let ranges += [[min, max]]
+  endfor
+  return ranges
+endfunction
+
+function! s:_compute_adjustment(context, colidx, left_joint, center_joint, right_joint)
+  let adjustment = (a:context.vborder) ? a:context.hpadding * 2 : 0
+
+  " adjust width
+  if a:colidx == 0
+    " most left
+    let adjustment -= strdisplaywidth(a:left_joint) - 1
+    let adjustment -= float2nr(floor((strdisplaywidth(a:center_joint) - 1) / 2.0))
+    let adjustment += strdisplaywidth(a:context.border_style.border.left) - 1
+    let adjustment += float2nr(floor((strdisplaywidth(a:context.border_style.border.column) - 1) / 2.0))
+  elseif a:colidx == a:context.ncolumns - 1
+    " most right
+    let adjustment -= float2nr(ceil((strdisplaywidth(a:center_joint) - 1) / 2.0))
+    let adjustment -= strdisplaywidth(a:right_joint) - 1
+    let adjustment += float2nr(ceil((strdisplaywidth(a:context.border_style.border.column) - 1) / 2.0))
+    let adjustment += strdisplaywidth(a:context.border_style.border.right) - 1
+  else
+    let adjustment -= float2nr(ceil((strdisplaywidth(a:center_joint) - 1) / 2.0))
+    let adjustment -= float2nr(floor((strdisplaywidth(a:center_joint) - 1) / 2.0))
+    let adjustment += float2nr(ceil((strdisplaywidth(a:context.border_style.border.column) - 1) / 2.0))
+    let adjustment += float2nr(floor((strdisplaywidth(a:context.border_style.border.column) - 1) / 2.0))
+  endif
+
+  return adjustment
+endfunction
+
+function! s:_adjust_for_filling(context, colidx, width)
+  let top_adjustment = s:_compute_adjustment(a:context, a:colidx, a:context.border_style.joint.top_left, a:context.border_style.joint.top, a:context.border_style.joint.top_right)
+  let head_adjustment = s:_compute_adjustment(a:context, a:colidx, a:context.border_style.joint.head_left, a:context.border_style.joint.head, a:context.border_style.joint.head_right)
+  let row_adjustment = s:_compute_adjustment(a:context, a:colidx, a:context.border_style.joint.left, a:context.border_style.joint.row, a:context.border_style.joint.right)
+  let foot_adjustment = s:_compute_adjustment(a:context, a:colidx, a:context.border_style.joint.foot_left, a:context.border_style.joint.foot, a:context.border_style.joint.foot_right)
+  let bottom_adjustment = s:_compute_adjustment(a:context, a:colidx, a:context.border_style.joint.bottom_left, a:context.border_style.joint.bottom, a:context.border_style.joint.bottom_right)
+
+  " first, adjust for all borders
+  let pairs = [
+  \ [top_adjustment, strdisplaywidth(a:context.border_style.border.top)],
+  \ [head_adjustment, strdisplaywidth(a:context.border_style.border.head)],
+  \ [row_adjustment, strdisplaywidth(a:context.border_style.border.row)],
+  \ [foot_adjustment, strdisplaywidth(a:context.border_style.border.foot)],
+  \ [bottom_adjustment, strdisplaywidth(a:context.border_style.border.bottom)],
+  \]
+  let width = a:width
+
+  for _ in range(5)
+    if empty(filter(copy(pairs), '((width + v:val[0]) % v:val[1]) != 0'))
+      return width
+    endif
+
+    let width += 1
+  endfor
+
+  " second, adjust for outer borders
+  let pairs = [
+  \ [top_adjustment, strdisplaywidth(a:context.border_style.border.top)],
+  \ [bottom_adjustment, strdisplaywidth(a:context.border_style.border.bottom)],
+  \]
+  let width = a:width
+
+  for _ in range(5)
+    if empty(filter(copy(pairs), '((width + v:val[0]) % v:val[1]) != 0'))
+      return width
+    endif
+
+    let width += 1
+  endfor
+
+  " oh, my...
+  return a:width
+endfunction
+
+function! s:_compute_widths(context)
+  let ranges = s:_compute_width_ranges(a:context)
+
+  let widths = []
+  for container in s:L.zip(ranges, a:context.column_styles, range(a:context.ncolumns))
+    let range = container[0]
+    let style = container[1]
+    let colidx = container[2]
+
+    let max_width = (style.max_width > 0) ? style.max_width : range[1]
+    let min_width = (style.min_width > 0) ? style.min_width : range[0]
+    " default is max one
+    let width = max_width
+    let fixed = 0
+
+    " fix width if exists width which was specified by user
+    if style.width > 0
+      let width = style.width
+      let fixed = 1
+    endif
+
+    " use minimum width if width less than minimum width
+    if width < min_width
+      let width = min_width
+    endif
+
+    " adjust for filling border
+    if !fixed && style.max_width <= 0
+      let width = s:_adjust_for_filling(a:context, colidx, width)
+    endif
+
+    let widths += [{'width': width, 'fixed': fixed, 'min_width': min_width, 'max_width': max_width}]
+  endfor
+
+  let table_width = s:_compute_table_width(a:context)
+
+  if a:context.table_style.max_width <= 0 || table_width >= s:L.foldl('v:memo + v:val.width', 0, widths)
+    return map(copy(widths), 'v:val.width')
+  else
+    while table_width < s:L.foldl('v:memo + v:val.width', 0, widths)
+      let fixed_widths = filter(copy(widths), 'v:val.fixed')
+      let nonfixed_widths = filter(copy(widths), '!v:val.fixed')
+      let free_width = abs(a:context.table_style.max_width - s:L.foldl('v:memo + v:val.width', 0, fixed_widths))
+
+      if empty(nonfixed_widths)
+        break
+      endif
+
+      " distribute free width to each non-fixed width
+      for w in nonfixed_widths
+        " ratio by logarithm for natural distribution
+        let w.width -= float2nr(free_width * (log(w.max_width) / s:L.foldl('v:memo + v:val.max_width', 0.0, nonfixed_widths)) + 0.5)
+
+        if w.width < w.min_width
+          let w.width = w.min_width
+          let w.fixed = 1
+        endif
+      endfor
+    endwhile
+
+    return map(copy(widths), 'v:val.width')
+  endif
+endfunction
+
+function! s:_compute_table_width(context)
+  if a:context.table_style.max_width <= 0
+    " not specified
+    return 0
+  endif
+
+  let width = a:context.table_style.max_width
+
+  " | xxx | xxx |
+  if a:context.vborder
+    let joint = a:context.border_style.joint
+    let border = a:context.border_style.border
+
+    let left_border_width = max(map([
+    \   joint.top_left, joint.head_left, joint.left, joint.foot_left, joint.bottom_left,
+    \   border.left,
+    \ ], 'strdisplaywidth(v:val)'))
+    let right_border_width = max(map([
+    \   joint.top_right, joint.head_right, joint.right, joint.foot_right, joint.bottom_right,
+    \   border.right,
+    \ ], 'strdisplaywidth(v:val)'))
+    let center_border_width = max(map([
+    \   joint.top, joint.head, joint.row, joint.foot, joint.bottom,
+    \   border.top, border.head, border.row, border.column, border.foot, border.bottom,
+    \ ], 'strdisplaywidth(v:val)'))
+
+    let width -= left_border_width + (center_border_width * (a:context.ncolumns - 1)) + right_border_width
+  endif
+
+  let width -= (a:context.hpadding * 2) * a:context.ncolumns
+
+  return width
+endfunction
+
+function! s:_make_internal_row_object(defs, row)
+  let irow = []
+  for container in s:L.zip(a:row, a:defs)
+    if type(container[0]) == type({})
+      let text =  get(container[0], 'text', '')
+      let style = get(container[0], 'style', container[1])
+    else
+      let text =  container[0]
+      let style = container[1]
+    endif
+
+    let irow += [{
+    \ 'style': extend(deepcopy(s:default_column_style), style),
+    \ 'text':  split(s:_to_string(text), "\n"),
+    \}]
+  endfor
+  return irow
 endfunction
 
 function! s:_stringify(context)
   let buffer = []
 
-  let buffer += s:_make_border_string(a:context)
+  let buffer += s:_make_border_string(a:context,
+  \ a:context.border_style.joint.top_left, a:context.border_style.joint.top, a:context.border_style.joint.top_right,
+  \ a:context.border_style.border.top
+  \)
 
-  if !empty(a:context.header)
-    let buffer += s:_make_row_string(a:context, a:context.header)
-    let buffer += s:_make_border_string(a:context)
+  if a:context.has_header
+    let buffer += s:_make_row_string(a:context, a:context.header,
+    \ a:context.border_style.border.left, a:context.border_style.border.column, a:context.border_style.border.right
+    \)
+    let buffer += s:_make_border_string(a:context,
+    \ a:context.border_style.joint.head_left, a:context.border_style.joint.head, a:context.border_style.joint.head_right,
+    \ a:context.border_style.border.head
+    \)
   endif
 
-  for row in a:context.rows
-    let buffer += s:_make_row_string(a:context, row)
+  let nrows = len(a:context.rows)
+  for rowidx in range(nrows)
+    let row = a:context.rows[rowidx]
+
+    let buffer += s:_make_row_string(a:context, row,
+    \ a:context.border_style.border.left, a:context.border_style.border.column, a:context.border_style.border.right
+    \)
+
+    if rowidx != nrows - 1
+      let buffer += s:_make_border_string(a:context,
+      \ a:context.border_style.joint.left, a:context.border_style.joint.row, a:context.border_style.joint.right,
+      \ a:context.border_style.border.row
+      \)
+    endif
   endfor
 
-  if !empty(a:context.footer)
-    let buffer += s:_make_border_string(a:context)
-    let buffer += s:_make_row_string(a:context, a:context.footer)
+  if a:context.has_footer
+    let buffer += s:_make_border_string(a:context,
+    \ a:context.border_style.joint.foot_left, a:context.border_style.joint.foot, a:context.border_style.joint.foot_right,
+    \ a:context.border_style.border.foot
+    \)
+    let buffer += s:_make_row_string(a:context, a:context.footer,
+    \ a:context.border_style.border.left, a:context.border_style.border.column, a:context.border_style.border.right
+    \)
   endif
 
-  let buffer += s:_make_border_string(a:context)
+  let buffer += s:_make_border_string(a:context,
+  \ a:context.border_style.joint.bottom_left, a:context.border_style.joint.bottom, a:context.border_style.joint.bottom_right,
+  \ a:context.border_style.border.bottom
+  \)
 
   return buffer
 endfunction
 
-function! s:_make_border_string(context)
+function! s:_make_border_string(context, left_joint, center_joint, right_joint, border)
   if !a:context.hborder
     return []
   endif
+  if empty(a:border)
+    return []
+  endif
+
+  let left_joint = (a:context.vborder) ? a:left_joint : a:border
+  let center_joint = (a:context.vborder) ? a:center_joint : a:border
+  let right_joint = (a:context.vborder) ? a:right_joint : a:border
 
   let buffer = []
 
-  for def in a:context.column_defs
-    let width = def.width
-    if a:context.vborder
-      let width += 2
-    endif
-    let buffer += [repeat('-', width)]
+  for colidx in range(a:context.ncolumns)
+    let width = a:context.widths[colidx]
+
+    " adjust width
+    let width += s:_compute_adjustment(a:context, colidx, left_joint, center_joint, right_joint)
+
+    let buffer += [s:_fill_char(a:border, width)]
   endfor
 
-  if a:context.vborder
-    return ['+' . join(buffer, '+') . '+']
-  else
-    return ['-' . join(buffer, '-') . '-']
-  endif
+  return [left_joint . join(buffer, center_joint) . right_joint]
 endfunction
 
-function! s:_make_row_string(context, row)
-  let buffer = []
+function! s:_make_row_string(context, row, left_border, center_border, right_border)
+  let row = deepcopy(a:row)
 
-  for col in range(len(a:context.column_defs))
-    let def =  a:context.column_defs[col]
-    let cell = a:row[col]
+  for colidx in range(a:context.ncolumns)
+    let cell = row[colidx]
 
-    let buffer += [s:_make_cell_string(def, cell)]
-
-    unlet cell
+    let cell.text = s:_wrap(cell.text, a:context.widths[colidx])
   endfor
 
   " vertical align
-  let tmp = []
-  let col = 0
-  for cells in s:_make_equals_size(buffer)
-    let def = a:context.column_defs[col]
-
-    let tmp += [s:_valign(def, cells)]
-
-    let col += 1
+  let row = s:_make_equals_size(row)
+  for cell in row
+    let cell.text = s:_valign(cell.style, cell.text)
   endfor
-  let buffer = tmp
-  unlet tmp
 
   let out = []
-  for cells in s:_zip(buffer)
+  let padding = repeat(' ', a:context.hpadding)
+  for htexts in call(s:L.zip, map(copy(row), '!empty(v:val.text) ? v:val.text : [""]'))
     let cellstrs = []
-    for col in range(len(a:context.column_defs))
-      let def = a:context.column_defs[col]
-      let cell = cells[col]
-
+    for colidx in range(a:context.ncolumns)
       " horizontal align
-      let cellstrs += [s:_halign(def, cell)]
+      let cellstrs += [s:_halign(row[colidx].style, htexts[colidx], a:context.widths[colidx])]
     endfor
     if a:context.vborder
-      let out += ['| ' . join(cellstrs, ' | ') . ' |']
+      let out += [a:left_border . padding . join(cellstrs, padding . a:center_border . padding) . padding . a:right_border]
     elseif a:context.hborder
-      let out += [' ' . join(cellstrs, ' ') . ' ']
+      let out += [padding . join(cellstrs, padding) . padding]
     else
-      let out += [join(cellstrs, ' ')]
+      let out += [join(cellstrs, padding)]
     endif
   endfor
   return out
 endfunction
 
-function! s:_make_cell_string(def, expr)
-  let cellstr = s:_to_string(a:expr)
-
-  " `1' is for a new line
-  return s:_wrap(cellstr, a:def.width + 1)
-endfunction
-
-function! s:_halign(def, expr)
-  if a:def.halign ==# 'left'
-    let str = s:_to_string(a:expr)
-    while strdisplaywidth(str) < a:def.width
+function! s:_halign(style, str, width)
+  if a:style.halign ==# 'left'
+    let str = a:str
+    while strdisplaywidth(str) < a:width
       let str .= ' '
     endwhile
     return str
-  elseif a:def.halign ==# 'center'
-    let str = s:_to_string(a:expr)
+  elseif a:style.halign ==# 'center'
+    let str = a:str
     let n = 0
-    while strdisplaywidth(str) < a:def.width
+    while strdisplaywidth(str) < a:width
       if n
         let str = ' ' . str
       else
@@ -277,14 +578,14 @@ function! s:_halign(def, expr)
       let n = !n
     endwhile
     return str
-  elseif a:def.halign ==# 'right'
-    let str = s:_to_string(a:expr)
-    while strdisplaywidth(str) < a:def.width
+  elseif a:style.halign ==# 'right'
+    let str = a:str
+    while strdisplaywidth(str) < a:width
       let str = ' ' . str
     endwhile
     return str
   else
-    throw printf("vital: Text.Table: Unknown halign `%s'", a:def.halign)
+    throw printf("vital: Text.Table: Unknown halign `%s'", a:style.halign)
   endif
 endfunction
 
@@ -320,31 +621,18 @@ function! s:_to_string(expr)
   endif
 endfunction
 
-function! s:_make_equals_size(list)
-  let mlen = max(map(copy(a:list), 'len(v:val)'))
-  let res = []
-  for l in a:list
-    let res += [map(range(mlen), 'get(l, v:val, "")')]
+function! s:_make_equals_size(row)
+  let row = deepcopy(a:row)
+  let mlen = max(map(copy(row), 'len(v:val.text)'))
+  for cell in row
+    let cell.text = map(range(mlen), 'get(cell.text, v:val, "")')
   endfor
-  return res
+  return row
 endfunction
 
-function! s:_zip(list)
-  let mlen = max(map(copy(a:list), 'len(v:val)'))
-  let zip = []
-  for i in range(mlen)
-    let buf = []
-    for l in a:list
-      let buf += [get(l, i, '')]
-    endfor
-    let zip += [buf]
-  endfor
-  return zip
-endfunction
-
-function! s:_wrap(s, w)
+function! s:_wrap(text, width)
   return s:L.concat(
-        \ map(split(a:s, '\r\n\|[\r\n]'), 's:_split_by_displaywidth(v:val, a:w - 1)'))
+  \ map(a:text, 's:_split_by_displaywidth(v:val, a:width)'))
 endfunction
 
 function! s:_split_by_displaywidth(body, x)
@@ -388,6 +676,17 @@ function! s:_strdisplaywidthpart_reverse(str, width)
     let width -= strdisplaywidth(char)
   endwhile
   return join(rest, '')
+endfunction
+
+function! s:_fill_char(char, width)
+  if a:width <= 0
+    return ''
+  endif
+  let str = repeat(a:char, a:width / strdisplaywidth(a:char))
+  while strdisplaywidth(str) < a:width
+    let str .= ' '
+  endwhile
+  return str
 endfunction
 
 let &cpo = s:save_cpo
