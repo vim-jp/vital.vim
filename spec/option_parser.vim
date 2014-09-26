@@ -422,6 +422,9 @@ Context complete_greedily() funcref in OptionParser object
         Should o.complete_greedily('-h', 'Hoge -h', 7) == []
         Should o.complete_greedily('-p', 'Hoge -p', 7) == []
         Should o.complete_greedily('-f', 'Hoge -f', 7) == []
+        Should o.complete_greedily('--tsura=', 'Hoge --tsura=', 13) == ['--tsura=inu', '--tsura=manbou', '--tsura=momonga']
+        Should o.complete_greedily('--huga=', 'Hoge --huga=', 12) == ['--huga=sushi', '--huga=yakiniku', '--huga=yakitori']
+        Should o.complete_greedily('--huga=yaki', 'Hoge --hoge=yaki', 16) == ['--huga=yakiniku', '--huga=yakitori']
         Should o.complete_greedily('', 'Hoge ', 5) == ['--tsura=', '--hoge', '--huga=', '--no-huga=', '--piyo', '--poyo', '--no-poyo', 'vim', 'vimmer', 'kowai']
     End
 End

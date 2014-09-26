@@ -287,7 +287,7 @@ function! s:_complete_user_specified_short_option(options, arglead, cmdline, cur
     if has_key(option, 'short_option_definition')
           \ && option.short_option_definition ==# def
           \ && has_key(option, 'completion')
-      return option.completion(lead, cmdline, cursorpos)
+      return option.completion(lead, a:cmdline, a:cursorpos)
     endif
   endfor
   return []
@@ -332,6 +332,22 @@ function! s:_DEFAULT_PARSER.complete(arglead, cmdline, cursorpos)
 endfunction
 
 function! s:_DEFAULT_PARSER.complete_greedily(arglead, cmdline, cursorpos)
+
+  if a:arglead =~# '^--.\+=.*$'
+    let prefix = matchstr(a:arglead, '^.\+=')
+    return map(
+          \  s:_complete_user_specified_option(self.options, a:arglead, a:cmdline, a:cursorpos),
+          \ 'prefix . v:val'
+          \ )
+
+  elseif a:arglead =~# '^-[^-=]=.*$'
+    let prefix = matchstr(a:arglead, '^-[^-=]=')
+    return map(
+          \ s:_complete_user_specified_short_option(self.options, a:arglead, a:cmdline, a:cursorpos),
+          \ 'prefix . v:val'
+          \ )
+  endif
+
   let long_opts = s:_complete_long_option(a:arglead, self.options)
   if has_key(self, 'unknown_options_completion')
     return long_opts + s:_complete_unknown_option(
