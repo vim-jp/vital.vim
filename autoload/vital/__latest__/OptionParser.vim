@@ -243,7 +243,7 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...)
   return self
 endfunction
 
-function! s:_long_option_completion(arglead, options)
+function! s:_complete_long_option(arglead, options)
   let candidates = []
   for [name, option] in items(a:options)
     let has_value = get(option, 'has_value', 0)
@@ -256,7 +256,7 @@ function! s:_long_option_completion(arglead, options)
   return filter(candidates, 'v:val =~# lead_pattern')
 endfunction
 
-function! s:_short_option_completion(arglead, options)
+function! s:_complete_short_option(arglead, options)
   let candidates = []
   for option in values(a:options)
     let has_value = get(option, 'has_value', 0)
@@ -271,25 +271,29 @@ function! s:_short_option_completion(arglead, options)
   return filter(candidates, 'v:val =~# lead_pattern')
 endfunction
 
-function! s:_user_defined_completion(lead, name, options, cmdline, cursorpos)
-  if ! has_key(a:options, a:name) || ! has_key(a:options[a:name], 'completion')
+function! s:_complete_user_specified_option(options, arglead, cmdline, cursorpos)
+  let lead = matchstr(a:arglead, '=\zs.*$')
+  let name = matchstr(a:arglead, '^--\zs[^=]\+')
+  if ! has_key(a:options, name) || ! has_key(a:options[name], 'completion')
     return []
   endif
-  return a:options[a:name].completion(a:lead, a:cmdline, a:cursorpos)
+  return a:options[name].completion(lead, a:cmdline, a:cursorpos)
 endfunction
 
-function! s:_user_defined_short_option_completion(lead, def, options, cmdline, cursorpos)
+function! s:_complete_user_specified_short_option(options, arglead, cmdline, cursorpos)
+  let lead = matchstr(a:arglead, '=\zs.*$')
+  let def = matchstr(a:arglead, '^-[^-=]')
   for option in values(a:options)
     if has_key(option, 'short_option_definition')
-          \ && option.short_option_definition ==# a:def
+          \ && option.short_option_definition ==# def
           \ && has_key(option, 'completion')
-      return option.completion(a:lead, a:cmdline, a:cursorpos)
+      return option.completion(lead, cmdline, cursorpos)
     endif
   endfor
   return []
 endfunction
 
-function! s:_unknown_option_completion(Completer, arglead, cmdline, cursorpos)
+function! s:_complete_unknown_option(Completer, arglead, cmdline, cursorpos)
   if type(a:Completer) == s:_STRING_TYPE
     return s:_PRESET_COMPLETER[a:Completer](a:arglead, a:cmdline, a:cursorpos)
   else
@@ -300,41 +304,37 @@ endfunction
 function! s:_DEFAULT_PARSER.complete(arglead, cmdline, cursorpos)
   if a:arglead =~# '^--[^=]*$'
     " when long option
-    return s:_long_option_completion(a:arglead, self.options)
+    return s:_complete_long_option(a:arglead, self.options)
 
   elseif a:arglead =~# '^-[^-=]\?$'
     " when short option
-    return s:_short_option_completion(a:arglead, self.options)
+    return s:_complete_short_option(a:arglead, self.options)
 
   elseif a:arglead =~# '^--.\+=.*$'
-    let lead = matchstr(a:arglead, '=\zs.*$')
-    let name = matchstr(a:arglead, '^--\zs[^=]\+')
     let prefix = matchstr(a:arglead, '^.\+=')
     return map(
-          \  s:_user_defined_completion(lead, name, self.options, a:cmdline, a:cursorpos),
+          \  s:_complete_user_specified_option(self.options, a:arglead, a:cmdline, a:cursorpos),
           \ 'prefix . v:val'
           \ )
 
   elseif a:arglead =~# '^-[^-=]=.*$'
-    let lead = matchstr(a:arglead, '=\zs.*$')
-    let def = matchstr(a:arglead, '^-[^-=]')
-    let prefix = def . '='
+    let prefix = matchstr(a:arglead, '^-[^-=]=')
     return map(
-          \ s:_user_defined_short_option_completion(lead, def, self.options, a:cmdline, a:cursorpos),
+          \ s:_complete_user_specified_short_option(self.options, a:arglead, a:cmdline, a:cursorpos),
           \ 'prefix . v:val'
           \ )
 
   elseif has_key(self, 'unknown_options_completion')
-    return s:_unknown_option_completion(self.unknown_options_completion, a:arglead, a:cmdline, a:cursorpos)
+    return s:_complete_unknown_option(self.unknown_options_completion, a:arglead, a:cmdline, a:cursorpos)
   endif
 
   return []
 endfunction
 
 function! s:_DEFAULT_PARSER.complete_greedily(arglead, cmdline, cursorpos)
-  let long_opts = s:_long_option_completion(a:arglead, self.options)
+  let long_opts = s:_complete_long_option(a:arglead, self.options)
   if has_key(self, 'unknown_options_completion')
-    return long_opts + s:_unknown_option_completion(
+    return long_opts + s:_complete_unknown_option(
           \   self.unknown_options_completion,
           \   a:arglead,
           \   a:cmdline,
