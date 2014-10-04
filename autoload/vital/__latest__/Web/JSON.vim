@@ -51,7 +51,7 @@ function! s:decode(json, ...)
         \ 'use_token': 0,
         \}, get(a:000, 0, {}))
   let json = iconv(a:json, "utf-8", &encoding)
-  let json = substitute(json, '\n', '', 'g')
+  let json = join(split(json, "\n"), '')
   let json = substitute(json, '\\u34;', '\\"', 'g')
   let json = substitute(json, '\\u\(\x\x\x\x\)', '\=s:string.nr2enc_char("0x".submatch(1))', 'g')
   if settings.use_token
