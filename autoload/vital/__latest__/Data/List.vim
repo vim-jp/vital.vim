@@ -395,12 +395,11 @@ function! s:permutations(list, ...)
 endfunction
 
 function! s:_permutations(list, r)
-  let pool = a:list
-  let n = len(pool)
+  let n = len(a:list)
   let result = []
   let indices = range(n)
   let cycles = range(n, n - a:r + 1, -1)
-  call add(result, pool[: a:r - 1])
+  call add(result, a:list[: a:r - 1])
   while n != 0
     let cont = 0
     for i in range(a:r - 1, 0, -1)
@@ -411,7 +410,7 @@ function! s:_permutations(list, r)
       else
         let j = cycles[i]
         let [indices[i], indices[-j]] = [indices[-j], indices[i]]
-        call add(result, map(indices[: a:r - 1], 'pool[v:val]'))
+        call add(result, map(indices[: a:r - 1], 'a:list[v:val]'))
         let cont = 1
         break
       endif
