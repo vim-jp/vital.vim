@@ -462,3 +462,14 @@ Context Data.List.binary_search()
     Should g:L.binary_search([], 1, f.func) == -1
   End
 End
+
+Context Data.List.permutations()
+  It returns permutations of elements in given list
+    Should g:L.permutations([1, 2, 3]) == [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+    Should g:L.permutations([1, 2, 3], 2) == [[1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
+    Should g:L.permutations('ABC', 2) == ['AB', 'AC', 'BA', 'BC', 'CA', 'CB']
+    Should g:L.permutations([1, 2, 3], 4) == []
+  End
+End
+
+
