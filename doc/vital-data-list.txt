@@ -494,17 +494,18 @@ binary_search({list}, {expr}, [{func}, [{dict}]])
 	" 1
 	echo s:L.binary_search(['a', 'aa', 'aaa'], 'vivi', CompareByLength.func, CompareByLength)
 	" -1
-permutations({list}, {r})			*Vital.Data.List.permutations*
+permutations({list} [, {r}])			*Vital.Data.List.permutations*
 	Returns successive {r} length permutations of elements in the {list}.
 	If {r} is not specified, then {r} defaults to the length of the {list}
 	and all possible full-length permutations are generated.
+	If {list} is string, this function returns {r} length string permutations.
 >
 	echo L.permutations([1, 2, 3])
 	" [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
-        echo L.permutations([1, 2, 3], 2)
-        " [[1, 2] , [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
-        echo L.permutations('ABC', 2)
-        " ['AB', 'AC', 'BA', 'BC', 'CA', 'CB']
+	echo L.permutations([1, 2, 3], 2)
+	" [[1, 2] , [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
+	echo L.permutations('ABC', 2)
+	" ['AB', 'AC', 'BA', 'BC', 'CA', 'CB']
 <
 
 ==============================================================================
