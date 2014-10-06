@@ -387,7 +387,7 @@ function! s:permutations(list, ...)
     return []
   endif
   if type(a:list) == type('')
-    let l = s:_permutations(split(a:list, '.\zs'), r)
+    let l = s:_permutations(split(a:list, '\zs'), r)
     return map(l, 'join(v:val, "")')
   else
     return s:_permutations(a:list, r)
