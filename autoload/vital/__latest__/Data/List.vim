@@ -400,9 +400,10 @@ function! s:_permutations(list, r)
   let indices = range(n)
   let cycles = range(n, n - a:r + 1, -1)
   call add(result, a:list[: a:r - 1])
+  let desc = range(a:r - 1, 0, -1)
   while n != 0
     let cont = 0
-    for i in range(a:r - 1, 0, -1)
+    for i in desc
       let cycles[i] -= 1
       if cycles[i] == 0
         let indices[i :] = indices[i + 1 :] + [indices[i]]
