@@ -1,0 +1,36 @@
+Describe Random.Mt19937ar
+  Before all
+    let g:M = vital#of('vital').import('Random.Mt19937ar')
+  End
+
+  After all
+    unlet! g:M
+  End
+
+  Describe .rand()
+    It returns the same random number as the reference implementation in C
+      let expected = readfile(expand('<sfile>:p:h') . '/test/Random/mt19937ar_random_numbers_table.txt')
+      for e in expected
+        Assert Equals(e, g:M.rand())
+      endfor
+    End
+  End
+
+  Describe .srand()
+    It sets the seed
+      call g:M.srand(1)
+      let g:a1 = g:M.rand()
+      let g:a2 = g:M.rand()
+      let g:a3 = g:M.rand()
+
+      call g:M.srand(1)
+      Assert Equals(g:a1, g:M.rand())
+      Assert Equals(g:a2, g:M.rand())
+      Assert Equals(g:a3, g:M.rand())
+
+      call g:M.srand(2)
+      Assert NotEquals(g:a1, g:M.rand())
+    End
+  End
+End
+
