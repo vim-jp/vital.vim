@@ -378,6 +378,51 @@ function! s:binary_search(list, value, ...)
   endwhile
 endfunction
 
+function! s:permutations(list, ...)
+  if a:0 > 1
+    throw 'vital: Data.List: too many arguments'
+  endif
+  let r = a:0 == 1 ? a:1 : len(a:list)
+  if r > len(a:list)
+    return []
+  endif
+  if type(a:list) == type('')
+    let l = s:_permutations(split(a:list, '\zs'), r)
+    return map(l, 'join(v:val, "")')
+  else
+    return s:_permutations(a:list, r)
+  endif
+endfunction
+
+function! s:_permutations(list, r)
+  let n = len(a:list)
+  let result = []
+  let indices = range(n)
+  let cycles = range(n, n - a:r + 1, -1)
+  call add(result, a:list[: a:r - 1])
+  let desc = range(a:r - 1, 0, -1)
+  while n != 0
+    let cont = 0
+    for i in desc
+      let cycles[i] -= 1
+      if cycles[i] == 0
+        let indices[i :] = indices[i + 1 :] + [indices[i]]
+        let cycles[i] = n - i
+      else
+        let j = cycles[i]
+        let [indices[i], indices[-j]] = [indices[-j], indices[i]]
+        call add(result, map(indices[: a:r - 1], 'a:list[v:val]'))
+        let cont = 1
+        break
+      endif
+    endfor
+    if cont == 0
+      break
+    endif
+  endwhile
+  return result
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
