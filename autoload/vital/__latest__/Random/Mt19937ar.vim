@@ -1,4 +1,4 @@
-" Mersenne Twister, a very first random number generator.
+" Mersenne Twister, a very long-period and high-order of equidistribution pseudo random number generator.
 "
 " Ported from https://github.com/ynkdir/vim-funlib/blob/master/autoload/random/mt19937ar.vim
 " originally written by Yukihiro Nakadaira (@ynkdir).
