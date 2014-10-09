@@ -386,21 +386,12 @@ function! s:permutations(list, ...)
   if r > len(a:list)
     return []
   endif
-  if type(a:list) == type('')
-    let l = s:_permutations(split(a:list, '\zs'), r)
-    return map(l, 'join(v:val, "")')
-  else
-    return s:_permutations(a:list, r)
-  endif
-endfunction
-
-function! s:_permutations(list, r)
   let n = len(a:list)
   let result = []
   let indices = range(n)
-  let cycles = range(n, n - a:r + 1, -1)
-  call add(result, a:list[: a:r - 1])
-  let desc = range(a:r - 1, 0, -1)
+  let cycles = range(n, n - r + 1, -1)
+  call add(result, a:list[: r - 1])
+  let desc = range(r - 1, 0, -1)
   while n != 0
     let cont = 0
     for i in desc
@@ -411,7 +402,7 @@ function! s:_permutations(list, r)
       else
         let j = cycles[i]
         let [indices[i], indices[-j]] = [indices[-j], indices[i]]
-        call add(result, map(indices[: a:r - 1], 'a:list[v:val]'))
+        call add(result, map(indices[: r - 1], 'a:list[v:val]'))
         let cont = 1
         break
       endif
