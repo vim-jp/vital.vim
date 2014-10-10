@@ -426,6 +426,22 @@ function! s:permutations(list, ...)
   return result
 endfunction
 
+function! s:combinations(list, r)
+  if r > len(a:list)
+    return []
+  elseif a:r < 0
+    throw 'vital: Data:List: r must be non-negative integer'
+  endif
+  let n = len(a:list)
+  let result = []
+  for indices in s:permutations(range(n), a:r)
+    if s:sort(copy(indices), 'a:a - a:b') == indices
+      call add(result, map(indices, 'a:list[v:val]'))
+    endif
+  endfor
+  return result
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

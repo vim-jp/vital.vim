@@ -484,3 +484,11 @@ Context Data.List.permutations()
  End
 End
 
+Context Data.List.combinations()
+  It returns combinations of elements in given list
+    Should g:L.combinations([1, 2, 3, 4], 2) == [[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
+    Should g:L.combinations([5, 2, 3, 1], 3) == [[5, 2, 3], [5, 2, 1], [5, 3, 1], [2, 3, 1]]
+    Should g:L.combinations([1, 2, 3], 4) == []
+  End
+End
+
