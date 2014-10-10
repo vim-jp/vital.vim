@@ -398,7 +398,7 @@ function! s:permutations(list, ...)
   if r > len(a:list)
     return []
   elseif r < 0
-    throw 'vital: Data.List: r must be non-negative integer'
+    throw 'vital: Data.List: {r} must be non-negative integer'
   endif
   let n = len(a:list)
   let result = []
@@ -411,10 +411,10 @@ function! s:permutations(list, ...)
 endfunction
 
 function! s:combinations(list, r)
-  if r > len(a:list)
+  if a:r > len(a:list)
     return []
   elseif a:r < 0
-    throw 'vital: Data:List: r must be non-negative integer'
+    throw 'vital: Data:List: {r} must be non-negative integer'
   endif
   let n = len(a:list)
   let result = []
