@@ -463,6 +463,14 @@ Context Data.List.binary_search()
   End
 End
 
+Context Data.List.product()
+  It returns Cartesian product of elements in given lists
+    Should g:L.product([[1], [2]]) == ([[1, 2]])
+    Should g:L.product([[1, 2], [4, 5]]) == ([[1, 4], [1, 5], [2, 4], [2, 5]])
+    Should g:L.product([range(2), range(2), range(2)]) == ([[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
+  End
+End
+
 Context Data.List.permutations()
   It returns permutations of elements in given list
     Should g:L.permutations([1, 2, 3]) == [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]

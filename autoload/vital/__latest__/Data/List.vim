@@ -378,6 +378,18 @@ function! s:binary_search(list, value, ...)
   endwhile
 endfunction
 
+function! s:product(lists)
+  let result = [[]]
+  for pool in a:lists
+    let tmp = []
+    for x in result
+      let tmp += map(copy(pool), 'x + [v:val]')
+    endfor
+    let result = tmp
+  endfor
+  return result
+endfunction
+
 function! s:permutations(list, ...)
   if a:0 > 1
     throw 'vital: Data.List: too many arguments'

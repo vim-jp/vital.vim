@@ -495,6 +495,14 @@ binary_search({list}, {expr}, [{func}, [{dict}]])
 	echo s:L.binary_search(['a', 'aa', 'aaa'], 'vivi', CompareByLength.func, CompareByLength)
 	" -1
 <
+product({lists})				*Vital.Data.List.product*
+	Returns Cartesian product of elements in the {lists}.
+>
+	echo L.product([[1, 2], [4, 5]])
+	" [[1, 4], [1, 5], [2, 4], [2, 5]]
+	echo L.product([range(2), range(2), range(2)])
+	" [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]]
+<
 permutations({list} [, {r}])			*Vital.Data.List.permutations*
 	Returns successive {r} length permutations of elements in the {list}.
 	If {r} is not specified, then {r} defaults to the length of the {list}
