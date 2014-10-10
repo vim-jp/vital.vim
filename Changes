@@ -1,3 +1,6 @@
+24877cc
+	Modules: Data.List
+	permutations({list}[, {r}]) behavior is changed not to support string input as {list}.
 24b96f5
 	Modules: Vim.Buffer
 	's:get_selected_text()' is deprecated. Use 's:get_last_selected()'.
