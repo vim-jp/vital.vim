@@ -135,6 +135,9 @@ Describe Data.Closure
       End
 
       It can change the variables of binding
+        if !g:C.is_binding_supported()
+          Skip {binding} is not supported in this Vim
+        endif
         let foo = 10
         let closure = g:C.from_command('let foo = a:1', l:)
         Assert Equals(foo, 10)

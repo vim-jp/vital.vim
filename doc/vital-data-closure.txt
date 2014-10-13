@@ -54,10 +54,13 @@ TERM					*Vital.Data.Closure-term*
 	{binding} is a |Dictionary|.  You can access to this Dictionary from
 	{expr} or {command} as local variables.
 	Note that the key for |Funcref| must start with a capital.
-	If local variable is changed, {binding} will change similarly.
+
 	When {binding} is a |List| of |Dictionary|, a new |Dictionary| will be
 	created as new {binding}, and all dictionaries are extended to the new
 	dictionary.
+
+	If local variable is changed, {binding} will change similarly.  This
+	feature is available in Vim 7.3.560 or later.
 
 
 
@@ -146,6 +149,10 @@ sweep_functions()			*Vital.Data.Closure.sweep_functions()*
 	As a result, the function remains as garbage.
 	This function sweeps it.
 	This is automatically called by |Vital.Data.Closure.build()|.
+
+is_binding_supported()		*Vital.Data.Closure.is_binding_supported()*
+	Returns true when the {binding} feature supports local changing.
+	See also |Vital.Data.Closure-term-binding|.
 
 
 

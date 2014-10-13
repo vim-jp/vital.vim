@@ -16,6 +16,9 @@ let s:OPERATOR_LIST = [
 \  '||', '&&',
 \]
 
+let s:is_binding_supported =
+\   704 <= v:version || (v:version == 703 && has('patch560'))
+
 let s:closures = {}
 let s:mark_to_sweep = {}
 let s:current_function_id = 0
@@ -149,7 +152,8 @@ function! s:from_funcref(function, ...)
 endfunction
 
 function! s:from_funcname(funcname, ...)
-  return call('s:from_funcref', [function(a:funcname)] + a:000)
+  let funcname = a:funcname[0] ==# '*' ? a:funcname[1 :] : a:funcname
+  return call('s:from_funcref', [function(funcname)] + a:000)
 endfunction
 
 function! s:from_expr(expr, ...)
@@ -252,6 +256,10 @@ function! s:is_callable(expr)
   \   ))
 endfunction
 
+function! s:is_binding_supported()
+  return s:is_binding_supported
+endfunction
+
 function! s:sweep_functions()
   for closure in values(s:mark_to_sweep)
     call closure.delete_function()
@@ -304,25 +312,43 @@ function! s:_is_operator(str)
 endfunction
 
 function! s:_eval(...) dict
-  call extend(l:, self.binding, 'keep')
+  for s:key in keys(self.binding)
+    if s:key !=# 'self'
+      let {s:key} = self.binding[s:key]
+    endif
+  endfor
+
   try
     return eval(self.expr)
   finally
-    call extend(self.binding, filter(copy(l:), 'v:key !=# "self"'))
+    call s:_move(self.binding, l:)
   endtry
 endfunction
 
 function! s:_execute(...) dict
-  call extend(l:, self.binding, 'keep')
+  for s:key in keys(self.binding)
+    if s:key !=# 'self'
+      let {s:key} = self.binding[s:key]
+    endif
+  endfor
+
   try
     execute self.command
   finally
-    call extend(self.binding, filter(copy(l:), 'v:key !=# "self"'))
+    call s:_move(self.binding, l:)
   endtry
 endfunction
 
 function! s:_chain(...) dict
   return self.second.call(self.first.apply(a:000))
+endfunction
+
+function! s:_move(l, binding)
+  if !s:is_binding_supported
+    return
+  endif
+  call filter(a:l, 'v:key ==# "self"')
+  call extend(a:l, filter(copy(a:binding), 'v:key !=# "self"'))
 endfunction
 
 function! s:_is_funcname(name)
