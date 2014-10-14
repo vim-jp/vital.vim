@@ -10,7 +10,7 @@ function! s:make(keys, values, ...)
   for i in range(len(a:keys))
     let key = type(a:keys[i]) == type('') ? a:keys[i] : string(a:keys[i])
     if key ==# ''
-      throw "vital: Data.Dict.make(): Can't use an empty string for key."
+      throw "vital: Data.Dict: Can't use an empty string for key."
     endif
     let dict[key] = get(a:values, i, fill)
   endfor

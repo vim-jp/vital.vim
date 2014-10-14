@@ -23,7 +23,7 @@ Describe Data.Dict
       Assert Equals(g:D.make([[], {}, 1.0], ['list', 'dict', 'float']), {'[]': 'list', '{}': 'dict', '1.0': 'float'})
     End
     It throws an error when key is empty string
-      Throws /^vital: Data.Dict.make():/ g:D.make(['one', 'two', ''], [1, 2, 'empty'])
+      Throws /^vital: Data.Dict:/ g:D.make(['one', 'two', ''], [1, 2, 'empty'])
     End
   End
 
