@@ -38,6 +38,7 @@ If you are a Vim plugin author, please check this out.
 * [ProcessManager](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-process_manager.txt)
 * [Random](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-random.txt)
 * [Random.Xor128](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-random-xor128.txt)
+* [Random.Mt19937ar](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-random-mt19937ar.txt)
 * [System.Cache](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-system-cache.txt)
 * [System.File](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-system-file.txt)
 * [System.Filepath](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-system-filepath.txt)
