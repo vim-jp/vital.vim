@@ -2,15 +2,15 @@ let s:suite = themis#suite('Text.Table')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
-    let g:T = vital#of('vital').import('Text.Table')
+    let s:T = vital#of('vital').import('Text.Table')
 endfunction
 
 function! s:suite.after()
-    unlet! g:T
+    unlet! s:T
 endfunction
 
 function! s:suite.It_instantiates_a_new_object_without_configuration()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call s:assert.equals(table.hborder(), 1)
     call s:assert.equals(table.vborder(), 1)
@@ -22,7 +22,7 @@ function! s:suite.It_instantiates_a_new_object_without_configuration()
 endfunction
 
 function! s:suite.It_instantiates_a_new_object_with_configuration()
-    let table = g:T.new({
+    let table = s:T.new({
     \ 'hborder': 0,
     \ 'vborder': 0,
     \ 'border_style': {'joint': {'top': '^'}, 'border': {'bottom': '_'}},
@@ -42,7 +42,7 @@ function! s:suite.It_instantiates_a_new_object_with_configuration()
 endfunction
 
 function! s:suite.It_configures_properties()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.hborder(0)
     call table.vborder(0)
@@ -62,7 +62,7 @@ function! s:suite.It_configures_properties()
 endfunction
 
 function! s:suite.It_throws_when_already_added_columns()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.columns([{}, {}, {}])
     call table.header(['h1', 'h2', 'h3'])
@@ -78,7 +78,7 @@ function! s:suite.It_throws_when_already_added_columns()
 endfunction
 
 function! s:suite.It_configures_properties_step_by_step()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.add_column({})
     call table.add_column({})
@@ -91,7 +91,7 @@ function! s:suite.It_configures_properties_step_by_step()
 endfunction
 
 function! s:suite.It_makes_a_table()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.columns([{}, {}, {}])
     call table.header(['h1', 'h2', 'h3'])
@@ -110,7 +110,7 @@ function! s:suite.It_makes_a_table()
 endfunction
 
 function! s:suite.It_makes_a_table_without_horizontal_border()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.hborder(0)
     call table.columns([{}, {}, {}])
@@ -126,7 +126,7 @@ function! s:suite.It_makes_a_table_without_horizontal_border()
 endfunction
 
 function! s:suite.It_makes_a_table_without_vertical_border()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.vborder(0)
     call table.columns([{}, {}, {}])
@@ -146,7 +146,7 @@ function! s:suite.It_makes_a_table_without_vertical_border()
 endfunction
 
 function! s:suite.It_makes_a_table_without_horizontal_and_vertical_border()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.hborder(0)
     call table.vborder(0)
@@ -163,7 +163,7 @@ function! s:suite.It_makes_a_table_without_horizontal_and_vertical_border()
 endfunction
 
 function! s:suite.It_makes_a_table_even_if_there_are_multibyte_characters()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.columns([{}, {}, {}])
     call table.header(['h1', 'h2', 'h3'])
@@ -186,7 +186,7 @@ function! s:suite.It_makes_a_table_even_if_there_are_multibyte_characters()
 endfunction
 
 function! s:suite.It_makes_a_table_which_wraps_each_cells()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.columns([{'width': 4}, {'width': 4}, {'width': 4}])
     call table.header(['h1', 'h2', 'h3'])
@@ -210,7 +210,7 @@ function! s:suite.It_makes_a_table_which_wraps_each_cells()
 endfunction
 
 function! s:suite.It_makes_a_table_with_horizontal_and_vertical_alignment()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.columns([{'halign': 'right', 'valign': 'bottom', 'width': 4}, {'width': 4}, {'halign': 'center', 'valign': 'center', 'width': 4}])
     call table.header(['h1', 'h2', 'h3'])
@@ -231,7 +231,7 @@ function! s:suite.It_makes_a_table_with_horizontal_and_vertical_alignment()
 endfunction
 
 function! s:suite.It_makes_a_table_with_auto_wrapping_in_the_cell()
-    let table = g:T.new()
+    let table = s:T.new()
 
     call table.columns([{'halign': 'right', 'valign': 'bottom', 'width': 4}, {'width': 4}, {'halign': 'center', 'valign': 'center', 'width': 4}])
     call table.header(['h1', 'h2', 'h3'])
@@ -252,7 +252,7 @@ function! s:suite.It_makes_a_table_with_auto_wrapping_in_the_cell()
 endfunction
 
 function! s:suite.It_make_a_table_only_header_and_footer()
-    let table = g:T.new({
+    let table = s:T.new({
     \ 'columns': [{}, {}, {}],
     \ 'header':  ['header1', 'header2', 'header3'],
     \ 'footer':  ['footer1', 'footer2', 'footer3'],
@@ -269,7 +269,7 @@ function! s:suite.It_make_a_table_only_header_and_footer()
 endfunction
 
 function! s:suite.It_has_initial_header_and_footer_and_rows_later()
-    let table = g:T.new({
+    let table = s:T.new({
     \ 'columns': [{}, {}, {}],
     \ 'header':  ['header1', 'header2', 'header3'],
     \ 'footer':  ['footer1', 'footer2', 'footer3'],
@@ -295,7 +295,7 @@ function! s:suite.It_has_initial_header_and_footer_and_rows_later()
 endfunction
 
 function! s:suite.It_has_no_header_and_footer()
-    let table = g:T.new({
+    let table = s:T.new({
     \ 'columns': [{}, {}, {}],
     \})
 
@@ -315,7 +315,7 @@ function! s:suite.It_has_no_header_and_footer()
 endfunction
 
 function! s:suite.It_lays_out_by_cell_style_and_column_style()
-    let table = g:T.new({
+    let table = s:T.new({
     \ 'columns': [{'halign': 'center', 'valign': 'center', 'width': 10}],
     \})
 
@@ -341,7 +341,7 @@ function! s:suite.It_lays_out_by_cell_style_and_column_style()
 endfunction
 
 function! s:suite.It_automatically_resizes_width_for_each_column()
-    let table = g:T.new({
+    let table = s:T.new({
     \ 'columns': [{'width': 5}, {'max_width': 10}, {'min_width': 3}],
     \})
 
@@ -364,7 +364,7 @@ function! s:suite.It_automatically_resizes_width_for_each_column()
 endfunction
 
 function! s:suite.It_supresses_resizes_if_specified_table_style()
-    let table = g:T.new({
+    let table = s:T.new({
     \ 'columns': [{'width': 5}, {'width': 10}, {'max_width': 30}],
     \})
 
@@ -380,7 +380,7 @@ function! s:suite.It_supresses_resizes_if_specified_table_style()
 endfunction
 
 function! s:suite.It_can_changes_joints_and_borders()
-    let table = g:T.new({
+    let table = s:T.new({
     \ 'columns': [{'min_width': 5}, {'min_width': 5}, {'min_width': 5}],
     \})
 
@@ -434,7 +434,7 @@ function! s:suite.It_can_changes_joints_and_borders()
 endfunction
 
 function! s:suite.It_can_use_for_sudden_death()
-    let table = g:T.new({
+    let table = s:T.new({
     \ 'columns': [{}],
     \})
 
