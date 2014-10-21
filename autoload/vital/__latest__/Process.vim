@@ -17,6 +17,10 @@ let s:is_unix = has('unix')
 " return-value. We must convert them manually.
 let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 
+let s:TYPE_DICT = type({})
+let s:TYPE_LIST = type([])
+let s:TYPE_STRING = type("")
+
 
 " Execute program in the background from Vim.
 " Return an empty string always.
@@ -39,10 +43,10 @@ function! s:spawn(expr, ...)
     setlocal noshellslash
   endif
   try
-    if type(a:expr) is type([])
+    if type(a:expr) is s:TYPE_LIST
       let special = 1
       let cmdline = join(map(a:expr, 'shellescape(v:val, special)'), ' ')
-    elseif type(a:expr) is type("")
+    elseif type(a:expr) is s:TYPE_STRING
       let cmdline = a:expr
       if a:0 && a:1
         " for :! command
@@ -94,9 +98,9 @@ endfunction
 "     timeout: bool,
 "   }
 function! s:system(str, ...)
-  if type(a:str) is type([])
+  if type(a:str) is s:TYPE_LIST
     let command = join(map(copy(a:str), 's:shellescape(v:val)'), ' ')
-  elseif type(a:str) is type("")
+  elseif type(a:str) is s:TYPE_STRING
     let command = a:str
   else
     throw 'Process.system(): invalid argument (value type:'.type(a:str).')'
@@ -108,7 +112,7 @@ function! s:system(str, ...)
   let use_vimproc = s:has_vimproc()
   let args = [command]
   if a:0 ==# 1
-    if type(a:1) is type({})
+    if type(a:1) is s:TYPE_DICT
       if has_key(a:1, 'use_vimproc')
         let use_vimproc = a:1.use_vimproc
       endif
@@ -119,7 +123,7 @@ function! s:system(str, ...)
         " ignores timeout unless you have vimproc.
         let args += [a:1.timeout]
       endif
-    elseif type(a:1) is type("")
+    elseif type(a:1) is s:TYPE_STRING
       let args += [s:need_trans ? s:iconv(a:1, &encoding, 'char') : a:1]
     else
       throw 'Process.system(): invalid argument (value type:'.type(a:1).')'
