@@ -98,19 +98,12 @@ endfunction
 "     timeout: bool,
 "   }
 function! s:system(str, ...)
-  if type(a:str) is s:TYPE_LIST
-    let command = join(map(copy(a:str), 's:shellescape(v:val)'), ' ')
-  elseif type(a:str) is s:TYPE_STRING
-    let command = a:str
-  else
-    throw 'Process.system(): invalid argument (value type:'.type(a:str).')'
-  endif
-  if s:need_trans
-    let command = s:iconv(command, &encoding, 'char')
-  endif
+  " Process optional arguments at first
+  " because use_vimproc is required later
+  " for a:str argument.
   let input = ''
   let use_vimproc = s:has_vimproc()
-  let args = [command]
+  let args = []
   if a:0 ==# 1
     " {command} [, {dict}]
     " a:1 = {dict}
@@ -138,11 +131,23 @@ function! s:system(str, ...)
     let args += [input] + rest
   endif
 
+  " Process a:str argument.
+  if type(a:str) is s:TYPE_LIST
+    let expr = use_vimproc ? '"''" . v:val . "''"' : 's:shellescape(v:val)'
+    let command = join(map(copy(a:str), expr), ' ')
+  elseif type(a:str) is s:TYPE_STRING
+    let command = a:str
+  else
+    throw 'Process.system(): invalid argument (value type:'.type(a:str).')'
+  endif
+  if s:need_trans
+    let command = s:iconv(command, &encoding, 'char')
+  endif
+  let args = [command] + args
+
   let funcname = use_vimproc ? 'vimproc#system' : 'system'
-  let args     = use_vimproc ? map(args, 'escape(v:val, "#")') : args
   let output = call(funcname, args)
   let output = s:iconv(output, 'char', &encoding)
-
   return output
 endfunction
 
