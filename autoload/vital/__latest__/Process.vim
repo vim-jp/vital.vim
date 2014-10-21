@@ -124,7 +124,7 @@ function! s:system(str, ...)
         let args += [a:1.timeout]
       endif
     elseif type(a:1) is s:TYPE_STRING
-      let args += [s:need_trans ? s:iconv(a:1, &encoding, 'char') : a:1]
+      let args += [s:iconv(a:1, &encoding, 'char')]
     else
       throw 'Process.system(): invalid argument (value type:'.type(a:1).')'
     endif
