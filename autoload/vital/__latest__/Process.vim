@@ -112,6 +112,8 @@ function! s:system(str, ...)
   let use_vimproc = s:has_vimproc()
   let args = [command]
   if a:0 ==# 1
+    " {command} [, {dict}]
+    " a:1 = {dict}
     if type(a:1) is s:TYPE_DICT
       if has_key(a:1, 'use_vimproc')
         let use_vimproc = a:1.use_vimproc
@@ -129,10 +131,11 @@ function! s:system(str, ...)
       throw 'Process.system(): invalid argument (value type:'.type(a:1).')'
     endif
   elseif a:0 >= 2
-    let [command, input; rest] = a:000
-    let command = s:need_trans ? s:iconv(command, &encoding, 'char') : command
+    " {command} [, {input} [, {timeout}]]
+    " a:000 = [{input} [, {timeout}]]
+    let [input; rest] = a:000
     let input   = s:iconv(input, &encoding, 'char')
-    let args += [command, input] + rest
+    let args += [input] + rest
   endif
 
   let funcname = use_vimproc ? 'vimproc#system' : 'system'
