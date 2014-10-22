@@ -55,39 +55,37 @@ function! s:get_selected_text(...)
   return call('s:get_last_selected', a:000)
 endfunction
 
-" Get the last selected text in visual mode.
+" Get the last selected text in visual mode
+" without using |gv| to avoid |textlock|.
+" NOTE:
+" * This function uses |gv| only when using |CTRL-V|
+"   because |gv| is the only way to get selected text
+"   when using <C-v>$ .
+"   Please see #192 for the details.
+" * If you don't care about |textlock|,
+"   you can use simple version of this function.
+"   https://github.com/vim-jp/vital.vim/commit/39aae80f3839fdbeebd838ff14d87327a6b889a9
 function! s:get_last_selected()
-  let save = getreg('"', 1)
-  let save_type = getregtype('"')
-  let [begin, end] = [getpos("'<"), getpos("'>")]
-  try
-    if visualmode() ==# "\<C-v>"
-      let begincol = begin[2] + (begin[2] ># getline('.') ? begin[3] : 0)
-      let endcol   =   end[2] + (  end[2] ># getline('.') ?   end[3] : 0)
-      if begincol ># endcol
-        " end's col must be greater than begin.
-        let tmp = begin[2:3]
-        let begin[2:3] = end[2:3]
-        let end[2:3] = tmp
-      endif
-      let virtpadchar = ' '
-      let lines = map(getline(begin[1], end[1]), '
-      \ (v:val[begincol-1 : endcol-1])
-      \ . repeat(virtpadchar, endcol-len(v:val))
-      \')
+  if visualmode() ==# "\<C-v>"
+    let save = getreg('"', 1)
+    let save_type = getregtype('"')
+    try
+      normal! gv"zy
+      return @"
+    finally
+      call setreg('"', save, save_type)
+    endtry
+  else
+    let [begin, end] = [getpos("'<"), getpos("'>")]
+    if begin[1] ==# end[1]
+      let lines = [getline(begin[1])[begin[2]-1 : end[2]-1]]
     else
-      if begin[1] ==# end[1]
-        let lines = [getline(begin[1])[begin[2]-1 : end[2]-1]]
-      else
-        let lines = [getline(begin[1])[begin[2]-1 :]]
-        \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
-        \         + [getline(end[1])[: end[2]-1]]
-      endif
+      let lines = [getline(begin[1])[begin[2]-1 :]]
+      \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
+      \         + [getline(end[1])[: end[2]-1]]
     endif
     return join(lines, "\n") . (visualmode() ==# "V" ? "\n" : "")
-  finally
-    call setreg('"', save, save_type)
-  endtry
+  endif
 endfunction
 
 
