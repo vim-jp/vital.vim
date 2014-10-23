@@ -70,7 +70,7 @@ function! s:get_last_selected()
     let save = getreg('"', 1)
     let save_type = getregtype('"')
     try
-      normal! gv"zy
+      normal! gv""y
       return @"
     finally
       call setreg('"', save, save_type)
