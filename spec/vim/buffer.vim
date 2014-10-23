@@ -31,32 +31,137 @@ End
 
 Context Vim.Buffer.get_last_selected()
   It can get the last selected text without textlock error.
+    %delete _
     append
 foo
 bar
 baz
 .
+
     normal! ggVGygg
     let text = g:VB.get_last_selected()
-    echom string(text)
+    " echom string(text)
     Should text ==# "foo\nbar\nbaz\n"
-    normal! ggVGy
-    Should text ==# @"
 
     normal! ggvjly
     let text = g:VB.get_last_selected()
-    echom string(text)
+    " echom string(text)
     Should text ==# "foo\nba"
 
     execute "normal! gg\<C-v>jly"
     let text = g:VB.get_last_selected()
-    echom string(text)
+    " echom string(text)
     Should text ==# "fo\nba"
 
-    echom string(getline(1, '$'))
+    " echom string(getline(1, '$'))
+  End
+
+  It can apply to oneline
+    %delete _
+    append
+foo
+bar
+baz
+.
+
+    normal! ggVygg
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "foo\n"
+
+    normal! ggvly
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "fo"
+
+    execute "normal! gg\<C-v>ly"
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "fo"
+
+    " echom string(getline(1, '$'))
+  End
+
+  It can apply to wide characters string
+    %delete _
+    append
+あいうえお
+かきくけこ
+ほげら
+.
+
+    normal! ggVGygg
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "あいうえお\nかきくけこ\nほげら\n"
+
+    normal! ggvjly
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "あいうえお\nかき"
+
+    execute "normal! gg\<C-v>jly"
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "あい\nかき"
+  End
+
+  It can apply to mixed string
+    %delete _
+    append
+あiうeお
+kaきkuけko
+ほgeら
+.
+
+    normal! ggVGygg
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "あiうeお\nkaきkuけko\nほgeら\n"
+
+    normal! ggvjly
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "あiうeお\nka"
+
+    execute "normal! gg\<C-v>jly"
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "あ\nka"
+  End
+
+  It can apply to mixed oneline string
+    %delete _
+    append
+あiうeお
+kaきkuけko
+ほgeら
+.
+
+    normal! ggVygg
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "あiうeお\n"
+
+    normal! ggvly
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "あi"
+
+    execute "normal! gg\<C-v>ly"
+    let text = g:VB.get_last_selected()
+    " echom string(text)
+    Should text ==# "あi"
   End
 
   It does not destroy unnamed register content
+    %delete _
+    append
+foo
+bar
+baz
+.
+
     normal! ggVGy
     let @" = "ajapa-"
     call g:VB.get_last_selected()

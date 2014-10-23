@@ -77,14 +77,15 @@ function! s:get_last_selected()
     endtry
   else
     let [begin, end] = [getpos("'<"), getpos("'>")]
+    let lastchar = matchstr(getline(end[1])[end[2]-1 :], '.')
     if begin[1] ==# end[1]
-      let lines = [getline(begin[1])[begin[2]-1 : end[2]-1]]
+      let lines = [getline(begin[1])[begin[2]-1 : end[2]-2]]
     else
       let lines = [getline(begin[1])[begin[2]-1 :]]
       \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
-      \         + [getline(end[1])[: end[2]-1]]
+      \         + [getline(end[1])[: end[2]-2]]
     endif
-    return join(lines, "\n") . (visualmode() ==# "V" ? "\n" : "")
+    return join(lines, "\n") . lastchar . (visualmode() ==# "V" ? "\n" : "")
   endif
 endfunction
 
