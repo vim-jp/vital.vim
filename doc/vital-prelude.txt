@@ -38,37 +38,37 @@ globpath({path}, {expr})			*Vital.Prelude.globpath()*
 is_numeric({value})				*Vital.Prelude.is_numeric()*
 	Returns non-zero if {value} is a |Number| or a |Float|, zero otherwise.
 		Examples: >
-		:let g:V = vital#of('vital')
-		:let g:P = g:V.import('Prelude')
-		:echo g:P.is_numeric(123)
+		:let s:V = vital#of('vital')
+		:let s:P = s:V.import('Prelude')
+		:echo s:P.is_numeric(123)
     <		1 >
-		:echo g:P.is_numeric(1.23)
+		:echo s:P.is_numeric(1.23)
     <		1 >
-		:echo g:P.is_numeric("hoge")
+		:echo s:P.is_numeric("hoge")
 <		0
 
 is_number({value})				*Vital.Prelude.is_number()*
 	Returns non-zero if {value} is a |Number|, zero otherwise.
 		Examples: >
-		:let g:V = vital#of('vital')
-		:let g:P = g:V.import('Prelude')
-		:echo g:P.is_number(123)
+		:let s:V = vital#of('vital')
+		:let s:P = s:V.import('Prelude')
+		:echo s:P.is_number(123)
 <		1 >
-		:echo g:P.is_number(1.23)
+		:echo s:P.is_number(1.23)
 <		0 >
-		:echo g:P.is_number("hoge")
+		:echo s:P.is_number("hoge")
 <		0
 
 is_float({value})				*Vital.Prelude.is_float()*
 	Returns non-zero if {value} is a |Float|, zero otherwise.
 		Examples: >
-		:let g:V = vital#of('vital')
-		:let g:P = g:V.import('Prelude')
-		:echo g:P.is_float(123)
+		:let s:V = vital#of('vital')
+		:let s:P = s:V.import('Prelude')
+		:echo s:P.is_float(123)
 <		0 >
-		:echo g:P.is_float(1.23)
+		:echo s:P.is_float(1.23)
 <		1 >
-		:echo g:P.is_float("hoge")
+		:echo s:P.is_float("hoge")
 <		0
 
 is_string({value})				*Vital.Prelude.is_string()*
