@@ -45,12 +45,12 @@ Tree.postorder_traversal       		*Vital.Data.Tree.postorder_traversal*
 EXAMPLES   				*Vital.Data.Tree-examples*
 
 >
-    let V = vital#of('vital')
-    let T = V.import('Data.Tree')
+    let s:V = vital#of('vital')
+    let s:T = s:V.import('Data.Tree')
 
-    let tree_obj = T.new('+',1,T.new('-',2,3))
+    let tree_obj = s:T.new('+',1,s:T.new('-',2,3))
     " or
-    let tree_obj = T.new('+', [1,T.new('-',2,3)] )
+    let tree_obj = s:T.new('+', [1,s:T.new('-',2,3)] )
     "
     "    +
     "   / \
@@ -63,7 +63,7 @@ EXAMPLES   				*Vital.Data.Tree-examples*
     " +
 
     echo tree_obj.children
-    " [1,T.new('-',2,3)]
+    " [1,s:T.new('-',2,3)]
 
     echo tree_obj.todict()
     " {'+': ['1', {'-': ['2', '3']}]}

@@ -17,8 +17,8 @@ INTRODUCTION				*Vital.System.File-introduction*
 It provides some functions for file system.
 
 >
-	let V = vital#of("vital")
-	let F = V.import("System.File")
+	let s:V = vital#of("vital")
+	let s:F = s:V.import("System.File")
 <
 
 ==============================================================================
@@ -30,21 +30,21 @@ open({filename})			*Vital.System.File.open()*
 	Opens a file specified as {filename}.  {filename} is a file or a
 	directory.
 >
-	call F.open("/tmp/file")
+	call s:F.open("/tmp/file")
 <
 
 move({src}, {dest})			*Vital.System.File.move()*
 	Renames a file {src} to {dest}. Returns non-zero if successful,
 	otherwise 0.
 >
-	call F.move("/tmp/old", "/tmp/new")
+	call s:F.move("/tmp/old", "/tmp/new")
 <
 
 copy({src}, {dest})			*Vital.System.File.copy()*
 	Copies a file {src} to {dest}. Returns non-zero if successful,
 	otherwise 0.
 >
-	call F.copy("/tmp/old", "/tmp/new")
+	call s:F.copy("/tmp/old", "/tmp/new")
 <
 
 mkdir_nothrow({name} [, {path} [, {prot}]])
@@ -53,7 +53,7 @@ mkdir_nothrow({name} [, {path} [, {prot}]])
 	arguments are used like with |mkdir()|.  Returns a non-zero Number
 	if successful, otherwise 0.
 >
-	echo F.mkdir_nothrow("/tmp/exists_file")
+	echo s:F.mkdir_nothrow("/tmp/exists_file")
 	" 0
 <
 

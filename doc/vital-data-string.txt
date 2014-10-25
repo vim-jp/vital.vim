@@ -15,8 +15,8 @@ INTRODUCTION				*Vital.Data.String-introduction*
 *Vital.Data.String* is String Utilities Library.
 It provides some functions to manipulate |String|.
 >
-	let V = vital#of("vital")
-	let S = V.import("Data.String")
+	let s:V = vital#of("vital")
+	let s:S = s:V.import("Data.String")
 <
 
 ==============================================================================
@@ -27,16 +27,16 @@ FUNCTIONS				*Vital.Data.String-functions*
 replace({str}, {from}, {to})		*Vital.Data.String.replace()*
 	Returns string replaced {from} to {to} from {str}.
 >
-	echo S.replace("fooba.bazbar", "ba.", "zzz")
+	echo s:S.replace("fooba.bazbar", "ba.", "zzz")
 	" foozzzbazbar
 <
 replace_first({str}, {from}, {to})	*Vital.Data.String.replace_first()*
 	Returns string replaced {from} to {to} from {str} only about the
 	first-match.
 >
-	echo S.replace("foobarbazbar", "bar", "zzz")
+	echo s:S.replace("foobarbazbar", "bar", "zzz")
 	" foozzzbazzzz
-	echo S.replace_first("foobarbazbar", "bar", "zzz")
+	echo s:S.replace_first("foobarbazbar", "bar", "zzz")
 	" foozzzbazbar
 <
 scan({str}, {pattern})			*Vital.Data.String.scan()*
@@ -45,26 +45,26 @@ scan({str}, {pattern})			*Vital.Data.String.scan()*
 reverse({str})				*Vital.Data.String.reverse()*
 	Returns a reversed string.  This works on character base.
 >
-	echo S.reverse("string")
+	echo s:S.reverse("string")
 	" gnirts
 <
 common_head({strs})			*Vital.Data.String.common_head()*
 	Returns a common part of head of strings.
 >
-	echo S.common_head(['neocomplcache', 'neosnippet', 'neobundle'])
+	echo s:S.common_head(['neocomplcache', 'neosnippet', 'neobundle'])
 	" 'neo'
 <
 split_leftright({expr}, {pattern})	*Vital.Data.String.split_leftright()*
 	Returns |List| that contains two |String| split by {pattern}.
 >
-	echo S.split_leftright('neocomplcache', 'neo\zs.....')
+	echo s:S.split_leftright('neocomplcache', 'neo\zs.....')
 	" ['neo', 'cache']
 <
 split3({expr}, {pattern})		*Vital.Data.String.split3()*
 	Like |Vital.Data.String.split_leftright()|, but this function returns
 	[left, middle, right] not only [left, right].
 >
-	echo S.split3('neocomplcache', 'neo\zs.....')
+	echo s:S.split3('neocomplcache', 'neo\zs.....')
 	" ['neo', 'compl', 'cache']
 <
 					*Vital.Data.String.nsplit()*
@@ -107,11 +107,11 @@ dstring({expr})				*Vital.Data.String.dstring()*
 	Behaves like |string()|, but this wraps the result string not with
 	single-quotes but with double-quotes.
 >
-	echo S.dstring(123)
+	echo s:S.dstring(123)
 	" 123
-	echo S.dstring('abc')
+	echo s:S.dstring('abc')
 	" '"abc"'
-	echo S.dstring("abc")
+	echo s:S.dstring("abc")
 	" '"abc"'
 <
 lines({str})				*Vital.Data.String.lines()*
@@ -127,7 +127,7 @@ pad_left({str}, {width} [, {char}])	*Vital.Data.String.pad_left()*
 	considering non-half-width characters.
 	Default: {char} = ' '
 >
-	echo g:S.pad_left('test', 11)
+	echo s:S.pad_left('test', 11)
 	" '       test'
 <
 
@@ -137,7 +137,7 @@ pad_right({str}, {width} [, {char}])	*Vital.Data.String.pad_right()*
 	considering non-half-width characters.
 	Default: {char} = ' '
 >
-	echo g:S.pad_right('test', 11)
+	echo s:S.pad_right('test', 11)
 	" 'test       '
 <
 
@@ -148,7 +148,7 @@ pad_both_sides({str}, {width} [, {char}])
 	considering non-half-width characters.
 	Default: {char} = ' '
 >
-	echo g:S.pad_both_sides('test', 11)
+	echo s:S.pad_both_sides('test', 11)
 	" '   test    '
 <
 
@@ -159,7 +159,7 @@ pad_between_letters({str}, {width} [, {char}])
 	considering non-half-width characters.
 	Default: {char} = ' '
 >
-	echo g:S.pad_between_letters('test', 11)
+	echo s:S.pad_between_letters('test', 11)
 	" '  t e s t  '
 <
 
@@ -170,7 +170,7 @@ justify_equal_spacing({str}, {width} [, {char}])
 	considering non-half-width characters.
 	Default: {char} = ' '
 >
-	echo g:S.justify_equal_spacing('test', 11)
+	echo s:S.justify_equal_spacing('test', 11)
 	" 't   e  s  t'
 <
 
@@ -179,7 +179,7 @@ levenshtein_distance({str1}, {str2})
         It returns a minimum edit distance of two given strings {str1} and
         {str2}.
 >
-	echo g:S.levenshtein_distance('kitten', 'sitting')
+	echo s:S.levenshtein_distance('kitten', 'sitting')
 	" 3
 <
 

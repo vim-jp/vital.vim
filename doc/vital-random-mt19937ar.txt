@@ -26,16 +26,16 @@ imported from the implementation.
 https://github.com/ynkdir/vim-funlib/blob/master/autoload/random/mt19937ar.vim
 
 >
-	let V = vital#of("vital")
-	let M = V.import("Random.Mt19937ar")
+	let s:V = vital#of("vital")
+	let s:M = s:V.import("Random.Mt19937ar")
 
-	call M.srand(1)
-	echo M.rand()
+	call s:M.srand(1)
+	echo s:M.rand()
 	" 1067595299
-	echo M.rand()
+	echo s:M.rand()
 	" 955945823
-	call M.srand(1)
-	echo M.rand()
+	call s:M.srand(1)
+	echo s:M.rand()
 	" 1067595299
 <
 

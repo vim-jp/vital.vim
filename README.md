@@ -85,9 +85,9 @@ Assuming your Vim plugin name is `ujihisa`. You can define your utility
 function set `ujihisa#util` just by
 
 ```vim
-let V = vital#of('ujihisa')
+let s:V = vital#of('ujihisa')
 function! ujihisa#util#system(...)
-  return call(V.system, a:000, V)
+  return call(s:V.system, a:000, s:V)
 endfunction
 ```
 
@@ -99,26 +99,26 @@ Vital has module system. The below is an example to import/load a module
 
 ```vim
 " Recommented way
-let V = vital#of('ujihisa')
-let O = V.import('Data.OrderedSet')
-call O.f()
+let s:V = vital#of('ujihisa')
+let s:O = s:V.import('Data.OrderedSet')
+call s:O.f()
 ```
 
 or
 
 ```vim
 " Recommended way only if you rarely use the module
-let V = vital#of('ujihisa')
-call V.load('Data.OrderedSet')
-call V.Data.OrderedSet.f()
+let s:V = vital#of('ujihisa')
+call s:V.load('Data.OrderedSet')
+call s:V.Data.OrderedSet.f()
 ```
 
 or
 
 ```vim
 " Available, but we don't recommend this very much
-let V = vital#of('ujihisa')
-call V.import('Data.OrderedSet', s:)
+let s:V = vital#of('ujihisa')
+call s:V.import('Data.OrderedSet', s:)
 call s:f()
 ```
 

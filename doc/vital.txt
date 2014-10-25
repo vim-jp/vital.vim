@@ -31,9 +31,9 @@ USAGE					*Vital-usage*
 Assuming your Vim plugin name is "ujihisa", you can define your utility
 function set 'ujihisa#util' just by
 >
-    let P = vital#of('ujihisa').import('Process')
+    let s:P = vital#of('ujihisa').import('Process')
     function! ujihisa#util#system(...)
-      return call(P.system, a:000, P)
+      return call(s:P.system, a:000, s:P)
     endfunction
 <
 and then you can call functions by 'ujihisa#util#system()', without taking
@@ -42,20 +42,20 @@ care of |vital.vim| itself. It's all hidden.
 |Vital| has module system. The below is an example to import/load a module
 "data/ordered_set" and to call a function "f()" of the module.
 >
-    let V = vital#of('ujihisa')
-    let O = V.import('Data.OrderedSet')
-    call O.f()
+    let s:V = vital#of('ujihisa')
+    let s:O = s:V.import('Data.OrderedSet')
+    call s:O.f()
 <
 or
 >
-    let V = vital#of('ujihisa')
-    call V.load('Data.OrderedSet')
-    call V.Data.OrderedSet.f()
+    let s:V = vital#of('ujihisa')
+    call s:V.load('Data.OrderedSet')
+    call s:V.Data.OrderedSet.f()
 <
 or
 >
-    let V = vital#of('ujihisa')
-    call V.import('Data.OrderedSet', s:)
+    let s:V = vital#of('ujihisa')
+    call s:V.import('Data.OrderedSet', s:)
     call s:f()
 <
 We recommend you to use a capital letter for a Vital module dictionary to
@@ -82,14 +82,14 @@ Vital.import({module-name} [, {to}])	*Vital-Vital.import()*
 	Imports a single module specified by {module-name} to {to} or empty
 	dictionary, and returns it.
 >
-	let List = V.import('Data.List')
-	echo List.uniq([1,1,2])
+	let s:List = s:V.import('Data.List')
+	echo s:List.uniq([1,1,2])
 
 Vital.load({module-name})		*Vital-Vital.load()*
 	Loads a module to the Vital directly.
 >
-	call V.load('Data.List')
-	echo V.Data.List.uniq([1,1,2])
+	call s:V.load('Data.List')
+	echo s:V.Data.List.uniq([1,1,2])
 
 Vital.exists({module-name})		*Vital-Vital.exists()*
 	Checks whether a module specified by {module-name} exists.
@@ -98,8 +98,8 @@ Vital.search({pattern})			*Vital-Vital.search()*
 	Searches available modules.  Returns module names by |List|.
 	Wildcard '*' is available in {pattern}.
 >
-	echo V.search('Data.*')
-	echo V.search('Data.*List')
+	echo s:V.search('Data.*')
+	echo s:V.search('Data.*List')
 
 
 
