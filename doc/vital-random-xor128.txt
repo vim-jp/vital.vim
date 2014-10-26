@@ -20,16 +20,16 @@ is fast and has less internal states.
 The paper about xorshift is http://www.jstatsoft.org/v08/i14/paper .
 
 >
-	let V = vital#of("vital")
-	let X = V.import("Random.Xor128")
+	let s:V = vital#of("vital")
+	let s:X = s:V.import("Random.Xor128")
 
-	call X.srand(1)
-	echo X.rand()
+	call s:X.srand(1)
+	echo s:X.rand()
 	" 88677267
-	echo X.rand()
+	echo s:X.rand()
 	" -1027910750
-	call X.srand(1)
-	echo X.rand()
+	call s:X.srand(1)
+	echo s:X.rand()
 	" 88677267
 <
 
