@@ -29,15 +29,15 @@ TERM					*Vital.Data.Closure-term*
 	A {callable} is one of the followings.
 	- A |Funcref|
 	  - |Vital.Data.Closure.from_funcref()|
-	- A string of function name
+	- A string of function name which begins from "*"
 	  - |Vital.Data.Closure.from_funcname()|
 	- An ex command string which begins from ":"
 	  - |Vital.Data.Closure.from_command()|
-	- A |List| of ex command strings
+	- A |List| of ex command strings which begin from ":"
 	  - |Vital.Data.Closure.from_command()|
 	- An operator string such as '+', '%', or '=~#'
 	  - |Vital.Data.Closure.from_operator()|
-	- An |expr| string
+	- An |expr| string which begins from "="
 	  - |Vital.Data.Closure.from_expr()|
 	- A Closure object(|Vital.Data.Closure-Closure|)
 
@@ -98,12 +98,14 @@ from_funcref({funcref} [, {arglist}][, {context}])
 					*Vital.Data.Closure.from_funcname()*
 from_funcname({funcname} [, {arglist}][, {context}])
 	Builds a Closure object from {funcname}.
+	There may be "*" prefix in {funcname}.
 	{funcname} is a buildin function or global function.
 	See |Vital.Data.Closure-Closure| for detail of {arglist} and
 	{context}.
 
 from_expr({expr} [, {binding}])		*Vital.Data.Closure.from_expr()*
 	Builds a Closure object from {expr} string.
+	There may be "=" prefix in {expr}.
 	You can use |a:| as the arguments.
 	See |Vital.Data.Closure-term-binding| about {binding}.
 
