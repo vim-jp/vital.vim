@@ -56,9 +56,9 @@ Describe Data.Dict
     It makes an index dictionary with a specified value
       let actual = ['apple', 'orange', 'banana']
       let original = deepcopy(actual)
-      Assert Equals({'apple': 'true', 'orange': 'true', 'banana': 'true'}, g:D.make_index(actual, 'true'))
+      Assert Equals(g:D.make_index(actual, 'true'), {'apple': 'true', 'orange': 'true', 'banana': 'true'})
       Assert Equals(actual, original)
-      Assert Equals({'apple': 5, 'orange': 5, 'banana': 5}, g:D.make_index(actual, 5))
+      Assert Equals(g:D.make_index(actual, 5), {'apple': 5, 'orange': 5, 'banana': 5})
       Assert Equals(actual, original)
     End
 
