@@ -202,10 +202,11 @@ function! s:build(callable, ...)
       return call('s:from_expr', [a:callable[1 :]] + a:000)
     endif
   elseif t == type([])
-    for c in a:callable
-      if type(c) != type('') || c[0] !=# ':'
+    for C in a:callable
+      if type(C) != type('') || C[0] !=# ':'
         return call('s:build', a:callable)
       endif
+      unlet C
     endfor
     return call('s:from_command', [a:callable] + a:000)
   endif
