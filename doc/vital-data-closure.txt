@@ -40,6 +40,7 @@ TERM					*Vital.Data.Closure-term*
 	- An |expr| string which begins from "="
 	  - |Vital.Data.Closure.from_expr()|
 	- A Closure object(|Vital.Data.Closure-Closure|)
+	- A |List| that is arguments of |Vital.Data.Closure.build()|.
 
 {arglist}				*Vital.Data.Closure-term-arglist*
 	This is a |List| for the arguments of the function.

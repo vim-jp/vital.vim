@@ -46,6 +46,12 @@ Describe Data.Closure
       Assert True(g:C.is_closure(closure))
       Assert Equals(closure.call(''), type(''))
     End
+
+    It can treat a list like argument itself
+      let closure = g:C.build([function('type'), ['']])
+      Assert True(g:C.is_closure(closure))
+      Assert Equals(closure.call(), type(''))
+    End
   End
 
   Describe .call()
