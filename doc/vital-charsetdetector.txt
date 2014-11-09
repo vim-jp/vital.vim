@@ -1,0 +1,50 @@
+*vital-charsetdetector.txt*	check a string encoding.
+
+Maintainer: rbtnn <naru123456789@gmail.com>
+
+==============================================================================
+CONTENTS			              *Vital.CharsetDetector-contents*
+
+INTERFACE		                 |Vital.CharsetDetector-interface|
+FUNCTIONS			         |Vital.CharsetDetector-functions|
+
+==============================================================================
+INTERFACE			              *Vital.CharsetDetector-interface*
+
+*Vital.CharsetDetector* is a module to check a string encoding.
+
+==============================================================================
+FUNCTIONS			              *Vital.CharsetDetector-functions*
+
+is_utf8({expr})		                      *Vital.CharsetDetector.is_utf8()*
+	Check whether a string({expr}) is valid UTF-8 encoded.
+        (return 1 or 0)
+
+is_eucjp({expr})		             *Vital.CharsetDetector.is_eucjp()*
+	Check whether a string({expr}) is valid EUC-JP encoded.
+        (return 1 or 0)
+
+is_cp932({expr})		             *Vital.CharsetDetector.is_cp932()*
+	Check whether a string({expr}) is valid CP932 encoded.
+        (return 1 or 0)
+
+is_iso2022jp({expr})		         *Vital.CharsetDetector.is_iso2022jp()*
+	Check whether a string({expr}) is valid ISO-2022-JP encoded.
+        (return 1 or 0)
+
+of({expr})		                           *Vital.CharsetDetector.of()*
+	Check a string({expr}) encoding.
+        If it is UTF-8, return `'utf-8'`.
+        If it is EUC-JP, return `'euc-jp'`.
+        If it is CP932, return `'cp932'`.
+        If it is ISO-2022-JP, return `'iso-2022-jp'`.
+        Otherwise throw a exception.
+
+iconv({expr}[, {to}])		                *Vital.CharsetDetector.iconv()*
+        Wrapper buildin function `iconv()`.
+        It is same as `iconv({expr}, Vital.CharsetDetector.of({expr}), {to})`.
+        Default value of {to} is `&encoding`.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
