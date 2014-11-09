@@ -13,4 +13,4 @@ script:
   - vim --cmd version --cmd quit
   - vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
   - ./spec.sh -q -p /tmp/vimproc
-  - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc
+  - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
