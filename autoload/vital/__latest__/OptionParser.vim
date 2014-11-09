@@ -223,6 +223,9 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...)
   if a:0 == 1
     if type(a:1) == type({})
       if has_key(a:1, 'short')
+        if (a:1.short !~# '^-[[:alnum:]]\>')
+          throw 'vital: OptionParser: Invalid short option: ' . a:1.short
+        endif
         let self.options[name].short_option_definition = a:1.short
       endif
       if has_key(a:1, 'default')
