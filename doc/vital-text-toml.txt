@@ -1,0 +1,32 @@
+*vital-text-toml.txt*		TOML library.
+
+Maintainer: kamichidu <c.kamunagi at gmail.com>
+
+==============================================================================
+CONTENTS			*Vital.Text.TOML-contents*
+
+INTRODUCTION			|Vital.Text.TOML-introduction|
+INTERFACE			|Vital.Text.TOML-interface|
+  FUNCTIONS			  |Vital.Text.TOML-functions|
+
+==============================================================================
+INTRODUCTION			*Vital.Text.TOML-introduction*
+
+*Vital.Text.TOML* is a TOML parser.
+
+See https://github.com/toml-lang/toml
+
+==============================================================================
+INTERFACE			*Vital.Text.TOML-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.Text.TOML-functions*
+
+parse({tomlstring})		*Vital.Text.TOML.parse()*
+	Parses TOML formatted string. It returns a |Dictionary|.
+
+parse_file({filename})		*Vital.Text.TOML.parse_file()*
+	Parses a TOML file. See |Vital.Text.TOML.parse()|.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
