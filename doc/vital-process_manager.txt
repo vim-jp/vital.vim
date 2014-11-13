@@ -142,9 +142,9 @@ state({label})			*Vital.ProcessManager.state()*
 ==============================================================================
 VERSION UP MIGRATION		*Vital.ProcessManager-migration-1to2*
 
-ProcessManager had changed its API in August 2014. Avoid using all functions
-which are marked as SOFT DEPRECATED. SOFT DEPRECATED functions will be marked
-as DEPRECATED, and then removed in the future.
+ProcessManager had changed its API in Novemeber 2014. Avoid using all
+functions which are marked as SOFT DEPRECATED. SOFT DEPRECATED functions will
+be marked as DEPRECATED, and then removed in the future.
 
 
 ==============================================================================
