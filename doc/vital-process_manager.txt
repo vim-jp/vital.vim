@@ -10,6 +10,7 @@ INTRODUCTION			|Vital.ProcessManager-introduction|
   PRINCIPLE			|Vital.ProcessManager-principle|
 INTERFACE			|Vital.ProcessManager-interface|
   FUNCTIONS			  |Vital.ProcessManager-functions|
+  OBJECTS			  |Vital.ProcessManager-objects|
 VERSION UP MIGRATION		|Vital.ProcessManager-migration-1to2|
 
 
@@ -143,25 +144,41 @@ state({label})			*Vital.ProcessManager.state()*
 
 of()				*Vital.ProcessManager.of()*
 	TODO
-is_new()			*Vital.ProcessManager.is_new()*
+
+==============================================================================
+OBJECTS				*Vital.ProcessManager-objects*
+
+------------------------------------------------------------------------------
+ProcessManager Object			*Vital.ProcessManager-PM*
+
+is_new()			*Vital.ProcessManager-PM.is_new()*
 	TODO
-is_idle()			*Vital.ProcessManager.is_idle()*
+
+is_idle()			*Vital.ProcessManager-PM.is_idle()*
 	TODO
-shutdown()			*Vital.ProcessManager.shutdown()*
+
+shutdown()			*Vital.ProcessManager-PM.shutdown()*
 	TODO
-				*Vital.ProcessManager.reserve_wait({endpatterns})*
+
+			*Vital.ProcessManager-PM.reserve_wait({endpatterns})*
 reserve_wait({endpatterns})
 	TODO
-				*Vital.ProcessManager.reserve_writeln({line})*
+
+			*Vital.ProcessManager-PM.reserve_writeln({line})*
 reserve_writeln({line})
 	TODO
-reserve_read({endpatterns})	*Vital.ProcessManager.reserve_read({endpatterns})*
+
+			*Vital.ProcessManager-PM.reserve_read({endpatterns})*
+reserve_read({endpatterns})
 	TODO
-go_bulk()			*Vital.ProcessManager.go_bulk()*
+
+go_bulk()			*Vital.ProcessManager-PM.go_bulk()*
 	TODO
-go_part()			*Vital.ProcessManager.go_part()*
+
+go_part()			*Vital.ProcessManager-PM.go_part()*
 	TODO
-tick()				*Vital.ProcessManager.tick()*
+
+tick()				*Vital.ProcessManager-PM.tick()*
 	TODO
 
 ==============================================================================
