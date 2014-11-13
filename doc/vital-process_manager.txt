@@ -10,8 +10,7 @@ INTRODUCTION			|Vital.ProcessManager-introduction|
   PRINCIPLE			|Vital.ProcessManager-principle|
 INTERFACE			|Vital.ProcessManager-interface|
   FUNCTIONS			  |Vital.ProcessManager-functions|
-CONFIG				|Vital.ProcessManager-config|
-
+VERSION UP MIGRATION		|Vital.ProcessManager-migration-1to2|
 
 
 ==============================================================================
@@ -26,7 +25,51 @@ required.
 
 
 ==============================================================================
-USAGE				*Vital.ProcessManager-usage*
+USAGE					*Vital.ProcessManager-usage*
+A code example that keeps /usr/bin/bash process and uses it without stopping.
+>
+	let s:P = g:V.import('ProcessManager')
+
+	function! s:benri()
+	  if !s:P.is_available() " please always check if it's available.
+	    throw 'omg'
+	  endif
+
+	  " Create/refer the ProcessManager object represents the process.
+	  " Add --norc and -i options to force it behaves interactively.
+	  let p = s:P.of('pm-doc-sample-bash', 'bash --norc -i')
+
+	  " The p may be already created by somebody. That way this p just referes the
+	  " existing one. The below if block will be executed only when this p is
+	  " really new.
+	  if p.is_new()
+	    " The default prompt is probably like 'ujihisa@host ~ $ ' but it's too
+	    " fragile. Let's change the prompt.
+	    call p.reserve_wait(['.*\$ $'])
+		  \.reserve_writeln('export PS1="\nPM-DOC-SAMPLE-BASH$ "')
+		  \.reserve_wait(['PM-DOC-SAMPLE-BASH\$ '])
+	  endif
+
+	  " Ok so what should I do? Let's just check current time.
+	  call p.reserve_writeln('date')
+		\.reserve_read(['PM-DOC-SAMPLE-BASH\$ '])
+
+	  " Let's block Vim to get complete result.
+	  while 1
+	    let result = p.go_bulk()
+	    if result.done
+	      echomsg string([result])
+	      break
+	    endif
+	  endwhile
+	endfunction
+
+	call s:benri()
+<
+
+USAGE-OLD				*Vital.ProcessManager-usage-old*
+
+SOFT DEPRECATED. See |Vital.ProcessManager-migration-1to2|.
 >
 	let P = V.import('ProcessManager')
 	if !P.is_available() " please always check if it's available.
@@ -71,10 +114,6 @@ USAGE				*Vital.ProcessManager-usage*
 	echo s:f('2 + 3') "=> '5' and fast!
 <
 
-MEMO
-* touch is almost idempotent
-* read's out split needs \r as well for windows
-
 ==============================================================================
 PRINCIPLE			*Vital.ProcessManager-principle*
 
@@ -93,11 +132,20 @@ INTERFACE			*Vital.ProcessManager-interface*
 FUNCTIONS			*Vital.ProcessManager-functions*
 
 touch({label}, {cmd})		*Vital.ProcessManager.touch()*
+	SOFT DEPRECATED. See |Vital.ProcessManager-migration-1to2|.
+
 	Returns a string which is either "existing" or "new".
-	TODO
 
 state({label})			*Vital.ProcessManager.state()*
 	Returns either "undefined", "inactive", "reading", or "idle".
+
+==============================================================================
+VERSION UP MIGRATION		*Vital.ProcessManager-migration-1to2*
+
+ProcessManager had changed its API in August 2014. Avoid using all functions
+which are marked as SOFT DEPRECATED. SOFT DEPRECATED functions will be marked
+as DEPRECATED, and then removed in the future.
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
