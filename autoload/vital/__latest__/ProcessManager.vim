@@ -199,7 +199,9 @@ function! s:_trigger(self)
     return trigger2
   endif
 
-  let [msgkey, msgvalue] = a:self['*mailbox*'][0]
+  " @vimlint(EVL102, 0, l:_)
+  let [_, msgvalue] = a:self['*mailbox*'][0]
+  " @vimlint(EVL102, 1, l:_)
 
   let [out, err, t] = s:read(a:self.label, msgvalue)
   if t ==# 'matched'
@@ -282,7 +284,6 @@ function! s:_go(bulk_or_part, self)
     if msgkey ==# 'writeln'
       return s:_trigger(self)
     elseif msgkey ==# 'wait'
-      let result = {'done': 0, 'fail': 0}
       call remove(self['*mailbox*'], 0)
       return self.go_bulk()
     elseif msgkey ==# 'read'
