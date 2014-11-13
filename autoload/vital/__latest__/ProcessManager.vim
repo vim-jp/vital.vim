@@ -242,7 +242,7 @@ endfunction
 function! s:_go(bulk_or_part, self)
   let self = a:self
   if self.is_idle()
-    throw 'Vital.ProcessManager: go has nothing to do'
+    throw 'vital: ProcessManager: go has nothing to do'
   endif
   let [msgkey, msgvalue] = self['*mailbox*'][0]
 
@@ -253,7 +253,7 @@ function! s:_go(bulk_or_part, self)
     return result
 
   elseif state ==# 'reading' && msgkey ==# 'writeln'
-    throw 'Vital.ProcessManager: Must not happen!!!!!!!!!!!!!1'
+    throw 'vital: ProcessManager: Must not happen!!!!!!!!!!!!!1'
 
   elseif state ==# 'reading' && msgkey ==# 'wait'
     call s:read(self.label, msgvalue)
