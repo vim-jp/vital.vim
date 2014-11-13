@@ -253,7 +253,7 @@ function! s:_go(bulk_or_part, self)
     return result
 
   elseif state ==# 'reading' && msgkey ==# 'writeln'
-    throw 'Must not happen!!!!!!!!!!!!!1'
+    throw 'Vital.ProcessManager: Must not happen!!!!!!!!!!!!!1'
 
   elseif state ==# 'reading' && msgkey ==# 'wait'
     call s:read(self.label, msgvalue)
