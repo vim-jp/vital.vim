@@ -144,43 +144,43 @@ function! s:of(label, command)
         \ 'label': a:label,
         \ '*mailbox*': ['*new*'],
         \ '*buffer*': ['', ''],
-        \ 'is_new': function('s:is_new'),
-        \ 'is_idle': function('s:is_idle'),
-        \ 'shutdown': function('s:shutdown'),
-        \ 'reserve_wait': function('s:reserve_wait'),
-        \ 'reserve_writeln': function('s:reserve_writeln'),
-        \ 'reserve_read': function('s:reserve_read'),
-        \ 'go_bulk': function('s:go_bulk'),
-        \ 'go_part': function('s:go_part'),
-        \ 'tick': function('s:tick')}
+        \ 'is_new': function('s:_is_new'),
+        \ 'is_idle': function('s:_is_idle'),
+        \ 'shutdown': function('s:_shutdown'),
+        \ 'reserve_wait': function('s:_reserve_wait'),
+        \ 'reserve_writeln': function('s:_reserve_writeln'),
+        \ 'reserve_read': function('s:_reserve_read'),
+        \ 'go_bulk': function('s:_go_bulk'),
+        \ 'go_part': function('s:_go_part'),
+        \ 'tick': function('s:_tick')}
   let s:_processes2[a:label] = p
   return p
 endfunction
 
-function! s:is_new() dict
+function! s:_is_new() dict
   return self['*mailbox*'] ==# ['*new*']
 endfunction
 
-function! s:is_idle() dict
+function! s:_is_idle() dict
   return empty(self['*mailbox*'])
 endfunction
 
-function! s:shutdown() dict
+function! s:_shutdown() dict
   call s:kill(self.label)
   unlet! s:_processes2[self.label]
 endfunction
 
-function! s:reserve_wait(endpatterns) dict
+function! s:_reserve_wait(endpatterns) dict
   call s:_reserve(self, 'wait', a:endpatterns)
   return self
 endfunction
 
-function! s:reserve_writeln(line) dict
+function! s:_reserve_writeln(line) dict
   call s:_reserve(self, 'writeln', a:line)
   return self
 endfunction
 
-function! s:reserve_read(endpatterns) dict
+function! s:_reserve_read(endpatterns) dict
   call s:_reserve(self, 'read', a:endpatterns)
   return self
 endfunction
@@ -233,17 +233,17 @@ function! s:_trigger2(self)
   endif
 endfunction
 
-function! s:go_bulk() dict
+function! s:_go_bulk() dict
   return s:_go('bulk', self)
 endfunction
 
-function! s:go_part() dict
+function! s:_go_part() dict
   return s:_go('part', self)
 endfunction
 
 function! s:_go(bulk_or_part, self)
   let self = a:self
-  if self.is_idle()
+  if self._is_idle()
     throw 'vital: ProcessManager: go has nothing to do'
   endif
   let [msgkey, msgvalue] = self['*mailbox*'][0]
@@ -285,7 +285,7 @@ function! s:_go(bulk_or_part, self)
       return s:_trigger(self)
     elseif msgkey ==# 'wait'
       call remove(self['*mailbox*'], 0)
-      return self.go_bulk()
+      return self._go_bulk()
     elseif msgkey ==# 'read'
       let out = self['*buffer*'][0]
       let err = self['*buffer*'][1]
@@ -299,8 +299,8 @@ function! s:_go(bulk_or_part, self)
   endif
 endfunction
 
-function! s:tick() dict
-  if self.is_idle()
+function! s:_tick() dict
+  if self._is_idle()
     return
   endif
 
