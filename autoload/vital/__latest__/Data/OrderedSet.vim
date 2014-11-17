@@ -36,7 +36,7 @@ function! s:ordered_set.append(list)
   endfor
 endfunction
 
-function s:ordered_set.push(elem)
+function! s:ordered_set.push(elem)
   let id = call(self.Fn_identifier, [a:elem])
   if !has_key(self._dict, id)
     let self._dict[id] = len(self._list) - self._origin_pos

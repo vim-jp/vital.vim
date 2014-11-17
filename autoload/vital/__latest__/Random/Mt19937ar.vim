@@ -63,7 +63,7 @@ endfunction
 
 let s:Generator = {}
 
-function s:Generator.seed(seeds)
+function! s:Generator.seed(seeds)
   let self._N = 624
   let self._M = 397
   let self._MATRIX_A = 0x9908b0df
