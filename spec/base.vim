@@ -80,8 +80,9 @@ function! s:_format_results(results) abort
   return messages
 endfunction
 
-function! s:_update_file(lines, filename) abort
-  call writefile(extend(readfile(a:filename), a:lines), a:filename)
+function! s:_update_file(lines, filename)
+  let curlines = filereadable(a:filename) ? readfile(a:filename) : []
+  call writefile(extend(curlines, a:lines), a:filename)
 endfunction
 
 command! -nargs=+ Context
