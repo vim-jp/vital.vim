@@ -2,7 +2,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:assert_config = {
         \   'equal_separator' : ['<=>','<=>'],
         \   'not_equal_separator' : ['<!>','<!>'],
@@ -22,11 +22,11 @@ function! s:_vital_loaded(V)
         \ ])
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Text.Lexer']
 endfunction
 
-function! s:_outputter(dict)
+function! s:_outputter(dict) abort
   if ! a:dict.is_success
     echohl Error
   endif
@@ -45,7 +45,7 @@ function! s:_outputter(dict)
   endif
 endfunction
 
-function! s:_redir(cmd)
+function! s:_redir(cmd) abort
   let oldverbosefile = &verbosefile
   try
     set verbosefile=
@@ -58,7 +58,7 @@ function! s:_redir(cmd)
   return res
 endfunction
 
-function! s:_define_scriptfunction(fname)
+function! s:_define_scriptfunction(fname) abort
   let scriptnames_list = map(split(s:_redir('scriptnames'),"\n"),'matchlist(v:val,''^\s*\(\d\+\)\s*:\s*\(.*\)\s*$'')[:2]')
   let targets = filter(copy(scriptnames_list),printf('fnamemodify(get(v:val,2,""),":p") ==# fnamemodify(%s,":p")',string(expand('%'))))
   if ! empty(targets)
@@ -68,7 +68,7 @@ function! s:_define_scriptfunction(fname)
   endif
 endfunction
 
-function! s:_assertion( q_args, local, scriptfilename, about_currline, cmd)
+function! s:_assertion( q_args, local, scriptfilename, about_currline, cmd) abort
   let s:_local = {}
   for s:_local.key in keys(a:local)
     execute printf('let %s = %s',s:_local.key,string(a:local[s:_local.key]))
@@ -120,7 +120,7 @@ function! s:_assertion( q_args, local, scriptfilename, about_currline, cmd)
   endif
 endfunction
 
-function! s:define(cmd_name,...)
+function! s:define(cmd_name,...) abort
   if (0 < len(a:000)) ? a:1 : 0
     execute 'command! -buffer -nargs=1 '.a:cmd_name.' try | throw 1 | catch | call s:_assertion(<q-args>,(exists(''l:'')?eval(''l:''):{}),expand(''%''), v:throwpoint, '.string(a:cmd_name).') | endtry'
   else
@@ -128,7 +128,7 @@ function! s:define(cmd_name,...)
   endif
 endfunction
 
-function! s:set_config(config)
+function! s:set_config(config) abort
   " TODO
 endfunction
 

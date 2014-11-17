@@ -1,15 +1,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:parse(ltsv)
+function! s:parse(ltsv) abort
   return map(split(a:ltsv, '\r\?\n'), 's:parse_record(v:val)')
 endfunction
 
-function! s:parse_file(file)
+function! s:parse_file(file) abort
   return s:parse(join(readfile(a:file), "\n"))
 endfunction
 
-function! s:parse_record(line)
+function! s:parse_record(line) abort
   let record = {}
   for field in split(a:line, "\t")
     let splitted = matchlist(field, '^\([0-9A-Za-z_.-]\+\):\(.*\)$')
@@ -21,7 +21,7 @@ function! s:parse_record(line)
   return record
 endfunction
 
-function! s:dump(data)
+function! s:dump(data) abort
   if type(a:data) == type([])
     return join(map(copy(a:data), 's:_dump_record(v:val)'), "\n")
   elseif type(a:data) == type({})
@@ -30,7 +30,7 @@ function! s:dump(data)
   return a:data
 endfunction
 
-function! s:dump_file(data, file, ...)
+function! s:dump_file(data, file, ...) abort
   let ltsv = split(s:dump(a:data), "\n")
   if a:0 && a:1 && filereadable(a:file)
     let ltsv = readfile(a:file) + ltsv
@@ -38,11 +38,11 @@ function! s:dump_file(data, file, ...)
   call writefile(ltsv, a:file)
 endfunction
 
-function! s:_dump_record(obj)
+function! s:_dump_record(obj) abort
   return join(values(map(copy(a:obj), 'v:key . ":" . s:_to_s(v:val)')), "\t")
 endfunction
 
-function! s:_to_s(data)
+function! s:_to_s(data) abort
   let t = type(a:data)
   return t == type('') || t == type(0) ? a:data : string(a:data)
 endfunction

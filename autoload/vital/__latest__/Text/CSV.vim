@@ -1,15 +1,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:parse(csvlines)
+function! s:parse(csvlines) abort
   return map(split(a:csvlines, '\r\?\n', 1), 's:parse_record(v:val)')
 endfunction
 
-function! s:parse_file(file)
+function! s:parse_file(file) abort
   return s:parse(join(readfile(a:file), "\n"))
 endfunction
 
-function! s:parse_record(csvline)
+function! s:parse_record(csvline) abort
   let csvline = a:csvline
   let record = []
   let rx_rest = '\(,\|$\)\(.*\)'
@@ -42,7 +42,7 @@ function! s:parse_record(csvline)
   return record
 endfunction
 
-function! s:dump(records)
+function! s:dump(records) abort
   if type(a:records) is type([])
     return join(map(copy(a:records), 's:dump_record(v:val)'), "\n")
   else
@@ -50,7 +50,7 @@ function! s:dump(records)
   endif
 endfunction
 
-function! s:dump_file(records, file, ...)
+function! s:dump_file(records, file, ...) abort
   let csv = split(s:dump(a:records), '\n', 1)
   if a:0 && a:1 && filereadable(a:file)
     let csv = readfile(a:file) + csv
@@ -58,7 +58,7 @@ function! s:dump_file(records, file, ...)
   call writefile(csv, a:file)
 endfunction
 
-function! s:dump_record(record)
+function! s:dump_record(record) abort
   if type(a:record) is type([])
     return join(map(copy(a:record), 's:_to_s(v:val)'), ",")
   else
@@ -67,7 +67,7 @@ function! s:dump_record(record)
 endfunction
 
 " TODO: More customizable?
-function! s:_to_s(data)
+function! s:_to_s(data) abort
   let t = type(a:data)
   if t is type('')
     if a:data =~# '[",\r\n]'

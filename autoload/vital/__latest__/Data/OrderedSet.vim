@@ -2,11 +2,11 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-function! s:version()
+function! s:version() abort
   return '0.0.15'
 endfunction
 
-function! s:new(...)
+function! s:new(...) abort
   let obj = deepcopy(s:ordered_set)
   if a:0
   \   && type(a:1) == type({})
@@ -24,19 +24,19 @@ let s:ordered_set = {
 \   'Fn_identifier': 'string',
 \}
 
-function! s:ordered_set.prepend(list)
+function! s:ordered_set.prepend(list) abort
   for V in reverse(a:list)
     call self.unshift(V)
   endfor
 endfunction
 
-function! s:ordered_set.append(list)
+function! s:ordered_set.append(list) abort
   for V in a:list
     call self.push(V)
   endfor
 endfunction
 
-function! s:ordered_set.push(elem)
+function! s:ordered_set.push(elem) abort
   let id = call(self.Fn_identifier, [a:elem])
   if !has_key(self._dict, id)
     let self._dict[id] = len(self._list) - self._origin_pos
@@ -46,7 +46,7 @@ function! s:ordered_set.push(elem)
   return 0
 endfunction
 
-function! s:ordered_set.unshift(elem)
+function! s:ordered_set.unshift(elem) abort
   let id = call(self.Fn_identifier, [a:elem])
   if !has_key(self._dict, id)
     let self._origin_pos += 1
@@ -57,34 +57,34 @@ function! s:ordered_set.unshift(elem)
   return 0
 endfunction
 
-function! s:ordered_set.empty()
+function! s:ordered_set.empty() abort
   return empty(self._list)
 endfunction
 
-function! s:ordered_set.size()
+function! s:ordered_set.size() abort
   return len(self._list)
 endfunction
 
-function! s:ordered_set.to_list()
+function! s:ordered_set.to_list() abort
   return copy(self._list)
 endfunction
 
-function! s:ordered_set.has(elem)
+function! s:ordered_set.has(elem) abort
   let id = call(self.Fn_identifier, [a:elem])
   return has_key(self._dict, id)
 endfunction
 
-function! s:ordered_set.has_id(id)
+function! s:ordered_set.has_id(id) abort
   return has_key(self._dict, a:id)
 endfunction
 
-function! s:ordered_set.clear()
+function! s:ordered_set.clear() abort
   let self._list = []
   let self._dict  = {}
   let self._origin_pos = 0
 endfunction
 
-function! s:ordered_set.remove(elem)
+function! s:ordered_set.remove(elem) abort
   let id = call(self.Fn_identifier, [a:elem])
   if has_key(self._dict, id)
     let idx = self._origin_pos + self._dict[id]

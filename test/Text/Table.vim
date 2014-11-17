@@ -1,15 +1,15 @@
 let s:suite = themis#suite('Text.Table')
 let s:assert = themis#helper('assert')
 
-function! s:suite.before()
+function! s:suite.before() abort
     let s:T = vital#of('vital').import('Text.Table')
 endfunction
 
-function! s:suite.after()
+function! s:suite.after() abort
     unlet! s:T
 endfunction
 
-function! s:suite.It_instantiates_a_new_object_without_configuration()
+function! s:suite.It_instantiates_a_new_object_without_configuration() abort
     let table = s:T.new()
 
     call s:assert.equals(table.hborder(), 1)
@@ -21,7 +21,7 @@ function! s:suite.It_instantiates_a_new_object_without_configuration()
     call s:assert.equals(table.footer(),  [])
 endfunction
 
-function! s:suite.It_instantiates_a_new_object_with_configuration()
+function! s:suite.It_instantiates_a_new_object_with_configuration() abort
     let table = s:T.new({
     \ 'hborder': 0,
     \ 'vborder': 0,
@@ -41,7 +41,7 @@ function! s:suite.It_instantiates_a_new_object_with_configuration()
     call s:assert.equals(table.footer(),  ['f1', 'f2', 'f3'])
 endfunction
 
-function! s:suite.It_configures_properties()
+function! s:suite.It_configures_properties() abort
     let table = s:T.new()
 
     call table.hborder(0)
@@ -61,7 +61,7 @@ function! s:suite.It_configures_properties()
     call s:assert.equals(table.footer(),  ['f1', 'f2', 'f3'])
 endfunction
 
-function! s:suite.It_throws_when_already_added_columns()
+function! s:suite.It_throws_when_already_added_columns() abort
     let table = s:T.new()
 
     call table.columns([{}, {}, {}])
@@ -77,7 +77,7 @@ function! s:suite.It_throws_when_already_added_columns()
     Throws /^vital: Text\.Table:/ table.add_column({})
 endfunction
 
-function! s:suite.It_configures_properties_step_by_step()
+function! s:suite.It_configures_properties_step_by_step() abort
     let table = s:T.new()
 
     call table.add_column({})
@@ -90,7 +90,7 @@ function! s:suite.It_configures_properties_step_by_step()
     call s:assert.equals(table.rows(),    [['r1c1', 'r1c2', 'r1c3']])
 endfunction
 
-function! s:suite.It_makes_a_table()
+function! s:suite.It_makes_a_table() abort
     let table = s:T.new()
 
     call table.columns([{}, {}, {}])
@@ -109,7 +109,7 @@ function! s:suite.It_makes_a_table()
     \])
 endfunction
 
-function! s:suite.It_makes_a_table_without_horizontal_border()
+function! s:suite.It_makes_a_table_without_horizontal_border() abort
     let table = s:T.new()
 
     call table.hborder(0)
@@ -125,7 +125,7 @@ function! s:suite.It_makes_a_table_without_horizontal_border()
     \])
 endfunction
 
-function! s:suite.It_makes_a_table_without_vertical_border()
+function! s:suite.It_makes_a_table_without_vertical_border() abort
     let table = s:T.new()
 
     call table.vborder(0)
@@ -145,7 +145,7 @@ function! s:suite.It_makes_a_table_without_vertical_border()
     \])
 endfunction
 
-function! s:suite.It_makes_a_table_without_horizontal_and_vertical_border()
+function! s:suite.It_makes_a_table_without_horizontal_and_vertical_border() abort
     let table = s:T.new()
 
     call table.hborder(0)
@@ -162,7 +162,7 @@ function! s:suite.It_makes_a_table_without_horizontal_and_vertical_border()
     \])
 endfunction
 
-function! s:suite.It_makes_a_table_even_if_there_are_multibyte_characters()
+function! s:suite.It_makes_a_table_even_if_there_are_multibyte_characters() abort
     let table = s:T.new()
 
     call table.columns([{}, {}, {}])
@@ -185,7 +185,7 @@ function! s:suite.It_makes_a_table_even_if_there_are_multibyte_characters()
     \])
 endfunction
 
-function! s:suite.It_makes_a_table_which_wraps_each_cells()
+function! s:suite.It_makes_a_table_which_wraps_each_cells() abort
     let table = s:T.new()
 
     call table.columns([{'width': 4}, {'width': 4}, {'width': 4}])
@@ -209,7 +209,7 @@ function! s:suite.It_makes_a_table_which_wraps_each_cells()
     \])
 endfunction
 
-function! s:suite.It_makes_a_table_with_horizontal_and_vertical_alignment()
+function! s:suite.It_makes_a_table_with_horizontal_and_vertical_alignment() abort
     let table = s:T.new()
 
     call table.columns([{'halign': 'right', 'valign': 'bottom', 'width': 4}, {'width': 4}, {'halign': 'center', 'valign': 'center', 'width': 4}])
@@ -230,7 +230,7 @@ function! s:suite.It_makes_a_table_with_horizontal_and_vertical_alignment()
     \])
 endfunction
 
-function! s:suite.It_makes_a_table_with_auto_wrapping_in_the_cell()
+function! s:suite.It_makes_a_table_with_auto_wrapping_in_the_cell() abort
     let table = s:T.new()
 
     call table.columns([{'halign': 'right', 'valign': 'bottom', 'width': 4}, {'width': 4}, {'halign': 'center', 'valign': 'center', 'width': 4}])
@@ -251,7 +251,7 @@ function! s:suite.It_makes_a_table_with_auto_wrapping_in_the_cell()
     \])
 endfunction
 
-function! s:suite.It_make_a_table_only_header_and_footer()
+function! s:suite.It_make_a_table_only_header_and_footer() abort
     let table = s:T.new({
     \ 'columns': [{}, {}, {}],
     \ 'header':  ['header1', 'header2', 'header3'],
@@ -268,7 +268,7 @@ function! s:suite.It_make_a_table_only_header_and_footer()
     \])
 endfunction
 
-function! s:suite.It_has_initial_header_and_footer_and_rows_later()
+function! s:suite.It_has_initial_header_and_footer_and_rows_later() abort
     let table = s:T.new({
     \ 'columns': [{}, {}, {}],
     \ 'header':  ['header1', 'header2', 'header3'],
@@ -294,7 +294,7 @@ function! s:suite.It_has_initial_header_and_footer_and_rows_later()
     \])
 endfunction
 
-function! s:suite.It_has_no_header_and_footer()
+function! s:suite.It_has_no_header_and_footer() abort
     let table = s:T.new({
     \ 'columns': [{}, {}, {}],
     \})
@@ -314,7 +314,7 @@ function! s:suite.It_has_no_header_and_footer()
     \])
 endfunction
 
-function! s:suite.It_lays_out_by_cell_style_and_column_style()
+function! s:suite.It_lays_out_by_cell_style_and_column_style() abort
     let table = s:T.new({
     \ 'columns': [{'halign': 'center', 'valign': 'center', 'width': 10}],
     \})
@@ -340,7 +340,7 @@ function! s:suite.It_lays_out_by_cell_style_and_column_style()
     \])
 endfunction
 
-function! s:suite.It_automatically_resizes_width_for_each_column()
+function! s:suite.It_automatically_resizes_width_for_each_column() abort
     let table = s:T.new({
     \ 'columns': [{'width': 5}, {'max_width': 10}, {'min_width': 3}],
     \})
@@ -363,7 +363,7 @@ function! s:suite.It_automatically_resizes_width_for_each_column()
     \])
 endfunction
 
-function! s:suite.It_supresses_resizes_if_specified_table_style()
+function! s:suite.It_supresses_resizes_if_specified_table_style() abort
     let table = s:T.new({
     \ 'columns': [{'width': 5}, {'width': 10}, {'max_width': 30}],
     \})
@@ -379,7 +379,7 @@ function! s:suite.It_supresses_resizes_if_specified_table_style()
     \])
 endfunction
 
-function! s:suite.It_can_changes_joints_and_borders()
+function! s:suite.It_can_changes_joints_and_borders() abort
     let table = s:T.new({
     \ 'columns': [{'min_width': 5}, {'min_width': 5}, {'min_width': 5}],
     \})
@@ -433,7 +433,7 @@ function! s:suite.It_can_changes_joints_and_borders()
     \])
 endfunction
 
-function! s:suite.It_can_use_for_sudden_death()
+function! s:suite.It_can_use_for_sudden_death() abort
     let table = s:T.new({
     \ 'columns': [{}],
     \})

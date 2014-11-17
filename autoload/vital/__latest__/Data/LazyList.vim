@@ -1,21 +1,21 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:L = s:V.import('Data.List')
   let s:P = s:V.import('Process')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Data.List', 'Process']
 endfunction
 
-function! s:from_list(list)
+function! s:from_list(list) abort
   return [[], {'list': a:list, 'run': function('s:_f_from_list')}]
 endfunction
 
-function! s:_f_from_list() dict
+function! s:_f_from_list() dict abort
   if len(self.list) == 0
     return [[], {}]
   else
@@ -24,7 +24,7 @@ function! s:_f_from_list() dict
   endif
 endfunction
 
-function! s:file_readlines(fname)
+function! s:file_readlines(fname) abort
   if !s:P.has_vimproc()
     throw 'Data.LazyList.file_readlines() requires vimproc'
   endif
@@ -34,7 +34,7 @@ function! s:file_readlines(fname)
 endfunction
 
 " TODO resource management
-function! s:_f_file_readlines() dict
+function! s:_f_file_readlines() dict abort
   if self.f.eof
     call self.f.close()
     return [[], {}]
@@ -44,14 +44,14 @@ function! s:_f_file_readlines() dict
   endif
 endfunction
 
-function! s:iterate(init, f)
+function! s:iterate(init, f) abort
   let thunk = {
         \ 'memo': a:init, 'f': a:f,
         \ 'run': function('s:_f_iterate')}
   return [[], thunk]
 endfunction
 
-function! s:_f_iterate() dict
+function! s:_f_iterate() dict abort
   let next_thunk = {
         \ 'memo': eval(substitute(self.f, 'v:val', self.memo, 'g')),
         \ 'f': self.f,
@@ -59,7 +59,7 @@ function! s:_f_iterate() dict
   return [[self.memo], next_thunk]
 endfunction
 
-function! s:zip(xs, ys)
+function! s:zip(xs, ys) abort
   let [xfs, xs] = a:xs
   let [yfs, ys] = a:ys
   let thunk = {
@@ -69,7 +69,7 @@ function! s:zip(xs, ys)
   return [[], thunk]
 endfunction
 
-function! s:_f_zip() dict
+function! s:_f_zip() dict abort
   let [x, xs] = s:_unapply(self.xfs, self.xs)
   let [y, ys] = s:_unapply(self.yfs, self.ys)
   if len(x) == 0 || len(y) == 0
@@ -83,11 +83,11 @@ function! s:_f_zip() dict
   endif
 endfunction
 
-function! s:is_empty(xs)
+function! s:is_empty(xs) abort
   return a:xs[1] == {}
 endfunction
 
-function! s:_eval(fs, x)
+function! s:_eval(fs, x) abort
   let memo = a:x
   for f in a:fs
     if len(memo)
@@ -100,24 +100,24 @@ function! s:_eval(fs, x)
   return memo
 endfunction
 
-function! s:_unapply(fs, xs)
+function! s:_unapply(fs, xs) abort
   let [x, xs] = a:xs.run()
   return [s:_eval(a:fs, x), xs]
 endfunction
 
-function! s:filter(xs, f)
+function! s:filter(xs, f) abort
   let [fs, xs] = a:xs
   let f = printf("%s ? [v:val] : []", a:f)
   return [s:L.conj(fs, f), xs]
 endfunction
 
-function! s:map(xs, f)
+function! s:map(xs, f) abort
   let [fs, xs] = a:xs
   let f = printf('[%s]', a:f)
   return [s:L.conj(fs, f), xs]
 endfunction
 
-function! s:take(n, xs)
+function! s:take(n, xs) abort
   if a:n == 0 || s:is_empty(a:xs)
     return []
   else
@@ -131,7 +131,7 @@ function! s:take(n, xs)
   endif
 endfunction
 
-function! s:take_while(xs, f)
+function! s:take_while(xs, f) abort
   if s:is_empty(a:xs)
     return []
   else
@@ -145,12 +145,12 @@ function! s:take_while(xs, f)
   endif
 endfunction
 
-function! s:first(xs, default)
+function! s:first(xs, default) abort
   let xs = s:take(1, a:xs)
   return len(xs) == 0 ? a:default : xs[0]
 endfunction
 
-function! s:rest(xs, default)
+function! s:rest(xs, default) abort
   if s:is_empty(a:xs)
     return a:default
   else
@@ -160,7 +160,7 @@ function! s:rest(xs, default)
   endif
 endfunction
 
-function! s:drop(n, xs)
+function! s:drop(n, xs) abort
   if s:is_empty(a:xs)
     return []
   else

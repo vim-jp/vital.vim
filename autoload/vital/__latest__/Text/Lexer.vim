@@ -1,16 +1,16 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = s:V.import('Prelude')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Prelude']
 endfunction
 
-function! s:_list2dict(list)
+function! s:_list2dict(list) abort
   if s:Prelude.is_list(a:list)
     if len(a:list) < 2 | call s:_exception('too few arguments.') | endif
     if 2 < len(a:list) | call s:_exception('too many arguments.') | endif
@@ -23,13 +23,13 @@ function! s:_list2dict(list)
   endif
 endfunction
 
-function! s:_exception(msg)
+function! s:_exception(msg) abort
   throw printf('[Text.Lexer] %s', a:msg)
 endfunction
 
 let s:obj = { 'tokens' : [] }
 
-function! s:obj.exec(string) dict
+function! s:obj.exec(string) dict abort
   let match_tokens = []
   let idx = 0
   while idx < len(a:string)
@@ -51,7 +51,7 @@ function! s:obj.exec(string) dict
   return match_tokens
 endfunction
 
-function! s:lexer(patterns)
+function! s:lexer(patterns) abort
   let obj = deepcopy(s:obj)
   for e in a:patterns
     let obj.tokens += [(s:_list2dict(e))]
@@ -59,7 +59,7 @@ function! s:lexer(patterns)
   return obj
 endfunction
 
-function! s:token(label,matched_text,col)
+function! s:token(label,matched_text,col) abort
   let obj = {}
   let obj['label'] = a:label
   let obj['matched_text'] = a:matched_text
@@ -67,24 +67,24 @@ function! s:token(label,matched_text,col)
   return obj
 endfunction
 
-function! s:simple_parser(expr)
+function! s:simple_parser(expr) abort
   echoerr 'Text.Lexer.simple_parser(expr) is obsolete. Use Text.Parser.parser() instead.'
   let obj = { 'expr' : a:expr, 'idx' : 0, 'tokens' : [] }
-  function! obj.end() dict
+  function! obj.end() dict abort
     return len(self.expr) <= self.idx
   endfunction
-  function! obj.next() dict
+  function! obj.next() dict abort
     if self.end()
       call s:_exception('Already end of tokens.')
     else
       return self.expr[self.idx]
     endif
   endfunction
-  function! obj.next_is(label) dict
+  function! obj.next_is(label) dict abort
     return self.next().label ==# a:label
   endfunction
   " @vimlint(EVL104, 1, l:next)
-  function! obj.consume() dict
+  function! obj.consume() dict abort
     if ! self.end()
       let next = self.next()
       let self.idx += 1

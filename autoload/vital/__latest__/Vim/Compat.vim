@@ -10,7 +10,7 @@ set cpo&vim
 " e.g.)
 " echo s:has_version('7.3.629')
 " echo s:has_version('7.3')
-function! s:has_version(version)
+function! s:has_version(version) abort
   let versions = split(a:version, '\.')
   if len(versions) == 2
     let versions += [0]
@@ -26,16 +26,16 @@ endfunction
 
 " Patch 7.3.694
 if exists('*shiftwidth')
-  function! s:shiftwidth()
+  function! s:shiftwidth() abort
     return shiftwidth()
   endfunction
 elseif s:has_version('7.3.629')
   " 7.3.629: When 'shiftwidth' is zero use the value of 'tabstop'.
-  function! s:shiftwidth()
+  function! s:shiftwidth() abort
     return &shiftwidth == 0 ? &tabstop : &shiftwidth
   endfunction
 else
-  function! s:shiftwidth()
+  function! s:shiftwidth() abort
     return &shiftwidth
   endfunction
 endif

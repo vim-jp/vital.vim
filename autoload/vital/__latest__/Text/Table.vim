@@ -1,12 +1,12 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:S = a:V.import('Data.String')
   let s:L = a:V.import('Data.List')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Data.String', 'Data.List']
 endfunction
 
@@ -65,7 +65,7 @@ let s:default_border_style = {
 \ },
 \}
 
-function! s:new(...)
+function! s:new(...) abort
   let obj = deepcopy(s:table)
 
   if a:0 > 0
@@ -97,7 +97,7 @@ function! s:new(...)
   return obj
 endfunction
 
-function! s:table.hborder(...)
+function! s:table.hborder(...) abort
   if a:0 == 0
     return self.__hborder
   else
@@ -105,7 +105,7 @@ function! s:table.hborder(...)
   endif
 endfunction
 
-function! s:table.vborder(...)
+function! s:table.vborder(...) abort
   if a:0 == 0
     return self.__vborder
   else
@@ -113,7 +113,7 @@ function! s:table.vborder(...)
   endif
 endfunction
 
-function! s:table.header(...)
+function! s:table.header(...) abort
   if a:0 == 0
     return deepcopy(self.__header)
   else
@@ -127,7 +127,7 @@ function! s:table.header(...)
   endif
 endfunction
 
-function! s:table.columns(...)
+function! s:table.columns(...) abort
   if a:0 == 0
     return deepcopy(self.__column_defs)
   else
@@ -144,7 +144,7 @@ function! s:table.columns(...)
   endif
 endfunction
 
-function! s:table.add_column(def)
+function! s:table.add_column(def) abort
   if !(empty(self.__header) && empty(self.__footer) && empty(self.__rows))
     throw 'vital: Text.Table: Already added header, footer or rows.'
   endif
@@ -152,7 +152,7 @@ function! s:table.add_column(def)
   let self.__column_defs += [deepcopy(a:def)]
 endfunction
 
-function! s:table.rows(...)
+function! s:table.rows(...) abort
   if a:0 == 0
     return deepcopy(self.__rows)
   else
@@ -163,7 +163,7 @@ function! s:table.rows(...)
   endif
 endfunction
 
-function! s:table.add_row(row)
+function! s:table.add_row(row) abort
   let row = deepcopy(a:row)
 
   if len(row) != len(self.__column_defs)
@@ -173,7 +173,7 @@ function! s:table.add_row(row)
   let self.__rows += [row]
 endfunction
 
-function! s:table.footer(...)
+function! s:table.footer(...) abort
   if a:0 == 0
     return deepcopy(self.__footer)
   else
@@ -187,7 +187,7 @@ function! s:table.footer(...)
   endif
 endfunction
 
-function! s:table.border_style(...)
+function! s:table.border_style(...) abort
   if a:0 == 0
     return deepcopy(self.__border_style)
   else
@@ -195,7 +195,7 @@ function! s:table.border_style(...)
   endif
 endfunction
 
-function! s:table.stringify(...)
+function! s:table.stringify(...) abort
   let context = {}
 
   let context.hborder = self.__hborder
@@ -228,7 +228,7 @@ function! s:table.stringify(...)
   return s:_stringify(context)
 endfunction
 
-function! s:_make_border_style(style)
+function! s:_make_border_style(style) abort
   let style = deepcopy(a:style)
 
   let style.joint = extend(deepcopy(s:default_border_style.joint), get(style, 'joint', {}))
@@ -237,7 +237,7 @@ function! s:_make_border_style(style)
   return style
 endfunction
 
-function! s:_compute_width_ranges(context)
+function! s:_compute_width_ranges(context) abort
   let rows = []
   if a:context.has_header
     let rows += [a:context.header]
@@ -260,7 +260,7 @@ function! s:_compute_width_ranges(context)
   return ranges
 endfunction
 
-function! s:_compute_adjustment(context, colidx, left_joint, center_joint, right_joint)
+function! s:_compute_adjustment(context, colidx, left_joint, center_joint, right_joint) abort
   let adjustment = (a:context.vborder) ? a:context.hpadding * 2 : 0
 
   " adjust width
@@ -286,7 +286,7 @@ function! s:_compute_adjustment(context, colidx, left_joint, center_joint, right
   return adjustment
 endfunction
 
-function! s:_adjust_for_filling(context, colidx, width)
+function! s:_adjust_for_filling(context, colidx, width) abort
   let top_adjustment = s:_compute_adjustment(a:context, a:colidx, a:context.border_style.joint.top_left, a:context.border_style.joint.top, a:context.border_style.joint.top_right)
   let head_adjustment = s:_compute_adjustment(a:context, a:colidx, a:context.border_style.joint.head_left, a:context.border_style.joint.head, a:context.border_style.joint.head_right)
   let row_adjustment = s:_compute_adjustment(a:context, a:colidx, a:context.border_style.joint.left, a:context.border_style.joint.row, a:context.border_style.joint.right)
@@ -330,7 +330,7 @@ function! s:_adjust_for_filling(context, colidx, width)
   return a:width
 endfunction
 
-function! s:_compute_widths(context)
+function! s:_compute_widths(context) abort
   let ranges = s:_compute_width_ranges(a:context)
 
   let widths = []
@@ -394,7 +394,7 @@ function! s:_compute_widths(context)
   endif
 endfunction
 
-function! s:_compute_table_width(context)
+function! s:_compute_table_width(context) abort
   if a:context.table_style.max_width <= 0
     " not specified
     return 0
@@ -428,7 +428,7 @@ function! s:_compute_table_width(context)
   return width
 endfunction
 
-function! s:_make_internal_row_object(defs, row)
+function! s:_make_internal_row_object(defs, row) abort
   let irow = []
   for container in s:L.zip(a:row, a:defs)
     if type(container[0]) == type({})
@@ -447,7 +447,7 @@ function! s:_make_internal_row_object(defs, row)
   return irow
 endfunction
 
-function! s:_stringify(context)
+function! s:_stringify(context) abort
   let buffer = []
 
   let buffer += s:_make_border_string(a:context,
@@ -499,7 +499,7 @@ function! s:_stringify(context)
   return buffer
 endfunction
 
-function! s:_make_border_string(context, left_joint, center_joint, right_joint, border)
+function! s:_make_border_string(context, left_joint, center_joint, right_joint, border) abort
   if !a:context.hborder
     return []
   endif
@@ -525,7 +525,7 @@ function! s:_make_border_string(context, left_joint, center_joint, right_joint, 
   return [left_joint . join(buffer, center_joint) . right_joint]
 endfunction
 
-function! s:_make_row_string(context, row, left_border, center_border, right_border)
+function! s:_make_row_string(context, row, left_border, center_border, right_border) abort
   let row = deepcopy(a:row)
 
   for colidx in range(a:context.ncolumns)
@@ -559,7 +559,7 @@ function! s:_make_row_string(context, row, left_border, center_border, right_bor
   return out
 endfunction
 
-function! s:_halign(style, str, width)
+function! s:_halign(style, str, width) abort
   if a:style.halign ==# 'left'
     let str = a:str
     while strdisplaywidth(str) < a:width
@@ -589,7 +589,7 @@ function! s:_halign(style, str, width)
   endif
 endfunction
 
-function! s:_valign(def, list)
+function! s:_valign(def, list) abort
   if a:def.valign ==# 'top'
     return a:list
   elseif a:def.valign ==# 'center'
@@ -609,7 +609,7 @@ function! s:_valign(def, list)
   endif
 endfunction
 
-function! s:_to_string(expr)
+function! s:_to_string(expr) abort
   if type(a:expr) == type('')
     return a:expr
   elseif type(a:expr) == type(0)
@@ -621,7 +621,7 @@ function! s:_to_string(expr)
   endif
 endfunction
 
-function! s:_make_equals_size(row)
+function! s:_make_equals_size(row) abort
   let row = deepcopy(a:row)
   let mlen = max(map(copy(row), 'len(v:val.text)'))
   for cell in row
@@ -630,12 +630,12 @@ function! s:_make_equals_size(row)
   return row
 endfunction
 
-function! s:_wrap(text, width)
+function! s:_wrap(text, width) abort
   return s:L.concat(
   \ map(a:text, 's:_split_by_displaywidth(v:val, a:width)'))
 endfunction
 
-function! s:_split_by_displaywidth(body, x)
+function! s:_split_by_displaywidth(body, x) abort
   let memo = []
   let body = a:body
   while strdisplaywidth(body) > a:x
@@ -646,13 +646,13 @@ function! s:_split_by_displaywidth(body, x)
   return memo
 endfunction
 
-function! s:_split_by_displaywidth_once(body, x)
+function! s:_split_by_displaywidth_once(body, x) abort
   let fst = s:_strdisplaywidthpart(a:body, a:x)
   let snd = s:_strdisplaywidthpart_reverse(a:body, strdisplaywidth(a:body) - strdisplaywidth(fst))
   return [fst, snd]
 endfunction
 
-function! s:_strdisplaywidthpart(str, width)
+function! s:_strdisplaywidthpart(str, width) abort
   if a:width <= 0
     return ''
   endif
@@ -665,7 +665,7 @@ function! s:_strdisplaywidthpart(str, width)
   return join(rest, '')
 endfunction
 
-function! s:_strdisplaywidthpart_reverse(str, width)
+function! s:_strdisplaywidthpart_reverse(str, width) abort
   if a:width <= 0
     return ''
   endif
@@ -678,7 +678,7 @@ function! s:_strdisplaywidthpart_reverse(str, width)
   return join(rest, '')
 endfunction
 
-function! s:_fill_char(char, width)
+function! s:_fill_char(char, width) abort
   if a:width <= 0
     return ''
   endif

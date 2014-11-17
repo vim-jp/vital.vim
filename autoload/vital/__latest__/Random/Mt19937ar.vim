@@ -52,18 +52,18 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:B = a:V.import('Bitwise')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Bitwise']
 endfunction
 
 
 let s:Generator = {}
 
-function! s:Generator.seed(seeds)
+function! s:Generator.seed(seeds) abort
   let self._N = 624
   let self._M = 397
   let self._MATRIX_A = 0x9908b0df
@@ -75,15 +75,15 @@ function! s:Generator.seed(seeds)
   call s:_init_by_array(self, a:seeds)
 endfunction
 
-function! s:Generator.min()
+function! s:Generator.min() abort
   return 0x80000000
 endfunction
 
-function! s:Generator.max()
+function! s:Generator.max() abort
   return 0x7FFFFFFF
 endfunction
 
-function! s:_init_genrand(g, s)
+function! s:_init_genrand(g, s) abort
   let a:g._mt[0] = a:s
   let a:g._mti = 1
   while a:g._mti < a:g._N
@@ -92,7 +92,7 @@ function! s:_init_genrand(g, s)
   endwhile
 endfunction
 
-function! s:_init_by_array(g, init_key)
+function! s:_init_by_array(g, init_key) abort
   let key_length = len(a:init_key)
   call s:_init_genrand(a:g, 19650218)
   let i = 1
@@ -125,7 +125,7 @@ function! s:_init_by_array(g, init_key)
   let a:g._mt[0] = 0x80000000
 endfunction
 
-function! s:Generator.next()
+function! s:Generator.next() abort
   let mag01 = [0, self._MATRIX_A]
 
   if self._mti >= self._N
@@ -161,20 +161,20 @@ function! s:Generator.next()
   return y
 endfunction
 
-function! s:new_generator()
+function! s:new_generator() abort
   let gen = deepcopy(s:Generator)
   call gen.seed([0x123, 0x234, 0x345, 0x456])
   return gen
 endfunction
 
-function! s:_common_generator()
+function! s:_common_generator() abort
   if !exists('s:common_generator')
     let s:common_generator = s:new_generator()
   endif
   return s:common_generator
 endfunction
 
-function! s:srand(...)
+function! s:srand(...) abort
   if a:0 == 0
     let x = has('reltime') ? reltime()[1] : localtime()
   elseif a:0 == 1
@@ -185,7 +185,7 @@ function! s:srand(...)
   call s:_common_generator().seed([x])
 endfunction
 
-function! s:rand()
+function! s:rand() abort
   return s:_common_generator().next()
 endfunction
 

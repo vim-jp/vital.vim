@@ -3,7 +3,7 @@ set cpo&vim
 
 " [I wrapper
 " known issue: it messes undo tree slightly
-function! s:finddef(str)
+function! s:finddef(str) abort
   let before = getpos('.')
   call append(0, a:str) " ugh
   try
@@ -46,7 +46,7 @@ endfunction
 
 " just for now
 " TODO move this to Data.String
-function! s:lines(str)
+function! s:lines(str) abort
   return split(a:str, '\r\?\n')
 endfunction
 

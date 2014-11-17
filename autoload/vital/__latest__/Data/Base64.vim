@@ -3,17 +3,17 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:encode(data)
+function! s:encode(data) abort
   let b64 = s:_b64encode(s:_str2bytes(a:data), s:standard_table, '=')
   return join(b64, '')
 endfunction
 
-function! s:encodebin(data)
+function! s:encodebin(data) abort
   let b64 = s:_b64encode(s:_binstr2bytes(a:data), s:standard_table, '=')
   return join(b64, '')
 endfunction
 
-function! s:decode(data)
+function! s:decode(data) abort
   let bytes = s:_b64decode(split(a:data, '\zs'), s:standard_table, '=')
   return s:_bytes2str(bytes)
 endfunction
@@ -30,7 +30,7 @@ let s:urlsafe_table = [
       \ "g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v",
       \ "w","x","y","z","0","1","2","3","4","5","6","7","8","9","-","_"]
 
-function! s:_b64encode(bytes, table, pad)
+function! s:_b64encode(bytes, table, pad) abort
   let b64 = []
   for i in range(0, len(a:bytes) - 1, 3)
     let n = a:bytes[i] * 0x10000
@@ -51,7 +51,7 @@ function! s:_b64encode(bytes, table, pad)
   return b64
 endfunction
 
-function! s:_b64decode(b64, table, pad)
+function! s:_b64decode(b64, table, pad) abort
   let a2i = {}
   for i in range(len(a:table))
     let a2i[a:table[i]] = i
@@ -75,15 +75,15 @@ function! s:_b64decode(b64, table, pad)
   return bytes
 endfunction
 
-function! s:_binstr2bytes(str)
+function! s:_binstr2bytes(str) abort
   return map(range(len(a:str)/2), 'eval("0x".a:str[v:val*2 : v:val*2+1])')
 endfunction
 
-function! s:_str2bytes(str)
+function! s:_str2bytes(str) abort
   return map(range(len(a:str)), 'char2nr(a:str[v:val])')
 endfunction
 
-function! s:_bytes2str(bytes)
+function! s:_bytes2str(bytes) abort
   return eval('"' . join(map(copy(a:bytes), 'printf(''\x%02x'', v:val)'), '') . '"')
 endfunction
 
