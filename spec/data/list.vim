@@ -349,9 +349,9 @@ Context Data.List.find_index()
   End
   It returns -1 or default value if not found
     Should g:L.find_index([], '1') == -1
-    Should g:L.find_index(["hoge", "fuga", "piyo"], 'v:val =~# x') == -1
+    Should g:L.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"') == -1
     Should g:L.find_index([], '1', 0, 999) == 999
-    Should g:L.find_index(["hoge", "fuga", "piyo"], 'v:val =~# x', 0, "not found") == "not found"
+    Should g:L.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"', 0, "not found") == "not found"
   End
 End
 
@@ -364,9 +364,9 @@ Context Data.List.find_last_index()
   End
   It returns -1 or default value if not found
     Should g:L.find_last_index([], '1') == -1
-    Should g:L.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# x') == -1
+    Should g:L.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"') == -1
     Should g:L.find_last_index([], '1', 0, 999) == 999
-    Should g:L.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# x', 0, "not found") == "not found"
+    Should g:L.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"', 0, "not found") == "not found"
   End
 End
 
@@ -376,7 +376,7 @@ Context Data.List.find_indices()
     Should g:L.find_indices(["hoge", "fuga", "piyo"], 'v:val =~# "o"') == [0, 2]
     Should g:L.find_indices([1, 2, 3], 'v:val % 2 == 1', 1) == [2]
     Should g:L.find_indices([], '1') == []
-    Should g:L.find_indices(["hoge", "fuga", "piyo"], 'v:val =~# x') == []
+    Should g:L.find_indices(["hoge", "fuga", "piyo"], 'v:val =~# "x"') == []
   End
 End
 
