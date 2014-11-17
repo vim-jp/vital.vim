@@ -5,7 +5,7 @@ set cpo&vim
 
 let s:sfile = expand('<sfile>:p')
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = s:V.import('Prelude')
 
@@ -18,16 +18,16 @@ function! s:_vital_loaded(V)
   endif
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Prelude']
   \    + (has('lua') ? ['Lua.Prelude'] : [])
 endfunction
 
-function! s:run(bfcode)
+function! s:run(bfcode) abort
   call s:run_vim_parse_execute(a:bfcode)
 endfunction
 
-function! s:run_vim_parse_execute(bfcode)
+function! s:run_vim_parse_execute(bfcode) abort
   let [asts, rest] = s:_vim_parse(a:bfcode)
   if rest !=# ''
     throw 'Vital.Interpreter.Brainf__k.run_vim_parse_execute(): parser failed to consume'
@@ -35,7 +35,7 @@ function! s:run_vim_parse_execute(bfcode)
   call s:_vim_execute(asts, 0, {})
 endfunction
 
-function! s:run_lua_parse_execute(bfcode)
+function! s:run_lua_parse_execute(bfcode) abort
   let [asts, rest] =  s:_lua_parse(a:bfcode)
   if rest !=# ''
     throw 'Vital.Interpreter.Brainf__k.run_vim_parse_execute(): parser failed to consume'
@@ -43,7 +43,7 @@ function! s:run_lua_parse_execute(bfcode)
   call s:_lua_execute(asts, 0, {})
 endfunction
 
-function! s:_vim_parse(tokens)
+function! s:_vim_parse(tokens) abort
   if a:tokens ==# ''
     return [[], '']
   endif
@@ -64,7 +64,7 @@ function! s:_vim_parse(tokens)
   endif
 endfunction
 
-function! s:_lua_parse(bfcode)
+function! s:_lua_parse(bfcode) abort
   return luaeval('_G[_A[0]].vim.lua_parse(_A[1])', [s:sfile, a:bfcode])
 endfunction
 
@@ -75,7 +75,7 @@ endfunction
 " return: [pointer, tape]
 "   the final state of pointer and tape to continue if you have more ASTs that
 "   you didn't pass to the call.
-function! s:_vim_execute(asts, pointer, tape)
+function! s:_vim_execute(asts, pointer, tape) abort
   let [asts, pointer, tape] = [a:asts, a:pointer, a:tape]
   while len(asts) > 0
     unlet! ast
@@ -105,7 +105,7 @@ function! s:_vim_execute(asts, pointer, tape)
   return [pointer, tape]
 endfunction
 
-function! s:_lua_execute(asts, pointer, tape)
+function! s:_lua_execute(asts, pointer, tape) abort
   return luaeval('_G[_A[0]].vim.lua_execute(_A[1], _A[2], _A[3])', [s:sfile, a:asts, a:pointer, a:tape])
 endfunction
 

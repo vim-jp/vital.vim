@@ -2,29 +2,29 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = s:V.import('Prelude')
   let s:Process = s:V.import('Process')
   let s:String = s:V.import('Data.String')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Prelude', 'Data.String', 'Process']
 endfunction
 
-function! s:__urlencode_char(c)
+function! s:__urlencode_char(c) abort
   return printf("%%%02X", char2nr(a:c))
 endfunction
 
-function! s:decodeURI(str)
+function! s:decodeURI(str) abort
   let ret = a:str
   let ret = substitute(ret, '+', ' ', 'g')
   let ret = substitute(ret, '%\(\x\x\)', '\=printf("%c", str2nr(submatch(1), 16))', 'g')
   return ret
 endfunction
 
-function! s:escape(str)
+function! s:escape(str) abort
   let result = ''
   for i in range(len(a:str))
     if a:str[i] =~# '^[a-zA-Z0-9_.~-]$'
@@ -36,7 +36,7 @@ function! s:escape(str)
   return result
 endfunction
 
-function! s:encodeURI(items)
+function! s:encodeURI(items) abort
   let ret = ''
   if s:Prelude.is_dict(a:items)
     for key in sort(keys(a:items))
@@ -58,7 +58,7 @@ function! s:encodeURI(items)
   return ret
 endfunction
 
-function! s:encodeURIComponent(items)
+function! s:encodeURIComponent(items) abort
   let ret = ''
   if s:Prelude.is_dict(a:items)
     for key in sort(keys(a:items))
@@ -96,7 +96,7 @@ let s:default_settings = {
 \   'maxRedirect': 20,
 \   'retry': 1,
 \ }
-function! s:request(...)
+function! s:request(...) abort
   let settings = {}
   for arg in a:000
     if s:Prelude.is_dict(arg)
@@ -151,7 +151,7 @@ function! s:request(...)
   return s:_build_response(header, content)
 endfunction
 
-function! s:get(url, ...)
+function! s:get(url, ...) abort
   let settings = {
   \    'url': a:url,
   \    'param': a:0 > 0 ? a:1 : {},
@@ -160,7 +160,7 @@ function! s:get(url, ...)
   return s:request(settings)
 endfunction
 
-function! s:post(url, ...)
+function! s:post(url, ...) abort
   let settings = {
   \    'url': a:url,
   \    'data': a:0 > 0 ? a:1 : {},
@@ -170,20 +170,20 @@ function! s:post(url, ...)
   return s:request(settings)
 endfunction
 
-function! s:_readfile(file)
+function! s:_readfile(file) abort
   if filereadable(a:file)
     return join(readfile(a:file, 'b'), "\n")
   endif
   return ''
 endfunction
 
-function! s:_make_postfile(data)
+function! s:_make_postfile(data) abort
   let fname = tr(tempname(),'\','/')
   call writefile(a:data, fname, 'b')
   return fname
 endfunction
 
-function! s:_postdata(data)
+function! s:_postdata(data) abort
   if s:Prelude.is_dict(a:data)
     return [s:encodeURI(a:data)]
   elseif s:Prelude.is_list(a:data)
@@ -193,7 +193,7 @@ function! s:_postdata(data)
   endif
 endfunction
 
-function! s:_build_response(header, content)
+function! s:_build_response(header, content) abort
   let response = {
   \   'header' : a:header,
   \   'content': a:content,
@@ -216,7 +216,7 @@ function! s:_build_response(header, content)
   return response
 endfunction
 
-function! s:_make_header_args(headdata, option, quote)
+function! s:_make_header_args(headdata, option, quote) abort
   let args = ''
   for [key, value] in items(a:headdata)
     if s:Prelude.is_windows()
@@ -227,7 +227,7 @@ function! s:_make_header_args(headdata, option, quote)
   return args
 endfunction
 
-function! s:parseHeader(headers)
+function! s:parseHeader(headers) abort
   " FIXME: User should be able to specify the treatment method of the duplicate item.
   let header = {}
   for h in a:headers
@@ -241,7 +241,7 @@ function! s:parseHeader(headers)
 endfunction
 
 " Clients
-function! s:_get_client(settings)
+function! s:_get_client(settings) abort
   let candidates = a:settings.client
   let names = s:Prelude.is_list(candidates) ? candidates : [candidates]
   for name in names
@@ -255,7 +255,7 @@ let s:clients = {}
 
 let s:clients.python = {}
 
-function! s:clients.python.available(settings)
+function! s:clients.python.available(settings) abort
   if !has('python')
     return 0
   endif
@@ -270,7 +270,7 @@ function! s:clients.python.available(settings)
   return 1
 endfunction
 
-function! s:clients.python.request(settings)
+function! s:clients.python.request(settings) abort
   " TODO: maxRedirect, retry, outputFile
   let header = ''
   let body = ''
@@ -346,15 +346,15 @@ endfunction
 
 let s:clients.curl = {}
 
-function! s:clients.curl.available(settings)
+function! s:clients.curl.available(settings) abort
   return executable(self._command(a:settings))
 endfunction
 
-function! s:clients.curl._command(settings)
+function! s:clients.curl._command(settings) abort
   return get(get(a:settings, 'command', {}), 'curl', 'curl')
 endfunction
 
-function! s:clients.curl.request(settings)
+function! s:clients.curl.request(settings) abort
   let quote = s:_quote()
   let command = self._command(a:settings)
   let a:settings._file.header = tr(tempname(),'\','/')
@@ -400,15 +400,15 @@ endfunction
 
 let s:clients.wget = {}
 
-function! s:clients.wget.available(settings)
+function! s:clients.wget.available(settings) abort
   return executable(self._command(a:settings))
 endfunction
 
-function! s:clients.wget._command(settings)
+function! s:clients.wget._command(settings) abort
   return get(get(a:settings, 'command', {}), 'wget', 'wget')
 endfunction
 
-function! s:clients.wget.request(settings)
+function! s:clients.wget.request(settings) abort
   let quote = s:_quote()
   let command = self._command(a:settings)
   let method = a:settings.method
@@ -466,7 +466,7 @@ function! s:clients.wget.request(settings)
   return [header, content]
 endfunction
 
-function! s:_quote()
+function! s:_quote() abort
   return &shellxquote == '"' ?  "'" : '"'
 endfunction
 

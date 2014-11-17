@@ -6,7 +6,7 @@ endif
 let s:results = {}
 let s:context_stack = []
 
-function! s:should(cond, result)
+function! s:should(cond, result) abort
   " FIXME: validate
   let it = s:context_stack[-1][1]
   let context = s:context_stack[-2][1]
@@ -17,13 +17,13 @@ function! s:should(cond, result)
         \ printf('It %s : %s', it, a:cond))
 endfunction
 
-function! s:_should(it, cond)
+function! s:_should(it, cond) abort
   echo a:cond
   echo eval(a:cond)
   return eval(a:cond) ? '.' : a:it
 endfunction
 
-function! s:shouldthrow(args)
+function! s:shouldthrow(args) abort
 	let expr = matchstr(a:args, '\zs.*\ze,\s*/.*/')
 	try
 		call eval(expr)
@@ -44,7 +44,7 @@ endfunction
 "   Prelude.is_numeric()
 "     - It checks if the argument is a numeric : g:V.is_numeric([]) ==# 1
 "
-function! s:_format_results(results)
+function! s:_format_results(results) abort
   let messages = []
 
   " {'Prelude.truncate_smart()': ['.', '.', 'It xxx']}
@@ -80,7 +80,7 @@ function! s:_format_results(results)
   return messages
 endfunction
 
-function! s:_update_file(lines, filename)
+function! s:_update_file(lines, filename) abort
   call writefile(extend(readfile(a:filename), a:lines), a:filename)
 endfunction
 

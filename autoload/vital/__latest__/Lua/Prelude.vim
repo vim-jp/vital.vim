@@ -10,7 +10,7 @@ set cpo&vim
 
 let s:sfile = tr(expand('<sfile>:p'), '\', '/')
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   if has('lua')
     execute printf('lua vital_context = "%s"', s:sfile)
     call luaeval('dofile(_A)', s:luafile_of(s:sfile))
@@ -19,24 +19,24 @@ function! s:_vital_loaded(V)
   endif
 endfunction
 
-function! s:plus(x, y)
+function! s:plus(x, y) abort
   return luaeval('_G[_A[0]].vim.plus(_A[1], _A[2])', [s:sfile, a:x, a:y])
 endfunction
 
-" function! s:map(list, f)
+" function! s:map(list, f) abort
 "   return luaeval('_G[_A[0]].vim.map(_A[1], _A[2])', [s:sfile, a:list, a:f])
 " endfunction
 "
 " " for testing
-" function! s:mapinc(list)
+" function! s:mapinc(list) abort
 "   return luaeval('_G[_A[0]].vim.map(_A[1], function(x) return x + 1 end)', [s:sfile, a:list])
 " endfunction
 
-function! s:lua_namespace()
+function! s:lua_namespace() abort
   return s:sfile
 endfunction
 
-function! s:luafile_of(sfile)
+function! s:luafile_of(sfile) abort
   return substitute(tr(a:sfile, '\', '/'), '.vim$', '.lua', '')
 endfunction
 

@@ -1,15 +1,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_true()
+function! s:_true() abort
   return 1
 endfunction
 
-function! s:_false()
+function! s:_false() abort
   return 0
 endfunction
 
-function! s:_null()
+function! s:_null() abort
   return 0
 endfunction
 
@@ -18,7 +18,7 @@ let s:const.true = function('s:_true')
 let s:const.false = function('s:_false')
 let s:const.null = function('s:_null')
 
-function! s:_resolve(val, prefix)
+function! s:_resolve(val, prefix) abort
   let t = type(a:val)
   if t == type('')
     let m = matchlist(a:val, '^' . a:prefix . '\(null\|true\|false\)$')
@@ -32,21 +32,21 @@ function! s:_resolve(val, prefix)
 endfunction
 
 
-function! s:_vital_loaded(V) dict
+function! s:_vital_loaded(V) dict abort
   let s:V = a:V
   let s:string = s:V.import('Data.String')
   " define constant variables
   call extend(self, s:const)
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Data.String']
 endfunction
 
 " @vimlint(EVL102, 1, l:null)
 " @vimlint(EVL102, 1, l:true)
 " @vimlint(EVL102, 1, l:false)
-function! s:decode(json, ...)
+function! s:decode(json, ...) abort
   let settings = extend({
         \ 'use_token': 0,
         \}, get(a:000, 0, {}))
@@ -70,7 +70,7 @@ endfunction
 " @vimlint(EVL102, 0, l:true)
 " @vimlint(EVL102, 0, l:false)
 
-function! s:encode(val)
+function! s:encode(val) abort
   if type(a:val) == 0
     return a:val
   elseif type(a:val) == 1

@@ -3,7 +3,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:get_f(collection, key, otherwise)
+function! s:get_f(collection, key, otherwise) abort
   " TODO make it work also for list
   if has_key(a:collection, a:key)
     return a:collection[a:key]

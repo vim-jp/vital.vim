@@ -3,12 +3,12 @@ set cpo&vim
 
 " Imports {{{
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:HTTP = s:V.import('Web.HTTP')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Web.HTTP']
 endfunction
 
@@ -16,7 +16,7 @@ endfunction
 
 " Autoload Functions {{{
 
-function! s:_sandbox_call(fn, args, nothrow, NothrowValue) "{{{
+function! s:_sandbox_call(fn, args, nothrow, NothrowValue) abort "{{{
   try
     return call(a:fn, a:args)
   catch
@@ -28,18 +28,18 @@ function! s:_sandbox_call(fn, args, nothrow, NothrowValue) "{{{
   endtry
 endfunction "}}}
 
-function! s:_is_own_exception(str) "{{{
+function! s:_is_own_exception(str) abort "{{{
   return a:str =~# '^uri parse error:'
 endfunction "}}}
 
-function! s:new(uri, ...) "{{{
+function! s:new(uri, ...) abort "{{{
   let nothrow = a:0 != 0
   let NothrowValue = a:0 ? a:1 : 'unused'
   return s:_sandbox_call(
   \   's:_uri_new', [a:uri], nothrow, NothrowValue)
 endfunction "}}}
 
-function! s:new_from_uri_like_string(str, ...) "{{{
+function! s:new_from_uri_like_string(str, ...) abort "{{{
   let str = a:str
   if str !~# s:RX_SCHEME    " no scheme.
     let str = 'http://' . str
@@ -51,12 +51,12 @@ function! s:new_from_uri_like_string(str, ...) "{{{
   \   's:_uri_new', [str], nothrow, NothrowValue)
 endfunction "}}}
 
-function! s:is_uri(str) "{{{
+function! s:is_uri(str) abort "{{{
   let ERROR = []
   return s:new(a:str, ERROR) isnot ERROR
 endfunction "}}}
 
-function! s:like_uri(str) "{{{
+function! s:like_uri(str) abort "{{{
   let ERROR = []
   return s:new_from_uri_like_string(a:str, ERROR) isnot ERROR
 endfunction "}}}
@@ -65,7 +65,7 @@ endfunction "}}}
 
 " URI Object {{{
 
-function! s:_uri_new(str) "{{{
+function! s:_uri_new(str) abort "{{{
   let result = s:_parse_uri(a:str)
   " TODO: Support punycode
   " let result.host = ...
@@ -79,28 +79,28 @@ function! s:_uri_new(str) "{{{
   return obj
 endfunction "}}}
 
-function! s:_uri_scheme(...) dict "{{{
+function! s:_uri_scheme(...) dict abort "{{{
   if a:0 && s:_is_scheme(a:1)
     let self.__scheme = a:1
   endif
   return self.__scheme
 endfunction "}}}
 
-function! s:_uri_host(...) dict "{{{
+function! s:_uri_host(...) dict abort "{{{
   if a:0 && s:_is_host(a:1)
     let self.__host = a:1
   endif
   return self.__host
 endfunction "}}}
 
-function! s:_uri_port(...) dict "{{{
+function! s:_uri_port(...) dict abort "{{{
   if a:0 && s:_is_port(a:1)
     let self.__port = a:1
   endif
   return self.__port
 endfunction "}}}
 
-function! s:_uri_path(...) dict "{{{
+function! s:_uri_path(...) dict abort "{{{
   if a:0
     " NOTE: self.__path must not have "/" as prefix.
     let path = substitute(a:1, '^/\+', '', '')
@@ -111,7 +111,7 @@ function! s:_uri_path(...) dict "{{{
   return "/" . self.__path
 endfunction "}}}
 
-function! s:_uri_opaque(...) dict "{{{
+function! s:_uri_opaque(...) dict abort "{{{
   if a:0
     " TODO
     throw 'vital: Web.URI: uri.opaque(value) does not support yet.'
@@ -122,7 +122,7 @@ function! s:_uri_opaque(...) dict "{{{
   \           self.__path)
 endfunction "}}}
 
-function! s:_uri_fragment(...) dict "{{{
+function! s:_uri_fragment(...) dict abort "{{{
   if a:0
     " NOTE: self.__fragment must not have "#" as prefix.
     let fragment = substitute(a:1, '^#', '', '')
@@ -133,7 +133,7 @@ function! s:_uri_fragment(...) dict "{{{
   return self.__fragment
 endfunction "}}}
 
-function! s:_uri_query(...) dict "{{{
+function! s:_uri_query(...) dict abort "{{{
   if a:0
     " NOTE: self.__query must not have "?" as prefix.
     let query = substitute(a:1, '^?', '', '')
@@ -144,7 +144,7 @@ function! s:_uri_query(...) dict "{{{
   return self.__query
 endfunction "}}}
 
-function! s:_uri_to_iri() dict "{{{
+function! s:_uri_to_iri() dict abort "{{{
   " Same as uri.to_string(), but do unescape for self.__path.
   return printf(
   \   '%s://%s%s/%s%s%s',
@@ -157,7 +157,7 @@ function! s:_uri_to_iri() dict "{{{
   \)
 endfunction "}}}
 
-function! s:_uri_to_string() dict "{{{
+function! s:_uri_to_string() dict abort "{{{
   return printf(
   \   '%s://%s%s/%s%s%s',
   \   self.__scheme,
@@ -171,7 +171,7 @@ endfunction "}}}
 
 
 
-function! s:_local_func(name) "{{{
+function! s:_local_func(name) abort "{{{
   let sid = matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__local_func$')
   return function('<SNR>' . sid . '_' . a:name)
 endfunction "}}}
@@ -198,7 +198,7 @@ let s:uri = {
 
 " Parsing Functions {{{
 
-function! s:_parse_uri(str) "{{{
+function! s:_parse_uri(str) abort "{{{
   let rest = a:str
 
   " Ignore leading/trailing whitespaces.
@@ -259,7 +259,7 @@ function! s:_parse_uri(str) "{{{
   \ 'fragment': fragment,
   \}
 endfunction "}}}
-function! s:_eat_em(str, pat) "{{{
+function! s:_eat_em(str, pat) abort "{{{
   let pat = a:pat.'\C'
   let m = matchlist(a:str, pat)
   if empty(m)
@@ -310,10 +310,10 @@ let s:FUNCTION_DESCS = {
 \}
 
 " Create s:_eat_*() functions.
-function! s:_create_eat_functions()
+function! s:_create_eat_functions() abort
   for where in keys(s:FUNCTION_DESCS)
     execute join([
-    \ 'function! s:_eat_'.where.'(str)',
+    \ 'function! s:_eat_'.where.'(str) abort',
     \   'return s:_eat_em(a:str, s:RX_'.toupper(where).')',
     \ 'endfunction',
     \], "\n")
@@ -322,7 +322,7 @@ endfunction
 call s:_create_eat_functions()
 
 " Create s:_is_*() functions.
-function! s:_has_error(func, args)
+function! s:_has_error(func, args) abort
   try
     call call(a:func, a:args)
     return 0
@@ -330,10 +330,10 @@ function! s:_has_error(func, args)
     return 1
   endtry
 endfunction
-function! s:_create_check_functions()
+function! s:_create_check_functions() abort
   for where in keys(s:FUNCTION_DESCS)
     execute join([
-    \ 'function! s:_is_'.where.'(str)',
+    \ 'function! s:_is_'.where.'(str) abort',
     \   'return !s:_has_error("s:_eat_'.where.'", [a:str])',
     \ 'endfunction',
     \], "\n")
@@ -342,10 +342,10 @@ endfunction
 call s:_create_check_functions()
 
 " Create s:_validate_*() functions.
-function! s:_create_validate_functions()
+function! s:_create_validate_functions() abort
   for [where, msg] in items(s:FUNCTION_DESCS)
     execute join([
-    \ 'function! s:_validate_'.where.'(str)',
+    \ 'function! s:_validate_'.where.'(str) abort',
     \   'if !s:_is_'.where.'(a:str)',
     \     'throw '.string(msg),
     \   'endif',

@@ -3,11 +3,11 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Prelude', 'Vim.Buffer']
 endfunction
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:P = s:V.import('Prelude')
   let s:B = s:V.import('Vim.Buffer')
@@ -23,7 +23,7 @@ let s:Manager = {
 \   '_bufnrs': {},
 \ }
 
-function! s:Manager.open(bufname, ...)
+function! s:Manager.open(bufname, ...) abort
   if s:B.is_cmdwin()
     " Note: Failed to open buffer in cmdline window.
     return {
@@ -56,7 +56,7 @@ function! s:Manager.open(bufname, ...)
   \ }
 endfunction
 
-function! s:Manager.close(...)
+function! s:Manager.close(...) abort
   if call(self.move, a:000, self)
     if winnr('$') != 1
       close
@@ -68,10 +68,10 @@ function! s:Manager.close(...)
   endif
 endfunction
 
-function! s:Manager.opened(bufname)
+function! s:Manager.opened(bufname) abort
 endfunction
 
-function! s:Manager.config(...)
+function! s:Manager.config(...) abort
   if a:0 == 0
     return self._config
   elseif a:0 == 1 && s:P.is_dict(a:1)
@@ -86,25 +86,25 @@ function! s:Manager.config(...)
   throw 'Vital.Vim.BufferManager: invalid argument for config()'
 endfunction
 
-function! s:Manager.user_config(config)
+function! s:Manager.user_config(config) abort
   let self._user_config = a:config
   return self
 endfunction
 
-function! s:Manager.is_managed(bufnr)
+function! s:Manager.is_managed(bufnr) abort
   return has_key(self._bufnrs, a:bufnr)
 endfunction
 
-function! s:Manager.add(bufnr, ...)
+function! s:Manager.add(bufnr, ...) abort
   let bufname = a:0 ? a:1 : bufname(a:bufnr)
   let self._bufnrs[a:bufnr] = bufname
 endfunction
 
-function! s:Manager.list()
+function! s:Manager.list() abort
   return sort(map(keys(self._bufnrs), 'v:val - 0'))
 endfunction
 
-function! s:Manager.nearest(...)
+function! s:Manager.nearest(...) abort
   let range = s:_make_config(self, map(copy(a:000), '{"range": v:val}')).range
 
   if range ==# 'tabpage'
@@ -126,7 +126,7 @@ function! s:Manager.nearest(...)
   return []
 endfunction
 
-function! s:Manager.move(...)
+function! s:Manager.move(...) abort
   let range = s:_make_config(self, map(copy(a:000), '{"range": v:val}')).range
   if range !=# 'all' && range !=# 'tabpage'
     return 0
@@ -140,7 +140,7 @@ function! s:Manager.move(...)
   return 1
 endfunction
 
-function! s:Manager.do(cmd)
+function! s:Manager.do(cmd) abort
   let cmd =
         \ a:cmd =~ '%s' ? a:cmd
         \               : a:cmd . ' %s'
@@ -149,28 +149,28 @@ function! s:Manager.do(cmd)
   endfor
 endfunction
 
-function! s:new(...)
+function! s:new(...) abort
   return deepcopy(s:Manager)
   \.config(a:0 ? s:_config(a:1) : {})
   \.user_config(2 <= a:0 ? a:2 : {})
 endfunction
 
-function! s:open(buffer, opener)
+function! s:open(buffer, opener) abort
   call s:_deprecated("open")
   return s:B.open(a:buffer, a:opener)
 endfunction
 
-function! s:_deprecated(fname)
+function! s:_deprecated(fname) abort
   echomsg printf("Vital.Vim.BufferManager.%s is deprecated! Please use Vital.Vim.Buffer.%s instead.",
         \ a:fname, a:fname)
 endfunction
 
-function! s:is_cmdwin()
+function! s:is_cmdwin() abort
   call s:_deprecated("is_cmdwin")
   return s:B.is_cmdwin()
 endfunction
 
-function! s:_make_config(manager, configs)
+function! s:_make_config(manager, configs) abort
   let configs = [a:manager._config]
   let user = a:manager._user_config
   if s:P.is_string(user)
@@ -186,7 +186,7 @@ function! s:_make_config(manager, configs)
   return config
 endfunction
 
-function! s:_config(c)
+function! s:_config(c) abort
   if s:P.is_dict(a:c)
     return a:c
   elseif s:P.is_string(a:c) || s:P.is_funcref(a:c)
@@ -195,7 +195,7 @@ function! s:_config(c)
   return {}
 endfunction
 
-function! s:_distance(a, b)
+function! s:_distance(a, b) abort
   return abs(a:a - s:base) - abs(a:b - s:base)
 endfunction
 

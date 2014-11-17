@@ -14,15 +14,15 @@ function! s:echomsg(hl, msg) abort
   endtry
 endfunction
 
-function! s:error(msg)
+function! s:error(msg) abort
   call s:echomsg('ErrorMsg', a:msg)
 endfunction
 
-function! s:warn(msg)
+function! s:warn(msg) abort
   call s:echomsg('WarningMsg', a:msg)
 endfunction
 
-function! s:capture(command)
+function! s:capture(command) abort
   try
     redir => out
     silent execute a:command
@@ -37,7 +37,7 @@ endfunction
 "   Vim waits for user input according to |hit-enter|.
 " XXX: Those fixed values may be different between different OSes?
 "      Currently tested on only Windows.
-function! s:get_hit_enter_max_length()
+function! s:get_hit_enter_max_length() abort
   let maxlen = &columns * &cmdheight - 1
   if &ruler
     " TODO

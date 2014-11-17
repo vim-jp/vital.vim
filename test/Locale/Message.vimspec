@@ -77,7 +77,7 @@ Describe Locale.Message
       let m = g:M.new(s:text_path)
       call m.load('ja')
       Assert Equals(m.get('world'), 'world')
-      function! m.missing(text)
+      function! m.missing(text) abort
         let self.__text = a:text
         return '世界'
       endfunction

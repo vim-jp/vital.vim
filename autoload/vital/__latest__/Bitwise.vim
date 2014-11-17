@@ -5,7 +5,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " compare as unsigned int
-function! s:compare(a, b)
+function! s:compare(a, b) abort
   if (a:a >= 0 && a:b >= 0) || (a:a < 0 && a:b < 0)
     return a:a < a:b ? -1 : a:a > a:b ? 1 : 0
   else
@@ -13,11 +13,11 @@ function! s:compare(a, b)
   endif
 endfunction
 
-function! s:lshift(a, n)
+function! s:lshift(a, n) abort
   return  a:a * s:pow2[s:and(a:n, 0x1F)]
 endfunction
 
-function! s:rshift(a, n)
+function! s:rshift(a, n) abort
   let n = s:and(a:n, 0x1F)
   return n == 0 ? a:a :
   \  a:a < 0 ? (a:a - 0x80000000) / s:pow2[n] + 0x40000000 / s:pow2[n - 1]
@@ -36,7 +36,7 @@ let s:pow2 = [
       \ ]
 
 if exists('*and')
-  function! s:_vital_loaded(V) dict
+  function! s:_vital_loaded(V) dict abort
     for op in ['and', 'or', 'xor', 'invert']
       let self[op] = function(op)
       let s:[op] = self[op]
@@ -46,11 +46,11 @@ if exists('*and')
 endif
 
 
-function! s:invert(a)
+function! s:invert(a) abort
   return -a:a - 1
 endfunction
 
-function! s:and(a, b)
+function! s:and(a, b) abort
   let a = a:a < 0 ? a:a - 0x80000000 : a:a
   let b = a:b < 0 ? a:b - 0x80000000 : a:b
   let r = 0
@@ -67,7 +67,7 @@ function! s:and(a, b)
   return r
 endfunction
 
-function! s:or(a, b)
+function! s:or(a, b) abort
   let a = a:a < 0 ? a:a - 0x80000000 : a:a
   let b = a:b < 0 ? a:b - 0x80000000 : a:b
   let r = 0
@@ -84,7 +84,7 @@ function! s:or(a, b)
   return r
 endfunction
 
-function! s:xor(a, b)
+function! s:xor(a, b) abort
   let a = a:a < 0 ? a:a - 0x80000000 : a:a
   let b = a:b < 0 ? a:b - 0x80000000 : a:b
   let r = 0

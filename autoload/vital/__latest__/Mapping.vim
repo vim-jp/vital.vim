@@ -28,7 +28,7 @@ set cpo&vim
 
 
 
-function! s:options_dict2raw(dict)
+function! s:options_dict2raw(dict) abort
   return
   \   (get(a:dict, 'expr')     ? '<expr>' : '')
   \   . (get(a:dict, 'buffer') ? '<buffer>' : '')
@@ -38,7 +38,7 @@ function! s:options_dict2raw(dict)
   \   . (get(a:dict, 'nowait') ? '<nowait>' : '')
 endfunction
 
-function! s:options_dict2chars(dict)
+function! s:options_dict2chars(dict) abort
   return
   \   (get(a:dict, 'expr')      ? 'e' : '')
   \   . (get(a:dict, 'buffer')  ? 'b' : '')
@@ -49,11 +49,11 @@ function! s:options_dict2chars(dict)
   \   . (get(a:dict, 'nowait')  ? 'n' : '')
 endfunction
 
-function! s:options_chars2raw(chars)
+function! s:options_chars2raw(chars) abort
   return s:options_dict2raw(s:options_chars2dict(a:chars))
 endfunction
 
-function! s:options_chars2dict(chars)
+function! s:options_chars2dict(chars) abort
   return {
   \   'expr': (stridx(a:chars, 'e') isnot -1),
   \   'buffer': (stridx(a:chars, 'b') isnot -1),
@@ -67,33 +67,33 @@ endfunction
 
 
 
-function! s:execute_map_command(mode, dict, lhs, rhs)
+function! s:execute_map_command(mode, dict, lhs, rhs) abort
   " s:get_map_command() may return empty string for invalid arguments.
   " But :execute '' does not do anything.
   execute s:get_map_command(a:mode, a:dict, a:lhs, a:rhs)
 endfunction
 
-function! s:get_map_command(...)
+function! s:get_map_command(...) abort
   return call('s:__get_map_command', ['map'] + a:000)
 endfunction
 
-function! s:execute_abbr_command(mode, dict, lhs, rhs)
+function! s:execute_abbr_command(mode, dict, lhs, rhs) abort
   " s:get_abbr_command() may return empty string for invalid arguments.
   " But :execute '' does not do anything.
   execute s:get_abbr_command(a:mode, a:dict, a:lhs, a:rhs)
 endfunction
 
-function! s:get_abbr_command(...)
+function! s:get_abbr_command(...) abort
   return call('s:__get_map_command', ['abbr'] + a:000)
 endfunction
 
-function! s:execute_unmap_command(mode, dict, lhs)
+function! s:execute_unmap_command(mode, dict, lhs) abort
   " s:get_unmap_command() may return empty string for invalid arguments.
   " But :execute '' does not do anything.
   execute s:get_unmap_command(a:mode, a:dict, a:lhs)
 endfunction
 
-function! s:__get_map_command(type, mode, dict, lhs, rhs)
+function! s:__get_map_command(type, mode, dict, lhs, rhs) abort
   if type(a:dict) != type({})
   \   || !s:is_mode_char(a:mode)
   \   || a:lhs ==# ''
@@ -112,15 +112,15 @@ function! s:__get_map_command(type, mode, dict, lhs, rhs)
   \])
 endfunction
 
-function! s:get_unmap_command(...)
+function! s:get_unmap_command(...) abort
   return call('s:__get_unmap_command', ['unmap'] + a:000)
 endfunction
 
-function! s:get_unabbr_command(...)
+function! s:get_unabbr_command(...) abort
   return call('s:__get_unmap_command', ['unabbr'] + a:000)
 endfunction
 
-function! s:__get_unmap_command(type, mode, dict, lhs)
+function! s:__get_unmap_command(type, mode, dict, lhs) abort
   if type(a:dict) != type({})
   \   || !s:is_mode_char(a:mode)
   \   || a:lhs ==# ''
@@ -137,16 +137,16 @@ endfunction
 
 
 let s:ALL_MODES = 'nvoiclxs'
-function! s:get_all_modes()
+function! s:get_all_modes() abort
   return s:ALL_MODES
 endfunction
 
 let s:ALL_MODES_LIST = split(s:ALL_MODES, '\zs')
-function! s:get_all_modes_list()
+function! s:get_all_modes_list() abort
   return copy(s:ALL_MODES_LIST)
 endfunction
 
-function! s:is_mode_char(char)
+function! s:is_mode_char(char) abort
   return a:char =~# '^['.s:ALL_MODES.']$'
 endfunction
 

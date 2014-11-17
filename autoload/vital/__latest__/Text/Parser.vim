@@ -2,25 +2,25 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-function! s:_exception(msg)
+function! s:_exception(msg) abort
   throw printf('[Text.Parser] %s', a:msg)
 endfunction
 
 
 let s:obj = { '_idx' : 0, '_tokens' : [], '_ignore_labels' : [] }
 
-function! s:obj.config(dict) dict
+function! s:obj.config(dict) dict abort
   if has_key(a:dict,'ignore_labels')
     let self._ignore_labels = a:dict.ignore_labels
   endif
   return self
 endfunction
 
-function! s:obj.end() dict
+function! s:obj.end() dict abort
   return len(self._tokens) <= self._idx
 endfunction
 
-function! s:obj.next() dict
+function! s:obj.next() dict abort
   if self.end()
     call s:_exception('Already end of tokens.')
   else
@@ -28,7 +28,7 @@ function! s:obj.next() dict
   endif
 endfunction
 
-function! s:obj.next_is(labels) dict
+function! s:obj.next_is(labels) dict abort
   let labels = type([]) == type(a:labels) ? a:labels : [ a:labels ]
   if ! self.end()
     for lbl in labels
@@ -40,7 +40,7 @@ function! s:obj.next_is(labels) dict
   return 0
 endfunction
 
-function! s:obj.ignore() dict
+function! s:obj.ignore() dict abort
   while self.next_is(self._ignore_labels)
     call self.consume()
   endwhile
@@ -48,7 +48,7 @@ function! s:obj.ignore() dict
 endfunction
 
 " @vimlint(EVL104, 1, l:next)
-function! s:obj.consume() dict
+function! s:obj.consume() dict abort
   if ! self.end()
     let next = self.next()
     let self._idx += 1
@@ -59,7 +59,7 @@ function! s:obj.consume() dict
 endfunction
 " @vimlint(EVL104, 0, l:next)
 
-function! s:obj.tostring() dict
+function! s:obj.tostring() dict abort
   if ! self.end()
     return ''
   else
@@ -67,9 +67,9 @@ function! s:obj.tostring() dict
   endif
 endfunction
 
-function! s:parser()
+function! s:parser() abort
   let o = {}
-  function! o.exec(lexered_tokens)
+  function! o.exec(lexered_tokens) abort
     let obj = deepcopy(s:obj)
     let obj._tokens = deepcopy(a:lexered_tokens)
     return obj

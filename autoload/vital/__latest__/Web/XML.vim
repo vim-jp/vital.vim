@@ -1,20 +1,20 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
 
   let s:S = s:V.import('Data.String')
   let s:H = s:V.import('Web.HTTP')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Data.String', 'Web.HTTP']
 endfunction
 
 let s:__template = { 'name': '', 'attr': {}, 'child': [] }
 
-function! s:decodeEntityReference(str)
+function! s:decodeEntityReference(str) abort
   let str = a:str
   let str = substitute(str, '&gt;', '>', 'g')
   let str = substitute(str, '&lt;', '<', 'g')
@@ -28,7 +28,7 @@ function! s:decodeEntityReference(str)
   return str
 endfunction
 
-function! s:encodeEntityReference(str)
+function! s:encodeEntityReference(str) abort
   let str = a:str
   let str = substitute(str, '&', '\&amp;', 'g')
   let str = substitute(str, '>', '\&gt;', 'g')
@@ -41,7 +41,7 @@ function! s:encodeEntityReference(str)
   return str
 endfunction
 
-function! s:__matchNode(node, cond)
+function! s:__matchNode(node, cond) abort
   if type(a:cond) == 1 && a:node.name == a:cond
     return 1
   endif
@@ -64,7 +64,7 @@ function! s:__matchNode(node, cond)
   return 0
 endfunction
 
-function! s:__template.childNode(...) dict
+function! s:__template.childNode(...) dict abort
   for c in self.child
     if type(c) == 4 && s:__matchNode(c, a:000)
       return c
@@ -74,7 +74,7 @@ function! s:__template.childNode(...) dict
   return {}
 endfunction
 
-function! s:__template.childNodes(...) dict
+function! s:__template.childNodes(...) dict abort
   let ret = []
   for c in self.child
     if type(c) == 4 && s:__matchNode(c, a:000)
@@ -85,7 +85,7 @@ function! s:__template.childNodes(...) dict
   return ret
 endfunction
 
-function! s:__template.value(...) dict
+function! s:__template.value(...) dict abort
   if a:0
     let self.child = a:000
     return
@@ -102,7 +102,7 @@ function! s:__template.value(...) dict
   return ret
 endfunction
 
-function! s:__template.find(...) dict
+function! s:__template.find(...) dict abort
   for c in self.child
     if type(c) == 4
       if s:__matchNode(c, a:000)
@@ -119,7 +119,7 @@ function! s:__template.find(...) dict
   return {}
 endfunction
 
-function! s:__template.findAll(...) dict
+function! s:__template.findAll(...) dict abort
   let ret = []
   for c in self.child
     if type(c) == 4
@@ -133,7 +133,7 @@ function! s:__template.findAll(...) dict
   return ret
 endfunction
 
-function! s:__template.toString() dict
+function! s:__template.toString() dict abort
   let xml = '<' . self.name
   for attr in keys(self.attr)
     let xml .= ' ' . attr . '="' . s:encodeEntityReference(self.attr[attr]) . '"'
@@ -157,14 +157,14 @@ function! s:__template.toString() dict
   return xml
 endfunction
 
-function! s:createElement(name)
+function! s:createElement(name) abort
   let node = deepcopy(s:__template)
   let node.name = a:name
   return node
 endfunction
 
 " @vimlint(EVL102, 1, l:content)
-function! s:__parse_tree(ctx, top)
+function! s:__parse_tree(ctx, top) abort
   let node = a:top
   let stack = [a:top]
   " content accumulates the text only tags
@@ -266,7 +266,7 @@ function! s:__parse_tree(ctx, top)
 endfunction
 " @vimlint(EVL102, 0, l:content)
 
-function! s:parse(xml)
+function! s:parse(xml) abort
   let top = deepcopy(s:__template)
   let oldmaxmempattern = &maxmempattern
   let oldmaxfuncdepth = &maxfuncdepth
@@ -287,11 +287,11 @@ function! s:parse(xml)
   throw "Parse Error"
 endfunction
 
-function! s:parseFile(fname)
+function! s:parseFile(fname) abort
   return s:parse(join(readfile(a:fname), "\n"))
 endfunction
 
-function! s:parseURL(url)
+function! s:parseURL(url) abort
   return s:parse(s:H.get(a:url).content)
 endfunction
 

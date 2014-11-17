@@ -79,10 +79,10 @@ End
 
 
 
-function! IdentifyClass(class)
+function! IdentifyClass(class) abort
     return a:class.name . a:class.value
 endfunction
-function! CreateClass(name, value)
+function! CreateClass(name, value) abort
     return {'name': a:name, 'value': a:value,
     \       'mem1': localtime(), 'mem2': localtime(),
     \       'mem3': localtime()}
