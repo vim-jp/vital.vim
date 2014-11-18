@@ -37,9 +37,16 @@ function! s:_skip(input)
   endwhile
 endfunction
 
+" XXX: old engine is faster than NFA engine (in this context).
+if exists('+regexpengine')
+  let s:regex_prefix = '\%#=1\C^'
+else
+  let s:regex_prefix = '\C^'
+endif
+
 function! s:_consume(input, pattern)
   call s:_skip(a:input)
-  let end = matchend(a:input.text, '\C^' . a:pattern, a:input.p)
+  let end = matchend(a:input.text, s:regex_prefix . a:pattern, a:input.p)
 
   if end == -1
     call s:_error(a:input)
@@ -53,7 +60,7 @@ function! s:_consume(input, pattern)
 endfunction
 
 function! s:_match(input, pattern)
-  return match(a:input.text, '\C^' . a:pattern, a:input.p) != -1
+  return match(a:input.text, s:regex_prefix . a:pattern, a:input.p) != -1
 endfunction
 
 function! s:_eof(input)
