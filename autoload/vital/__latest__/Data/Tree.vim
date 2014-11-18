@@ -1,7 +1,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:new(token, ...)
+function! s:new(token, ...) abort
   if type(a:token) == type({}) && has_key(a:token,'token') && has_key(a:token,'children')
     let obj = a:token
   else
@@ -12,18 +12,18 @@ function! s:new(token, ...)
     \ : [] }
   endif
 
-  function! obj.addchild(...) dict
+  function! obj.addchild(...) dict abort
     let self.children += map(copy(a:000), 'copy(v:val)')
     return self
   endfunction
 
-  function! obj.todict() dict
+  function! obj.todict() dict abort
     return { type(self.token) == type('')
     \  ? self.token : string(self.token)
     \  : map(copy(self.children),'type(v:val) == type({}) ? v:val.todict() : string(v:val)') }
   endfunction
 
-  function! obj.preorder_traversal() dict
+  function! obj.preorder_traversal() dict abort
     let tkns = []
     let tkns += [(self.token)]
     for child in self.children
@@ -33,7 +33,7 @@ function! s:new(token, ...)
     return tkns
   endfunction
 
-  function! obj.inorder_traversal() dict
+  function! obj.inorder_traversal() dict abort
     let tkns = []
     if ! empty(self.children)
       let tkns += s:new(get(self.children, 0, '')).inorder_traversal()
@@ -45,7 +45,7 @@ function! s:new(token, ...)
     return tkns
   endfunction
 
-  function! obj.postorder_traversal() dict
+  function! obj.postorder_traversal() dict abort
     let tkns = []
     for child in self.children
       let tkns += s:new(child).preorder_traversal()

@@ -17,11 +17,11 @@ let s:Mes = s:V.import('Vim.Message')
 let g:vitalizer#vital_dir =
 \     get(g:, 'vitalizer#vital_dir', expand('<sfile>:h:h:p'))
 
-function! s:git_dir()
+function! s:git_dir() abort
   return s:FP.join(g:vitalizer#vital_dir, '.git')
 endfunction
 
-function! s:check_system()
+function! s:check_system() abort
   if !executable('git')
     throw 'vitalizer: git is required by vitalizer.'
   endif
@@ -33,7 +33,7 @@ function! s:check_system()
   endif
 endfunction
 
-function! s:git(cmd)
+function! s:git(cmd) abort
   let cmd = printf('git --git-dir "%s" %s', s:git_dir(), a:cmd)
   let output = system(cmd)
   if v:shell_error
@@ -42,11 +42,11 @@ function! s:git(cmd)
   return output
 endfunction
 
-function! s:git_hash(rev)
+function! s:git_hash(rev) abort
   return s:git('rev-parse ' . a:rev)
 endfunction
 
-function! s:git_checkout(hash)
+function! s:git_checkout(hash) abort
   try
     return s:git('checkout ' . a:hash)
   catch
@@ -54,7 +54,7 @@ function! s:git_checkout(hash)
   endtry
 endfunction
 
-function! s:copy(from, to)
+function! s:copy(from, to) abort
   let todir = substitute(s:FP.dirname(a:to), '//', '/', 'g')
   if !isdirectory(todir)
     call mkdir(todir, 'p')
@@ -63,7 +63,7 @@ function! s:copy(from, to)
   call writefile(map(readfile(a:from, "b"), convert_newline), a:to, "b")
 endfunction
 
-function! s:search_dependence(depends_info)
+function! s:search_dependence(depends_info) abort
   " XXX Not smart...
   if exists('g:vital_debug')
     let vital_debug = g:vital_debug
@@ -92,32 +92,32 @@ function! s:search_dependence(depends_info)
   return sort(keys(all))
 endfunction
 
-function! s:is_camel_case(str)
+function! s:is_camel_case(str) abort
   return !empty(matchstr(a:str, '^\%([0-9A-Z]\l*\)\+$'))
 endfunction
 
-function! s:is_module_name(str)
+function! s:is_module_name(str) abort
   return s:L.and(map(split(a:str, '\.'), 's:is_camel_case(v:val)'))
 endfunction
 
-function! s:module2file(name)
+function! s:module2file(name) abort
   let target = a:name ==# '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
   return printf('autoload/vital/__latest__%s.vim', target)
 endfunction
 
-function! s:file2module(file)
+function! s:file2module(file) abort
   let filename = s:FP.unify_separator(a:file)
   let tail = matchstr(filename, 'autoload/vital/_\w\+/\zs.*\ze\.vim$')
   return join(split(tail, '[\\/]\+'), '.')
 endfunction
 
-function! s:available_module_names()
+function! s:available_module_names() abort
   return sort(s:L.uniq(filter(map(split(globpath(&runtimepath,
   \          'autoload/vital/__latest__/**/*.vim', 1), "\n"),
   \          's:file2module(v:val)'), 's:is_module_name(v:val)')))
 endfunction
 
-function! s:get_changes()
+function! s:get_changes() abort
   let changes_file = s:FP.join(g:vitalizer#vital_dir, 'Changes')
   if !filereadable(changes_file)
     return {}
@@ -140,7 +140,7 @@ function! s:get_changes()
   return changes
 endfunction
 
-function! s:show_changes(current, installing_modules)
+function! s:show_changes(current, installing_modules) abort
   let confirm_required = 0
   if a:current != '_latest__'
     let keys = split(s:git(printf("log --format=format:%%h %s..HEAD", a:current)), "\n")
@@ -168,7 +168,7 @@ function! s:show_changes(current, installing_modules)
 endfunction
 
 " Uninstall vital from {target-dir}.
-function! s:uninstall(target_dir)
+function! s:uninstall(target_dir) abort
   if isdirectory(a:target_dir . '/autoload/vital')
     call s:F.rmdir(a:target_dir . '/autoload/vital', 'rf')
   endif
@@ -178,12 +178,12 @@ function! s:uninstall(target_dir)
 endfunction
 
 " Search *.vital file in a target directory.
-function! s:search_old_vital_file(to)
+function! s:search_old_vital_file(to) abort
   let filelist = split(glob(a:to . '/autoload/vital/*.vital', 1), "\n")
   return len(filelist) == 1 ? filelist[0] : ''
 endfunction
 
-function! s:build_vital_data(to, name)
+function! s:build_vital_data(to, name) abort
   let name = a:name
   let hash = ''
   let modules = []
@@ -210,7 +210,7 @@ function! s:build_vital_data(to, name)
   \ }
 endfunction
 
-function! vitalizer#vitalize(name, to, modules, hash)
+function! vitalizer#vitalize(name, to, modules, hash) abort
   " FIXME: Should check if a working tree is dirty.
 
   " Check arguments
@@ -344,7 +344,7 @@ function! vitalizer#vitalize(name, to, modules, hash)
   endtry
 endfunction
 
-function! vitalizer#complete(arglead, cmdline, cursorpos)
+function! vitalizer#complete(arglead, cmdline, cursorpos) abort
   let options = ['--name=', '--hash=', '--help']
   let args = filter(split(a:cmdline[: a:cursorpos], '[^\\]\zs\s\+'), 'v:val!~"^--"')
   if a:arglead =~ '^--'
@@ -361,7 +361,7 @@ function! vitalizer#complete(arglead, cmdline, cursorpos)
   endif
 endfunction
 
-function! vitalizer#command(args)
+function! vitalizer#command(args) abort
   try
     call s:check_system()
   catch

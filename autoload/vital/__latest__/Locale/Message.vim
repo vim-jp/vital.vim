@@ -3,18 +3,18 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:new(path)
+function! s:new(path) abort
   let obj = copy(s:Message)
   let obj.path = a:path =~# '%s' ? a:path : 'message/' . a:path . '/%s.txt'
   return obj
 endfunction
 
-function! s:get_lang()
+function! s:get_lang() abort
   return v:lang ==# 'C' ? 'en' : v:lang[: 1]
 endfunction
 
 let s:Message = {}
-function! s:Message.get(text)
+function! s:Message.get(text) abort
   if !has_key(self, 'lang')
     call self.load(s:get_lang())
   endif
@@ -24,7 +24,7 @@ function! s:Message.get(text)
   let text = self.missing(a:text)
   return type(text) == type('') ? text : a:text
 endfunction
-function! s:Message.load(lang)
+function! s:Message.load(lang) abort
   let pattern = printf(self.path, a:lang)
   let files = split(globpath(&runtimepath, pattern), "\n")
   let data = {}
@@ -42,7 +42,7 @@ function! s:Message.load(lang)
   let self.data = data
 endfunction
 let s:Message._ = s:Message.get
-function! s:Message.missing(text)
+function! s:Message.missing(text) abort
 endfunction
 
 let &cpo = s:save_cpo

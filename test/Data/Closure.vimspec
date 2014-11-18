@@ -74,7 +74,7 @@ Describe Data.Closure
     Context with {context}
       It builds a Closure object with {context} and calls it
         let obj = {'value': 10}
-        function! obj.get()
+        function! obj.get() abort
           return self.value
         endfunction
         Assert Equals(g:C.apply(obj.get, obj), 10)
@@ -171,7 +171,7 @@ Describe Data.Closure
   Describe .from_method()
     It builds a Closure object from Dictionary and name of method
       let obj = {'value': 10}
-      function! obj.get()
+      function! obj.get() abort
         return self.value
       endfunction
       let closure = g:C.from_method(obj, 'get')
@@ -203,7 +203,7 @@ Describe Data.Closure
     It returns false if the argument is not a Closure object
       Assert False(g:C.is_closure(function('type')))
       let obj = {}
-      function! obj.call(...)
+      function! obj.call(...) abort
       endfunction
       Assert False(g:C.is_closure(obj))
     End
@@ -281,7 +281,7 @@ Describe Data.Closure
     Describe .with_context()
       It Creates a new Closure object which has the {context}
         let obj = {'value': 10}
-        function! obj.get()
+        function! obj.get() abort
           return self.value
         endfunction
         let closure_org = g:C.from_method(obj, 'get')

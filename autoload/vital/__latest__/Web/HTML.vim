@@ -1,7 +1,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
 
   let s:string = s:V.import('Data.String')
@@ -9,11 +9,11 @@ function! s:_vital_loaded(V)
   let s:http = s:V.import('Web.HTTP')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Data.String', 'Web.XML', 'Web.HTTP']
 endfunction
 
-function! s:decodeEntityReference(str)
+function! s:decodeEntityReference(str) abort
   let str = a:str
   let str = substitute(str, '&gt;', '>', 'g')
   let str = substitute(str, '&lt;', '<', 'g')
@@ -28,7 +28,7 @@ function! s:decodeEntityReference(str)
   return str
 endfunction
 
-function! s:encodeEntityReference(str)
+function! s:encodeEntityReference(str) abort
   let str = a:str
   let str = substitute(str, '&', '\&amp;', 'g')
   let str = substitute(str, '>', '\&gt;', 'g')
@@ -40,16 +40,16 @@ function! s:encodeEntityReference(str)
   return str
 endfunction
 
-function! s:parse(content)
+function! s:parse(content) abort
   let content = substitute(a:content, '<\(area\|base\|basefont\|br\|nobr\|col\|frame\|hr\|img\|input\|isindex\|link\|meta\|param\|embed\|keygen\|command\)\([^>]*[^/]\|\)>', '<\1\2/>', 'g')
   return s:xml.parse(content)
 endfunction
 
-function! s:parseFile(fname)
+function! s:parseFile(fname) abort
   return s:parse(join(readfile(a:fname), "\n"))
 endfunction
 
-function! s:parseURL(url)
+function! s:parseURL(url) abort
   return s:parse(s:http.get(a:url).content)
 endfunction
 

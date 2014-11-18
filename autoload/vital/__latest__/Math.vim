@@ -4,12 +4,12 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " TODO Simpler way?
-function! s:modulo(m, n)
+function! s:modulo(m, n) abort
   let d = a:m * a:n < 0 ? 1 : 0
   return a:m + (-(a:m + (0 < a:n ? d : -d)) / a:n + d) * a:n
 endfunction
 
-function! s:fib(n)
+function! s:fib(n) abort
   let [a, b, i] = [0, 1, 0]
   while i < a:n
     let [a, b, i] = [b, a + b, i + 1]
@@ -17,14 +17,14 @@ function! s:fib(n)
   return a
 endfunction
 
-function! s:_lcm(m, n)
+function! s:_lcm(m, n) abort
   if a:m == 0 || a:n == 0
     return 0
   endif
   return (a:m / s:_gcd(a:m, a:n)) * a:n
 endfunction
 
-function! s:_gcd(m, n)
+function! s:_gcd(m, n) abort
   if a:m == 0 && a:n == 0
     return 0
   elseif a:m == 0
@@ -43,7 +43,7 @@ function! s:_gcd(m, n)
   return n
 endfunction
 
-function! s:lcm(list)
+function! s:lcm(list) abort
   let list = map(a:list, 'abs(v:val)')
   if len(list) == 0
     throw 'vital: Math: Empty list'
@@ -54,7 +54,7 @@ function! s:lcm(list)
   return list[0]
 endfunction
 
-function! s:gcd(list)
+function! s:gcd(list) abort
   let list = map(a:list, 'abs(v:val)')
   if len(list) == 0
     throw 'vital: Math: Empty list'

@@ -1,4 +1,4 @@
-function! s:permutation(args)
+function! s:permutation(args) abort
   if len(a:args) <= 1
     return [[a:args[0]]]
   endif
@@ -13,15 +13,15 @@ function! s:permutation(args)
   return ret
 endfunction
 
-function! CompleteTest(optlead, cmdline, pos)
+function! CompleteTest(optlead, cmdline, pos) abort
   return filter(['sushi', 'yakiniku', 'yakitori'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
 endfunction
 
-function! CompleteTest2(optlead, cmdline, pos)
+function! CompleteTest2(optlead, cmdline, pos) abort
   return filter(['inu', 'manbou', 'momonga'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
 endfunction
 
-function! CompleteUnknownOptionTest(optlead, cmdline, pos)
+function! CompleteUnknownOptionTest(optlead, cmdline, pos) abort
   return filter(['vim', 'vimmer', 'kowai'], 'a:optlead == "" ? 1 : (v:val =~# "^" . a:optlead)')
 endfunction
 

@@ -28,7 +28,7 @@ let s:Closure = {
 \   '_context': {},
 \ }
 
-function! s:_new(function, arglist, context)
+function! s:_new(function, arglist, context) abort
   let closure = deepcopy(s:Closure)
   let closure._function = a:function
   let closure._arglist = a:arglist
@@ -36,19 +36,19 @@ function! s:_new(function, arglist, context)
   return closure
 endfunction
 
-function! s:Closure.call(...)
+function! s:Closure.call(...) abort
   return self.apply(a:000)
 endfunction
 
-function! s:Closure.apply(arglist)
+function! s:Closure.apply(arglist) abort
   return call(self._function, self._arglist + a:arglist, self._context)
 endfunction
 
-function! s:Closure.with_args(...)
+function! s:Closure.with_args(...) abort
   return self.with_arglist(a:000)
 endfunction
 
-function! s:Closure.with_arglist(arglist)
+function! s:Closure.with_arglist(arglist) abort
   if empty(a:arglist)
     return self
   endif
@@ -58,14 +58,14 @@ function! s:Closure.with_arglist(arglist)
   \   self._context)
 endfunction
 
-function! s:Closure.with_context(context)
+function! s:Closure.with_context(context) abort
   if type(a:context) != type({})
     return self
   endif
   return s:_new(self._function, self._arglist, a:context)
 endfunction
 
-function! s:Closure.with_param(param_list)
+function! s:Closure.with_param(param_list) abort
   let [arglist, context] = s:_get_arglist_and_context(a:param_list)
   if empty(arglist) && type(context) != type({})
     return self
@@ -77,11 +77,11 @@ function! s:Closure.with_param(param_list)
   return s:_new(self._function, self._arglist + arglist, context)
 endfunction
 
-function! s:Closure.compose(...)
+function! s:Closure.compose(...) abort
   return s:compose(a:000 + [self])
 endfunction
 
-function! s:Closure.to_function(...)
+function! s:Closure.to_function(...) abort
   if !has_key(self, '_function_id')
     let self._function_id = s:_create_function_id()
     let s:closures[self._function_id] = self
@@ -92,7 +92,7 @@ function! s:Closure.to_function(...)
   return s:_sfunc(name)
 endfunction
 
-function! s:Closure.delete_function()
+function! s:Closure.delete_function() abort
   let id = get(self, '_function_id', 0)
   let funcname = 's:' . s:_function_name(id)
   if has_key(s:mark_to_sweep, id)
@@ -110,7 +110,7 @@ function! s:Closure.delete_function()
   endif
 endfunction
 
-function! s:Closure._decrease()
+function! s:Closure._decrease() abort
   if get(self, '_limit', 0) <= 0
     return
   endif
@@ -121,16 +121,16 @@ function! s:Closure._decrease()
   endif
 endfunction
 
-function! s:_create_function_id()
+function! s:_create_function_id() abort
   let s:current_function_id += 1
   return s:current_function_id
 endfunction
 
-function! s:_function_name(id)
+function! s:_function_name(id) abort
   return printf('_function_%d', a:id)
 endfunction
 
-function! s:_make_function(name, id)
+function! s:_make_function(name, id) abort
   execute printf(join([
   \   'function s:%s(...)',
   \   '  let closure = get(s:closures, %s)',
@@ -145,25 +145,25 @@ function! s:_make_function(name, id)
 endfunction
 
 
-function! s:from_funcref(function, ...)
+function! s:from_funcref(function, ...) abort
   let closure = deepcopy(s:Closure)
   let closure._function = a:function
   return closure.with_param(a:000)
 endfunction
 
-function! s:from_funcname(funcname, ...)
+function! s:from_funcname(funcname, ...) abort
   let funcname = a:funcname[0] ==# '*' ? a:funcname[1 :] : a:funcname
   return call('s:from_funcref', [function(funcname)] + a:000)
 endfunction
 
-function! s:from_expr(expr, ...)
+function! s:from_expr(expr, ...) abort
   let expr = a:expr[0] ==# '=' ? a:expr[1 :] : a:expr
   let binding = s:_get_binding(a:000)
   let context = {'binding': binding, 'expr': expr}
   return s:from_funcref(s:_sfunc('_eval'), context)
 endfunction
 
-function! s:from_command(command, ...)
+function! s:from_command(command, ...) abort
   let binding = s:_get_binding(a:000)
   let command =
   \   type(a:command) == type([])
@@ -173,18 +173,18 @@ function! s:from_command(command, ...)
   return s:from_funcref(s:_sfunc('_execute'), context)
 endfunction
 
-function! s:from_operator(op)
+function! s:from_operator(op) abort
   if !s:_is_operator(a:op)
     throw s:error('%s is not an operator', string(a:op))
   endif
   return s:from_expr(printf('a:1%sa:2', a:op))
 endfunction
 
-function! s:from_method(obj, method)
+function! s:from_method(obj, method) abort
   return s:from_funcref(a:obj[a:method], a:obj)
 endfunction
 
-function! s:build(callable, ...)
+function! s:build(callable, ...) abort
   call s:sweep_functions()  " Automatically delete garbages
   let t = type(a:callable)
   if s:is_closure(a:callable)
@@ -213,16 +213,16 @@ function! s:build(callable, ...)
   throw s:error('Can not treat as callable: %s', string(a:callable))
 endfunction
 
-function! s:call(callable, ...)
+function! s:call(callable, ...) abort
   return s:apply(a:callable, a:000)
 endfunction
 
-function! s:apply(callable, ...)
+function! s:apply(callable, ...) abort
   let closure = call('s:build', [a:callable] + a:000)
   return closure.call()
 endfunction
 
-function! s:compose(callables)
+function! s:compose(callables) abort
   if empty(a:callables)
     return s:from_command('')
   endif
@@ -237,14 +237,14 @@ function! s:compose(callables)
   return closure
 endfunction
 
-function! s:is_closure(expr)
+function! s:is_closure(expr) abort
   return type(a:expr) == type({}) &&
   \      has_key(a:expr, 'call') &&
   \      type(a:expr.call) == type(function('call')) &&
   \      a:expr.call == s:Closure.call
 endfunction
 
-function! s:is_callable(expr)
+function! s:is_callable(expr) abort
   let t = type(a:expr)
   return
   \   s:is_closure(a:expr) ||
@@ -257,18 +257,18 @@ function! s:is_callable(expr)
   \   ))
 endfunction
 
-function! s:is_binding_supported()
+function! s:is_binding_supported() abort
   return s:is_binding_supported
 endfunction
 
-function! s:sweep_functions()
+function! s:sweep_functions() abort
   for closure in values(s:mark_to_sweep)
     call closure.delete_function()
   endfor
 endfunction
 
 
-function! s:_get_arglist_and_context(args)
+function! s:_get_arglist_and_context(args) abort
   let arglist = []
   let context = 0
   for arg in a:args
@@ -284,7 +284,7 @@ function! s:_get_arglist_and_context(args)
   return [arglist, context]
 endfunction
 
-function! s:_get_binding(args)
+function! s:_get_binding(args) abort
   if empty(a:args)
     return {}
   endif
@@ -308,11 +308,11 @@ function! s:_get_binding(args)
   throw s:error('{binding} must be a Dictionary: %s', string(a:args))
 endfunction
 
-function! s:_is_operator(str)
+function! s:_is_operator(str) abort
   return 0 <= index(s:OPERATOR_LIST, a:str)
 endfunction
 
-function! s:_eval(...) dict
+function! s:_eval(...) dict abort
   for s:key in keys(self.binding)
     if s:key !=# 'self'
       let {s:key} = self.binding[s:key]
@@ -326,7 +326,7 @@ function! s:_eval(...) dict
   endtry
 endfunction
 
-function! s:_execute(...) dict
+function! s:_execute(...) dict abort
   for s:key in keys(self.binding)
     if s:key !=# 'self'
       let {s:key} = self.binding[s:key]
@@ -340,11 +340,11 @@ function! s:_execute(...) dict
   endtry
 endfunction
 
-function! s:_chain(...) dict
+function! s:_chain(...) dict abort
   return self.second.call(self.first.apply(a:000))
 endfunction
 
-function! s:_move(l, binding)
+function! s:_move(l, binding) abort
   if !s:is_binding_supported
     return
   endif
@@ -352,7 +352,7 @@ function! s:_move(l, binding)
   call extend(a:l, filter(copy(a:binding), 'v:key !=# "self"'))
 endfunction
 
-function! s:_is_funcname(name)
+function! s:_is_funcname(name) abort
   let builtin_func = '\l\w+'
   let global_func = '%(\u|g:\u|)\w+'
   let script_func = '%(s:|\<SNR\>\d+_)\w+'
@@ -368,7 +368,7 @@ function! s:_is_funcname(name)
   return a:name =~# func_pat
 endfunction
 
-function! s:_function_exists(name)
+function! s:_function_exists(name) abort
   try
     return s:_is_funcname(a:name) && exists('*' . a:name)
   catch
@@ -376,11 +376,11 @@ function! s:_function_exists(name)
   return 0
 endfunction
 
-function! s:_sfunc(name)
+function! s:_sfunc(name) abort
   return function(matchstr(expand('<sfile>'), '<SNR>\d\+_\ze_\w\+$') . a:name)
 endfunction
 
-function! s:error(message, ...)
+function! s:error(message, ...) abort
   let mes = printf('vital: Data.Closure: %s', a:message)
   if a:0
     let mes = call('printf', [mes] + a:000)

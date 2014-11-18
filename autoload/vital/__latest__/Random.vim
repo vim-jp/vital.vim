@@ -1,12 +1,12 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Bitwise = s:V.import('Bitwise')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return [['Random.*'], 'Bitwise']
 endfunction
 
@@ -14,19 +14,19 @@ let s:loaded_generator_modules = {}
 
 let s:Random = {}
 
-function! s:Random.next(...)
+function! s:Random.next(...) abort
   if a:0
     return map(range(a:1), 'self._generator.next()')
   endif
   return self._generator.next()
 endfunction
 
-function! s:Random.seed(seed)
+function! s:Random.seed(seed) abort
   let seed = type(a:seed) == type([]) ? a:seed : [a:seed]
   return self._generator.seed(seed)
 endfunction
 
-function! s:Random.generate_canonical()
+function! s:Random.generate_canonical() abort
   let b = 32
   let min = self._generator.min() + 0.0
   let r = (self._generator.max() + 0.0) - min + 1.0
@@ -42,18 +42,18 @@ function! s:Random.generate_canonical()
   return sum / tmp
 endfunction
 
-function! s:Random.range(from, ...)
+function! s:Random.range(from, ...) abort
   let [from, to] = a:0 ? [a:from, a:1] : [0, a:from]
   let range = to - from
   let base = self.generate_canonical() * range
   return (type(range) == type(0.0) ? base : float2nr(base)) + from
 endfunction
 
-function! s:Random.bool()
+function! s:Random.bool() abort
   return self.range(2)
 endfunction
 
-function! s:Random.sample(list, ...)
+function! s:Random.sample(list, ...) abort
   if a:0 == 0
     return a:list[self.range(len(a:list))]
   endif
@@ -65,7 +65,7 @@ function! s:Random.sample(list, ...)
   return result
 endfunction
 
-function! s:Random.shuffle(list)
+function! s:Random.shuffle(list) abort
   let pos = len(a:list)
   while 1 < pos
     let n = self.range(pos)
@@ -80,7 +80,7 @@ function! s:Random.shuffle(list)
 endfunction
 
 
-function! s:make_seed()
+function! s:make_seed() abort
   let seed = localtime()
   if has('reltime')
     let time = split(reltimestr(reltime()), '\.')
@@ -95,7 +95,7 @@ function! s:make_seed()
   return seed
 endfunction
 
-function! s:_seed_from_string(seed, str)
+function! s:_seed_from_string(seed, str) abort
   let seed = a:seed
   for n in range(len(a:str))
     let seed = s:Bitwise.xor(seed, s:Bitwise.lshift(a:str[n], n % 4))
@@ -103,7 +103,7 @@ function! s:_seed_from_string(seed, str)
   return seed
 endfunction
 
-function! s:new(...)
+function! s:new(...) abort
   let generator = a:0 ? a:1 : ''
   let seed = 2 <= a:0 ? a:2 : s:next()
   let random = deepcopy(s:Random)
@@ -112,7 +112,7 @@ function! s:new(...)
   return random
 endfunction
 
-function! s:_get_generator(arg)
+function! s:_get_generator(arg) abort
   let arg =
   \ empty(a:arg)
   \ ? matchstr(get(s:V.search('Random.*'), 0, ''), 'Random\.\zs.*$')
@@ -135,7 +135,7 @@ function! s:_get_generator(arg)
   throw printf('vital: Random: Invalid generator: %s', string(a:arg))
 endfunction
 
-function! s:_common()
+function! s:_common() abort
   if !exists('s:common_random')
     let s:common_random = s:new('', s:make_seed())
   endif
@@ -144,7 +144,7 @@ endfunction
 let s:func_type = type(function('type'))
 for s:func in keys(filter(copy(s:Random), 'type(v:val) == s:func_type'))
   execute join([
-  \   'function! s:' . s:func . '(...)',
+  \   'function! s:' . s:func . '(...) abort',
   \   '  let r = s:_common()',
   \   '  return call(r.' . s:func . ', a:000, r)',
   \   'endfunction',

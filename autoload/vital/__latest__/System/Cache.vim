@@ -3,37 +3,37 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:getfilename(cache_dir, filename)
+function! s:getfilename(cache_dir, filename) abort
   return s:_encode_name(a:cache_dir, a:filename)
 endfunction
 
-function! s:filereadable(cache_dir, filename)
+function! s:filereadable(cache_dir, filename) abort
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
   return filereadable(cache_name)
 endfunction
 
-function! s:readfile(cache_dir, filename)
+function! s:readfile(cache_dir, filename) abort
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
   return filereadable(cache_name) ? readfile(cache_name) : []
 endfunction
 
-function! s:writefile(cache_dir, filename, list)
+function! s:writefile(cache_dir, filename, list) abort
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
 
   call writefile(a:list, cache_name)
 endfunction
 
-function! s:delete(cache_dir, filename)
+function! s:delete(cache_dir, filename) abort
   echoerr 'System.Cache.delete() is obsolete. Use its deletefile() instead.'
   return call('s:deletefile', a:cache_dir, a:filename)
 endfunction
 
-function! s:deletefile(cache_dir, filename)
+function! s:deletefile(cache_dir, filename) abort
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
   return delete(cache_name)
 endfunction
 
-function! s:_encode_name(cache_dir, filename)
+function! s:_encode_name(cache_dir, filename) abort
   " Check cache directory.
   if !isdirectory(a:cache_dir)
     call mkdir(a:cache_dir, 'p')
@@ -46,7 +46,7 @@ function! s:_encode_name(cache_dir, filename)
   return cache_dir . s:_create_hash(cache_dir, a:filename)
 endfunction
 
-function! s:check_old_cache(cache_dir, filename)
+function! s:check_old_cache(cache_dir, filename) abort
   " Check old cache file.
   let cache_name = s:_encode_name(a:cache_dir, a:filename)
   let ret = getftime(cache_name) == -1
@@ -59,7 +59,7 @@ function! s:check_old_cache(cache_dir, filename)
   return ret
 endfunction
 
-function! s:_create_hash(dir, str)
+function! s:_create_hash(dir, str) abort
   if len(a:dir) + len(a:str) < 150
     let hash = substitute(substitute(
           \ a:str, ':', '=-', 'g'), '[/\\]', '=+', 'g')

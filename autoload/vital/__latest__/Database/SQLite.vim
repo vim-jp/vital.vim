@@ -1,28 +1,28 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:P = s:V.import('Process')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Process']
 endfunction
 
 let s:_debug_mode = 0
 
-function! s:is_available()
+function! s:is_available() abort
   return executable('sqlite3')
 endfunction
 
-function! s:_quote_escape(x)
+function! s:_quote_escape(x) abort
   return printf('"%s"', escape(a:x, '"'))
 endfunction
 
 " This function name is long on purpose to discourage people to use that
 " frequently.
-function! s:build_line_from_query_with_placeholders(q, xs)
+function! s:build_line_from_query_with_placeholders(q, xs) abort
   let num_placeholders = len(split(a:q, '?', 1)) - 1
   call s:debug('build_line_from_query_with_placeholders', a:q, a:xs,
         \ {'num_placeholders': num_placeholders})
@@ -38,7 +38,7 @@ endfunction
 
 " s:query('a.db', 'SELECT * from b') ==
 "   s:query('a.db', 'SELECT * from b', [])
-function! s:query_rawdata(db, q, ...)
+function! s:query_rawdata(db, q, ...) abort
   if a:0 > 1
     throw 'Database.SQLite.query() too many arguments'
   endif
@@ -61,7 +61,7 @@ endfunction
 "
 "    x = 999'
 " to [{'x':'123a'},{'x','999}]
-function! s:_to_vim(result)
+function! s:_to_vim(result) abort
   let chunks = split(a:result, "\r\\?\n\r\\?\n")
   call s:debug('parse_result', a:result, chunks)
   let l = []
@@ -81,7 +81,7 @@ endfunction
 
 " s:query('a.db', 'SELECT * from b') ==
 "   s:query('a.db', 'SELECT * from b', [])
-function! s:query(db, q, ...)
+function! s:query(db, q, ...) abort
   if a:0 > 1
     throw 'Database.SQLite.query() too many arguments'
   endif
@@ -89,11 +89,11 @@ function! s:query(db, q, ...)
   return s:_to_vim(s:query_rawdata(a:db, a:q, xs))
 endfunction
 
-function! s:debug_mode_to(to)
+function! s:debug_mode_to(to) abort
   let s:_debug_mode = a:to
 endfunction
 
-function! s:debug(...)
+function! s:debug(...) abort
   if s:_debug_mode
     echomsg string(a:000)
   endif

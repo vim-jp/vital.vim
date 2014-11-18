@@ -3,44 +3,44 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:P = s:V.import('Prelude')
   let s:L = s:V.import('Data.List')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Prelude', 'Data.List']
 endfunction
 
 " Substitute a:from => a:to by string.
 " To substitute by pattern, use substitute() instead.
-function! s:replace(str, from, to)
+function! s:replace(str, from, to) abort
   return s:_replace(a:str, a:from, a:to, 'g')
 endfunction
 
 " Substitute a:from => a:to only once.
 " cf. s:replace()
-function! s:replace_first(str, from, to)
+function! s:replace_first(str, from, to) abort
   return s:_replace(a:str, a:from, a:to, '')
 endfunction
 
 " implement of replace() and replace_first()
-function! s:_replace(str, from, to, flags)
+function! s:_replace(str, from, to, flags) abort
   return substitute(a:str, '\V'.escape(a:from, '\'), escape(a:to, '\'), a:flags)
 endfunction
 
-function! s:scan(str, pattern)
+function! s:scan(str, pattern) abort
   let list = []
   call substitute(a:str, a:pattern, '\=add(list, submatch(0)) == [] ? "" : ""', 'g')
   return list
 endfunction
 
-function! s:reverse(str)
+function! s:reverse(str) abort
   return join(reverse(split(a:str, '.\zs')), '')
 endfunction
 
-function! s:common_head(strs)
+function! s:common_head(strs) abort
   if empty(a:strs)
     return ''
   endif
@@ -55,12 +55,12 @@ endfunction
 
 " Split to two elements of List. ([left, right])
 " e.g.: s:split3('neocomplcache', 'compl') returns ['neo', 'compl', 'cache']
-function! s:split_leftright(expr, pattern)
+function! s:split_leftright(expr, pattern) abort
   let [left, _, right] = s:split3(a:expr, a:pattern)
   return [left, right]
 endfunction
 
-function! s:split3(expr, pattern)
+function! s:split3(expr, pattern) abort
   let ERROR = ['', '', '']
   if a:expr ==# '' || a:pattern ==# ''
     return ERROR
@@ -77,7 +77,7 @@ endfunction
 
 " Slices into strings determines the number of substrings.
 " e.g.: s:nsplit("neo compl cache", 2, '\s') returns ['neo', 'compl cache']
-function! s:nsplit(expr, n, ...)
+function! s:nsplit(expr, n, ...) abort
   let pattern = get(a:000, 0, '\s')
   let keepempty = get(a:000, 1, 1)
   let ret = []
@@ -119,29 +119,29 @@ endfunction
 " even if a:str contains multibyte character(s).
 " s:strchars(str) {{{
 if exists('*strchars')
-  function! s:strchars(str)
+  function! s:strchars(str) abort
     return strchars(a:str)
   endfunction
 else
-  function! s:strchars(str)
+  function! s:strchars(str) abort
     return strlen(substitute(copy(a:str), '.', 'x', 'g'))
   endfunction
 endif "}}}
 
 " Returns the bool of contains any multibyte character in s:str
-function! s:contains_multibyte(str) "{{{
+function! s:contains_multibyte(str) abort "{{{
   return strlen(a:str) != s:strchars(a:str)
 endfunction "}}}
 
 " Remove last character from a:str.
 " NOTE: This returns proper value
 " even if a:str contains multibyte character(s).
-function! s:chop(str) "{{{
+function! s:chop(str) abort "{{{
   return substitute(a:str, '.$', '', '')
 endfunction "}}}
 
 " Remove last \r,\n,\r\n from a:str.
-function! s:chomp(str) "{{{
+function! s:chomp(str) abort "{{{
   return substitute(a:str, '\%(\r\n\|[\r\n]\)$', '', '')
 endfunction "}}}
 
@@ -153,13 +153,13 @@ endfunction "}}}
 "
 " NOTE _concat() is just a copy of Data.List.concat().
 " FIXME don't repeat yourself
-function! s:_split_by_wcswidth_once(body, x)
+function! s:_split_by_wcswidth_once(body, x) abort
   let fst = s:P.strwidthpart(a:body, a:x)
   let snd = s:P.strwidthpart_reverse(a:body, s:P.wcswidth(a:body) - s:P.wcswidth(fst))
   return [fst, snd]
 endfunction
 
-function! s:_split_by_wcswidth(body, x)
+function! s:_split_by_wcswidth(body, x) abort
   let memo = []
   let body = a:body
   while s:P.wcswidth(body) > a:x
@@ -170,17 +170,17 @@ function! s:_split_by_wcswidth(body, x)
   return memo
 endfunction
 
-function! s:trim(str)
+function! s:trim(str) abort
   return matchstr(a:str,'^\s*\zs.\{-}\ze\s*$')
 endfunction
 
-function! s:wrap(str,...)
+function! s:wrap(str,...) abort
   let _columns = a:0 > 0 ? a:1 : &columns
   return s:L.concat(
         \ map(split(a:str, '\r\n\|[\r\n]'), 's:_split_by_wcswidth(v:val, _columns - 1)'))
 endfunction
 
-function! s:nr2byte(nr)
+function! s:nr2byte(nr) abort
   if a:nr < 0x80
     return nr2char(a:nr)
   elseif a:nr < 0x800
@@ -190,7 +190,7 @@ function! s:nr2byte(nr)
   endif
 endfunction
 
-function! s:nr2enc_char(charcode)
+function! s:nr2enc_char(charcode) abort
   if &encoding == 'utf-8'
     return nr2char(a:charcode)
   endif
@@ -201,7 +201,7 @@ function! s:nr2enc_char(charcode)
   return char
 endfunction
 
-function! s:nr2hex(nr)
+function! s:nr2hex(nr) abort
   let n = a:nr
   let r = ""
   while n
@@ -213,29 +213,29 @@ endfunction
 
 " If a ==# b, returns -1.
 " If a !=# b, returns first index of different character.
-function! s:diffidx(a, b)
+function! s:diffidx(a, b) abort
   return a:a ==# a:b ? -1 : strlen(s:common_head([a:a, a:b]))
 endfunction
 
-function! s:substitute_last(expr, pat, sub)
+function! s:substitute_last(expr, pat, sub) abort
   return substitute(a:expr, printf('.*\zs%s', a:pat), a:sub, '')
 endfunction
 
-function! s:dstring(expr)
+function! s:dstring(expr) abort
   let x = substitute(string(a:expr), "^'\\|'$", '', 'g')
   let x = substitute(x, "''", "'", 'g')
   return printf('"%s"', escape(x, '"'))
 endfunction
 
-function! s:lines(str)
+function! s:lines(str) abort
   return split(a:str, '\r\?\n')
 endfunction
 
-function! s:_pad_with_char(str, left, right, char)
+function! s:_pad_with_char(str, left, right, char) abort
   return repeat(a:char, a:left). a:str. repeat(a:char, a:right)
 endfunction
 
-function! s:pad_left(str, width, ...)
+function! s:pad_left(str, width, ...) abort
   let char = get(a:, 1, ' ')
   if strdisplaywidth(char) != 1
     throw "vital: Data.String: Can't use non-half-width characters for padding."
@@ -244,7 +244,7 @@ function! s:pad_left(str, width, ...)
   return s:_pad_with_char(a:str, left, 0, char)
 endfunction
 
-function! s:pad_right(str, width, ...)
+function! s:pad_right(str, width, ...) abort
   let char = get(a:, 1, ' ')
   if strdisplaywidth(char) != 1
     throw "vital: Data.String: Can't use non-half-width characters for padding."
@@ -253,7 +253,7 @@ function! s:pad_right(str, width, ...)
   return s:_pad_with_char(a:str, 0, right, char)
 endfunction
 
-function! s:pad_both_sides(str, width, ...)
+function! s:pad_both_sides(str, width, ...) abort
   let char = get(a:, 1, ' ')
   if strdisplaywidth(char) != 1
     throw "vital: Data.String: Can't use non-half-width characters for padding."
@@ -264,7 +264,7 @@ function! s:pad_both_sides(str, width, ...)
   return s:_pad_with_char(a:str, left, right, char)
 endfunction
 
-function! s:pad_between_letters(str, width, ...)
+function! s:pad_between_letters(str, width, ...) abort
   let char = get(a:, 1, ' ')
   if strdisplaywidth(char) != 1
     throw "vital: Data.String: Can't use non-half-width characters for padding."
@@ -278,7 +278,7 @@ function! s:pad_between_letters(str, width, ...)
   return str
 endfunction
 
-function! s:justify_equal_spacing(str, width, ...)
+function! s:justify_equal_spacing(str, width, ...) abort
   let char = get(a:, 1, ' ')
   if strdisplaywidth(char) != 1
     throw "vital: Data.String: Can't use non-half-width characters for padding."
@@ -294,7 +294,7 @@ function! s:justify_equal_spacing(str, width, ...)
 \   ]), '')
 endfunction
 
-function! s:levenshtein_distance(str1, str2)
+function! s:levenshtein_distance(str1, str2) abort
   let letters1 = split(a:str1, '\zs')
   let letters2 = split(a:str2, '\zs')
   let length1 = len(letters1)

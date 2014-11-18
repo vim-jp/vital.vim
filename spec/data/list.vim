@@ -400,7 +400,7 @@ Context Data.List.group_by()
   End
 End
 
-function! My_predicate(a, b)
+function! My_predicate(a, b) abort
     return a:a - a:b
 endfunction
 
@@ -417,7 +417,7 @@ Context Data.List.binary_search()
     Should g:L.binary_search([1, 3, 5, 7], 7, 'My_predicate') == 3
 
     let f = {}
-    function! f.func(a, b) dict
+    function! f.func(a, b) dict abort
       return a:a - a:b
     endfunction
 
@@ -431,7 +431,7 @@ Context Data.List.binary_search()
     Should g:L.binary_search([1, 3, 5, 7], 5, f.func) == 2
     Should g:L.binary_search([1, 3, 5, 7], 7, f.func) == 3
 
-    function! f.bylength(a, b) dict
+    function! f.bylength(a, b) dict abort
       return len(a:a) - len(a:b)
     endfunction
 
@@ -452,7 +452,7 @@ Context Data.List.binary_search()
     Should g:L.binary_search([], 1, 'My_predicate') == -1
 
     let f = {}
-    function! f.func(a, b) dict
+    function! f.func(a, b) dict abort
         return a:a - a:b
     endfunction
 

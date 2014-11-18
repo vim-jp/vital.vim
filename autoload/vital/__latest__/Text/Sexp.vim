@@ -6,7 +6,7 @@ set cpo&vim
 
 let s:sfile = expand('<sfile>:p')
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:P = s:V.import('Lua.Prelude')
   let s:LuaP = s:P.lua_namespace()
@@ -19,11 +19,11 @@ function! s:_vital_loaded(V)
   endif
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Lua.Prelude']
 endfunction
 
-function! s:parse(sexp)
+function! s:parse(sexp) abort
   if has('lua')
     return luaeval('_G[_A[0]].vim.parse(_A[1])', [s:sfile, a:sexp])
     " return luaeval('vital_text_sexp.parse(_A)', a:sexp)
