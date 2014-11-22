@@ -33,13 +33,14 @@ new({token},...)			*Vital.Data.Tree.new()*
 
 ------------------------------------------------------------------------------
 
-Tree.token      			*Vital.Data.Tree.token*
-Tree.children      			*Vital.Data.Tree.children*
-Tree.addchild      			*Vital.Data.Tree.addchild*
-Tree.todict      			*Vital.Data.Tree.todict*
-Tree.preorder_traversal       		*Vital.Data.Tree.preorder_traversal*
-Tree.inorder_traversal       		*Vital.Data.Tree.inorder_traversal*
-Tree.postorder_traversal       		*Vital.Data.Tree.postorder_traversal*
+Tree.token                              *Vital.Data.Tree.token*
+Tree.children                           *Vital.Data.Tree.children*
+Tree.addchild                           *Vital.Data.Tree.addchild*
+Tree.todict                             *Vital.Data.Tree.todict*
+Tree.preorder_traversal                 *Vital.Data.Tree.preorder_traversal*
+Tree.inorder_traversal                  *Vital.Data.Tree.inorder_traversal*
+Tree.postorder_traversal                *Vital.Data.Tree.postorder_traversal*
+Tree.renderer                           *Vital.Data.Tree.renderer*
 
 ==============================================================================
 EXAMPLES   				*Vital.Data.Tree-examples*
@@ -86,6 +87,17 @@ EXAMPLES   				*Vital.Data.Tree-examples*
     "    / \
     "   2   3
     "
+
+    echo join(tree_obj.renderer(), "\n")
+    " * 3
+    " |
+    " | * 2
+    " | /
+    " * '-'
+    " |
+    " | * 1
+    " | /
+    " * '+'
 <
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

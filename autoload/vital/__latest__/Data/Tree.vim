@@ -1,6 +1,27 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_renderer(idx, tree) abort
+  let lines = []
+  let value = string(a:tree)
+  let children = []
+  if type({}) is type(a:tree)
+    let value = string(get(a:tree, 'token', ''))
+    let children = get(a:tree, 'children', [])
+  endif
+  let lines += [ join(repeat(['|'], a:idx), ' ') . (a:idx is 0 ? '' : ' ') . '*' . ' ' . value ]
+  for cidx in range(0, len(children) - 1)
+    if cidx isnot len(a:tree.children) - 1
+      let lines += [ join(repeat(['|'], (a:idx + 1)), ' ') . ' ' . '/' ]
+      let lines += s:_renderer(a:idx+1, children[cidx])
+      let lines += [ join(repeat(['|'], a:idx + 1), ' ') ]
+    else
+      let lines += s:_renderer(a:idx, children[cidx])
+    endif
+  endfor
+  return lines
+endfunction
+
 function! s:new(token, ...) abort
   if type(a:token) == type({}) && has_key(a:token,'token') && has_key(a:token,'children')
     let obj = a:token
@@ -53,6 +74,10 @@ function! s:new(token, ...) abort
     endfor
     let tkns += [(self.token)]
     return tkns
+  endfunction
+
+  function! obj.renderer() dict abort
+    return reverse(s:_renderer(0, self))
   endfunction
 
   return copy(obj)
