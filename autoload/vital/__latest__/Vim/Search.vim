@@ -14,7 +14,7 @@ function! s:finddef(str) abort
     redir END
 
     " tokenizing phase
-    let lines = s:lines(result)
+    let lines = s:_lines(result)
     let tokens = []
     for line in lines
       if line =~ '^\s*\d'
@@ -31,7 +31,7 @@ function! s:finddef(str) abort
     let parsed = {}
     let current_file = '*undefined*'
     for [label ; xs] in tokens
-      if label ==# 'file' || current_file == '*undefined*'
+      if label ==# 'file' || current_file ==# '*undefined*'
         let current_file = xs[0]
         let parsed[current_file] = {}
       else
@@ -47,7 +47,7 @@ endfunction
 
 " just for now
 " TODO move this to Data.String
-function! s:lines(str) abort
+function! s:_lines(str) abort
   return split(a:str, '\r\?\n')
 endfunction
 
