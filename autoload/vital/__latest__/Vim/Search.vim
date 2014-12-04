@@ -7,7 +7,8 @@ function! s:finddef(str) abort
   let before = getpos('.')
   call append(0, a:str) " ugh
   try
-    call setpos('.', getpos('1'))
+    " call setpos('.', getpos('1'))
+    1
     redir => result
       silent! normal! [I
     redir END
