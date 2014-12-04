@@ -243,7 +243,7 @@ endfunction
 
 function! s:_go(bulk_or_part, self)
   let self = a:self
-  if self._is_idle()
+  if self.is_idle()
     throw 'vital: ProcessManager: go has nothing to do'
   endif
   let [msgkey, msgvalue] = self['*mailbox*'][0]
@@ -285,7 +285,7 @@ function! s:_go(bulk_or_part, self)
       return s:_trigger(self)
     elseif msgkey ==# 'wait'
       call remove(self['*mailbox*'], 0)
-      return self._go_bulk()
+      return self.go_bulk()
     elseif msgkey ==# 'read'
       let out = self['*buffer*'][0]
       let err = self['*buffer*'][1]
@@ -300,7 +300,7 @@ function! s:_go(bulk_or_part, self)
 endfunction
 
 function! s:_tick() dict
-  if self._is_idle()
+  if self.is_idle()
     return
   endif
 
