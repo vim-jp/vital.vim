@@ -183,5 +183,40 @@ levenshtein_distance({str1}, {str2})
 	" 3
 <
 
+				*Vital.Data.String.padding_by_displaywidth()*
+padding_by_displaywidth({expr}, {width}, {float})
+        It returns a string padding {expr} with spaces of {width}.
+        {float}: 
+          left padding: `-1` 
+          center padding: `0`
+          right padding: `1`
+>
+        echo s:S.padding_by_displaywidth('abc', 5, -1)
+        " 'abc  '
+        echo s:S.padding_by_displaywidth('abc', 5, 0)
+        " ' abc '
+        echo s:S.padding_by_displaywidth('abc', 5, 1)
+        " '  abc'
+<
+
+				*Vital.Data.String.split_by_displaywidth()*
+split_by_displaywidth({expr}, {width}, {float}, {is_wrap})
+        It returns a list of string that split {expr} by Carriage Return
+        and apply `padding_by_displaywidth(v:val,{width},{float})` to these.
+        {float}: 
+          left padding: `-1` 
+          center padding: `0`
+          right padding: `1`
+>
+        echo s:S.split_by_displaywidth('あaいbうcえdおe', 5, -1, 1)
+        " ['あaい', 'bうc ', 'えdお', 'e    ']
+        echo s:S.split_by_displaywidth('あaいbうcえdおe', 5, -1, 0)
+        " ['あaい']
+        echo s:S.split_by_displaywidth('1234567890', 5, -1, 1)
+        " ['12345', '67890']
+        echo s:S.split_by_displaywidth("123\n4567890", 5, 1, 1)
+        " ['  123', '45678', '   90']
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

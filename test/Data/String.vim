@@ -318,3 +318,126 @@ function! s:suite.levenshtein_distance()
   call s:assert.equals( s:String.levenshtein_distance('ちからうどん', 'からげんき'), 4)
 endfunction
 
+function! s:suite.split_by_displaywidth()
+  let float = -1
+  let width = 0
+  call s:assert.equals(s:String.split_by_displaywidth('あaいbうcえdおe', width, float, 1), [''])
+  call s:assert.equals(s:String.split_by_displaywidth('あaいbうcえdおe', width, float, 0), [''])
+  call s:assert.equals(s:String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 0), [''])
+  call s:assert.equals(s:String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 1), [''])
+
+  let float = -1
+  let width = 1
+  call s:assert.equals(s:String.split_by_displaywidth('あaいbうcえdおe', width, float, 1), [' '])
+  call s:assert.equals(s:String.split_by_displaywidth('あaいbうcえdおe', width, float, 0), [' '])
+  call s:assert.equals(s:String.split_by_displaywidth('aあbいcうdえeお', width, float, 1), ['a', ' '])
+  call s:assert.equals(s:String.split_by_displaywidth('aあbいcうdえeお', width, float, 0), ['a'])
+  call s:assert.equals(s:String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 0), [' ', ' ', ' ', ' ', ' '])
+  call s:assert.equals(s:String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 1), [' ', ' ', ' ', ' ', ' '])
+
+  let float = -1
+  let width = 2
+  call s:assert.equals(s:String.split_by_displaywidth('12', width, float, 1), ['12'])
+  call s:assert.equals(s:String.split_by_displaywidth('12', width, float, 0), ['12'])
+  call s:assert.equals(s:String.split_by_displaywidth('あ12', width, float, 1), ['あ', '12'])
+  call s:assert.equals(s:String.split_by_displaywidth('あ12', width, float, 0), ['あ'])
+  call s:assert.equals(s:String.split_by_displaywidth('あ1', width, float, 1), ['あ', '1 '])
+  call s:assert.equals(s:String.split_by_displaywidth('あ1', width, float, 0), ['あ'])
+
+  let float = -1
+  let width = 4
+  call s:assert.equals(s:String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 0), ['あa ', '    ', 'うc ', 'えd '])
+  call s:assert.equals(s:String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 1), ['あa ', 'いb ', 'うc ', 'えd ', 'おe '])
+
+  let float = -1
+  let width = 5
+  call s:assert.equals(s:String.split_by_displaywidth('1234567890abcde', width, float, 1), ['12345', '67890', 'abcde'])
+  call s:assert.equals(s:String.split_by_displaywidth('1234567890abcde', width, float, 0), ['12345'])
+  call s:assert.equals(s:String.split_by_displaywidth('あaいbうcえdおe', width, float, 1), ['あaい', 'bうc ', 'えdお', 'e    '])
+  call s:assert.equals(s:String.split_by_displaywidth('あaいbうcえdおe', width, float, 0), ['あaい'])
+  call s:assert.equals(s:String.split_by_displaywidth('1234567890', width, float, 1), ['12345', '67890'])
+  call s:assert.equals(s:String.split_by_displaywidth('1234567890', width, float, 0), ['12345'])
+  call s:assert.equals(s:String.split_by_displaywidth('あいうえお', width, float, 1), ['あい ', 'うえ ', 'お   '])
+  call s:assert.equals(s:String.split_by_displaywidth('あいうえお', width, float, 0), ['あい '])
+  call s:assert.equals(s:String.split_by_displaywidth('12345678', width, float, 1), ['12345', '678  '])
+  call s:assert.equals(s:String.split_by_displaywidth('12345678', width, float, 0), ['12345'])
+
+  let float = -1
+  let width = 6
+  call s:assert.equals(s:String.split_by_displaywidth('1234567890abcde', width, float, 1), ['123456', '7890ab', 'cde   '])
+  call s:assert.equals(s:String.split_by_displaywidth('1234567890abcde', width, float, 0), ['123456'])
+  call s:assert.equals(s:String.split_by_displaywidth('1234567890', width, float, 1), ['123456', '7890  '])
+  call s:assert.equals(s:String.split_by_displaywidth('1234567890', width, float, 0), ['123456'])
+  call s:assert.equals(s:String.split_by_displaywidth('あいうえお', width, float, 1), ['あいう', 'えお  '])
+  call s:assert.equals(s:String.split_by_displaywidth('あいうえお', width, float, 0), ['あいう'])
+  call s:assert.equals(s:String.split_by_displaywidth('12345678', width, float, 1), ['123456', '78    '])
+  call s:assert.equals(s:String.split_by_displaywidth('12345678', width, float, 0), ['123456'])
+  call s:assert.equals(s:String.split_by_displaywidth('12', width, float, 1), ['12    '])
+  call s:assert.equals(s:String.split_by_displaywidth('12', width, float, 0), ['12    '])
+
+  let float = 0
+  let width = 5
+  call s:assert.equals(s:String.split_by_displaywidth('あいうえお', width, float, 1), ['あい ', 'うえ ', ' お  '])
+  let float = 0
+  let width = 3
+  call s:assert.equals(s:String.split_by_displaywidth('あいうえお', width, float, 1), ['あ ', 'い ', 'う ', 'え ', 'お '])
+
+  let float = 1
+  let width = 5
+  call s:assert.equals(s:String.split_by_displaywidth('あいうえお', width, float, 1), [' あい', ' うえ', '   お'])
+  let float = 1
+  let width = 3
+  call s:assert.equals(s:String.split_by_displaywidth('あいうえお', width, float, 1), [' あ', ' い', ' う', ' え', ' お'])
+
+endfunction
+"
+function! s:suite.padding_by_displaywidth()
+  let width = 6
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, -1), 'abc   ')
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, 1),  '   abc')
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, 0),  ' abc  ')
+  call s:assert.equals(s:String.padding_by_displaywidth('abcdefgh', width, -1),  'abcdefgh')
+  call s:assert.equals(s:String.padding_by_displaywidth('abcdefgh', width, 0),  'abcdefgh')
+  call s:assert.equals(s:String.padding_by_displaywidth('abcdefgh', width, 1),  'abcdefgh')
+
+  let width = 5
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, -1), 'abc  ')
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, 0),  ' abc ')
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, 1),  '  abc')
+  call s:assert.equals(s:String.padding_by_displaywidth('abcdefgh', width, -1),  'abcdefgh')
+  call s:assert.equals(s:String.padding_by_displaywidth('abcdefgh', width, 0),  'abcdefgh')
+  call s:assert.equals(s:String.padding_by_displaywidth('abcdefgh', width, 1),  'abcdefgh')
+
+  let width = 0
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, -1), 'abc')
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, 0), 'abc')
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, 1), 'abc')
+  "
+  let width = -3
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, -1), 'abc')
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, 0), 'abc')
+  call s:assert.equals(s:String.padding_by_displaywidth('abc', width, 1), 'abc')
+
+  let width = 12
+  call s:assert.equals(s:String.padding_by_displaywidth('あいう'   , width, -1), 'あいう      ')
+  call s:assert.equals(s:String.padding_by_displaywidth('あいう'   , width, 0), '   あいう   ')
+  call s:assert.equals(s:String.padding_by_displaywidth('あいう'   , width, 1), '      あいう')
+  call s:assert.equals(s:String.padding_by_displaywidth('あaいbうc', width, -1), 'あaいbうc   ')
+  call s:assert.equals(s:String.padding_by_displaywidth('あaいbうc', width, 0), ' あaいbうc  ')
+  call s:assert.equals(s:String.padding_by_displaywidth('あaいbうc', width, 1), '   あaいbうc')
+  call s:assert.equals(s:String.padding_by_displaywidth('あいうえおかき', width, -1), 'あいうえおかき')
+  call s:assert.equals(s:String.padding_by_displaywidth('あいうえおかき', width, 0), 'あいうえおかき')
+  call s:assert.equals(s:String.padding_by_displaywidth('あいうえおかき', width, 1), 'あいうえおかき')
+
+  let width = 0
+  call s:assert.equals(s:String.padding_by_displaywidth('あいう'   , width, -1), 'あいう')
+  call s:assert.equals(s:String.padding_by_displaywidth('あaいbうc', width, 0), 'あaいbうc')
+  call s:assert.equals(s:String.padding_by_displaywidth('あいうえおかき', width, 1), 'あいうえおかき')
+
+  let width = -2
+  call s:assert.equals(s:String.padding_by_displaywidth('あいう'   , width, -1), 'あいう')
+  call s:assert.equals(s:String.padding_by_displaywidth('あaいbうc', width, 0), 'あaいbうc')
+  call s:assert.equals(s:String.padding_by_displaywidth('あいうえおかき', width, 1), 'あいうえおかき')
+
+endfunction
+
