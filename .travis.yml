@@ -1,7 +1,7 @@
 before_script:
   - git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
   - git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
-  - git clone https://github.com/thinca/vim-themis --branch v1.3 --single-branch --depth 1 /tmp/vim-themis
+  - git clone https://github.com/thinca/vim-themis --branch v1.4 --single-branch --depth 1 /tmp/vim-themis
   - uname -a
   - echo ja_JP.UTF-8 UTF-8 | sudo tee -a /var/lib/locales/supported.d/local
   - echo ja_JP.UTF-8 UTF-8 | sudo tee -a /etc/locale.gen
