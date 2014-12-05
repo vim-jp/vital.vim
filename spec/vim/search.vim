@@ -26,15 +26,15 @@ Context Vim.Search.finddef()
   End
 End
 
-Context Vim.Search.lines()
-  It returns lines separated by CR/LF or LF
-    Should g:S.lines("foobar") == ['foobar']
-    Should g:S.lines("foo\nbar") == ['foo', 'bar']
-    Should g:S.lines("foo\nbar\n") == ['foo', 'bar']
-    Should g:S.lines("\nfoo\nbar\n") == ['foo', 'bar']
-    Should g:S.lines("\nfoo\n\nbar\n") == ['foo', '', 'bar']
-    Should g:S.lines("\n") == []
-    Should g:S.lines("\n\n") == []
-  End
-  " TODO add other specs, refering Bram's Patch 7.3.694
-End
+" Context Vim.Search.lines()
+"   It returns lines separated by CR/LF or LF
+"     Should g:S.lines("foobar") == ['foobar']
+"     Should g:S.lines("foo\nbar") == ['foo', 'bar']
+"     Should g:S.lines("foo\nbar\n") == ['foo', 'bar']
+"     Should g:S.lines("\nfoo\nbar\n") == ['foo', 'bar']
+"     Should g:S.lines("\nfoo\n\nbar\n") == ['foo', '', 'bar']
+"     Should g:S.lines("\n") == []
+"     Should g:S.lines("\n\n") == []
+"   End
+"   " TODO add other specs, refering Bram's Patch 7.3.694
+" End
