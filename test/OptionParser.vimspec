@@ -38,17 +38,16 @@ Describe OptionParser
   Describe .new()
     It makes parser object
       let o = g:O.new()
-      let func_type = type(function('empty'))
       Assert has_key(o, 'options')
-      Assert Equals(type(o.options), type({}))
+      Assert IsDict(o.options)
       Assert has_key(o, 'on')
-      Assert Equals(type(o.on), func_type)
+      Assert IsFunc(o.on)
       Assert has_key(o, 'parse')
-      Assert Equals(type(o.parse), func_type)
+      Assert IsFunc(o.parse)
       Assert has_key(o, 'help')
-      Assert Equals(type(o.help), func_type)
+      Assert IsFunc(o.help)
       Assert has_key(o, 'complete')
-      Assert Equals(type(o.help), func_type)
+      Assert IsFunc(o.help)
     End
   End
 
@@ -140,8 +139,8 @@ Describe OptionParser
       Assert has_key(o.options.hoge, 'completion')
       Assert has_key(o.options.huga, 'completion')
       Assert ! has_key(o.options.piyo, 'completion')
-      Assert Equals(type(o.options.hoge.completion), type(function('empty')))
-      Assert Equals(type(o.options.huga.completion), type(function('empty')))
+      Assert IsFunc(o.options.hoge.completion)
+      Assert IsFunc(o.options.huga.completion)
     End
 
   End
