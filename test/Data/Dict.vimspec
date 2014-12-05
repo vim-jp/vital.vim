@@ -1,42 +1,39 @@
 Describe Data.Dict
   Before all
-    let g:D = vital#of('vital').import('Data.Dict')
-  End
-  After all
-    unlet! g:D
+    let D = vital#of('vital').import('Data.Dict')
   End
 
   Describe .make()
     It makes a new dictionary from keys and values
-      Assert Equals(g:D.make(['one', 'two', 'three'], [1, 2, 3]), {'one': 1, 'two': 2, 'three': 3})
+      Assert Equals(D.make(['one', 'two', 'three'], [1, 2, 3]), {'one': 1, 'two': 2, 'three': 3})
     End
     It ignores the extra values
-      Assert Equals(g:D.make(['one'], [1, 2, 3]), {'one': 1})
+      Assert Equals(D.make(['one'], [1, 2, 3]), {'one': 1})
     End
     It fills the values by 0 if it is short
-      Assert Equals(g:D.make(['one', 'two', 'three'], [1, 2]), {'one': 1, 'two': 2, 'three': 0})
+      Assert Equals(D.make(['one', 'two', 'three'], [1, 2]), {'one': 1, 'two': 2, 'three': 0})
     End
     It fills the values by specified value if it is short
-      Assert Equals(g:D.make(['one', 'two', 'three'], [1], 'null'), {'one': 1, 'two': 'null', 'three': 'null'})
+      Assert Equals(D.make(['one', 'two', 'three'], [1], 'null'), {'one': 1, 'two': 'null', 'three': 'null'})
     End
     It converts invalid key to a string
-      Assert Equals(g:D.make([[], {}, 1.0], ['list', 'dict', 'float']), {'[]': 'list', '{}': 'dict', '1.0': 'float'})
+      Assert Equals(D.make([[], {}, 1.0], ['list', 'dict', 'float']), {'[]': 'list', '{}': 'dict', '1.0': 'float'})
     End
     It throws an error when key is empty string
-      Throws /^vital: Data.Dict:/ g:D.make(['one', 'two', ''], [1, 2, 'empty'])
+      Throws /^vital: Data.Dict:/ D.make(['one', 'two', ''], [1, 2, 'empty'])
     End
   End
 
   Describe .swap()
     It swaps keys and values
       let dict = {'one': 1, 'two': 2, 'three': 3}
-      Assert Equals(g:D.swap(dict), {'1': 'one', '2': 'two', '3': 'three'})
+      Assert Equals(D.swap(dict), {'1': 'one', '2': 'two', '3': 'three'})
       Assert Equals(dict, {'one': 1, 'two': 2, 'three': 3})
-      Assert Equals(g:D.swap({}), {})
+      Assert Equals(D.swap({}), {})
     End
 
     It converts invalid key to a string
-      Assert Equals(g:D.swap({'list': [], 'dict': {}, 'float': 1.0}), {'[]': 'list', '{}': 'dict', '1.0': 'float'})
+      Assert Equals(D.swap({'list': [], 'dict': {}, 'float': 1.0}), {'[]': 'list', '{}': 'dict', '1.0': 'float'})
     End
   End
 
@@ -44,30 +41,30 @@ Describe Data.Dict
     It makes an index dictionary from a list
       let actual = []
       let original = deepcopy(actual)
-      Assert Equals(g:D.make_index(actual), {})
+      Assert Equals(D.make_index(actual), {})
       Assert Equals(actual, original)
-      Assert Equals(g:D.make_index(actual, 5), {})
+      Assert Equals(D.make_index(actual, 5), {})
       Assert Equals(actual, original)
       let actual = ['apple', 'orange', 'banana']
       let original = deepcopy(actual)
-      Assert Equals(g:D.make_index(actual), {'apple': 1, 'orange': 1, 'banana': 1})
+      Assert Equals(D.make_index(actual), {'apple': 1, 'orange': 1, 'banana': 1})
       Assert Equals(actual, original)
     End
     It makes an index dictionary with a specified value
       let actual = ['apple', 'orange', 'banana']
       let original = deepcopy(actual)
-      Assert Equals(g:D.make_index(actual, 'true'), {'apple': 'true', 'orange': 'true', 'banana': 'true'})
+      Assert Equals(D.make_index(actual, 'true'), {'apple': 'true', 'orange': 'true', 'banana': 'true'})
       Assert Equals(actual, original)
-      Assert Equals(g:D.make_index(actual, 5), {'apple': 5, 'orange': 5, 'banana': 5})
+      Assert Equals(D.make_index(actual, 5), {'apple': 5, 'orange': 5, 'banana': 5})
       Assert Equals(actual, original)
     End
 
     It converts invalid key to a string
       let actual = [[], {}, 1.4]
       let original = deepcopy(actual)
-      Assert Equals(g:D.make_index(actual), {'[]': 1, '{}': 1, '1.4': 1})
+      Assert Equals(D.make_index(actual), {'[]': 1, '{}': 1, '1.4': 1})
       Assert Equals(actual, original)
-      Assert Equals(g:D.make_index(actual, [1,2,3]), {'[]': [1,2,3], '{}': [1,2,3], '1.4': [1,2,3]})
+      Assert Equals(D.make_index(actual, [1,2,3]), {'[]': [1,2,3], '{}': [1,2,3], '1.4': [1,2,3]})
       Assert Equals(actual, original)
     End
   End
@@ -75,28 +72,28 @@ Describe Data.Dict
   Describe .pick()
     It returns filtered dictionary that only has values for the whitelisted
       Assert Equals(
-      \   g:D.pick({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
+      \   D.pick({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
       \            ['apple', 'melon']),
       \   {'apple': 'red', 'melon': 'green'})
       let actual = {'one': 1, 'two': 2, 'three': 3}
       let original = deepcopy(actual)
-      Assert Equals(g:D.pick(actual, ['one', 'three']), {'one': 1, 'three': 3})
+      Assert Equals(D.pick(actual, ['one', 'three']), {'one': 1, 'three': 3})
       Assert Equals(actual, original)
     End
     It ignores unexisting item of whitelist
       Assert Equals(
-      \   g:D.pick({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
+      \   D.pick({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
       \            ['apple', 'orange', 'lemon', 'melon']),
       \   {'apple': 'red', 'melon': 'green'})
     End
     It returns new dictionary
       let dict = {}
-      Assert NotSame(g:D.pick(dict, []), dict)
+      Assert NotSame(D.pick(dict, []), dict)
     End
     It doesn't change the passed dictionary
       let actual = {'apple': 'red', 'banana': 'yellow', 'melon': 'green'}
       let original = deepcopy(actual)
-      Assert Equals(g:D.pick(actual, []), {})
+      Assert Equals(D.pick(actual, []), {})
       Assert Equals(actual, original)
     End
   End
@@ -104,23 +101,23 @@ Describe Data.Dict
   Describe .omit()
     It returns filtered dictionary that omits the blacklisted
       Assert Equals(
-      \   g:D.omit({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
+      \   D.omit({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
       \            ['apple', 'melon']),
       \   {'banana': 'yellow'})
     End
     It ignores unexisting item of blacklist
       Assert Equals(
-      \   g:D.omit({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
+      \   D.omit({'apple': 'red', 'banana': 'yellow', 'melon': 'green'},
       \            ['apple', 'orange', 'lemon', 'melon']),
       \   {'banana': 'yellow'},)
     End
     It returns new dictionary
       let dict = {}
-      Assert NotSame(g:D.omit(dict, []), dict)
+      Assert NotSame(D.omit(dict, []), dict)
     End
     It doesn't change the passed dictionary
       let dict = {'apple': 'red', 'banana': 'yellow', 'melon': 'green'}
-      Assert Equals(g:D.omit(dict, keys(dict)), {})
+      Assert Equals(D.omit(dict, keys(dict)), {})
       Assert Equals(dict, {'apple': 'red', 'banana': 'yellow', 'melon': 'green'})
     End
   End
@@ -128,46 +125,46 @@ Describe Data.Dict
   Describe .clear()
     It clears the all items of a dictionary
       let dict = {'one': 1, 'two': 2, 'three': 3}
-      Assert Equals(g:D.clear(dict), {})
+      Assert Equals(D.clear(dict), {})
       Assert Equals(dict, {})
     End
     It returns the passed dictionary directly
       let dict = {'one': 1, 'two': 2, 'three': 3}
-      Assert Same(g:D.clear(dict), dict)
+      Assert Same(D.clear(dict), dict)
     End
   End
 
   Describe .max_by()
     It returns a key-and-value list which derives a maximum value in the dictionary through the given expr.
-      Assert Equals(g:D.max_by({'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}, 'len(v:key) * abs(v:val)'), ['foo', -5])
-      Assert Equals(g:D.max_by({'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}, 'len(v:val)'), ['bob', '/1/2/3/4'])
+      Assert Equals(D.max_by({'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}, 'len(v:key) * abs(v:val)'), ['foo', -5])
+      Assert Equals(D.max_by({'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}, 'len(v:val)'), ['bob', '/1/2/3/4'])
     End
     It throws an exception if the dictionary is empty.
-      Throws /^vital: Data.Dict:/ g:D.max_by({}, 'len(v:key . v:val)')
+      Throws /^vital: Data.Dict:/ D.max_by({}, 'len(v:key . v:val)')
     End
   End
 
   Describe .min_by()
     It returns a key-and-value list which derives a minimum value in the dictionary through the given expr.
-      Assert Equals(g:D.min_by({'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}, 'len(v:key) * abs(v:val)'), ['hehehe', 1])
-      Assert Equals(g:D.min_by({'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}, 'len(v:val)'), ['dave', '/1'])
+      Assert Equals(D.min_by({'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}, 'len(v:key) * abs(v:val)'), ['hehehe', 1])
+      Assert Equals(D.min_by({'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}, 'len(v:val)'), ['dave', '/1'])
     End
     It throws an exception if the dictionary is empty.
-      Throws  /^vital: Data.Dict:/ g:D.min_by({}, 'len(v:key . v:val)')
+      Throws  /^vital: Data.Dict:/ D.min_by({}, 'len(v:key . v:val)')
     End
   End
 
   Describe .foldl()
     It returns a value gotten from folding the keys and values in the dictionary using the given left-associative expr.
-      Assert Equals(g:D.foldl('len(v:key) * abs(v:val) + v:memo', 0, {'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}), 43)
-      Assert Equals(g:D.foldl('v:memo - len(v:val)', 100, {'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}), 80)
+      Assert Equals(D.foldl('len(v:key) * abs(v:val) + v:memo', 0, {'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}), 43)
+      Assert Equals(D.foldl('v:memo - len(v:val)', 100, {'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}), 80)
     End
   End
 
   Describe .foldr()
     It returns a value gotten from folding the keys and values in the dictionary using the given right-associative expr.
-      Assert Equals(g:D.foldr('len(v:key) * abs(v:val) + v:memo', 0, {'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}), 43)
-      Assert Equals(g:D.foldr('v:memo - len(v:val)', 100, {'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}), 80)
+      Assert Equals(D.foldr('len(v:key) * abs(v:val) + v:memo', 0, {'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}), 43)
+      Assert Equals(D.foldr('v:memo - len(v:val)', 100, {'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}), 80)
     End
   End
 End
