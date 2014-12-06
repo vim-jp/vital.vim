@@ -182,14 +182,14 @@ function! s:timezone(...) abort
   if s:_is_class(info, 'TimeZone')
     return info
   endif
-  if !s:Prelude.is_number(info) && empty(info)
+  if info is ''
     unlet info
     let info = s:_default_tz()
   endif
   let tz = copy(s:TimeZone)
   if s:Prelude.is_number(info)
     let tz._offset = info * s:NUM_MINUTES * s:NUM_SECONDS
-  else
+  elseif s:Prelude.is_string(info)
     let list = matchlist(info, '\v^([+-])?(\d{1,2}):?(\d{1,2})?$')
     if !empty(list)
       let tz._offset = str2nr(list[1] . s:NUM_SECONDS) *
@@ -198,6 +198,8 @@ function! s:timezone(...) abort
       " TODO: TimeZone names
       throw 'vital: DateTime: Unknown timezone: ' . string(info)
     endif
+  else
+    throw 'vital: DateTime: Invalid timezone: ' . string(info)
   endif
   return tz
 endfunction
