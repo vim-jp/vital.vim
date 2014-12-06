@@ -368,9 +368,11 @@ function! s:DateTime.compare(dt) abort
   return self.delta(a:dt).sign()
 endfunction
 function! s:DateTime.delta(dt) abort
-  return s:delta(self.days_from_era() - a:dt.days_from_era(),
-  \              (self.seconds_of_day() + self.timezone().offset()) -
-  \              (a:dt.seconds_of_day() + a:dt.timezone().offset()))
+  let left = self.to(0)
+  let right = a:dt.to(0)
+  return s:delta(left.days_from_era() - right.days_from_era(),
+  \              (left.seconds_of_day() + left.timezone().offset()) -
+  \              (right.seconds_of_day() + right.timezone().offset()))
 endfunction
 function! s:DateTime.to(...) abort
   let dt = self._clone()
