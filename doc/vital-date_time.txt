@@ -86,7 +86,9 @@ delta({TimeDelta})
 	Returns {TimeDelta} directly.
 
 compare({datetime1}, {datetime2})	*Vital.DateTime.compare()*
-	Comparison function for DateTime.  This is useful when using |sort()|.
+	Comparison function for DateTime.
+	This is same to "datetime1.compare(datetime2)"
+	This is useful when using |sort()|.
 
 month_names([{longname} [, {locale}]])	*Vital.DateTime.month_names()*
 	Returns month names according to the current or specified locale.
@@ -166,9 +168,9 @@ DateTime.is({DateTime})		*Vital.DateTime-DateTime.is()*
 	time.
 
 DateTime.compare({DateTime})	*Vital.DateTime-DateTime.compare()*
-	Returns -1 if {DateTime} is after than this DateTime.
+	Returns -1 if {DateTime} is later more than this DateTime.
 	Returns 0 if {DateTime} and this DateTime is same.
-	Returns 1 if {DateTime} is before than this DateTime.
+	Returns 1 if {DateTime} is precedes more than this DateTime.
 
 DateTime.delta({DateTime})	*Vital.DateTime-DateTime.delta()*
 	Returns a new TimeDelta(|Vital.DateTime-TimeDelta|) object.
