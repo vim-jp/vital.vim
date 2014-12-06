@@ -1,0 +1,32 @@
+Describe Random.Xor128
+  Before all
+    let X = vital#of('vital').import('Random.Xor128')
+  End
+
+  Describe .rand()
+    It returns the same random number as the C implementations
+      let expected = readfile(getcwd() . '/test/Random/xor128_random_numbers_table.txt')
+      " call X.srand(123456789)
+      for e in expected
+        Assert Equals(e, X.rand())
+      endfor
+    End
+  End
+
+  Describe .srand()
+    It sets the seed
+      call X.srand(1)
+      let a1 = X.rand()
+      let a2 = X.rand()
+      let a3 = X.rand()
+
+      call X.srand(1)
+      Assert Equals(a1, X.rand())
+      Assert Equals(a2, X.rand())
+      Assert Equals(a3, X.rand())
+
+      call X.srand(2)
+      Assert NotEquals(a1, X.rand())
+    End
+  End
+End
