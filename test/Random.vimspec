@@ -1,0 +1,112 @@
+Describe Random
+  Before all
+    let R = vital#of('vital').import('Random')
+  End
+
+  Describe .next()
+    It returns a random number
+      let random = R.new('Xor128', [])
+      for _ in range(10)
+        let x = random.next()
+        Assert IsNumber(x)
+      endfor
+    End
+    It returns n random numbers
+      let random = R.new('Xor128', [])
+      for n in range(10)
+        let x = random.next(n)
+        Assert IsList(x)
+        Assert LengthOf(x, n)
+      endfor
+    End
+  End
+
+  Describe .generate_canonical()
+    It returns a random float number in 0.0 - 1.0
+      let random = R.new('Xor128', [])
+      for _ in range(100)
+        let x = random.generate_canonical()
+        Assert 0.0 <= x && x < 1.0
+      endfor
+    End
+  End
+
+  Describe .range()
+    It returns a random number in specified range
+      let random = R.new('Xor128', [])
+      for _ in range(100)
+        let x = random.range(10)
+        Assert 0 <= x && x < 10
+        let x = random.range(-10)
+        Assert -10 < x && x <= 0
+        let x = random.range(-10, 10)
+        Assert -10 <= x && x < 10
+        let x = random.range(10, -10)
+        Assert -10 < x && x <= 10
+      endfor
+    End
+    It returns a random float number in specified range
+      let random = R.new('Xor128', [])
+      for _ in range(100)
+        let x = random.range(10.0)
+        Assert 0.0 <= x && x < 10.0
+        let x = random.range(-10.0)
+        Assert -10.0 < x && x <= 0.0
+        let x = random.range(-10.0, 10.0)
+        Assert -10.0 <= x && x < 10.0
+        let x = random.range(10.0, -10.0)
+        Assert -10.0 < x && x <= 10.0
+      endfor
+    End
+  End
+
+  Describe .bool()
+    It returns a random number in specified range
+      let random = R.new('Xor128', [])
+      for _ in range(100)
+        let x = random.bool()
+        Assert x is 0 || x is 1
+      endfor
+    End
+  End
+
+  Describe .sample()
+    It returns a random element from the list
+      let random = R.new('Xor128', [])
+      let list = range(10)
+      for _ in range(100)
+        let x = random.sample(list)
+        Assert 0 <= index(list, x)
+      endfor
+    End
+    It returns n random elements from the list
+      let random = R.new('Xor128', [])
+      let list = range(10) + range(10)
+      for _ in range(100)
+        let n = _ % len(list)
+        let xs = random.sample(list, n)
+        Assert IsList(xs)
+        Assert LengthOf(xs, n)
+        let copy_list = copy(list)
+        for x in xs
+          let idx = index(copy_list, x)
+          Assert 0 <= idx
+          call remove(copy_list, idx)
+        endfor
+      endfor
+    End
+  End
+
+  Describe .shuffle()
+    It shuffles the list
+      let random = R.new('Xor128', [])
+      for _ in range(100)
+        let list = range(100)
+        let copy_list = copy(list)
+        let result_list = random.shuffle(copy_list)
+        Assert Same(result_list, copy_list)
+        Assert Equals(sort(list), sort(result_list))
+      endfor
+    End
+  End
+End
