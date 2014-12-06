@@ -96,7 +96,7 @@ function! s:from_format(string, format, ...) abort
       let pat = '^' . skip_pattern . '\V' . escape(f, '\')
       let matched_len = len(matchstr(remain, pat))
       if matched_len == 0
-        throw "Vital.DateTime: Parse error:\n" .
+        throw "vital: DateTime: Parse error:\n" .
         \     'input: ' . a:string . "\nformat: " . a:format
       endif
       let remain = remain[matched_len :]
@@ -196,7 +196,7 @@ function! s:timezone(...) abort
       \                (str2nr(list[2]) * s:NUM_MINUTES + str2nr(list[3]))
     else
       " TODO: TimeZone names
-      throw 'Vital.DateTime: Unknown timezone: ' . string(info)
+      throw 'vital: DateTime: Unknown timezone: ' . string(info)
     endif
   endif
   return tz
