@@ -225,35 +225,29 @@ TimeZone.w3c()			*Vital.DateTime-TimeZone.w3c()*
 ------------------------------------------------------------------------------
 TimeDelta Object		*Vital.DateTime-TimeDelta*
 
-TimeDelta is a delta of two DateTime.  This object holds delta with the
-following elements.
-- seconds
-  - Less than the seconds on a day.
-- days
-- sign
-  - direction (ago or later)
+TimeDelta is a delta of two DateTime.
 
 TimeDelta.seconds()		*Vital.DateTime-TimeDelta.seconds()*
-	Returns the seconds parts of the delta.
+	Returns the seconds component.
 
 TimeDelta.minutes()		*Vital.DateTime-TimeDelta.minutes()*
-	Returns the seconds parts of the delta in minute.
+	Returns the minutes component.
 
 TimeDelta.hours()		*Vital.DateTime-TimeDelta.hours()*
-	Returns the seconds parts of the delta in hour.
+	Returns the hours component.
 
 TimeDelta.days()		*Vital.DateTime-TimeDelta.days()*
-	Returns the days parts of the delta.
+	Returns the days component.
 
 TimeDelta.weeks()		*Vital.DateTime-TimeDelta.weeks()*
-	Returns the days parts of the delta in week.
+	Returns the days component by the unit of the week.
 
 TimeDelta.months()		*Vital.DateTime-TimeDelta.months()*
-	Returns the days parts of the delta in month.
+	Returns the days component by the unit of the month.
 	The month is always calculated in 30 days.
 
 TimeDelta.years()		*Vital.DateTime-TimeDelta.years()*
-	Returns the days parts of the delta in year.
+	Returns the days component by the unit of the years.
 	The year is always calculated in 365 days.
 
 TimeDelta.total_seconds()	*Vital.DateTime-TimeDelta.total_seconds()*

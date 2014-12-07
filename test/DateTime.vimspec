@@ -70,8 +70,8 @@ Describe DateTime
     It is a TimeDelta object
       Assert Equals(delta.days(), 0)
       Assert Equals(delta.hours(), 3)
-      Assert Equals(delta.minutes(), 184)
-      Assert Equals(delta.seconds(), 11045)
+      Assert Equals(delta.minutes(), 4)
+      Assert Equals(delta.seconds(), 5)
     End
   End
 End

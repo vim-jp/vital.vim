@@ -483,10 +483,10 @@ endfunction
 " ----------------------------------------------------------------------------
 let s:TimeDelta = s:_new_class('TimeDelta')
 function! s:TimeDelta.seconds() abort
-  return self._time
+  return self._time % s:NUM_SECONDS
 endfunction
 function! s:TimeDelta.minutes() abort
-  return self._time / s:NUM_SECONDS
+  return self._time / s:NUM_SECONDS % s:NUM_MINUTES
 endfunction
 function! s:TimeDelta.hours() abort
   return self._time / s:SECONDS_OF_HOUR
