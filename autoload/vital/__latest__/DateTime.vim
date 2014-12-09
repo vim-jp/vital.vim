@@ -45,7 +45,6 @@ function! s:_vital_loaded(V) abort
   call extend(s:TimeDelta, {
   \   '_days': 0,
   \   '_time': 0,
-  \   '_sign': 0,
   \ })
 endfunction
 
@@ -507,18 +506,24 @@ function! s:TimeDelta.total_seconds() abort
   return self._days * s:SECONDS_OF_DAY + self._time
 endfunction
 function! s:TimeDelta.sign() abort
-  return self._sign
+  if self._days < 0 || self._time < 0
+    return -1
+  elseif 0 < self._days || 0 < self._time
+    return 1
+  endif
+  return 0
 endfunction
 function! s:TimeDelta.negate() abort
   let td = self._clone()
-  let td._sign = -self._sign
-  return td
+  let td._days = -self._days
+  let td._time = -self._time
+  return td._normalize()
 endfunction
 function! s:TimeDelta.add(...) abort
   let n = self._clone()
   let other = call('s:delta', a:000)
-  let n._days += other._days * other._sign
-  let n._time += other._time * other._sign
+  let n._days += other._days
+  let n._time += other._time
   return n._normalize()
 endfunction
 function! s:TimeDelta.about() abort
@@ -566,23 +571,16 @@ function! s:TimeDelta.to_string() abort
   return str
 endfunction
 function! s:TimeDelta._normalize() abort
-  if self._sign < 0
-    let self._days = -self._days
-    let self._time = -self._time
-    let self._sign = -self._sign
-  endif
+  let over_days = self._time / s:SECONDS_OF_DAY
+  let self._days += over_days
+  let self._time = self._time % s:SECONDS_OF_DAY
+
   if self._days < 0 && 0 < self._time
     let self._days += 1
     let self._time -= s:SECONDS_OF_DAY
   elseif 0 < self._days && self._time < 0
     let self._days -= 1
     let self._time += s:SECONDS_OF_DAY
-  endif
-  let self._sign = self._time != 0 ? (0 <= self._time ? 1 : -1) :
-  \                self._days != 0 ? (0 <= self._days ? 1 : -1) : 0
-  if self._sign < 0
-    let self._days = -self._days
-    let self._time = -self._time
   endif
   return self
 endfunction
