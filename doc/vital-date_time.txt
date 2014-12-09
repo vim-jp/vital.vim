@@ -266,6 +266,10 @@ TimeDelta.add({other})		*Vital.DateTime-TimeDelta.add()*
 	Returns a new TimeDelta object which added this and {other}.
 	{other} accepts the same arguments as |Vital.DateTime.delta()|.
 
+TimeDelta.subtract({other})	*Vital.DateTime-TimeDelta.subtract()*
+	Returns a new TimeDelta object which subtracted this and {other}.
+	{other} accepts the same arguments as |Vital.DateTime.delta()|.
+
 TimeDelta.about()		*Vital.DateTime-TimeDelta.about()*
 	Returns a string that about this delta.
 	Examples:

@@ -526,6 +526,10 @@ function! s:TimeDelta.add(...) abort
   let n._time += other._time
   return n._normalize()
 endfunction
+function! s:TimeDelta.subtract(...) abort
+  let other = call('s:delta', a:000)
+  return self.add(other.negate())
+endfunction
 function! s:TimeDelta.about() abort
   if self.sign() == 0
     return 'now'
