@@ -522,6 +522,9 @@ function! s:TimeDelta.negate() abort
   let td._time = -self._time
   return td._normalize()
 endfunction
+function! s:TimeDelta.duration() abort
+  return self.sign() < 0 ? self.negate() : self
+endfunction
 function! s:TimeDelta.add(...) abort
   let n = self._clone()
   let other = call('s:delta', a:000)
