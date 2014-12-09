@@ -262,6 +262,10 @@ TimeDelta.negate()		*Vital.DateTime-TimeDelta.negate()*
 	Returns a new negated TimeDelta object.
 	delta.sign() == -delta.negate().sign()
 
+TimeDelta.is({TimeDelta})	*Vital.DateTime-TimeDelta.add()*
+	Returns true if this TimeDelta and the specified {TimeDelta} is the
+	same delta.
+
 TimeDelta.add({other})		*Vital.DateTime-TimeDelta.add()*
 	Returns a new TimeDelta object which added this and {other}.
 	{other} accepts the same arguments as |Vital.DateTime.delta()|.

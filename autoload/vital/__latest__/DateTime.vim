@@ -505,6 +505,9 @@ endfunction
 function! s:TimeDelta.total_seconds() abort
   return self._days * s:SECONDS_OF_DAY + self._time
 endfunction
+function! s:TimeDelta.is(td) abort
+  return self.subtract(a:td).sign() == 0
+endfunction
 function! s:TimeDelta.sign() abort
   if self._days < 0 || self._time < 0
     return -1
