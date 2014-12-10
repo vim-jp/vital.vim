@@ -1,13 +1,25 @@
-before_script:
-  - git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
-  - git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
-  - git clone https://github.com/thinca/vim-themis --branch v1.4 --single-branch --depth 1 /tmp/vim-themis
+env:
+  - PPA=yes
+  - PPA=no
+
+before_install:
   - uname -a
   - echo ja_JP.UTF-8 UTF-8 | sudo tee -a /var/lib/locales/supported.d/local
   - echo ja_JP.UTF-8 UTF-8 | sudo tee -a /etc/locale.gen
   - sudo /usr/sbin/locale-gen
+
+install:
+  - if [ x"$PPA" == "xyes" ] ; then sudo add-apt-repository ppa:pi-rho/dev -y; fi
+  - sudo apt-get update -q
+  - sudo apt-get install vim-gtk
+
+before_script:
+  - git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
+  - git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
+  - git clone https://github.com/thinca/vim-themis --branch v1.4 --single-branch --depth 1 /tmp/vim-themis
   - git clone https://github.com/Shougo/vimproc.vim /tmp/vimproc
   - (cd /tmp/vimproc && make)
+
 script:
   - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 -c func_abort=1 autoload
   - vim --cmd version --cmd quit
