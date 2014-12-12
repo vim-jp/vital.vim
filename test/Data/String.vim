@@ -111,6 +111,12 @@ function! s:suite.common_head()
   call s:assert.equals( s:String.common_head(['', '']), '')
   call s:assert.equals( s:String.common_head(['']), '')
 
+  " is case-sensitive
+  set ignorecase
+  call s:assert.equals( s:String.common_head(['call', 'Completion', 'common']), '')
+  call s:assert.equals( s:String.common_head(['HEAD', 'Hear']), 'H')
+  set ignorecase&
+
   " returns an empty string with empty list
   call s:assert.equals( s:String.common_head([]), '')
   " is safe for regexp characters
