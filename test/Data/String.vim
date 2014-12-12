@@ -85,9 +85,9 @@ function! s:suite.scan()
   call s:assert.equals( s:String.scan('neo compl cache', 'c\w\+'), ['compl', 'cache'])
   call s:assert.equals( s:String.scan('[](){}', '[{()}]'), ['(', ')', '{', '}'])
   call s:assert.equals( s:String.scan('string', '.*'), ['string'])
-  if 704 <= v:version
-    call s:assert.equals( s:String.scan('string', '.\zs'), ['', '', ''])
-  else
+  " These versions of Vim contains a bug
+  " https://github.com/vim-jp/issues/issues/503
+  if !(704 == v:version && has('patch45') && !has('patch158'))
     call s:assert.equals( s:String.scan('string', '.\zs'), ['', '', '', '', '', ''])
   endif
   call s:assert.equals( s:String.scan('string', ''), ['', '', '', '', '', '', ''])
