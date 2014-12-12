@@ -571,13 +571,11 @@ function! s:TimeDelta.about() abort
 endfunction
 function! s:TimeDelta.to_string() abort
   let str = self.sign() < 0 ? '-' : ''
-  if self._days != 0
-    let str .= self._days . (self._days == 1 ? 'day' : 'days') . ', '
+  let d = self.duration()
+  if d._days != 0
+    let str .= d._days . (d._days == 1 ? 'day' : 'days') . ', '
   endif
-  let str .= printf('%02d:%02d:%02d',
-  \                 self._time / (s:SECONDS_OF_HOUR),
-  \                 (self._time / s:NUM_SECONDS) % s:NUM_MINUTES,
-  \                 self._time % s:NUM_SECONDS)
+  let str .= printf('%02d:%02d:%02d', d.hours(), d.minutes(), d.seconds())
   return str
 endfunction
 function! s:TimeDelta._normalize() abort
