@@ -221,9 +221,7 @@ Describe DateTime
 
   Describe TimeDelta object
     Before each
-      let dt1 = DT.from_format('2012-01-02 00:00:00', '%Y-%m-%d %H:%M:%S')
-      let dt2 = DT.from_format('2012-03-05 03:04:05', '%Y-%m-%d %H:%M:%S')
-      let delta = dt2.delta(dt1)
+      let delta = DT.delta(63, 'days', 3, 'hours', 4, 'minutes', 5, 'seconds')
     End
 
     Describe .seconds()
@@ -247,6 +245,117 @@ Describe DateTime
     Describe .days()
       It returns days component
         Assert Equals(delta.days(), 63)
+      End
+    End
+
+    Describe .total_seconds()
+      It returns the total seconds of the delta
+        Assert Equals(delta.total_seconds(), 5454245)
+      End
+    End
+
+    Describe .sign()
+      It returns the sign of the delta
+        Assert Equals(delta.sign(), 1)
+      End
+    End
+
+    Describe .negate()
+      It returns new negated TimeDelta object
+        let delta = DT.delta(1, 100)
+        let result = delta.negate()
+        Assert True(result.is(DT.delta(-1, -100)))
+        Assert True(result.negate().is(delta))
+      End
+    End
+
+    Describe .duration()
+      It returns new TimeDelta object that is absolute value
+        let delta = DT.delta(-1, -100)
+        let result = delta.duration()
+        Assert True(result.is(DT.delta(1, 100)))
+        Assert True(result.duration().is(DT.delta(1, 100)))
+      End
+    End
+
+    Describe .is()
+      It returns true if two TimeDeltas are same
+        let delta1 = DT.delta(0, 43200)
+        let delta2 = DT.delta(1, -43200)
+        Assert True(delta1.is(delta2))
+      End
+      It returns false if two TimeDeltas are not same
+        let delta1 = DT.delta(0, 43200)
+        let delta2 = DT.delta(0, -43200)
+        Assert False(delta1.is(delta2))
+      End
+    End
+
+    Describe .add()
+      It returns new TimeDelta object which added this and other
+        let delta1 = DT.delta(1, 100)
+        let delta2 = DT.delta(2, 50)
+        let result = delta1.add(delta2)
+        Assert True(result.is(DT.delta(3, 150)))
+      End
+    End
+
+    Describe .subtract()
+      It returns new TimeDelta object which subtracted this and other
+        let delta1 = DT.delta(1, 100)
+        let delta2 = DT.delta(2, 150)
+        let result = delta1.subtract(delta2)
+        Assert True(result.is(DT.delta(-1, -50)))
+      End
+    End
+
+    Describe .about()
+      It returns a string that about this delta
+        Assert Equals(delta.about(), '2 months later')
+        Assert Equals(delta.negate().about(), '2 months ago')
+        Assert Equals(DT.delta(740, 0).about(), '2 years later')
+        Assert Equals(DT.delta(10, 0).about(), '1 week later')
+        Assert Equals(DT.delta(0, 0).about(), 'now')
+        Assert Equals(DT.delta(0, -50).about(), '50 seconds ago')
+        Assert Equals(DT.delta(0, -500).about(), '8 minutes ago')
+        Assert Equals(DT.delta(0, -5000).about(), '1 hour ago')
+      End
+    End
+
+    Describe .to_string()
+      It returns a string representation
+        Assert Equals(delta.to_string(), '63days, 03:04:05')
+        Assert Equals(delta.negate().to_string(), '-63days, 03:04:05')
+        Assert Equals(DT.delta(1, 3600).to_string(), '1day, 01:00:00')
+        Assert Equals(DT.delta(0, 3600).to_string(), '01:00:00')
+        Assert Equals(DT.delta(0, -3600).to_string(), '-01:00:00')
+      End
+    End
+
+    Context with strange initialization
+      It is normalized correctly (plus)
+        let delta = DT.delta(0, (60 * 60 * 24 * 5) + (60 * 60 * 4) + (60 * 3) + 25)
+        Assert Equals(delta.days(), 5)
+        Assert Equals(delta.hours(), 4)
+        Assert Equals(delta.minutes(), 3)
+        Assert Equals(delta.seconds(), 25)
+        Assert Equals(delta.sign(), 1)
+      End
+      It is normalized correctly (minus)
+        let delta = DT.delta(-10, (60 * 60 * 24 * 5) + (60 * 60 * 4) + (60 * 3) + 25)
+        Assert Equals(delta.days(), -4)
+        Assert Equals(delta.hours(), -19)
+        Assert Equals(delta.minutes(), -56)
+        Assert Equals(delta.seconds(), -35)
+        Assert Equals(delta.sign(), -1)
+      End
+      It is normalized correctly (zero)
+        let delta = DT.delta(5, 60 * 60 * 24 * -5)
+        Assert Equals(delta.days(), 0)
+        Assert Equals(delta.hours(), 0)
+        Assert Equals(delta.minutes(), 0)
+        Assert Equals(delta.seconds(), 0)
+        Assert Equals(delta.sign(), 0)
       End
     End
   End
