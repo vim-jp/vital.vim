@@ -541,29 +541,30 @@ function! s:TimeDelta.about() abort
     return 'now'
   endif
   let dir = self.sign() < 0 ? 'ago' : 'later'
-  if self._days == 0
-    if self._time < s:NUM_SECONDS
-      let val = self.seconds()
+  let d = self.duration()
+  if d._days == 0
+    if d._time < s:NUM_SECONDS
+      let val = d.seconds()
       let unit = val == 1 ? 'second' : 'seconds'
-    elseif self._time < s:SECONDS_OF_HOUR
-      let val = self.minutes()
+    elseif d._time < s:SECONDS_OF_HOUR
+      let val = d.minutes()
       let unit = val == 1 ? 'minute' : 'minutes'
     else
-      let val = self.hours()
+      let val = d.hours()
       let unit = val == 1 ? 'hour' : 'hours'
     endif
   else
-    if self._days < s:NUM_DAYS_OF_WEEK
-      let val = self.days()
+    if d._days < s:NUM_DAYS_OF_WEEK
+      let val = d.days()
       let unit = val == 1 ? 'day' : 'days'
-    elseif self._days < 30
-      let val = self.weeks()
+    elseif d._days < 30
+      let val = d.weeks()
       let unit = val == 1 ? 'week' : 'weeks'
-    elseif self._days < 365
-      let val = self.months()
+    elseif d._days < 365
+      let val = d.months()
       let unit = val == 1 ? 'month' : 'months'
     else
-      let val = self.years()
+      let val = d.years()
       let unit = val == 1 ? 'year' : 'years'
     endif
   endif
