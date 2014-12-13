@@ -50,7 +50,7 @@ function! s:common_head(strs) abort
   endif
   let strs = len == 2 ? a:strs : sort(copy(a:strs))
   let pat = substitute(strs[0], '.', '\="[" . escape(submatch(0), "^\\") . "]"', 'g')
-  return pat == '' ? '' : matchstr(strs[-1], '^\%[' . pat . ']')
+  return pat == '' ? '' : matchstr(strs[-1], '\C^\%[' . pat . ']')
 endfunction
 
 " Split to two elements of List. ([left, right])
