@@ -43,6 +43,7 @@ If you are a Vim plugin author, please check this out.
 * [System.File](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-system-file.txt)
 * [System.Filepath](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-system-filepath.txt)
 * [Text.CSV](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-csv.txt)
+* [Text.INI](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-ini.txt)
 * [Text.Lexer](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-lexer.txt)
 * [Text.LTSV](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-ltsv.txt)
 * [Text.Parser](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-parser.txt)
