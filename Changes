@@ -1,3 +1,6 @@
+aaf51a6
+    Modules: Text.INI
+    Add an INI file parser Text.INI
 24877cc
 	Modules: Data.List
 	permutations({list}[, {r}]) behavior is changed not to support string input as {list}.
