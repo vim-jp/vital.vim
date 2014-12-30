@@ -43,7 +43,7 @@ parse({ini} [, {fail-silently})		*Vital.Text.INI.parse()*
 	0 or 1. If it is 0, the function will throw an exception when it found
 	unknown formatted line. Otherwise it will ignore the line.
 
-parse_file({file} [, {fail-silently})	*Vital.Text.INI.parse()*
+parse_file({file} [, {fail-silently})	*Vital.Text.INI.parse_file()*
 
 	Parse an INI formatted file and return a dictionary.
 
