@@ -135,9 +135,10 @@ LINKS					*Vital-links*
   |vitalizer.txt|
 
  Vital modules
+  |vital-assertion.txt|
   |vital-bitwise.txt|
   |vital-data-base64.txt|
-  |vital-database-sqlite.txt|
+  |vital-data-closure.txt|
   |vital-data-collection.txt|
   |vital-data-dict.txt|
   |vital-data-lazylist.txt|
@@ -145,6 +146,7 @@ LINKS					*Vital-links*
   |vital-data-ordered_set.txt|
   |vital-data-string.txt|
   |vital-data-tree.txt|
+  |vital-database-sqlite.txt|
   |vital-date_time.txt|
   |vital-experimental-functor.txt|
   |vital-interpreter-brainf__k.txt|
@@ -154,21 +156,25 @@ LINKS					*Vital-links*
   |vital-math.txt|
   |vital-option_parser.txt|
   |vital-prelude.txt|
-  |vital-process_manager.txt|
   |vital-process.txt|
-  |vital-random.txt|
+  |vital-process_manager.txt|
+  |vital-random-mt19937ar.txt|
   |vital-random-xor128.txt|
+  |vital-random.txt|
   |vital-system-cache.txt|
-  |vital-system-filepath.txt|
   |vital-system-file.txt|
+  |vital-system-filepath.txt|
   |vital-text-csv.txt|
+  |vital-text-ini.txt|
   |vital-text-lexer.txt|
   |vital-text-ltsv.txt|
   |vital-text-parser.txt|
-  |vital-vim-buffer_manager.txt|
+  |vital-text-table.txt|
   |vital-vim-buffer.txt|
+  |vital-vim-buffer_manager.txt|
   |vital-vim-compat.txt|
   |vital-vim-message.txt|
+  |vital-vim-search.txt|
   |vital-web-html.txt|
   |vital-web-http.txt|
   |vital-web-json.txt|
