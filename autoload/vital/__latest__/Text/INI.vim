@@ -15,7 +15,7 @@ function! s:parse_record(line) abort
   endif
   " is parameter line?
   let m = matchlist(line, s:parameter_pattern)
-  if len(m) > 0
+  if len(m) > 0 && m[1] !=# ''
     return {'type': 'parameter', 'key': m[1], 'value': m[2]}
   endif
   " is section line?
