@@ -5,7 +5,7 @@ let s:P = s:V.import('System.Filepath')
 let s:valid_ini_file = s:P.join([getcwd(), 'test', 'Text', 'INI', 'valid.ini'])
 let s:invalid_ini_file = s:P.join([getcwd(), 'test', 'Text', 'INI', 'invalid.ini'])
 
-Describe Vital.Text.INI
+Describe Text.INI
 
   Context .parse_record({line})
     It should return a emptyline record for an empty line
