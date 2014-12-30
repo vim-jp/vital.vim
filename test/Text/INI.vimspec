@@ -1,0 +1,184 @@
+let s:V = vital#of('vital')
+call s:V.unload()
+let s:I = s:V.import('Text.INI')
+let s:P = s:V.import('System.Filepath')
+let s:valid_ini_file = s:P.join([getcwd(), 'test', 'Text', 'INI', 'valid.ini'])
+let s:invalid_ini_file = s:P.join([getcwd(), 'test', 'Text', 'INI', 'invalid.ini'])
+
+Describe Vital.Text.INI
+
+  Context .parse_record({line})
+    It should return a emptyline record for an empty line
+      let record = s:I.parse_record("")
+      Assert Equals(record.type, 'emptyline')
+    End
+
+    It should return a emptyline record for a line which only contain white spaces
+      let record = s:I.parse_record(" \t")
+      Assert Equals(record.type, 'emptyline')
+    End
+
+    It should return a emptyline record for a line which only contain comment string
+      let record = s:I.parse_record("; this is a general comment line of INI file")
+      Assert Equals(record.type, 'emptyline')
+
+      let record = s:I.parse_record("# this type of comment lines are used often as well")
+      Assert Equals(record.type, 'emptyline')
+    End
+
+    It should return a section record for "[foo]"
+      let record = s:I.parse_record("[foo]")
+      Assert Equals(record.type, 'section')
+      Assert Equals(record.name, 'foo')
+    End
+
+    It should return a section record for " [ foo ] " with trimed 'name' attribute
+      let record = s:I.parse_record(" [ foo ] ")
+      Assert Equals(record.type, 'section')
+      Assert Equals(record.name, 'foo')
+    End
+
+    It should return a parameter record for "foo=bar"
+      let record = s:I.parse_record("foo=bar")
+      Assert Equals(record.type, 'parameter')
+      Assert Equals(record.key, 'foo')
+      Assert Equals(record.value, 'bar')
+    End
+
+    It should return a parameter record for " foo = bar " with trimed 'key' and 'value' attributes
+      let record = s:I.parse_record(" foo = bar ")
+      Assert Equals(record.type, 'parameter')
+      Assert Equals(record.key, 'foo')
+      Assert Equals(record.value, 'bar')
+    End
+
+    It should return a unknown record for "foo bar hoge hoge"
+      let record = s:I.parse_record("foo bar hoge hoge")
+      Assert Equals(record.type, 'unknown')
+      Assert Equals(record.value, 'foo bar hoge hoge')
+    End
+  End
+
+  Context .parse({ini} [, {fail-silently}])
+    It should parse an INI formatted text
+      let ini = join([
+            \ "foo = bar",
+            \ "hoge = hoge",
+            \ "[foo]",
+            \ "foo = bar in foo",
+            \ "hoge = hoge in foo",
+            \ "[bar]",
+            \ "foo = bar in bar",
+            \ "hoge = hoge in bar",
+            \], "\n")
+      let obj = s:I.parse(ini)
+      let expected = {
+            \ '_': {
+            \   'foo': 'bar',
+            \   'hoge': 'hoge',
+            \ },
+            \ 'foo': {
+            \   'foo': 'bar in foo',
+            \   'hoge': 'hoge in foo',
+            \ },
+            \ 'bar': {
+            \   'foo': 'bar in bar',
+            \   'hoge': 'hoge in bar',
+            \ },
+            \}
+      Assert Equals(obj, expected)
+    End
+
+    It should ignore unknown lines when {fail-silently} is 1 (default behavior)
+      let ini = join([
+            \ "foo = bar",
+            \ "hoge = hoge",
+            \ "foo bar hoge hoge",
+            \ "[foo]",
+            \ "foo = bar in foo",
+            \ "hoge = hoge in foo",
+            \ "[bar]",
+            \ "foo = bar in bar",
+            \ "hoge = hoge in bar",
+            \], "\n")
+      let obj = s:I.parse(ini, 1)
+      let expected = {
+            \ '_': {
+            \   'foo': 'bar',
+            \   'hoge': 'hoge',
+            \ },
+            \ 'foo': {
+            \   'foo': 'bar in foo',
+            \   'hoge': 'hoge in foo',
+            \ },
+            \ 'bar': {
+            \   'foo': 'bar in bar',
+            \   'hoge': 'hoge in bar',
+            \ },
+            \}
+      Assert Equals(obj, expected)
+    End
+
+    It should raise an exception for unknown lines when {fail-silently} is 0
+      let ini = join([
+            \ "foo = bar",
+            \ "hoge = hoge",
+            \ "foo bar hoge hoge",
+            \ "[foo]",
+            \ "foo = bar in foo",
+            \ "hoge = hoge in foo",
+            \ "[bar]",
+            \ "foo = bar in bar",
+            \ "hoge = hoge in bar",
+            \], "\n")
+      let parser = s:I
+      Throws /vital: Text.INI: Parsing a record failed:/ parser.parse(ini, 0)
+    End
+  End
+
+  Context .parse_file({file} [, {fail-silently}])
+    It should parse an INI formatted file
+      let obj = s:I.parse_file(s:valid_ini_file)
+      let expected = {
+            \ '_': {
+            \   'foo': 'bar',
+            \   'hoge': 'hoge',
+            \ },
+            \ 'foo': {
+            \   'foo': 'bar in foo',
+            \   'hoge': 'hoge in foo',
+            \ },
+            \ 'bar': {
+            \   'foo': 'bar in bar',
+            \   'hoge': 'hoge in bar',
+            \ },
+            \}
+      Assert Equals(obj, expected)
+    End
+
+    It should ignore unknown lines when {fail-silently} is 1 (default behavior)
+      let obj = s:I.parse_file(s:invalid_ini_file, 1)
+      let expected = {
+            \ '_': {
+            \   'foo': 'bar',
+            \   'hoge': 'hoge',
+            \ },
+            \ 'foo': {
+            \   'foo': 'bar in foo',
+            \   'hoge': 'hoge in foo',
+            \ },
+            \ 'bar': {
+            \   'foo': 'bar in bar',
+            \   'hoge': 'hoge in bar',
+            \ },
+            \}
+      Assert Equals(obj, expected)
+    End
+
+    It should raise an exception for unknown lines when {fail-silently} is 0
+      let parser = s:I
+      let invalid_ini_file = s:invalid_ini_file
+      Throws /vital: Text.INI: Parsing a record failed:/ parser.parse_file(invalid_ini_file, 0)
+    End
+  End
+End
