@@ -38,6 +38,11 @@ Describe Text.INI
       Assert Equals(record.name, 'foo')
     End
 
+    It should not return a section record but unknown record for "[]"
+      let record = s:I.parse_record("[]")
+      Assert Equals(record.type, 'unknown')
+    End
+
     It should return a parameter record for "foo=bar"
       let record = s:I.parse_record("foo=bar")
       Assert Equals(record.type, 'parameter')
@@ -50,6 +55,11 @@ Describe Text.INI
       Assert Equals(record.type, 'parameter')
       Assert Equals(record.key, 'foo')
       Assert Equals(record.value, 'bar')
+    End
+
+    It should not return a parameter record but unknown record for "=bar"
+      let record = s:I.parse_record("=bar")
+      Assert Equals(record.type, 'unknown')
     End
 
     It should return a unknown record for "foo bar hoge hoge"
