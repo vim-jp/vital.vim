@@ -20,7 +20,7 @@ function! s:parse_record(line) abort
   endif
   " is section line?
   let m = matchlist(line, s:section_pattern)
-  if len(m) > 0
+  if len(m) > 0 && m[1] !=# ''
     return {'type': 'section', 'name': m[1]}
   endif
   " unknown format
