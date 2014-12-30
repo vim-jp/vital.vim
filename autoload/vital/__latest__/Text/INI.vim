@@ -3,8 +3,8 @@ set cpo&vim
 
 let s:default_section = '_'
 let s:comment_pattern = '\v[#;].*$'
-let s:section_pattern = '\v^\s*\[\s*(.{-})\s*\]\s*$'
-let s:parameter_pattern = '\v^\s*([^\=]{-})\s*\=\s*(.{-})\s*$'
+let s:section_pattern = '\v^\s*\[\s*(.{-1,})\s*\]\s*$'
+let s:parameter_pattern = '\v^\s*([^\=]{-1,})\s*\=\s*(.{-})\s*$'
 
 function! s:parse_record(line) abort
   " remove comment string
@@ -15,12 +15,12 @@ function! s:parse_record(line) abort
   endif
   " is parameter line?
   let m = matchlist(line, s:parameter_pattern)
-  if len(m) > 0 && m[1] !=# ''
+  if len(m) > 0
     return {'type': 'parameter', 'key': m[1], 'value': m[2]}
   endif
   " is section line?
   let m = matchlist(line, s:section_pattern)
-  if len(m) > 0 && m[1] !=# ''
+  if len(m) > 0
     return {'type': 'section', 'name': m[1]}
   endif
   " unknown format
