@@ -1,25 +1,16 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V) abort
-  let s:V = a:V
-  let s:S = s:V.import('Data.String')
-endfunction
-
-function! s:_vital_depends() abort
-  return ['Data.String']
-endfunction
-
 let s:default_section = '_'
 let s:comment_pattern = '\v[#;].*$'
-let s:section_pattern = '\v^\[\s*(.{-})\s*\]$'
+let s:section_pattern = '\v^\s*\[\s*(.{-})\s*\]\s*$'
 let s:parameter_pattern = '\v^\s*([^\=]{-})\s*\=\s*(.{-})\s*$'
 
 function! s:parse_record(line) abort
   " remove comment string
-  let line = s:S.trim(substitute(a:line, s:comment_pattern, '', 'g'))
+  let line = substitute(a:line, s:comment_pattern, '', 'g')
   " is empty line?
-  if len(line) == 0
+  if line =~# '\v^\s*$'
     return {'type': 'emptyline'}
   endif
   " is parameter line?
