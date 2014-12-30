@@ -7,7 +7,7 @@ CONTENTS			*Vital.Text.INI-contents*
 
 INTRODUCTIONS		|Vital.Text.INI-introduction|
 INTERFACE		|Vital.Text.INI-interface|
-	FUNCTIONS		|Vital.Text.INI-funcionss|
+	FUNCTIONS		|Vital.Text.INI-functions|
 	RECORD			|Vital.Text.INI-record|
 
 
@@ -64,11 +64,10 @@ The 'type' attribute indicate the type of record and followings are used.
 	This record indicate an emptyline. Note that comment lines will be
 	detected as 'emptyline' while any comment strings are removed before
 	parsing.
-	
+
 	'section'
 	This record indicate a section line such as '[default]'. This type of
-	record also has 'name' attribute which inidicate a name of the
-	section.
+	record also has 'name' attribute which indicate a name of the section.
 
 	'parameter'
 	This record indicate a parameter line such as 'key = value'. This type
@@ -76,7 +75,7 @@ The 'type' attribute indicate the type of record and followings are used.
 	and value of the parameter respectively.
 
 	'unknown'
-	This record indicate an unkown line. This type of record also has
+	This record indicate an unknown line. This type of record also has
 	'value' attribute which contain a value of the line.
 
 
