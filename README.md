@@ -17,6 +17,7 @@ If you are a Vim plugin author, please check this out.
 * [Assertion](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-assertion.txt)
 * [Bitwise](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-bitwise.txt)
 * [Data.Base64](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-base64.txt)
+* [Data.Closure](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-closure.txt)
 * [Data.Collection](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-collection.txt)
 * [Data.Dict](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-dict.txt)
 * [Data.LazyList](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-data-lazylist.txt)
@@ -47,12 +48,13 @@ If you are a Vim plugin author, please check this out.
 * [Text.Lexer](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-lexer.txt)
 * [Text.LTSV](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-ltsv.txt)
 * [Text.Parser](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-parser.txt)
+* [Text.Table](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-text-table.txt)
 * Text.Sexp
 * [Vim.Buffer](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-vim-buffer.txt)
 * [Vim.BufferManager](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-vim-buffer_manager.txt)
 * [Vim.Compat](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-vim-compat.txt)
 * [Vim.Message](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-vim-message.txt)
-* Vim.Search
+* [Vim.Search](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-vim-search.txt)
 * [Web.HTML](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-web-html.txt)
 * [Web.HTTP](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-web-http.txt)
 * [Web.JSON](https://github.com/vim-jp/vital.vim/blob/master/doc/vital-web-json.txt)
