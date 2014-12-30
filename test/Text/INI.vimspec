@@ -62,6 +62,7 @@ Describe Text.INI
   Context .parse({ini} [, {fail-silently}])
     It should parse an INI formatted text
       let ini = join([
+            \ "; this is valid INI text",
             \ "foo = bar",
             \ "hoge = hoge",
             \ "[foo]",
@@ -93,7 +94,10 @@ Describe Text.INI
       let ini = join([
             \ "foo = bar",
             \ "hoge = hoge",
+            \ "; the folowing line is invalid",
             \ "foo bar hoge hoge",
+            \ "; the folowing line is also invalid",
+            \ "=piyo",
             \ "[foo]",
             \ "foo = bar in foo",
             \ "hoge = hoge in foo",
@@ -123,7 +127,10 @@ Describe Text.INI
       let ini = join([
             \ "foo = bar",
             \ "hoge = hoge",
+            \ "; the folowing line is invalid",
             \ "foo bar hoge hoge",
+            \ "; the folowing line is also invalid",
+            \ "=piyo",
             \ "[foo]",
             \ "foo = bar in foo",
             \ "hoge = hoge in foo",
