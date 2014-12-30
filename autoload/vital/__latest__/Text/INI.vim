@@ -33,7 +33,7 @@ function! s:parse(ini, ...) abort
   let sections[s:default_section] = {}
   let current_section = s:default_section
 
-  for line in split(a:ini, '\r\?\n')
+  for line in split(a:ini, '\v%(\r?\n)+')
     let record = s:parse_record(line)
     if record.type ==# 'section'
       let current_section = record.name
