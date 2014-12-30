@@ -1,18 +1,23 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:S = s:V.import('Data.String')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Data.String']
+endfunction
+
 let s:default_section = '_'
 let s:comment_pattern = '\v[#;].*$'
 let s:section_pattern = '\v^\[(.*)\]$'
 let s:parameter_pattern = '\v^([^\=]+)\s*\=\s*(.+)$'
 
-function! s:_trim(str) abort
-  return substitute(a:str, '\v%(^\s*|\s*$)', '', 'g')
-endfunction
-
 function! s:parse_record(line) abort
   " remove comment string
-  let line = s:_trim(substitute(a:line, s:comment_pattern, '', 'g'))
+  let line = s:S.trim(substitute(a:line, s:comment_pattern, '', 'g'))
   " is empty line?
   if len(line) == 0
     return {'type': 'emptyline'}
@@ -20,12 +25,12 @@ function! s:parse_record(line) abort
   " is parameter line?
   let m = matchlist(line, s:parameter_pattern)
   if len(m) > 0
-    return {'type': 'parameter', 'key': s:_trim(m[1]), 'value': s:_trim(m[2])}
+    return {'type': 'parameter', 'key': s:S.trim(m[1]), 'value': s:S.trim(m[2])}
   endif
   " is section line?
   let m = matchlist(line, s:section_pattern)
   if len(m) > 0
-    return {'type': 'section', 'name': s:_trim(m[1])}
+    return {'type': 'section', 'name': s:S.trim(m[1])}
   endif
   " unknown format
   return {'type': 'unknown', 'value': line}
