@@ -131,8 +131,6 @@ We recommend you to use a capital letter for a Vital module dictionary to assign
 
 ## References
 
-* [How to use vital.vim (in Japanese)](http://rbtnn.github.io/how-to-use-vital.vim/)
-    * This is beautiful
 * [Delegation in Vim script](http://ujihisa.blogspot.com/2011/02/delegation-in-vim-script.html)
 * [Core concept of vital (in Japanese)](http://d.hatena.ne.jp/thinca/20110310/1299768323)
 * [How to make a vital module (in Japanese)](http://d.hatena.ne.jp/thinca/20110311/1299769233)
