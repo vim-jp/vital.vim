@@ -63,7 +63,7 @@ assign as Vital convention. That makes your code more readable among Vital
 programmers.
 
 When you start using vital for your own Vim plugin for the first time, you
-have to embed vital. See |vitalizer.txt| about the defails how to embed and
+have to embed vital. See |vitalizer.txt| about the details how to embed and
 keep it updated.
 
 ==============================================================================

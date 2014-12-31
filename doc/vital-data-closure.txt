@@ -100,7 +100,7 @@ from_funcref({funcref} [, {arglist}][, {context}])
 from_funcname({funcname} [, {arglist}][, {context}])
 	Builds a Closure object from {funcname}.
 	There may be "*" prefix in {funcname}.
-	{funcname} is a buildin function or global function.
+	{funcname} is a builtin function or global function.
 	See |Vital.Data.Closure-Closure| for detail of {arglist} and
 	{context}.
 
