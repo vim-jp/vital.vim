@@ -136,7 +136,7 @@ LINKS					*Vital-links*
  Vitalize command
   |vitalizer.txt|
 
- Vital modules
+ Vital modules				*Vital-modules*
   |vital-assertion.txt|
   |vital-bitwise.txt|
   |vital-data-base64.txt|
