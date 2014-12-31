@@ -124,8 +124,6 @@ LINKS					*Vital-links*
 
  Delegation in Vim script:
    http://ujihisa.blogspot.com/2011/02/delegation-in-vim-script.html
- How to use Vital modules (in Japanese):
-   http://rbtnn.github.com/how-to-use-vital.vim/
  Core concept of vital (in Japanese):
    http://d.hatena.ne.jp/thinca/20110310/1299768323
  How to make a vital module (in Japanese):
