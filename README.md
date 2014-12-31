@@ -71,7 +71,7 @@ Web.URI  |
 ### Install modules for your own plugin
 
 Use `:Vitalize` to install modules.
-Please see [the help](https://github.com/vim-jp/vital.vim/blob/master/doc/vitalizer.txt) for more details.
+Please see [the help](doc/vitalizer.txt) for more details.
 
 ```vim
 :Vitalize --name=your_plugin_name $HOME/.vim/bundle/your_plugin_dir/
