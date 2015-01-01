@@ -20,7 +20,7 @@ INTERFACE			                   *Vital.Assertion-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS			                   *Vital.Assertion-functions*
 
-define(assert_command_name, ...)                    *Vital.Assertion.define()*
+define({assert_command_name}, ...)                  *Vital.Assertion.define()*
     Define a command of Vital.Assertion that is named {assert_command_name}.
     {a:1} is a bool value to enable the command defined by `define()`.
     Default value of {a:1} is `0`.
