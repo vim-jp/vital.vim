@@ -130,6 +130,8 @@ LINKS					*Vital-links*
    http://d.hatena.ne.jp/thinca/20110311/1299769233
  API Reference (in Japanese):
    http://d.hatena.ne.jp/kanno_kanno/20120107/1325949855
+ Let's use vital.vim (in Japanese):
+   http://qiita.com/rbtnn/items/deb569ebc94d5172a5e5
 
  Vitalize command
   |vitalizer.txt|
