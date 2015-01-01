@@ -29,8 +29,8 @@ module						 | description
 [Data.Tree](doc/vital-data-tree.txt)		 | tree utilities library
 [Database.SQLite](doc/vital-database-sqlite.txt) | sqlite utilities library
 [DateTime](doc/vital-date_time.txt)		 | date and time library
-[Experimental.Functor](doc/vital-experimental-functor.txt)  | Utilities for functor
-[Interpreter.Brainf__k](doc/vital-interpreter-brainf__k.txt)  |	 Brainf**k interpreter
+[Experimental.Functor](doc/vital-experimental-functor.txt) | Utilities for functor
+[Interpreter.Brainf__k](doc/vital-interpreter-brainf__k.txt) | Brainf\*\*k interpreter
 [Locale.Message](doc/vital-locale-message.txt)	 | very simple message localization library
 [Lua.Prelude](doc/vital-lua-prelude.txt)	 | crucial functions for lua integration
 [Mapping](doc/vital-mapping.txt)		 | Utilities for mapping
@@ -139,6 +139,7 @@ We recommend you to use a capital letter for a Vital module dictionary to assign
 * [Delegation in Vim script](http://ujihisa.blogspot.com/2011/02/delegation-in-vim-script.html)
 * [Core concept of vital (in Japanese)](http://d.hatena.ne.jp/thinca/20110310/1299768323)
 * [How to make a vital module (in Japanese)](http://d.hatena.ne.jp/thinca/20110311/1299769233)
+* [API Reference (in Japanese)](http://d.hatena.ne.jp/kanno_kanno/20120107/1325949855)
 * [Let's use vital.vim (in Japanese)](http://qiita.com/rbtnn/items/deb569ebc94d5172a5e5)
 
 ## Authors
