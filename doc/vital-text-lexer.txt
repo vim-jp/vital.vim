@@ -23,10 +23,10 @@ INTERFACE			                *Vital.Text.Lexer-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS			                *Vital.Text.Lexer-functions*
 
-lexer(patterns)		                        *Vital.Text.Lexer.lexer()*
+lexer({patterns})	                        *Vital.Text.Lexer.lexer()*
 	Creates a new Lexer object.
 	{patterns} is a format such as "[ [label,regex] , ... ]".
-	A Lexer object has exec(expr).
+	A Lexer object has exec({expr}).
 
 ==============================================================================
 OBJECTS				                *Vital.Text.Lexer-objects*
@@ -34,7 +34,7 @@ OBJECTS				                *Vital.Text.Lexer-objects*
 ------------------------------------------------------------------------------
 Lexer Object		                        *Vital.Text.Lexer-Lexer*
 
-Lexer.exec(expr)		                *Vital.Text.Lexer-Lexer.exec()*
+Lexer.exec({expr})		                *Vital.Text.Lexer-Lexer.exec()*
 	Evaluates {expr}.
         This returns a list of dictionaries which have the following keys.
 		'matched_text' : matched text in {expr}.

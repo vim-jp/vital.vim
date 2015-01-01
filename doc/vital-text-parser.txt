@@ -25,7 +25,7 @@ FUNCTIONS			                 *Vital.Text.Parser-functions*
 
 parser()         	                          *Vital.Text.Parser.parser()*
 	Creates a new Parser object.
-	A Parser object has exec(expr).
+	A Parser object has exec({expr}).
 
 ==============================================================================
 OBJECTS				                   *Vital.Text.Parser-objects*
@@ -33,7 +33,7 @@ OBJECTS				                   *Vital.Text.Parser-objects*
 ------------------------------------------------------------------------------
 Parser Object		                            *Vital.Text.Parser-Parser*
 
-Parser.exec(expr)		             *Vital.Text.Parser-Parser.exec()*
+Parser.exec({expr})		             *Vital.Text.Parser-Parser.exec()*
         Begins parsing {expr}.
 
 Parser.end()    		              *Vital.Text.Parser-Parser.end()*
@@ -42,7 +42,7 @@ Parser.end()    		              *Vital.Text.Parser-Parser.end()*
 Parser.next()    		             *Vital.Text.Parser-Parser.next()*
 	Returns the next token.  This function does not consume.
 
-Parser.next_is(labels)    		  *Vital.Text.Parser-Parser.next_is()*
+Parser.next_is({labels})    		  *Vital.Text.Parser-Parser.next_is()*
 	Returns 1 if next().label is contained {labels}, otherwise zero.
 
 Parser.consume()    		          *Vital.Text.Parser-Parser.consume()*
@@ -51,7 +51,7 @@ Parser.consume()    		          *Vital.Text.Parser-Parser.consume()*
 Parser.ignore()                            *Vital.Text.Parser-Parser.ignore()*
 	Consumes it while the next token is contained 'ignore_labels'.
 
-Parser.config(dict)                        *Vital.Text.Parser-Parser.config()*
+Parser.config({dict})                      *Vital.Text.Parser-Parser.config()*
         {dict} is options of this Parser object.
         {dict} can have following keys.
 

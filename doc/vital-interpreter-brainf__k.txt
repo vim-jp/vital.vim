@@ -12,7 +12,7 @@ INTERFACE			|Vital.Interpreter.Brainf__k-interface|
 
 
 ==============================================================================
-INTRODUCTION			*Vital.Interpreter.Brainf__k-introduction*
+INTRODUCTION			    *Vital.Interpreter.Brainf__k-introduction*
 
 *Vital.Interpreter.Brainf__k* provides 2 implementations of Brainf**k
 interpreter in pure Vim script and in lua with using |if_lua|.
@@ -38,10 +38,10 @@ run_vim_parse_execute().
 	echo s:B.run_lua_parse_execute(s:hello_world)
 <
 ==============================================================================
-INTERFACE					*Vital.Interpreter.Brainf__k-interface*
+INTERFACE				*Vital.Interpreter.Brainf__k-interface*
 
 ------------------------------------------------------------------------------
-FUNCTIONS					*Vital.Interpreter.Brainf__k-functions*
+FUNCTIONS				*Vital.Interpreter.Brainf__k-functions*
 
 run({string})				*Vital.Interpreter.Brainf__k.run()*
 	Parse and execute the given brainf**k source code with using pure Vim
