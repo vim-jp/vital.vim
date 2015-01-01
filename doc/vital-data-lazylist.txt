@@ -94,12 +94,12 @@ DATA STRUCTURE			*Vital.Data.LazyList-datastructure*
 	[[], {'list': [3, 1, 4], 'run': function('<SNR>385__f_from_list')}]
 <
 	A lazy list is a tuple (a 2-item |List|).  The left side is registered
-	functions to apply when you take items from the lazy list. Each item is a
-	string which has "v:val" that returns an empty list or a list which
-	only has 1 item if you |eval()| it. The right side is a |Dictionary| which
-	either at least has "run" key where the value is a |Funcref| or an
-	empty dict {} which means the end of the lazy list. This is for generating
-	an item and upcoming uncalculated next items.
+	functions to apply when you take items from the lazy list. Each item
+	is a string which has "v:val" that returns an empty list or a list
+	which only has 1 item if you |eval()| it. The right side is a
+	|Dictionary| which either at least has "run" key where the value is a
+	|Funcref| or an empty dict {} which means the end of the lazy list.
+	This is for generating an item and upcoming uncalculated next items.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
