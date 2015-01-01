@@ -33,7 +33,7 @@ INTERFACE			*Vital.Vim.Search-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS			*Vital.Vim.Search-functions*
 
-finddef(str)			*Vital.Vim.Search.finddef()*
+finddef({str})			*Vital.Vim.Search.finddef()*
 	lists up all defs of {str}, as if you typed [I on a given keyword
 	{str}.
 
