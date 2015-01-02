@@ -41,9 +41,9 @@ is_numeric({value})				*Vital.Prelude.is_numeric()*
 		:let s:V = vital#of('vital')
 		:let s:P = s:V.import('Prelude')
 		:echo s:P.is_numeric(123)
-    <		1 >
+<		1 >
 		:echo s:P.is_numeric(1.23)
-    <		1 >
+<		1 >
 		:echo s:P.is_numeric("hoge")
 <		0
 
