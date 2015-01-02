@@ -12,37 +12,33 @@ INTERFACE			|Vital.Process-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Process-introduction*
 
-*Vital.Process* provides utility functions
-which manipulates process.
+*Vital.Process* provides utility functions which manipulates process.
 
 ==============================================================================
 INTERFACE				*Vital.Process-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Process-functions*
 
-                        *Vital.Process.spawn()*
-spawn({command} [, {special}])
-	{command} is |List| or |String|
-	to run as background process.
+spawn({command} [, {special}])		*Vital.Process.spawn()*
+	{command} is |List| or |String| to run as background process.
 	This function returns nothing.
-	If {command} is |String| and
-	{special} was given and non-zero,
+	If {command} is |String| and {special} was given and non-zero,
 	escape special characters.
 	See |shellescape()|'s {special} argument for the details.
 
-                        *Vital.Process.iconv()*
-iconv({expr}, {from}, {to})
+iconv({expr}, {from}, {to})		*Vital.Process.iconv()*
 	|iconv()| wrapper for safety.
-	Built-in |iconv()| returns an empty string
-	when the conversion completely fails.
-	But this function won't return an original string
-	not an empty string when failure.
+	Built-in |iconv()| returns an empty string when the conversion
+	completely fails.
+	But this function won't return an original string not an empty string
+	when failure.
 
-has_vimproc()					*Vital.Process.has_vimproc()*
+has_vimproc()				*Vital.Process.has_vimproc()*
 	Returns non-zero if |vimproc| is installed, zero otherwise.
-	You can download the |vimproc| from http://github.com/Shougo/vimproc/.
+	You can download the |vimproc| from
+	https://github.com/Shougo/vimproc.vim.
 
-                        *Vital.Process.system()*
+					*Vital.Process.system()*
 system({command} [, {input} [, {timeout}]])
 system({command} [, {dict}])
 	Gets the output of the shell command {expr}.
@@ -51,9 +47,8 @@ system({command} [, {dict}])
 	If {timeout} is specified, the command will be killed after {timeout}
 	milliseconds.  Note that {timeout} is available only when
 	|has_vimproc()| returns non-zero.
-	
-	When the 2nd argument is Dictionary,
-	you can specify more options.
+
+	When the 2nd argument is Dictionary, you can specify more options.
 	{dict} structure is:
 >
 	{dict} = {
