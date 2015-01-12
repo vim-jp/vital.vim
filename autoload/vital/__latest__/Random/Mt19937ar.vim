@@ -180,7 +180,7 @@ function! s:srand(...) abort
   elseif a:0 == 1
     let x = a:1
   else
-    throw 'vital: Random.Mt19937ar.srand(): too many arguments'
+    throw 'vital: Random.Mt19937ar: srand(): too many arguments'
   endif
   call s:_common_generator().seed([x])
 endfunction
