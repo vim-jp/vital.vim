@@ -332,6 +332,15 @@ function! s:has_common_items(list1, list2) abort
   return !empty(filter(copy(a:list1), 'index(a:list2, v:val) isnot -1'))
 endfunction
 
+function! s:common_items(list1, list2) abort
+  let items = []
+  for x in a:list1
+    " compare by same way with index()
+    let items += filter(copy(a:list2), 'v:val is x')
+  endfor
+  return items
+endfunction
+
 " similar to Ruby's group_by.
 function! s:group_by(xs, f) abort
   let result = {}

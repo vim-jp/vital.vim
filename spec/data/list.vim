@@ -391,6 +391,17 @@ Context Data.List.has_common_items()
   End
 End
 
+Context Data.List.common_items()
+  It returns elements are commons with two lists
+    Should g:L.common_items(['a', 'b', 'c'], ['b', 'c']) ==# ['b', 'c']
+    Should g:L.common_items(['a', 'c'], ['b', 'c']) ==# ['c']
+    Should g:L.common_items(['a'], ['b', 'c']) ==# []
+    Should g:L.common_items([], ['b', 'c']) ==# []
+    Should g:L.common_items(['a'], []) ==# []
+    Should g:L.common_items([], []) ==# []
+  End
+End
+
 Context Data.List.group_by()
   It returns grouped dictionary
     Should g:L.group_by([], 'len(v:val)') ==# {}

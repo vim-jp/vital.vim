@@ -450,6 +450,16 @@ has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	echo s:L.has_common_items(['a'], ['b', 'c'])
 	" 0
 
+common_items({list1}, {list2})		*Vital.Data.List.common_items()*
+	Returns a |List| are common items with a:list1 and a:list2.
+>
+	echo s:L.common_items(['a', 'b', 'c'], ['b', 'c'])
+	" ['b', 'c']
+	echo s:L.common_items(['a', 'c'], ['b', 'c'])
+	" ['c']
+	echo s:L.common_items(['a'], ['b', 'c'])
+	" []
+<
 group_by({list}, {expr})		*Vital.Data.List.group_by()*
 	Returns a |Dictionary| grouped by the result of {expr}.
 	"v:val" can be used in {expr}.
