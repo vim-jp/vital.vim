@@ -335,8 +335,9 @@ endfunction
 function! s:common_items(list1, list2) abort
   let items = []
   for x in a:list1
-    " compare by same way with index()
-    let items += filter(copy(a:list2), 'v:val is x')
+    if index(a:list2, x) != -1 && index(items, x) == -1
+      let items += [x]
+    endif
   endfor
   return items
 endfunction

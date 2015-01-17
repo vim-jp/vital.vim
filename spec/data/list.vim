@@ -399,6 +399,7 @@ Context Data.List.common_items()
     Should g:L.common_items([], ['b', 'c']) ==# []
     Should g:L.common_items(['a'], []) ==# []
     Should g:L.common_items([], []) ==# []
+    Should g:L.common_items(['a', 'a'], ['a', 'a']) ==# ['a']
   End
 End
 
