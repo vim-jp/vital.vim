@@ -451,12 +451,15 @@ has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	" 0
 
 common_items({list1}, {list2})		*Vital.Data.List.common_items()*
-	Returns a |List| are common items with a:list1 and a:list2.
+	Returns a |List| of common items between a:list1 and a:list2, and it's
+	unordered and uniquified.
 >
 	echo s:L.common_items(['a', 'b', 'c'], ['b', 'c'])
 	" ['b', 'c']
 	echo s:L.common_items(['a', 'c'], ['b', 'c'])
 	" ['c']
+	echo s:L.common_items(['a', 'a'], ['a', 'a'])
+	" ['a']
 	echo s:L.common_items(['a'], ['b', 'c'])
 	" []
 <
