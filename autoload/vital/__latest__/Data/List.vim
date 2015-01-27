@@ -332,7 +332,7 @@ function! s:has_common_items(list1, list2) abort
   return !empty(filter(copy(a:list1), 'index(a:list2, v:val) isnot -1'))
 endfunction
 
-function! s:common_items(list1, list2) abort
+function! s:intersect(list1, list2) abort
   let items = []
   for x in a:list1
     if index(a:list2, x) != -1 && index(items, x) == -1
