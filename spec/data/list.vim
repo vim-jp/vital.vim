@@ -391,15 +391,15 @@ Context Data.List.has_common_items()
   End
 End
 
-Context Data.List.common_items()
+Context Data.List.intersect()
   It returns elements are commons with two lists
-    Should g:L.common_items(['a', 'b', 'c'], ['b', 'c']) ==# ['b', 'c']
-    Should g:L.common_items(['a', 'c'], ['b', 'c']) ==# ['c']
-    Should g:L.common_items(['a'], ['b', 'c']) ==# []
-    Should g:L.common_items([], ['b', 'c']) ==# []
-    Should g:L.common_items(['a'], []) ==# []
-    Should g:L.common_items([], []) ==# []
-    Should g:L.common_items(['a', 'a'], ['a', 'a']) ==# ['a']
+    Should g:L.intersect(['a', 'b', 'c'], ['b', 'c']) ==# ['b', 'c']
+    Should g:L.intersect(['a', 'c'], ['b', 'c']) ==# ['c']
+    Should g:L.intersect(['a'], ['b', 'c']) ==# []
+    Should g:L.intersect([], ['b', 'c']) ==# []
+    Should g:L.intersect(['a'], []) ==# []
+    Should g:L.intersect([], []) ==# []
+    Should g:L.intersect(['a', 'a'], ['a', 'a']) ==# ['a']
   End
 End
 
