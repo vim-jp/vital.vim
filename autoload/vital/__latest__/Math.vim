@@ -65,6 +65,20 @@ function! s:gcd(list) abort
   return list[0]
 endfunction
 
+function! s:sum(list) abort
+  if len(a:list) == 0
+    throw 'vital: Math: Empty list'
+  endif
+  let sum = 0
+  for x in a:list
+    if type(x) != type(0) && type(x) != type(0.0)
+      throw 'vital: Math: Included not a number'
+    endif
+    let sum += x
+  endfor
+  return sum
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

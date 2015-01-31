@@ -1,0 +1,18 @@
+Describe Math
+  Before all
+    let M = vital#of('vital').import('Math')
+  End
+
+  Describe .sum()
+    It get sum of integers
+      Assert Equals(M.sum([1, 2, 3, 4, 5]), 15)
+    End
+    It get sum of real numbers
+      Assert Equals(M.sum([1.0, 2.0, 3.2, 4.0, 5.3]), 15.5)
+      Assert Equals(M.sum([1, 2, 3.2, 4, 5.3]), 15.5)
+    End
+    It if included illigal element, throw exception
+      Throws M.sum([1, 2, '3', 4, 5])
+    End
+  End
+End
