@@ -67,7 +67,7 @@ endfunction
 
 function! s:sum(list) abort
   if len(a:list) == 0
-    throw 'vital: Math: Empty list'
+    return 0
   endif
   let sum = 0
   for x in a:list
