@@ -14,5 +14,8 @@ Describe Math
     It if included illigal element, throw exception
       Throws M.sum([1, 2, '3', 4, 5])
     End
+    It if argument is empty list return 0
+      Assert Equals(M.sum([]), 0)
+    End
   End
 End

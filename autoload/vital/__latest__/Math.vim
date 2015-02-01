@@ -66,9 +66,6 @@ function! s:gcd(list) abort
 endfunction
 
 function! s:sum(list) abort
-  if len(a:list) == 0
-    return 0
-  endif
   let sum = 0
   for x in a:list
     if type(x) != type(0) && type(x) != type(0.0)
