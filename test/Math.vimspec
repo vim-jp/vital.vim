@@ -4,17 +4,17 @@ Describe Math
   End
 
   Describe .sum()
-    It get sum of integers
+    It returns sum integers.
       Assert Equals(M.sum([1, 2, 3, 4, 5]), 15)
     End
-    It get sum of real numbers
+    It returns sum real numbers.
       Assert Equals(M.sum([1.0, 2.0, 3.2, 4.0, 5.3]), 15.5)
       Assert Equals(M.sum([1, 2, 3.2, 4, 5.3]), 15.5)
     End
-    It if included illigal element, throw exception
+    It throws illigal arguments.
       Throws M.sum([1, 2, '3', 4, 5])
     End
-    It if argument is empty list return 0
+    It returns argument is empty list.
       Assert Equals(M.sum([]), 0)
     End
   End
