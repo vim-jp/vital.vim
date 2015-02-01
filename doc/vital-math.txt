@@ -74,11 +74,14 @@ gcd({values})				*Vital.Math.gcd()*
 
 sum({values})				*Vital.Math.sum()*
 	Return all sum of elements in {values}.
+
 	If {values} included not a number elements, throw an exception.
+        If {values} is empty list, returns 0.
 >
 	sum([1, 2, 3, 4, 5]) == 15
 	sum([1, 2, 3.2, 4, 5.3]) == 15.5
 	sum([1, 2, '3', 4, 5])  " throw exception
+        sum([]) == 0
 <
 
 ==============================================================================
