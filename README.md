@@ -51,6 +51,7 @@ module						 | description
 [Text.Lexer](doc/vital-text-lexer.txt)		 | lexer library
 [Text.Parser](doc/vital-text-parser.txt)	 | parser library
 Text.Sexp  |	
+[Text.TOML](doc/vital-text-toml.txt)		 | TOML library
 [Text.Table](doc/vital-text-table.txt)		 | Character table library
 [Vim.Buffer](doc/vital-vim-buffer.txt)		 | Vim's buffer related stuff in general
 [Vim.BufferManager](doc/vital-vim-buffer_manager.txt)  | buffer manager

@@ -172,6 +172,7 @@ LINKS					*Vital-links*
   |vital-text-ltsv.txt|		  LTSV library
   |vital-text-parser.txt|	  parser library
   |vital-text-table.txt|	  Character table library
+  |vital-text-toml.txt|		  TOML library
   |vital-vim-buffer.txt|	  Vim's buffer related stuff in general
   |vital-vim-buffer_manager.txt|    buffer manager
   |vital-vim-compat.txt|	  Vim compatibility wrapper functions
