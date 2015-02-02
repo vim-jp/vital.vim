@@ -430,7 +430,7 @@ find_last_index({list}, {expr} [, {start} [, {default}]])
 <
 					*Vital.Data.List.find_indices()*
 find_indices({list}, {expr} [, {start}])
-	Similar to find_index but this returns all of indices specifing
+	Similar to find_index but this returns all of indices specifying
 	{expr}.
 	When no indices found, empty list is returned.
 >
