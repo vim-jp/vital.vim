@@ -400,6 +400,7 @@ Context Data.List.intersect()
     Should g:L.intersect(['a'], []) ==# []
     Should g:L.intersect([], []) ==# []
     Should g:L.intersect(['a', 'a'], ['a', 'a']) ==# ['a']
+    Should g:L.intersect([function('tr')], [function('tr')]) ==# [function('tr')]
   End
 End
 
