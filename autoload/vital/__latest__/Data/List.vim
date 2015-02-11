@@ -334,9 +334,10 @@ endfunction
 
 function! s:intersect(list1, list2) abort
   let items = []
-  for x in a:list1
-    if index(a:list2, x) != -1 && index(items, x) == -1
-      let items += [x]
+  " for funcref
+  for X in a:list1
+    if index(a:list2, X) != -1 && index(items, X) == -1
+      let items += [X]
     endif
   endfor
   return items
