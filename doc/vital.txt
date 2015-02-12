@@ -145,6 +145,7 @@ LINKS					*Vital-links*
   |vital-data-dict.txt|		  dictionary utilities library
   |vital-data-lazylist.txt|	  lazy list including file io
   |vital-data-list.txt|		  list utilities library
+  |vital-data-optional.txt|	  optional value library
   |vital-data-ordered_set.txt|	  ordered collection library
   |vital-data-string.txt|	  string utilities library
   |vital-data-tree.txt|		  tree utilities library
