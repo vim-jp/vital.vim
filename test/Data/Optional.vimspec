@@ -76,7 +76,7 @@ Describe Data.Optional
   End
 
   Describe .get_unsafe()
-    It access to the content of optional value directly
+    It accesses to the content of optional value directly
       let o = O.some(42)
       Assert Equals(O.get_unsafe(o), 42)
     End
@@ -120,7 +120,7 @@ Describe Data.Optional
       endfunction
     End
 
-    It applys optional values to the function if all values are valid
+    It applies optional values to the function if all values are valid
       let o1 = O.some(42)
       let o2 = O.some("aaa")
       let o3 = O.some(3.14)
@@ -134,7 +134,7 @@ Describe Data.Optional
       Assert Equals(O.get(result2), 1)
     End
 
-    It doesn't applys optional values to the function if any value is invalid
+    It doesn't apply optional values to the function if any value is invalid
       let o1 = O.some(42)
       let o3 = O.some(3.14)
 
@@ -162,7 +162,7 @@ Describe Data.Optional
       endfunction
     End
 
-    It applys optional values to monadic function if all values are valid
+    It applies optional values to monadic function if all values are valid
       let x = O.some(42)
       let y = O.some(21)
       let z = O.some(0)
@@ -183,7 +183,7 @@ Describe Data.Optional
       Assert Equals(O.get(result), 42 / 2 / 21)
     End
 
-    It doesn't applys optional values to the function if any value is invalid
+    It doesn't apply optional values to the function if any value is invalid
       let x = O.some(42)
 
       let result = O.bind('Div', x, O.none())
