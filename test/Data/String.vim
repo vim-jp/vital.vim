@@ -324,3 +324,19 @@ function! s:suite.levenshtein_distance()
   call s:assert.equals( s:String.levenshtein_distance('ちからうどん', 'からげんき'), 4)
 endfunction
 
+function! s:suite.hash()
+  for str1 in ['', 'sample text', "longer\ntest\nexample", 'サンプルテキスト']
+    " Hashed strings should be different to original strings
+    call s:assert.not_equals(str1, s:String.hash(str1))
+
+    for str2 in ['', 'sample text', "longer\ntest\nexample", 'サンプルテキスト']
+      if str1 ==# str2
+        " This is idempotent; hashed strings with same string should equal
+        call s:assert.equals(s:String.hash(str1), s:String.hash(str2))
+      else
+        " Hashed strings should be different if original strings are different
+        call s:assert.not_equals(s:String.hash(str1), s:String.hash(str2))
+      endif
+    endfor
+  endfor
+endfunction
