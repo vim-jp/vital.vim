@@ -183,5 +183,23 @@ levenshtein_distance({str1}, {str2})
 	" 3
 <
 
+						*Vital.Data.String.hash()*
+hash({str})
+	This maps from arbitrary length string {str} to another string.
+>
+	echo s:S.hash('All your base are belong to us')
+	" 'c46ec1b18ce8a878725a37e780dfb7351f68ed2e194c79fbc6aebee1a667975d'
+<
+	If the vim that evaluates this function has |sha256()| function, this
+	uses it, otherwise it uses the algorithm to hash the string.
+>
+	let sum = 0
+	for i in range(len(a:str))
+	  let sum += char2nr(a:str[i]) * (i + 1)
+	endfor
+	
+	return printf('%x', sum)
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

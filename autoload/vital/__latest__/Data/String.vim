@@ -323,6 +323,20 @@ function! s:levenshtein_distance(str1, str2) abort
   return distances[length1][length2]
 endfunction
 
+function! s:hash(str) abort
+  if exists('*sha256')
+    return sha256(a:str)
+  else
+    " This gives up sha256ing but just adds up char with index.
+    let sum = 0
+    for i in range(len(a:str))
+      let sum += char2nr(a:str[i]) * (i + 1)
+    endfor
+
+    return printf('%x', sum)
+  endif
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
