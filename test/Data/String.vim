@@ -325,6 +325,10 @@ function! s:suite.levenshtein_distance()
 endfunction
 
 function! s:suite.hash()
+  "
+  " Test by property
+  " TODO use something like quickcheck once themis add it.
+  "
   for str1 in ['', 'sample text', "longer\ntest\nexample", 'サンプルテキスト']
     " Hashed strings should be different to original strings
     call s:assert.not_equals(str1, s:String.hash(str1))
@@ -339,4 +343,11 @@ function! s:suite.hash()
       endif
     endfor
   endfor
+
+  " Test by concrete values
+  if exists('*sha256')
+    call s:assert.equals('45d233b7fdfe9fcac08ec47c797a8d99bebfb0718b9d2acbcdf50df7d6aeb84c', s:String.hash('ujihisa'))
+  else
+    call s:assert.equals('b8a', s:String.hash('ujihisa'))
+  endif
 endfunction
