@@ -59,6 +59,7 @@ Text.Sexp  |
 [Vim.Compat](doc/vital-vim-compat.txt)		 | Vim compatibility wrapper functions
 [Vim.Message](doc/vital-vim-message.txt)	 | Vim message functions
 [Vim.Search](doc/vital-vim-search.txt)		 | Vim's [I like function
+[Vim.ScriptLocal](doc/vital-vim-script_local.txt)		 | Get script-local things
 [Web.HTML](doc/vital-web-html.txt)		 | HTML parser written in pure Vim script
 [Web.HTTP](doc/vital-web-http.txt)		 | simple HTTP client library
 [Web.JSON](doc/vital-web-json.txt)		 | JSON parser written in pure Vim script

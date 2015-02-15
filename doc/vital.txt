@@ -179,6 +179,7 @@ LINKS					*Vital-links*
   |vital-vim-compat.txt|	  Vim compatibility wrapper functions
   |vital-vim-message.txt|	  Vim message functions
   |vital-vim-search.txt|	  Vim's [I like function
+  |vital-vim-script_local.txt|	  Get script-local things
   |vital-web-html.txt|		  HTML parser written in pure Vim script
   |vital-web-http.txt|		  simple HTTP client library
   |vital-web-json.txt|		  JSON parser written in pure Vim script
