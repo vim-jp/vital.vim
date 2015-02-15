@@ -97,6 +97,22 @@ Describe Data.Optional
     End
   End
 
+  Describe .unset()
+    It removes a value from the optional value
+      let o = O.some(42)
+      call O.unset(o)
+
+      Assert True(O.empty(o))
+    End
+
+    It does nothing when the optional value is already invalid
+      let o = O.none()
+      call O.unset(o)
+
+      Assert True(O.empty(o))
+    End
+  End
+
   Describe .has()
     It checks the type of content of the value
       let o1 = O.some(42)
