@@ -36,8 +36,9 @@ optional value.
 	  if O.exists(s:cache)
 	    return O.get(s:cache)
 	  endif
-	  let s:cache = O.some(DoHeavyProcess())
-	  return s:cache
+	  let data = DoHeavyProcess()
+	  let s:cache = O.some(data)
+	  return data
 	end
 <
 
@@ -60,10 +61,8 @@ FUNCTIONS				*Vital.Data.Optional-functions*
 none()					*Vital.Data.Optional.none()*
 	Returns an optional value as invalid value.
 
-some([{value}])				*Vital.Data.Optional.some()*
-	Returns an optional which contains {value} as valid value.
-	When the argument is omitted, it returns an invalid value like
-	none().
+some({value})				*Vital.Data.Optional.some()*
+	Returns an optional value which contains {value} as valid value.
 
 is_optional({value})			*Vital.Data.Optional.is_optional()*
 	Returns {value} is an optional value.  It actually checks that {value}
@@ -80,6 +79,10 @@ exists({optional})			*Vital.Data.Optional.exists()*
 set({optional}, {value})		*Vital.Data.Optional.set()*
 	Updates {optional} with {value}.  The result is a valid optional value
 	which contains {value}.
+
+unset({optional}, {value})		*Vital.Data.Optional.unset()*
+	Removes value which {optional} contains and makes {optional} invalid
+	value.  If {optional} is already invalid, it does nothing.
 
 get({optional})				*Vital.Data.Optional.get()*
 	Returns a contained value in {optional}.  If {optional} is an invalid
@@ -148,8 +151,8 @@ bind({func}, {args}...)			*Vital.Data.Optional.bind()*
 
 	let f = function('Div')
 
-	" Below invokes 10 / (4 / 2 - 2)
-	let result = O.bind(f, 10, O.bind(f, 4, 2) - 2)
+	" Below invokes 10 / (4 / 2)
+	let result = O.bind(f, 10, O.bind(f, 4, 2))
 
 	O.empty(result) " returns 1 because 10 / 0 occurs an error
 <
