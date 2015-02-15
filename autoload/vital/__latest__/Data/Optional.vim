@@ -60,26 +60,26 @@ function! s:has(o, type) abort
   endif
 endfunction
 
-function! s:apply(F, ...) abort
-  for a in a:000
-    if s:is_optional(a) && empty(a)
+function! s:apply(f, ...) abort
+  for Arg in a:000
+    if s:is_optional(Arg) && empty(Arg)
       return s:none()
     endif
-    unlet a
+    unlet Arg
   endfor
 
-  return s:some(call(a:F, map(copy(a:000), "s:is_optional(v:val) ? v:val[0] : v:val")))
+  return s:some(call(a:f, map(copy(a:000), "s:is_optional(v:val) ? v:val[0] : v:val")))
 endfunction
 
-function! s:bind(F, ...) abort
-  for a in a:000
-    if s:is_optional(a) && empty(a)
+function! s:bind(f, ...) abort
+  for Arg in a:000
+    if s:is_optional(Arg) && empty(Arg)
       return s:none()
     endif
-    unlet a
+    unlet Arg
   endfor
 
-  return call(a:F, map(copy(a:000), "s:is_optional(v:val) ? v:val[0] : v:val"))
+  return call(a:f, map(copy(a:000), "s:is_optional(v:val) ? v:val[0] : v:val"))
 endfunction
 
 function! s:flatten(o, ...) abort
