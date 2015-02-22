@@ -127,7 +127,7 @@ apply({func}, {args}...)		*Vital.Data.Optional.apply()*
 	" Update cache only if s:cache has a valid value.
 	" Below invokes Update(O.get(cache), O.get(new_value)) if s:cache has
 	" a valid value.
-	O.apply(function('Update'), s:cache, O.some(new_value))
+	call O.apply(function('Update'), s:cache, O.some(new_value))
 <
 
 bind({func}, {args}...)			*Vital.Data.Optional.bind()*
@@ -157,7 +157,7 @@ bind({func}, {args}...)			*Vital.Data.Optional.bind()*
 	" Below invokes 10 / (2 - 2)
 	let result = O.bind(f, O.some(10), O.bind(f2, O.some(2), O.some(2)))
 
-	O.empty(result) " returns 1 because 10 / 0 occurs an error
+	echo O.empty(result) " returns 1 because 10 / 0 occurs an error
 <
 
 flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
