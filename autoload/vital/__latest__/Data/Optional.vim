@@ -60,38 +60,36 @@ function! s:has(o, type) abort
   endif
 endfunction
 
-function! s:apply(f, ...) abort
-  for Arg in a:000
+function! s:_valid_args(args) abort
+  for Arg in a:args
     if !s:is_optional(Arg)
-      throw "vital: Data.Optional: Non-optional value for argument of apply()"
+      throw "vital: Data.Optional: Non-optional argument"
     endif
     unlet Arg
   endfor
 
-  for Arg in a:000
+  for Arg in a:args
     if empty(Arg)
-      return s:none()
+      return 0
     endif
     unlet Arg
   endfor
+
+  return 1
+endfunction
+
+function! s:apply(f, ...) abort
+  if !s:_valid_args(a:000)
+    return s:none()
+  endif
 
   return s:some(call(a:f, map(copy(a:000), "v:val[0]")))
 endfunction
 
 function! s:bind(f, ...) abort
-  for Arg in a:000
-    if !s:is_optional(Arg)
-      throw "vital: Data.Optional: Non-optional value for argument of bind()"
-    endif
-    unlet Arg
-  endfor
-
-  for Arg in a:000
-    if empty(Arg)
-      return s:none()
-    endif
-    unlet Arg
-  endfor
+  if !s:_valid_args(a:000)
+    return s:none()
+  endif
 
   return call(a:f, map(copy(a:000), "v:val[0]"))
 endfunction
