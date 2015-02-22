@@ -62,24 +62,38 @@ endfunction
 
 function! s:apply(f, ...) abort
   for Arg in a:000
-    if s:is_optional(Arg) && empty(Arg)
+    if !s:is_optional(Arg)
+      throw "vital: Data.Optional: Non-optional value for argument of apply()"
+    endif
+    unlet Arg
+  endfor
+
+  for Arg in a:000
+    if empty(Arg)
       return s:none()
     endif
     unlet Arg
   endfor
 
-  return s:some(call(a:f, map(copy(a:000), "s:is_optional(v:val) ? v:val[0] : v:val")))
+  return s:some(call(a:f, map(copy(a:000), "v:val[0]")))
 endfunction
 
 function! s:bind(f, ...) abort
   for Arg in a:000
-    if s:is_optional(Arg) && empty(Arg)
+    if !s:is_optional(Arg)
+      throw "vital: Data.Optional: Non-optional value for argument of bind()"
+    endif
+    unlet Arg
+  endfor
+
+  for Arg in a:000
+    if empty(Arg)
       return s:none()
     endif
     unlet Arg
   endfor
 
-  return call(a:f, map(copy(a:000), "s:is_optional(v:val) ? v:val[0] : v:val"))
+  return call(a:f, map(copy(a:000), "v:val[0]"))
 endfunction
 
 function! s:flatten(o, ...) abort

@@ -154,11 +154,12 @@ Describe Data.Optional
       let o1 = O.some(42)
       let o3 = O.some(3.14)
 
-      let result1 = O.apply('TestFunc', o1, O.none(), o3, "not optional value")
-      Assert True(O.empty(result1))
+      let result = O.apply('TestFunc', o1, O.none(), o3, O.none())
+      Assert True(O.empty(result))
+    End
 
-      let result2 = O.apply('TestFunc', O.apply('TestFunc', o1, "not optional value", O.none()), O.apply('TestFunc', o3))
-      Assert True(O.empty(result2))
+    It throws an exception when non-optional value is passed
+      Throws /^vital: Data.Optional:/ O.apply('TestFunc', O.some(42), O.none(), "non-optional value")
     End
   End
 
@@ -187,14 +188,10 @@ Describe Data.Optional
       Assert True(O.exists(result))
       Assert Equals(O.get(result), 42 / 21)
 
-      let result = O.bind('Div', 42, y)
-      Assert True(O.exists(result))
-      Assert Equals(O.get(result), 42 / 21)
-
       let result = O.bind('Div', x, z)
       Assert True(O.empty(result))
 
-      let result = O.bind('Div', O.bind('Div', x, 2), y)
+      let result = O.bind('Div', O.bind('Div', x, O.some(2)), y)
       Assert True(O.exists(result))
       Assert Equals(O.get(result), 42 / 2 / 21)
     End
@@ -205,14 +202,18 @@ Describe Data.Optional
       let result = O.bind('Div', x, O.none())
       Assert True(O.empty(result))
 
-      let result = O.bind('Div', 42, O.none())
+      let result = O.bind('Div', O.some(42), O.none())
       Assert True(O.empty(result))
 
-      let result = O.bind('Div', O.bind('Div', x, 2), O.none())
+      let result = O.bind('Div', O.bind('Div', x, O.some(2)), O.none())
       Assert True(O.empty(result))
 
-      let result = O.bind('Div', O.bind('Div', O.none(), 2), x)
+      let result = O.bind('Div', O.bind('Div', O.none(), O.some(2)), x)
       Assert True(O.empty(result))
+    End
+
+    It throws an exception when non-optional value is passed
+      Throws /^vital: Data.Optional:/ O.bind('Div', O.some(42), O.none(), "non-optional value")
     End
   End
 

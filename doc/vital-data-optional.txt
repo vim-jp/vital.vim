@@ -103,13 +103,12 @@ has({optional}, {type})			*Vital.Data.Optional.has()*
 	returns 0.
 
 apply({func}, {args}...)		*Vital.Data.Optional.apply()*
-	Applies {args} to {func} if all of {args} are:
-	    1. not an optional value
-	    2. valid optional value
-	and returns the result wrapped as valid optional value.
+	Applies {args} to {func} if all of {args} are valid optional value.
+	Then it returns the result wrapped as valid optional value.
 	If any of {args} is an invalid optional value, it doesn't call
-	{func} and return an invalid optional value.
+	{func} and returns an invalid optional value.
 	This is like Applicative in Haskell.
+	When any of {args} is not an optional value, it throws an exception.
 
 	For example, below is an example to update data in cache.
 
@@ -126,33 +125,37 @@ apply({func}, {args}...)		*Vital.Data.Optional.apply()*
 	...
 
 	" Update cache only if s:cache has a valid value.
-	" Below invokes Update(O.get(cache), new_value) if s:cache has a valid
-	" value.
-	O.apply(function('Update'), s:cache, new_value)
+	" Below invokes Update(O.get(cache), O.get(new_value)) if s:cache has
+	" a valid value.
+	O.apply(function('Update'), s:cache, O.some(new_value))
 <
 
 bind({func}, {args}...)			*Vital.Data.Optional.bind()*
-	Applies {args} to {func} if all of {args} are:
-	    1. not an optional value
-	    2. valid optional value
-	and returns the result directly.  This assumes that {func}'s arguments
-	doesn't care about an optional value and {func} returns an optional
-	value.
+	Applies {args} to {func} if all of {args} are valid optional value.
+	Then it returns the result directly.  This assumes that {func}'s
+	arguments doesn't care about an optional value and {func} returns an
+	optional value.
+	When any of {args} is not an optional value, it throws an exception.
 
 	For example, division with safe way is like below:
 
 >
 	function! Div(a, b)
-	  if b == 0
+	  if a:b == 0
 	    return O.none()
 	  endif
-	  return O.some(a / b)
+	  return O.some(a:a / a:b)
+	endfunction
+
+	function! Sub(a, b)
+	    return O.some(a:a - a:b)
 	endfunction
 
 	let f = function('Div')
+	let f2 = function('Sub')
 
-	" Below invokes 10 / (4 / 2)
-	let result = O.bind(f, 10, O.bind(f, 4, 2))
+	" Below invokes 10 / (2 - 2)
+	let result = O.bind(f, O.some(10), O.bind(f2, O.some(2), O.some(2)))
 
 	O.empty(result) " returns 1 because 10 / 0 occurs an error
 <
