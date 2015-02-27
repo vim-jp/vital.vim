@@ -12,7 +12,7 @@ before_install:
 install:
   - if [ x"$PPA" == "xyes" ] ; then sudo add-apt-repository ppa:pi-rho/dev -y; fi
   - sudo apt-get update -q
-  - sudo apt-get install vim-gtk
+  - sudo apt-get install vim-nox
 
 before_script:
   - git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
