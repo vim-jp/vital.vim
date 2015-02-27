@@ -392,7 +392,7 @@ Context Data.List.has_common_items()
 End
 
 Context Data.List.intersect()
-  It returns elements are commons with two lists
+  It returns elements which are common with two lists
     Should g:L.intersect(['a', 'b', 'c'], ['b', 'c']) ==# ['b', 'c']
     Should g:L.intersect(['a', 'c'], ['b', 'c']) ==# ['c']
     Should g:L.intersect(['a'], ['b', 'c']) ==# []
