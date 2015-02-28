@@ -24,6 +24,7 @@ module						 | description
 [Data.Dict](doc/vital-data-dict.txt)		 | dictionary utilities library
 [Data.LazyList](doc/vital-data-lazylist.txt)	 | lazy list including file io
 [Data.List](doc/vital-data-list.txt)		 | list utilities library
+[Data.Optional](doc/vital-data-optional.txt)	 | optional value library
 [Data.OrderedSet](doc/vital-data-ordered_set.txt)| ordered collection library
 [Data.String](doc/vital-data-string.txt)	 | string utilities library
 [Data.Tree](doc/vital-data-tree.txt)		 | tree utilities library
