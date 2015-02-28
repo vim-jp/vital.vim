@@ -391,6 +391,19 @@ Context Data.List.has_common_items()
   End
 End
 
+Context Data.List.intersect()
+  It returns elements which are common with two lists
+    Should g:L.intersect(['a', 'b', 'c'], ['b', 'c']) ==# ['b', 'c']
+    Should g:L.intersect(['a', 'c'], ['b', 'c']) ==# ['c']
+    Should g:L.intersect(['a'], ['b', 'c']) ==# []
+    Should g:L.intersect([], ['b', 'c']) ==# []
+    Should g:L.intersect(['a'], []) ==# []
+    Should g:L.intersect([], []) ==# []
+    Should g:L.intersect(['a', 'a'], ['a', 'a']) ==# ['a']
+    Should g:L.intersect([function('tr')], [function('tr')]) ==# [function('tr')]
+  End
+End
+
 Context Data.List.group_by()
   It returns grouped dictionary
     Should g:L.group_by([], 'len(v:val)') ==# {}

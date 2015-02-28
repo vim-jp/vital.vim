@@ -28,33 +28,28 @@ endfunction
 Describe OptionParser
 
   Before all
-    let g:O = vital#of('vital').import('OptionParser')
-  End
-
-  After all
-    unlet! g:O
+    let O = vital#of('vital').import('OptionParser')
   End
 
   Describe .new()
     It makes parser object
-      let o = g:O.new()
-      let func_type = type(function('empty'))
+      let o = O.new()
       Assert has_key(o, 'options')
-      Assert Equals(type(o.options), type({}))
+      Assert IsDict(o.options)
       Assert has_key(o, 'on')
-      Assert Equals(type(o.on), func_type)
+      Assert IsFunc(o.on)
       Assert has_key(o, 'parse')
-      Assert Equals(type(o.parse), func_type)
+      Assert IsFunc(o.parse)
       Assert has_key(o, 'help')
-      Assert Equals(type(o.help), func_type)
+      Assert IsFunc(o.help)
       Assert has_key(o, 'complete')
-      Assert Equals(type(o.help), func_type)
+      Assert IsFunc(o.help)
     End
   End
 
   Describe obj.on()
     It defines "--hoge" options with on()
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge', 'huga')
       Assert has_key(o.options, 'hoge')
       Assert Equals(o.options.hoge, {'description': 'huga', 'definition': '--hoge'})
@@ -65,7 +60,7 @@ Describe OptionParser
     End
 
     It defines short option
-      let o = g:O.new()
+      let o = O.new()
 
       " non alphabetical characters
       for na in ['a', 'b', 'c', '1', '2', '3']
@@ -76,7 +71,7 @@ Describe OptionParser
     End
 
     It defines --hoge=VALUE option
-      let o = g:O.new()
+      let o = O.new()
 
       call o.on('--hoge=VALUE', 'huga')
       Assert has_key(o.options, 'hoge')
@@ -84,14 +79,14 @@ Describe OptionParser
     End
 
     It defines --[no-]hoge option
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--[no-]hoge', 'huga')
       Assert has_key(o.options, 'hoge')
       Assert Equals(o.options.hoge, {'description': 'huga', 'definition': '--[no-]hoge', 'no': 1})
     End
 
     It can chain definitions of options
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge', '')
           \.on('--huga', '')
           \.on('--piyo', '')
@@ -103,13 +98,13 @@ Describe OptionParser
     End
 
     It occurs an error when invalid option name is specified
-      let o = g:O.new()
+      let o = O.new()
       Throws o.on('invalid_name', '')
       Throws o.on('--invalid name', '')
     End
 
     It occurs an error when invalid short option name is specified
-      let o = g:O.new()
+      let o = O.new()
       Throws o.on('--valid', '', {'short' : '-but_invalid'})
       Throws o.on('--valid', '', {'short' : '--'})
       Throws o.on('--valid', '', {'short' : 'a'})
@@ -118,7 +113,7 @@ Describe OptionParser
     End
 
     It sets default values if specified
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge', '')
           \.on('--huga', '', {'default' : 3})
           \.on('--tsura', '', 'aaa')
@@ -133,15 +128,15 @@ Describe OptionParser
     End
 
     It sets function for completion with "completion" key
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge', '', {'completion' : 'file'})
           \.on('--huga', '', {'completion' : function('CompleteTest')})
           \.on('--piyo', '')
       Assert has_key(o.options.hoge, 'completion')
       Assert has_key(o.options.huga, 'completion')
       Assert ! has_key(o.options.piyo, 'completion')
-      Assert Equals(type(o.options.hoge.completion), type(function('empty')))
-      Assert Equals(type(o.options.huga.completion), type(function('empty')))
+      Assert IsFunc(o.options.hoge.completion)
+      Assert IsFunc(o.options.huga.completion)
     End
 
   End
@@ -149,32 +144,32 @@ Describe OptionParser
   Describe obj.parse()
 
     It parses empty argument
-      let o = g:O.new()
+      let o = O.new()
       Assert Equals(o.parse(''), {'__unknown_args__' : []})
     End
 
     It deals with <bang>
-      let o = g:O.new()
+      let o = O.new()
       Assert Equals(o.parse('', '!'), {'__unknown_args__' : [], '__bang__' : '!'})
     End
 
     It deals with <count>
-      let o = g:O.new()
+      let o = O.new()
       Assert Equals(o.parse('', 3), {'__unknown_args__' : [], '__count__' : 3})
     End
 
     It deals with <reg>
-      let o = g:O.new()
+      let o = O.new()
       Assert Equals(o.parse('', 'g'), {'__unknown_args__' : [], '__reg__' : 'g'})
     End
 
     It deals with <range>
-      let o = g:O.new()
+      let o = O.new()
       Assert Equals(o.parse('', [1, 100]), {'__unknown_args__' : [], '__range__' : [1, 100]})
     End
 
     It deals with command special options regardless of the order of and number of arguments
-      let o = g:O.new()
+      let o = O.new()
       " count command
       let cands = ['g', 42, '!']
       let perms = s:permutation(cands)
@@ -191,34 +186,34 @@ Describe OptionParser
     End
 
     It parses --hoge as 'hoge' : 1
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge', 'huga')
       Assert Equals(o.parse('--hoge'), {'__unknown_args__' : [], 'hoge' : 1})
     End
 
     It parses --hoge=VALUE as 'hoge' : 'VALUE' and echoes an error when VALUE is omitted
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge=VALUE', 'huga')
       Assert Equals(o.parse('--hoge=huga'), {'__unknown_args__' : [], 'hoge' : 'huga'})
-      Throws g:O.parse('--hoge')
+      Throws O.parse('--hoge')
     End
 
     It parses --[no-]hoge as 'hoge' : 0 or 1
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--[no-]hoge', 'huga')
       Assert Equals(o.parse('--no-hoge'), {'__unknown_args__' : [], 'hoge' : 0})
       Assert Equals(o.parse('--hoge'), {'__unknown_args__' : [], 'hoge' : 1})
     End
 
     It parses short option -h as 'hoge'
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge', 'huga', {'short' : '-h'})
       Assert Equals(o.parse('-h'), {'__unknown_args__' : [], 'hoge' : 1})
       Assert Equals(o.parse('--hoge'), {'__unknown_args__' : [], 'hoge' : 1})
     End
 
     It parses default values if they are set in on() and they are not specified by user
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge', '', {'default' : 3.14})
       call o.on('--huga', '', 'default value')
       Assert Equals(o.parse(''), {'__unknown_args__' : [], 'hoge' : 3.14, 'huga' : 'default value'})
@@ -226,7 +221,7 @@ Describe OptionParser
     End
 
     It doesn't parse arguments not defined with on()
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--foo', 'huga')
       call o.on('--bar=VALUE', 'huga')
       call o.on('--[no-]baz', 'huga')
@@ -237,7 +232,7 @@ Describe OptionParser
     End
 
     It parses all argument types at one time regardless of the order of arguments
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge', '')
       call o.on('--huga=VALUE', '')
       call o.on('--[no-]poyo', '')
@@ -251,7 +246,7 @@ Describe OptionParser
     End
 
     It parses all options defined with on() and command options at one time regardless of the order of arguments
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge', '')
       call o.on('--huga=VALUE', '')
       call o.on('--tsura', '', {'short' : '-t'})
@@ -302,7 +297,7 @@ Describe OptionParser
     End
 
     It can parse some non alphabetical names and keys
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--''!"#$=VALUE', '')
       Assert Equals(o.parse('--''!"#$=''hoge'''), {'__unknown_args__' : [], '''!"#$' : "'hoge'"})
     End
@@ -311,7 +306,7 @@ Describe OptionParser
   Describe obj.help()
 
     It returns help message
-      let o = g:O.new()
+      let o = O.new()
       call o.on('--hoge=VALUE', 'description of hoge, must have value')
       call o.on('--foo', 'description of foo')
       call o.on('--[no-]bar', 'description of bar, contradictable')
@@ -329,14 +324,14 @@ Describe OptionParser
     End
 
     It returns title-only help if no option is defined
-      let o = g:O.new()
+      let o = O.new()
       Assert Equals(o.help(), "Options:\n")
     End
   End
 
   Describe obj.complete()
     It completes long options
-        let o = g:O.new()
+        let o = O.new()
         call o.on('--[no-]huga=VALUE', '', {'short' : '-h', 'completion' : function('CompleteTest')})
              \.on('--hoge', '')
              \.on('--piyo', '', {'short' : '-p'})
@@ -355,7 +350,7 @@ Describe OptionParser
     End
 
     It completes short options
-        let o = g:O.new()
+        let o = O.new()
         call o.on('--[no-]huga=VALUE', '', {'short' : '-h', 'completion' : function('CompleteTest')})
              \.on('--hoge', '')
              \.on('--piyo', '', {'short' : '-p'})
@@ -369,7 +364,7 @@ Describe OptionParser
     End
 
     It completes values of options with specified complete function
-        let o = g:O.new()
+        let o = O.new()
         call o.on('--[no-]huga=VALUE', '', {'short' : '-h', 'completion' : function('CompleteTest')})
              \.on('--hoge', '')
              \.on('--piyo', '', {'short' : '-p'})
@@ -383,7 +378,7 @@ Describe OptionParser
     End
 
     It completes unknown argument if "unknown_options_completion" is specified
-        let o = g:O.new()
+        let o = O.new()
         call o.on('--[no-]huga=VALUE', '', {'short' : '-h', 'completion' : function('CompleteTest')})
              \.on('--hoge', '')
              \.on('--piyo', '', {'short' : '-p'})

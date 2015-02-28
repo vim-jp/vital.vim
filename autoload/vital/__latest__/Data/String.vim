@@ -50,7 +50,7 @@ function! s:common_head(strs) abort
   endif
   let strs = len == 2 ? a:strs : sort(copy(a:strs))
   let pat = substitute(strs[0], '.', '\="[" . escape(submatch(0), "^\\") . "]"', 'g')
-  return pat == '' ? '' : matchstr(strs[-1], '^\%[' . pat . ']')
+  return pat == '' ? '' : matchstr(strs[-1], '\C^\%[' . pat . ']')
 endfunction
 
 " Split to two elements of List. ([left, right])
@@ -400,6 +400,20 @@ function! s:split_by_displaywidth(expr, width, float, is_wrap) abort
   endif
 
   return lines
+endfunction
+
+function! s:hash(str) abort
+  if exists('*sha256')
+    return sha256(a:str)
+  else
+    " This gives up sha256ing but just adds up char with index.
+    let sum = 0
+    for i in range(len(a:str))
+      let sum += char2nr(a:str[i]) * (i + 1)
+    endfor
+
+    return printf('%x', sum)
+  endif
 endfunction
 
 let &cpo = s:save_cpo

@@ -3,6 +3,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:S = s:V.import('Data.String')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Data.String']
+endfunction
+
 function! s:getfilename(cache_dir, filename) abort
   return s:_encode_name(a:cache_dir, a:filename)
 endfunction
@@ -63,16 +72,8 @@ function! s:_create_hash(dir, str) abort
   if len(a:dir) + len(a:str) < 150
     let hash = substitute(substitute(
           \ a:str, ':', '=-', 'g'), '[/\\]', '=+', 'g')
-  elseif exists('*sha256')
-    let hash = sha256(a:str)
   else
-    " Use simple hash.
-    let sum = 0
-    for i in range(len(a:str))
-      let sum += char2nr(a:str[i]) * (i + 1)
-    endfor
-
-    let hash = printf('%x', sum)
+    let hash = s:S.hash(a:str)
   endif
 
   return hash

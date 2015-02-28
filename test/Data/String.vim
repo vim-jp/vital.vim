@@ -85,9 +85,9 @@ function! s:suite.scan()
   call s:assert.equals( s:String.scan('neo compl cache', 'c\w\+'), ['compl', 'cache'])
   call s:assert.equals( s:String.scan('[](){}', '[{()}]'), ['(', ')', '{', '}'])
   call s:assert.equals( s:String.scan('string', '.*'), ['string'])
-  if 704 <= v:version
-    call s:assert.equals( s:String.scan('string', '.\zs'), ['', '', ''])
-  else
+  " These versions of Vim contains a bug
+  " https://github.com/vim-jp/issues/issues/503
+  if !(704 == v:version && has('patch45') && !has('patch158'))
     call s:assert.equals( s:String.scan('string', '.\zs'), ['', '', '', '', '', ''])
   endif
   call s:assert.equals( s:String.scan('string', ''), ['', '', '', '', '', '', ''])
@@ -110,6 +110,12 @@ function! s:suite.common_head()
   call s:assert.equals( s:String.common_head(['', 'neocomplcache']), '')
   call s:assert.equals( s:String.common_head(['', '']), '')
   call s:assert.equals( s:String.common_head(['']), '')
+
+  " is case-sensitive
+  set ignorecase
+  call s:assert.equals( s:String.common_head(['call', 'Completion', 'common']), '')
+  call s:assert.equals( s:String.common_head(['HEAD', 'Hear']), 'H')
+  set ignorecase&
 
   " returns an empty string with empty list
   call s:assert.equals( s:String.common_head([]), '')
@@ -441,3 +447,30 @@ function! s:suite.padding_by_displaywidth()
 
 endfunction
 
+function! s:suite.hash()
+  "
+  " Test by property
+  " TODO use something like quickcheck once themis add it.
+  "
+  for str1 in ['', 'sample text', "longer\ntest\nexample", 'サンプルテキスト']
+    " Hashed strings should be different to original strings
+    call s:assert.not_equals(str1, s:String.hash(str1))
+
+    for str2 in ['', 'sample text', "longer\ntest\nexample", 'サンプルテキスト']
+      if str1 ==# str2
+        " This is idempotent; hashed strings with same string should equal
+        call s:assert.equals(s:String.hash(str1), s:String.hash(str2))
+      else
+        " Hashed strings should be different if original strings are different
+        call s:assert.not_equals(s:String.hash(str1), s:String.hash(str2))
+      endif
+    endfor
+  endfor
+
+  " Test by concrete values
+  if exists('*sha256')
+    call s:assert.equals('45d233b7fdfe9fcac08ec47c797a8d99bebfb0718b9d2acbcdf50df7d6aeb84c', s:String.hash('ujihisa'))
+  else
+    call s:assert.equals('b8a', s:String.hash('ujihisa'))
+  endif
+endfunction

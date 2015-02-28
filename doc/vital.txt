@@ -63,7 +63,7 @@ assign as Vital convention. That makes your code more readable among Vital
 programmers.
 
 When you start using vital for your own Vim plugin for the first time, you
-have to embed vital. See |vitalizer.txt| about the defails how to embed and
+have to embed vital. See |vitalizer.txt| about the details how to embed and
 keep it updated.
 
 ==============================================================================
@@ -124,57 +124,65 @@ LINKS					*Vital-links*
 
  Delegation in Vim script:
    http://ujihisa.blogspot.com/2011/02/delegation-in-vim-script.html
- How to use Vital modules (in Japanese):
-   http://rbtnn.github.com/how-to-use-vital.vim/
  Core concept of vital (in Japanese):
    http://d.hatena.ne.jp/thinca/20110310/1299768323
  How to make a vital module (in Japanese):
    http://d.hatena.ne.jp/thinca/20110311/1299769233
  API Reference (in Japanese):
    http://d.hatena.ne.jp/kanno_kanno/20120107/1325949855
+ Let's use vital.vim (in Japanese):
+   http://qiita.com/rbtnn/items/deb569ebc94d5172a5e5
 
  Vitalize command
   |vitalizer.txt|
 
- Vital modules
-  |vital-bitwise.txt|
-  |vital-data-base64.txt|
-  |vital-database-sqlite.txt|
-  |vital-data-collection.txt|
-  |vital-data-dict.txt|
-  |vital-data-lazylist.txt|
-  |vital-data-list.txt|
-  |vital-data-ordered_set.txt|
-  |vital-data-string.txt|
-  |vital-data-tree.txt|
-  |vital-date_time.txt|
-  |vital-experimental-functor.txt|
-  |vital-interpreter-brainf__k.txt|
-  |vital-locale-message.txt|
-  |vital-lua-prelude.txt|
-  |vital-mapping.txt|
-  |vital-math.txt|
-  |vital-option_parser.txt|
-  |vital-prelude.txt|
-  |vital-process_manager.txt|
-  |vital-process.txt|
-  |vital-random.txt|
-  |vital-random-xor128.txt|
-  |vital-system-cache.txt|
-  |vital-system-filepath.txt|
-  |vital-system-file.txt|
-  |vital-text-csv.txt|
-  |vital-text-lexer.txt|
-  |vital-text-ltsv.txt|
-  |vital-text-parser.txt|
-  |vital-vim-buffer_manager.txt|
-  |vital-vim-buffer.txt|
-  |vital-vim-compat.txt|
-  |vital-vim-message.txt|
-  |vital-web-html.txt|
-  |vital-web-http.txt|
-  |vital-web-json.txt|
-  |vital-web-xml.txt|
+ Vital modules				*Vital-modules*
+  |vital-assertion.txt|		  assertion library
+  |vital-bitwise.txt|		  bitwise operators
+  |vital-data-base64.txt|	  base64 utilities library
+  |vital-data-closure.txt|	  Provide Closure object
+  |vital-data-collection.txt|	  Utilities both for list and dict
+  |vital-data-dict.txt|		  dictionary utilities library
+  |vital-data-lazylist.txt|	  lazy list including file io
+  |vital-data-list.txt|		  list utilities library
+  |vital-data-optional.txt|	  optional value library
+  |vital-data-ordered_set.txt|	  ordered collection library
+  |vital-data-string.txt|	  string utilities library
+  |vital-data-tree.txt|		  tree utilities library
+  |vital-database-sqlite.txt|	  sqlite utilities library
+  |vital-date-time.txt|		  date and time library
+  |vital-experimental-functor.txt|  Utilities for functor
+  |vital-interpreter-brainf__k.txt| Brainf**k interpreter
+  |vital-locale-message.txt|	  very simple message localization library
+  |vital-lua-prelude.txt|	  crucial functions for lua integration
+  |vital-mapping.txt|		  Utilities for mapping
+  |vital-math.txt|		  Mathematical functions
+  |vital-option_parser.txt|	  Option parser library for Vim
+  |vital-prelude.txt|		  crucial functions
+  |vital-process.txt|		  Utilities for process
+  |vital-process_manager.txt|	  process manager with vimproc
+  |vital-random-mt19937ar.txt|	  random number generator using mt19937ar
+  |vital-random-xor128.txt|	  random number generator using xor128
+  |vital-random.txt|		  Random utility frontend library
+  |vital-system-cache.txt|	  store/restore cache into/from file
+  |vital-system-file.txt|	  filesystem utilities library
+  |vital-system-filepath.txt|	  path string utilities library
+  |vital-text-csv.txt|		  CSV library
+  |vital-text-ini.txt|		  INI file library
+  |vital-text-lexer.txt|	  lexer library
+  |vital-text-ltsv.txt|		  LTSV library
+  |vital-text-parser.txt|	  parser library
+  |vital-text-table.txt|	  Character table library
+  |vital-text-toml.txt|		  TOML library
+  |vital-vim-buffer.txt|	  Vim's buffer related stuff in general
+  |vital-vim-buffer_manager.txt|    buffer manager
+  |vital-vim-compat.txt|	  Vim compatibility wrapper functions
+  |vital-vim-message.txt|	  Vim message functions
+  |vital-vim-search.txt|	  Vim's [I like function
+  |vital-web-html.txt|		  HTML parser written in pure Vim script
+  |vital-web-http.txt|		  simple HTTP client library
+  |vital-web-json.txt|		  JSON parser written in pure Vim script
+  |vital-web-xml.txt|		  XML parser written in pure Vim script
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
