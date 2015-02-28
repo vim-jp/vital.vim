@@ -41,7 +41,7 @@ of({expr})		                           *Vital.CharsetDetector.of()*
         Otherwise throw a exception.
 
 iconv({expr}[, {to}])		                *Vital.CharsetDetector.iconv()*
-        Wrapper buildin function `iconv()`.
+        Wrapper builtin function `iconv()`.
         It is same as `iconv({expr}, Vital.CharsetDetector.of({expr}), {to})`.
         Default value of {to} is `&encoding`.
 
