@@ -33,9 +33,14 @@ function! s:_count_1_prefixed(bits) abort
   endfor
   return c
 endfunction
+function! s:_set_encoding() abort
+  set encoding=utf-8
+endfunction
 
 function! s:is_utf8(line) abort
   " http://tools.ietf.org/html/rfc3629
+  let saved_encoding = &encoding
+  call s:_set_encoding()
 
   let cs = a:line
   let i = 0
@@ -58,19 +63,24 @@ function! s:is_utf8(line) abort
           " ok
         else
           " not utf-8
+          let &encoding = saved_encoding
           return 0
         endif
         let i += 1
       endfor
     else
       " not utf-8
+      let &encoding = saved_encoding
       return 0
     endif
   endwhile
+  let &encoding = saved_encoding
   return 1
 endfunction
 function! s:is_eucjp(line) abort
   " http://charset.7jp.net/euc.html
+  let saved_encoding = &encoding
+  call s:_set_encoding()
 
   let cs = a:line
   let i = 0
@@ -82,6 +92,7 @@ function! s:is_eucjp(line) abort
       if 0xa1 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0xfe
         let i += 1
       else
+        let &encoding = saved_encoding
         return 0
       endif
     elseif 0x8e is char2nr(cs[i])
@@ -89,16 +100,21 @@ function! s:is_eucjp(line) abort
       if 0xa1 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0xdf
         let i += 1
       else
+        let &encoding = saved_encoding
         return 0
       endif
     else
+      let &encoding = saved_encoding
       return 0
     endif
   endwhile
+  let &encoding = saved_encoding
   return 1
 endfunction
 function! s:is_cp932(line) abort
   " http://charset.7jp.net/sjis.html
+  let saved_encoding = &encoding
+  call s:_set_encoding()
 
   let cs = a:line
   let i = 0
@@ -109,12 +125,13 @@ function! s:is_cp932(line) abort
       let i += 1
 
     elseif (0x81 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0x9f)
-          \ || (0xe0 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0xef)
+    \ || (0xe0 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0xef)
       let i += 1
       if     (0x40 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0x7e)
-            \ || (0x80 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0xfc)
+      \ || (0x80 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0xfc)
         let i += 1
       else
+        let &encoding = saved_encoding
         return 0
       endif
     elseif 0x8e is char2nr(cs[i])
@@ -122,23 +139,21 @@ function! s:is_cp932(line) abort
       if 0xa1 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0xdf
         let i += 1
       else
+        let &encoding = saved_encoding
         return 0
       endif
     else
+      let &encoding = saved_encoding
       return 0
     endif
   endwhile
+  let &encoding = saved_encoding
   return 1
 endfunction
 function! s:is_iso2022jp(line) abort
   " http://charset.7jp.net/jis.html
-  " <mode>
-  "   MODE_A : "ASCIIの開始"
-  "   MODE_B : "漢字の開始（旧JIS漢字 JIS C 6226-1978）"
-  "   MODE_C : "漢字の開始 (新JIS漢字 JIS X 0208-1983）"
-  "   MODE_D : "漢字の開始 (JIS X 0208-1990）"
-  "   MODE_E : "JISローマ字の開始"
-  "   MODE_F : "半角カタカナの開始"
+  let saved_encoding = &encoding
+  call s:_set_encoding()
 
   let cs = a:line
   let mode = "MODE_A"
@@ -151,7 +166,7 @@ function! s:is_iso2022jp(line) abort
       let i += 3
       let mode = "MODE_C"
     elseif 0x1b is char2nr(cs[i]) && 0x26 is char2nr(cs[i+1])  && 0x40 is char2nr(cs[i+2])
-          \ && 0x1b is char2nr(cs[i+3]) && 0x24 is char2nr(cs[i+4])  && 0x42 is char2nr(cs[i+5])
+    \ && 0x1b is char2nr(cs[i+3]) && 0x24 is char2nr(cs[i+4])  && 0x42 is char2nr(cs[i+5])
       let i += 6
       let mode = "MODE_D"
     elseif 0x1b is char2nr(cs[i]) && 0x28 is char2nr(cs[i+1])  && 0x42 is char2nr(cs[i+2])
@@ -168,26 +183,31 @@ function! s:is_iso2022jp(line) abort
       if 0x00 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0x7f
         let i += 1
       else
+        let &encoding = saved_encoding
         return 0
       endif
     elseif mode =~ "MODE_F"
       if   (0x21 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0x5f)
-            \ || (0xa1 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0xdf)
+      \ || (0xa1 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0xdf)
         let i += 1
       else
+        let &encoding = saved_encoding
         return 0
       endif
     elseif mode =~ "MODE_B" || mode =~ "MODE_C" || mode =~ "MODE_D"
       if   (0x21 <= char2nr(cs[i]) && char2nr(cs[i]) <= 0x7e)
-            \ && (0x21 <= char2nr(cs[i+1]) && char2nr(cs[i+1]) <= 0x7e)
+      \ && (0x21 <= char2nr(cs[i+1]) && char2nr(cs[i+1]) <= 0x7e)
         let i += 2
       else
+        let &encoding = saved_encoding
         return 0
       endif
     else
+      let &encoding = saved_encoding
       return 0
     endif
   endwhile
+  let &encoding = saved_encoding
   return 1
 endfunction
 function! s:of(str) abort

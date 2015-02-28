@@ -17,10 +17,6 @@ function! s:suite.after()
   unlet! s:CharsetDetector
 endfunction
 
-" echo iconv(s:multichars_utf_8, 'utf-8', 'cp932') == s:multichars_cp932
-" echo iconv(s:multichars_cp932, 'cp932', 'utf-8') == s:multichars_utf_8
-" echo iconv(s:multichars_euc_jp, 'euc-jp', 'cp932') == s:multichars_cp932
-
 function! s:suite.test_is_utf8()
   call s:assert.equals( s:CharsetDetector.is_utf8(s:multichars_utf_8), 1)
   call s:assert.equals( s:CharsetDetector.of(s:multichars_utf_8), 'utf-8')
