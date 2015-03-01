@@ -323,6 +323,85 @@ function! s:levenshtein_distance(str1, str2) abort
   return distances[length1][length2]
 endfunction
 
+function! s:padding_by_displaywidth(expr, width, float) abort
+  let padding_char = ' '
+  let n = a:width - strdisplaywidth(a:expr)
+  if n <= 0
+    let n = 0
+  endif
+  if a:float < 0
+    return a:expr . repeat(padding_char, n)
+  elseif 0 < a:float
+    return repeat(padding_char, n) . a:expr
+  else
+    if n % 2 is 0
+      return repeat(padding_char, n / 2) . a:expr . repeat(padding_char, n / 2)
+    else
+      return repeat(padding_char, (n - 1) / 2) . a:expr . repeat(padding_char, (n - 1) / 2) . padding_char
+    endif
+  endif
+endfunction
+
+function! s:split_by_displaywidth(expr, width, float, is_wrap) abort
+  if a:width is 0
+    return ['']
+  endif
+
+  let lines = []
+
+  let cs = split(a:expr, '\zs')
+  let cs_index = 0
+
+  let text = ''
+  while cs_index < len(cs)
+    if cs[cs_index] is "\n"
+      let text = s:padding_by_displaywidth(text, a:width, a:float)
+      let lines += [text]
+      let text = ''
+    else
+      let w = strdisplaywidth(text . cs[cs_index])
+
+      if w < a:width
+        let text .= cs[cs_index]
+      elseif a:width < w
+        let text = s:padding_by_displaywidth(text, a:width, a:float)
+      else
+        let text .= cs[cs_index]
+      endif
+
+      if a:width <= w
+        let lines += [text]
+        let text = ''
+        if a:is_wrap
+          if a:width < w
+            if a:width < strdisplaywidth(cs[cs_index])
+              while get(cs, cs_index, "\n") isnot "\n"
+                let cs_index += 1
+              endwhile
+              continue
+            else
+              let text = cs[cs_index]
+            endif
+          endif
+        else
+          while get(cs, cs_index, "\n") isnot "\n"
+            let cs_index += 1
+          endwhile
+          continue
+        endif
+      endif
+
+    endif
+    let cs_index += 1
+  endwhile
+
+  if !empty(text)
+    let lines += [ s:padding_by_displaywidth(text, a:width, a:float) ]
+  endif
+
+  return lines
+endfunction
+
 function! s:hash(str) abort
   if exists('*sha256')
     return sha256(a:str)
