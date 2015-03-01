@@ -96,6 +96,7 @@ endfunction
 "     use_vimproc: bool,
 "     input: string,
 "     timeout: bool,
+"     background: bool,
 "   }
 function! s:system(str, ...) abort
   " Process optional arguments at first
@@ -103,6 +104,7 @@ function! s:system(str, ...) abort
   " for a:str argument.
   let input = ''
   let use_vimproc = s:has_vimproc()
+  let background = 0
   let args = []
   if a:0 ==# 1
     " {command} [, {dict}]
@@ -117,6 +119,9 @@ function! s:system(str, ...) abort
       if use_vimproc && has_key(a:1, 'timeout')
         " ignores timeout unless you have vimproc.
         let args += [a:1.timeout]
+      endif
+      if has_key(a:1, 'background')
+        let background = a:1.background
       endif
     elseif type(a:1) is s:TYPE_STRING
       let args += [s:iconv(a:1, &encoding, 'char')]
@@ -144,6 +149,9 @@ function! s:system(str, ...) abort
     let command = s:iconv(command, &encoding, 'char')
   endif
   let args = [command] + args
+  if background && (use_vimproc || !s:is_windows)
+    let args[0] = args[0] . ' &'
+  endif
 
   let funcname = use_vimproc ? 'vimproc#system' : 'system'
   let output = call(funcname, args)

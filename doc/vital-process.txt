@@ -55,6 +55,7 @@ system({command} [, {dict}])
 		use_vimproc: bool,
 		input: string,
 		timeout: bool,
+		background: bool,
 	}
 
 get_last_status()			*Vital.Process.get_last_status()*
