@@ -1,0 +1,169 @@
+Describe Vim.ScriptLocal
+
+  Before all
+    let V = vital#of('vital')
+    let P = V.import('Prelude')
+    let S = V.import('Vim.ScriptLocal')
+  End
+
+  Describe .sid()
+    It returns SID with relative path to &runtimepath
+      let sid = S.sid('test/_testdata/Vim/ScriptLocal/test.vim')
+      Assert IsNumber(sid)
+      Assert NotEquals(sid, -1)
+      Assert Exists(printf("*\<SNR>%s_double", sid))
+    End
+    It returns SID with absolute path
+      let sid = S.sid(g:root . '/test/_testdata/Vim/ScriptLocal/test.vim')
+      Assert IsNumber(sid)
+      Assert NotEquals(sid, -1)
+      Assert Exists(printf("*\<SNR>%s_double", sid))
+    End
+    It returns SID with unsourced file (absolute path)
+      let g:vital_test_Vim_ScriptLocal_absolute_is_loaded = 0
+      Assert False(g:vital_test_Vim_ScriptLocal_absolute_is_loaded)
+      let sid = S.sid(g:root . '/test/_testdata/Vim/ScriptLocal/absolute.vim')
+      Assert IsNumber(sid)
+      Assert NotEquals(sid, -1)
+      Assert True(g:vital_test_Vim_ScriptLocal_absolute_is_loaded)
+      Assert Equals(sid, g:vital_test_Vim_ScriptLocal_absolute_SID)
+    End
+    It returns SID with unsourced file (relative path)
+      let g:vital_test_Vim_ScriptLocal_relative_is_loaded = 0
+      Assert False(g:vital_test_Vim_ScriptLocal_relative_is_loaded)
+      let sid = S.sid('test/_testdata/Vim/ScriptLocal/relative.vim')
+      Assert IsNumber(sid)
+      Assert NotEquals(sid, -1)
+      Assert True(g:vital_test_Vim_ScriptLocal_relative_is_loaded)
+      Assert Equals(sid, g:vital_test_Vim_ScriptLocal_relative_SID)
+    End
+    It returns SID with symbolic link (relative)
+      if P.is_windows()
+        Skip "windows doesn't handle symlink"
+      endif
+      let sid = S.sid('test/_testdata/Vim/ScriptLocal/symlink.vim')
+      Assert IsNumber(sid)
+      Assert NotEquals(sid, -1)
+      Assert Exists(printf("*\<SNR>%s_double", sid))
+    End
+    It returns SID with symbolic link (absolute)
+      if P.is_windows()
+        Skip "windows doesn't handle symlink"
+      endif
+      let sid = S.sid(g:root . '/test/_testdata/Vim/ScriptLocal/symlink.vim')
+      Assert IsNumber(sid)
+      Assert NotEquals(sid, -1)
+      Assert Exists(printf("*\<SNR>%s_double", sid))
+    End
+    It handles the case &regexpengine == 1
+      if !exists('+regexpengine')
+        Skip 'regexpengine option doesn''t exist'
+      endif
+      let regexpengine_save = &regexpengine
+      let &regexpengine = 1
+      try
+        let sid = S.sid('test/_testdata/Vim/ScriptLocal/test.vim')
+        Assert IsNumber(sid)
+        Assert NotEquals(sid, -1)
+        Assert Exists(printf("*\<SNR>%s_double", sid))
+      finally
+        let &regexpengine = regexpengine_save
+      endtry
+    End
+    It throws with wrong absolute path
+      Throws /vital: Vim.ScriptLocal: file not found/ S.sid(g:root . '/test/_testdata/Vim/ScriptLocal/notfound.vim')
+    End
+    It throws with wrong relative path
+      Throws /vital: Vim.ScriptLocal: file not found/ S.sid('test/_testdata/Vim/ScriptLocal/notfound.vim')
+    End
+  End
+
+  Describe .sid2path()
+    It returns path from sid
+      let path = g:root . '/test/_testdata/Vim/ScriptLocal/test.vim'
+      let sid = S.sid(path)
+      Assert Equals(fnamemodify(S.sid2path(sid), ':p'), path)
+    End
+    It throws with wrong sid
+      Throws /vital: Vim.ScriptLocal: sid not found/ S.sid2path(-100)
+    End
+  End
+
+  Describe .sfuncs()
+    It returns sfuncs with relative path to &runtimepath
+      let sfuncs = S.sfuncs('test/_testdata/Vim/ScriptLocal/test.vim')
+      Assert IsDict(sfuncs)
+      Assert HasKey(sfuncs, 'double')
+      Assert Equals(sfuncs.double(3), 6)
+      Assert HasKey(sfuncs, '_square', 'it handles underscore too')
+      Assert Equals(sfuncs._square(3), 9)
+    End
+    It returns sfuncs with absolute path
+      let sfuncs = S.sfuncs(g:root . '/test/_testdata/Vim/ScriptLocal/test.vim')
+      Assert IsDict(sfuncs)
+      Assert HasKey(sfuncs, 'double')
+      Assert Equals(sfuncs.double(3), 6)
+      Assert HasKey(sfuncs, '_square', 'it handles underscore too')
+      Assert Equals(sfuncs._square(3), 9)
+    End
+  End
+
+  Describe .sid2sfuncs()
+    It returns sfuncs with relative path to &runtimepath
+      let sfuncs = S.sid2sfuncs(S.sid('test/_testdata/Vim/ScriptLocal/test.vim'))
+      Assert IsDict(sfuncs)
+      Assert HasKey(sfuncs, 'double')
+      Assert Equals(sfuncs.double(3), 6)
+      Assert HasKey(sfuncs, '_square', 'it handles underscore too')
+      Assert Equals(sfuncs._square(3), 9)
+    End
+  End
+
+  Describe .svars()
+    It clean up the temporal function
+      let p = 'test/_testdata/Vim/ScriptLocal/test.vim'
+      let sfuncs_before = S.sfuncs(p)
+      call S.svars(p)
+      let sfuncs_after = S.sfuncs(p)
+      Assert Equals(sfuncs_after, sfuncs_before)
+    End
+    It restore the original file
+      let p = 'test/_testdata/Vim/ScriptLocal/test.vim'
+      let before = readfile(p)
+      call S.svars(p)
+      let after = readfile(p)
+      Assert Equals(after, before)
+    End
+    It returns s:var with relative path to &runtimepath
+      let svars = S.svars('test/_testdata/Vim/ScriptLocal/test.vim')
+      Assert IsDict(svars)
+      Assert HasKey(svars, 'i')
+      Assert Equals(svars.i, 1)
+      " And you can increment it
+      Assert Equals(Vital_test_Vim_ScriptLocal_test_i(), 1)
+      let svars.i += 1
+      Assert Equals(Vital_test_Vim_ScriptLocal_test_i(), 2)
+    End
+  End
+
+  Describe .sid2svars()
+    It returns s:var with sid
+      let svars = S.sid2svars(S.sid('test/_testdata/Vim/ScriptLocal/test.vim'))
+      Assert IsDict(svars)
+      Assert HasKey(svars, 'i')
+    End
+  End
+
+  Describe .scriptnames()
+    It returns scriptnames dict
+      let sns = S.scriptnames()
+      Assert IsDict(sns)
+      Assert HasKey(sns, '1')
+      for k in keys(sns)
+        Assert True(k > 0)
+        Assert IsDict(S.sid2sfuncs(k))
+      endfor
+    End
+  End
+
+End
