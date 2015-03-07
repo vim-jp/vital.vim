@@ -147,7 +147,7 @@ function! s:_get_sid_by_script(path) abort
 endfunction
 
 function! s:_file2module(file) abort
-  let filename = fnamemodify(a:file, ':p:gs?[\\/]\+?/?')
+  let filename = fnamemodify(a:file, ':p:gs?[\\/]?/?')
   let tail = matchstr(filename, 'autoload/vital/_\w\+/\zs.*\ze\.vim$')
   return join(split(tail, '[\\/]\+'), '.')
 endfunction
@@ -163,13 +163,13 @@ if filereadable(expand('<sfile>:r') . '.VIM')
       return s:_unify_path_cache[a:path]
     endif
     let value = tolower(fnamemodify(resolve(fnamemodify(
-    \                   a:path, ':p')), ':~:gs?[\\/]\+?/?'))
+    \                   a:path, ':p')), ':~:gs?[\\/]?/?'))
     let s:_unify_path_cache[a:path] = value
     return value
   endfunction
 else
   function! s:_unify_path(path) abort
-    return resolve(fnamemodify(a:path, ':p:gs?[\\/]\+?/?'))
+    return resolve(fnamemodify(a:path, ':p:gs?[\\/]?/?'))
   endfunction
 endif
 
