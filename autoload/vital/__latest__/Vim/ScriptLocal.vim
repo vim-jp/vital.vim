@@ -34,10 +34,10 @@ endfunction
 
 function! s:_source(path) abort
   try
-    execute ':source' a:path
+    execute ':source' fnameescape(a:path)
   catch /^Vim\%((\a\+)\)\=:E121/
     " NOTE: workaround for `E121: Undefined variable: s:save_cpo`
-    execute ':source' a:path
+    execute ':source' fnameescape(a:path)
   endtry
 endfunction
 
@@ -190,7 +190,7 @@ function! s:sid2svars(sid) abort
   let lines = readfile(fullpath)
   try
     call writefile(s:_get_svars_func, fullpath)
-    execute 'source' fnameescape(fullpath)
+    call s:_source(fullpath)
     let sfuncname = s:_sfuncname(a:sid, s:GETSVARSFUNCNAME)
     let svars = call(function(sfuncname), [])
     execute 'delfunction' sfuncname

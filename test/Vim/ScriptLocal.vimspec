@@ -55,6 +55,12 @@ Describe Vim.ScriptLocal
       Assert NotEquals(sid, -1)
       Assert Exists(printf("*\<SNR>%s_double", sid))
     End
+    It handles paths containing special characters
+      let sid = S.sid(g:root . '/test/_testdata/Vim/ScriptLocal/escape%.vim')
+      Assert IsNumber(sid)
+      Assert NotEquals(sid, -1)
+      Assert Equals(sid, g:vital_test_Vim_ScriptLocal_escape_SID)
+    End
     It handles the case &regexpengine == 1
       if !exists('+regexpengine')
         Skip 'regexpengine option doesn''t exist'
