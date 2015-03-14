@@ -278,7 +278,11 @@ function! s:clients.python.request(settings) abort
 try:
     class DummyClassForLocalScope:
         def main():
-            import vim, urllib2, socket
+            try:
+                from StringIO import StringIO
+            except ImportError:
+                from io import StringIO
+            import vim, urllib2, socket, gzip
             def vimstr(s):
                 return "'" + s.replace("\0", "\n").replace("'", "''") + "'"
 
@@ -327,7 +331,15 @@ try:
 
                 st = status(res)
                 responseHeaders = st + ''.join(res.info().headers)
-                return (responseHeaders, res.read())
+                response_body = res.read()
+
+                gzip_decompress = settings.get('gzipDecompress', False)
+                if gzip_decompress:
+                    buf = StringIO(response_body)
+                    f = gzip.GzipFile(fileobj=buf)
+                    response_body = f.read()[:-1]
+
+                return (responseHeaders, response_body)
 
             (header, body) = access()
             vim.command('let header = ' + vimstr(header))
@@ -367,6 +379,9 @@ function! s:clients.curl.request(settings) abort
     let a:settings._file.content = output_file
   endif
   let command .= ' --output ' . quote . output_file . quote
+  if has_key(a:settings, 'gzipDecompress') && a:settings.gzipDecompress
+    let command .= ' --compressed '
+  endif
   let command .= ' -L -s -k -X ' . a:settings.method
   let command .= ' --max-redirs ' . a:settings.maxRedirect
   let command .= s:_make_header_args(a:settings.headers, '-H ', quote)
