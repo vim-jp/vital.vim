@@ -1,0 +1,122 @@
+*vital-concurrent_process.txt*	Manages process concurrently with vimproc.
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS			*Vital.ConcurrentProcess-contents*
+
+INTRODUCTION			|Vital.ConcurrentProcess-introduction|
+  USAGE				|Vital.ConcurrentProcess-usage|
+  PRINCIPLE			|Vital.ConcurrentProcess-principle|
+INTERFACE			|Vital.ConcurrentProcess-interface|
+  FUNCTIONS			  |Vital.ConcurrentProcess-functions|
+CONFIG				|Vital.ConcurrentProcess-config|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.ConcurrentProcess-introduction*
+
+*Vital.ConcurrentProcess* is to communitate with external process concurrently
+with using |vimproc|.  This library stores external processes information
+spawned by this library, and provides higher layer concurrent synchronous
+non-blocking read/write interface. This library doesn't use thread nor fork,
+so by nature this library can't crash Vim by them.
+
+Note that this library doesn't work on Vim without vimproc; vimproc is
+required.
+
+
+==============================================================================
+USAGE				*Vital.ConcurrentProcess-usage*
+
+TODO
+
+==============================================================================
+PRINCIPLE			*Vital.ConcurrentProcess-principle*
+
+* Nonblocking by default
+  * blocking APIs should have verbose name to discourage developers to use
+* Timeout is required if it's blocking
+  * Remember that: not to specify timeout is same to specify timeout as
+    forever. Having 30 year timeout explicitly is better than to specify
+    forever implicitly.
+* Synchronous (asynchronous in Vim always makes trouble)
+* Don't show lower layer too much easily, but don't hide completely. No
+  perfect abstraction exists in the world.
+* Avoid tricky specification. Function name and behaviour itself should
+  explain what it does.
+>
+==============================================================================
+INTERFACE			*Vital.ConcurrentProcess-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.ConcurrentProcess-functions*
+
+of({command}, {dir}, {list})			*Vital.ConcurrentProcess.of()*
+	Spawns an external process based on the arguments, and returns a
+	string which is used as |Vital.ConcurrentProcess-term.label| later.
+
+	Besides the side-effect, the return value is idempotent; if you give
+	exactly same arguments, this function always returns exactly same
+	string.
+
+	Check |Vital.ConcurrentProcess-usage| how to use this with other
+	functions.
+
+is_available()			*Vital.ConcurrentProcess.is_available()*
+	Returns 1 if the running Vim can use ConcurrentProcess, otherwise 0.
+
+tick({label})				*Vital.ConcurrentProcess.tick()*
+	This is an action |Vital.ConcurrentProcess-term.action|, and does
+	nothing besides action.
+
+queue({label}, {list})			*Vital.ConcurrentProcess.queue()*
+	TODO
+
+consume({label}, {varname})		*Vital.ConcurrentProcess.consume()*
+	TODO
+
+consume_all_blocking({label}, {varname})
+			*Vital.ConcurrentProcess.consume_all_blocking()*
+	TODO
+
+is_done({label}, {rname})		*Vital.ConcurrentProcess.is_done()*
+	TODO
+
+is_busy({label})			*Vital.ConcurrentProcess.is_busy()*
+	TODO
+
+shutdown({label})			*Vital.ConcurrentProcess.shutdown()*
+	TODO
+
+log_clear({label})			*Vital.ConcurrentProcess.log_clear()*
+	Just to wipe out accumulated logs for the process.
+
+log_dump({label})			*Vital.ConcurrentProcess.log_dump()*
+	Print out the accumulated logs for the process, and wipe out it.
+
+------------------------------------------------------------------------------
+TERMS				*Vital.ConcurrentProcess-terms*
+
+label					*Vital.ConcurrentProcess-term.label*
+	A string that represents a running/dead process managed by
+	ConcurrentProcess.
+
+action
+	The external process runs in parallel independent to Vim, but the
+	communication between Vim and the process is always done
+	synchronously. A function which is an action, such as consume(), will
+	trigger the communication; reads from stdout/stderr, or writes to stdin
+	if there's corresponding queue.
+
+	The following functions are actions.
+	* |Vital.ConcurrentProcess.tick()|
+	* |Vital.ConcurrentProcess.consume()|
+	* |Vital.ConcurrentProcess.consume_all_blocking()|
+	* |Vital.ConcurrentProcess.is_done()|
+	* |Vital.ConcurrentProcess.queue()|
+	* |Vital.ConcurrentProcess.is_busy()|
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
