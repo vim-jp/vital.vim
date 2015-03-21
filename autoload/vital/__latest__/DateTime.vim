@@ -709,6 +709,7 @@ let s:format_info = {
 \   'D': '%m/%d/%y',
 \   'e': '%_m/%_d/%_y',
 \   'F': '%Y-%m-%d',
+\   'h': '%b',
 \   'H': ['hour', ['0', 2]],
 \   'I': ['hour', ['0', 2], 's:_mod(value - 1, 12) + 1', 'value % 12'],
 \   'j': ['day_of_year', ['0', 3]],
@@ -737,7 +738,6 @@ let s:format_info = {
 \         's:timezone(empty(value) ? 0 : value)'],
 \   '*': ['#skip', '.\{-}', ''],
 \ }
-let s:format_info.h = s:format_info.b
 let s:DESCRIPTORS_PATTERN = '[' . join(keys(s:format_info), '') . ']'
 
 " 'foo%Ybar%02m' => ['foo', ['Y', '', -1], 'bar', ['m', '0', 2], '']
