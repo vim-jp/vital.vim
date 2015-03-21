@@ -202,12 +202,12 @@ Describe DateTime
 
   Describe .is_leap_year()
     It judges whether a year is a leap year
-      Assert True(DT.is_leap_year(1996))
-      Assert True(DT.is_leap_year(2000))
-      Assert True(DT.is_leap_year(2004))
-      Assert False(DT.is_leap_year(1900))
-      Assert False(DT.is_leap_year(2006))
-      Assert False(DT.is_leap_year(2100))
+      Assert Truthy(DT.is_leap_year(1996))
+      Assert Truthy(DT.is_leap_year(2000))
+      Assert Truthy(DT.is_leap_year(2004))
+      Assert Falsy(DT.is_leap_year(1900))
+      Assert Falsy(DT.is_leap_year(2006))
+      Assert Falsy(DT.is_leap_year(2100))
     End
   End
 
@@ -264,8 +264,8 @@ Describe DateTime
       It returns new negated TimeDelta object
         let delta = DT.delta(1, 100)
         let result = delta.negate()
-        Assert True(result.is(DT.delta(-1, -100)))
-        Assert True(result.negate().is(delta))
+        Assert Truthy(result.is(DT.delta(-1, -100)))
+        Assert Truthy(result.negate().is(delta))
       End
     End
 
@@ -273,8 +273,8 @@ Describe DateTime
       It returns new TimeDelta object that is absolute value
         let delta = DT.delta(-1, -100)
         let result = delta.duration()
-        Assert True(result.is(DT.delta(1, 100)))
-        Assert True(result.duration().is(DT.delta(1, 100)))
+        Assert Truthy(result.is(DT.delta(1, 100)))
+        Assert Truthy(result.duration().is(DT.delta(1, 100)))
       End
     End
 
@@ -282,12 +282,12 @@ Describe DateTime
       It returns true if two TimeDeltas are same
         let delta1 = DT.delta(0, 43200)
         let delta2 = DT.delta(1, -43200)
-        Assert True(delta1.is(delta2))
+        Assert Truthy(delta1.is(delta2))
       End
       It returns false if two TimeDeltas are not same
         let delta1 = DT.delta(0, 43200)
         let delta2 = DT.delta(0, -43200)
-        Assert False(delta1.is(delta2))
+        Assert Falsy(delta1.is(delta2))
       End
     End
 
@@ -296,7 +296,7 @@ Describe DateTime
         let delta1 = DT.delta(1, 100)
         let delta2 = DT.delta(2, 50)
         let result = delta1.add(delta2)
-        Assert True(result.is(DT.delta(3, 150)))
+        Assert Truthy(result.is(DT.delta(3, 150)))
       End
     End
 
@@ -305,7 +305,7 @@ Describe DateTime
         let delta1 = DT.delta(1, 100)
         let delta2 = DT.delta(2, 150)
         let result = delta1.subtract(delta2)
-        Assert True(result.is(DT.delta(-1, -50)))
+        Assert Truthy(result.is(DT.delta(-1, -50)))
       End
     End
 
