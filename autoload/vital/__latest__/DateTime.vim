@@ -114,7 +114,7 @@ function! s:from_format(string, format, ...) abort
 endfunction
 " @vimlint(EVL102, 1, l:locale)
 function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale) abort
-  " "o", "key", "value" and "locale" is used by parse_conv
+  " "o", "key", "value" and "locale" are used by parse_conv
   let o = a:datetime
   let locale = a:locale " for parse_conv
   let [info, flag, width] = a:descriptor
