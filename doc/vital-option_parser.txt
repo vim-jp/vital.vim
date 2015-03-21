@@ -155,7 +155,7 @@ Parser.on({name}, {description} [, {extra}])
 
 	- {extra} (optional)
 	  If {extra} is |Dictionary| value, it can contain below keys; "short",
-	  "default" or "completion" or "required" or "pattern".
+	  "default", "completion", "required" or "pattern".
 	  Otherwise, {extra} is dealt with a default value of the option.
 
 	  - "short"
