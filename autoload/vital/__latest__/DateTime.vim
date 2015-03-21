@@ -701,7 +701,7 @@ let s:format_info = {
 \   'B': ['month', function('s:_month_full'),
 \         's:_month_full(locale)[value - 1]', 'value + 1'],
 \   'c': '%F %T %z',
-\   'C': ['year', ['0', 2], 'value / 100', 'o[key] % 100 + value * 100'],
+\   'C': ['year', ['0', 2], '(value + 99) / 100', 'o[key] % 100 + value * 100'],
 \   'd': ['day', ['0', 2]],
 \   'D': '%m/%d/%y',
 \   'e': '%_m/%_d/%_y',
