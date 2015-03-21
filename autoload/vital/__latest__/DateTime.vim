@@ -95,8 +95,11 @@ function! s:from_format(string, format, ...) abort
       let pat = '^' . skip_pattern . '\V' . escape(f, '\')
       let matched_len = len(matchstr(remain, pat))
       if matched_len == 0
-        throw "vital: DateTime: Parse error:\n" .
-        \     'input: ' . a:string . "\nformat: " . a:format
+        throw join([
+        \   'vital: DateTime: Parse error:',
+        \   'input: ' . a:string,
+        \   'format: ' . a:format,
+        \ ], "\n")
       endif
       let remain = remain[matched_len :]
     else  " if s:Prelude.is_list(f)
