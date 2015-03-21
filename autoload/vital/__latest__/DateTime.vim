@@ -723,7 +723,7 @@ let s:format_info = {
 \         's:_am_pm_lower(locale)[value / 12]', 'o[key] + value * 12'],
 \   'r': '%I:%M:%S %p',
 \   'R': '%H:%M',
-\   's': ['unix_time', ['', 20]],
+\   's': ['unix_time', ['', '']],
 \   'S': ['second', ['0', 2]],
 \   't': ['', '\_.*', "\t"],
 \   'u': ['day_of_week', ['0', 1], 'value == 0 ? 7 : value'],
