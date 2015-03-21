@@ -634,7 +634,45 @@ Describe DateTime
   End
 
   Describe TimeZone object
-    " TODO
+    Before each
+      let tz = DT.timezone('-0800')
+    End
+
+    Describe .offset()
+      It returns the offset in second
+        Assert Equals(tz.offset(), -28800)
+      End
+    End
+
+    Describe .minutes()
+      It returns the offset in minute
+        Assert Equals(tz.minutes(), -480)
+      End
+    End
+
+    Describe .hours()
+      It returns the offset in hour
+        Assert Equals(tz.hours(), -8)
+      End
+    End
+
+    Describe .sign()
+      It returns the offset of sign
+        Assert Equals(tz.sign(), -1)
+      End
+    End
+
+    Describe .offset_string()
+      It returns the offset by the format used by RFC 2822
+        Assert Equals(tz.offset_string(), '-0800')
+      End
+    End
+
+    Describe .w3c()
+      It returns the offset by the format used by W3CDTF
+        Assert Equals(tz.w3c(), '-08:00')
+      End
+    End
   End
 
   Describe TimeDelta object
