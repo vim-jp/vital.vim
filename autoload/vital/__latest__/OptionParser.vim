@@ -115,7 +115,7 @@ endfunction
 
 function! s:_check_pattern_option(parsed_args, options) abort
   for [name, pattern_option] in map(items(filter(copy(a:options), 'has_key(v:val, "pattern_option")')), '[v:val[0], v:val[1].pattern_option]')
-    if has_key(a:parsed_args, name) && a:parsed_args[name] !~ pattern_option
+    if has_key(a:parsed_args, name) && a:parsed_args[name] !~# pattern_option
       throw 'vital: OptionParser: parameter doesn''t match pattern: ' . name . ' ' . pattern_option
     endif
   endfor
