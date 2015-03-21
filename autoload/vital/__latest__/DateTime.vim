@@ -63,9 +63,10 @@ endfunction
 
 " Creates a DateTime object from given unix time.
 function! s:from_unix_time(unix_time, ...) abort
+  let tz = call('s:timezone', a:000)
   return call('s:from_date',
   \   map(split(strftime('%Y %m %d %H %M %S', a:unix_time)),
-  \       'str2nr(v:val, 10)') + a:000)
+  \       'str2nr(v:val, 10)')).to(tz)
 endfunction
 
 " Creates a DateTime object from given date and time.
