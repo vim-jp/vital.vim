@@ -265,7 +265,7 @@ TimeDelta.negate()		*Vital.DateTime-TimeDelta.negate()*
 TimeDelta.duration()		*Vital.DateTime-TimeDelta.duration()*
 	Returns a TimeDelta object that is absolute value.
 
-TimeDelta.is({TimeDelta})	*Vital.DateTime-TimeDelta.add()*
+TimeDelta.is({TimeDelta})	*Vital.DateTime-TimeDelta.is()*
 	Returns true if this TimeDelta and the specified {TimeDelta} is the
 	same delta.
 
