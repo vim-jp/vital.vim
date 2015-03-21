@@ -25,11 +25,18 @@ function! s:_PRESET_COMPLETER.file(optlead, cmdline, cursorpos) abort
 endfunction
 
 function! s:_make_option_description_for_help(opt) abort
-  let desc = a:opt.description
+  let extra = ''
   if has_key(a:opt, 'default_value')
-    let desc .= ' (DEFAULT: ' . string(a:opt.default_value) . ')'
+    let extra .= 'DEFAULT: ' . string(a:opt.default_value) . ', '
   endif
-  return desc
+  if get(a:opt, 'required_option', 0)
+    let extra .= 'REQUIRED, '
+  endif
+  let extra = substitute(extra, ', $', '', '')
+  if !empty(extra)
+    let extra = ' (' . extra . ')'
+  endif
+  return a:opt.description . extra
 endfunction
 
 function! s:_make_option_definition_for_help(opt) abort
@@ -92,6 +99,14 @@ function! s:_set_default_values(parsed_args, options) abort
       let a:parsed_args[name] = default_value
     endif
     unlet default_value
+  endfor
+endfunction
+
+function! s:_check_required_option(parsed_args, options) abort
+  for [name, required_option] in map(items(filter(copy(a:options), 'has_key(v:val, "required_option")')), '[v:val[0], v:val[1].required_option]')
+    if required_option && ! has_key(a:parsed_args, name)
+      throw 'vital: OptionParser: parameter is required: ' . name
+    endif
   endfor
 endfunction
 
@@ -188,6 +203,7 @@ function! s:_DEFAULT_PARSER.parse(...) abort
 
   let ret = parsed_args[0]
   call s:_set_default_values(ret, self.options)
+  call s:_check_required_option(ret, self.options)
   call extend(ret, opts.specials)
   let ret.__unknown_args__ = parsed_args[1]
   return ret
@@ -237,6 +253,12 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...) abort
         else
           let self.options[name].completion = a:1.completion
         endif
+      endif
+      if has_key(a:1, 'required')
+        if (a:1.required !~# '^[01]$')
+          throw 'vital: OptionParser: Invalid required option: ' . a:1.required
+        endif
+        let self.options[name].required_option = a:1.required
       endif
     else
       let self.options[name].default_value = a:1

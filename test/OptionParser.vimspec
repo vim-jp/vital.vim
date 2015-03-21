@@ -139,6 +139,16 @@ Describe OptionParser
       Assert IsFunc(o.options.huga.completion)
     End
 
+    It occurs an error when invalid required option is specified
+      let o = O.new()
+      Throws o.on('--hoge=VALUE', '', {'required' : '-1'})
+      Throws o.on('--hoge=VALUE', '', {'required' : '2'})
+      Throws o.on('--hoge=VALUE', '', {'required' : 'a'})
+      Throws o.on('--hoge=VALUE', '', {'required' : ''})
+      Throws o.on('--hoge=VALUE', '', {'required' : 1.0})
+      Throws o.on('--hoge=VALUE', '', {'required' : 0.0})
+    End
+
   End
 
   Describe obj.parse()
@@ -218,6 +228,24 @@ Describe OptionParser
       call o.on('--huga', '', 'default value')
       Assert Equals(o.parse(''), {'__unknown_args__' : [], 'hoge' : 3.14, 'huga' : 'default value'})
       Assert Equals(o.parse('--hoge --huga --piyo'), {'__unknown_args__' : ['--piyo'], 'hoge' : 1, 'huga' : 1})
+    End
+
+    It parses required option --hoge must be specified
+      let o = O.new()
+      call o.on('--hoge', '', {'required' : 1})
+      call o.on('--huga', '')
+      Assert Equals(o.parse('--hoge --huga'), {'__unknown_args__' : [], 'hoge' : 1, 'huga' : 1})
+      Assert Equals(o.parse('--hoge'), {'__unknown_args__' : [], 'hoge' : 1})
+      Throws o.parse('--huga')
+    End
+
+    It parses required option --hoge need not be specified
+      let o = O.new()
+      call o.on('--hoge', '', {'required' : 0})
+      call o.on('--huga', '')
+      Assert Equals(o.parse('--hoge --huga'), {'__unknown_args__' : [], 'hoge' : 1, 'huga' : 1})
+      Assert Equals(o.parse('--hoge'), {'__unknown_args__' : [], 'hoge' : 1})
+      Assert Equals(o.parse('--huga'), {'__unknown_args__' : [], 'huga' : 1})
     End
 
     It doesn't parse arguments not defined with on()
@@ -312,6 +340,8 @@ Describe OptionParser
       call o.on('--[no-]bar', 'description of bar, contradictable')
       call o.on('--baz', 'description of baz, has short option', {'short' : '-b'})
       call o.on('--qux', 'description of qux, has default value', {'default' : 3.14})
+      call o.on('--quux', 'description of quux, has required option', {'required' : 1})
+      call o.on('--grault', 'description of grault, has extra options', {'default' : 3.14, 'required' : 1})
 
       Assert Equals(o.help(), join([
             \   "Options:",
@@ -320,6 +350,8 @@ Describe OptionParser
             \   "  --hoge=VALUE : description of hoge, must have value",
             \   "  --[no-]bar   : description of bar, contradictable",
             \   "  --qux        : description of qux, has default value (DEFAULT: 3.14)",
+            \   "  --quux       : description of quux, has required option (REQUIRED)",
+            \   "  --grault     : description of grault, has extra options (DEFAULT: 3.14, REQUIRED)",
             \ ], "\n"))
     End
 
