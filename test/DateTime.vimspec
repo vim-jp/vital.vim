@@ -78,7 +78,8 @@ Describe DateTime
   Describe .timezone()
     It makes a TimeZone object
       let tz = DT.timezone()
-      Assert Equals(tz.hours(), 9)
+      Assert Compare(tz.hours(), '<=', 14)
+      Assert Compare(tz.hours(), '>=', -12)
     End
     It makes a TimeZone object from time string
       let tz = DT.timezone('+0900')
