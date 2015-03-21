@@ -6,24 +6,14 @@ Describe DateTime
   Context .from_unix_time()
     It makes a DateTime object from unix time
       let dt = DT.from_unix_time(1325441045, 9)
-      Assert Equals(dt.year(), 2012)
-      Assert Equals(dt.month(), 1)
-      Assert Equals(dt.day(), 2)
-      Assert Equals(dt.hour(), 3)
-      Assert Equals(dt.minute(), 4)
-      Assert Equals(dt.second(), 5)
+      Assert Equals(dt.to_string(), '2012-01-02 03:04:05 +0900')
     End
   End
 
   Describe .from_date()
     It makes a DateTime object from date info
-      let dt = DT.from_date(2012, 1, 2, 3, 4, 5)
-      Assert Equals(dt.year(), 2012)
-      Assert Equals(dt.month(), 1)
-      Assert Equals(dt.day(), 2)
-      Assert Equals(dt.hour(), 3)
-      Assert Equals(dt.minute(), 4)
-      Assert Equals(dt.second(), 5)
+      let dt = DT.from_date(2012, 1, 2, 3, 4, 5, 9)
+      Assert Equals(dt.to_string(), '2012-01-02 03:04:05 +0900')
     End
   End
 
@@ -66,12 +56,7 @@ Describe DateTime
   Describe .from_julian_day()
     It makes a DateTime object from string
       let dt = DT.from_julian_day(2455928.627836, 0)
-      Assert Equals(dt.year(), 2012)
-      Assert Equals(dt.month(), 1)
-      Assert Equals(dt.day(), 2)
-      Assert Equals(dt.hour(), 3)
-      Assert Equals(dt.minute(), 4)
-      Assert Equals(dt.second(), 5)
+      Assert Equals(dt.to_string(), '2012-01-02 03:04:05 +0000')
     End
   End
 
