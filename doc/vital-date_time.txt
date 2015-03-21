@@ -180,7 +180,7 @@ DateTime.to({delta})		*Vital.DateTime-DateTime.to()*
 DateTime.to({timezone})
 	Returns a new object from which the specified time is different.
 	This function accepts the followings:
-	- {DateDelta} object or {TimeZone} object.
+	- {TimeDelta} object or {TimeZone} object.
 	- If the length of argument is one, it is a {timezone}.
 	  This the same arguments as |Vital.DateTime.timezone()|.
 	- If the length of argument is two or more, it is a {delta}.
