@@ -155,7 +155,7 @@ Parser.on({name}, {description} [, {extra}])
 
 	- {extra} (optional)
 	  If {extra} is |Dictionary| value, it can contain below keys; "short",
-	  "default" or "completion" or "required".
+	  "default" or "completion" or "required" or "pattern".
 	  Otherwise, {extra} is dealt with a default value of the option.
 
 	  - "short"
@@ -186,6 +186,11 @@ Parser.on({name}, {description} [, {extra}])
 	    must be specified. If it isn't specified, Vital throw exception.
 	    And if 0, it means this option is optional.
 	    If "default" key is specified, "required" value ignored.
+
+	  - "pattern"
+	    If {extra} has "pattern" key, its value should be |String| and means
+	    this option must match "pattern" value.
+	    If it doesn't match "pattern" value, Vital throw exception.
 
 					*Vital.OptionParser-Parser.parse()*
 Parser.parse({q-args} [, {cmd-attributes}...])

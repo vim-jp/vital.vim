@@ -149,6 +149,11 @@ Describe OptionParser
       Throws o.on('--hoge=VALUE', '', {'required' : 0.0})
     End
 
+    It occurs an error when invalid pattern option is specified
+      let o = O.new()
+      Throws o.on('--hoge=VALUE', '', {'pattern' : '\('})
+    End
+
   End
 
   Describe obj.parse()
@@ -248,6 +253,16 @@ Describe OptionParser
       Assert Equals(o.parse('--huga'), {'__unknown_args__' : [], 'huga' : 1})
     End
 
+    It parses pattern option only number
+      let o = O.new()
+      call o.on('--hoge=VALUE', '', {'pattern' : '^\d\+$'})
+      Assert Equals(o.parse('--hoge=0'), {'__unknown_args__' : [], 'hoge' : '0'})
+      Assert Equals(o.parse('--hoge=99999'), {'__unknown_args__' : [], 'hoge' : '99999'})
+      Throws o.parse('--hoge=-1')
+      Throws o.parse('--hoge=99999.')
+      Throws o.parse('--hoge=aaa')
+    End
+
     It doesn't parse arguments not defined with on()
       let o = O.new()
       call o.on('--foo', 'huga')
@@ -341,17 +356,19 @@ Describe OptionParser
       call o.on('--baz', 'description of baz, has short option', {'short' : '-b'})
       call o.on('--qux', 'description of qux, has default value', {'default' : 3.14})
       call o.on('--quux', 'description of quux, has required option', {'required' : 1})
-      call o.on('--grault', 'description of grault, has extra options', {'default' : 3.14, 'required' : 1})
+      call o.on('--corge', 'description of corge, has pattern option', {'pattern' : '^\d$'})
+      call o.on('--grault', 'description of grault, has extra options', {'default' : 3.14, 'required' : 1, 'pattern' : '^\d$'})
 
       Assert Equals(o.help(), join([
             \   "Options:",
             \   "  --foo        : description of foo",
             \   "  --baz, -b    : description of baz, has short option",
+            \   "  --corge      : description of corge, has pattern option (PATTERN: '^\\d$')",
             \   "  --hoge=VALUE : description of hoge, must have value",
             \   "  --[no-]bar   : description of bar, contradictable",
             \   "  --qux        : description of qux, has default value (DEFAULT: 3.14)",
             \   "  --quux       : description of quux, has required option (REQUIRED)",
-            \   "  --grault     : description of grault, has extra options (DEFAULT: 3.14, REQUIRED)",
+            \   "  --grault     : description of grault, has extra options (DEFAULT: 3.14, REQUIRED, PATTERN: '^\\d$')",
             \ ], "\n"))
     End
 

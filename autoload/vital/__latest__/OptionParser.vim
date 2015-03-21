@@ -32,6 +32,9 @@ function! s:_make_option_description_for_help(opt) abort
   if get(a:opt, 'required_option', 0)
     let extra .= 'REQUIRED, '
   endif
+  if has_key(a:opt, 'pattern_option')
+    let extra .= 'PATTERN: ' . string(a:opt.pattern_option) . ', '
+  endif
   let extra = substitute(extra, ', $', '', '')
   if !empty(extra)
     let extra = ' (' . extra . ')'
@@ -106,6 +109,14 @@ function! s:_check_required_option(parsed_args, options) abort
   for [name, required_option] in map(items(filter(copy(a:options), 'has_key(v:val, "required_option")')), '[v:val[0], v:val[1].required_option]')
     if required_option && ! has_key(a:parsed_args, name)
       throw 'vital: OptionParser: parameter is required: ' . name
+    endif
+  endfor
+endfunction
+
+function! s:_check_pattern_option(parsed_args, options) abort
+  for [name, pattern_option] in map(items(filter(copy(a:options), 'has_key(v:val, "pattern_option")')), '[v:val[0], v:val[1].pattern_option]')
+    if has_key(a:parsed_args, name) && a:parsed_args[name] !~ pattern_option
+      throw 'vital: OptionParser: parameter doesn''t match pattern: ' . name . ' ' . pattern_option
     endif
   endfor
 endfunction
@@ -204,6 +215,7 @@ function! s:_DEFAULT_PARSER.parse(...) abort
   let ret = parsed_args[0]
   call s:_set_default_values(ret, self.options)
   call s:_check_required_option(ret, self.options)
+  call s:_check_pattern_option(ret, self.options)
   call extend(ret, opts.specials)
   let ret.__unknown_args__ = parsed_args[1]
   return ret
@@ -259,6 +271,14 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...) abort
           throw 'vital: OptionParser: Invalid required option: ' . a:1.required
         endif
         let self.options[name].required_option = a:1.required
+      endif
+      if has_key(a:1, 'pattern')
+        try
+          call match('', a:1.pattern)
+        catch
+          throw printf('vital: OptionParser: Invalid pattern option: exception="%s" pattern="%s"', v:exception, a:1.pattern)
+        endtry
+        let self.options[name].pattern_option = a:1.pattern
       endif
     else
       let self.options[name].default_value = a:1
