@@ -272,6 +272,7 @@ Describe DateTime
     Describe .day_of_year()
       It returns day of the year
         Assert Equals(dt.day_of_year(), 2)
+        Assert Equals(DT.from_format('2015-01-01 01:00:00 +0900', '%c').day_of_year(), 1)
       End
     End
 
@@ -292,6 +293,12 @@ Describe DateTime
         It returns Julian day by float value
           Assert Compare(abs(2455928.627836 - dt.julian_day(1)), '<', 0.00001)
         End
+      End
+
+      It does not change the result by timezone
+        Assert Compare(abs(2455928.627836 - dt.julian_day(1)), '<', 0.00001)
+        Assert Compare(abs(2455928.627836 - dt.to(9).julian_day(1)), '<', 0.00001)
+        Assert Compare(abs(2455928.627836 - dt.to(-8).julian_day(1)), '<', 0.00001)
       End
     End
 
@@ -319,6 +326,12 @@ Describe DateTime
           let dt = DT.from_date(1969, 12, 31)
           Assert Equals(dt.unix_time(), -1)
         End
+      End
+
+      It does not change the result by timezone
+        Assert Equals(dt.unix_time(), 1325473445)
+        Assert Equals(dt.to(9).unix_time(), 1325473445)
+        Assert Equals(dt.to(-8).unix_time(), 1325473445)
       End
     End
 

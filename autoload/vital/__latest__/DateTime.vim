@@ -310,13 +310,13 @@ function! s:DateTime.timezone(...) abort
 endfunction
 function! s:DateTime.day_of_week() abort
   if !has_key(self, '_day_of_week')
-    let self._day_of_week = self.days_from_era() % 7
+    let self._day_of_week = self.timezone(0).days_from_era() % 7
   endif
   return self._day_of_week
 endfunction
 function! s:DateTime.day_of_year() abort
   if !has_key(self, '_day_of_year')
-    let self._day_of_year = self.julian_day() -
+    let self._day_of_year = self.timezone(0).julian_day() -
     \                       s:_g2jd(self._year, 1, 1) + 1
   endif
   return self._day_of_year
@@ -328,11 +328,12 @@ function! s:DateTime.days_from_era() abort
   return self._day_from_era
 endfunction
 function! s:DateTime.julian_day(...) abort
-  let jd = s:_g2jd(self._year, self._month, self._day)
+  let utc = self.to(0)
+  let jd = s:_g2jd(utc._year, utc._month, utc._day)
   if a:0 && a:1
     if has('float')
-      let jd += (self.seconds_of_day() + 0.0) / s:SECONDS_OF_DAY - 0.5
-    elseif self._hour < 12
+      let jd += (utc.seconds_of_day() + 0.0) / s:SECONDS_OF_DAY - 0.5
+    elseif utc._hour < 12
       let jd -= 1
     endif
   endif
