@@ -488,6 +488,12 @@ Describe DateTime
         End
       End
 
+      Context symbol "%h"
+        It is equivalent to "%b"
+          Assert Equals(dt.format('%h'), dt.format('%b'))
+        End
+      End
+
       Context symbol "%H"
         It is the hour as a decimal number using a 24-hour clock (range 00 to 23)
           Assert Equals(dt.format('%H'), '03')

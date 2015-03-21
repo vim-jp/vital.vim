@@ -322,6 +322,7 @@ There is a list of specifications of the format.
   o o  %D  Equivalent to "%m/%d/%y".
   o o  %e  Equivalent to "%_m/%_d/%_y".
   o o  %F  Equivalent to "%Y-%m-%d".
+  o o  %h  Equivalent to "%b".
   o o  %H  The hour as a decimal number using a 24-hour clock(range 00 to 23).
   o o  %I  The hour as a decimal number using a 12-hour clock(range 01 to 12).
   o    %j  The day of the year as a decimal number (range 001 to 366).
