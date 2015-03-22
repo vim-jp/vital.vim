@@ -3,18 +3,57 @@ Describe Math
     let M = vital#of('vital').import('Math')
   End
 
+  Describe .modulo()
+    It returns modulo
+      Assert Equals(M.modulo(10, 3), 1)
+      Assert Equals(M.modulo(-10, 3), 2)
+      Assert Equals(M.modulo(10, -3), -2)
+      Assert Equals(M.modulo(-10, -3), -1)
+    End
+  End
+
+  Describe .fib()
+    It returns fib if it's less than or equal to 48
+      Assert Equals(0, M.fib(0))
+      Assert Equals(1, M.fib(1))
+      Assert Equals(55, M.fib(10))
+      Assert Equals(512559680, M.fib(48))
+    End
+  End
+
+  Describe .lcm()
+    It returns least common multiple number
+      Assert Equals(M.lcm([2, 3]), 6 )
+      Assert Equals(M.lcm([2, -3]), 6 )
+      Assert Equals(M.lcm([7, 2, 3, 2]), 42)
+      Assert Equals(M.lcm([0]), 0 )
+      Assert Equals(M.lcm([2, 3, 0]), 0 )
+    End
+  End
+
+  Describe .gcd()
+    It returns greatest common divisor
+      Assert Equals(M.gcd([2, 3]), 1 )
+      Assert Equals(M.gcd([20, -30]), 10)
+      Assert Equals(M.gcd([5, 20, 30]), 5 )
+      Assert Equals(M.gcd([0]), 0 )
+      Assert Equals(M.gcd([4, 0, 6]), 2 )
+      Assert Equals(M.gcd([0, 0, 0]), 0 )
+    End
+  End
+
   Describe .sum()
-    It returns sum integers.
+    It returns sum integers
       Assert Equals(M.sum([1, 2, 3, 4, 5]), 15)
     End
-    It returns sum real numbers.
+    It returns sum real numbers
       Assert Equals(M.sum([1.0, 2.0, 3.2, 4.0, 5.3]), 15.5)
       Assert Equals(M.sum([1, 2, 3.2, 4, 5.3]), 15.5)
     End
-    It throws illigal arguments.
+    It throws illigal arguments
       Throws M.sum([1, 2, '3', 4, 5])
     End
-    It returns argument is empty list.
+    It returns argument is empty list
       Assert Equals(M.sum([]), 0)
     End
   End
