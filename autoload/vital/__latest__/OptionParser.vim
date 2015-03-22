@@ -96,27 +96,16 @@ function! s:_expand_short_option(arg, options) abort
   return a:arg
 endfunction
 
-function! s:_set_default_values(parsed_args, options) abort
-  for [name, default_value] in map(items(filter(copy(a:options), 'has_key(v:val, "default_value")')), '[v:val[0], v:val[1].default_value]')
-    if ! has_key(a:parsed_args, name)
-      let a:parsed_args[name] = default_value
+function! s:_check_extra_option(parsed_args, options) abort
+  for [name, option] in items(a:options)
+    if has_key(option, 'default_value') && ! has_key(a:parsed_args, name)
+      let a:parsed_args[name] = option.default_value
     endif
-    unlet default_value
-  endfor
-endfunction
-
-function! s:_check_required_option(parsed_args, options) abort
-  for [name, required_option] in map(items(filter(copy(a:options), 'has_key(v:val, "required_option")')), '[v:val[0], v:val[1].required_option]')
-    if required_option && ! has_key(a:parsed_args, name)
+    if get(option, 'required_option', 0) && ! has_key(a:parsed_args, name)
       throw 'vital: OptionParser: parameter is required: ' . name
     endif
-  endfor
-endfunction
-
-function! s:_check_pattern_option(parsed_args, options) abort
-  for [name, pattern_option] in map(items(filter(copy(a:options), 'has_key(v:val, "pattern_option")')), '[v:val[0], v:val[1].pattern_option]')
-    if has_key(a:parsed_args, name) && a:parsed_args[name] !~# pattern_option
-      throw 'vital: OptionParser: parameter doesn''t match pattern: ' . name . ' ' . pattern_option
+    if has_key(option, 'pattern_option') && has_key(a:parsed_args, name) && a:parsed_args[name] !~# option.pattern_option
+      throw 'vital: OptionParser: parameter doesn''t match pattern: ' . name . ' ' . options.pattern_option
     endif
   endfor
 endfunction
@@ -213,9 +202,7 @@ function! s:_DEFAULT_PARSER.parse(...) abort
   let parsed_args = s:_parse_args(opts.q_args, self.options)
 
   let ret = parsed_args[0]
-  call s:_set_default_values(ret, self.options)
-  call s:_check_required_option(ret, self.options)
-  call s:_check_pattern_option(ret, self.options)
+  call s:_check_extra_option(ret, self.options)
   call extend(ret, opts.specials)
   let ret.__unknown_args__ = parsed_args[1]
   return ret
