@@ -356,19 +356,19 @@ Describe OptionParser
       call o.on('--baz', 'description of baz, has short option', {'short' : '-b'})
       call o.on('--qux', 'description of qux, has default value', {'default' : 3.14})
       call o.on('--quux', 'description of quux, has required option', {'required' : 1})
-      call o.on('--corge', 'description of corge, has pattern option', {'pattern' : '^\d$'})
-      call o.on('--grault', 'description of grault, has extra options', {'default' : 3.14, 'required' : 1, 'pattern' : '^\d$'})
+      call o.on('--corge', 'description of corge, has pattern option', {'pattern' : '^\d\+\%(\.\d\+\)\?$'})
+      call o.on('--grault', 'description of grault, has extra options', {'default' : 3.14, 'required' : 1, 'pattern' : '^\d\+\%(\.\d\+\)\?$'})
 
       Assert Equals(o.help(), join([
             \   "Options:",
             \   "  --foo        : description of foo",
             \   "  --baz, -b    : description of baz, has short option",
-            \   "  --corge      : description of corge, has pattern option (PATTERN: '^\\d$')",
+            \   "  --corge      : description of corge, has pattern option (PATTERN: '^\\d\\+\\%(\\.\\d\\+\\)\\?$')",
             \   "  --hoge=VALUE : description of hoge, must have value",
             \   "  --[no-]bar   : description of bar, contradictable",
             \   "  --qux        : description of qux, has default value (DEFAULT: 3.14)",
             \   "  --quux       : description of quux, has required option (REQUIRED)",
-            \   "  --grault     : description of grault, has extra options (DEFAULT: 3.14, REQUIRED, PATTERN: '^\\d$')",
+            \   "  --grault     : description of grault, has extra options (DEFAULT: 3.14, REQUIRED, PATTERN: '^\\d\\+\\%(\\.\\d\\+\\)\\?$')",
             \ ], "\n"))
     End
 
