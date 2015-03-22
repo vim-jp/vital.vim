@@ -1,0 +1,23 @@
+Describe Data.Base64
+  Before all
+    let B = vital#of('vital').import('Data.Base64')
+  End
+
+  Describe .encode()
+    It encode string to base64 encoded string.
+      Assert Equals(B.encode("hello, world!"), 'aGVsbG8sIHdvcmxkIQ==')
+    End
+  End
+
+  Describe .encodebin()
+    It encode string encoded as hex to base64 encoded string.
+      Assert Equals(B.encodebin('68656c6c6f2c20776f726c6421'), 'aGVsbG8sIHdvcmxkIQ==')
+    End
+  End
+
+  Describe .decode()
+    It decode base64 encoded string to string.
+      Assert Equals(B.decode("aGVsbG8sIHdvcmxkIQ=="), 'hello, world!')
+    End
+  End
+End
