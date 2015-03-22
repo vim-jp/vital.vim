@@ -1,0 +1,55 @@
+scriptencoding utf-8
+
+Describe Web.Http
+  Before all
+    let HTTP = vital#of('vital').import('Web.HTTP')
+  End
+
+  Describe .encodeURI()
+    It encodes string
+      for s in ['1234567890',
+      \  'abcdefghijklmnopqrstuvwxyz',
+      \  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \  '._-',
+      \  'abc1.2345_ABCD-EZY']
+        Assert Equals(s, HTTP.encodeURI(s))
+      endfor
+
+      Assert Equals('abc12390', HTTP.encodeURI('abc12390'))
+      Assert Equals('abc%01%0A%0D%20AB-', HTTP.encodeURI("abc\x01\x0a\x0d AB-"))
+      Assert Equals('%A4%C1%A4%E3', HTTP.encodeURI("\xA4\xC1\xA4\xE3"))
+      Assert Equals('%A4%C1%A4%E5', HTTP.encodeURI("\xA4\xC1\xA4\xE5"))
+      Assert Equals('%A4%C1%A4%E7', HTTP.encodeURI("\xA4\xC1\xA4\xE7"))
+    End
+  End
+
+  Describe .decodeURI()
+    It decodes string
+      for s in ['1234567890',
+      \  'abcdefghijklmnopqrstuvwxyz',
+      \  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \  'abc12345ABCDEZY',
+      \  '._-',
+      \  'abc1.2345_ABCD-EZY']
+        Assert Equals(s, HTTP.decodeURI(s))
+      endfor
+      Assert Equals('1234567890', HTTP.decodeURI('1234567890'))
+      Assert Equals('abc12390', HTTP.decodeURI('abc12390'))
+      Assert Equals(HTTP.decodeURI('%A4%C1%A4%E3'), "\xA4\xC1\xA4\xE3")
+      Assert Equals(HTTP.decodeURI('%A4%C1%A4%E5'), "\xA4\xC1\xA4\xE5")
+      Assert Equals(HTTP.decodeURI('%A4%C1%A4%E7'), "\xA4\xC1\xA4\xE7")
+    End
+
+    It encodes and decodes string
+      for s in ['1234567890',
+      \  'abcdefghijklmnopqrstuvwxyz',
+      \  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \  'abc12345ABCDEZY',
+      \  '%123ABC!"#$%&''()~=-~^|\\[]@:;+<>/\',
+      \  'あいうえお',
+      \  'ちゃちゅちょ']
+        Assert Equals(s, HTTP.decodeURI(HTTP.encodeURI(s)))
+      endfor
+    End
+  End
+End
