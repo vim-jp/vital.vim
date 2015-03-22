@@ -1,0 +1,193 @@
+Describe Data.OrderedSet
+  Before all
+    let OrderedSet = vital#of('vital').import('Data.OrderedSet')
+  End
+
+  Describe .push()
+    It adds an element to the last of an OrderedSet
+      let set = OrderedSet.new()
+      Assert Equals(set.to_list(), [])
+      call set.push(1)
+      Assert Equals(set.to_list(), [1])
+      call set.push(2)
+      Assert Equals(set.to_list(), [1,2])
+      call set.push(3)
+      Assert Equals(set.to_list(), [1,2,3])
+      call set.push(1)
+      Assert Equals(set.to_list(), [1,2,3])
+    End
+  End
+
+  Describe .unshift()
+    It adds an element to the first of an OrderedSet
+      let set = OrderedSet.new()
+      Assert Equals(set.to_list(), [])
+      call set.unshift(1)
+      Assert Equals(set.to_list(), [1])
+      call set.unshift(2)
+      Assert Equals(set.to_list(), [2,1])
+      call set.unshift(3)
+      Assert Equals(set.to_list(), [3,2,1])
+      call set.unshift(1)
+      Assert Equals(set.to_list(), [3,2,1])
+    End
+  End
+
+  Describe .append()
+    It appends an element to the last of an OrderedSet
+      let set = OrderedSet.new()
+      Assert Equals(set.to_list(), [])
+      call set.append([1,2,3])
+      Assert Equals(set.to_list(), [1,2,3])
+      call set.append([2,3,4,5])
+      Assert Equals(set.to_list(), [1,2,3,4,5])
+    End
+  End
+
+  Describe .prepend()
+    It prepends an element to the first of an OrderedSet
+      let set = OrderedSet.new()
+      Assert Equals(set.to_list(), [])
+      call set.prepend([1,2,3])
+      Assert Equals(set.to_list(), [1,2,3])
+      call set.prepend([-1,0,1])
+      Assert Equals(set.to_list(), [-1,0,1,2,3])
+    End
+  End
+
+  Describe .clear()
+    It makes OrderedSet empty
+      let set = OrderedSet.new()
+      call set.push(1)
+      call set.push(2)
+      call set.push(3)
+      call set.clear()
+      Assert Equals(set.to_list(), [])
+      Assert True(set.empty())
+    End
+  End
+
+  Describe .empty()
+    It returns boolean value if an OrderedSet is empty
+      let set = OrderedSet.new()
+      Assert True(set.empty())
+      call set.push(1)
+      Assert False(set.empty())
+      call set.clear()
+      Assert True(set.empty())
+    End
+  End
+
+
+
+  function! IdentifyClass(class) abort
+      return a:class.name . a:class.value
+  endfunction
+  function! CreateClass(name, value) abort
+      return {'name': a:name, 'value': a:value,
+      \       'mem1': localtime(), 'mem2': localtime(),
+      \       'mem3': localtime()}
+  endfunction
+
+  Context Fn_identifier
+    It stringifies to a key name of a Dictionary
+      let set = OrderedSet.new({'Fn_identifier': 'IdentifyClass'})
+      call set.append([
+      \   CreateClass('FooClass', 'foo'),
+      \   CreateClass('BarClass', 'bar'),
+      \   CreateClass('BazClass', 'baz'),
+      \   CreateClass('FooClass', 'hoge'),
+      \   CreateClass('FooClass', 'foo'),
+      \   CreateClass('BazClass', 'baz'),
+      \])
+      Assert Equals(set.to_list(), [
+      \   CreateClass('FooClass', 'foo'),
+      \   CreateClass('BarClass', 'bar'),
+      \   CreateClass('BazClass', 'baz'),
+      \   CreateClass('FooClass', 'hoge'),
+      \])
+      Assert True(set.has(CreateClass('FooClass', 'foo')))
+      Assert True(set.has(CreateClass('BarClass', 'bar')))
+      Assert True(set.has(CreateClass('BazClass', 'baz')))
+      Assert True(set.has(CreateClass('FooClass', 'hoge')))
+      Assert False(set.has(CreateClass('FooClass', 'bar')))
+    End
+  End
+
+  Describe .has()
+    It returns if an OrderedSet has a given element
+      let set = OrderedSet.new()
+      Assert False(set.has(1))
+      call set.append([1,2,3])
+      Assert True(set.has(1))
+    End
+  End
+
+  Describe .has_id()
+    It returns if an OrderedSet has a given id of element
+      " Default Fn_identifier is 'string'.
+      let set = OrderedSet.new()
+      Assert False(set.has_id(string("foo")))
+      call set.append(["foo", "bar", "baz"])
+      Assert True(set.has_id(string("foo")))
+    End
+  End
+
+  Describe .remove()
+    It removes an element from OrderedSet
+      let set = OrderedSet.new()
+      call set.push(1)
+      call set.remove(1)
+      Assert True(set.empty())
+
+      let set = OrderedSet.new()
+      call set.prepend([1,2])
+      call set.remove(1)
+      Assert Equals(set.to_list(), [2])
+
+      let set = OrderedSet.new()
+      call set.prepend([1,2])
+      call set.remove(2)
+      Assert Equals(set.to_list(), [1])
+
+      let set = OrderedSet.new()
+      call set.append([1,2])
+      call set.remove(1)
+      Assert Equals(set.to_list(), [2])
+
+      let set = OrderedSet.new()
+      call set.append([1,2])
+      call set.remove(2)
+      Assert Equals(set.to_list(), [1])
+    End
+
+    It is safe to remove middle element of OrderedSet
+      let set = OrderedSet.new()
+      call set.prepend([1,2,3])
+      call set.remove(2)
+      Assert Equals(set.to_list(), [1,3])
+      call set.unshift(0)
+      Assert Equals(set.to_list(), [0,1,3])
+      call set.remove(1)
+      Assert Equals(set.to_list(), [0,3])
+
+      let set = OrderedSet.new()
+      call set.append([1,2,3])
+      call set.remove(2)
+      Assert Equals(set.to_list(), [1,3])
+      call set.push(4)
+      Assert Equals(set.to_list(), [1,3,4])
+      call set.remove(3)
+      Assert Equals(set.to_list(), [1,4])
+    End
+
+    It does anything if OrderedSet does not have a given element
+      let set = OrderedSet.new()
+      call set.push(1)
+      call set.remove(2) " Check to throw no exception
+      Assert Equals(set.to_list(), [1])
+    End
+  End
+
+End
+
