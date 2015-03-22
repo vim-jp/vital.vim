@@ -105,7 +105,7 @@ function! s:_check_extra_option(parsed_args, options) abort
       throw 'vital: OptionParser: parameter is required: ' . name
     endif
     if has_key(option, 'pattern_option') && has_key(a:parsed_args, name) && a:parsed_args[name] !~# option.pattern_option
-      throw 'vital: OptionParser: parameter doesn''t match pattern: ' . name . ' ' . options.pattern_option
+      throw 'vital: OptionParser: parameter doesn''t match pattern: ' . name . ' ' . option.pattern_option
     endif
   endfor
 endfunction
