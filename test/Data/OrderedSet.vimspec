@@ -89,7 +89,7 @@ Describe Data.OrderedSet
       \       'mem3': localtime()}
   endfunction
 
-  Context Fn_identifier
+  Describe Fn_identifier
     It stringifies to a key name of a Dictionary
       let set = OrderedSet.new({'Fn_identifier': 'IdentifyClass'})
       call set.append([
