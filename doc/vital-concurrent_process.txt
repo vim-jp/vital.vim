@@ -50,6 +50,25 @@ PRINCIPLE			*Vital.ConcurrentProcess-principle*
 ==============================================================================
 INTERFACE			*Vital.ConcurrentProcess-interface*
 
+The following function is to start a process.
+	|Vital.ConcurrentProcess.of()|
+The following function is to terminate a process.
+	|Vital.ConcurrentProcess.shutdown()|
+The following function is to change queries in queue.
+	|Vital.ConcurrentProcess.queue()|
+The following functions are to obtain information with side effect, based on
+queries in the queue and etc.
+	|Vital.ConcurrentProcess.consume()|
+	|Vital.ConcurrentProcess.consume_all_blocking()|
+	|Vital.ConcurrentProcess.is_done()|
+	|Vital.ConcurrentProcess.is_busy()|
+The following functions are for debugging.
+	|Vital.ConcurrentProcess.log_clear()|
+	|Vital.ConcurrentProcess.log_dump()|
+Etc
+	|Vital.ConcurrentProcess.tick()|
+	|Vital.ConcurrentProcess.is_available()|
+
 ------------------------------------------------------------------------------
 FUNCTIONS			*Vital.ConcurrentProcess-functions*
 
@@ -64,37 +83,94 @@ of({command}, {dir}, {list})			*Vital.ConcurrentProcess.of()*
 	Check |Vital.ConcurrentProcess-usage| how to use this with other
 	functions.
 
+	Idempotent? Yes -- but side-effect can be different.
+
 is_available()			*Vital.ConcurrentProcess.is_available()*
 	Returns 1 if the running Vim can use ConcurrentProcess, otherwise 0.
+
+	Idempotent? Yes
 
 tick({label})				*Vital.ConcurrentProcess.tick()*
 	This is an action |Vital.ConcurrentProcess-term.action|, and does
 	nothing besides action.
 
 queue({label}, {list})			*Vital.ConcurrentProcess.queue()*
-	TODO
+	Pushes the given {list} of queries into the queue for the process.
+	The query has to be either one of them.
+	['*writeln*', string]
+	['*read*', string, string]
+	['*read-all', string]
+
+>
+	call s:CP.queue(label, [
+	      \ ['*writeln*', '1 + 2'],
+	      \ ['*read*', 'x', '> ']])
+	let [out, err] = s:CP.consume(label, 'x')
+	" out may contain "3"
+<
 
 consume({label}, {varname})		*Vital.ConcurrentProcess.consume()*
-	TODO
+	This is an action |Vital.ConcurrentProcess-term.action|, and returns
+	accumulated value for {varname} immediately, and remove it from
+	internal buffer.
 
-consume_all_blocking({label}, {varname})
+	similar to consume() described above, but this doesn't immediately
+	return the current output but blocks until the end of the read of the
+	given {varname}, at most {timeout-sec} seconds. This also returns a
+	0/1 value as the 3rd element of the list to tell if it has timed out
+	or not.
+
+	Idempotent? No -- this removes the internal buffer.
+
+consume_all_blocking({label}, {varname}, {timeout-sec})
 			*Vital.ConcurrentProcess.consume_all_blocking()*
-	TODO
+	This is an action |Vital.ConcurrentProcess-term.action|, and does
+	similar to consume() described above, but this doesn't immediately
+	return the current output but blocks until the end of the read of the
+	given {varname}, at most {timeout-sec} seconds. This also returns a
+	0/1 value as the 3rd element of the list to tell if it has timed out
+	or not.
+>
+	" get stdout/stderr for the var x, with blocking at worst 10 seconds.
+	let [out, err, timeout_p] =
+	      \ s:CP.consume_all_blocking(label, 'x', 10)
+	if timeout_p
+	  " omg it timed out!
+	else
+	  " yes it completed without 10 seconds. Do normal stuff here
+	endif
+<
+	For your info this function is internally using is_done() described
+	below.
 
-is_done({label}, {rname})		*Vital.ConcurrentProcess.is_done()*
-	TODO
+	Idempotent? No -- this removes the internal buffer.
+
+is_done({label}, {varname})		*Vital.ConcurrentProcess.is_done()*
+	This is an action |Vital.ConcurrentProcess-term.action|, and checks
+	if the read operation of given {varname} has completed. You are
+	particularly expected to use this function when you use consume().
+
+	Idempotent? No -- return value depends on internal state.
 
 is_busy({label})			*Vital.ConcurrentProcess.is_busy()*
-	TODO
+	This is an action |Vital.ConcurrentProcess-term.action|, and checks
+	if the queries are currently empty.
+
+	Idempotent? No -- return value depends on internal state.
 
 shutdown({label})			*Vital.ConcurrentProcess.shutdown()*
-	TODO
+	Terminates the underlying process for the given label immediately, no
+	matter how many queries are in the queue. This also removes all
+	internal buffers for the process, including queries and logs.
 
 log_clear({label})			*Vital.ConcurrentProcess.log_clear()*
 	Just to wipe out accumulated logs for the process.
 
 log_dump({label})			*Vital.ConcurrentProcess.log_dump()*
 	Print out the accumulated logs for the process, and wipe out it.
+
+	Idempotent? No -- output depends on the internal buffer and every time
+	you call this ConcurrentProcess removes buffer.
 
 ------------------------------------------------------------------------------
 TERMS				*Vital.ConcurrentProcess-terms*
