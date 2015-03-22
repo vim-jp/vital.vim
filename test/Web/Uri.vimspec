@@ -1,0 +1,80 @@
+Describe Web.URI
+  Before all
+    let URI = vital#of('vital').import('Web.URI')
+  End
+
+  Describe .new()
+    It parses @tyru's twitter URL
+      let uri = URI.new('http://twitter.com/tyru')
+      Assert Equals(uri.scheme(), 'http')
+      Assert Equals(uri.host(), 'twitter.com')
+      Assert Equals(uri.path(), '/tyru')
+      Assert Equals(uri.opaque(), '//twitter.com/tyru')
+      Assert Equals(uri.fragment(), '')
+      Assert Equals(uri.to_string(), 'http://twitter.com/tyru')
+    End
+
+    It parses tyru's blog URL
+      let uri = URI.new('http://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c')
+      Assert Equals(uri.scheme(), 'http')
+      Assert Equals(uri.host(), 'd.hatena.ne.jp')
+      Assert Equals(uri.path(), '/tyru/20100619/git_push_vim_plugins_to_github')
+      Assert Equals(uri.opaque(), '//d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github')
+      Assert Equals(uri.fragment(), 'c')
+      Assert Equals(uri.to_string(), 'http://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c')
+    End
+
+    It builds URI with given parts
+      let uri = URI.new('http://twitter.com/tyru')
+      call uri.scheme('ftp')
+      Assert Equals(uri.scheme(), 'ftp')
+      Assert Equals(uri.to_string(), 'ftp://twitter.com/tyru')
+      call uri.host('ftp.vim.org')
+      Assert Equals(uri.host(), 'ftp.vim.org')
+      Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/tyru')
+      call uri.path('pub/vim/unix/vim-7.3.tar.bz2')
+      Assert Equals(uri.path(), '/pub/vim/unix/vim-7.3.tar.bz2')
+      Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.3.tar.bz2')
+      call uri.path('/pub/vim/unix/vim-7.3.tar.bz2')
+      " uri.path() ignores head slashes.
+      Assert Equals(uri.path(), '/pub/vim/unix/vim-7.3.tar.bz2')
+      Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.3.tar.bz2')
+    End
+
+    It modifies URI with given parts
+      let uri = URI.new('http://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c')
+      call uri.scheme('https')
+      Assert Equals(uri.scheme(), 'https')
+      Assert Equals(uri.to_string(), 'https://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c')
+      call uri.host('github.com')
+      Assert Equals(uri.host(), 'github.com')
+      Assert Equals(uri.to_string(), 'https://github.com/tyru/20100619/git_push_vim_plugins_to_github#c')
+      call uri.path('tyru/urilib.vim/blob/master/autoload/urilib.vim')
+      Assert Equals(uri.path(), '/tyru/urilib.vim/blob/master/autoload/urilib.vim')
+      Assert Equals(uri.to_string(), 'https://github.com/tyru/urilib.vim/blob/master/autoload/urilib.vim#c')
+      call uri.fragment('L32')
+      Assert Equals(uri.fragment(), 'L32')
+      Assert Equals(uri.to_string(), 'https://github.com/tyru/urilib.vim/blob/master/autoload/urilib.vim#L32')
+      call uri.fragment('#L32')
+      " uri.fragment({fragment}) ignores head # characters.
+      Assert Equals(uri.fragment(), 'L32')
+      Assert Equals(uri.to_string(), 'https://github.com/tyru/urilib.vim/blob/master/autoload/urilib.vim#L32')
+    End
+  End
+
+  Describe .is_uri()
+    It checks valid URI
+      Assert True(URI.is_uri('http://twitter.com/tyru'))
+      Assert True(URI.is_uri('http://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c'))
+      Assert True(URI.is_uri('file://baz/'))
+      Assert True(URI.is_uri('file:///home/tyru/'))
+      Assert True(URI.is_uri('file:///home/tyru'))
+      Assert True(URI.is_uri('ftp://withoutslash.com'))
+    End
+
+    It checks invalid URI
+      Assert False(URI.is_uri('foo'))
+      Assert False(URI.is_uri('/bar'))
+    End
+  End
+End
