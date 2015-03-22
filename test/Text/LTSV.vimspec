@@ -1,0 +1,71 @@
+Describe Text.LTSV
+  Before all
+    let LTSV = vital#of('vital').import('Text.LTSV')
+    let sample_file = g:root . '/test/_testdata/Text/LTSV/sample.ltsv'
+    let expect_data = [
+    \   {'name': 'Web.HTTP', 'maintainer': 'mattn'},
+    \   {'name': 'Text.LTSV', 'maintainer': 'thinca'},
+    \   {'name': 'Text.Lexer', 'maintainer': 'rbtnn'},
+    \ ]
+  End
+
+  Describe .parse()
+    It parses records of LTSV
+      let ltsv_data = join(readfile(sample_file), "\n")
+      Assert Equals(LTSV.parse(ltsv_data), expect_data)
+    End
+  End
+
+  Describe .parse_record()
+    It parses an LTSV file
+      let ltsv_record = readfile(sample_file, 0, 1)[0]
+      let expect_record = expect_data[0]
+      Assert Equals(LTSV.parse_record(ltsv_record), expect_record)
+    End
+    It throws an exception when invalid data was passed
+      Throws /^vital: Text\.LTSV:/ LTSV.parse_record("hoge:huga\thehehe")  " colon missed
+      Throws /^vital: Text\.LTSV:/ LTSV.parse_record("hoge:huga\tfoo/bar:hey")  " invalid label
+    End
+  End
+
+  Describe .parse_file()
+    It parses an LTSV file
+      Assert Equals(LTSV.parse_file(sample_file), expect_data)
+    End
+  End
+
+  Describe .dump()
+    It convets a list objects to a LTSV string
+      Assert Equals(LTSV.dump(expect_data), join(readfile(sample_file), "\n"))
+    End
+    It convets an object to a LTSV string
+      Assert Equals(LTSV.dump(expect_data[0]), readfile(sample_file)[0])
+    End
+  End
+
+  Describe .dump_file()
+    Before each
+      let tempfile = tempname()
+    End
+
+    After each
+      if filereadable(tempfile)
+        call delete(tempfile)
+      endif
+    End
+
+    It dumps the data to a file
+      call LTSV.dump_file(expect_data, tempfile)
+      Assert Equals(readfile(tempfile), readfile(sample_file))
+    End
+    It can append the data to a file
+      let sample = readfile(sample_file)
+      call LTSV.dump_file(expect_data[0], tempfile)
+      Assert Equals(readfile(tempfile), sample[0 : 0])
+      call LTSV.dump_file(expect_data[1], tempfile, 1)
+      Assert Equals(readfile(tempfile), sample[0 : 1])
+      call LTSV.dump_file(expect_data[2], tempfile, 1)
+      Assert Equals(readfile(tempfile), sample)
+    End
+  End
+End
