@@ -1,0 +1,823 @@
+Describe DateTime
+  Before all
+    let DT = vital#of('vital').import('DateTime')
+  End
+
+  Context .from_unix_time()
+    It makes a DateTime object from unix time
+      let dt = DT.from_unix_time(1325441045, 9)
+      Assert Equals(dt.to_string(), '2012-01-02 03:04:05 +0900')
+    End
+  End
+
+  Describe .from_date()
+    It makes a DateTime object from date info
+      let dt = DT.from_date(2012, 1, 2, 3, 4, 5, 9)
+      Assert Equals(dt.to_string(), '2012-01-02 03:04:05 +0900')
+    End
+  End
+
+  Describe .from_format()
+    It makes a DateTime object from formatted string
+      let dt = DT.from_format('2012-1-02T03:04:05Z', '%Y-%m-%dT%H:%M:%SZ%z')
+      Assert Equals(dt.year(), 2012)
+      Assert Equals(dt.month(), 1)
+      Assert Equals(dt.day(), 2)
+      Assert Equals(dt.hour(), 3)
+      Assert Equals(dt.minute(), 4)
+      Assert Equals(dt.second(), 5)
+      Assert Equals(dt.timezone().offset(), 0)
+    End
+    It can treat the some format specifier
+      let dt = DT.from_format('02 Jan 2012 03:04:05 +0900', '%d %b %Y%n%H:%M:%S%n%z', 'C')
+      Assert Equals(dt.year(), 2012)
+      Assert Equals(dt.month(), 1)
+      Assert Equals(dt.day(), 2)
+      Assert Equals(dt.hour(), 3)
+      Assert Equals(dt.minute(), 4)
+      Assert Equals(dt.second(), 5)
+      Assert Equals(dt.timezone().hours(), 9)
+    End
+    It can skip any text by %*
+      let dt = DT.from_format('2011-01-03T10:16:46.297581Z', '%Y-%m-%dT%H:%M:%S%*Z%z', 'C')
+      Assert Equals(dt.year(), 2011)
+      Assert Equals(dt.month(), 1)
+      Assert Equals(dt.day(), 3)
+      Assert Equals(dt.hour(), 10)
+      Assert Equals(dt.minute(), 16)
+      Assert Equals(dt.second(), 46)
+      Assert Equals(dt.timezone().hours(), 0)
+    End
+    It throws an exception with invalid format
+      Throws /^vital: DateTime:/ DT.from_format('Invalid Date', '%Y-%m-%dT%H:%M:%S%*Z%z')
+    End
+  End
+
+  Describe .from_julian_day()
+    It makes a DateTime object from string
+      let dt = DT.from_julian_day(2455928.627836, 0)
+      Assert Equals(dt.to_string(), '2012-01-02 03:04:05 +0000')
+    End
+  End
+
+  Describe .timezone()
+    It makes a TimeZone object
+      let tz = DT.timezone()
+      Assert Compare(tz.hours(), '<=', 14)
+      Assert Compare(tz.hours(), '>=', -12)
+    End
+    It makes a TimeZone object from time string
+      let tz = DT.timezone('+0900')
+      Assert Equals(tz.hours(), 9)
+    End
+    It makes a TimeZone object from hour
+      let tz = DT.timezone(9)
+      Assert Equals(tz.hours(), 9)
+    End
+    It just returns a TimeZone object that was supplied from argument
+      let tz = DT.timezone(9)
+      let returned = DT.timezone(tz)
+      Assert Same(returned, tz)
+    End
+    It throws an exception with invalid argument
+      Throws /^vital: DateTime:/ DT.timezone({})
+      Throws /^vital: DateTime:/ DT.timezone('abc')
+    End
+  End
+
+  Describe .delta()
+    It makes TimeDelta object from days and seconds
+      let d = DT.delta(10, 10000)
+      Assert Equals(d.days(), 10)
+      Assert Equals(d.hours(), 2)
+      Assert Equals(d.minutes(), 46)
+      Assert Equals(d.seconds(), 40)
+      Assert Equals(d.total_seconds(), 874000)
+    End
+    It makes TimeDelta object from values and units
+      let d = DT.delta(10, 'days', 2, 'hours', 46, 'minutes', 40, 'seconds')
+      Assert Equals(d.days(), 10)
+      Assert Equals(d.hours(), 2)
+      Assert Equals(d.minutes(), 46)
+      Assert Equals(d.seconds(), 40)
+      Assert Equals(d.total_seconds(), 874000)
+    End
+  End
+
+  Describe .compare()
+    It returns -1 when left one is later more than right one
+      let left =  DT.from_format('2014-12-01 12:00:00 +0000', '%c')
+      let right = DT.from_format('2014-12-02 12:00:00 +0000', '%c')
+      Assert Equals(DT.compare(left, right), -1)
+
+      let left =  DT.from_format('2014-12-02 00:00:00 +0900', '%c')
+      let right = DT.from_format('2014-12-01 12:00:00 -0800', '%c')
+      Assert Equals(DT.compare(left, right), -1)
+    End
+    It returns 0 when left one and right one is same time
+      let left =  DT.from_format('2014-12-01 12:00:00 +0000', '%c')
+      let right = DT.from_format('2014-12-01 12:00:00 +0000', '%c')
+      Assert Equals(DT.compare(left, right), 0)
+
+      let left =  DT.from_format('2014-12-02 12:00:00 +0900', '%c')
+      let right = DT.from_format('2014-12-01 19:00:00 -0800', '%c')
+      Assert Equals(DT.compare(left, right), 0)
+    End
+    It returns 1 when left one is precedes more than right one
+      let left =  DT.from_format('2014-12-02 12:00:00 +0000', '%c')
+      let right = DT.from_format('2014-12-01 12:00:00 +0000', '%c')
+      Assert Equals(DT.compare(left, right), 1)
+
+      let left =  DT.from_format('2014-12-01 12:00:00 -0800', '%c')
+      let right = DT.from_format('2014-12-02 00:00:00 +0900', '%c')
+      Assert Equals(DT.compare(left, right), 1)
+    End
+  End
+
+  Describe .month_names()
+    Context {longname} = 0
+      It returns the list of name of months
+        let names = DT.month_names(0, 'C')
+        Assert Equals(names,
+        \ ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        \  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+      End
+    End
+    Context {longname} is 1
+      It returns the list of long name of months
+        let names = DT.month_names(1, 'C')
+        Assert Equals(names,
+        \ ['January', 'February', 'March', 'April', 'May', 'June',
+        \  'July', 'August', 'September', 'October', 'November', 'December'])
+      End
+    End
+  End
+
+  Describe .weekday_names()
+    Context {longname} = 0
+      It returns the list of name of weekdays
+        let names = DT.weekday_names(0, 'C')
+        Assert Equals(names,
+        \ ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+      End
+    End
+    Context {longname} is 1
+      It returns the list of long name of weekdays
+        let names = DT.weekday_names(1, 'C')
+        Assert Equals(names,
+        \ ['Sunday', 'Monday', 'Tuesday',
+        \   'Wednesday', 'Thursday', 'Friday', 'Saturday'])
+      End
+    End
+  End
+
+  Describe .am_pm_names()
+    Context {lowercase} = 0
+      It returns the list of am/pm names in uppercase
+        let names = DT.am_pm_names(0, 'C')
+        Assert Equals(names, ['AM', 'PM'])
+      End
+    End
+    Context {lowercase} is 1
+      It returns the list of am/pm names in lowercase
+        let names = DT.am_pm_names(1, 'C')
+        Assert Equals(names, ['am', 'pm'])
+      End
+    End
+  End
+
+  Describe .is_leap_year()
+    It judges whether a year is a leap year
+      Assert Truthy(DT.is_leap_year(1996))
+      Assert Truthy(DT.is_leap_year(2000))
+      Assert Truthy(DT.is_leap_year(2004))
+      Assert Falsy(DT.is_leap_year(1900))
+      Assert Falsy(DT.is_leap_year(2006))
+      Assert Falsy(DT.is_leap_year(2100))
+    End
+  End
+
+  Describe DateTime object
+    Before each
+      let dt = DT.from_date(2012, 1, 2, 3, 4, 5, 0)
+    End
+
+    Describe .year()
+      It returns the year
+        Assert Equals(dt.year(), 2012)
+      End
+    End
+
+    Describe .month()
+      It returns the month
+        Assert Equals(dt.month(), 1)
+      End
+    End
+
+    Describe .day()
+      It returns the day
+        Assert Equals(dt.day(), 2)
+      End
+    End
+
+    Describe .hour()
+      It returns the hour
+        Assert Equals(dt.hour(), 3)
+      End
+    End
+
+    Describe .minute()
+      It returns the minute
+        Assert Equals(dt.minute(), 4)
+      End
+    End
+
+    Describe .second()
+      It returns the second
+        Assert Equals(dt.second(), 5)
+      End
+    End
+
+    Describe .timezone()
+      Context without an argument
+        It returns the TimeZone object
+          let tz = dt.timezone()
+          Assert Equals(tz.hours(), 0)
+        End
+      End
+
+      Context with an argument
+        It sets TimeZone object
+          let new_dt = dt.timezone(9)
+          let new_tz = new_dt.timezone()
+          Assert Equals(new_tz.hours(), 9)
+        End
+        It does not change the original DateTime object
+          call dt.timezone(9)
+          Assert Equals(dt.timezone().hours(), 0)
+        End
+        It does not change the time
+          let new_dt = dt.timezone(9)
+          Assert Equals(new_dt.hour(), 3)
+        End
+      End
+    End
+
+    Describe .day_of_week()
+      It returns day of the week
+        Assert Equals(dt.day_of_week(), 1)
+      End
+    End
+
+    Describe .day_of_year()
+      It returns day of the year
+        Assert Equals(dt.day_of_year(), 2)
+        Assert Equals(DT.from_format('2015-01-01 01:00:00 +0900', '%c').day_of_year(), 1)
+      End
+    End
+
+    Describe .days_from_era()
+      It returns day of the year
+        Assert Equals(dt.days_from_era(), 734504)
+      End
+    End
+
+    Describe .julian_day()
+      Context without an argument
+        It returns Julian day by integer value
+          Assert Equals(dt.julian_day(), 2455929)
+        End
+      End
+
+      Context with an argument 1
+        It returns Julian day by float value
+          Assert Compare(abs(2455928.627836 - dt.julian_day(1)), '<', 0.00001)
+        End
+      End
+
+      It does not change the result by timezone
+        Assert Compare(abs(2455928.627836 - dt.julian_day(1)), '<', 0.00001)
+        Assert Compare(abs(2455928.627836 - dt.to(9).julian_day(1)), '<', 0.00001)
+        Assert Compare(abs(2455928.627836 - dt.to(-8).julian_day(1)), '<', 0.00001)
+      End
+    End
+
+    Describe .seconds_of_day()
+      It returns the number of seconds of the day
+        Assert Equals(dt.seconds_of_day(), 11045)
+      End
+    End
+
+    Describe .quarter()
+      It returns the quarter of the year
+        Assert Equals(dt.quarter(), 1)
+      End
+    End
+
+    Describe .unix_time()
+      Context when DateTime is in the range of unix time
+        It returns the unix time
+          Assert Equals(dt.unix_time(), 1325473445)
+        End
+      End
+
+      Context when DateTime is out of the range of unix time
+        It returns -1
+          let dt = DT.from_date(1969, 12, 31)
+          Assert Equals(dt.unix_time(), -1)
+        End
+      End
+
+      It does not change the result by timezone
+        Assert Equals(dt.unix_time(), 1325473445)
+        Assert Equals(dt.to(9).unix_time(), 1325473445)
+        Assert Equals(dt.to(-8).unix_time(), 1325473445)
+      End
+    End
+
+    Describe .is_leap_year()
+      It judges whether the year is a leap year
+        Assert Equals(dt.is_leap_year(), 1)
+      End
+    End
+
+    Describe .is()
+      It checks that this and other DateTime are same
+        Assert Truthy(dt.is(DT.from_format('2012-01-02 03:04:05 +0000', '%c')))
+        Assert Falsy(dt.is(DT.from_format('2012-01-01 00:00:00 +0000', '%c')))
+      End
+    End
+
+    Describe .compare()
+      It returns -1 when this one is later more than other one
+        let other = DT.from_format('2012-01-02 04:00:00 +0000', '%c')
+        Assert Equals(dt.compare(other), -1)
+
+        let other = DT.from_format('2012-01-02 10:00:00 -0800', '%c')
+        Assert Equals(dt.compare(other), -1)
+      End
+      It returns 0 when this one and other one is same time
+        let other = DT.from_format('2012-01-02 03:04:05 +0000', '%c')
+        Assert Equals(dt.compare(other), 0)
+
+        let other = DT.from_format('2012-01-02 12:04:05 +0900', '%c')
+        Assert Equals(dt.compare(other), 0)
+      End
+      It returns 1 when this one is precedes more than other one
+        let other = DT.from_format('2012-01-02 02:00:00 +0000', '%c')
+        Assert Equals(dt.compare(other), 1)
+
+        let other = DT.from_format('2012-01-02 04:00:00 +0900', '%c')
+        Assert Equals(dt.compare(other), 1)
+      End
+    End
+
+    Describe .delta()
+      It returns TimeDelta object
+        let delta = dt.delta(DT.from_format('2012-01-02 04:00:00 +0000', '%c'))
+        Assert Equals(delta.total_seconds(), -3355)
+      End
+    End
+
+    Describe .to()
+      Context with TimeDelta object
+        It returns new DateTime object to which time was changed
+          let delta = DT.delta(3, 'days')
+          let new_dt = dt.to(delta)
+          Assert Equals(new_dt.day(), 5)
+        End
+      End
+
+      Context with arguments like TimeDelta
+        It returns new DateTime object to which time was changed
+          let new_dt = dt.to(3, 'days')
+          Assert Equals(new_dt.day(), 5)
+        End
+      End
+
+      Context with TimeZone object
+        It returns new DateTime object to which timezone was changed
+          let tz = DT.timezone('+0900')
+          let new_dt = dt.to(tz)
+          Assert Equals(new_dt.timezone().offset(), tz.offset())
+        End
+        It does not change the time
+          let tz = DT.timezone('+0900')
+          let new_dt = dt.to(tz)
+          Assert Truthy(new_dt.is(dt))
+        End
+      End
+
+      Context with arguments like TimeZone
+        It returns new DateTime object to which timezone was changed
+          let new_dt = dt.to('+0900')
+          Assert Equals(new_dt.timezone().hours(), 9)
+        End
+        It does not change the time
+          let new_dt = dt.to('+0900')
+          Assert Truthy(new_dt.is(dt))
+        End
+      End
+    End
+
+    Describe .format()
+      Context symbol "%%"
+        It is the '%' character
+          Assert Equals(dt.format('%%'), '%')
+        End
+      End
+
+      Context symbol "%a"
+        It is the abbreviated weekday name
+          Assert Equals(dt.format('%a', 'C'), 'Mon')
+        End
+      End
+
+      Context symbol "%A"
+        It is the full weekday name
+          Assert Equals(dt.format('%A', 'C'), 'Monday')
+        End
+      End
+
+      Context symbol "%b"
+        It is the abbreviated month name
+          Assert Equals(dt.format('%b', 'C'), 'Jan')
+        End
+      End
+
+      Context symbol "%B"
+        It is the full month name
+          Assert Equals(dt.format('%B', 'C'), 'January')
+        End
+      End
+
+      Context symbol "%c"
+        It is equivalent to "%F %T %z"
+          Assert Equals(dt.format('%c'), dt.format('%F %T %z'))
+        End
+      End
+
+      Context symbol "%C"
+        It is the century number (year/100) as a 2-digit integer
+          Assert Equals(dt.format('%C'), '21')
+        End
+      End
+
+      Context symbol "%d"
+        It is the day of the month as a decimal number
+          Assert Equals(dt.format('%d'), '02')
+        End
+      End
+
+      Context symbol "%D"
+        It is equivalent to "%m/%d/%y"
+          Assert Equals(dt.format('%D'), dt.format('%m/%d/%y'))
+        End
+      End
+
+      Context symbol "%e"
+        It is equivalent to "%_m/%_d/%_y"
+          Assert Equals(dt.format('%e'), dt.format('%_m/%_d/%_y'))
+        End
+      End
+
+      Context symbol "%F"
+        It is equivalent to "%Y-%m-%d"
+          Assert Equals(dt.format('%F'), dt.format('%Y-%m-%d'))
+        End
+      End
+
+      Context symbol "%h"
+        It is equivalent to "%b"
+          Assert Equals(dt.format('%h'), dt.format('%b'))
+        End
+      End
+
+      Context symbol "%H"
+        It is the hour as a decimal number using a 24-hour clock (range 00 to 23)
+          Assert Equals(dt.format('%H'), '03')
+          Assert Equals(DT.from_date(2015, 3, 21, 17, 0, 0, 0).format('%H'), '17')
+        End
+      End
+
+      Context symbol "%I"
+        It is the hour as a decimal number using a 12-hour clock (range 01 to 12)
+          Assert Equals(dt.format('%I'), '03')
+          Assert Equals(DT.from_date(2015, 3, 21, 17, 0, 0, 0).format('%I'), '05')
+        End
+      End
+
+      Context symbol "%j"
+        It is the day of the year as a decimal number (range 001 to 366)
+          Assert Equals(dt.format('%j'), '002')
+        End
+      End
+
+      Context symbol "%k"
+        It is equivalent to "%_H"
+          Assert Equals(dt.format('%k'), dt.format('%_H'))
+        End
+      End
+
+      Context symbol "%l"
+        It is equivalent to "%_I"
+          Assert Equals(dt.format('%l'), dt.format('%_I'))
+        End
+      End
+
+      Context symbol "%m"
+        It is the month as a decimal number (range 01 to 12)
+          Assert Equals(dt.format('%m'), '01')
+        End
+      End
+
+      Context symbol "%M"
+        It is the minute as a decimal number (range 00 to 59)
+          Assert Equals(dt.format('%M'), '04')
+        End
+      End
+
+      Context symbol "%n"
+        It is a newline character
+          Assert Equals(dt.format('%n'), "\n")
+        End
+      End
+
+      Context symbol "%p"
+        It is either "AM" or "PM" according to the given time value
+          Assert Equals(dt.format('%p', 'C'), 'AM')
+        End
+      End
+
+      Context symbol "%P"
+        It is either "am" or "pm" according to the given time value
+          Assert Equals(dt.format('%P', 'C'), 'am')
+        End
+      End
+
+      Context symbol "%r"
+        It is equivalent to "%I:%M:%S %p"
+          Assert Equals(dt.format('%r'), dt.format('%I:%M:%S %p'))
+        End
+      End
+
+      Context symbol "%R"
+        It is equivalent to "%H:%M"
+          Assert Equals(dt.format('%R'), dt.format('%H:%M'))
+        End
+      End
+
+      Context symbol "%s"
+        It is the number of seconds since the Epoch, 1970-01-01 00:00:00 +0000
+          Assert Equals(dt.format('%s'), '1325473445')
+        End
+      End
+
+      Context symbol "%S"
+        It is the second as a decimal number (range 00 to 59)
+          Assert Equals(dt.format('%S'), '05')
+        End
+      End
+
+      Context symbol "%t"
+        It is a tab character
+          Assert Equals(dt.format('%t'), "\t")
+        End
+      End
+
+      Context symbol "%u"
+        It is the day of the week as a decimal, range 1 to 7, Monday being 1.
+          Assert Equals(dt.format('%u'), '1')
+          Assert Equals(DT.from_date(2012, 1, 1).format('%u'), '7')
+        End
+      End
+
+      Context symbol "%T"
+        It is equivalent to "%H:%M:%S"
+          Assert Equals(dt.format('%T'), dt.format('%H:%M:%S'))
+        End
+      End
+
+      Context symbol "%w"
+        It is the day of the week as a decimal, range 0 to 6, Sunday being 0
+          Assert Equals(dt.format('%w'), '1')
+          Assert Equals(DT.from_date(2012, 1, 1).format('%w'), '0')
+        End
+      End
+
+      Context symbol "%y"
+        It is the year as a decimal number without a century (range 00 to 99)
+          Assert Equals(dt.format('%y'), '12')
+        End
+      End
+
+      Context symbol "%Y"
+        It is the year as a decimal number including the century
+          Assert Equals(dt.format('%Y'), '2012')
+        End
+      End
+
+      Context symbol "%z"
+        It is the +hhmm or -hhmm numeric timezone
+          Assert Equals(dt.format('%z'), '+0000')
+        End
+      End
+
+    End
+
+    Describe .strftime()
+      It is same as "strftime({format}, dt.unix_time())"
+        Assert Equals(dt.strftime('%c'), strftime('%c', dt.unix_time()))
+      End
+    End
+
+    Describe .to_string()
+      It is same as "format('%c')"
+        Assert Equals(dt.to_string(), dt.format('%c'))
+      End
+    End
+  End
+
+  Describe TimeZone object
+    Before each
+      let tz = DT.timezone('-0800')
+    End
+
+    Describe .offset()
+      It returns the offset in second
+        Assert Equals(tz.offset(), -28800)
+      End
+    End
+
+    Describe .minutes()
+      It returns the offset in minute
+        Assert Equals(tz.minutes(), -480)
+      End
+    End
+
+    Describe .hours()
+      It returns the offset in hour
+        Assert Equals(tz.hours(), -8)
+      End
+    End
+
+    Describe .sign()
+      It returns the offset of sign
+        Assert Equals(tz.sign(), -1)
+      End
+    End
+
+    Describe .offset_string()
+      It returns the offset by the format used by RFC 2822
+        Assert Equals(tz.offset_string(), '-0800')
+      End
+    End
+
+    Describe .w3c()
+      It returns the offset by the format used by W3CDTF
+        Assert Equals(tz.w3c(), '-08:00')
+      End
+    End
+  End
+
+  Describe TimeDelta object
+    Before each
+      let delta = DT.delta(63, 'days', 3, 'hours', 4, 'minutes', 5, 'seconds')
+    End
+
+    Describe .seconds()
+      It returns seconds component
+        Assert Equals(delta.seconds(), 5)
+      End
+    End
+
+    Describe .minutes()
+      It returns minutes component
+        Assert Equals(delta.minutes(), 4)
+      End
+    End
+
+    Describe .hours()
+      It returns hours component
+        Assert Equals(delta.hours(), 3)
+      End
+    End
+
+    Describe .days()
+      It returns days component
+        Assert Equals(delta.days(), 63)
+      End
+    End
+
+    Describe .total_seconds()
+      It returns the total seconds of the delta
+        Assert Equals(delta.total_seconds(), 5454245)
+      End
+    End
+
+    Describe .sign()
+      It returns the sign of the delta
+        Assert Equals(delta.sign(), 1)
+      End
+    End
+
+    Describe .negate()
+      It returns new negated TimeDelta object
+        let delta = DT.delta(1, 100)
+        let result = delta.negate()
+        Assert Truthy(result.is(DT.delta(-1, -100)))
+        Assert Truthy(result.negate().is(delta))
+      End
+    End
+
+    Describe .duration()
+      It returns new TimeDelta object that is absolute value
+        let delta = DT.delta(-1, -100)
+        let result = delta.duration()
+        Assert Truthy(result.is(DT.delta(1, 100)))
+        Assert Truthy(result.duration().is(DT.delta(1, 100)))
+      End
+    End
+
+    Describe .is()
+      It returns true if two TimeDeltas are same
+        let delta1 = DT.delta(0, 43200)
+        let delta2 = DT.delta(1, -43200)
+        Assert Truthy(delta1.is(delta2))
+      End
+      It returns false if two TimeDeltas are not same
+        let delta1 = DT.delta(0, 43200)
+        let delta2 = DT.delta(0, -43200)
+        Assert Falsy(delta1.is(delta2))
+      End
+    End
+
+    Describe .add()
+      It returns new TimeDelta object which added this and other
+        let delta1 = DT.delta(1, 100)
+        let delta2 = DT.delta(2, 50)
+        let result = delta1.add(delta2)
+        Assert Truthy(result.is(DT.delta(3, 150)))
+      End
+    End
+
+    Describe .subtract()
+      It returns new TimeDelta object which subtracted this and other
+        let delta1 = DT.delta(1, 100)
+        let delta2 = DT.delta(2, 150)
+        let result = delta1.subtract(delta2)
+        Assert Truthy(result.is(DT.delta(-1, -50)))
+      End
+    End
+
+    Describe .about()
+      It returns a string that about this delta
+        Assert Equals(delta.about(), '2 months later')
+        Assert Equals(delta.negate().about(), '2 months ago')
+        Assert Equals(DT.delta(740, 0).about(), '2 years later')
+        Assert Equals(DT.delta(10, 0).about(), '1 week later')
+        Assert Equals(DT.delta(0, 0).about(), 'now')
+        Assert Equals(DT.delta(0, -50).about(), '50 seconds ago')
+        Assert Equals(DT.delta(0, -500).about(), '8 minutes ago')
+        Assert Equals(DT.delta(0, -5000).about(), '1 hour ago')
+      End
+    End
+
+    Describe .to_string()
+      It returns a string representation
+        Assert Equals(delta.to_string(), '63days, 03:04:05')
+        Assert Equals(delta.negate().to_string(), '-63days, 03:04:05')
+        Assert Equals(DT.delta(1, 3600).to_string(), '1day, 01:00:00')
+        Assert Equals(DT.delta(0, 3600).to_string(), '01:00:00')
+        Assert Equals(DT.delta(0, -3600).to_string(), '-01:00:00')
+      End
+    End
+
+    Context with strange initialization
+      It is normalized correctly (plus)
+        let delta = DT.delta(0, (60 * 60 * 24 * 5) + (60 * 60 * 4) + (60 * 3) + 25)
+        Assert Equals(delta.days(), 5)
+        Assert Equals(delta.hours(), 4)
+        Assert Equals(delta.minutes(), 3)
+        Assert Equals(delta.seconds(), 25)
+        Assert Equals(delta.sign(), 1)
+      End
+      It is normalized correctly (minus)
+        let delta = DT.delta(-10, (60 * 60 * 24 * 5) + (60 * 60 * 4) + (60 * 3) + 25)
+        Assert Equals(delta.days(), -4)
+        Assert Equals(delta.hours(), -19)
+        Assert Equals(delta.minutes(), -56)
+        Assert Equals(delta.seconds(), -35)
+        Assert Equals(delta.sign(), -1)
+      End
+      It is normalized correctly (zero)
+        let delta = DT.delta(5, 60 * 60 * 24 * -5)
+        Assert Equals(delta.days(), 0)
+        Assert Equals(delta.hours(), 0)
+        Assert Equals(delta.minutes(), 0)
+        Assert Equals(delta.seconds(), 0)
+        Assert Equals(delta.sign(), 0)
+      End
+    End
+  End
+End

@@ -86,7 +86,9 @@ delta({TimeDelta})
 	Returns {TimeDelta} directly.
 
 compare({datetime1}, {datetime2})	*Vital.DateTime.compare()*
-	Comparison function for DateTime.  This is useful when using |sort()|.
+	Comparison function for DateTime.
+	This is same to "datetime1.compare(datetime2)"
+	This is useful when using |sort()|.
 
 month_names([{longname} [, {locale}]])	*Vital.DateTime.month_names()*
 	Returns month names according to the current or specified locale.
@@ -166,9 +168,9 @@ DateTime.is({DateTime})		*Vital.DateTime-DateTime.is()*
 	time.
 
 DateTime.compare({DateTime})	*Vital.DateTime-DateTime.compare()*
-	Returns -1 if {DateTime} is after than this DateTime.
+	Returns -1 if {DateTime} is later more than this DateTime.
 	Returns 0 if {DateTime} and this DateTime is same.
-	Returns 1 if {DateTime} is before than this DateTime.
+	Returns 1 if {DateTime} is precedes more than this DateTime.
 
 DateTime.delta({DateTime})	*Vital.DateTime-DateTime.delta()*
 	Returns a new TimeDelta(|Vital.DateTime-TimeDelta|) object.
@@ -178,7 +180,7 @@ DateTime.to({delta})		*Vital.DateTime-DateTime.to()*
 DateTime.to({timezone})
 	Returns a new object from which the specified time is different.
 	This function accepts the followings:
-	- {DateDelta} object or {TimeZone} object.
+	- {TimeDelta} object or {TimeZone} object.
 	- If the length of argument is one, it is a {timezone}.
 	  This the same arguments as |Vital.DateTime.timezone()|.
 	- If the length of argument is two or more, it is a {delta}.
@@ -223,35 +225,29 @@ TimeZone.w3c()			*Vital.DateTime-TimeZone.w3c()*
 ------------------------------------------------------------------------------
 TimeDelta Object		*Vital.DateTime-TimeDelta*
 
-TimeDelta is a delta of two DateTime.  This object holds delta with the
-following elements.
-- seconds
-  - Less than the seconds on a day.
-- days
-- sign
-  - direction (ago or later)
+TimeDelta is a delta of two DateTime.
 
 TimeDelta.seconds()		*Vital.DateTime-TimeDelta.seconds()*
-	Returns the seconds parts of the delta.
+	Returns the seconds component.
 
 TimeDelta.minutes()		*Vital.DateTime-TimeDelta.minutes()*
-	Returns the seconds parts of the delta in minute.
+	Returns the minutes component.
 
 TimeDelta.hours()		*Vital.DateTime-TimeDelta.hours()*
-	Returns the seconds parts of the delta in hour.
+	Returns the hours component.
 
 TimeDelta.days()		*Vital.DateTime-TimeDelta.days()*
-	Returns the days parts of the delta.
+	Returns the days component.
 
 TimeDelta.weeks()		*Vital.DateTime-TimeDelta.weeks()*
-	Returns the days parts of the delta in week.
+	Returns the days component by the unit of the week.
 
 TimeDelta.months()		*Vital.DateTime-TimeDelta.months()*
-	Returns the days parts of the delta in month.
+	Returns the days component by the unit of the month.
 	The month is always calculated in 30 days.
 
 TimeDelta.years()		*Vital.DateTime-TimeDelta.years()*
-	Returns the days parts of the delta in year.
+	Returns the days component by the unit of the years.
 	The year is always calculated in 365 days.
 
 TimeDelta.total_seconds()	*Vital.DateTime-TimeDelta.total_seconds()*
@@ -266,8 +262,19 @@ TimeDelta.negate()		*Vital.DateTime-TimeDelta.negate()*
 	Returns a new negated TimeDelta object.
 	delta.sign() == -delta.negate().sign()
 
+TimeDelta.duration()		*Vital.DateTime-TimeDelta.duration()*
+	Returns a TimeDelta object that is absolute value.
+
+TimeDelta.is({TimeDelta})	*Vital.DateTime-TimeDelta.is()*
+	Returns true if this TimeDelta and the specified {TimeDelta} is the
+	same delta.
+
 TimeDelta.add({other})		*Vital.DateTime-TimeDelta.add()*
 	Returns a new TimeDelta object which added this and {other}.
+	{other} accepts the same arguments as |Vital.DateTime.delta()|.
+
+TimeDelta.subtract({other})	*Vital.DateTime-TimeDelta.subtract()*
+	Returns a new TimeDelta object which subtracted this and {other}.
 	{other} accepts the same arguments as |Vital.DateTime.delta()|.
 
 TimeDelta.about()		*Vital.DateTime-TimeDelta.about()*
@@ -315,6 +322,7 @@ There is a list of specifications of the format.
   o o  %D  Equivalent to "%m/%d/%y".
   o o  %e  Equivalent to "%_m/%_d/%_y".
   o o  %F  Equivalent to "%Y-%m-%d".
+  o o  %h  Equivalent to "%b".
   o o  %H  The hour as a decimal number using a 24-hour clock(range 00 to 23).
   o o  %I  The hour as a decimal number using a 12-hour clock(range 01 to 12).
   o    %j  The day of the year as a decimal number (range 001 to 366).

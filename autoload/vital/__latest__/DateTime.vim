@@ -45,7 +45,6 @@ function! s:_vital_loaded(V) abort
   call extend(s:TimeDelta, {
   \   '_days': 0,
   \   '_time': 0,
-  \   '_sign': 0,
   \ })
 endfunction
 
@@ -64,9 +63,10 @@ endfunction
 
 " Creates a DateTime object from given unix time.
 function! s:from_unix_time(unix_time, ...) abort
+  let tz = call('s:timezone', a:000)
   return call('s:from_date',
   \   map(split(strftime('%Y %m %d %H %M %S', a:unix_time)),
-  \       'str2nr(v:val, 10)') + a:000)
+  \       'str2nr(v:val, 10)')).to(tz)
 endfunction
 
 " Creates a DateTime object from given date and time.
@@ -96,8 +96,11 @@ function! s:from_format(string, format, ...) abort
       let pat = '^' . skip_pattern . '\V' . escape(f, '\')
       let matched_len = len(matchstr(remain, pat))
       if matched_len == 0
-        throw "Vital.DateTime: Parse error:\n" .
-        \     'input: ' . a:string . "\nformat: " . a:format
+        throw join([
+        \   'vital: DateTime: Parse error:',
+        \   'input: ' . a:string,
+        \   'format: ' . a:format,
+        \ ], "\n")
       endif
       let remain = remain[matched_len :]
     else  " if s:Prelude.is_list(f)
@@ -115,7 +118,7 @@ function! s:from_format(string, format, ...) abort
 endfunction
 " @vimlint(EVL102, 1, l:locale)
 function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale) abort
-  " "o", "key", "value" and "locale" is used by parse_conv
+  " "o", "key", "value" and "locale" are used by parse_conv
   let o = a:datetime
   let locale = a:locale " for parse_conv
   let [info, flag, width] = a:descriptor
@@ -182,22 +185,24 @@ function! s:timezone(...) abort
   if s:_is_class(info, 'TimeZone')
     return info
   endif
-  if !s:Prelude.is_number(info) && empty(info)
+  if info is ''
     unlet info
     let info = s:_default_tz()
   endif
   let tz = copy(s:TimeZone)
   if s:Prelude.is_number(info)
     let tz._offset = info * s:NUM_MINUTES * s:NUM_SECONDS
-  else
+  elseif s:Prelude.is_string(info)
     let list = matchlist(info, '\v^([+-])?(\d{1,2}):?(\d{1,2})?$')
     if !empty(list)
       let tz._offset = str2nr(list[1] . s:NUM_SECONDS) *
       \                (str2nr(list[2]) * s:NUM_MINUTES + str2nr(list[3]))
     else
       " TODO: TimeZone names
-      throw 'Vital.DateTime: Unknown timezone: ' . string(info)
+      throw 'vital: DateTime: Unknown timezone: ' . string(info)
     endif
+  else
+    throw 'vital: DateTime: Invalid timezone: ' . string(info)
   endif
   return tz
 endfunction
@@ -305,13 +310,13 @@ function! s:DateTime.timezone(...) abort
 endfunction
 function! s:DateTime.day_of_week() abort
   if !has_key(self, '_day_of_week')
-    let self._day_of_week = self.days_from_era() % 7
+    let self._day_of_week = self.timezone(0).days_from_era() % 7
   endif
   return self._day_of_week
 endfunction
 function! s:DateTime.day_of_year() abort
   if !has_key(self, '_day_of_year')
-    let self._day_of_year = self.julian_day() -
+    let self._day_of_year = self.timezone(0).julian_day() -
     \                       s:_g2jd(self._year, 1, 1) + 1
   endif
   return self._day_of_year
@@ -323,11 +328,12 @@ function! s:DateTime.days_from_era() abort
   return self._day_from_era
 endfunction
 function! s:DateTime.julian_day(...) abort
-  let jd = s:_g2jd(self._year, self._month, self._day)
+  let utc = self.to(0)
+  let jd = s:_g2jd(utc._year, utc._month, utc._day)
   if a:0 && a:1
     if has('float')
-      let jd += (self.seconds_of_day() + 0.0) / s:SECONDS_OF_DAY - 0.5
-    elseif self._hour < 12
+      let jd += (utc.seconds_of_day() + 0.0) / s:SECONDS_OF_DAY - 0.5
+    elseif utc._hour < 12
       let jd -= 1
     endif
   endif
@@ -366,9 +372,11 @@ function! s:DateTime.compare(dt) abort
   return self.delta(a:dt).sign()
 endfunction
 function! s:DateTime.delta(dt) abort
-  return s:delta(self.days_from_era() - a:dt.days_from_era(),
-  \              (self.seconds_of_day() + self.timezone().offset()) -
-  \              (a:dt.seconds_of_day() + a:dt.timezone().offset()))
+  let left = self.to(0)
+  let right = a:dt.to(0)
+  return s:delta(left.days_from_era() - right.days_from_era(),
+  \              (left.seconds_of_day() + left.timezone().offset()) -
+  \              (right.seconds_of_day() + right.timezone().offset()))
 endfunction
 function! s:DateTime.to(...) abort
   let dt = self._clone()
@@ -479,10 +487,10 @@ endfunction
 " ----------------------------------------------------------------------------
 let s:TimeDelta = s:_new_class('TimeDelta')
 function! s:TimeDelta.seconds() abort
-  return self._time
+  return self._time % s:NUM_SECONDS
 endfunction
 function! s:TimeDelta.minutes() abort
-  return self._time / s:NUM_SECONDS
+  return self._time / s:NUM_SECONDS % s:NUM_MINUTES
 endfunction
 function! s:TimeDelta.hours() abort
   return self._time / s:SECONDS_OF_HOUR
@@ -502,49 +510,66 @@ endfunction
 function! s:TimeDelta.total_seconds() abort
   return self._days * s:SECONDS_OF_DAY + self._time
 endfunction
+function! s:TimeDelta.is(td) abort
+  return self.subtract(a:td).sign() == 0
+endfunction
 function! s:TimeDelta.sign() abort
-  return self._sign
+  if self._days < 0 || self._time < 0
+    return -1
+  elseif 0 < self._days || 0 < self._time
+    return 1
+  endif
+  return 0
 endfunction
 function! s:TimeDelta.negate() abort
   let td = self._clone()
-  let td._sign = -self._sign
-  return td
+  let td._days = -self._days
+  let td._time = -self._time
+  return td._normalize()
+endfunction
+function! s:TimeDelta.duration() abort
+  return self.sign() < 0 ? self.negate() : self
 endfunction
 function! s:TimeDelta.add(...) abort
   let n = self._clone()
   let other = call('s:delta', a:000)
-  let n._days += other._days * other._sign
-  let n._time += other._time * other._sign
+  let n._days += other._days
+  let n._time += other._time
   return n._normalize()
+endfunction
+function! s:TimeDelta.subtract(...) abort
+  let other = call('s:delta', a:000)
+  return self.add(other.negate())
 endfunction
 function! s:TimeDelta.about() abort
   if self.sign() == 0
     return 'now'
   endif
   let dir = self.sign() < 0 ? 'ago' : 'later'
-  if self._days == 0
-    if self._time < s:NUM_SECONDS
-      let val = self.seconds()
+  let d = self.duration()
+  if d._days == 0
+    if d._time < s:NUM_SECONDS
+      let val = d.seconds()
       let unit = val == 1 ? 'second' : 'seconds'
-    elseif self._time < s:SECONDS_OF_HOUR
-      let val = self.minutes()
+    elseif d._time < s:SECONDS_OF_HOUR
+      let val = d.minutes()
       let unit = val == 1 ? 'minute' : 'minutes'
     else
-      let val = self.hours()
+      let val = d.hours()
       let unit = val == 1 ? 'hour' : 'hours'
     endif
   else
-    if self._days < s:NUM_DAYS_OF_WEEK
-      let val = self.days()
+    if d._days < s:NUM_DAYS_OF_WEEK
+      let val = d.days()
       let unit = val == 1 ? 'day' : 'days'
-    elseif self._days < 30
-      let val = self.weeks()
+    elseif d._days < 30
+      let val = d.weeks()
       let unit = val == 1 ? 'week' : 'weeks'
-    elseif self._days < 365
-      let val = self.months()
+    elseif d._days < 365
+      let val = d.months()
       let unit = val == 1 ? 'month' : 'months'
     else
-      let val = self.years()
+      let val = d.years()
       let unit = val == 1 ? 'year' : 'years'
     endif
   endif
@@ -552,33 +577,24 @@ function! s:TimeDelta.about() abort
 endfunction
 function! s:TimeDelta.to_string() abort
   let str = self.sign() < 0 ? '-' : ''
-  if self._days != 0
-    let str .= self._days . (self._days == 1 ? 'day' : 'days') . ', '
+  let d = self.duration()
+  if d._days != 0
+    let str .= d._days . (d._days == 1 ? 'day' : 'days') . ', '
   endif
-  let str .= printf('%02d:%02d:%02d',
-  \                 self._time / (s:SECONDS_OF_HOUR),
-  \                 (self._time / s:NUM_SECONDS) % s:NUM_MINUTES,
-  \                 self._time % s:NUM_SECONDS)
+  let str .= printf('%02d:%02d:%02d', d.hours(), d.minutes(), d.seconds())
   return str
 endfunction
 function! s:TimeDelta._normalize() abort
-  if self._sign < 0
-    let self._days = -self._days
-    let self._time = -self._time
-    let self._sign = -self._sign
-  endif
+  let over_days = self._time / s:SECONDS_OF_DAY
+  let self._days += over_days
+  let self._time = self._time % s:SECONDS_OF_DAY
+
   if self._days < 0 && 0 < self._time
     let self._days += 1
     let self._time -= s:SECONDS_OF_DAY
   elseif 0 < self._days && self._time < 0
     let self._days -= 1
     let self._time += s:SECONDS_OF_DAY
-  endif
-  let self._sign = self._time != 0 ? (0 <= self._time ? 1 : -1) :
-  \                self._days != 0 ? (0 <= self._days ? 1 : -1) : 0
-  if self._sign < 0
-    let self._days = -self._days
-    let self._time = -self._time
   endif
   return self
 endfunction
@@ -690,11 +706,12 @@ let s:format_info = {
 \   'B': ['month', function('s:_month_full'),
 \         's:_month_full(locale)[value - 1]', 'value + 1'],
 \   'c': '%F %T %z',
-\   'C': ['year', ['0', 2], 'value / 100', 'o[key] % 100 + value * 100'],
+\   'C': ['year', ['0', 2], '(value + 99) / 100', 'o[key] % 100 + value * 100'],
 \   'd': ['day', ['0', 2]],
 \   'D': '%m/%d/%y',
 \   'e': '%_m/%_d/%_y',
 \   'F': '%Y-%m-%d',
+\   'h': '%b',
 \   'H': ['hour', ['0', 2]],
 \   'I': ['hour', ['0', 2], 's:_mod(value - 1, 12) + 1', 'value % 12'],
 \   'j': ['day_of_year', ['0', 3]],
@@ -709,7 +726,7 @@ let s:format_info = {
 \         's:_am_pm_lower(locale)[value / 12]', 'o[key] + value * 12'],
 \   'r': '%I:%M:%S %p',
 \   'R': '%H:%M',
-\   's': ['unix_time', ['', 20]],
+\   's': ['unix_time', ['', '']],
 \   'S': ['second', ['0', 2]],
 \   't': ['', '\_.*', "\t"],
 \   'u': ['day_of_week', ['0', 1], 'value == 0 ? 7 : value'],
@@ -723,7 +740,6 @@ let s:format_info = {
 \         's:timezone(empty(value) ? 0 : value)'],
 \   '*': ['#skip', '.\{-}', ''],
 \ }
-let s:format_info.h = s:format_info.b
 let s:DESCRIPTORS_PATTERN = '[' . join(keys(s:format_info), '') . ']'
 
 " 'foo%Ybar%02m' => ['foo', ['Y', '', -1], 'bar', ['m', '0', 2], '']
