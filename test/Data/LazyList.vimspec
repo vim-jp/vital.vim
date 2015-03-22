@@ -1,0 +1,128 @@
+Describe Data.LazyList
+  Before all
+    let LazyList = vital#of('vital').import('Data.LazyList')
+  End
+
+  Describe .from_list()
+    It constructs lazy list
+      let a = [1,2,3,4,5,6,7,8,9,10]
+      let a_ = deepcopy(a)
+      let b = LazyList.from_list(a)
+      Assert Equals(a, a_)
+      Assert Equals([], LazyList.take(0, b))
+      Assert Equals([1,2,3], LazyList.take(3, b))
+      Assert Equals([1,2,3], LazyList.take(3, b))
+      Assert Equals(a, LazyList.take(len(a), b))
+      Assert Equals(a, LazyList.take(len(a)+10, b))
+      Assert Equals(a, a_)
+      unlet a
+      unlet a_
+      unlet b
+    End
+
+    It throws exception
+      " no error...
+      "    ShouldThrow LazyList.from_list(1), /.*/
+      "    ShouldThrow LazyList.from_list("a"), /.*/
+      "    ShouldThrow LazyList.from_list({}), /.*/
+      Throw LazyList.from_list([1,2,3], [4,5,6])
+    End
+
+    It constructs lazy list with any type
+      for a in [
+      \  [0,1,2,3,4,5,6,7,8,9,10],
+      \   ['a','b','c','d','e'],
+      \   [0, "123", {}, [], 123]
+      \]
+        let b = LazyList.from_list(a)
+        for i in range(len(a)+3)
+          if i == 0
+            Assert Equals([], LazyList.take(i, b))
+          elseif i < len(a)
+            Assert Equals(a[0:i-1], LazyList.take(i, b))
+          else
+            Assert Equals(a, LazyList.take(i, b))
+          endif
+        endfor
+        unlet b
+        unlet i
+        unlet a
+      endfor
+    End
+  End
+
+  Describe .iterate()
+    It constructs lazy list
+      let a = [1,2,3,4,5,6,7,8,9,10]
+      let b = LazyList.iterate(1, 'v:val + 1')
+
+      Assert Equals([], LazyList.take(0, b))
+      Assert Equals([1,2,3], LazyList.take(3, b))
+      Assert Equals(a, LazyList.take(len(a), b))
+      for i in range(len(a)+1)
+        let b = LazyList.iterate(1, 'v:val + 1')
+        if i == 0
+          Assert Equals([], LazyList.take(i, b))
+        else
+          Assert Equals(a[0:i-1], LazyList.take(i, b))
+        endif
+      endfor
+      unlet a
+      unlet b
+      unlet i
+    End
+  End
+
+  Describe .file_readlines()
+
+    " issue #93
+    "
+    " It constructs lazy list
+    "   let tmpfile = tempname()
+    "   let lines = []
+    "   let lines += ["1"]
+    "   let lines += ["2"]
+    "   let lines += ["3"]
+    "   let lines += ["4ABCDEFG"]
+    "   let lines += [""]
+    "   let lines += ["6ABCDEFG"]
+    "   let lines += ["7"]
+    "   let lines += ["8abc"]
+    "   let lines += ["012345"]
+    "   for i in range(100)
+    "     let lines += [printf("%d", i)]
+    "   endfor
+    "   call writefile(lines, tmpfile)
+    "   let b = LazyList.file_readlines(tmpfile)
+    "   Assert Equals([], LazyList.take(0, b))
+    "   Assert Equals(["1", "2", "3"], LazyList.take(3, b))
+
+    "   for i in range(len(lines))
+    "     if i, 0
+    "       Assert Equals([], LazyList.take(i, b))
+    "     elseif i < len(lines)
+    "       Assert Equals(lines[0:i-1], LazyList.take(i, b))
+    "     else
+    "       Assert Equals(lines, LazyList.take(i, b))
+    "       break
+    "     endif
+    "   endfor
+    "   Assert Equals([], LazyList.take(0, b))
+    "   call delete(tmpfile)
+    " End
+
+    It throws exception
+      Throw LazyList.file_readlines({})
+      Throw LazyList.file_readlines([])
+      let i = 0
+      while 1
+        let i = i + 1
+        let fname = printf("/tmp/__non_exist_file_%d", i)
+        if !filereadable(fname)
+          Throw LazyList.file_readlines("")
+          break
+        endif
+      endwhile
+    End
+  End
+End
