@@ -36,7 +36,7 @@ function! s:_make_option_description_for_help(opt) abort
     let extra .= 'PATTERN: ' . string(a:opt.pattern_option) . ', '
   endif
   let extra = substitute(extra, ', $', '', '')
-  if !empty(extra)
+  if extra !=# ''
     let extra = ' (' . extra . ')'
   endif
   return a:opt.description . extra
