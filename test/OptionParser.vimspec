@@ -253,14 +253,19 @@ Describe OptionParser
       Assert Equals(o.parse('--huga'), {'__unknown_args__' : [], 'huga' : 1})
     End
 
-    It parses pattern option only number
+    It parses pattern option
       let o = O.new()
       call o.on('--hoge=VALUE', '', {'pattern' : '^\d\+$'})
+      call o.on('--huga=VALUE', '', {'pattern' : '^[a-m]\+$'})
       Assert Equals(o.parse('--hoge=0'), {'__unknown_args__' : [], 'hoge' : '0'})
       Assert Equals(o.parse('--hoge=99999'), {'__unknown_args__' : [], 'hoge' : '99999'})
+      Assert Equals(o.parse('--huga=a'), {'__unknown_args__' : [], 'huga' : 'a'})
+      Assert Equals(o.parse('--huga=cde'), {'__unknown_args__' : [], 'huga' : 'cde'})
       Throws o.parse('--hoge=-1')
       Throws o.parse('--hoge=99999.')
       Throws o.parse('--hoge=aaa')
+      Throws o.parse('--huga=xyz')
+      Throws o.parse('--huga=hoge')
     End
 
     It doesn't parse arguments not defined with on()
