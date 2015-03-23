@@ -4,6 +4,7 @@ set cpo&vim
 let s:_STRING_TYPE = type('')
 let s:_LIST_TYPE = type([])
 let s:_DICT_TYPE = type({})
+let s:_NUM_TYPE = type(0)
 
 function! s:_vital_loaded(V) abort
   let s:L = a:V.import('Data.List')
@@ -214,7 +215,11 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...) abort
   endif
 
   " get hoge and huga from --hoge=huga
-  let [name, value] = matchlist(a:def, '^--\([^= ]\+\)\(=\S\+\)\=$')[1:2]
+  let matched = matchlist(a:def, '^--\([^= ]\+\)\(=\S\+\)\=$')[1:2]
+  if len(matched) != 2
+    throw 'vital: OptionParser: Invalid option "' . a:def . '"'
+  endif
+  let [name, value] = matched
   let has_value = value != ''
 
   let no = name =~# '^\[no-]'
@@ -254,8 +259,8 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...) abort
         endif
       endif
       if has_key(a:1, 'required')
-        if (a:1.required !~# '^[01]$')
-          throw 'vital: OptionParser: Invalid required option: ' . a:1.required
+        if a:1.required isnot 0 && a:1.required isnot 1
+          throw 'vital: OptionParser: Invalid required option: ' . string(a:1.required)
         endif
         let self.options[name].required_option = a:1.required
       endif

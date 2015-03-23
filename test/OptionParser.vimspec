@@ -99,17 +99,17 @@ Describe OptionParser
 
     It occurs an error when invalid option name is specified
       let o = O.new()
-      Throws o.on('invalid_name', '')
-      Throws o.on('--invalid name', '')
+      Throws /vital: OptionParser: / o.on('invalid_name', '')
+      Throws /vital: OptionParser: / o.on('--invalid name', '')
     End
 
     It occurs an error when invalid short option name is specified
       let o = O.new()
-      Throws o.on('--valid', '', {'short' : '-but_invalid'})
-      Throws o.on('--valid', '', {'short' : '--'})
-      Throws o.on('--valid', '', {'short' : 'a'})
-      Throws o.on('--valid', '', {'short' : '-='})
-      Throws o.on('--valid', '', {'short' : '-'})
+      Throws /vital: OptionParser: / o.on('--valid', '', {'short' : '-but_invalid'})
+      Throws /vital: OptionParser: / o.on('--valid', '', {'short' : '--'})
+      Throws /vital: OptionParser: / o.on('--valid', '', {'short' : 'a'})
+      Throws /vital: OptionParser: / o.on('--valid', '', {'short' : '-='})
+      Throws /vital: OptionParser: / o.on('--valid', '', {'short' : '-'})
     End
 
     It sets default values if specified
@@ -141,17 +141,17 @@ Describe OptionParser
 
     It occurs an error when invalid required option is specified
       let o = O.new()
-      Throws o.on('--hoge=VALUE', '', {'required' : '-1'})
-      Throws o.on('--hoge=VALUE', '', {'required' : '2'})
-      Throws o.on('--hoge=VALUE', '', {'required' : 'a'})
-      Throws o.on('--hoge=VALUE', '', {'required' : ''})
-      Throws o.on('--hoge=VALUE', '', {'required' : 1.0})
-      Throws o.on('--hoge=VALUE', '', {'required' : 0.0})
+      Throws /vital: OptionParser: / o.on('--hoge=VALUE', '', {'required' : '-1'})
+      Throws /vital: OptionParser: / o.on('--hoge=VALUE', '', {'required' : '2'})
+      Throws /vital: OptionParser: / o.on('--hoge=VALUE', '', {'required' : 'a'})
+      Throws /vital: OptionParser: / o.on('--hoge=VALUE', '', {'required' : ''})
+      Throws /vital: OptionParser: / o.on('--hoge=VALUE', '', {'required' : 1.0})
+      Throws /vital: OptionParser: / o.on('--hoge=VALUE', '', {'required' : 0.0})
     End
 
     It occurs an error when invalid pattern option is specified
       let o = O.new()
-      Throws o.on('--hoge=VALUE', '', {'pattern' : '\('})
+      Throws /vital: OptionParser: / o.on('--hoge=VALUE', '', {'pattern' : '\('})
     End
 
   End
@@ -210,7 +210,7 @@ Describe OptionParser
       let o = O.new()
       call o.on('--hoge=VALUE', 'huga')
       Assert Equals(o.parse('--hoge=huga'), {'__unknown_args__' : [], 'hoge' : 'huga'})
-      Throws O.parse('--hoge')
+      Throws /vital: OptionParser: / o.parse('--hoge')
     End
 
     It parses --[no-]hoge as 'hoge' : 0 or 1
@@ -241,7 +241,7 @@ Describe OptionParser
       call o.on('--huga', '')
       Assert Equals(o.parse('--hoge --huga'), {'__unknown_args__' : [], 'hoge' : 1, 'huga' : 1})
       Assert Equals(o.parse('--hoge'), {'__unknown_args__' : [], 'hoge' : 1})
-      Throws o.parse('--huga')
+      Throws /vital: OptionParser: / o.parse('--huga')
     End
 
     It parses required option --hoge need not be specified
@@ -261,11 +261,11 @@ Describe OptionParser
       Assert Equals(o.parse('--hoge=99999'), {'__unknown_args__' : [], 'hoge' : '99999'})
       Assert Equals(o.parse('--huga=a'), {'__unknown_args__' : [], 'huga' : 'a'})
       Assert Equals(o.parse('--huga=cde'), {'__unknown_args__' : [], 'huga' : 'cde'})
-      Throws o.parse('--hoge=-1')
-      Throws o.parse('--hoge=99999.')
-      Throws o.parse('--hoge=aaa')
-      Throws o.parse('--huga=xyz')
-      Throws o.parse('--huga=hoge')
+      Throws /vital: OptionParser: / o.parse('--hoge=-1')
+      Throws /vital: OptionParser: / o.parse('--hoge=99999.')
+      Throws /vital: OptionParser: / o.parse('--hoge=aaa')
+      Throws /vital: OptionParser: / o.parse('--huga=xyz')
+      Throws /vital: OptionParser: / o.parse('--huga=hoge')
     End
 
     It doesn't parse arguments not defined with on()

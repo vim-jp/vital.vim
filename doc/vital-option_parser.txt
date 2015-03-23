@@ -182,15 +182,16 @@ Parser.on({name}, {description} [, {extra}])
 	  |:command-completion-custom|.
 
 	  - "required"
-	    Value of "required" key must be 1 or 0. If 1, it means this option
-	    must be specified. If it isn't specified, Vital throw exception.
-	    And if 0, it means this option is optional.
-	    If "default" key is specified, "required" value ignored.
+	    Value of "required" key must be 1 or 0.
+	    1 means this option must be specified. If not specified, Vital
+	    throws an exception.
+	    And 0 means this option is optional.
+	    If "default" key is specified, "required" value is ignored.
 
 	  - "pattern"
-	    If {extra} has "pattern" key, its value should be |String| and means
-	    this option must match "pattern" value.
-	    If it doesn't match "pattern" value, Vital throw exception.
+	    If {extra} has "pattern" key, its value must be |String| and means
+	    this option must match the value.
+	    If it doesn't match "pattern" value, Vital throws an exception.
 
 					*Vital.OptionParser-Parser.parse()*
 Parser.parse({q-args} [, {cmd-attributes}...])
