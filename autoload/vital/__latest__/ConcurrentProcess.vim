@@ -48,7 +48,7 @@ function! s:of(command, dir, initial_queries) abort
     try
       let vp = vimproc#popen3(a:command)
     finally
-      if len(a:dir)
+      if exists('cwd')
         execute 'lcd' cwd
       endif
     endtry
@@ -75,7 +75,7 @@ function! s:_split_at_last_newline(str) abort
   endif
 endfunction
 
-function! s:_read(label, pi, rname)
+function! s:_read(pi, rname) abort
   let pi = a:pi
 
   let [out, err] = [pi.vp.stdout.read(-1, 0), pi.vp.stderr.read(-1, 0)]
@@ -102,7 +102,9 @@ function! s:tick(label) abort
     return
   endif
 
+  " TODO return value 'is_alive' can be useful
   let is_alive = get(pi.vp.checkpid(), 0, '') ==# 'run'
+  " @vimlint(EVL102, 1, l:is_alive)
 
   let qlabel = pi.queries[0][0]
 
@@ -110,7 +112,7 @@ function! s:tick(label) abort
     let rname = pi.queries[0][1]
     let rtil = pi.queries[0][2]
 
-    call s:_read(a:label, pi, rname)
+    call s:_read(pi, rname)
 
     let pattern = "\\(^\\|\n\\)" . rtil . '$'
     " when wait ended:
@@ -128,7 +130,7 @@ function! s:tick(label) abort
     endif
   elseif qlabel ==# '*read-all*'
     let rname = pi.queries[0][1]
-    call s:_read(a:label, pi, rname)
+    call s:_read(pi, rname)
 
     " when wait ended:
     if get(s:_process_info[a:label].vp.checkpid(), 0, '') !=# 'run'
