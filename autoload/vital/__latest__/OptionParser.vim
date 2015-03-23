@@ -25,11 +25,21 @@ function! s:_PRESET_COMPLETER.file(optlead, cmdline, cursorpos) abort
 endfunction
 
 function! s:_make_option_description_for_help(opt) abort
-  let desc = a:opt.description
+  let extra = ''
   if has_key(a:opt, 'default_value')
-    let desc .= ' (DEFAULT: ' . string(a:opt.default_value) . ')'
+    let extra .= 'DEFAULT: ' . string(a:opt.default_value) . ', '
   endif
-  return desc
+  if get(a:opt, 'required_option', 0)
+    let extra .= 'REQUIRED, '
+  endif
+  if has_key(a:opt, 'pattern_option')
+    let extra .= 'PATTERN: ' . string(a:opt.pattern_option) . ', '
+  endif
+  let extra = substitute(extra, ', $', '', '')
+  if extra !=# ''
+    let extra = ' (' . extra . ')'
+  endif
+  return a:opt.description . extra
 endfunction
 
 function! s:_make_option_definition_for_help(opt) abort
@@ -86,12 +96,17 @@ function! s:_expand_short_option(arg, options) abort
   return a:arg
 endfunction
 
-function! s:_set_default_values(parsed_args, options) abort
-  for [name, default_value] in map(items(filter(copy(a:options), 'has_key(v:val, "default_value")')), '[v:val[0], v:val[1].default_value]')
-    if ! has_key(a:parsed_args, name)
-      let a:parsed_args[name] = default_value
+function! s:_check_extra_option(parsed_args, options) abort
+  for [name, option] in items(a:options)
+    if has_key(option, 'default_value') && ! has_key(a:parsed_args, name)
+      let a:parsed_args[name] = option.default_value
     endif
-    unlet default_value
+    if get(option, 'required_option', 0) && ! has_key(a:parsed_args, name)
+      throw 'vital: OptionParser: parameter is required: ' . name
+    endif
+    if has_key(option, 'pattern_option') && has_key(a:parsed_args, name) && a:parsed_args[name] !~# option.pattern_option
+      throw 'vital: OptionParser: parameter doesn''t match pattern: ' . name . ' ' . option.pattern_option
+    endif
   endfor
 endfunction
 
@@ -187,7 +202,7 @@ function! s:_DEFAULT_PARSER.parse(...) abort
   let parsed_args = s:_parse_args(opts.q_args, self.options)
 
   let ret = parsed_args[0]
-  call s:_set_default_values(ret, self.options)
+  call s:_check_extra_option(ret, self.options)
   call extend(ret, opts.specials)
   let ret.__unknown_args__ = parsed_args[1]
   return ret
@@ -237,6 +252,20 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...) abort
         else
           let self.options[name].completion = a:1.completion
         endif
+      endif
+      if has_key(a:1, 'required')
+        if (a:1.required !~# '^[01]$')
+          throw 'vital: OptionParser: Invalid required option: ' . a:1.required
+        endif
+        let self.options[name].required_option = a:1.required
+      endif
+      if has_key(a:1, 'pattern')
+        try
+          call match('', a:1.pattern)
+        catch
+          throw printf('vital: OptionParser: Invalid pattern option: exception="%s" pattern="%s"', v:exception, a:1.pattern)
+        endtry
+        let self.options[name].pattern_option = a:1.pattern
       endif
     else
       let self.options[name].default_value = a:1
