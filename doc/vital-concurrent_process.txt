@@ -17,7 +17,7 @@ CONFIG				|Vital.ConcurrentProcess-config|
 ==============================================================================
 INTRODUCTION			*Vital.ConcurrentProcess-introduction*
 
-*Vital.ConcurrentProcess* is to communitate with external process concurrently
+*Vital.ConcurrentProcess* is to communicate with external process concurrently
 with using |vimproc|.  This library stores external processes information
 spawned by this library, and provides higher layer concurrent synchronous
 non-blocking read/write interface. This library doesn't use thread nor fork,
