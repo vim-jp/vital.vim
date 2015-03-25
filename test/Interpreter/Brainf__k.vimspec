@@ -1,0 +1,16 @@
+scriptencoding utf-8
+
+Describe Interpreter.Brainf__k
+  Before all
+    let BF = vital#of('vital').import('Interpreter.Brainf__k')
+  End
+
+  Describe .run_vim_parse_execute()
+    It shows hello world
+      redir => output
+        silent call BF.run_vim_parse_execute("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.")
+      redir END
+      Assert Equals(output, "Hello World!\n")
+    End
+  End
+End
