@@ -1,5 +1,7 @@
 # vital.vim [![Build Status](https://travis-ci.org/vim-jp/vital.vim.svg?branch=master)](https://travis-ci.org/vim-jp/vital.vim)
 
+[![Join the chat at https://gitter.im/vim-jp/vital.vim](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vim-jp/vital.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A comprehensive Vim utility functions for Vim plugins.
 
 This is like a plugin which has both aspects of
