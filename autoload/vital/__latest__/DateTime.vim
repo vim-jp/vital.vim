@@ -259,7 +259,12 @@ endfunction
 " @param lowercase = false
 " @param locale = ''
 function! s:am_pm_names(...) abort
-  return s:_names(s:AM_PM_TIMES, a:0 && a:1 ? '%P' : '%p', get(a:000, 1, ''))
+  let spec = a:0 && a:1 ? '%P' : '%p'
+  let names = s:_names(s:AM_PM_TIMES, spec, get(a:000, 1, ''))
+  if spec ==# '%P' && names[0] ==# 'P'  " System doesn't support %P
+    call map(names, 'tolower(v:val)')
+  endif
+  return names
 endfunction
 
 " Returns 1 if the year is a leap year.
