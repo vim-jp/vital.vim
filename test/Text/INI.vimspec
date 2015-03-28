@@ -2,8 +2,8 @@ let s:V = vital#of('vital')
 call s:V.unload()
 let s:I = s:V.import('Text.INI')
 let s:P = s:V.import('System.Filepath')
-let s:valid_ini_file = s:P.join([getcwd(), 'test', 'Text', 'INI', 'valid.ini'])
-let s:invalid_ini_file = s:P.join([getcwd(), 'test', 'Text', 'INI', 'invalid.ini'])
+let s:valid_ini_file = s:P.join([getcwd(), 'test', '_testdata', 'Text', 'INI', 'valid.ini'])
+let s:invalid_ini_file = s:P.join([getcwd(), 'test', '_testdata', 'Text', 'INI', 'invalid.ini'])
 
 Describe Text.INI
 

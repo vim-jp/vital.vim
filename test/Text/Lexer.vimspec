@@ -1,0 +1,45 @@
+
+Describe Text.Lexer
+  Before all
+    let Lexer = vital#of('vital').import('Text.Lexer')
+    let patterns = [
+    \ ['WHITE_SPACES','\s\+'],
+    \ ['WORD','[a-zA-Z]\+'],
+    \ ['DIGIT','[0-9]\+'],
+    \ ]
+    let lex = Lexer.lexer(patterns)
+    let tokens = lex.exec('orange melon 123 banana')
+  End
+
+  Context .lexer()
+    It makes a new dictionary from keys and values
+      Assert Equals([], lex.exec(''))
+      Assert Equals([
+      \   {'label': 'WORD', 'col': 0, 'matched_text': 'hoge'},
+      \   {'label': 'WHITE_SPACES', 'col': 4, 'matched_text': ' '},
+      \   {'label': 'WORD', 'col': 5, 'matched_text': 'foo'}
+      \   ], lex.exec('hoge foo'))
+      Assert Equals(len(tokens), 7)
+      Assert Equals(tokens[0], {'label': 'WORD', 'col': 0, 'matched_text': 'orange'})
+      Assert Equals(tokens[1], {'label': 'WHITE_SPACES', 'col': 6, 'matched_text': ' '})
+      Assert Equals(tokens[2], {'label': 'WORD', 'col': 7, 'matched_text': 'melon'})
+      Assert Equals(tokens[3], {'label': 'WHITE_SPACES', 'col': 12, 'matched_text': ' '})
+      Assert Equals(tokens[4], {'label': 'DIGIT', 'col': 13, 'matched_text': '123'})
+      Assert Equals(tokens[5], {'label': 'WHITE_SPACES', 'col': 16, 'matched_text': ' '})
+      Assert Equals(tokens[6], {'label': 'WORD', 'col': 17, 'matched_text': 'banana'})
+    End
+  End
+
+  It throws an error when arg has unknown patterns
+    Throws /.*/  lex.exec('hoge 123 @@@')
+  End
+
+  It throws an error when invalid parameter
+    Throws /.*/  Lexer.lexer('hoge')
+    Throws /.*/  Lexer.lexer([['word']])
+    Throws /.*/  Lexer.lexer([['word', '2', '3']])
+    Throws /.*/  Lexer.lexer([['word', 2]])
+  End
+
+End
+
