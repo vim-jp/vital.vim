@@ -1,0 +1,42 @@
+scriptencoding utf-8
+
+Describe Vim.Message
+  Before all
+    let Message = vital#of('vital').import('Vim.Message')
+  End
+
+  Context .error()
+    It prints error message
+      redir => output
+      silent call Message.error('hi')
+      redir END
+      " TODO: how to check `echohl ErrorMsg`?
+      Assert Equals(output, "\nhi")
+    End
+  End
+  
+  Context .capture()
+    It returns output string of Vim {command}
+      let output = Message.capture('echo "hi"')
+      " Ignore blank lines.
+      let keepempty = 0
+      let output = join(split(output, '\n', keepempty), '')
+      Assert Equals(output, 'hi')
+    End
+  End
+
+  Context .get_hit_enter_max_length()
+    It gets max length of |hit-enter|
+      let cmdheight = &cmdheight
+      try
+        set cmdheight=1
+        Assert Message.get_hit_enter_max_length() < &columns * &cmdheight
+        set cmdheight=2
+        Assert Message.get_hit_enter_max_length() > &columns
+        Assert Message.get_hit_enter_max_length() < &columns * &cmdheight
+      finally
+        let &cmdheight = cmdheight
+      endtry
+    End
+  End
+End
