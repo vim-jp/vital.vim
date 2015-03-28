@@ -1,0 +1,13 @@
+scriptencoding utf-8
+
+Describe Database.SQLite
+  Before all
+    let SQLite = vital#of('vital').import('Database.SQLite')
+  End
+
+  Describe .is_available()
+    It is true if you have sqlite3 command
+      Assert Equals(SQLite.is_available(), executable('sqlite3'))
+    End
+  End
+End
