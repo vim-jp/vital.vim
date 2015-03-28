@@ -1,0 +1,153 @@
+scriptencoding utf-8
+
+Describe Prelude
+  Before all
+    let P = vital#of('vital').import('Prelude')
+  End
+
+  Describe .is_numeric()
+    It checks if the argument is a numeric
+      Assert Equals(P.is_numeric(3), 1)
+      Assert Equals(P.is_numeric(3.14159), 1)
+      Assert Equals(P.is_numeric(""), 0)
+      Assert Equals(P.is_numeric(function('tr')), 0)
+      Assert Equals(P.is_numeric([]), 0)
+      Assert Equals(P.is_numeric({}), 0)
+    End
+  End
+
+  Describe .is_number()
+    It checks if the argument is a number
+      Assert Equals(P.is_number(3), 1)
+      Assert Equals(P.is_number(3.14159), 0)
+      Assert Equals(P.is_number(""), 0)
+      Assert Equals(P.is_number(function('tr')), 0)
+      Assert Equals(P.is_number([]), 0)
+      Assert Equals(P.is_number({}), 0)
+    End
+  End
+
+  Describe .is_float()
+    It checks if the argument is a float
+      Assert Equals(P.is_float(3), 0)
+      Assert Equals(P.is_float(3.14159), 1)
+      Assert Equals(P.is_float(""), 0)
+      Assert Equals(P.is_float(function('tr')), 0)
+      Assert Equals(P.is_float([]), 0)
+      Assert Equals(P.is_float({}), 0)
+    End
+  End
+
+  Describe .is_string()
+    It checks if the argument is a string
+      Assert Equals(P.is_string(3), 0)
+      Assert Equals(P.is_string(3.14159), 0)
+      Assert Equals(P.is_string(""), 1)
+      Assert Equals(P.is_string(function('tr')), 0)
+      Assert Equals(P.is_string([]), 0)
+      Assert Equals(P.is_string({}), 0)
+    End
+  End
+
+  Describe .is_funcref()
+    It checks if the argument is a funcref
+      Assert Equals(P.is_funcref(3), 0)
+      Assert Equals(P.is_funcref(3.14159), 0)
+      Assert Equals(P.is_funcref(""), 0)
+      Assert Equals(P.is_funcref(function('tr')), 1)
+      Assert Equals(P.is_funcref([]), 0)
+      Assert Equals(P.is_funcref({}), 0)
+    End
+  End
+
+  Describe .is_list()
+    It checks if the argument is a list
+      Assert Equals(P.is_list(3), 0)
+      Assert Equals(P.is_list(3.14159), 0)
+      Assert Equals(P.is_list(""), 0)
+      Assert Equals(P.is_list(function('tr')), 0)
+      Assert Equals(P.is_list([]), 1)
+      Assert Equals(P.is_list({}), 0)
+    End
+  End
+
+  Describe .is_dict()
+    It checks if the argument is a dictionary
+      Assert Equals(P.is_dict(3), 0)
+      Assert Equals(P.is_dict(3.14159), 0)
+      Assert Equals(P.is_dict(""), 0)
+      Assert Equals(P.is_dict(function('tr')), 0)
+      Assert Equals(P.is_dict([]), 0)
+      Assert Equals(P.is_dict({}), 1)
+    End
+  End
+  "}}}
+
+  Describe .truncate()
+    It truncates not based on the number of letters but based on visual length
+      Assert Equals(P.truncate('あいうえお', 2), 'あ')
+    End
+  End
+
+  Describe .truncate_skipping()
+    It truncates similarly to Prelude.truncate() but shows a given letter in snip area
+      Assert Equals(P.truncate_skipping('this is a pen', 10, 1, '/'), 'this is /n')
+      Assert Equals(P.truncate_skipping('あいうえおかきくけこ.', 10, 1, '/'), 'あいうえ/.')
+    End
+  End
+
+  Describe .strwidthpart()
+    It cuts a string to give width
+      Assert Equals(P.strwidthpart('this is a pen', 5), 'this ')
+      Assert Equals(P.strwidthpart('あいうえお', 5), 'あい')
+    End
+    It returns an empty string by illegal width
+      Assert Equals(P.strwidthpart('あいうえお', -1), '')
+    End
+  End
+
+  Describe .strwidthpart_reverse()
+    It cuts backward a string to give width
+      Assert Equals(P.strwidthpart_reverse('this is a pen', 5), 'a pen')
+      Assert Equals(P.strwidthpart_reverse('あいうえお', 5), 'えお')
+    End
+    It returns an empty string by illegal width
+      Assert Equals(P.strwidthpart_reverse('あいうえお', -1), '')
+    End
+  End
+
+  "IS unite#util#wcswidth('this is a pen'), 13
+  "IS unite#util#wcswidth('あいうえお'), 10
+  "IS unite#util#is_win(), 0
+
+  "call unite#util#smart_execute_command('echo', '') " hmm
+
+  "let tempname = tempname()
+  "call unite#util#smart_execute_command('new', tempname)
+  "IS expand('%'), tempname
+
+  "redraw
+  "echohl Underlined
+  "echom 'Test done.'
+  "echohl None
+  "sleep 1
+
+  Describe .is_cygwin()
+    It is true only when the platform is cygwin
+      Assert Equals(P.is_cygwin(), has('win32unix'))
+    End
+  End
+
+  Describe .is_windows()
+    It is true only when the platform is MS Windows
+      Assert Equals(P.is_windows(), has('win16') || has('win32') || has('win64'))
+    End
+  End
+
+  Describe .is_mac()
+    It is true only when the platform is Mac OS X
+      Assert Equals(P.is_mac(), (!P.is_windows() && !P.is_cygwin() && (has('mac') || has('macunix') || has('gui_macvim') || (!isdirectory('/proc') && executable('sw_vers')))))
+    End
+  End
+
+End
