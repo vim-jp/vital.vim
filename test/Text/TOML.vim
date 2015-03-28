@@ -18,7 +18,7 @@ function! s:suite.__parse_file__()
   endfunction
 
   function! parse_file.parses_toml_formatted_file()
-    let data = s:TOML.parse_file('./test/Text/toml-sample.txt')
+    let data = s:TOML.parse_file('./test/_testdata/Text/TOML/toml-sample.txt')
 
     call s:assert.equals(data, {
     \ 'title': 'TOML Example',
