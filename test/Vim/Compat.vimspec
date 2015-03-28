@@ -4,14 +4,14 @@ Describe Vim.Compat
     let Compat = vital#of('vital').import('Vim.Compat')
   End
 
-  Context .has_version()
+  Describe .has_version()
     It returns false when passed invalid argument
-      Assert !Compat.has_version('hogera')
-      Assert !Compat.has_version('')
+      Assert Falsy(Compat.has_version('hogera'))
+      Assert Falsy(Compat.has_version(''))
     End
   End
 
-  Context .shiftwidth()
+  Describe .shiftwidth()
     It gives you &shiftwidth
       Assert Equals(Compat.shiftwidth(), &shiftwidth)
     End
