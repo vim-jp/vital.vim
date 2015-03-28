@@ -1,0 +1,135 @@
+scriptencoding utf-8
+
+
+Describe Vim.Buffer
+  Before all
+    let VB = vital#of('vital').import('Vim.Buffer')
+  End
+
+  Describe .is_cmdwin()
+    It detects if current window is cmdwin.
+      " FIXME: CmdWin can not open from test environment
+      Assert Falsy(VB.is_cmdwin())
+    End
+  End
+
+  Describe .get_last_selected()
+    Context for single byte characters
+      Before each
+        %delete _
+        append
+foo
+bar
+baz
+.
+      End
+
+      It can get the last selected text without textlock error.
+        normal! ggVGygg
+        let text = VB.get_last_selected()
+        Assert Equals(text, "foo\nbar\nbaz\n")
+
+        normal! ggvjly
+        let text = VB.get_last_selected()
+        Assert Equals(text, "foo\nba")
+
+        execute "normal! gg\<C-v>jly"
+        let text = VB.get_last_selected()
+        Assert Equals(text, "fo\nba")
+      End
+
+      It can apply to oneline
+        normal! ggVygg
+        let text = VB.get_last_selected()
+        Assert Equals("foo\n", text)
+
+        normal! ggvly
+        let text = VB.get_last_selected()
+        Assert Equals("fo", text)
+
+        execute "normal! gg\<C-v>ly"
+        let text = VB.get_last_selected()
+        Assert Equals("fo", text)
+      End
+
+      It does not destroy unnamed register content
+        %delete _
+        append
+foo
+bar
+baz
+.
+
+        normal! ggVGy
+        let @" = "ajapa-"
+        call VB.get_last_selected()
+        Assert Equals("ajapa-", @")
+      End
+    End
+
+    Context for wide characters
+      It can apply to wide characters string
+        %delete _
+        append
+あいうえお
+かきくけこ
+ほげら
+.
+
+        normal! ggVGygg
+        let text = VB.get_last_selected()
+        Assert Equals("あいうえお\nかきくけこ\nほげら\n", text)
+
+        normal! ggvjly
+        let text = VB.get_last_selected()
+        Assert Equals("あいうえお\nかき", text)
+
+        execute "normal! gg\<C-v>jly"
+        let text = VB.get_last_selected()
+        Assert Equals("あい\nかき", text)
+      End
+
+      It can apply to mixed string
+        %delete _
+        append
+あiうeお
+kaきkuけko
+ほgeら
+.
+
+        normal! ggVGygg
+        let text = VB.get_last_selected()
+        Assert Equals("あiうeお\nkaきkuけko\nほgeら\n", text)
+
+        normal! ggvjly
+        let text = VB.get_last_selected()
+        Assert Equals("あiうeお\nka", text)
+
+        execute "normal! gg\<C-v>jly"
+        let text = VB.get_last_selected()
+        Assert Equals("あ\nka", text)
+      End
+
+      It can apply to mixed oneline string
+        %delete _
+        append
+あiうeお
+kaきkuけko
+ほgeら
+.
+
+        normal! ggVygg
+        let text = VB.get_last_selected()
+        Assert Equals("あiうeお\n", text)
+
+        normal! ggvly
+        let text = VB.get_last_selected()
+        Assert Equals("あi", text)
+
+        execute "normal! gg\<C-v>ly"
+        let text = VB.get_last_selected()
+        Assert Equals("あi", text)
+      End
+    End
+  End
+End
