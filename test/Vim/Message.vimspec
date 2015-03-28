@@ -5,7 +5,7 @@ Describe Vim.Message
     let Message = vital#of('vital').import('Vim.Message')
   End
 
-  Context .error()
+  Describe .error()
     It prints error message
       redir => output
       silent call Message.error('hi')
@@ -15,7 +15,7 @@ Describe Vim.Message
     End
   End
   
-  Context .capture()
+  Describe .capture()
     It returns output string of Vim {command}
       let output = Message.capture('echo "hi"')
       " Ignore blank lines.
@@ -25,15 +25,15 @@ Describe Vim.Message
     End
   End
 
-  Context .get_hit_enter_max_length()
+  Describe .get_hit_enter_max_length()
     It gets max length of |hit-enter|
       let cmdheight = &cmdheight
       try
         set cmdheight=1
-        Assert Message.get_hit_enter_max_length() < &columns * &cmdheight
+        Assert Compare(Message.get_hit_enter_max_length(), '<', &columns * &cmdheight)
         set cmdheight=2
-        Assert Message.get_hit_enter_max_length() > &columns
-        Assert Message.get_hit_enter_max_length() < &columns * &cmdheight
+        Assert Compare(Message.get_hit_enter_max_length(), '>', &columns)
+        Assert Compare(Message.get_hit_enter_max_length(), '<', &columns * &cmdheight)
       finally
         let &cmdheight = cmdheight
       endtry
