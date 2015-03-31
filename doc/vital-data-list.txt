@@ -59,7 +59,7 @@ unshift({list}, {val})			*Vital.Data.List.unshift()*
 cons({val}, {list})			*Vital.Data.List.cons()*
 	Makes new |List| which first item is {val} and the rest of items are
 	|List| {list}.
-	See also: |Vital.Data.List.cons()|
+	See also: |Vital.Data.List.conj()|
 >
 	echo s:L.cons(1, [2, 3])
 	" [1, 2, 3]
@@ -74,7 +74,7 @@ cons({val}, {list})			*Vital.Data.List.cons()*
 conj({list}, {val})			*Vital.Data.List.conj()*
 	Makes new |List| which first items are |List| {list} and the final
 	item is {val}.
-	See also: |Vital.Data.List.conj()|
+	See also: |Vital.Data.List.cons()|
 >
 	echo s:L.conj([2, 3], 1)
 	" [2, 3, 1]
