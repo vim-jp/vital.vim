@@ -10,7 +10,7 @@ time.
 
 ## Targets
 
-If you are a Vim user who don't make Vim plugins, please ignore this page.
+If you are a Vim user who doesn't make Vim plugins, please ignore this page.
 
 If you are a Vim plugin author, please check this out.
 
