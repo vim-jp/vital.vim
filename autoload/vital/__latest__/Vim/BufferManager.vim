@@ -69,6 +69,7 @@ function! s:Manager.close(...) abort
 endfunction
 
 function! s:Manager.opened(bufname) abort
+  throw 'Vital.Vim.BufferManager: not implemented yet'
 endfunction
 
 function! s:Manager.config(...) abort
