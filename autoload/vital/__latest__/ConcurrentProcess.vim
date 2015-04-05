@@ -7,6 +7,7 @@ set cpo&vim
 " * buffer_out, buffer_err: String
 "     * current buffered vp output/error
 " * vars: dict
+" * supervisor: (String, String, String) to try of() again
 let s:_process_info = {}
 
 function! s:_vital_loaded(V) abort
@@ -25,7 +26,7 @@ endfunction
 
 " supervisor strategy
 " * Failed to spawn the process: exception
-" * The process has been dead: start from scratch silently
+" * The process has been dead: start from scratch silently (see tick() for details)
 function! s:of(command, dir, initial_queries) abort
   let label = s:S.hash(printf(
         \ '%s--%s--%s',
@@ -53,9 +54,14 @@ function! s:of(command, dir, initial_queries) abort
       endif
     endtry
 
+    let supervisor = {
+          \ 'command': a:command,
+          \ 'dir': a:dir,
+          \ 'initial_queries': a:initial_queries}
     let s:_process_info[label] = {
           \ 'logs': [], 'queries': a:initial_queries, 'vp': vp,
-          \ 'buffer_out': '', 'buffer_err': '', 'vars': {}}
+          \ 'buffer_out': '', 'buffer_err': '', 'vars': {},
+          \ 'supervisor': supervisor}
   endif
 
   call s:tick(label)
@@ -102,9 +108,15 @@ function! s:tick(label) abort
     return
   endif
 
-  " TODO return value 'is_alive' can be useful
   let is_alive = get(pi.vp.checkpid(), 0, '') ==# 'run'
-  " @vimlint(EVL102, 1, l:is_alive)
+
+  if !is_alive
+    " Use the default supervisor.
+    " Default supervisor: restart the process with fresh state.
+    " (Accumulated queue won't be kept)
+    call s:of(pi.supervisor.command, pi.supervisor.dir, pi.supervisor.initial_queries)
+    return
+  endif
 
   let qlabel = pi.queries[0][0]
 
