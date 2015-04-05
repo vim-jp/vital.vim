@@ -198,9 +198,12 @@ endfunction
 function! s:is_done(label, rname) abort
   call s:tick(a:label)
 
+  let reads = filter(
+        \ copy(s:_process_info[a:label].queries),
+        \ 'v:val[0] ==# "*read*" || v:val[0] ==# "*read-all*"')
   return s:L.all(
-        \ printf('(v:val[0] ==# "*read*" || v:val[0] ==# "*read-all*") && v:val[1] !=# %s', string(a:rname)),
-        \ s:_process_info[a:label].queries)
+        \ printf('v:val[1] !=# %s', string(a:rname)),
+        \ reads)
 endfunction
 
 function! s:queue(label, queries) abort

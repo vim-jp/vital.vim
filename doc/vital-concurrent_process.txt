@@ -150,6 +150,16 @@ is_done({label}, {varname})		*Vital.ConcurrentProcess.is_done()*
 	if the read operation of given {varname} has completed. You are
 	particularly expected to use this function when you use consume().
 
+	e.g.
+	is_done(label, 'x') == 1 if you didn't read/read-all with 'x' yet
+	is_done(label, 'x') == 1 if you did read/read-all with 'x' and it
+	completed.
+	is_done(label, 'x') == 1 if you did read/read-all with 'x' and it
+	didn't complete, but the process crashed and after auto restart you
+	didn't read/read-all yet.
+	is_done(label, 'x') == 0 only if you did read/read-all with 'x' and it
+	didn't complete nor crash yet.
+
 	Idempotent? No -- return value depends on internal state.
 
 is_busy({label})			*Vital.ConcurrentProcess.is_busy()*
