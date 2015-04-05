@@ -50,6 +50,8 @@ function! s:suite.consume()
 
   call s:CP.tick(label)
 
+  sleep
+
   let [outx, errx] = s:CP.consume(label, 'x')
   let [outy, erry] = s:CP.consume(label, 'y')
 
