@@ -142,6 +142,7 @@ function! s:tick(label) abort
     endif
   elseif qlabel ==# '*read-all*'
     let rname = pi.queries[0][1]
+    call pi.vp.stdin.close()
     call s:_read(pi, rname)
 
     " when wait ended:

@@ -1,4 +1,4 @@
-*vital-concurrent_process.txt*	Manages process concurrently with vimproc.
+*vital-concurrent_process.txt*	Manages processes concurrently with vimproc.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 
@@ -10,18 +10,32 @@ INTRODUCTION			|Vital.ConcurrentProcess-introduction|
   PRINCIPLE			|Vital.ConcurrentProcess-principle|
 INTERFACE			|Vital.ConcurrentProcess-interface|
   FUNCTIONS			  |Vital.ConcurrentProcess-functions|
-CONFIG				|Vital.ConcurrentProcess-config|
+TERMS				|Vital.ConcurrentProcess-terms|
 
 
 
 ==============================================================================
 INTRODUCTION			*Vital.ConcurrentProcess-introduction*
 
-*Vital.ConcurrentProcess* is to communicate with external process concurrently
-with using |vimproc|.  This library stores external processes information
-spawned by this library, and provides higher layer concurrent synchronous
-non-blocking read/write interface. This library doesn't use thread nor fork,
-so by nature this library can't crash Vim by them.
+*Vital.ConcurrentProcess* (or if it's too long you can all it as concproc) is
+to communicate with external process concurrently with using |vimproc|.  This
+library stores external processes information spawned by this library, and
+provides higher layer concurrent synchronous non-blocking read/write
+interface. This library doesn't use thread nor fork, so by nature this library
+can't crash Vim by them.
+
+This module is most likely used for following types of Vim plugins:
+* Language support (code completion, execution, or inspection) with using the
+  language runtime process.
+  (e.g. neoclojure.vim provides clojure code completion and execution with
+  using leiningen as a persistent external process)
+* Networking with using external process.
+  (e.g. create a zeromq connection via external ruby process, and use it from
+  Vim concurrently)
+ConcurrentProcess is particularly powerful if the external process takes long
+time to start, comparing to do without using ConcurrentProcess, because it's
+managed by ConcurrentProcess.
+(e.g. JVM, or any scripting languages with lots of libraries)
 
 Note that this library doesn't work on Vim without vimproc; vimproc is
 required.
@@ -29,6 +43,88 @@ required.
 
 ==============================================================================
 USAGE				*Vital.ConcurrentProcess-usage*
+
+Here I will introduce 3 different usage depending on your purpose.
+
+1. like system(cmd) -- run external command and wait until the end.
+
+This is the simplest example; the following sample code runs "ls" command as
+an external process, wait for the termination of the process synchronously,
+and returns the output. This also takes care of exceptional cases such as (1)
+taking longer time than you have expected, (2) unexpected stderr output, or (3)
+failure of invoking the external command itself (as an exception thornw.)
+
+Note that this usage gives you little benefit to you comparing just to use
+system(), vimproc#system(), or Vital.Process.system(). Keep reading other
+examples before you try to use this for your own plugin ;)
+>
+	let s:CP = vital#of('vital').import('ConcurrentProcess')
+
+	function! s:list_files(path) abort
+	  let label = s:CP.of(['ls', a:path], '', [
+		\ ['*read-all*', 'x']])
+	  let [out, err, timeout_p] = s:CP.consume_all_blocking(label, 'x', 1.0)
+
+	  if timeout_p
+	    throw 'Timed out'
+	  elseif err !=# ''
+	    throw printf("[STDERR] %s", err)
+	  endif
+	  return split(out, '\r\?\n')
+	endfunction
+
+	echo s:list_files('/') " == ['bin', 'boot', 'dev', 'etc', ...]
+<
+
+Things to learn from this example:
+* |Vital.ConcurrentProcess.of()| with '*read-all*' query
+    * This creates an external process, and reserve ConcurrentProcess to read
+      all the stdout/stderr until the process terminates by itself.
+* |Vital.ConcurrentProcess.consume_all_blocking()|
+    * This starts the reserved queries above, in this case this start reading
+      stdout/stderr, and return them once process terminates.
+* The ls process will be created in the beginning of list_files(), and will be
+  terminated during the function.
+
+2. like system(cmd, input)
+
+You can give text to stdin as well.
+>
+	let s:CP = vital#of('vital').import('ConcurrentProcess')
+
+	function! s:with_linenum(text) abort
+	  let label = s:CP.of('cat -n', '', [
+		\ ['*writeln*', a:text],
+		\ ['*read-all*', 'x']])
+	  let [out, err, timeout_p] = s:CP.consume_all_blocking(label, 'x', 1.0)
+
+	  if timeout_p
+	    throw 'Timed out'
+	  elseif err !=# ''
+	    throw printf("[STDERR] %s", err)
+	  endif
+	  return out
+	endfunction
+
+	echo s:with_linenum("Hello\nWorld")
+<
+
+Note that you can separate of() with different queue() call, like this. They
+are different, but in this example they behave exactly samely.
+>
+	  " Before
+	  let label = s:CP.of('cat -n', '', [
+		\ ['*writeln*', a:text],
+		\ ['*read-all*', 'x']])
+
+	  " After
+	  let label = s:CP.of('cat -n', '', [])
+	  call s:CP.queue(label, [
+		\ ['*writeln*', a:text],
+		\ ['*read-all*', 'x']])
+<
+
+3. like system(cmd, input), but reuse the process
 
 TODO
 
@@ -50,11 +146,11 @@ PRINCIPLE			*Vital.ConcurrentProcess-principle*
 ==============================================================================
 INTERFACE			*Vital.ConcurrentProcess-interface*
 
-The following function is to start a process.
+The following function is to start a process, or to refer existing process.
 	|Vital.ConcurrentProcess.of()|
 The following function is to terminate a process.
 	|Vital.ConcurrentProcess.shutdown()|
-The following function is to change queries in queue.
+The following function is to add queries in queue.
 	|Vital.ConcurrentProcess.queue()|
 The following functions are to obtain information with side effect, based on
 queries in the queue and etc.
@@ -83,6 +179,10 @@ of({command}, {dir}, {list})			*Vital.ConcurrentProcess.of()*
 	Check |Vital.ConcurrentProcess-usage| how to use this with other
 	functions.
 
+	{command} can be a single string that contains both command name and
+	command line options such as "ls /tmp", or it can also be a list such
+	as ["ls", "/tmp"]
+
 	Idempotent? Yes -- but side-effect can be different.
 
 is_available()			*Vital.ConcurrentProcess.is_available()*
@@ -99,7 +199,7 @@ queue({label}, {list})			*Vital.ConcurrentProcess.queue()*
 	The query has to be either one of them.
 	['*writeln*', string]
 	['*read*', string, string]
-	['*read-all', string]
+	['*read-all*', string]
 
 >
 	call s:CP.queue(label, [
@@ -108,6 +208,12 @@ queue({label}, {list})			*Vital.ConcurrentProcess.queue()*
 	let [out, err] = s:CP.consume(label, 'x')
 	" out may contain "3"
 <
+
+	Notes:
+	* '*write*' without newline does not exist yet. Please ask me if you
+	  actually need it.
+	* '*read-all*' must be always at the very end.
+	* '*read-all*' automatically closes stdin pipe beforehand.
 
 consume({label}, {varname})		*Vital.ConcurrentProcess.consume()*
 	This is an action |Vital.ConcurrentProcess-term.action|, and returns
@@ -165,6 +271,21 @@ is_done({label}, {varname})		*Vital.ConcurrentProcess.is_done()*
 is_busy({label})			*Vital.ConcurrentProcess.is_busy()*
 	This is an action |Vital.ConcurrentProcess-term.action|, and checks
 	if the queries are currently empty.
+
+	This function is possibly used for checking if you can querying
+	something light and get the response immedicately, with using
+	consume_all_blocking(), like for code completion.
+
+>
+	if s:CP.is_busy(label, 'code-completion')
+	  return 'Busy for something else. Try later please.'
+	else
+	  call s:CP.queue([
+		\ ['*writeln*', something],
+		\ ['*read*', 'code-completion', another_something]])
+	  return s:CP.consume_all_blocking(label, 'code-completion', 0.5)
+	endif
+<
 
 	Idempotent? No -- return value depends on internal state.
 
