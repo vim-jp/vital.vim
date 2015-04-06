@@ -1,0 +1,29 @@
+*vital-text-sexp.txt*		S-Expression parser.
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS			*Vital.Text.Sexp-contents*
+
+INTERFACE			|Vital.Text.Sexp-interface|
+  FUNCTIONS			  |Vital.Text.Sexp-functions|
+
+==============================================================================
+INTERFACE			*Vital.Text.Sexp-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.Text.Sexp-functions*
+
+parse({string})					*Vital.Text.Sexp.parse()*
+	Requires |+lua|.
+
+	Parses Sexp formatted string. It returns a |List| that contains
+	|Dictionary|.
+>
+	echo s:S.parse('(a b c)')
+	" [[{'label': 'identifier', 'col': 2.0, 'matched_text': 'a'}, {'label': 'whitespace', 'col': 3.0, 'matched_text': ' '}, {'label': 'identifier', 'col': 4.0, 'matched_text': 'b'}, {'label': 'whitespace', 'col': 5.0, 'matched_text': ' '}, {'label': 'identifier', 'col': 6.0, 'matched_text': 'c'}]]
+<
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
