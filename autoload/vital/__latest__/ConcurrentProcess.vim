@@ -232,7 +232,7 @@ endfunction
 
 " Print out log, and wipe out the log
 function! s:log_dump(label) abort
-  echomsg '-----------------------------'
+  echo '-----------------------------'
   for [stdin, stdout, stderr] in s:_process_info[a:label].logs
     echon stdin
     echon stdout
