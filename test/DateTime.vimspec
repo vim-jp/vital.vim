@@ -396,16 +396,18 @@ Describe DateTime
     Describe .to()
       Context with TimeDelta object
         It returns new DateTime object to which time was changed
-          let delta = DT.delta(3, 'days')
+          let delta = DT.delta(3, 'days', 10, 'min')
           let new_dt = dt.to(delta)
           Assert Equals(new_dt.day(), 5)
+          Assert Equals(new_dt.minute(), 14)
         End
       End
 
       Context with arguments like TimeDelta
         It returns new DateTime object to which time was changed
-          let new_dt = dt.to(3, 'days')
+          let new_dt = dt.to(3, 'days', 10, 'min')
           Assert Equals(new_dt.day(), 5)
+          Assert Equals(new_dt.minute(), 14)
         End
       End
 
