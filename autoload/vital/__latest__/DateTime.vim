@@ -221,9 +221,9 @@ function! s:delta(...) abort
     let a = copy(a:000)
     while 2 <= len(a) && s:Prelude.is_number(a[0]) && s:Prelude.is_string(a[1])
       let [value, unit] = remove(a, 0, 1)
-      if unit =~? '^seconds\?$'
+      if unit =~? '^sec\%(onds\?\)\?$'
         let d._time += value
-      elseif unit =~? '^minutes\?$'
+      elseif unit =~? '^min\%(utes\?\)\?$'
         let d._time += value * s:NUM_SECONDS
       elseif unit =~? '^hours\?$'
         let d._time += value * s:SECONDS_OF_HOUR
