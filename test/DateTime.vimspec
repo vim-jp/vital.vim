@@ -101,6 +101,20 @@ Describe DateTime
       Assert Equals(d.minutes(), 46)
       Assert Equals(d.seconds(), 40)
       Assert Equals(d.total_seconds(), 874000)
+
+      let d = DT.delta(2, 'week', 46, 'min', 40, 'sec')
+      Assert Equals(d.days(), 14)
+      Assert Equals(d.hours(), 0)
+      Assert Equals(d.minutes(), 46)
+      Assert Equals(d.seconds(), 40)
+    End
+    It throws an exception with invalid unit
+      Throws /^vital: DateTime:/ DT.delta(1, 'month')
+    End
+    It throws an exception with invalid arguments
+      Throws /^vital: DateTime:/ DT.delta(1)
+      Throws /^vital: DateTime:/ DT.delta(1, 'min', 1)
+      Throws /^vital: DateTime:/ DT.delta('1', 'min')
     End
   End
 
