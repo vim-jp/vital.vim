@@ -81,7 +81,7 @@ delta({days}, {seconds})
 delta({value}, {unit}, ...)
 	Creates a new TimeDelta object.
 	{unit} accepts the followings:
-	"second", "minute", "hour", "day", "week"
+	"second", "sec", "minute", "min", "hour", "day", "week"
 delta({TimeDelta})
 	Returns {TimeDelta} directly.
 

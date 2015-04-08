@@ -101,6 +101,20 @@ Describe DateTime
       Assert Equals(d.minutes(), 46)
       Assert Equals(d.seconds(), 40)
       Assert Equals(d.total_seconds(), 874000)
+
+      let d = DT.delta(2, 'week', 46, 'min', 40, 'sec')
+      Assert Equals(d.days(), 14)
+      Assert Equals(d.hours(), 0)
+      Assert Equals(d.minutes(), 46)
+      Assert Equals(d.seconds(), 40)
+    End
+    It throws an exception with invalid unit
+      Throws /^vital: DateTime:/ DT.delta(1, 'month')
+    End
+    It throws an exception with invalid arguments
+      Throws /^vital: DateTime:/ DT.delta(1)
+      Throws /^vital: DateTime:/ DT.delta(1, 'min', 1)
+      Throws /^vital: DateTime:/ DT.delta('1', 'min')
     End
   End
 
@@ -135,7 +149,7 @@ Describe DateTime
   End
 
   Describe .month_names()
-    Context {longname} = 0
+    Context with {longname} is 0
       It returns the list of name of months
         let names = DT.month_names(0, 'C')
         Assert Equals(names,
@@ -143,7 +157,7 @@ Describe DateTime
         \  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
       End
     End
-    Context {longname} is 1
+    Context with {longname} is 1
       It returns the list of long name of months
         let names = DT.month_names(1, 'C')
         Assert Equals(names,
@@ -154,14 +168,14 @@ Describe DateTime
   End
 
   Describe .weekday_names()
-    Context {longname} = 0
+    Context with {longname} is 0
       It returns the list of name of weekdays
         let names = DT.weekday_names(0, 'C')
         Assert Equals(names,
         \ ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
       End
     End
-    Context {longname} is 1
+    Context with {longname} is 1
       It returns the list of long name of weekdays
         let names = DT.weekday_names(1, 'C')
         Assert Equals(names,
@@ -382,16 +396,18 @@ Describe DateTime
     Describe .to()
       Context with TimeDelta object
         It returns new DateTime object to which time was changed
-          let delta = DT.delta(3, 'days')
+          let delta = DT.delta(3, 'days', 10, 'min')
           let new_dt = dt.to(delta)
           Assert Equals(new_dt.day(), 5)
+          Assert Equals(new_dt.minute(), 14)
         End
       End
 
       Context with arguments like TimeDelta
         It returns new DateTime object to which time was changed
-          let new_dt = dt.to(3, 'days')
+          let new_dt = dt.to(3, 'days', 10, 'min')
           Assert Equals(new_dt.day(), 5)
+          Assert Equals(new_dt.minute(), 14)
         End
       End
 
