@@ -44,7 +44,7 @@ function! s:_vital_loaded(V) abort
   \ })
   call extend(s:TimeDelta, {
   \   '_days': 0,
-  \   '_time': 0,
+  \   '_seconds': 0,
   \ })
 endfunction
 
@@ -216,17 +216,17 @@ function! s:delta(...) abort
   let d = copy(s:TimeDelta)
   if a:0 == 2 && s:Prelude.is_number(a:1) && s:Prelude.is_number(a:2)
     let d._days = a:1
-    let d._time = a:2
+    let d._seconds = a:2
   else
     let a = copy(a:000)
     while 2 <= len(a) && s:Prelude.is_number(a[0]) && s:Prelude.is_string(a[1])
       let [value, unit] = remove(a, 0, 1)
       if unit =~? '^sec\%(onds\?\)\?$'
-        let d._time += value
+        let d._seconds += value
       elseif unit =~? '^min\%(utes\?\)\?$'
-        let d._time += value * s:NUM_SECONDS
+        let d._seconds += value * s:NUM_SECONDS
       elseif unit =~? '^hours\?$'
-        let d._time += value * s:SECONDS_OF_HOUR
+        let d._seconds += value * s:SECONDS_OF_HOUR
       elseif unit =~? '^days\?$'
         let d._days += value
       elseif unit =~? '^weeks\?$'
@@ -497,13 +497,13 @@ endfunction
 " ----------------------------------------------------------------------------
 let s:TimeDelta = s:_new_class('TimeDelta')
 function! s:TimeDelta.seconds() abort
-  return self._time % s:NUM_SECONDS
+  return self._seconds % s:NUM_SECONDS
 endfunction
 function! s:TimeDelta.minutes() abort
-  return self._time / s:NUM_SECONDS % s:NUM_MINUTES
+  return self._seconds / s:NUM_SECONDS % s:NUM_MINUTES
 endfunction
 function! s:TimeDelta.hours() abort
-  return self._time / s:SECONDS_OF_HOUR
+  return self._seconds / s:SECONDS_OF_HOUR
 endfunction
 function! s:TimeDelta.days() abort
   return self._days
@@ -518,15 +518,15 @@ function! s:TimeDelta.years() abort
   return self._days / 365
 endfunction
 function! s:TimeDelta.total_seconds() abort
-  return self._days * s:SECONDS_OF_DAY + self._time
+  return self._days * s:SECONDS_OF_DAY + self._seconds
 endfunction
 function! s:TimeDelta.is(td) abort
   return self.subtract(a:td).sign() == 0
 endfunction
 function! s:TimeDelta.sign() abort
-  if self._days < 0 || self._time < 0
+  if self._days < 0 || self._seconds < 0
     return -1
-  elseif 0 < self._days || 0 < self._time
+  elseif 0 < self._days || 0 < self._seconds
     return 1
   endif
   return 0
@@ -534,7 +534,7 @@ endfunction
 function! s:TimeDelta.negate() abort
   let td = self._clone()
   let td._days = -self._days
-  let td._time = -self._time
+  let td._seconds = -self._seconds
   return td._normalize()
 endfunction
 function! s:TimeDelta.duration() abort
@@ -544,7 +544,7 @@ function! s:TimeDelta.add(...) abort
   let n = self._clone()
   let other = call('s:delta', a:000)
   let n._days += other._days
-  let n._time += other._time
+  let n._seconds += other._seconds
   return n._normalize()
 endfunction
 function! s:TimeDelta.subtract(...) abort
@@ -558,10 +558,10 @@ function! s:TimeDelta.about() abort
   let dir = self.sign() < 0 ? 'ago' : 'later'
   let d = self.duration()
   if d._days == 0
-    if d._time < s:NUM_SECONDS
+    if d._seconds < s:NUM_SECONDS
       let val = d.seconds()
       let unit = val == 1 ? 'second' : 'seconds'
-    elseif d._time < s:SECONDS_OF_HOUR
+    elseif d._seconds < s:SECONDS_OF_HOUR
       let val = d.minutes()
       let unit = val == 1 ? 'minute' : 'minutes'
     else
@@ -595,16 +595,16 @@ function! s:TimeDelta.to_string() abort
   return str
 endfunction
 function! s:TimeDelta._normalize() abort
-  let over_days = self._time / s:SECONDS_OF_DAY
+  let over_days = self._seconds / s:SECONDS_OF_DAY
   let self._days += over_days
-  let self._time = self._time % s:SECONDS_OF_DAY
+  let self._seconds = self._seconds % s:SECONDS_OF_DAY
 
-  if self._days < 0 && 0 < self._time
+  if self._days < 0 && 0 < self._seconds
     let self._days += 1
-    let self._time -= s:SECONDS_OF_DAY
-  elseif 0 < self._days && self._time < 0
+    let self._seconds -= s:SECONDS_OF_DAY
+  elseif 0 < self._days && self._seconds < 0
     let self._days -= 1
-    let self._time += s:SECONDS_OF_DAY
+    let self._seconds += s:SECONDS_OF_DAY
   endif
   return self
 endfunction
