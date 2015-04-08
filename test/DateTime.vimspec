@@ -149,7 +149,7 @@ Describe DateTime
   End
 
   Describe .month_names()
-    Context {longname} = 0
+    Context with {longname} is 0
       It returns the list of name of months
         let names = DT.month_names(0, 'C')
         Assert Equals(names,
@@ -157,7 +157,7 @@ Describe DateTime
         \  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
       End
     End
-    Context {longname} is 1
+    Context with {longname} is 1
       It returns the list of long name of months
         let names = DT.month_names(1, 'C')
         Assert Equals(names,
@@ -168,14 +168,14 @@ Describe DateTime
   End
 
   Describe .weekday_names()
-    Context {longname} = 0
+    Context with {longname} is 0
       It returns the list of name of weekdays
         let names = DT.weekday_names(0, 'C')
         Assert Equals(names,
         \ ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
       End
     End
-    Context {longname} is 1
+    Context with {longname} is 1
       It returns the list of long name of weekdays
         let names = DT.weekday_names(1, 'C')
         Assert Equals(names,
