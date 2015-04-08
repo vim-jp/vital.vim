@@ -231,8 +231,13 @@ function! s:delta(...) abort
         let d._days += value
       elseif unit =~? '^weeks\?$'
         let d._days += value * s:NUM_DAYS_OF_WEEK
+      else
+        throw 'vital: DateTime: Invalid unit for delta(): ' . string(unit)
       endif
     endwhile
+    if !empty(a)
+      throw 'vital: DateTime: Invalid arguments for delta(): ' . string(a)
+    endif
   endif
   return d._normalize()
 endfunction
