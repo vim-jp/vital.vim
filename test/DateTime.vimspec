@@ -1,6 +1,7 @@
 Describe DateTime
   Before all
     let DT = vital#of('vital').import('DateTime')
+    " TODO set timezone for test here
   End
 
   Context .from_unix_time()
