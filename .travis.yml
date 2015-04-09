@@ -26,3 +26,10 @@ script:
   - vim --cmd version --cmd quit
   - vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
   - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
+notifications:
+  webhooks:
+    urls:
+      - http://travis-ci.herokuapp.com/vim
+    on_success: never
+    on_failure: always
+    on_start: false
