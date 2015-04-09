@@ -139,6 +139,7 @@ LINKS					*Vital-links*
  Vital modules				*Vital-modules*
   |vital-assertion.txt|		  assertion library
   |vital-bitwise.txt|		  bitwise operators
+  |vital-concurrent_process.txt|  manages processes concurrently with vimproc
   |vital-data-base64.txt|	  base64 utilities library
   |vital-data-closure.txt|	  Provide Closure object
   |vital-data-collection.txt|	  Utilities both for list and dict

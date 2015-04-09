@@ -20,6 +20,7 @@ module						 | description
 ------------------------------------------------ | ------------------------------
 [Assertion](doc/vital-assertion.txt)		 | assertion library
 [Bitwise](doc/vital-bitwise.txt)		 | bitwise operators
+[ConcurrentProcess](doc/vital-concurrent_process.txt)	 | manages processes concurrently with vimproc
 [Data.Base64](doc/vital-data-base64.txt)	 | base64 utilities library
 [Data.Closure](doc/vital-data-closure.txt)	 | Provide Closure object
 [Data.Collection](doc/vital-data-collection.txt) | Utilities both for list and dict
