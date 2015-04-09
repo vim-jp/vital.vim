@@ -15,7 +15,7 @@ function! s:_vital_loaded(V) abort
     execute printf('lua vital_context = "%s"', s:sfile)
     call luaeval('dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
   else
-    throw "Vital.Text.Sexp: You don't have if_lua."
+    throw "vital: Text.Sexp: You don't have if_lua."
   endif
 endfunction
 
@@ -29,7 +29,7 @@ function! s:parse(sexp) abort
     " return luaeval('vital_text_sexp.parse(_A)', a:sexp)
     " return luaeval('vital_text_sexp.parse(vital_text_sexp.parse(_A))', a:sexp)
   else
-    throw 'Text.Sexp: any function call needs if_lua'
+    throw 'vital: Text.Sexp: any function call needs if_lua'
   endif
 endfunction
 
