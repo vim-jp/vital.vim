@@ -69,6 +69,7 @@ function! s:Manager.close(...) abort
 endfunction
 
 function! s:Manager.opened(bufname) abort
+  throw 'Vital.Vim.BufferManager: not implemented yet'
 endfunction
 
 function! s:Manager.config(...) abort
@@ -83,7 +84,7 @@ function! s:Manager.config(...) abort
     let self._config[a:1] = a:2
     return self
   endif
-  throw 'Vital.Vim.BufferManager: invalid argument for config()'
+  throw 'Vital.Vim.Buffer.Manager: invalid argument for config()'
 endfunction
 
 function! s:Manager.user_config(config) abort
