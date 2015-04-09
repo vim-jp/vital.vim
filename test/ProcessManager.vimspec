@@ -1,0 +1,40 @@
+Describe ProcessManager
+  Before all
+    let PM = vital#of('vital').import('ProcessManager')
+  End
+
+  Describe .is_available()
+    It behaves the same as has_vimproc()
+      let P = vital#of('vital').import('Process')
+      Assert Equals(P.has_vimproc(), PM.is_available())
+    End
+  End
+
+  Describe .touch()
+
+    It makes a process synchronously and stores the info inside ProcessManager
+      if !PM.is_available() || !executable('cat')
+        Skip because ProcessManager requires vimproc
+      endif
+
+      let t = PM.touch('aaa', 'cat')
+      Assert Equals(t, 'new')
+      let t = PM.touch('aaa', 'cat')
+      Assert Equals(t, 'existing')
+    End
+  End
+
+  Describe .status()
+    It is 'stopped' when the process is not working
+      if !PM.is_available() || !executable('ls')
+        Skip because ProcessManager requires vimproc
+      endif
+
+      call PM.touch('spec-status', 'ls') " assuming you have ls command
+      sleep " TODO it's evil.
+      Assert Equals(PM.status('spec-status'), 'inactive')
+    End
+
+    " TODO make new test case about 'active'
+  End
+End
