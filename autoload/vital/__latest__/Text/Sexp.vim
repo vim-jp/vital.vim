@@ -29,7 +29,7 @@ function! s:parse(sexp) abort
     " return luaeval('vital_text_sexp.parse(_A)', a:sexp)
     " return luaeval('vital_text_sexp.parse(vital_text_sexp.parse(_A))', a:sexp)
   else
-    throw 'Vital.Text.Sexp: any function call needs if_lua'
+    throw 'Text.Sexp: any function call needs if_lua'
   endif
 endfunction
 
