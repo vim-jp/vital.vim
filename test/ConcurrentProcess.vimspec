@@ -6,7 +6,14 @@ let s:assert = themis#helper('assert')
 function! s:suite.before()
   let s:CP = vital#of('vital').import('ConcurrentProcess')
 
-  " Check if user has `cat` executable command
+  " NOTE: currently themis ignores s:assert.skip() from before.
+  " This will be fixed in the future.
+  if !s:CP.is_available()
+    call s:assert.skip('CP is not available. Do you have vimproc?')
+  endif
+  if !executable('cat') || !executable('sh')
+    call s:assert.skip('cat or sh are not available. Do you have vimproc?')
+  endif
 endfunction
 
 function! s:suite.after()
