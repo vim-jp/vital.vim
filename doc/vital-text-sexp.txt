@@ -5,8 +5,15 @@ Maintainer: ujihisa <ujihisa at gmail com>
 ==============================================================================
 CONTENTS			*Vital.Text.Sexp-contents*
 
+INTRODUCTION			|Vital.Data.List-introduction|
 INTERFACE			|Vital.Text.Sexp-interface|
   FUNCTIONS			  |Vital.Text.Sexp-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.List-introduction*
+
+*Vital.Text.Sexp* is a S-Expression parsing library. For performance it uses
+lua if the Vim that runs this has |+lua|.
 
 ==============================================================================
 INTERFACE			*Vital.Text.Sexp-interface*
