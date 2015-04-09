@@ -13,7 +13,7 @@ INTERFACE			|Vital.Text.Sexp-interface|
 INTRODUCTION				*Vital.Text.Sexp-introduction*
 
 *Vital.Text.Sexp* is a S-Expression parsing library. For performance it uses
-lua if the Vim that runs this has |+lua|.
+lua, so the Vim that runs this needs |+lua|.
 
 ==============================================================================
 INTERFACE			*Vital.Text.Sexp-interface*
