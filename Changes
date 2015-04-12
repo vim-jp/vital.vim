@@ -1,3 +1,7 @@
+3ba9447
+	Modules: System.Cache
+	System.Cache is replaced with a new version.
+	The old version was moved into System.Cache.Deprecated and become deprecated.
 24877cc
 	Modules: Data.List
 	permutations({list}[, {r}]) behavior is changed not to support string input as {list}.
