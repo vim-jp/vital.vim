@@ -1,0 +1,127 @@
+*vital-system-cache-file.txt*	A file based cache system
+
+Maintainer: Alisue <lambdalisue@hashnote.net>
+
+
+==============================================================================
+CONTENTS			*Vital.System.Cache.File-contents*
+
+Introductions		|Vital.System.Cache.File-intro|
+Usage			|Vital.System.Cache.File-usage|
+Functions		|Vital.System.Cache.File-functions|
+Methods			|Vital.System.Cache.File-methods|
+
+
+==============================================================================
+INTRODUCTIONS				*Vital.System.Cache.File-intro*
+
+*Vital.System.Cache.File* is a file based unified cache system.
+
+
+==============================================================================
+USAGE					*Vital.System.Cache.File-usage*
+
+|Vital.System.Cache.File| have all required API of unified cache system and
+store cache in a filesystem.
+In the following example, |Vital.System.Cache.File| is used for memorize the
+calculated values.
+>
+	let s:V = vital#of('vital')
+	let s:C = s:V.import('System.Cache.File')
+
+	let s:factorial_cache = s:C.new('.cache')
+
+	function! s:factorial(n)
+	  if a:n == 0
+	    return 1
+	  elseif s:factorial_cache.has(a:n)
+	    return s:factorial_cache.get(a:n)
+	  else
+	    let x = s:factorial(a:n - 1) * a:n
+	    call s:factorial_cache.set(a:n, x)
+	    return x
+	  endif
+	endfunction
+
+	echo s:factorial(10)
+<
+
+==============================================================================
+FUNCTIONS				*Vital.System.Cache.File-functions*
+
+new([{options}])			*Vital.System.Cache.File.new()*
+
+	Create a new instance of System.Cache.File.
+	It require 'cache_dir' option in {options}. If no 'cache_dir' is
+	specified, it will throw an exception.
+	The 'cache_dir' will automatically be created if missing.
+
+
+==============================================================================
+METHODS					*Vital.System.Cache.File-methods*
+
+cache_key({obj})		*Vital.System.Cache.File.cache_key()*
+
+	See |Vital.System.Cache.Base.cache_key()|
+
+has({name})			*Vital.System.Cache.File.has()*
+
+	Return 1 if the cache instance has {name} in its cache directory.
+	Otherwise 0.
+
+	{name} (required)
+	A name of the cache. An actual cache key will be created via
+	|Vital.System.Cache.File.cache_key()| method thus {name} is not
+	required to be |String|.
+
+get({name}[, {default}])	*Vital.System.Cache.File.get()*
+
+	Return a cached value of {name} in a cache directory. It return
+	{default} if no value is found.
+
+	{name} (required)
+	A name of the cache. An actual cache key will be created via
+	|Vital.System.Cache.File.cache_key()| method thus {name} is not
+	required to be |String|.
+
+	{default} (optional)
+	A default value. It will be returned when no value is found in the
+	cache dictionary.
+
+set({name}, {value})		*Vital.System.Cache.File.set()*
+
+	Save {value} into a cache directory as {name}.
+
+	{name} (required)
+	A name of the cache. An actual cache key will be created via
+	|Vital.System.Cache.File.cache_key()| method thus {name} is not
+	required to be |String|.
+
+	{value} (required)
+	A value of the cache.
+
+keys()				*Vital.System.Cache.File.keys()*
+
+	Return a list of cache keys
+
+remove({name})			*Vital.System.Cache.File.remove()*
+
+	Remove {name} from a cache directory. It does nothing when the
+	specified {name} is not found in the cache.
+
+	{name} (required)
+	A name of the cache. An actual cache key will be created via
+	|Vital.System.Cache.File.cache_key()| method thus {name} is not
+	required to be |String|.
+
+clear()				*Vital.System.Cache.File.clear()*
+
+	Clear all files in the cache directory without prompts.
+
+	CAUTION
+	It remove all files in the directory. Make sure the correct cache
+	directory is specified in the instance.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

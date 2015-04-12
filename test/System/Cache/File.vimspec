@@ -1,0 +1,170 @@
+" Use vim-themis to execute this test
+let s:V = vital#of('vital')
+let s:F = s:V.import('System.File')
+let s:P = s:V.import('System.Filepath')
+
+Describe System.Cache.File
+  let s:C = s:V.import('System.Cache.File')
+
+  Context Usage (Factorial)
+    Before
+      let cache_dir = tempname()
+      let s:factorial_cache = s:C.new({ 'cache_dir': cache_dir })
+    End
+    After
+      if isdirectory(cache_dir)
+        call s:F.rmdir(cache_dir, 'r')
+      endif
+    End
+
+    function! s:factorial(n)
+      if a:n == 0
+        return 1
+      elseif s:factorial_cache.has(a:n)
+        return s:factorial_cache.get(a:n)
+      else
+        let x = s:factorial(a:n - 1) * a:n
+        call s:factorial_cache.set(a:n, x)
+        return x
+      endif
+    endfunction
+
+    It should return correct factorial value
+      let r = s:factorial(10)
+      Assert Equals(r, 1*2*3*4*5*6*7*8*9*10)
+    End
+  End
+
+  Context .new({config})
+    Before each
+      let cache_dir = tempname()
+    End
+    After each
+      if isdirectory(cache_dir)
+        call s:F.rmdir(cache_dir, 'r')
+      endif
+    End
+
+    It should return an instance
+      let cache = s:C.new({ 'cache_dir': cache_dir })
+      Assert HasKey(cache, 'cache_dir')
+    End
+
+    It should automatically create a specified cache directory
+      call s:C.new({ 'cache_dir': cache_dir })
+      Assert True(isdirectory(cache_dir))
+    End
+
+    It should raise an exception if 'cache_dir' option is not specified.
+      Throw call s:C.new(), 'No "cache_dir" option is specified'
+    End
+  End
+
+  Context instance
+    Before
+      let cache_dir = tempname()
+      let cache = s:C.new({ 'cache_dir': cache_dir })
+    End
+
+    After
+      if isdirectory(cache_dir)
+        call s:F.rmdir(cache_dir, 'r')
+      endif
+    End
+
+    Context .cache_key({str})
+      It should return an original string in default
+        let r = cache.cache_key('foo')
+        Assert Equals(r, 'foo')
+      End
+    End
+
+    Context .has({name})
+      It should return 0 if a named cache is not found
+        let r = cache.has('undefined_cache_name')
+        Assert False(r)
+      End
+
+      It should return 1 if a named cache is found
+        let filename = s:P.join(cache_dir, 'foo')
+        call writefile(["'bar'"], filename)
+        let r = cache.has('foo')
+        Assert True(r)
+        call delete(filename)
+      End
+    End
+
+    Context .get({name}[, {default}])
+      It should return an empty string if a named cache is not found
+        let r = cache.get('foo')
+        Assert Equals(r, '')
+      End
+
+      It should return 'default' if a named cache is not found and 'default' is specified
+        let r1 = cache.get('foo', 'hello')
+        Assert Equals(r1, 'hello')
+
+        let r2 = cache.get('foo', 0)
+        Assert Equals(r2, 0)
+      End
+
+      It should return a value if a named cache is found
+        let filename = s:P.join(cache_dir, 'foo')
+        call writefile(["'bar'"], filename)
+        let r = cache.get('foo')
+        Assert Equals(r, 'bar')
+        call delete(filename)
+      End
+    End
+
+    Context .set({name}, {value})
+      It should save 'value' into a cache file with given 'name'
+        let filename = s:P.join(cache_dir, 'foo')
+        call cache.set('foo', 'foo')
+        Assert Equals(readfile(filename), ["'foo'"])
+
+        call delete(filename)
+      End
+    End
+
+    Context .keys()
+      It should return a list of cache keys
+        let filename1 = s:P.join(cache_dir, 'foo')
+        let filename2 = s:P.join(cache_dir, 'bar')
+        call writefile(["'foo'"], filename1)
+        call writefile(["'bar'"], filename2)
+
+        let keys = cache.keys()
+        Assert Equals(sort(keys), sort(['foo', 'bar']))
+
+        call delete(filename1)
+        call delete(filename2)
+      End
+    End
+
+    Context .remove({name})
+      It should do nothing if a named cache is not found
+        call cache.remove('foo')
+      End
+
+      It should remove a named cache from a cache directory
+        let filename = s:P.join(cache_dir, 'foo')
+        call writefile(["'bar'"], filename)
+        call cache.remove('foo')
+        Assert !filereadable(filename)
+      End
+    End
+
+    Context .clear({name})
+      It should clear a cache directory
+        let filename1 = s:P.join(cache_dir, 'foo')
+        let filename2 = s:P.join(cache_dir, 'bar')
+        call writefile(["'foo'"], filename1)
+        call writefile(["'bar'"], filename2)
+        call cache.clear()
+        Assert !filereadable(filename1)
+        Assert !filereadable(filename2)
+      End
+    End
+  End
+End
