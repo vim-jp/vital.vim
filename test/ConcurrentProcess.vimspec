@@ -8,7 +8,7 @@ function! s:skip_test_if_inappropriate_environment()
     call s:assert.skip('CP is not available. Do you have vimproc?')
   endif
   if !executable('cat') || !executable('sh')
-    call s:assert.skip('cat or sh are not available. Do you have vimproc?')
+    call s:assert.skip("'cat' or 'sh' are not available. Check your $PATH.")
   endif
 endfunction
 
@@ -21,7 +21,7 @@ function! s:suite.before()
     call s:assert.skip('CP is not available. Do you have vimproc?')
   endif
   if !executable('cat') || !executable('sh')
-    call s:assert.skip('cat or sh are not available. Do you have vimproc?')
+    call s:assert.skip("'cat' or 'sh' are not available. Check your $PATH.")
   endif
 endfunction
 
