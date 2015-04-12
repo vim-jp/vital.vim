@@ -158,8 +158,10 @@ We recommend you to use a capital letter for a Vital module dictionary to assign
   [tyru](http://github.com/tyru)
 * ![](https://secure.gravatar.com/avatar/1ba93fd9e39ebf48777f217c38e768fd)
   [mattn](http://github.com/mattn)
-* ![](https://secure.gravatar.com/avatar/7f5a1bfaf8b64cbcdfaf82a7de92506b)
-  [Shougo](http://github.com/shougo)
+* ![](https://avatars2.githubusercontent.com/u/823277?v=3&s=460)
+  [rhysd](https://github.com/rhysd)
+<!--* ![](https://secure.gravatar.com/avatar/7f5a1bfaf8b64cbcdfaf82a7de92506b)
+  [Shougo](http://github.com/shougo)-->
 * ... and lots more <https://github.com/vim-jp/vital.vim/graphs/contributors>
 
 ## License
