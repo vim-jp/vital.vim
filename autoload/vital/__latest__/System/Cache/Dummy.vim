@@ -11,29 +11,29 @@ endfunction
 let s:cache = {
       \ '__name__': 'dummy',
       \}
-function! s:new(...)
+function! s:new(...) abort
   return extend(
         \ call(s:Base.new, a:000, s:Base),
         \ deepcopy(s:cache)
         \)
 endfunction
 
-function! s:cache.has(name) dict
+function! s:cache.has(name) abort
   return 0
 endfunction
-function! s:cache.get(name, ...) dict
+function! s:cache.get(name, ...) abort
   return get(a:000, 0, '')
 endfunction
-function! s:cache.set(name, value) dict
+function! s:cache.set(name, value) abort
   " do nothing
 endfunction
-function! s:cache.keys() dict
+function! s:cache.keys() abort
   return []
 endfunction
-function! s:cache.remove(name) dict
+function! s:cache.remove(name) abort
   " do nothing
 endfunction
-function! s:cache.clear() dict
+function! s:cache.clear() abort
   " do nothing
 endfunction
 

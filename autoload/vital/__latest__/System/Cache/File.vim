@@ -34,7 +34,7 @@ endfunction
 let s:cache = {
       \ '__name__': 'file',
       \}
-function! s:new(...)
+function! s:new(...) abort
   let options = get(a:000, 0, {})
   if !has_key(options, 'cache_dir')
     throw 'vital: System.Cache.File: No "cache_dir" option is specified.'
