@@ -1,29 +1,29 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V) dict abort " {{{
+function! s:_vital_loaded(V) dict abort
   let s:Base = a:V.import('System.Cache.Base')
-endfunction " }}}
-function! s:_vital_depends() abort " {{{
+endfunction
+function! s:_vital_depends() abort
   return ['System.Cache.Base']
-endfunction " }}}
+endfunction
 
 let s:cache = {
       \ '_cached': {},
       \ '__name__': 'memory',
       \}
-function! s:new(...) abort " {{{
+function! s:new(...) abort
   return extend(
         \ call(s:Base.new, a:000, s:Base),
         \ deepcopy(s:cache)
         \)
-endfunction " }}}
+endfunction
 
-function! s:cache.has(name) abort " {{{
+function! s:cache.has(name) abort
   let cache_key = self.cache_key(a:name)
   return has_key(self._cached, cache_key)
-endfunction " }}}
-function! s:cache.get(name, ...) abort " {{{
+endfunction
+function! s:cache.get(name, ...) abort
   let default = get(a:000, 0, '')
   let cache_key = self.cache_key(a:name)
   if has_key(self._cached, cache_key)
@@ -31,23 +31,23 @@ function! s:cache.get(name, ...) abort " {{{
   else
     return default
   endif
-endfunction " }}}
-function! s:cache.set(name, value) abort " {{{
+endfunction
+function! s:cache.set(name, value) abort
   let cache_key = self.cache_key(a:name)
   let self._cached[cache_key] = a:value
-endfunction " }}}
-function! s:cache.remove(name) abort " {{{
+endfunction
+function! s:cache.remove(name) abort
   let cache_key = self.cache_key(a:name)
   if has_key(self._cached, cache_key)
     unlet self._cached[cache_key]
   endif
-endfunction " }}}
-function! s:cache.keys() abort " {{{
+endfunction
+function! s:cache.keys() abort
   return keys(self._cached)
-endfunction " }}}
-function! s:cache.clear() abort " {{{
+endfunction
+function! s:cache.clear() abort
   let self._cached = {}
-endfunction " }}}
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

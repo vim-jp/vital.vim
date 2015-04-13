@@ -2,23 +2,23 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:registry = {}
-function! s:_vital_loaded(V) dict abort " {{{
+function! s:_vital_loaded(V) dict abort
   let s:V = a:V
   let s:P = a:V.import('Prelude')
   call s:register('dummy',  'System.Cache.Dummy')
   call s:register('memory', 'System.Cache.Memory')
   call s:register('file',   'System.Cache.File')
-endfunction " }}}
-function! s:_vital_depends() abort " {{{
+endfunction
+function! s:_vital_depends() abort
   return [
         \ 'Prelude',
         \ 'System.Cache.Dummy',
         \ 'System.Cache.Memory',
         \ 'System.Cache.File',
         \]
-endfunction " }}}
+endfunction
 
-function! s:new(name, ...) abort " {{{
+function! s:new(name, ...) abort
   if !has_key(s:registry, a:name)
     throw printf(
           \ 'vital: System.Cache: A cache system "%s" is not registered.',
@@ -27,15 +27,15 @@ function! s:new(name, ...) abort " {{{
   endif
   let class = s:registry[a:name]
   return call(class.new, a:000, class)
-endfunction " }}}
+endfunction
 
-function! s:register(name, class) abort " {{{
+function! s:register(name, class) abort
   let class = s:P.is_string(a:class) ? s:V.import(a:class) : a:class
   let s:registry[a:name] = class
-endfunction " }}}
-function! s:unregister(name) abort " {{{
+endfunction
+function! s:unregister(name) abort
   unlet! s:registry[a:name]
-endfunction " }}}
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
