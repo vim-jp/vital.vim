@@ -3,7 +3,7 @@
 Maintainer: ujihisa <ujihisa at gmail com>
 
 ==============================================================================
-CONTENTS			*Vital.System.Cache-contents*
+CONTENTS			*Vital.System.Cache.Deprecated-contents*
 
 INTRODUCTION			|Vital.System.Cache-introduction|
   USAGE				|Vital.System.Cache-usage|
@@ -15,25 +15,25 @@ CONFIG				|Vital.System.Cache-config|
 
 
 ==============================================================================
-INTRODUCTION			*Vital.System.Cache-introduction*
+INTRODUCTION			*Vital.System.Cache.Deprecated-introduction*
 
 Note this module is deprecated. Use |Vital.System.Cache| instead.
 
-*Vital.System.Cache* is a TODO
+*Vital.System.Cache.Deprecated* is a TODO
 
 
 ==============================================================================
-USAGE				*Vital.System.Cache-usage*
+USAGE				*Vital.System.Cache.Deprecated-usage*
 >
 	let C = V.import('System.Cache')
 	TODO
 <
 
 ==============================================================================
-INTERFACE			*Vital.System.Cache-interface*
+INTERFACE			*Vital.System.Cache.Deprecated-interface*
 
 ------------------------------------------------------------------------------
-FUNCTIONS			*Vital.System.Cache-functions*
+FUNCTIONS			*Vital.System.Cache.Deprecated-functions*
 
 
 ==============================================================================
