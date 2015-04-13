@@ -68,9 +68,21 @@ Manager.open({bufname} [, {config}])
 	If a window is found, it moves to the window and opens a buffer.
 	If it is not found, opens a buffer by
 	opener(|Vital.Vim.BufferManager-config-opener|).
+	The return value is a |Dictionary| which contains following attributes
 
-Manager.opened({bufname})	*Vital.Vim.BufferManager-Manager.opened()*
-	Not implemented yet.
+	'loaded'
+	A boolean which indicate whether the buffer was newly loaded or not.
+
+	'newwin'
+	A boolean which indicate whether the buffer was opened in a new
+	window.
+
+	'newbuf'
+	A boolean which indicate whether the buffer was newly opened (in other
+	word, listed).
+
+	'bufnr'
+	A |Number| which indica the buffer index (|bufnr()|).
 
 Manager.close([{range}])	*Vital.Vim.BufferManager-Manager.close()*
 	Closes the {range} buffer if it exists.
