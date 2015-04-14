@@ -3,9 +3,12 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:zero = {'num': [0], 'sign': 1}
-let s:node_max_digit = 4
-let s:node_max_num = 10000
+let s:_ZERO = {'num': [0], 'sign': 1}
+let s:_NODE_MAX_DIGIT = 4
+let s:_NODE_MAX_NUM = 10000
+lockvar! s:_ZERO
+lockvar! s:_NODE_MAX_DIGIT
+lockvar! s:_NODE_MAX_NUM
 
 function! s:_is_number(str) abort
   return a:str =~# '^[+-]\?\d\+$'
@@ -20,7 +23,7 @@ function! s:from_string(str) abort
   if s:_is_number(a:str) != 1
     call s:_throw('is not digit: '.a:str)
   endif
-  let bigint = deepcopy(s:zero)
+  let bigint = deepcopy(s:_ZERO)
   let bigint.sign = (a:str[0] == "-") ? -1 : 1
   if a:str =~# '^[+-]'
     let l:str = a:str[1:]
@@ -28,13 +31,13 @@ function! s:from_string(str) abort
     let l:str = a:str
   endif
   let l:strlen = len(l:str)
-  let l:head_node_len = l:strlen % s:node_max_digit
+  let l:head_node_len = l:strlen % s:_NODE_MAX_DIGIT
 
   if l:head_node_len != 0
     call add(bigint.num, l:str[: l:head_node_len-1])
   endif
 
-  let l:tail_nodes = split(l:str[l:head_node_len :], '.\{' . s:node_max_digit . '}\zs')
+  let l:tail_nodes = split(l:str[l:head_node_len :], '.\{'.s:_NODE_MAX_DIGIT.'}\zs')
   let l:bigint.num = map(l:bigint.num + l:tail_nodes, 'str2nr(v:val)')
   return s:_fix_form(l:bigint)
 endfunction
@@ -43,7 +46,7 @@ function! s:to_string(bigint) abort
   let l:str = ''
   let l:str .= string(a:bigint.num[0])
   for node in a:bigint.num[1:]
-    let l:str .= printf('%0'.s:node_max_digit.'d', node)
+    let l:str .= printf('%0'.s:_NODE_MAX_DIGIT.'d', node)
   endfor
   if a:bigint.sign == -1
     let l:str = '-' .l:str
@@ -148,8 +151,8 @@ function! s:_abs_add(a,b) abort
     endif
 
     let l:tmp = l:res.num[l:res_idx] + l:tmp_add + l:carry
-    let l:carry = l:tmp / s:node_max_num
-    let l:tmp = l:tmp % s:node_max_num
+    let l:carry = l:tmp / s:_NODE_MAX_NUM
+    let l:tmp = l:tmp % s:_NODE_MAX_NUM
     let l:res.num[l:res_idx] = l:tmp
   endfor
 
@@ -185,7 +188,7 @@ function! s:_abs_sub(a,b) abort
 
     if l:tmp < 0
       let l:borrow = 1
-      let l:tmp += s:node_max_num
+      let l:tmp += s:_NODE_MAX_NUM
     else
       let l:borrow = 0
     endif
@@ -199,7 +202,7 @@ function! s:mul(a,b) abort
   let l:a = s:_of(a:a)
   let l:b = s:_of(a:b)
 
-  let l:res = deepcopy(s:zero)
+  let l:res = deepcopy(s:_ZERO)
   if s:_abs_compare(l:a,l:b) >= 0
     let l:multiplicand = l:a
     let l:multiplier = l:b
@@ -225,15 +228,15 @@ endfunction
 function! s:div_mod(a,b) abort
   let l:a = s:_of(a:a)
   let l:b = s:_of(a:b)
-  if s:compare(l:b, s:zero) == 0
-    if s:compare(l:a, s:zero) == 0
+  if s:compare(l:b, s:_ZERO) == 0
+    if s:compare(l:a, s:_ZERO) == 0
       call s:_throw('indeterminate')
     else
       call s:_throw('incompatible')
     endif
   endif
 
-  let l:res = deepcopy(s:zero)
+  let l:res = deepcopy(s:_ZERO)
   let l:dividend = deepcopy(l:a)
   let l:divisor = deepcopy(l:b)
   if s:_abs_compare(l:a,l:b) < 0
@@ -260,7 +263,7 @@ function! s:div_mod(a,b) abort
     if l:part_dividend_idx == 0
       let l:part_dividend = l:dividend.num[0]
     else " l:part_dividend_idx == 1
-      let l:part_dividend = l:dividend.num[0] * s:node_max_num + l:dividend.num[1]
+      let l:part_dividend = l:dividend.num[0] * s:_NODE_MAX_NUM + l:dividend.num[1]
     endif
 
     let l:part_div = s:from_int(l:part_dividend / l:part_divisor)
@@ -292,7 +295,7 @@ endfunction
 
 function! s:_abs_mul_shortint(a,n) abort
   " n < 10000
-  if a:n >= s:node_max_num
+  if a:n >= s:_NODE_MAX_NUM
     call s:_throw('too large: '.a:n)
   endif
 
@@ -303,8 +306,8 @@ function! s:_abs_mul_shortint(a,n) abort
   for i in range(res_len)
     let l:res_idx = l:res_len-i-1
     let l:tmp = l:res.num[l:res_idx] * a:n + l:carry
-    let l:carry = l:tmp / s:node_max_num
-    let l:tmp = l:tmp % s:node_max_num
+    let l:carry = l:tmp / s:_NODE_MAX_NUM
+    let l:tmp = l:tmp % s:_NODE_MAX_NUM
     let l:res.num[l:res_idx] = l:tmp
   endfor
 
@@ -325,7 +328,7 @@ endfunction
 
 function! s:neg(a) abort
   let l:a = s:_of(a:a)
-  if s:compare(l:a, s:zero) == 0
+  if s:compare(l:a, s:_ZERO) == 0
     return l:a
   endif
   let l:res = deepcopy(l:a)
@@ -346,7 +349,7 @@ function! s:_fix_form(a) abort
 endfunction
 
 function! s:_throw(message) abort
-  throw 'vital: Data.Bigint: ' . a:message
+  throw 'vital: Data.Bigint: '.a:message
 endfunction
 
 let &cpo = s:save_cpo
