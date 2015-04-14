@@ -21,7 +21,7 @@ endfunction
 
 function! s:from_string(str) abort
   if s:_is_number(a:str) != 1
-    call s:_throw('is not digit: '.a:str)
+    call s:_throw('is not number: '.a:str)
   endif
   let bigint = deepcopy(s:_ZERO)
   let bigint.sign = (a:str[0] == "-") ? -1 : 1
