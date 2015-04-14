@@ -7,8 +7,8 @@ let s:zero = {'num': [0], 'sign': 1}
 let s:node_max_digit = 4
 let s:node_max_num = 10000
 
-function! s:_is_digit(str) abort
-  return match(a:str, '^[+-]\?\d\+$') != -1
+function! s:_is_number(str) abort
+  return a:str =~# '^[+-]\?\d\+$'
 endfunction
 
 function! s:from_int(n) abort
@@ -17,18 +17,17 @@ function! s:from_int(n) abort
 endfunction
 
 function! s:from_string(str) abort
-  if s:_is_digit(a:str) != 1
+  if s:_is_number(a:str) != 1
     call s:_throw('is not digit: '.a:str)
   endif
   let bigint = deepcopy(s:zero)
   let bigint.sign = (a:str[0] == "-") ? -1 : 1
-  if match(a:str, '^[+-]') != -1
+  if a:str =~# '^[+-]'
     let l:str = a:str[1:]
   else
     let l:str = a:str
   endif
   let l:strlen = len(l:str)
-  let l:nodes = ((l:strlen-1)/s:node_max_digit)+1
   let l:head_node_len = l:strlen % s:node_max_digit
 
   if l:head_node_len != 0
@@ -74,7 +73,7 @@ function! s:compare(a,b) abort
   let l:b = s:_of(a:b)
 
   if l:a.sign != l:b.sign
-    return (l:a.sign == 1) ? 1 : -1
+    return l:a.sign
   endif
   return s:_abs_compare(l:a,l:b) * l:a.sign
 endfunction
@@ -215,9 +214,7 @@ function! s:mul(a,b) abort
     let l:multiplier_int = l:multiplier.num[l:multiplier_idx]
 
     let l:tmp = s:_abs_mul_shortint(l:multiplicand, l:multiplier_int)
-    for j in range(i)
-      call add(l:tmp.num, 0)
-    endfor
+    let l:tmp.num = l:tmp.num + map(range(i), 0)
     let l:res = s:_abs_add(l:res, l:tmp)
   endfor
 
@@ -268,10 +265,7 @@ function! s:div_mod(a,b) abort
 
     let l:part_div = s:from_int(l:part_dividend / l:part_divisor)
     let l:extend_divisor = deepcopy(l:divisor)
-    for j in range(l:extend_nodes_len - i)
-      call add(l:extend_divisor.num, 0)
-    endfor
-
+    let l:extend_divisor.num = l:extend_divisor.num + map(range(l:extend_nodes_len-i), 0)
     let l:tmp = s:mul(l:extend_divisor, l:part_div)
     let l:dividend = s:_abs_sub(l:dividend, l:tmp)
 
@@ -280,9 +274,7 @@ function! s:div_mod(a,b) abort
       let l:part_div = s:add(l:part_div, s:from_int(1))
     endwhile
 
-    for j in range(l:extend_nodes_len - i)
-      call add(l:part_div.num, 0)
-    endfor
+    let l:part_div.num = l:part_div.num + map(range(l:extend_nodes_len-i), 0)
     let l:res = s:add(l:res, l:part_div)
   endfor
 
