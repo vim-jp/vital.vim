@@ -1,0 +1,80 @@
+*vital-data-bigint.txt*		Multi precision integer library.
+
+Maintainer: aomoriringo <sel0433 at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Bigint-contents*
+
+INTRODUCTION			|Vital.Data.Bigint-introduction|
+INTERFACE			|Vital.Data.Bigint-interface|
+  Functions			|Vital.Data.Bigint-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Bigint-introduction*
+
+*Vital.Data.Bigint* is a multi precision integer library.
+It provides some functions to manipulate multi precision integer.
+
+>
+	source ./bigint.vim
+
+	let x = FromInt(42)
+	let y = FromString("12345678901")
+	let z = BigAdd(x, y)
+	echo ToString(z)
+	" 12345678943
+	let z = BigMul(y, 9753)
+	echo ToString(z)
+	" 120407406321453
+
+	let [div, mod] = BigDivMod(y, "112233")
+	echo ToString(div)
+	" 110000
+	echo ToString(mod)
+	" 48901
+<
+
+==============================================================================
+INTERFACE				*Vital.Data.Bigint-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Bigint-functions*
+
+from_int({number})			*Vital.Data.Bigint.from_int()*
+	Return a new 'bigint' object from {number}.
+
+from_string({str})			*Vital.Data.Bigint.from_string()*
+	Return a new 'bigint' object from {str}.
+
+to_string({bigint})			*Vital.Data.Bigint.to_string()*
+	Return a string from {bigint}.
+
+compare({elem1}, {elem2})		*Vital.Data.Bigint.compare()*
+	Compares as signed integer.  Returns -1, 0, or 1.
+
+add({elem1}, {elem2})			*Vital.Data.Bigint.add()*
+	Return {elem1} + {elem2}, for {elem1} and {elem2} integer, string or
+	bigint.
+
+sub({elem1}, {elem2})			*Vital.Data.Bigint.sub()*
+	Return {elem1} - {elem2}.
+
+mul({elem1}, {elem2})			*Vital.Data.Bigint.mul()*
+	Return {elem1} * {elem2}.
+
+div({elem1}, {elem2})			*Vital.Data.Bigint.div()*
+	Return {elem1} / {elem2}.
+
+mod({elem1}, {elem2})			*Vital.Data.Bigint.mod()*
+	Return {elem1} % {elem2}.
+
+div_mod({elem1}, {elem2})		*Vital.Data.Bigint.divmod()*
+	Return [Div(), Mod()].
+
+sign({elem})				*Vital.Data.Bigint.sign()*
+	Return sign of {elem} as -1, 0, or 1.
+
+neg({elem})				*Vital.Data.Bigint.neg()*
+	Return {elem} negated (-{elem}).
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
