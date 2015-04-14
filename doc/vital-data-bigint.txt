@@ -16,21 +16,22 @@ INTRODUCTION				*Vital.Data.Bigint-introduction*
 It provides some functions to manipulate multi precision integer.
 
 >
-	source ./bigint.vim
+	let s:V = vital#of("vital")
+	let s:Bigint = s:V.import("Data.Bigint")
 
-	let x = FromInt(42)
-	let y = FromString("12345678901")
-	let z = BigAdd(x, y)
-	echo ToString(z)
+	let x = s:Bigint.from_int(42)
+	let y = s:Bigint.from_string("12345678901")
+	let z = s:Bigint.add(x, y)
+	echo s:Bigint.to_string(z)
 	" 12345678943
-	let z = BigMul(y, 9753)
-	echo ToString(z)
+	let z = s:Bigint.mul(y, 9753)
+	echo s:Bigint.to_string(z)
 	" 120407406321453
 
-	let [div, mod] = BigDivMod(y, "112233")
-	echo ToString(div)
+	let [div, mod] = s:Bigint.div_mod(y, "112233")
+	echo s:Bigint.to_string(div)
 	" 110000
-	echo ToString(mod)
+	echo s:Bigint.to_string(mod)
 	" 48901
 <
 
