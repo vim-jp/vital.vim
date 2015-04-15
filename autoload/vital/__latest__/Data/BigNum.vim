@@ -23,8 +23,8 @@ function! s:from_string(str) abort
   if s:_is_number(a:str) != 1
     call s:_throw('is not number: '.a:str)
   endif
-  let bigint = deepcopy(s:_ZERO)
-  let bigint.sign = (a:str[0] == "-") ? -1 : 1
+  let bignum = deepcopy(s:_ZERO)
+  let bignum.sign = (a:str[0] == "-") ? -1 : 1
   if a:str =~# '^[+-]'
     let l:str = a:str[1:]
   else
@@ -34,28 +34,28 @@ function! s:from_string(str) abort
   let l:head_node_len = l:strlen % s:_NODE_MAX_DIGIT
 
   if l:head_node_len != 0
-    call add(bigint.num, l:str[: l:head_node_len-1])
+    call add(bignum.num, l:str[: l:head_node_len-1])
   endif
 
   let l:tail_nodes = split(l:str[l:head_node_len :], '.\{'.s:_NODE_MAX_DIGIT.'}\zs')
-  let l:bigint.num = map(l:bigint.num + l:tail_nodes, 'str2nr(v:val)')
-  return s:_fix_form(l:bigint)
+  let l:bignum.num = map(l:bignum.num + l:tail_nodes, 'str2nr(v:val)')
+  return s:_fix_form(l:bignum)
 endfunction
 
-function! s:to_string(bigint) abort
+function! s:to_string(bignum) abort
   let l:str = ''
-  let l:str .= string(a:bigint.num[0])
-  for node in a:bigint.num[1:]
+  let l:str .= string(a:bignum.num[0])
+  for node in a:bignum.num[1:]
     let l:str .= printf('%0'.s:_NODE_MAX_DIGIT.'d', node)
   endfor
-  if a:bigint.sign == -1
+  if a:bignum.sign == -1
     let l:str = '-' .l:str
   endif
   return l:str
 endfunction
 
 function! s:_of(n) abort
-  " n: Number or String or Bigint
+  " n: Number or String or BigNum
   let l:t = type(a:n)
   if l:t == 4 " Dictionary
     return a:n
@@ -349,7 +349,7 @@ function! s:_fix_form(a) abort
 endfunction
 
 function! s:_throw(message) abort
-  throw 'vital: Data.Bigint: '.a:message
+  throw 'vital: Data.BigNum: '.a:message
 endfunction
 
 let &cpo = s:save_cpo
