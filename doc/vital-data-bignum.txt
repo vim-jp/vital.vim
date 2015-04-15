@@ -19,7 +19,7 @@ It provides some functions to manipulate multi precision integer.
 	let s:V = vital#of("vital")
 	let s:BigNum = s:V.import("Data.BigNum")
 
-	let x = s:BigNum.from_int(42)
+	let x = s:BigNum.from_num(42)
 	let y = s:BigNum.from_string("12345678901")
 	let z = s:BigNum.add(x, y)
 	echo s:BigNum.to_string(z)
@@ -40,7 +40,7 @@ INTERFACE				*Vital.Data.BigNum-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Data.BigNum-functions*
 
-from_int({number})			*Vital.Data.BigNum.from_int()*
+from_num({number})			*Vital.Data.BigNum.from_num()*
 	Return a new 'BigNum' object from {number}.
 
 from_string({str})			*Vital.Data.BigNum.from_string()*

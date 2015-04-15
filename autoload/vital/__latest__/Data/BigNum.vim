@@ -14,7 +14,7 @@ function! s:_is_number(str) abort
   return a:str =~# '^[+-]\?\d\+$'
 endfunction
 
-function! s:from_int(n) abort
+function! s:from_num(n) abort
   " TODO: do not use s:from_string
   return s:from_string(string(a:n))
 endfunction
@@ -60,7 +60,7 @@ function! s:_of(n) abort
   if l:t == 4 " Dictionary
     return a:n
   elseif l:t == 0 " Number
-    return s:from_int(a:n)
+    return s:from_num(a:n)
   elseif l:t == 1 " String
     return s:from_string(a:n)
   else
@@ -266,7 +266,7 @@ function! s:div_mod(a,b) abort
       let l:part_dividend = l:dividend.num[0] * s:_NODE_MAX_NUM + l:dividend.num[1]
     endif
 
-    let l:part_div = s:from_int(l:part_dividend / l:part_divisor)
+    let l:part_div = s:from_num(l:part_dividend / l:part_divisor)
     let l:extend_divisor = deepcopy(l:divisor)
     let l:extend_divisor.num = l:extend_divisor.num + map(range(l:extend_nodes_len-i), 0)
     let l:tmp = s:mul(l:extend_divisor, l:part_div)
@@ -274,7 +274,7 @@ function! s:div_mod(a,b) abort
 
     while s:_abs_compare(l:dividend, l:extend_divisor) >= 0
       let l:dividend = s:_abs_sub(l:dividend, l:extend_divisor)
-      let l:part_div = s:add(l:part_div, s:from_int(1))
+      let l:part_div = s:add(l:part_div, s:from_num(1))
     endwhile
 
     let l:part_div.num = l:part_div.num + map(range(l:extend_nodes_len-i), 0)
