@@ -56,12 +56,12 @@ function! s:suite.add() abort
   call s:assert.equals(s:BigNum.add(0, 0), s:BigNum.from_num(0))
   call s:assert.equals(s:BigNum.add(-1, 999), s:BigNum.from_num(998))
   call s:assert.equals(s:BigNum.add(-1000, -1234), s:BigNum.from_num(-2234))
-  " bigint + int32
+  " bignum + int32
   call s:assert.equals(s:BigNum.add("9999999999999999", 1), s:BigNum.from_string("10000000000000000"))
   call s:assert.equals(s:BigNum.add("9999999999999999", -1), s:BigNum.from_string("9999999999999998"))
   call s:assert.equals(s:BigNum.add("-12345678901", 111111111), s:BigNum.from_string("-12234567790"))
   call s:assert.equals(s:BigNum.add("-12345678901", -111111111), s:BigNum.from_string("-12456790012"))
-  " bigint + bigint
+  " bignum + bignum
   call s:assert.equals(s:BigNum.add("9999999999999999", "1111111111111111"), s:BigNum.from_string("11111111111111110"))
   call s:assert.equals(s:BigNum.add("9999999999999999", "-1111111111111111"), s:BigNum.from_string("8888888888888888"))
   call s:assert.equals(s:BigNum.add("-12345123451234512345", "10000100001000010000"), s:BigNum.from_string("-2345023450234502345"))
@@ -73,12 +73,12 @@ function! s:suite.sub() abort
   call s:assert.equals(s:BigNum.sub(0, 0), s:BigNum.from_num(0))
   call s:assert.equals(s:BigNum.sub(-1, 999), s:BigNum.from_num(-1000))
   call s:assert.equals(s:BigNum.sub(-1000, -1234), s:BigNum.from_num(234))
-  " bigint - int32
+  " bignum - int32
   call s:assert.equals(s:BigNum.sub("9999999999999999", 1), s:BigNum.from_string("9999999999999998"))
   call s:assert.equals(s:BigNum.sub("9999999999999999", -1), s:BigNum.from_string("10000000000000000"))
   call s:assert.equals(s:BigNum.sub("-12345678901", 111111111), s:BigNum.from_string("-12456790012"))
   call s:assert.equals(s:BigNum.sub("-12345678901", -111111111), s:BigNum.from_string("-12234567790"))
-  " bigint + bigint
+  " bignum + bignum
   call s:assert.equals(s:BigNum.sub("9999999999999999", "1111111111111111"), s:BigNum.from_string("8888888888888888"))
   call s:assert.equals(s:BigNum.sub("9999999999999999", "-1111111111111111"), s:BigNum.from_string("11111111111111110"))
   call s:assert.equals(s:BigNum.sub("-12345123451234512345", "10000100001000010000"), s:BigNum.from_string("-22345223452234522345"))
@@ -91,16 +91,16 @@ function! s:suite.mul() abort
   call s:assert.equals(s:BigNum.mul(12345678, 9), s:BigNum.from_num(111111102))
   call s:assert.equals(s:BigNum.mul(-12345678, 2), s:BigNum.from_num(-24691356))
   call s:assert.equals(s:BigNum.mul(-3, -2), s:BigNum.from_num(6))
-  " int32 * int32 -> bigint
+  " int32 * int32 -> bignum
   call s:assert.equals(s:BigNum.mul(1234567890, 1234567890), s:BigNum.from_string("1524157875019052100"))
   call s:assert.equals(s:BigNum.mul(-2147483648, -2147483648), s:BigNum.from_string("4611686018427387904"))
-  " bigint * int32
+  " bignum * int32
   call s:assert.equals(s:BigNum.mul("1234567890123", 0), s:BigNum.from_num(0))
   call s:assert.equals(s:BigNum.mul("1234567890123", 2), s:BigNum.from_string("2469135780246"))
   call s:assert.equals(s:BigNum.mul("1234567890123", -2), s:BigNum.from_string("-2469135780246"))
   call s:assert.equals(s:BigNum.mul("-1234567890123", 2), s:BigNum.from_string("-2469135780246"))
   call s:assert.equals(s:BigNum.mul("-1234567890123", -2), s:BigNum.from_string("2469135780246"))
-  " bigint * bigint
+  " bignum * bignum
   call s:assert.equals(s:BigNum.mul("1234567890123", "1234567890123"), s:BigNum.from_string("1524157875322755800955129"))
   call s:assert.equals(s:BigNum.mul("-111111111111", "-111111111111"), s:BigNum.from_string("12345679012320987654321"))
 endfunction
@@ -111,20 +111,20 @@ function! s:suite.div() abort
   call s:assert.equals(s:BigNum.div(123, -123), s:BigNum.from_num(-1))
   call s:assert.equals(s:BigNum.div(-123, 123), s:BigNum.from_num(-1))
   call s:assert.equals(s:BigNum.div(-123, -123), s:BigNum.from_num(1))
-  " bigint / int32 -> int32
+  " bignum / int32 -> int32
   call s:assert.equals(s:BigNum.div("10000001000000", 1000000), s:BigNum.from_num(10000001))
   call s:assert.equals(s:BigNum.div("-10000001000000", 1000000), s:BigNum.from_num(-10000001))
   call s:assert.equals(s:BigNum.div("-10000001000000", -1000000), s:BigNum.from_num(10000001))
-  " bigint / int32 -> bigintNum
+  " bignum / int32 -> bignum
   call s:assert.equals(s:BigNum.div("123123123123123", 123), s:BigNum.from_string("1001001001001"))
   call s:assert.equals(s:BigNum.div("-123123123123123", 123), s:BigNum.from_string("-1001001001001"))
   call s:assert.equals(s:BigNum.div("123123123123123", -123), s:BigNum.from_string("-1001001001001"))
-  " bigint / bigint -> int32Num
+  " bignum / bignum -> int32
   call s:assert.equals(s:BigNum.div("1112345678999", "1112345679990"), s:BigNum.from_num(0))
   call s:assert.equals(s:BigNum.div("12345678901234567890", "1234567890123456789"), s:BigNum.from_num(10))
   call s:assert.equals(s:BigNum.div("-12345678901234567890", "1234567890123456789"), s:BigNum.from_num(-10))
   call s:assert.equals(s:BigNum.div("-12345678901234567890", "-1234567890123456789"), s:BigNum.from_num(10))
-  " bigint / bigint -> biginNum
+  " bignum / bignum -> bignum
   call s:assert.equals(s:BigNum.div("519920419074760465703", "22801763489"), s:BigNum.from_string("22801763527"))
   call s:assert.equals(s:BigNum.div("-1522605027922533360535618378132637429718068114961380688657908494580122963258952897654000350692006139", "37975227936943673922808872755445627854565536638199"), s:BigNum.from_string("-40094690950920881030683735292761468389214899724061"))
 endfunction
