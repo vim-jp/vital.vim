@@ -22,6 +22,7 @@ module						 | description
 [Bitwise](doc/vital-bitwise.txt)		 | bitwise operators
 [ConcurrentProcess](doc/vital-concurrent_process.txt)	 | manages processes concurrently with vimproc
 [Data.Base64](doc/vital-data-base64.txt)	 | base64 utilities library
+[Data.BigNum](doc/vital-data-bignum.txt)	 | multi precision integer library
 [Data.Closure](doc/vital-data-closure.txt)	 | Provide Closure object
 [Data.Collection](doc/vital-data-collection.txt) | Utilities both for list and dict
 [Data.Dict](doc/vital-data-dict.txt)		 | dictionary utilities library
