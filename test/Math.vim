@@ -70,4 +70,7 @@ function! s:suite.round()
   call s:assert.equals(s:M.round(5.127, 2), 5.13)
   call s:assert.equals(s:M.round(5.127, 3), 5.127)
   call s:assert.equals(s:M.round(5.127, 20), 5.127)
+  call s:assert.equals(s:M.round(123, -2), 100.0)
+  call s:assert.equals(s:M.round(123, -1), 120.0)
+  call s:assert.equals(s:M.round(123, 1), 123.0)
 endfunction
