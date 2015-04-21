@@ -59,3 +59,15 @@ function! s:suite.sum()
   " It returns argument is empty list
   call s:assert.equals(s:M.sum([]), 0)
 endfunction
+
+function! s:suite.round()
+  call s:assert.equals(s:M.round(2.675, 0), 3)
+  call s:assert.equals(s:M.round(2.675, 2), 2.68)
+  call s:assert.equals(s:M.round(-2.675, 2), -2.68)
+  call s:assert.equals(s:M.round(5.127, -1), 10.0)
+  call s:assert.equals(s:M.round(5.127, 0), 5.0)
+  call s:assert.equals(s:M.round(5.127, 1), 5.1)
+  call s:assert.equals(s:M.round(5.127, 2), 5.13)
+  call s:assert.equals(s:M.round(5.127, 3), 5.127)
+  call s:assert.equals(s:M.round(5.127, 20), 5.127)
+endfunction
