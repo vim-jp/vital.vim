@@ -303,7 +303,7 @@ strwidthpart({str}, {width})			*Vital.Data.String.strwidthpart()*
 <
 strwidthpart_reverse({str}, {width})	*Vital.Data.String.strwidthpart_reverse()*
 	This function returns the part of the string {str} like the function
-	|Vital.Data.String.truncate()|, but this function takes the part of
+	|Vital.Data.String.strwidthpart()|, but this function takes the part of
 	the string from the right.
 >
 	echo s:S.strwidthpart_reverse('this is a pen', 5)
