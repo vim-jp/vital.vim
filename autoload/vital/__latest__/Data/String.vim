@@ -451,7 +451,7 @@ function! s:truncate_skipping(str, max, footer_width, separator) abort
   return s:truncate(ret, a:max)
 endfunction
 
-function! s:strwidthpart(str, width)
+function! s:strwidthpart(str, width) abort
   if a:width <= 0
     return ''
   endif
@@ -474,7 +474,7 @@ function! s:strwidthpart(str, width)
   return index ? join(strarr[:index - 1], '') : ''
 endfunction
 
-function! s:strwidthpart_reverse(str, width)
+function! s:strwidthpart_reverse(str, width) abort
   if a:width <= 0
     return ''
   endif
