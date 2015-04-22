@@ -259,6 +259,69 @@ hash({str})
 	
 	return printf('%x', sum)
 <
-
+truncate({str}, {width})			*Vital.Data.String.truncate()*
+	This function truncates the string {str} to the specified {width}.
+	The width of the string is calculated as it is displayed.
+>
+	echo s:S.truncate('this is a pen', 2)
+	" 'th'
+	echo s:S.truncate('あいうえお', 2)
+	" 'あ'
+<
+	If {width} is larger than the width {str} is displayed, spaces are
+	appended.
+>
+	echo s:S.truncate('this is a pen', 20)
+	" 'this is a pen       '
+<
+					*Vital.Data.String.truncate_skipping()*
+truncate_skipping({str}, {max}, {footer-width}, {separator})
+	This function splits the string {str} into two parts and joins with
+	the given {separator}. The second argument {max} specifies the
+	displayed width of the result string and the third argument
+	{footer-width} specifies the displayed width of the string after the
+	separator.
+>
+	echo s:S.truncate_skipping('this is a pen', 10, 3, '...')
+	" 'this...pen'
+	echo s:S.truncate_skipping('あいうえおかきくけこ', 10, 2, ' .. ')
+	" 'あい .. こ'
+<
+strwidthpart({str}, {width})			*Vital.Data.String.strwidthpart()*
+	This function returns the part of the string {str} the displayed width
+	of which is narrower than the given {width}. This function does not
+	appends spaces as opposed to |Vital.Data.String.truncate()|.
+>
+	echo s:S.strwidthpart('this is a pen', 5)
+	" 'this '
+	echo s:S.strwidthpart('this is a pen', 20)
+	" 'this is a pen'
+	echo s:S.strwidthpart('あいうえお', 5)
+	" 'あい'
+	echo s:S.strwidthpart('あいうえお', 20)
+	" 'あいうえお'
+<
+strwidthpart_reverse({str}, {width})	*Vital.Data.String.strwidthpart_reverse()*
+	This function returns the part of the string {str} like the function
+	|Vital.Data.String.truncate()|, but this function takes the part of
+	the string from the right.
+>
+	echo s:S.strwidthpart_reverse('this is a pen', 5)
+	" 'a pen'
+	echo s:S.strwidthpart_reverse('this is a pen', 20)
+	" 'this is a pen'
+	echo s:S.strwidthpart_reverse('あいうえお', 5)
+	" 'えお'
+	echo s:S.strwidthpart_reverse('あいうえお', 20)
+	" 'あいうえお'
+<
+wcswidth({str})					*Vital.Data.String.wcswidth()*
+	This function returns the displayed width of the string {str}.
+>
+	echo s:S.wcswidth('this is a pen')
+	" 13
+	echo s:S.wcswidth('あいうえお')
+	" 10
+<
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
