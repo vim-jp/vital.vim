@@ -76,6 +76,12 @@ function! s:sum(list) abort
   return sum
 endfunction
 
+function! s:round(float, ...) abort
+  let digits = get(a:, 1, 0)
+  let n = pow(10.0, digits)
+  return round(a:float*n)/n
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
