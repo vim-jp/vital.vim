@@ -290,7 +290,7 @@ truncate_skipping({str}, {max}, {footer-width}, {separator})
 strwidthpart({str}, {width})			*Vital.Data.String.strwidthpart()*
 	This function returns the part of the string {str} the displayed width
 	of which is narrower than the given {width}. This function does not
-	appends spaces as opposed to |Vital.Data.String.truncate()|.
+	append spaces as opposed to |Vital.Data.String.truncate()|.
 >
 	echo s:S.strwidthpart('this is a pen', 5)
 	" 'this '
