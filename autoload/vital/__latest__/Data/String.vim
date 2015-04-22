@@ -458,9 +458,9 @@ function! s:strwidthpart(str, width) abort
   let strarr = split(a:str, '\zs')
   let width = s:wcswidth(a:str)
   let index = len(strarr)
-  let diff = index / 2
+  let diff = (index + 1) / 2
   let rightindex = index - 1
-  while width > a:width && diff
+  while width > a:width
     let index = max([rightindex - diff + 1, 0])
     let partwidth = s:wcswidth(join(strarr[(index):(rightindex)], ''))
     if width - partwidth >= a:width || diff <= 1
@@ -481,10 +481,10 @@ function! s:strwidthpart_reverse(str, width) abort
   let strarr = split(a:str, '\zs')
   let width = s:wcswidth(a:str)
   let strlen = len(strarr)
-  let diff = strlen / 2
+  let diff = (strlen + 1) / 2
   let leftindex = 0
   let index = -1
-  while width > a:width && diff
+  while width > a:width
     let index = min([leftindex + diff, strlen]) - 1
     let partwidth = s:wcswidth(join(strarr[(leftindex):(index)], ''))
     if width - partwidth >= a:width || diff <= 1
