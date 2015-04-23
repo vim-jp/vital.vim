@@ -41,21 +41,23 @@ function! s:suite.gcd()
   call s:assert.equals(s:M.gcd([0, 0, 0]), 0 )
 endfunction
 
-function! s:suite.sum()
+function! s:suite.sum_integeres()
   " It returns sum integers
   call s:assert.equals(s:M.sum([1, 2, 3, 4, 5]), 15)
+endfunction
 
+function! s:suite.sum_real_numbers()
   " It returns sum real numbers
   call s:assert.equals(s:M.sum([1.0, 2.0, 3.2, 4.0, 5.3]), 15.5)
   call s:assert.equals(s:M.sum([1, 2, 3.2, 4, 5.3]), 15.5)
+endfunction
 
+function! s:suite.sum_throws_illegal_arguments()
   " It throws illigal arguments
-  try
-    call s:M.sum([1, 2, '3', 4, 5])
-    call s:assert.fail('Not thrown illegal arguments')
-  catch
-  endtry
+  Throws s:M.sum([1, 2, '3', 4, 5])
+endfunction
 
+function! s:suite.sum_unit_when_empty()
   " It returns argument is empty list
   call s:assert.equals(s:M.sum([]), 0)
 endfunction
