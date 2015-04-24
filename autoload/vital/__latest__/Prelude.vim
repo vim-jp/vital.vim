@@ -68,11 +68,6 @@ function! s:is_dict(Value) abort
   return type(a:Value) ==# s:__TYPE_DICT
 endfunction
 
-function! s:truncate_smart(str, max, footer_width, separator) abort
-  echoerr 'Prelude.truncate_smart() is obsolete. Use its truncate_skipping() instead; they are equivalent.'
-  return s:truncate_skipping(a:str, a:max, a:footer_width, a:separator)
-endfunction
-
 function! s:truncate_skipping(str, max, footer_width, separator) abort
   let width = s:wcswidth(a:str)
   if width <= a:max
@@ -209,10 +204,6 @@ function! s:is_unix() abort
   return s:is_unix
 endfunction
 
-function! s:_deprecated2(fname) abort
-  echomsg printf("Vital.Prelude.%s is deprecated!",
-        \ a:fname)
-endfunction
 
 function! s:smart_execute_command(action, word) abort
   execute a:action . ' ' . (a:word == '' ? '' : '`=a:word`')
@@ -258,16 +249,6 @@ function! s:set_default(var, val) abort
   if !exists(a:var) || type({a:var}) != type(a:val)
     let {a:var} = a:val
   endif
-endfunction
-
-function! s:set_dictionary_helper(variable, keys, pattern) abort
-  call s:_deprecated2('set_dictionary_helper')
-
-  for key in split(a:keys, '\s*,\s*')
-    if !has_key(a:variable, key)
-      let a:variable[key] = a:pattern
-    endif
-  endfor
 endfunction
 
 function! s:substitute_path_separator(path) abort
