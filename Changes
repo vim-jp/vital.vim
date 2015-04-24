@@ -1,3 +1,12 @@
+d4d6207
+	Modules: Prelude
+	Below functions were moved to Data.String module (#295) and they are marked as
+	deprecated in Prelude. They will be removed in the near future.
+	- truncate_skipping()
+	- truncate()
+	- strwidthpart()
+	- strwidthpart_reverse()
+	- wcswidth()
 83a2dbf
 	Modules: Prelude
 	Removed below deprecated functions:
