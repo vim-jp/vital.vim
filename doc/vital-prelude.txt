@@ -85,19 +85,24 @@ is_dict({value})				*Vital.Prelude.is_dict()*
 
 					*Vital.Prelude.truncate_skipping()*
 truncate_skipping({str}, {max}, {footer-width}, {separator})
-	TODO
+	This function is deprecated. Please use
+	|Vital.Data.String.truncate_skipping()| instead.
 
 truncate({str}, {width})			*Vital.Prelude.truncate()*
-	TODO
+	This function is deprecated. Please use |Vital.Data.String.truncate()|
+	instead.
 
 strwidthpart({str}, {width})			*Vital.Prelude.strwidthpart()*
-	TODO
+	This function is deprecated. Please use
+	|Vital.Data.String.strwidthpart()| instead.
 
 strwidthpart_reverse({str}, {width})	*Vital.Prelude.strwidthpart_reverse()*
-	TODO
+	This function is deprecated. Please use
+	|Vital.Data.String.strwidthpart_reverse()| instead.
 
 wcswidth({str})					*Vital.Prelude.wcswidth()*
-	TODO
+	This function is deprecated. Please use |Vital.Data.String.wcswidth()|
+	instead.
 
 is_windows()					*Vital.Prelude.is_windows()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.

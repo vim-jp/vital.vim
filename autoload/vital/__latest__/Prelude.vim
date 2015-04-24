@@ -69,6 +69,8 @@ function! s:is_dict(Value) abort
 endfunction
 
 function! s:truncate_skipping(str, max, footer_width, separator) abort
+  call s:_warn_deprecated("truncate_skipping", "Data.String.truncate_skipping")
+
   let width = s:wcswidth(a:str)
   if width <= a:max
     let ret = a:str
@@ -84,6 +86,8 @@ endfunction
 function! s:truncate(str, width) abort
   " Original function is from mattn.
   " http://github.com/mattn/googlereader-vim/tree/master
+
+  call s:_warn_deprecated("truncate", "Data.String.truncate")
 
   if a:str =~# '^[\x00-\x7f]*$'
     return len(a:str) < a:width ?
@@ -105,6 +109,8 @@ function! s:truncate(str, width) abort
 endfunction
 
 function! s:strwidthpart(str, width) abort
+  call s:_warn_deprecated("strwidthpart", "Data.String.strwidthpart")
+
   if a:width <= 0
     return ''
   endif
@@ -119,6 +125,8 @@ function! s:strwidthpart(str, width) abort
   return ret
 endfunction
 function! s:strwidthpart_reverse(str, width) abort
+  call s:_warn_deprecated("strwidthpart_reverse", "Data.String.strwidthpart_reverse")
+
   if a:width <= 0
     return ''
   endif
@@ -136,10 +144,13 @@ endfunction
 if v:version >= 703
   " Use builtin function.
   function! s:wcswidth(str) abort
+    call s:_warn_deprecated("wcswidth", "Data.String.wcswidth")
     return strwidth(a:str)
   endfunction
 else
   function! s:wcswidth(str) abort
+    call s:_warn_deprecated("wcswidth", "Data.String.wcswidth")
+
     if a:str =~# '^[\x00-\x7f]*$'
       return strlen(a:str)
     end
@@ -204,6 +215,14 @@ function! s:is_unix() abort
   return s:is_unix
 endfunction
 
+function! s:_warn_deprecated(name, alternative) abort
+  try
+    echohl Error
+    echomsg "Prelude." . a:name . " is deprecated!  Please use " . a:alternative . " instead."
+  finally
+    echohl None
+  endtry
+endfunction
 
 function! s:smart_execute_command(action, word) abort
   execute a:action . ' ' . (a:word == '' ? '' : '`=a:word`')
