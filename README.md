@@ -16,7 +16,7 @@ If you are a Vim plugin author, please check this out.
 
 ## What vital.vim provides
 
-module						 | description
+Module						 | Description
 ------------------------------------------------ | ------------------------------
 [Assertion](doc/vital-assertion.txt)		 | assertion library
 [Bitwise](doc/vital-bitwise.txt)		 | bitwise operators
@@ -55,7 +55,7 @@ module						 | description
 [Text.LTSV](doc/vital-text-ltsv.txt)		 | LTSV library
 [Text.Lexer](doc/vital-text-lexer.txt)		 | lexer library
 [Text.Parser](doc/vital-text-parser.txt)	 | parser library
-Text.Sexp  |	
+[Text.Sexp](doc/vital-text-sexp.txt)	         | S-Expression parser
 [Text.TOML](doc/vital-text-toml.txt)		 | TOML library
 [Text.Table](doc/vital-text-table.txt)		 | Character table library
 [Vim.Buffer](doc/vital-vim-buffer.txt)		 | Vim's buffer related stuff in general
