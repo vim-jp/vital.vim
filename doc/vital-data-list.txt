@@ -406,7 +406,7 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 		echo idx.': '.line
 	endfor
 <
-find({list}, {default} {f})			 *Vital.Data.List.find()*
+find({list}, {default}, {f})			 *Vital.Data.List.find()*
 	Returns the first value in {list} where the given {expr} is satisfied.
 	{default} is returned when no item satisfies {expr}.
 >
