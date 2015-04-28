@@ -41,11 +41,9 @@ function! s:load(...) dict abort
     let [name; as] = type(arg) == type([]) ? arg[: 1] : [arg, arg]
     let target = split(join(as, ''), '\W\+')
     let dict = self
-    let len_target = len(target)
     let dict_type = type({})
-    while 1 <= len_target
+    while !empty(target)
       let ns = remove(target, 0)
-      let len_target -= 1
       if !has_key(dict, ns)
         let dict[ns] = {}
       endif
