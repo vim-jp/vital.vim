@@ -47,7 +47,7 @@ Module						 | Description
 [Random.Mt19937ar](doc/vital-random-mt19937ar.txt)| random number generator using mt19937ar
 [Random.Xor128](doc/vital-random-xor128.txt)	 | random number generator using xor128
 [Random](doc/vital-random.txt)			 | Random utility frontend library
-[System.Cache](doc/vital-system-cache.txt)	 | store/restore cache into/from file
+[System.Cache](doc/vital-system-cache.txt)	 | An unified cache system
 [System.File](doc/vital-system-file.txt)	 | filesystem utilities library
 [System.Filepath](doc/vital-system-filepath.txt) | path string utilities library
 [Text.CSV](doc/vital-text-csv.txt)		 | CSV library
