@@ -2,6 +2,20 @@
 	Modules: System.Cache
 	System.Cache is replaced with a new version.
 	The old version was moved into System.Cache.Deprecated and become deprecated.
+d4d6207
+	Modules: Prelude
+	Below functions were moved to Data.String module (#295) and they are marked as
+	deprecated in Prelude. They will be removed in the near future.
+	- truncate_skipping()
+	- truncate()
+	- strwidthpart()
+	- strwidthpart_reverse()
+	- wcswidth()
+83a2dbf
+	Modules: Prelude
+	Removed below deprecated functions:
+	- truncate_smart()
+	- set_dictionaryhelper()
 24877cc
 	Modules: Data.List
 	permutations({list}[, {r}]) behavior is changed not to support string input as {list}.

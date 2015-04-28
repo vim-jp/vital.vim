@@ -25,7 +25,8 @@ script:
   - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 -c func_abort=1 autoload
   - vim --cmd version --cmd quit
   - vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
-  - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
+  # - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
+  - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
 notifications:
   webhooks:
     urls:

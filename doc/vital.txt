@@ -141,6 +141,7 @@ LINKS					*Vital-links*
   |vital-bitwise.txt|		  bitwise operators
   |vital-concurrent_process.txt|  manages processes concurrently with vimproc
   |vital-data-base64.txt|	  base64 utilities library
+  |vital-data-bignum.txt|	  multi precision integer library
   |vital-data-closure.txt|	  Provide Closure object
   |vital-data-collection.txt|	  Utilities both for list and dict
   |vital-data-dict.txt|		  dictionary utilities library
@@ -173,6 +174,7 @@ LINKS					*Vital-links*
   |vital-text-lexer.txt|	  lexer library
   |vital-text-ltsv.txt|		  LTSV library
   |vital-text-parser.txt|	  parser library
+  |vital-text-sexp.txt|		  S-Expression parser
   |vital-text-table.txt|	  Character table library
   |vital-text-toml.txt|		  TOML library
   |vital-vim-buffer.txt|	  Vim's buffer related stuff in general

@@ -333,6 +333,17 @@ Describe Data.List
     End
   End
 
+  Describe .find()
+    It returns the value if found
+      Assert Equals(List.find([1, 2, 3], '*not-found*', 'v:val % 2 == 0'), 2)
+      Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', 'v:val % 2 == 0'), 2)
+      Assert Equals(List.find([1, 2, 3], '*not-found*', 'v:val % 10 == 0'), '*not-found*')
+      Assert Equals(List.find([], '*not-found*', 'v:val % 2 == 0'), '*not-found*')
+
+      Assert Equals(List.find(['hi', 'yo'], -1, 'v:val =~ "y"'), 'yo')
+    End
+  End
+
   Describe .find_index()
     It returns the index if found
       Assert Equals(List.find_index([1, 2, 3], 'v:val % 2 == 0'), 1)

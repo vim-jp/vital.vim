@@ -406,6 +406,18 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 		echo idx.': '.line
 	endfor
 <
+find({list}, {default}, {f})			 *Vital.Data.List.find()*
+	Returns the first value in {list} where the given {expr} is satisfied.
+	{default} is returned when no item satisfies {expr}.
+>
+	echo s:L.find([1, 2, 3, 1, 2, 3], '*not-found*', 'v:val % 2 == 0')
+	" 2
+	echo s:L.find([1, 2, 3], '*not-found*', 'v:val % 10 == 0')
+	" '*not-found*'
+<
+	If you know Haskell, this find() is like Haskell's Data.List.find
+	just for your info.
+
 					*Vital.Data.List.find_index()*
 find_index({list}, {expr} [, {start} [, {default}]])
 	Returns the lowest index in {list} where the given {expr} is

@@ -37,7 +37,14 @@ function! s:suite.of()
         \ ['*writeln*', 'hello'],
         \ ['*read*', 'x', '']])
   call s:assert.is_string(label)
-  2sleep
+
+  " dirty hack
+  sleep
+  call s:CP.tick(label)
+  sleep
+  call s:CP.tick(label)
+  sleep
+  call s:CP.tick(label)
 
   call s:CP.tick(label)
   redir => output
@@ -67,10 +74,15 @@ function! s:suite.consume()
         \ ['*read*', 'x', ''],
         \ ['*writeln*', 'world'],
         \ ['*read*', 'y', '']])
-
   call s:CP.tick(label)
 
-  2sleep
+  " dirty hack
+  sleep
+  call s:CP.tick(label)
+  sleep
+  call s:CP.tick(label)
+  sleep
+  call s:CP.tick(label)
 
   let [outx, errx] = s:CP.consume(label, 'x')
   let [outy, erry] = s:CP.consume(label, 'y')

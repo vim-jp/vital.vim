@@ -83,26 +83,26 @@ is_list({value})				*Vital.Prelude.is_list()*
 is_dict({value})				*Vital.Prelude.is_dict()*
 	Returns non-zero if {value} is a |Dictionary|, zero otherwise.
 
-					*Vital.Prelude.truncate_smart()*
-truncate_smart({str}, {max}, {footer-width}, {separator})
-	Deprecated. Use Prelude.truncate_skipping() instead; they are
-	equivalent.
-
 					*Vital.Prelude.truncate_skipping()*
 truncate_skipping({str}, {max}, {footer-width}, {separator})
-	TODO
+	This function is deprecated. Please use
+	|Vital.Data.String.truncate_skipping()| instead.
 
 truncate({str}, {width})			*Vital.Prelude.truncate()*
-	TODO
+	This function is deprecated. Please use |Vital.Data.String.truncate()|
+	instead.
 
 strwidthpart({str}, {width})			*Vital.Prelude.strwidthpart()*
-	TODO
+	This function is deprecated. Please use
+	|Vital.Data.String.strwidthpart()| instead.
 
 strwidthpart_reverse({str}, {width})	*Vital.Prelude.strwidthpart_reverse()*
-	TODO
+	This function is deprecated. Please use
+	|Vital.Data.String.strwidthpart_reverse()| instead.
 
 wcswidth({str})					*Vital.Prelude.wcswidth()*
-	TODO
+	This function is deprecated. Please use |Vital.Data.String.wcswidth()|
+	instead.
 
 is_windows()					*Vital.Prelude.is_windows()*
 	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
@@ -165,20 +165,6 @@ set_default({var}, {val})			*Vital.Prelude.set_default()*
 	let g:aaa = get(g:, 'aaa', 'bbb')
 <
 	But not exactly same when the type of aaa is not |expr-string|.
-
-				*Vital.Prelude.set_dictionary_helper()*
-set_dictionary_helper({variable}, {keys}, {pattern})
-	TODO (deprecated)
->
-	let x = {'b': 123}
-	call V.set_dictionary_helper('x', 'a, b, c', 999)
-<
-	is same to
->
-	let x = {'b': 123}
-	let x.a = 999
-	let x.c = 999
-<
 
 				*Vital.Prelude.substitute_path_separator()*
 substitute_path_separator({path})

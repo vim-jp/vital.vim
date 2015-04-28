@@ -84,5 +84,20 @@ sum({values})				*Vital.Math.sum()*
         sum([]) == 0
 <
 
+round({expr} [, {digits}])		*Vital.Math.round()*
+	Round off {expr} to {digits} digits after the decimal point and
+	return it as a Float.
+	If {digits} is omitted, it defaults to 0.
+	If {expr} lies halfway between two values, then use the larger
+	one (away from zero).
+	{expr} must evaluate to a Float or a Number.
+>
+	round(2.675) == 3
+	round(2.675, 2) == 2.68
+	round(-2.675, 2) == -2.68
+	round(5.127, -1) == 10.0
+	round(5.127, 20) == 5.127
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
