@@ -97,9 +97,14 @@ request({method}, {url} [, {settings}])
 		  "wget": "/usr/local/bin/wget",
 		}
 
-        "gzipDecompress" Default: 0
-                Attempt to decompress response data as if it was gzipped
-                  
+	"authMethod"	Default: (None)
+		(This is only valid for "curl" interface.)
+		Specify the authorization method.
+		The value must be in ['basic', 'digest', 'ntlm', 'negotiate']
+		The default value is None, and then use "anyauth".
+
+	"gzipDecompress"	Default: 0
+		Attempt to decompress response data as if it was gzipped
 
 parseHeader({headers})			*Vital.Web.HTTP.parseHeader()*
 	Parse {headers} list to a dictionary.
