@@ -1,0 +1,30 @@
+" Use vim-themis to execute this test
+let s:V = vital#of('vital')
+let s:F = s:V.import('System.File')
+
+Describe System.Cache
+  let s:C = s:V.import('System.Cache')
+
+  Context .new({name}, ...)
+    It should return an instance of System.Cache.Dummy if 'dummy' is specified.
+      let ret = s:C.new('dummy')
+      Assert Equals(ret.__name__, 'dummy')
+    End
+
+    It should return an instance of System.Cache.Memory if 'memory' is specified.
+      let ret = s:C.new('memory')
+      Assert Equals(ret.__name__, 'memory')
+    End
+
+    It should raise an exception if 'cache_dir' option is not specified.
+      Throw call s:C.new('file'), 'No "cache_dir" option is specified'
+    End
+
+    It should return an instance of System.Cache.File if 'file' and 'cache_dir' option is specified.
+      let cache_dir = tempname()
+      let ret = s:C.new('file', { 'cache_dir': cache_dir })
+      Assert Equals(ret.__name__, 'file')
+      silent! call s:F.rmdir(cache_dir, 'r')
+    End
+  End
+End

@@ -1,0 +1,91 @@
+" Use vim-themis to execute this test
+let s:V = vital#of('vital')
+
+Describe System.Cache.Dummy
+  let s:C = s:V.import('System.Cache.Dummy')
+
+  Context Usage (Factorial)
+    let s:factorial_cache = s:C.new()
+
+    function! s:factorial(n)
+      if a:n == 0
+        return 1
+      elseif s:factorial_cache.has(a:n)
+        return s:factorial_cache.get(a:n)
+      else
+        let x = s:factorial(a:n - 1) * a:n
+        call s:factorial_cache.set(a:n, x)
+        return x
+      endif
+    endfunction
+
+    It should return correct factorial value
+      let r = s:factorial(10)
+      Assert Equals(r, 1*2*3*4*5*6*7*8*9*10)
+    End
+  End
+
+  Context .new()
+    It should return an instance
+      let cache = s:C.new()
+      Assert IsDict(cache)
+      Assert KeyExists(cache, 'cache_key')
+      Assert KeyExists(cache, 'has')
+      Assert KeyExists(cache, 'get')
+      Assert KeyExists(cache, 'set')
+      Assert KeyExists(cache, 'keys')
+      Assert KeyExists(cache, 'remove')
+      Assert KeyExists(cache, 'clear')
+    End
+  End
+
+  Context instance
+    Before each
+      let cache = s:C.new()
+    End
+
+    Context .has({name})
+      It should always return 0
+        let r = cache.has('foo')
+        Assert Equals(r, 0)
+      End
+    End
+
+    Context .get({name}[, {default}])
+      It should always return an empty string
+        let r = cache.get('foo')
+        Assert Equals(r, '')
+      End
+
+      It should always return a default value if 'default' is specified
+        let r = cache.get('foo', [])
+        Assert Equals(r, [])
+      End
+    End
+
+    Context .set({name}, {value})
+      It should do nothing
+        call cache.set('foo', 'bar')
+      End
+    End
+
+    Context .keys()
+      It should always return an empty list
+        let r = cache.keys()
+        Assert Equals(r, [])
+      End
+    End
+
+    Context .remove({name})
+      It should do nothing
+        call cache.remove('foo')
+      End
+    End
+
+    Context .clear()
+      It should do nothing
+        call cache.clear()
+      End
+    End
+  End
+End

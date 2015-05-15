@@ -1,0 +1,77 @@
+" Use vim-themis to execute this test
+let s:V = vital#of('vital')
+
+Describe System.Cache.Base
+  let s:C = s:V.import('System.Cache.Base')
+
+  Context .new()
+    It should return an instance
+      let cache = s:C.new()
+      Assert IsDict(cache)
+      Assert KeyExists(cache, 'cache_key')
+      Assert KeyExists(cache, 'has')
+      Assert KeyExists(cache, 'get')
+      Assert KeyExists(cache, 'set')
+      Assert KeyExists(cache, 'keys')
+      Assert KeyExists(cache, 'remove')
+      Assert KeyExists(cache, 'clear')
+    End
+  End
+
+  Context instance
+    Before each
+      let cache = s:C.new()
+    End
+
+    Context .cache_key({obj})
+      It should return an original string if a string is specified
+        let r = cache.cache_key('foo')
+        Assert Equals(r, 'foo')
+      End
+
+      It should return a string representation if a object is specified
+        let obj = { 'foo': 'bar' }
+        let ret = cache.cache_key(obj)
+        let exp = string(obj)
+        Assert Equals(ret, exp)
+      End
+    End
+
+    Context .has({name})
+      It should throw an exception
+        Throws 'has({name}) is not implemented', cache.has('foo')
+      End
+    End
+
+    Context .get({name}[, {default}])
+      It should throw an exception
+        Throws 'get({name}[, {default}]) is not implemented', cache.get('foo')
+        Throws 'get({name}[, {default}]) is not implemented', cache.get('foo', 'foo')
+      End
+    End
+
+    Context .set({name}, {value})
+      It should throw an exception
+        Throws 'set({name}, {value}) is not implemented', cache.set('foo', 'foo')
+      End
+    End
+
+    Context .keys()
+      It should throw an exception
+        Throws 'keys() is not implemented', cache.keys()
+      End
+    End
+
+    Context .remove({name})
+      It should throw an exception
+        Throws 'remove({name}) is not implemented', cache.remove('foo')
+      End
+    End
+
+    Context .clear()
+      It should throw an exception
+        Throws 'clear() is not implemented', cache.clear()
+      End
+    End
+  End
+End
