@@ -274,6 +274,9 @@ function! s:clients.python.request(settings) abort
   " TODO: maxRedirect, retry, outputFile
   let header = ''
   let body = ''
+  if has_key(a:settings, 'authMethod')
+    throw 'vital: Web.HTTP: "authMethod" option is not supported for Python backend'
+  endif
   python << endpython
 try:
     class DummyClassForLocalScope:
@@ -392,7 +395,15 @@ function! s:clients.curl.request(settings) abort
   endif
   if has_key(a:settings, 'username')
     let auth = a:settings.username . ':' . get(a:settings, 'password', '')
-    let command .= ' --anyauth --user ' . quote . auth . quote
+    if has_key(a:settings, 'authMethod')
+      if index(['basic', 'digest', 'ntlm', 'negotiate'], a:settings.authMethod) == -1
+        throw 'vital: Web.HTTP: Invalid authorization method: ' . a:settings.authMethod
+      endif
+      let method = a:settings.authMethod
+    else
+      let method = "anyauth"
+    endif
+    let command .= ' --' . method . ' --user ' . quote . auth . quote
   endif
   let command .= ' ' . quote . a:settings.url . quote
   if has_key(a:settings, 'data')
@@ -449,6 +460,9 @@ function! s:clients.wget.request(settings) abort
   let command .= ' --tries=' . a:settings.retry
   if timeout =~# '^\d\+$'
     let command .= ' --timeout=' . timeout
+  endif
+  if has_key(a:settings, 'authMethod')
+    throw 'vital: Web.HTTP:"authMethod" option is not supported for wget backend'
   endif
   if has_key(a:settings, 'username')
     let command .= ' --http-user=' . quote . a:settings.username . quote
