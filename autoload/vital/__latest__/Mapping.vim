@@ -136,7 +136,7 @@ function! s:__get_unmap_command(type, mode, dict, lhs) abort
 endfunction
 
 
-let s:ALL_MODES = 'nvoiclxs'
+let s:ALL_MODES = 'noiclxs'
 function! s:get_all_modes() abort
   return s:ALL_MODES
 endfunction
