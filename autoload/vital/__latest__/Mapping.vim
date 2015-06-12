@@ -147,7 +147,7 @@ function! s:get_all_modes_list() abort
 endfunction
 
 function! s:is_mode_char(char) abort
-  return a:char =~# '^['.s:ALL_MODES.']$'
+  return a:char =~# '^[v'.s:ALL_MODES.']$'
 endfunction
 
 
