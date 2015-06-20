@@ -63,11 +63,11 @@ Module						 | Description
 [Vim.Compat](doc/vital-vim-compat.txt)		 | Vim compatibility wrapper functions
 [Vim.Message](doc/vital-vim-message.txt)	 | Vim message functions
 [Vim.Search](doc/vital-vim-search.txt)		 | Vim's [I like function
-[Vim.ScriptLocal](doc/vital-vim-script_local.txt)		 | Get script-local things
+[Vim.ScriptLocal](doc/vital-vim-script_local.txt) | Get script-local things
 [Web.HTML](doc/vital-web-html.txt)		 | HTML parser written in pure Vim script
 [Web.HTTP](doc/vital-web-http.txt)		 | simple HTTP client library
 [Web.JSON](doc/vital-web-json.txt)		 | JSON parser written in pure Vim script
-Web.URI  |	
+[Web.URI](doc/vital-web-uri.txt)		 | URI manipulation library
 [Web.XML](doc/vital-web-xml.txt)		 | XML parser written in pure Vim script
 
 ... and more ...
