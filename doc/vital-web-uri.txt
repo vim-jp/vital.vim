@@ -1,4 +1,4 @@
-*vital-web-uri.txt*			URI manupilation library
+*vital-web-uri.txt*			URI manipulation library
 
 Maintainer: tyru <tyru.exe@gmail.com>
 
@@ -15,27 +15,27 @@ REFERENCES				|Vital.Web.URI-references|
 ==============================================================================
 INTRODUCTION				*Vital.Web.URI-introduction*
 
-*Vital.Web.URI* is URI manupilation library.
+*Vital.Web.URI* is URI manipulation library.
 
 ==============================================================================
 INTERFACE				*Vital.Web.URI-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.URI-functions*
 
-new({str} [, {default}])					*Vital.Web.URI.new()*
+new({str} [, {default}])		*Vital.Web.URI.new()*
 	Returns a |Vital.Web.URI-object| constructed by {str}.
 	If {default} is given and {str} is invalid,
 	returns {default}.
 	Otherwise, throws an exception.
 
 new_from_uri_like_string({str} [, {default}])
-						*Vital.Web.URI.new_from_uri_like_string()*
+					*Vital.Web.URI.new_from_uri_like_string()*
 	This is same as |Vital.Web.URI.parse()|
 	except when {str} has no scheme.
 	then this function prepends the string "http://" to {str}
 	and returns a |Vital.Web.URI-object|.
 
-is_uri({str})			*Vital.Web.URI.is_uri()*
+is_uri({str})				*Vital.Web.URI.is_uri()*
 	Returns non-zero value if {str} is URI.
 	Returns zero value otherwise.
 >
@@ -43,7 +43,7 @@ is_uri({str})			*Vital.Web.URI.is_uri()*
 	let ERROR = []
 	let like_uri = (URI.is_uri(a:str, ERROR) isnot ERROR)
 <
-like_uri({str})			*Vital.Web.URI.like_uri()*
+like_uri({str})				*Vital.Web.URI.like_uri()*
 	Returns non-zero value if {str} looks like URI.
 	Returns zero value otherwise.
 	This is the |Vital.Web.URI.new_from_uri_like_string()| version
@@ -54,28 +54,28 @@ like_uri({str})			*Vital.Web.URI.like_uri()*
 ------------------------------------------------------------------------------
 URI OBJECT				*Vital.Web.URI-object*
 
-scheme([{str}])			*Vital.Web.URI-object.scheme()*
-host([{str}])			*Vital.Web.URI-object.host()*
-port([{str}])			*Vital.Web.URI-object.port()*
-path([{str}])			*Vital.Web.URI-object.path()*
-opaque([{str}])			*Vital.Web.URI-object.opaque()*
-query([{str}])			*Vital.Web.URI-object.query()*
-fragment([{str}])		*Vital.Web.URI-object.fragment()*
+scheme([{str}])				*Vital.Web.URI-object.scheme()*
+host([{str}])				*Vital.Web.URI-object.host()*
+port([{str}])				*Vital.Web.URI-object.port()*
+path([{str}])				*Vital.Web.URI-object.path()*
+opaque([{str}])				*Vital.Web.URI-object.opaque()*
+query([{str}])				*Vital.Web.URI-object.query()*
+fragment([{str}])			*Vital.Web.URI-object.fragment()*
 
 	Returns each part if no arguments are given.
 	Set {str} as each part if {str} is given.
 
 	NOTE: opaque() does not support {str} yet.
 
-to_iri()		*Vital.Web.URI-object.to_iri()*
+to_iri()				*Vital.Web.URI-object.to_iri()*
 	Same as |Vital.Web.URI-object.to_string()|,
 	but do URI-unescape for |Vital.Web.URI-object.path()| part.
 
-to_string()		*Vital.Web.URI-object.to_string()*
+to_string()				*Vital.Web.URI-object.to_string()*
 	Returns URI representation of this object.
 
 ==============================================================================
-TODO				*Vital.Web.URI-todo*
+TODO					*Vital.Web.URI-todo*
 
 * Punycode
 * Vital.Web.URI-object.userinfo()
