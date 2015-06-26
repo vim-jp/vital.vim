@@ -30,7 +30,7 @@ new({str} [, {default}])		*Vital.Web.URI.new()*
 
 new_from_uri_like_string({str} [, {default}])
 					*Vital.Web.URI.new_from_uri_like_string()*
-	This is same as |Vital.Web.URI.parse()|
+	This is same as |Vital.Web.URI.new()|
 	except when {str} has no scheme.
 	then this function prepends the string "http://" to {str}
 	and returns a |Vital.Web.URI-object|.
