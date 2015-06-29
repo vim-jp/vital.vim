@@ -264,7 +264,7 @@ endfunction
 " Inspired by Ruby's with_index method.
 function! s:with_index(list, ...) abort
   let base = a:0 > 0 ? a:1 : 0
-  return s:zip(a:list, range(base, len(a:list)+base-1))
+  return map(copy(a:list), '[v:val, v:key + base]')
 endfunction
 
 " similar to Ruby's detect or Haskell's find.
