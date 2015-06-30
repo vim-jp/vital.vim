@@ -201,7 +201,7 @@ function! s:get_name(name) abort
   return empty(name) ? '.' : name
 endfunction
 
-function! s:_new(name, parent)
+function! s:_new(name, parent) abort
   let base = s:D.omit(a:parent, [
         \ '__logfile__',
         \ '__loglevel__',
@@ -216,7 +216,7 @@ function! s:_new(name, parent)
   return logger
 endfunction
 
-function! s:of(...)
+function! s:of(...) abort
   let name = s:get_name(get(a:000, 0, '.'))
   if s:C.has(name)
     return s:C.get(name)
