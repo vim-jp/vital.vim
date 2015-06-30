@@ -136,7 +136,7 @@ function! s:_vital_loaded(V) dict abort
         \ 'basename': s:get_default_basename(),
         \}
   " Create a root logger
-  let logger = s:_new_logger('.', s:logger)
+  let logger = s:_new('.', s:logger)
   call logger.set_logfile()
   call logger.set_loglevel()
 endfunction
@@ -189,7 +189,7 @@ function! s:get_name(path) abort
   return name
 endfunction
 
-function! s:_new_logger(name, parent)
+function! s:_new(name, parent)
   let base = s:D.omit(a:parent, [
         \ '__logfile__',
         \ '__loglevel__',
@@ -204,13 +204,13 @@ function! s:_new_logger(name, parent)
   return logger
 endfunction
 
-function! s:get_logger(...)
+function! s:of(...)
   let name = get(a:000, 0, '.')
   if s:C.has(name)
     return s:C.get(name)
   endif
-  let parent = s:get_logger(fnamemodify(name, ':h'))
-  return s:_new_logger(name, parent)
+  let parent = s:of(fnamemodify(name, ':h'))
+  return s:_new(name, parent)
 endfunction
 
 
