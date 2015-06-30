@@ -106,6 +106,13 @@ Describe System.Logging
   Context .of([{name}])
     It should return an instance of logger
       let logger = Logging.of()
+      Assert KeyExists(logger, 'NOTSET')
+      Assert KeyExists(logger, 'DEBUG')
+      Assert KeyExists(logger, 'INFO')
+      Assert KeyExists(logger, 'WARNING')
+      Assert KeyExists(logger, 'ERROR')
+      Assert KeyExists(logger, 'CRITICAL')
+      Assert KeyExists(logger, 'LEVELS')
       Assert KeyExists(logger, '__name__')
       Assert KeyExists(logger, '__parent__')
       Assert Equals(logger.__name__, '.')

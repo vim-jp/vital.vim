@@ -137,6 +137,13 @@ function! s:_vital_loaded(V) dict abort
         \}
   " Create a root logger
   let logger = s:_new('.', s:logger)
+  let logger.NOTSET   = s:NOTSET
+  let logger.DEBUG    = s:DEBUG
+  let logger.INFO     = s:INFO
+  let logger.WARNING  = s:WARNING
+  let logger.ERROR    = s:ERROR
+  let logger.CRITICAL = s:CRITICAL
+  let logger.LEVELS   = s:LEVELS
   call logger.set_logfile()
   call logger.set_loglevel()
 endfunction
