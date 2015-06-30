@@ -135,6 +135,7 @@ function! s:_vital_loaded(V) dict abort
   let s:default_config = {
         \ 'basename': s:get_default_basename(),
         \}
+  let s:config = deepcopy(s:default_config)
   " Create a root logger
   let logger = s:_new('.', s:logger)
   let logger.NOTSET   = s:NOTSET
@@ -187,13 +188,17 @@ function! s:set_config(...) abort
         \)
 endfunction
 
-function! s:get_name(path) abort
-  let name = substitute(
-        \ fnamemodify(a:path, ':p:r'),
-        \ printf('^%s%s\?', s:config.basename, s:separator),
-        \ '', '',
-        \)
-  return name
+function! s:get_name(name) abort
+  if fnamemodify(a:name, ':p') =~# printf('^%s', s:config.basename)
+    let name = substitute(
+          \ fnamemodify(a:name, ':p'),
+          \ printf('^%s%s\?', s:config.basename, s:separator),
+          \ '', '',
+          \)
+  else
+    let name = a:name
+  endif
+  return empty(name) ? '.' : name
 endfunction
 
 function! s:_new(name, parent)
@@ -212,7 +217,7 @@ function! s:_new(name, parent)
 endfunction
 
 function! s:of(...)
-  let name = get(a:000, 0, '.')
+  let name = s:get_name(get(a:000, 0, '.'))
   if s:C.has(name)
     return s:C.get(name)
   endif
