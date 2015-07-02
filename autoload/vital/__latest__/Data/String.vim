@@ -154,15 +154,15 @@ endfunction "}}}
 " NOTE _concat() is just a copy of Data.List.concat().
 " FIXME don't repeat yourself
 function! s:_split_by_wcswidth_once(body, x) abort
-  let fst = s:P.strwidthpart(a:body, a:x)
-  let snd = s:P.strwidthpart_reverse(a:body, s:P.wcswidth(a:body) - s:P.wcswidth(fst))
+  let fst = s:strwidthpart(a:body, a:x)
+  let snd = s:strwidthpart_reverse(a:body, s:wcswidth(a:body) - s:wcswidth(fst))
   return [fst, snd]
 endfunction
 
 function! s:_split_by_wcswidth(body, x) abort
   let memo = []
   let body = a:body
-  while s:P.wcswidth(body) > a:x
+  while s:wcswidth(body) > a:x
     let [tmp, body] = s:_split_by_wcswidth_once(body, a:x)
     call add(memo, tmp)
   endwhile
