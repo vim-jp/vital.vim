@@ -40,6 +40,29 @@ else
   endfunction
 endif
 
+" Patch 7.4.503
+if s:has_version('7.4.503')
+  function! s:writefile(...) abort
+    return call('writefile', a:000)
+  endfunction
+else
+  function! s:writefile(list, fname, ...) abort
+    let flags = get(a:000, 0, '')
+    if flags !~ 'a'
+      return writefile(a:list, a:fname, flags)
+    endif
+    let f = tempname()
+    let r = writefile(a:list, f, substitute(flags, 'a', '', 'g'))
+    if has("win32") || has("win64")
+      silent! execute "!type ".shellescape(f) ">>".shellescape(a:fname)
+    else
+      silent! execute "!cat ".shellescape(f) ">>".shellescape(a:fname)
+    endif
+    call delete(f)
+    return r
+  endfunction
+endif
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

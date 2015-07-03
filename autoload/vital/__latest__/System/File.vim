@@ -230,24 +230,6 @@ else
   endfunction
 endif
 
-" Vim 7.3 compatible writefile function
-function! s:writefile(list, fname, ...) abort
-  let flags = get(a:000, 0, '')
-  if empty(flags)
-    call writefile(a:list, a:fname)
-  elseif v:version > 704 || (v:version == 704 && has('patch503'))
-    call writefile(a:list, a:fname, flags)
-  elseif flags ==# 'a'
-    let contents = filereadable(a:fname) ? readfile(a:fname) : []
-    call writefile(extend(contents, a:list), a:fname)
-  else
-    throw printf(
-          \ 'vital: System.File.writefile(): "%s" is not supported in this Vim',
-          \ flags,
-          \)
-  endif
-endfunction
-
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

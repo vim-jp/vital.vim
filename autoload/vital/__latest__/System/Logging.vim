@@ -76,7 +76,7 @@ function! s:logger.emit(record) abort
   if !isdirectory(dirname)
     call mkdir(dirname, 'p')
   endif
-  call s:F.writefile(
+  call s:M.writefile(
         \ split(a:record, '\v\r?\n'),
         \ fname,
         \ 'a',
@@ -119,7 +119,7 @@ endfunction
 function! s:_vital_loaded(V) dict abort
   let s:V = a:V
   let s:D = a:V.import('Data.Dict')
-  let s:F = a:V.import('System.File')
+  let s:M = a:V.import('Vim.Compat')
   let s:P = a:V.import('System.Filepath')
   let s:C = a:V.import('System.Cache.Memory').new()
   " Export several variables
@@ -152,7 +152,7 @@ endfunction
 function! s:_vital_depends() abort
   return [
         \ 'Data.Dict',
-        \ 'System.File',
+        \ 'Vim.Compat',
         \ 'System.Filepath',
         \ 'System.Cache.Memory',
         \]
