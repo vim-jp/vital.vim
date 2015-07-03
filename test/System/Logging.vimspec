@@ -103,9 +103,9 @@ Describe System.Logging
     End
   End
 
-  Context .of([{name}])
+  Context .get_logger([{name}])
     It should return an instance of logger
-      let logger = Logging.of()
+      let logger = Logging.get_logger()
       Assert KeyExists(logger, 'NOTSET')
       Assert KeyExists(logger, 'DEBUG')
       Assert KeyExists(logger, 'INFO')
@@ -119,24 +119,24 @@ Describe System.Logging
     End
 
     It should lockvar __name__ and __parent__
-      let logger = Logging.of()
+      let logger = Logging.get_logger()
       Throw let logger.__name__   = '' /^Vim(let):E741: Value is locked:/
       Throw let logger.__parent__ = {} /^Vim(let):E741: Value is locked:/
     End
 
     It should return a cached instance (same instance) of logger
-      let logger1 = Logging.of()
-      let logger2 = Logging.of()
+      let logger1 = Logging.get_logger()
+      let logger2 = Logging.get_logger()
       Assert KeyExists(logger1, '__name__')
       Assert KeyExists(logger1, '__parent__')
       Assert Same(logger1, logger2)
     End
 
     It should use a parent logger as an abstract class to create children
-      let parent = Logging.of('A')
+      let parent = Logging.get_logger('A')
       let parent.hello = 'hello'
-      let child1 = Logging.of(s:P.join('A', 'child'))
-      let child2 = Logging.of(s:P.join('B', 'child'))
+      let child1 = Logging.get_logger(s:P.join('A', 'child'))
+      let child2 = Logging.get_logger(s:P.join('B', 'child'))
       Assert NotSame(parent, child1)
       Assert NotSame(parent, child2)
       Assert NotSame(child1, child2)
@@ -149,20 +149,20 @@ Describe System.Logging
       let name1 = s:P.join('__latest__', 'System', 'Logging')
       let name2 = s:P.join('__latest__', 'System')
       let name3 = s:P.join('__latest__')
-      let logger = Logging.of(name1)
+      let logger = Logging.get_logger(name1)
       Assert Equals(logger.__name__, name1)
       Assert Equals(logger.__parent__.__name__, name2)
       Assert Equals(logger.__parent__.__parent__.__name__, name3)
       Assert Equals(logger.__parent__.__parent__.__parent__.__name__, '.')
 
-      let root = Logging.of()
+      let root = Logging.get_logger()
       Assert Same(logger.__parent__.__parent__.__parent__, root)
     End
   End
 
   Context Logger instance
     Before
-      let logger = Logging.of()
+      let logger = Logging.get_logger()
     End
 
     Context .get_logfile()
@@ -174,7 +174,7 @@ Describe System.Logging
 
       It should return ancestor's logfile if no logfile is assigned
         let name = s:P.join('__latest__', 'System', 'Logging')
-        let leaf = Logging.of(name)
+        let leaf = Logging.get_logger(name)
         let logfile = leaf.get_logfile()
         Assert Equals(logfile, logger.get_logfile())
         Assert KeyNotExists(leaf, '__logfile__')
@@ -197,7 +197,7 @@ Describe System.Logging
         Assert Equals(logger.__logfile__, Logging.get_default_logfile())
 
         let name = s:P.join('__latest__', 'System', 'Logging')
-        let leaf = Logging.of(name)
+        let leaf = Logging.get_logger(name)
         call leaf.set_logfile('hello')
         call leaf.set_logfile()
         Assert KeyNotExists(leaf, '__logfile__')
@@ -213,7 +213,7 @@ Describe System.Logging
 
       It should return ancestor's loglevel if no loglevel is assigned
         let name = s:P.join('__latest__', 'System', 'Logging')
-        let leaf = Logging.of(name)
+        let leaf = Logging.get_logger(name)
         let loglevel = leaf.get_loglevel()
         Assert Equals(loglevel, logger.get_loglevel())
         Assert KeyNotExists(leaf, '__loglevel__')
@@ -236,7 +236,7 @@ Describe System.Logging
         Assert Equals(logger.__loglevel__, Logging.WARNING)
 
         let name = s:P.join('__latest__', 'System', 'Logging')
-        let leaf = Logging.of(name)
+        let leaf = Logging.get_logger(name)
         call leaf.set_loglevel(Logging.CRITICAL)
         call leaf.set_loglevel()
         Assert KeyNotExists(leaf, '__loglevel__')
