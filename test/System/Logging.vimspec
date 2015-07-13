@@ -1,0 +1,468 @@
+" Use vim-themis to execute this test
+let s:V = vital#of('vital')
+let s:F = s:V.import('System.File')
+let s:P = s:V.import('System.Filepath')
+
+Describe System.Logging
+  Before
+    let Logging = deepcopy(s:V.import('System.Logging'))
+    " restore default config
+    call Logging.set_config()
+  End
+
+  Context Module
+    It should have several constant variables
+      Assert KeyExists(Logging, 'NOTSET')
+      Assert KeyExists(Logging, 'DEBUG')
+      Assert KeyExists(Logging, 'INFO')
+      Assert KeyExists(Logging, 'WARNING')
+      Assert KeyExists(Logging, 'ERROR')
+      Assert KeyExists(Logging, 'CRITICAL')
+      Assert KeyExists(Logging, 'LEVELS')
+    End
+  End
+
+  Context .get_default_logfile()
+    Before
+      let saved_XDG_CONFIG_HOME = $XDG_CONFIG_HOME
+    End
+    After
+      let $XDG_CONFIG_HOME = saved_XDG_CONFIG_HOME
+    End
+
+    It should return ~/._latest__/logger.log for non XDG environment
+      let $XDG_CONFIG_HOME = ''
+      let logfile = Logging.get_default_logfile()
+      Assert Equals(logfile, expand('~/._latest__/logger.log'))
+    End
+
+    It should return ~/.config/_latest__/logger.log for XDG environment
+      let $XDG_CONFIG_HOME = expand('~/.config')
+      let logfile = Logging.get_default_logfile()
+      Assert Equals(logfile, expand('~/.config/_latest__/logger.log'))
+    End
+  End
+
+  Context .get_default_basename()
+    It should return a basename determined from a scriptfile path
+      let expect = s:P.join(g:root, 'autoload')
+      let basename = Logging.get_default_basename()
+      Assert Equals(basename, expect)
+    End
+  End
+
+  Context .get_config()
+    It should return a config dictionary
+      let config = Logging.get_config()
+      Assert KeyExists(config, 'basename')
+      Assert Equals(config.basename, Logging.get_default_basename())
+    End
+
+    It should return a deepcopy of a config
+      let config1 = Logging.get_config()
+      let config2 = Logging.get_config()
+      Assert NotSame(config1, config2)
+    End
+  End
+
+  Context .set_config([{config}])
+    It should update a config dictionary
+      call Logging.set_config({
+            \ 'basename': 'hello',
+            \})
+      let config = Logging.get_config()
+      Assert Equals(config.basename, 'hello')
+    End
+
+    It should only update keys in a config dictionary
+      call Logging.set_config({
+            \ 'foobar': 'hello',
+            \})
+      let config = Logging.get_config()
+      Assert KeyNotExists(config, 'foobar')
+    End
+
+    It should restore a default config dictionary if nothing is specified
+      call Logging.set_config({
+            \ 'logfile': 'hello',
+            \ 'basename': 'goodbye',
+            \})
+      call Logging.set_config()
+      let config = Logging.get_config()
+      Assert KeyExists(config, 'basename')
+      Assert Equals(config.basename, Logging.get_default_basename())
+    End
+  End
+
+  Context .get_name({path})
+    It should remove a leading basename from the path
+      let expect = s:P.join('__latest__', 'System', 'Logging')
+      let path = s:P.join(g:root, 'autoload', expect)
+      let name = Logging.get_name(path)
+      Assert Equals(name, expect)
+    End
+  End
+
+  Context .get_logger([{name}])
+    It should return an instance of logger
+      let logger = Logging.get_logger()
+      Assert KeyExists(logger, 'NOTSET')
+      Assert KeyExists(logger, 'DEBUG')
+      Assert KeyExists(logger, 'INFO')
+      Assert KeyExists(logger, 'WARNING')
+      Assert KeyExists(logger, 'ERROR')
+      Assert KeyExists(logger, 'CRITICAL')
+      Assert KeyExists(logger, 'LEVELS')
+      Assert KeyExists(logger, '__name__')
+      Assert KeyExists(logger, '__parent__')
+      Assert Equals(logger.__name__, '.')
+    End
+
+    It should lockvar __name__ and __parent__
+      let logger = Logging.get_logger()
+      Throw let logger.__name__   = '' /^Vim(let):E741: Value is locked:/
+      Throw let logger.__parent__ = {} /^Vim(let):E741: Value is locked:/
+    End
+
+    It should return a cached instance (same instance) of logger
+      let logger1 = Logging.get_logger()
+      let logger2 = Logging.get_logger()
+      Assert KeyExists(logger1, '__name__')
+      Assert KeyExists(logger1, '__parent__')
+      Assert Same(logger1, logger2)
+    End
+
+    It should use a parent logger as an abstract class to create children
+      let parent = Logging.get_logger('A')
+      let parent.hello = 'hello'
+      let child1 = Logging.get_logger(s:P.join('A', 'child'))
+      let child2 = Logging.get_logger(s:P.join('B', 'child'))
+      Assert NotSame(parent, child1)
+      Assert NotSame(parent, child2)
+      Assert NotSame(child1, child2)
+      Assert KeyExists(child1, 'hello')
+      Assert KeyNotExists(child2, 'hello')
+      Assert Equals(child1.hello, 'hello')
+    End
+
+    It should automatically create/assign ancestor loggers
+      let name1 = s:P.join('__latest__', 'System', 'Logging')
+      let name2 = s:P.join('__latest__', 'System')
+      let name3 = s:P.join('__latest__')
+      let logger = Logging.get_logger(name1)
+      Assert Equals(logger.__name__, name1)
+      Assert Equals(logger.__parent__.__name__, name2)
+      Assert Equals(logger.__parent__.__parent__.__name__, name3)
+      Assert Equals(logger.__parent__.__parent__.__parent__.__name__, '.')
+
+      let root = Logging.get_logger()
+      Assert Same(logger.__parent__.__parent__.__parent__, root)
+    End
+  End
+
+  Context Logger instance
+    Before
+      let logger = Logging.get_logger()
+    End
+
+    Context .get_logfile()
+      It should return assigned logfile
+        let logfile = logger.get_logfile()
+        Assert Equals(logfile, Logging.get_default_logfile())
+        Assert KeyExists(logger, '__logfile__')
+      End
+
+      It should return ancestor's logfile if no logfile is assigned
+        let name = s:P.join('__latest__', 'System', 'Logging')
+        let leaf = Logging.get_logger(name)
+        let logfile = leaf.get_logfile()
+        Assert Equals(logfile, logger.get_logfile())
+        Assert KeyNotExists(leaf, '__logfile__')
+      End
+    End
+
+    Context .set_logfile([{logfile}])
+      After
+        call logger.set_logfile(Logging.get_default_logfile())
+      End
+
+      It should assign a logfile to a logger
+        call logger.set_logfile('hello')
+        Assert Equals(logger.__logfile__, 'hello')
+      End
+
+      It should assign a default value to a logger if nothing is specified
+        call logger.set_logfile('hello')
+        call logger.set_logfile()
+        Assert Equals(logger.__logfile__, Logging.get_default_logfile())
+
+        let name = s:P.join('__latest__', 'System', 'Logging')
+        let leaf = Logging.get_logger(name)
+        call leaf.set_logfile('hello')
+        call leaf.set_logfile()
+        Assert KeyNotExists(leaf, '__logfile__')
+      End
+    End
+
+    Context .get_loglevel()
+      It should return assigned loglevel
+        let loglevel = logger.get_loglevel()
+        Assert Equals(loglevel, Logging.WARNING)
+        Assert KeyExists(logger, '__loglevel__')
+      End
+
+      It should return ancestor's loglevel if no loglevel is assigned
+        let name = s:P.join('__latest__', 'System', 'Logging')
+        let leaf = Logging.get_logger(name)
+        let loglevel = leaf.get_loglevel()
+        Assert Equals(loglevel, logger.get_loglevel())
+        Assert KeyNotExists(leaf, '__loglevel__')
+      End
+    End
+
+    Context .set_loglevel([{loglevel}])
+      After
+        call logger.set_loglevel(Logging.WARNING)
+      End
+
+      It should assign a loglevel to a logger
+        call logger.set_loglevel(Logging.CRITICAL)
+        Assert Equals(logger.__loglevel__, Logging.CRITICAL)
+      End
+
+      It should assign a default value to a logger if nothing is specified
+        call logger.set_loglevel(Logging.CRITICAL)
+        call logger.set_loglevel()
+        Assert Equals(logger.__loglevel__, Logging.WARNING)
+
+        let name = s:P.join('__latest__', 'System', 'Logging')
+        let leaf = Logging.get_logger(name)
+        call leaf.set_loglevel(Logging.CRITICAL)
+        call leaf.set_loglevel()
+        Assert KeyNotExists(leaf, '__loglevel__')
+      End
+    End
+
+    Context .is_enabled_for({loglevel})
+      It should return 1 if {logleve} is grater than or equal to the loglevel of logger
+        call logger.set_loglevel(Logging.DEBUG)
+        Assert True(logger.is_enabled_for(Logging.DEBUG))
+        Assert True(logger.is_enabled_for(Logging.INFO))
+        Assert True(logger.is_enabled_for(Logging.WARNING))
+        Assert True(logger.is_enabled_for(Logging.ERROR))
+        Assert True(logger.is_enabled_for(Logging.CRITICAL))
+      End
+
+      It should return 0 if {logleve} is less than the loglevel of logger
+        call logger.set_loglevel(Logging.CRITICAL)
+        Assert False(logger.is_enabled_for(Logging.DEBUG))
+        Assert False(logger.is_enabled_for(Logging.INFO))
+        Assert False(logger.is_enabled_for(Logging.WARNING))
+        Assert False(logger.is_enabled_for(Logging.ERROR))
+        Assert True(logger.is_enabled_for(Logging.CRITICAL))
+      End
+    End
+
+    Context .format({loglevel}, {fmt}[, {expr1} ...])
+      let prefix = '\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'
+
+      It should return a formatted record
+        let record = logger.format(
+              \ Logging.DEBUG,
+              \ 'hello saturday',
+              \)
+        Assert True(record =~# printf(
+              \ '^%s;.;DEBUG; hello saturday',
+              \ prefix,
+              \))
+      End
+
+      It should replace "%" items into respective arguments
+        let record = logger.format(
+              \ Logging.CRITICAL,
+              \ '%s %s',
+              \ 'goodbye', 'sunday',
+              \)
+        Assert True(record =~# printf(
+              \ '^%s;.;CRITICAL; goodbye sunday',
+              \ prefix,
+              \))
+      End
+    End
+
+    Context .emit({record})
+      It should write a record into a logfile
+        call logger.set_logfile(s:P.join(tempname(), 'doesnot', 'exist'))
+        call logger.emit('Hello')
+        call logger.emit('World')
+
+        let logfile = logger.get_logfile()
+        let content = readfile(logfile)
+        Assert Equals(content[0], 'Hello')
+        Assert Equals(content[1], 'World')
+
+        call delete(logfile)
+        call logger.set_logfile()
+      End
+    End
+
+    Context .log({loglevel}, {fmt}[, {expr1} ...])
+      Before
+        call logger.set_logfile(tempname())
+        call logger.set_loglevel(Logging.WARNING)
+      End
+      After
+        call delete(logger.get_logfile())
+      End
+
+      It should write a record into a logfile
+        call logger.log(Logging.DEBUG,    'it should be skipped')
+        call logger.log(Logging.INFO,     'it should be skipped')
+        call logger.log(Logging.WARNING,  'it should NOT be skipped')
+        call logger.log(Logging.ERROR,    'it should NOT be skipped')
+        call logger.log(Logging.CRITICAL, 'it should NOT be skipped')
+
+        let content = readfile(logger.get_logfile())
+        Assert Equals(len(content), 3)
+        Assert True(content[0] =~# ';WARNING;')
+        Assert True(content[1] =~# ';ERROR;')
+        Assert True(content[2] =~# ';CRITICAL;')
+      End
+    End
+
+    Context .debug({fmt}[, {expr1} ...])
+      Before
+        call logger.set_logfile(tempname())
+        call logger.set_loglevel(Logging.DEBUG)
+      End
+      After
+        call delete(logger.get_logfile())
+      End
+
+      It should write a DEBUG record into a logfile
+        call logger.debug('it should NOT be skipped')
+        call logger.debug('it should NOT be skipped')
+        call logger.debug('it should NOT be skipped')
+
+        let content = readfile(logger.get_logfile())
+        Assert Equals(len(content), 3)
+        Assert True(content[0] =~# ';DEBUG;')
+        Assert True(content[1] =~# ';DEBUG;')
+        Assert True(content[2] =~# ';DEBUG;')
+      End
+    End
+
+    Context .info({fmt}[, {expr1} ...])
+      Before
+        call logger.set_logfile(tempname())
+        call logger.set_loglevel(Logging.DEBUG)
+      End
+      After
+        call delete(logger.get_logfile())
+      End
+
+      It should write a INFO record into a logfile
+        call logger.info('it should NOT be skipped')
+        call logger.info('it should NOT be skipped')
+        call logger.info('it should NOT be skipped')
+
+        let content = readfile(logger.get_logfile())
+        Assert Equals(len(content), 3)
+        Assert True(content[0] =~# ';INFO;')
+        Assert True(content[1] =~# ';INFO;')
+        Assert True(content[2] =~# ';INFO;')
+      End
+    End
+
+    Context .warning({fmt}[, {expr1} ...])
+      Before
+        call logger.set_logfile(tempname())
+        call logger.set_loglevel(Logging.DEBUG)
+      End
+      After
+        call delete(logger.get_logfile())
+      End
+
+      It should write a WARNING record into a logfile
+        call logger.warning('it should NOT be skipped')
+        call logger.warning('it should NOT be skipped')
+        call logger.warning('it should NOT be skipped')
+
+        let content = readfile(logger.get_logfile())
+        Assert Equals(len(content), 3)
+        Assert True(content[0] =~# ';WARNING;')
+        Assert True(content[1] =~# ';WARNING;')
+        Assert True(content[2] =~# ';WARNING;')
+      End
+    End
+
+    Context .error({fmt}[, {expr1} ...])
+      Before
+        call logger.set_logfile(tempname())
+        call logger.set_loglevel(Logging.DEBUG)
+      End
+      After
+        call delete(logger.get_logfile())
+      End
+
+      It should write a ERROR record into a logfile
+        call logger.error('it should NOT be skipped')
+        call logger.error('it should NOT be skipped')
+        call logger.error('it should NOT be skipped')
+
+        let content = readfile(logger.get_logfile())
+        Assert Equals(len(content), 3)
+        Assert True(content[0] =~# ';ERROR;')
+        Assert True(content[1] =~# ';ERROR;')
+        Assert True(content[2] =~# ';ERROR;')
+      End
+    End
+
+    Context .critical({fmt}[, {expr1} ...])
+      Before
+        call logger.set_logfile(tempname())
+        call logger.set_loglevel(Logging.DEBUG)
+      End
+      After
+        call delete(logger.get_logfile())
+      End
+
+      It should write a CRITICAL record into a logfile
+        call logger.critical('it should NOT be skipped')
+        call logger.critical('it should NOT be skipped')
+        call logger.critical('it should NOT be skipped')
+
+        let content = readfile(logger.get_logfile())
+        Assert Equals(len(content), 3)
+        Assert True(content[0] =~# ';CRITICAL;')
+        Assert True(content[1] =~# ';CRITICAL;')
+        Assert True(content[2] =~# ';CRITICAL;')
+      End
+    End
+
+    Context .exception({fmt}[, {expr1} ...])
+      Before
+        call logger.set_logfile(tempname())
+        call logger.set_loglevel(Logging.DEBUG)
+      End
+      After
+        call delete(logger.get_logfile())
+      End
+
+      It should write a ERROR record with stacktrace into a logfile
+        call logger.exception('it should NOT be skipped')
+        call logger.exception('it should NOT be skipped')
+        call logger.exception('it should NOT be skipped')
+
+        let content = readfile(logger.get_logfile())
+        Assert Equals(len(content), 6)
+        Assert True(content[0] =~# ';ERROR;')
+        Assert True(content[1] =~# ';ERROR; Exception')
+        Assert True(content[2] =~# ';ERROR;')
+        Assert True(content[3] =~# ';ERROR; Exception')
+        Assert True(content[4] =~# ';ERROR;')
+        Assert True(content[5] =~# ';ERROR; Exception')
+      End
+    End
+  End
+End
