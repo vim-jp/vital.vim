@@ -189,16 +189,17 @@ function! s:set_config(...) abort
 endfunction
 
 function! s:get_name(name) abort
-  if fnamemodify(a:name, ':p') =~# printf('^%s', s:config.basename)
+  if a:name ==# '.'
+    return '.'
+  elseif fnamemodify(a:name, ':p') =~# printf('^%s', s:config.basename)
     let name = substitute(
           \ fnamemodify(a:name, ':p'),
           \ printf('^%s%s\?', s:config.basename, s:separator),
           \ '', '',
           \)
-  else
-    let name = a:name
+    return s:get_name(name)
   endif
-  return empty(name) ? '.' : name
+  return empty(a:name) ? '.' : a:name
 endfunction
 
 function! s:_new_logger(name, parent) abort
