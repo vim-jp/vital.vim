@@ -51,6 +51,13 @@ function! s:new_from_uri_like_string(str, ...) abort "{{{
   \   's:_uri_new', [str], nothrow, NothrowValue)
 endfunction "}}}
 
+function! s:new_from_seq_string(uri, ...) abort "{{{
+  let nothrow = a:0 != 0
+  let NothrowValue = a:0 ? a:1 : 'unused'
+  return s:_sandbox_call(
+  \   's:_uri_new', [a:uri, 1], nothrow, NothrowValue)
+endfunction "}}}
+
 function! s:is_uri(str) abort "{{{
   let ERROR = []
   return s:new(a:str, ERROR) isnot ERROR
@@ -65,8 +72,9 @@ endfunction "}}}
 
 " URI Object {{{
 
-function! s:_uri_new(str) abort "{{{
-  let result = s:_parse_uri(a:str)
+function! s:_uri_new(str, ...) abort "{{{
+  let ignore_rest = (a:0 ? a:1 : 0)
+  let result = s:_parse_uri(a:str, ignore_rest)
   " TODO: Support punycode
   " let result.host = ...
 
@@ -198,7 +206,7 @@ let s:uri = {
 
 " Parsing Functions {{{
 
-function! s:_parse_uri(str) abort "{{{
+function! s:_parse_uri(str, ignore_rest) abort "{{{
   let rest = a:str
 
   " Ignore leading/trailing whitespaces.
@@ -246,7 +254,7 @@ function! s:_parse_uri(str) abort "{{{
     let fragment = ''
   endif
 
-  if rest != ''
+  if !a:ignore_rest && rest != ''
     throw 'uri parse error: unnecessary string at the end.'
   endif
 
