@@ -292,12 +292,12 @@ endfunction "}}}
 " NOTE: Using this regexp pattern in urilib.vim
 "   http://tools.ietf.org/html/rfc3986#appendix-B
 
-let s:RX_SCHEME   = '^\([^:/?#]\+\)'
-let s:RX_HOST     = '^\([^/?#]*\)'
+let s:RX_SCHEME   = '^\([^:/?#[:space:]]\+\)'
+let s:RX_HOST     = '^\([^/?#[:space:]]*\)'
 let s:RX_PORT     = '^\(\d*\)'
-let s:RX_PATH     = '^\([^?#]*\)'
-let s:RX_QUERY    = '^\([^#]*\)'
-let s:RX_FRAGMENT = '^\(.*\)'
+let s:RX_PATH     = '^\([^?#[:space:]]*\)'
+let s:RX_QUERY    = '^\([^#[:space:]]*\)'
+let s:RX_FRAGMENT = '^\([^[:space:]]*\)'
 " }}}
 
 " FIXME: make error messages user-friendly.
