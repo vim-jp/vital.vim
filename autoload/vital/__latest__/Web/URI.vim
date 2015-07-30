@@ -16,11 +16,14 @@ endfunction
 
 " Autoload Functions {{{
 
-function! s:_sandbox_call(fn, args, nothrow, NothrowValue) abort "{{{
+let s:NONE = []
+
+function! s:_uri_new_sandbox(args, retall, NothrowValue) abort "{{{
   try
-    return call(a:fn, a:args)
+    let results = call('s:_uri_new', a:args)
+    return a:retall ? results : results[0]
   catch
-    if a:nothrow && s:_is_own_exception(v:exception)
+    if a:NothrowValue isnot s:NONE && s:_is_own_exception(v:exception)
       return a:NothrowValue
     else
       throw substitute(v:exception, '^Vim([^()]\+):', '', '')
@@ -33,10 +36,9 @@ function! s:_is_own_exception(str) abort "{{{
 endfunction "}}}
 
 function! s:new(uri, ...) abort "{{{
-  let nothrow = a:0 != 0
-  let NothrowValue = a:0 ? a:1 : 'unused'
-  return s:_sandbox_call(
-  \   's:_uri_new', [a:uri], nothrow, NothrowValue)
+  let NothrowValue = a:0 ? a:1 : s:NONE
+  return s:_uri_new_sandbox(
+  \   [a:uri], 0, NothrowValue)
 endfunction "}}}
 
 function! s:new_from_uri_like_string(str, ...) abort "{{{
@@ -45,17 +47,15 @@ function! s:new_from_uri_like_string(str, ...) abort "{{{
     let str = 'http://' . str
   endif
 
-  let nothrow = a:0 != 0
-  let NothrowValue = a:0 ? a:1 : 'unused'
-  return s:_sandbox_call(
-  \   's:_uri_new', [str], nothrow, NothrowValue)
+  let NothrowValue = a:0 ? a:1 : s:NONE
+  return s:_uri_new_sandbox(
+  \   [str], 0, NothrowValue)
 endfunction "}}}
 
 function! s:new_from_seq_string(uri, ...) abort "{{{
-  let nothrow = a:0 != 0
-  let NothrowValue = a:0 ? a:1 : 'unused'
-  return s:_sandbox_call(
-  \   's:_uri_new', [a:uri, 1], nothrow, NothrowValue)
+  let NothrowValue = a:0 ? a:1 : s:NONE
+  return s:_uri_new_sandbox(
+  \   [a:uri, 1], 1, NothrowValue)
 endfunction "}}}
 
 function! s:is_uri(str) abort "{{{
@@ -74,7 +74,7 @@ endfunction "}}}
 
 function! s:_uri_new(str, ...) abort "{{{
   let ignore_rest = (a:0 ? a:1 : 0)
-  let result = s:_parse_uri(a:str, ignore_rest)
+  let [result, rest] = s:_parse_uri(a:str, ignore_rest)
   " TODO: Support punycode
   " let result.host = ...
 
@@ -84,7 +84,8 @@ function! s:_uri_new(str, ...) abort "{{{
     call call(obj[where], [value], obj)    " Set the value.
   endfor
 
-  return obj
+  let original_url = a:str[: len(a:str)-len(rest)-1]
+  return [obj, original_url, rest]
 endfunction "}}}
 
 function! s:_uri_scheme(...) dict abort "{{{
@@ -258,14 +259,14 @@ function! s:_parse_uri(str, ignore_rest) abort "{{{
     throw 'uri parse error: unnecessary string at the end.'
   endif
 
-  return {
+  return [{
   \ 'scheme': scheme,
   \ 'host': host,
   \ 'port': port,
   \ 'path': path,
   \ 'query': query,
   \ 'fragment': fragment,
-  \}
+  \}, rest]
 endfunction "}}}
 function! s:_eat_em(str, pat) abort "{{{
   let pat = a:pat.'\C'
