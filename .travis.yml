@@ -1,18 +1,23 @@
 language: generic
 env:
-  - PPA=yes
-  - PPA=no
+  - HEAD=yes
+  - HEAD=no
+sudo: false
 
-before_install:
-  - uname -a
-  - echo ja_JP.UTF-8 UTF-8 | sudo tee -a /var/lib/locales/supported.d/local
-  - echo ja_JP.UTF-8 UTF-8 | sudo tee -a /etc/locale.gen
-  - sudo /usr/sbin/locale-gen
+addons:
+  apt:
+    packages:
+      - language-pack-ja
+      - vim
+      - libperl-dev
+      - python-dev
+      - python3-dev
+      - liblua5.1-0-dev
+      - lua5.1
 
 install:
-  - if [ x"$PPA" == "xyes" ] ; then sudo add-apt-repository ppa:pi-rho/dev -y; fi
-  - sudo apt-get update -q
-  - sudo apt-get install vim-nox
+  - bash install-vim.sh
+  - if [ x"$HEAD" = "xyes" ]; then export PATH=$HOME/vim/bin:$PATH; fi
 
 before_script:
   - git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
@@ -22,9 +27,10 @@ before_script:
   - (cd /tmp/vimproc && make)
 
 script:
-  - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 -c func_abort=1 autoload
+  - which -a vim
   - vim --cmd version --cmd quit
   - vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
+  - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 -c func_abort=1 autoload
   # - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
   - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
 notifications:
