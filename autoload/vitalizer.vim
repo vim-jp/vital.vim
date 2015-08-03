@@ -156,7 +156,7 @@ function! s:show_changes(current, installing_modules) abort
         else
           " Show the only installed modules in specified one
           let common = s:L.intersect(changes[key].modules, a:installing_modules)
-          echomsg '    Modules: '.join(common, ", ")
+          echomsg '    Modules: ' . join(common, ", ")
         endif
         for line in split(changes[key].text, "\n")
           if line =~# '^\*\*.*\*\*$'
