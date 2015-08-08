@@ -14,7 +14,7 @@ function! s:_vital_depends() abort
 endfunction
 
 function! s:__urlencode_char(c) abort
-  return printf("%%%02X", char2nr(a:c))
+  return printf('%%%02X', char2nr(a:c))
 endfunction
 
 function! s:decodeURI(str) abort
@@ -41,14 +41,14 @@ function! s:encodeURI(items) abort
   if s:Prelude.is_dict(a:items)
     for key in sort(keys(a:items))
       if strlen(ret)
-        let ret .= "&"
+        let ret .= '&'
       endif
-      let ret .= key . "=" . s:encodeURI(a:items[key])
+      let ret .= key . '=' . s:encodeURI(a:items[key])
     endfor
   elseif s:Prelude.is_list(a:items)
     for item in sort(a:items)
       if strlen(ret)
-        let ret .= "&"
+        let ret .= '&'
       endif
       let ret .= item
     endfor
@@ -62,16 +62,16 @@ function! s:encodeURIComponent(items) abort
   let ret = ''
   if s:Prelude.is_dict(a:items)
     for key in sort(keys(a:items))
-      if strlen(ret) | let ret .= "&" | endif
-      let ret .= key . "=" . s:encodeURIComponent(a:items[key])
+      if strlen(ret) | let ret .= '&' | endif
+      let ret .= key . '=' . s:encodeURIComponent(a:items[key])
     endfor
   elseif s:Prelude.is_list(a:items)
     for item in sort(a:items)
-      if strlen(ret) | let ret .= "&" | endif
+      if strlen(ret) | let ret .= '&' | endif
       let ret .= item
     endfor
   else
-    let items = iconv(a:items, &enc, "utf-8")
+    let items = iconv(a:items, &enc, 'utf-8')
     let len = strlen(items)
     let i = 0
     while i < len
@@ -222,7 +222,7 @@ function! s:_make_header_args(headdata, option, quote) abort
     if s:Prelude.is_windows()
       let value = substitute(value, '"', '"""', 'g')
     endif
-    let args .= " " . a:option . a:quote . key . ": " . value . a:quote
+    let args .= ' ' . a:option . a:quote . key . ': ' . value . a:quote
   endfor
   return args
 endfunction
@@ -401,7 +401,7 @@ function! s:clients.curl.request(settings) abort
       endif
       let method = a:settings.authMethod
     else
-      let method = "anyauth"
+      let method = 'anyauth'
     endif
     let command .= ' --' . method . ' --user ' . quote . auth . quote
   endif
