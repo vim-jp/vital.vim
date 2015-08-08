@@ -96,7 +96,7 @@ request({method}, {url} [, {settings}])
 		  "curl": "/usr/bin/curl",
 		  "wget": "/usr/local/bin/wget",
 		}
-
+<
 	"authMethod"	Default: (None)
 		(This is only valid for "curl" interface.)
 		Specify the authorization method.
