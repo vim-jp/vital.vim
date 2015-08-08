@@ -178,9 +178,13 @@ function! s:_readfile(file) abort
 endfunction
 
 function! s:_make_postfile(data) abort
-  let fname = tr(tempname(),'\','/')
+  let fname = s:_tempname()
   call writefile(a:data, fname, 'b')
   return fname
+endfunction
+
+function! s:_tempname() abort
+  return tr(tempname(), '\', '/')
 endfunction
 
 function! s:_postdata(data) abort
@@ -372,13 +376,13 @@ endfunction
 function! s:clients.curl.request(settings) abort
   let quote = s:_quote()
   let command = self._command(a:settings)
-  let a:settings._file.header = tr(tempname(),'\','/')
+  let a:settings._file.header = s:_tempname()
   let command .= ' --dump-header ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
   if has_output_file
     let output_file = a:settings.outputFile
   else
-    let output_file = tr(tempname(),'\','/')
+    let output_file = s:_tempname()
     let a:settings._file.content = output_file
   endif
   let command .= ' --output ' . quote . output_file . quote
@@ -443,13 +447,13 @@ function! s:clients.wget.request(settings) abort
   elseif method !=# 'GET' && method !=# 'POST'
     let a:settings.headers['X-HTTP-Method-Override'] = a:settings.method
   endif
-  let a:settings._file.header = tr(tempname(),'\','/')
+  let a:settings._file.header = s:_tempname()
   let command .= ' -o ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
   if has_output_file
     let output_file = a:settings.outputFile
   else
-    let output_file = tr(tempname(),'\','/')
+    let output_file = s:_tempname()
     let a:settings._file.content = output_file
   endif
   let command .= ' -O ' . quote . output_file . quote
