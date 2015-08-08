@@ -206,9 +206,9 @@ function! s:_build_response(header, content) abort
     let status_line = get(a:header, 0)
     let matched = matchlist(status_line, '^HTTP/1\.\d\s\+\(\d\+\)\s\+\(.*\)')
     if !empty(matched)
-      let [status, statusText] = matched[1 : 2]
+      let [status, status_text] = matched[1 : 2]
       let response.status = status - 0
-      let response.statusText = statusText
+      let response.statusText = status_text
       let response.success = status =~# '^2'
       call remove(a:header, 0)
     endif
@@ -303,7 +303,7 @@ try:
                 timeout = settings.get('timeout')
                 if timeout:
                     timeout = float(timeout)
-                requestHeaders = settings.get('headers')
+                request_headers = settings.get('headers')
                 director = urllib2.build_opener()
                 if settings.has_key('username'):
                     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
@@ -316,7 +316,7 @@ try:
                     digestauth = urllib2.HTTPDigestAuthHandler(passman)
                     director.add_handler(basicauth)
                     director.add_handler(digestauth)
-                req = urllib2.Request(settings['url'], data, requestHeaders)
+                req = urllib2.Request(settings['url'], data, request_headers)
                 req.get_method = lambda: settings['method']
                 default_timeout = socket.getdefaulttimeout()
                 try:
@@ -333,7 +333,7 @@ try:
                     return ('', '')
 
                 st = status(res)
-                responseHeaders = st + ''.join(res.info().headers)
+                response_headers = st + ''.join(res.info().headers)
                 response_body = res.read()
 
                 gzip_decompress = settings.get('gzipDecompress', False)
@@ -342,7 +342,7 @@ try:
                     f = gzip.GzipFile(fileobj=buf)
                     response_body = f.read()[:-1]
 
-                return (responseHeaders, response_body)
+                return (response_headers, response_body)
 
             (header, body) = access()
             vim.command('let header = ' + vimstr(header))
