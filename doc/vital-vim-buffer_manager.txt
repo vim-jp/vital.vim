@@ -70,18 +70,18 @@ Manager.open({bufname} [, {config}])
 	opener(|Vital.Vim.BufferManager-config-opener|).
 	The return value is a |Dictionary| which contains following attributes
 
-	'loaded'
+	"loaded"
 	A boolean which indicate whether the buffer was newly loaded or not.
 
-	'newwin'
+	"newwin"
 	A boolean which indicate whether the buffer was opened in a new
 	window.
 
-	'newbuf'
+	"newbuf"
 	A boolean which indicate whether the buffer was newly opened (in other
 	word, listed).
 
-	'bufnr'
+	"bufnr"
 	A |Number| which indicate the buffer index (|bufnr()|).
 
 Manager.opened({info})		*Vital.Vim.BufferManager-Manager.opened()*
