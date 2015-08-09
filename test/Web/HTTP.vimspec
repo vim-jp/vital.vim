@@ -1,6 +1,6 @@
 scriptencoding utf-8
 
-Describe Web.Http
+Describe Web.HTTP
   Before all
     let HTTP = vital#of('vital').import('Web.HTTP')
   End
