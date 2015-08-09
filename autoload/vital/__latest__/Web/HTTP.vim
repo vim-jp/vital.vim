@@ -89,27 +89,8 @@ function! s:encodeURIComponent(items) abort
   return ret
 endfunction
 
-let s:default_settings = {
-\   'method': 'GET',
-\   'headers': {},
-\   'client': ['python', 'curl', 'wget'],
-\   'maxRedirect': 20,
-\   'retry': 1,
-\ }
 function! s:request(...) abort
-  let settings = {}
-  for arg in a:000
-    if s:Prelude.is_dict(arg)
-      let settings = extend(settings, arg, 'keep')
-    elseif s:Prelude.is_string(arg)
-      if has_key(settings, 'url')
-        let settings.method = settings.url
-      endif
-      let settings.url = arg
-    endif
-    unlet arg
-  endfor
-  call extend(settings, deepcopy(s:default_settings), 'keep')
+  let settings = s:_build_settings(a:000)
   let settings.method = toupper(settings.method)
   if !has_key(settings, 'url')
     throw 'vital: Web.HTTP: "url" parameter is required.'
@@ -218,6 +199,31 @@ function! s:_build_response(header, content) abort
     endif
   endif
   return response
+endfunction
+
+function! s:_build_settings(args) abort
+  let settings = {
+  \   'method': 'GET',
+  \   'headers': {},
+  \   'client': ['python', 'curl', 'wget'],
+  \   'maxRedirect': 20,
+  \   'retry': 1,
+  \ }
+  let args = copy(a:args)
+  if len(args) == 0
+    throw 'vital: Web.HTTP: request() needs one or more arguments.'
+  endif
+  if s:Prelude.is_dict(args[-1])
+    call extend(settings, remove(args, -1))
+  endif
+  if len(args) == 2
+    let settings.method = remove(args, 0)
+  endif
+  if !empty(args)
+    let settings.url = args[0]
+  endif
+
+  return settings
 endfunction
 
 function! s:_make_header_args(headdata, option, quote) abort
