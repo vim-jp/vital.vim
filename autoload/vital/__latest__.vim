@@ -237,6 +237,9 @@ function! s:_build_module(sid) abort
   for func in functions
     let module[func] = function(prefix . func)
   endfor
+  if has_key(module, '_vital_export')
+    call module._vital_export(module)
+  endif
   if has_key(module, '_vital_loaded')
     let V = vital#{s:self_version}#new()
     if has_key(module, '_vital_depends')
