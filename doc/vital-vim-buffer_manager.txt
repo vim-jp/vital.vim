@@ -82,7 +82,7 @@ Manager.open({bufname} [, {config}])
 	word, listed).
 
 	'bufnr'
-	A |Number| which indica the buffer index (|bufnr()|).
+	A |Number| which indicate the buffer index (|bufnr()|).
 
 Manager.opened({info})		*Vital.Vim.BufferManager-Manager.opened()*
 	This is called when a buffer is opened via
