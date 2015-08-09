@@ -109,4 +109,23 @@ Describe Random
       endfor
     End
   End
+
+  Describe .seed()
+    It can take new seed by number
+      let random = R.new('Xor128', [])
+      call random.seed(42)
+    End
+
+    It can take new seed by array
+      let random = R.new('Xor128', [])
+      call random.seed([1, 2, 3])
+    End
+  End
+
+  Describe .make_seed()
+    It generates a number for seed
+      let seed = R.make_seed()
+      Assert IsNumber(seed)
+    End
+  End
 End
