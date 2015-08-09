@@ -402,8 +402,8 @@ function! s:DateTime.to(...) abort
     return dt._normalize()
   endif
   let delta = call('s:delta', a:000)
-  let dt._day += delta._days * delta.sign()
-  let dt._second += delta._seconds * delta.sign()
+  let dt._day += delta._days
+  let dt._second += delta._seconds
   return dt._normalize()
 endfunction
 " @vimlint(EVL102, 1, l:locale)

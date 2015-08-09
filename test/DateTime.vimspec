@@ -401,6 +401,10 @@ Describe DateTime
           let new_dt = dt.to(delta)
           Assert Equals(new_dt.day(), 5)
           Assert Equals(new_dt.minute(), 14)
+
+          let delta = DT.delta(-3, 'days')
+          let new_dt = dt.to(delta)
+          Assert Equals(new_dt.format('%F'), '2011-12-30')
         End
       End
 
@@ -409,6 +413,9 @@ Describe DateTime
           let new_dt = dt.to(3, 'days', 10, 'min')
           Assert Equals(new_dt.day(), 5)
           Assert Equals(new_dt.minute(), 14)
+
+          let new_dt = dt.to(-3, 'days')
+          Assert Equals(new_dt.format('%F'), '2011-12-30')
         End
       End
 
@@ -417,9 +424,17 @@ Describe DateTime
           let tz = DT.timezone('+0900')
           let new_dt = dt.to(tz)
           Assert Equals(new_dt.timezone().offset(), tz.offset())
+
+          let tz = DT.timezone('-0900')
+          let new_dt = dt.to(tz)
+          Assert Equals(new_dt.timezone().offset(), tz.offset())
         End
         It does not change the time
           let tz = DT.timezone('+0900')
+          let new_dt = dt.to(tz)
+          Assert Truthy(new_dt.is(dt))
+
+          let tz = DT.timezone('-0900')
           let new_dt = dt.to(tz)
           Assert Truthy(new_dt.is(dt))
         End
@@ -429,9 +444,15 @@ Describe DateTime
         It returns new DateTime object to which timezone was changed
           let new_dt = dt.to('+0900')
           Assert Equals(new_dt.timezone().hours(), 9)
+
+          let new_dt = dt.to('-0900')
+          Assert Equals(new_dt.timezone().hours(), -9)
         End
         It does not change the time
           let new_dt = dt.to('+0900')
+          Assert Truthy(new_dt.is(dt))
+
+          let new_dt = dt.to('-0900')
           Assert Truthy(new_dt.is(dt))
         End
       End
