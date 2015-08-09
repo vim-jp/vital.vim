@@ -252,9 +252,7 @@ endfunction
 
 " Clients
 function! s:_get_client(settings) abort
-  let candidates = a:settings.client
-  let names = s:Prelude.is_list(candidates) ? candidates : [candidates]
-  for name in names
+  for name in a:settings.client
     if has_key(s:clients, name) && s:clients[name].available(a:settings)
       return s:clients[name]
     endif
