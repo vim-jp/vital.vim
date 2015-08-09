@@ -131,9 +131,7 @@ function! s:request(...) abort
   endfor
 
   call map(responses, 's:_build_response(v:val[0], v:val[1])')
-  let last_response = remove(responses, -1)
-  let last_response.redirectInfo = responses
-  return last_response
+  return s:_build_last_response(responses)
 endfunction
 
 function! s:get(url, ...) abort
@@ -203,6 +201,17 @@ function! s:_build_response(header, content) abort
     endif
   endif
   return response
+endfunction
+
+function! s:_build_last_response(responses) abort
+  let all_headers = []
+  for response in a:responses
+    call extend(all_headers, response.header)
+  endfor
+  let last_response = remove(a:responses, -1)
+  let last_response.redirectInfo = a:responses
+  let last_response.allHeaders = all_headers
+  return last_response
 endfunction
 
 function! s:_build_settings(args) abort

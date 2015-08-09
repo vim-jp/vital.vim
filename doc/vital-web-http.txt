@@ -130,6 +130,11 @@ return data structure as |Directory| like following.
 	    "Content-Type: text/html",
 	    "Content-Length: 310"
 	  ],
+	  "allHeaders": [
+	    "Set-Cookie: k1=v1; Path=/",
+	    "Content-Type: text/html",
+	    "Content-Length: 310"
+	  ],
 	  "content": "<html> .....",
 	  "status": 200,
 	  "statusText": "OK",
@@ -140,6 +145,9 @@ return data structure as |Directory| like following.
 "header"
 		The header lines of a response.  This can convert to
 		|Dictionary| by |Vital.Web.HTTP.parseHeader()|.
+
+"allHeaders"
+		All of header lines that includes redirectInfo.
 
 "content"
 		The content of a response.
