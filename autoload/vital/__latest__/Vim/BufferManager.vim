@@ -47,12 +47,14 @@ function! s:Manager.open(bufname, ...) abort
   let new_bufnr = bufnr('%')
   let self._bufnrs[new_bufnr] = a:bufname
 
-  return {
+  let info = {
   \   'loaded': loaded,
   \   'newwin': moved,
   \   'newbuf': lastbuf < bufnr('%'),
   \   'bufnr': new_bufnr,
   \ }
+  call self.opened(info)
+  return info
 endfunction
 
 function! s:Manager.close(...) abort
@@ -68,7 +70,7 @@ function! s:Manager.close(...) abort
 endfunction
 
 function! s:Manager.opened(bufname) abort
-  throw 'vital: Vim.BufferManager: not implemented yet'
+  " This is placeholder function.
 endfunction
 
 function! s:Manager.config(...) abort

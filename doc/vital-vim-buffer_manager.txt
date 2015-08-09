@@ -84,6 +84,12 @@ Manager.open({bufname} [, {config}])
 	'bufnr'
 	A |Number| which indica the buffer index (|bufnr()|).
 
+Manager.opened({info})		*Vital.Vim.BufferManager-Manager.opened()*
+	This is called when a buffer is opened via
+	Manager.open()(|Vital.Vim.BufferManager-Manager.open()|).
+	{info} is a return value of Manager.open().
+	User can overwrite this function and use as hook function.
+
 Manager.close([{range}])	*Vital.Vim.BufferManager-Manager.close()*
 	Closes the {range} buffer if it exists.
 
