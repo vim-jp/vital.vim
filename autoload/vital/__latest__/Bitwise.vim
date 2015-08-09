@@ -36,10 +36,10 @@ let s:pow2 = [
       \ ]
 
 if exists('*and')
-  function! s:_vital_loaded(V) dict abort
+  function! s:_vital_export(module) abort
     for op in ['and', 'or', 'xor', 'invert']
-      let self[op] = function(op)
-      let s:[op] = self[op]
+      let a:module[op] = function(op)
+      let s:[op] = a:module[op]
     endfor
   endfunction
   finish
