@@ -430,11 +430,11 @@ function! s:clients.curl.request(settings) abort
     endif
     let command .= ' --' . method . ' --user ' . quote . auth . quote
   endif
-  let command .= ' ' . quote . a:settings.url . quote
   if has_key(a:settings, 'data')
     let a:settings._file.post = s:_make_postfile(a:settings.data)
     let command .= ' --data-binary @' . quote . a:settings._file.post . quote
   endif
+  let command .= ' ' . quote . a:settings.url . quote
 
   call s:Process.system(command)
 
