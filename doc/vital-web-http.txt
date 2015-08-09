@@ -134,6 +134,7 @@ return data structure as |Directory| like following.
 	  "status": 200,
 	  "statusText": "OK",
 	  "success": 1,
+	  "redirectInfo": [],
 	}
 <
 "header"
@@ -153,6 +154,10 @@ return data structure as |Directory| like following.
 
 "success"
 		This is 1 if the "status" is 2xx.
+
+"redirectInfo"
+		When the request was redirected, the redirected responses are
+		stored.  Form of these are the same as a response.
 
 
 

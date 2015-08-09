@@ -122,14 +122,18 @@ function! s:request(...) abort
   endif
   let settings._file = {}
 
-  let [header, content] = client.request(settings)
+  let responses = client.request(settings)
 
   for file in values(settings._file)
     if filereadable(file)
       call delete(file)
     endif
   endfor
-  return s:_build_response(header, content)
+
+  call map(responses, 's:_build_response(v:val[0], v:val[1])')
+  let last_response = remove(responses, -1)
+  let last_response.redirectInfo = responses
+  return last_response
 endfunction
 
 function! s:get(url, ...) abort
@@ -283,8 +287,7 @@ endfunction
 
 function! s:clients.python.request(settings) abort
   " TODO: maxRedirect, retry, outputFile
-  let header = ''
-  let body = ''
+  let responses = []
   python << endpython
 try:
     class DummyClassForLocalScope:
@@ -294,16 +297,22 @@ try:
             except ImportError:
                 from io import StringIO
             import vim, urllib2, socket, gzip
-            def vimstr(s):
-                return "'" + s.replace("\0", "\n").replace("'", "''") + "'"
+
+            responses = vim.bindeval('responses')
+
+            class CustomHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
+                def redirect_request(self, req, fp, code, msg, headers, newurl):
+                    header_list = filter(None, str(headers).split("\r\n"))
+                    responses.extend([[[status(code, msg)] + header_list, fp.read()]])
+                    return urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
 
             def vimlist2str(list):
                 if not list:
                     return None
                 return "\n".join([s.replace("\n", "\0") for s in list])
 
-            def status(res):
-                return "HTTP/1.0 %d %s\r\n" % (res.code, res.msg)
+            def status(code, msg):
+                return "HTTP/1.0 %d %s\r\n" % (code, msg)
 
             def access():
                 settings = vim.eval('a:settings')
@@ -312,7 +321,7 @@ try:
                 if timeout:
                     timeout = float(timeout)
                 request_headers = settings.get('headers')
-                director = urllib2.build_opener()
+                director = urllib2.build_opener(CustomHTTPRedirectHandler)
                 if settings.has_key('username'):
                     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
                     passman.add_password(
@@ -335,12 +344,12 @@ try:
                 except urllib2.URLError as res:
                     socket.setdefaulttimeout(default_timeout)
                     # FIXME: We want body and headers if possible
-                    return (status(res), '')
+                    return (status(res.code, res.msg), '')
                 except socket.timeout as e:
                     socket.setdefaulttimeout(default_timeout)
                     return ('', '')
 
-                st = status(res)
+                st = status(res.code, res.msg)
                 response_headers = st + ''.join(res.info().headers)
                 response_body = res.read()
 
@@ -353,8 +362,7 @@ try:
                 return (response_headers, response_body)
 
             (header, body) = access()
-            vim.command('let header = ' + vimstr(header))
-            vim.command('let body = ' + vimstr(body))
+            responses.extend([[header.split("\r\n"), body]])
 
         main()
         raise RuntimeError("Exit from local scope")
@@ -364,7 +372,7 @@ except RuntimeError as exception:
         raise exception
 
 endpython
-  return [split(header, "\r\n"), body]
+  return responses
 endfunction
 
 let s:clients.curl = {}
@@ -423,13 +431,15 @@ function! s:clients.curl.request(settings) abort
 
   let headerstr = s:_readfile(a:settings._file.header)
   let header_chunks = split(headerstr, "\r\n\r\n")
-  let header = split(get(header_chunks, -1, ''), "\r\n")
+  let headers = map(header_chunks, 'split(v:val, "\r\n")')
+  let responses = map(headers, '[v:val, ""]')
   if has_output_file
     let content = ''
   else
     let content = s:_readfile(output_file)
   endif
-  return [header, content]
+  let responses[-1][1] = content
+  return responses
 endfunction
 
 let s:clients.wget = {}
@@ -489,18 +499,20 @@ function! s:clients.wget.request(settings) abort
   if filereadable(a:settings._file.header)
     let header_lines = readfile(a:settings._file.header, 'b')
     call map(header_lines, 'matchstr(v:val, "^\\s*\\zs.*")')
-    let headerstr = join(header_lines, "\n")
-    let header_chunks = split(headerstr, '\n\zeHTTP/1\.\d')
-    let header = split(get(header_chunks, -1, ''), "\n")
+    let headerstr = join(header_lines, "\r\n")
+    let header_chunks = split(headerstr, '\r\n\zeHTTP/1\.\d')
+    let headers = map(header_chunks, 'split(v:val, "\r\n")')
+    let responses = map(headers, '[v:val, ""]')
   else
-    let header = []
+    let responses = [[[], '']]
   endif
   if has_output_file
     let content = ''
   else
     let content = s:_readfile(output_file)
   endif
-  return [header, content]
+  let responses[-1][1] = content
+  return responses
 endfunction
 
 function! s:_quote() abort
