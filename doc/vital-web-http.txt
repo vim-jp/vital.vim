@@ -22,15 +22,15 @@ INTERFACE				*Vital.Web.HTTP-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.HTTP-functions*
 
-get({url}, {param}, {header})		*Vital.Web.HTTP.get()*
+get({url} [, {param} [, {header}]])	*Vital.Web.HTTP.get()*
 	Send a GET request to the server.
 	This is just a wrapper of |Vital.Web.HTTP.request()|.
 
-post({url}, {param}, {header})		*Vital.Web.HTTP.post()*
+post({url} [, {param} [, {header}]])	*Vital.Web.HTTP.post()*
 	Send a POST request to the server.
 	This is just a wrapper of |Vital.Web.HTTP.request()|.
 
-request([{settings}])			*Vital.Web.HTTP.request()*
+request({settings})			*Vital.Web.HTTP.request()*
 request({url} [, {settings}])
 request({method}, {url} [, {settings}])
 	Send a request to the server.
