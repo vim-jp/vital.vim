@@ -1,7 +1,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V) dict abort
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = a:V.import('Prelude')
   let s:String = a:V.import('Data.String')

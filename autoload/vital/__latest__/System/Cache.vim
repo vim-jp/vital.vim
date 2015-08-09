@@ -2,7 +2,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:registry = {}
-function! s:_vital_loaded(V) dict abort
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:P = a:V.import('Prelude')
   call s:register('dummy',  'System.Cache.Dummy')
