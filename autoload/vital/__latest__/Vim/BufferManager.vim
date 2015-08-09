@@ -31,6 +31,7 @@ function! s:Manager.open(bufname, ...) abort
   \   'newwin': -1,
   \   'newbuf': 0,
   \   'bufnr': -1,
+  \   'bufname': a:bufname,
   \ }
   endif
 
@@ -52,6 +53,7 @@ function! s:Manager.open(bufname, ...) abort
   \   'newwin': moved,
   \   'newbuf': lastbuf < bufnr('%'),
   \   'bufnr': new_bufnr,
+  \   'bufname': a:bufname,
   \ }
   call self.opened(info)
   return info
