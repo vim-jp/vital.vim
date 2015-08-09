@@ -275,6 +275,9 @@ function! s:clients.python.available(settings) abort
     " 'retry' is not supported yet
     return 0
   endif
+  if has_key(a:settings, 'authMethod')
+    return 0
+  endif
   return 1
 endfunction
 
@@ -282,9 +285,6 @@ function! s:clients.python.request(settings) abort
   " TODO: maxRedirect, retry, outputFile
   let header = ''
   let body = ''
-  if has_key(a:settings, 'authMethod')
-    throw 'vital: Web.HTTP: "authMethod" option is not supported for Python backend'
-  endif
   python << endpython
 try:
     class DummyClassForLocalScope:
@@ -435,6 +435,9 @@ endfunction
 let s:clients.wget = {}
 
 function! s:clients.wget.available(settings) abort
+  if has_key(a:settings, 'authMethod')
+    return 0
+  endif
   return executable(self._command(a:settings))
 endfunction
 
@@ -468,9 +471,6 @@ function! s:clients.wget.request(settings) abort
   let command .= ' --tries=' . a:settings.retry
   if timeout =~# '^\d\+$'
     let command .= ' --timeout=' . timeout
-  endif
-  if has_key(a:settings, 'authMethod')
-    throw 'vital: Web.HTTP:"authMethod" option is not supported for wget backend'
   endif
   if has_key(a:settings, 'username')
     let command .= ' --http-user=' . quote . a:settings.username . quote
