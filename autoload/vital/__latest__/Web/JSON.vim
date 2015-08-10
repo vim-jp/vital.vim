@@ -32,11 +32,14 @@ function! s:_resolve(val, prefix) abort
 endfunction
 
 
-function! s:_vital_loaded(V) dict abort
+function! s:_vital_export(module) abort
+  " define constant variables
+  call extend(a:module, s:const)
+endfunction
+
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:string = s:V.import('Data.String')
-  " define constant variables
-  call extend(self, s:const)
 endfunction
 
 function! s:_vital_depends() abort
