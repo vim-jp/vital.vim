@@ -240,6 +240,8 @@ function! s:_build_module(sid) abort
   if has_key(module, '_vital_export')
     call module._vital_export(module)
   endif
+  let export_module = filter(copy(module), 'v:key =~# "^\\a"')
+  let s:loaded[a:sid] = get(g:, 'vital_debug', 0) ? module : export_module
   if has_key(module, '_vital_loaded')
     let V = vital#{s:self_version}#new()
     try
@@ -248,11 +250,7 @@ function! s:_build_module(sid) abort
       " FIXME: Show an error message for debug.
     endtry
   endif
-  if !get(g:, 'vital_debug', 0)
-    call filter(module, 'v:key =~# "^\\a"')
-  endif
-  let s:loaded[a:sid] = module
-  return copy(module)
+  return copy(s:loaded[a:sid])
 endfunction
 
 if exists('+regexpengine')
