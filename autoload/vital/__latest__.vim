@@ -242,13 +242,6 @@ function! s:_build_module(sid) abort
   endif
   if has_key(module, '_vital_loaded')
     let V = vital#{s:self_version}#new()
-    if has_key(module, '_vital_depends')
-      let all = {}
-      let modules =
-      \     s:_concat(map(module._vital_depends(),
-      \                   's:expand_modules(v:val, all)'))
-      call call(V.load, modules, V)
-    endif
     try
       call module._vital_loaded(V)
     catch
