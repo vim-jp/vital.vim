@@ -295,7 +295,7 @@ function! s:clients.python.available(settings) abort
 endfunction
 
 function! s:clients.python.request(settings) abort
-  " TODO: maxRedirect, retry, outputFile
+  " TODO: retry, outputFile
   let responses = []
   python << endpython
 try:
@@ -310,7 +310,14 @@ try:
             responses = vim.bindeval('responses')
 
             class CustomHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
+                def __init__(self, max_redirect):
+                    self.max_redirect = max_redirect
+
                 def redirect_request(self, req, fp, code, msg, headers, newurl):
+                    if self.max_redirect == 0:
+                        return None
+                    if 0 < self.max_redirect:
+                        self.max_redirect -= 1
                     header_list = filter(None, str(headers).split("\r\n"))
                     responses.extend([[[status(code, msg)] + header_list, fp.read()]])
                     return urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
@@ -330,7 +337,8 @@ try:
                 if timeout:
                     timeout = float(timeout)
                 request_headers = settings.get('headers')
-                director = urllib2.build_opener(CustomHTTPRedirectHandler)
+                max_redirect = int(settings.get('maxRedirect'))
+                director = urllib2.build_opener(CustomHTTPRedirectHandler(max_redirect))
                 if settings.has_key('username'):
                     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
                     passman.add_password(
