@@ -253,10 +253,11 @@ Describe Data.List
   End
 
   Describe .map_accum()
-    It is TODO
+    It is similar to map() but holds previous accumulator as well
       Assert Equals([11, 12, 13], List.map_accum('[v:val + v:memo, v:memo]', [1, 2, 3], 10))
       Assert Equals([11, 13, 15], List.map_accum('[v:val + v:memo, v:memo + 1]', [1, 2, 3], 10))
     End
+    " TODO test more details
   End
 
   Describe .foldl()
