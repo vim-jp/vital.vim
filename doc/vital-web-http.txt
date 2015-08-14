@@ -22,15 +22,15 @@ INTERFACE				*Vital.Web.HTTP-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.HTTP-functions*
 
-get({url}, {param}, {header})		*Vital.Web.HTTP.get()*
+get({url} [, {param} [, {header}]])	*Vital.Web.HTTP.get()*
 	Send a GET request to the server.
 	This is just a wrapper of |Vital.Web.HTTP.request()|.
 
-post({url}, {param}, {header})		*Vital.Web.HTTP.post()*
+post({url} [, {param} [, {header}]])	*Vital.Web.HTTP.post()*
 	Send a POST request to the server.
 	This is just a wrapper of |Vital.Web.HTTP.request()|.
 
-request([{settings}])			*Vital.Web.HTTP.request()*
+request({settings})			*Vital.Web.HTTP.request()*
 request({url} [, {settings}])
 request({method}, {url} [, {settings}])
 	Send a request to the server.
@@ -96,7 +96,7 @@ request({method}, {url} [, {settings}])
 		  "curl": "/usr/bin/curl",
 		  "wget": "/usr/local/bin/wget",
 		}
-
+<
 	"authMethod"	Default: (None)
 		(This is only valid for "curl" interface.)
 		Specify the authorization method.
@@ -130,15 +130,24 @@ return data structure as |Directory| like following.
 	    "Content-Type: text/html",
 	    "Content-Length: 310"
 	  ],
+	  "allHeaders": [
+	    "Set-Cookie: k1=v1; Path=/",
+	    "Content-Type: text/html",
+	    "Content-Length: 310"
+	  ],
 	  "content": "<html> .....",
 	  "status": 200,
 	  "statusText": "OK",
 	  "success": 1,
+	  "redirectInfo": [],
 	}
 <
 "header"
 		The header lines of a response.  This can convert to
 		|Dictionary| by |Vital.Web.HTTP.parseHeader()|.
+
+"allHeaders"
+		All of header lines that includes redirectInfo.
 
 "content"
 		The content of a response.
@@ -153,6 +162,10 @@ return data structure as |Directory| like following.
 
 "success"
 		This is 1 if the "status" is 2xx.
+
+"redirectInfo"
+		When the request was redirected, the redirected responses are
+		stored.  Form of these are the same as a response.
 
 
 
