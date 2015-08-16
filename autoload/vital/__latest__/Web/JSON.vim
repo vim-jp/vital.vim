@@ -32,7 +32,7 @@ function! s:_resolve(val, prefix) abort
 endfunction
 
 
-function! s:_vital_export(module) abort
+function! s:_vital_created(module) abort
   " define constant variables
   call extend(a:module, s:const)
 endfunction

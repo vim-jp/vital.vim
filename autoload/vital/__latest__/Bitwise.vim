@@ -36,7 +36,7 @@ let s:pow2 = [
       \ ]
 
 if exists('*and')
-  function! s:_vital_export(module) abort
+  function! s:_vital_created(module) abort
     for op in ['and', 'or', 'xor', 'invert']
       let a:module[op] = function(op)
       let s:[op] = a:module[op]

@@ -237,8 +237,8 @@ function! s:_build_module(sid) abort
   for func in functions
     let module[func] = function(prefix . func)
   endfor
-  if has_key(module, '_vital_export')
-    call module._vital_export(module)
+  if has_key(module, '_vital_created')
+    call module._vital_created(module)
   endif
   let export_module = filter(copy(module), 'v:key =~# "^\\a"')
   let s:loaded[a:sid] = get(g:, 'vital_debug', 0) ? module : export_module
