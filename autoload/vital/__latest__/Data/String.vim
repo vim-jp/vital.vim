@@ -40,6 +40,14 @@ function! s:reverse(str) abort
   return join(reverse(split(a:str, '.\zs')), '')
 endfunction
 
+function! s:starts_with(str, prefix) abort
+  return stridx(a:str, a:prefix) == 0
+endfunction
+
+function! s:ends_with(str, suffix) abort
+  return strridx(a:str, a:suffix) + len(a:suffix) == len(a:str)
+endfunction
+
 function! s:common_head(strs) abort
   if empty(a:strs)
     return ''
