@@ -101,6 +101,16 @@ function! s:suite.reverse()
   call s:assert.equals( s:String.reverse('あいうえお'), 'おえういあ')
 endfunction
 
+function! s:suite.starts_with() abort
+  call s:assert.true( s:String.starts_with('vital.vim', 'vi'))
+  call s:assert.false( s:String.starts_with('vital.vim', 'vim'))
+endfunction
+
+function! s:suite.ends_with() abort
+  call s:assert.true( s:String.ends_with('vital.vim', 'vim'))
+  call s:assert.false( s:String.ends_with('vital.vim', 'vi'))
+endfunction
+
 function! s:suite.common_head()
   " returns common part of head of strings
   call s:assert.equals( s:String.common_head(['neocomplcache', 'neosnippet', 'neobundle']), 'neo')
