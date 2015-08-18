@@ -1,7 +1,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V) dict abort
+function! s:_vital_loaded(V) abort
   let s:Base = a:V.import('System.Cache.Base')
 endfunction
 function! s:_vital_depends() abort

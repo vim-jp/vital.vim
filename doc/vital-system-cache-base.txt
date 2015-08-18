@@ -33,7 +33,7 @@ Tutorial				*Vital.System.Cache.Base-tutorial*
 First of all, create s:new(...) function to return an instance of your variant
 like:
 >
-	function! s:_vital_loaded(V) dict abort " {{{
+	function! s:_vital_loaded(V) abort " {{{
 	  let s:Base = a:V.import('System.Cache.Base')
 	endfunction " }}}
 	function! s:_vital_depends() abort " {{{
