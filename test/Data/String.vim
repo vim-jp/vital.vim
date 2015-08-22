@@ -22,6 +22,26 @@ function! s:suite.trim()
   call s:assert.equals(s:String.trim('   hello  world !     '), 'hello  world !')
 endfunction
 
+function! s:suite.trim_start()
+  call s:assert.equals(s:String.trim_start('hello'), 'hello')
+  call s:assert.equals(s:String.trim_start('hello '), 'hello ')
+  call s:assert.equals(s:String.trim_start(' hello'), 'hello')
+  call s:assert.equals(s:String.trim_start(' hello '), 'hello ')
+  call s:assert.equals(s:String.trim_start('hello   '), 'hello   ')
+  call s:assert.equals(s:String.trim_start('   hello'), 'hello')
+  call s:assert.equals(s:String.trim_start('   hello  world !     '), 'hello  world !     ')
+endfunction
+
+function! s:suite.trim_end()
+  call s:assert.equals(s:String.trim_end('hello'), 'hello')
+  call s:assert.equals(s:String.trim_end('hello '), 'hello')
+  call s:assert.equals(s:String.trim_end(' hello'), ' hello')
+  call s:assert.equals(s:String.trim_end(' hello '), ' hello')
+  call s:assert.equals(s:String.trim_end('hello   '), 'hello')
+  call s:assert.equals(s:String.trim_end('   hello'), '   hello')
+  call s:assert.equals(s:String.trim_end('   hello  world !     '), '   hello  world !')
+endfunction
+
 function! s:suite.wrap()
   " makes a list from the given string, considering linebreak and width like wrap option
   call s:assert.equals( ['a', 'hello, world!'], s:String.wrap("a\nhello, world!"))
