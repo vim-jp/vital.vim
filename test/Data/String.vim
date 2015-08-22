@@ -12,6 +12,16 @@ function! s:suite.after()
   unlet! s:String
 endfunction
 
+function! s:suite.trim()
+  call s:assert.equals(s:String.trim('hello'), 'hello')
+  call s:assert.equals(s:String.trim('hello '), 'hello')
+  call s:assert.equals(s:String.trim(' hello'), 'hello')
+  call s:assert.equals(s:String.trim(' hello '), 'hello')
+  call s:assert.equals(s:String.trim('hello   '), 'hello')
+  call s:assert.equals(s:String.trim('   hello'), 'hello')
+  call s:assert.equals(s:String.trim('   hello  world !     '), 'hello  world !')
+endfunction
+
 function! s:suite.wrap()
   " makes a list from the given string, considering linebreak and width like wrap option
   call s:assert.equals( ['a', 'hello, world!'], s:String.wrap("a\nhello, world!"))
