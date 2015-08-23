@@ -20,6 +20,8 @@ function! s:suite.trim()
   call s:assert.equals(s:String.trim('hello   '), 'hello')
   call s:assert.equals(s:String.trim('   hello'), 'hello')
   call s:assert.equals(s:String.trim('   hello  world !     '), 'hello  world !')
+  call s:assert.equals(s:String.trim(''), '')
+  call s:assert.equals(s:String.trim('  '), '')
 endfunction
 
 function! s:suite.trim_start()
@@ -30,6 +32,8 @@ function! s:suite.trim_start()
   call s:assert.equals(s:String.trim_start('hello   '), 'hello   ')
   call s:assert.equals(s:String.trim_start('   hello'), 'hello')
   call s:assert.equals(s:String.trim_start('   hello  world !     '), 'hello  world !     ')
+  call s:assert.equals(s:String.trim(''), '')
+  call s:assert.equals(s:String.trim('  '), '')
 endfunction
 
 function! s:suite.trim_end()
@@ -40,6 +44,8 @@ function! s:suite.trim_end()
   call s:assert.equals(s:String.trim_end('hello   '), 'hello')
   call s:assert.equals(s:String.trim_end('   hello'), '   hello')
   call s:assert.equals(s:String.trim_end('   hello  world !     '), '   hello  world !')
+  call s:assert.equals(s:String.trim(''), '')
+  call s:assert.equals(s:String.trim('  '), '')
 endfunction
 
 function! s:suite.wrap()
