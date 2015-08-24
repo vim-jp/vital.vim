@@ -182,6 +182,14 @@ function! s:trim(str) abort
   return matchstr(a:str,'^\s*\zs.\{-}\ze\s*$')
 endfunction
 
+function! s:trim_start(str) abort
+  return matchstr(a:str,'^\s*\zs.\{-}$')
+endfunction
+
+function! s:trim_end(str) abort
+  return matchstr(a:str,'^.\{-}\ze\s*$')
+endfunction
+
 function! s:wrap(str,...) abort
   let _columns = a:0 > 0 ? a:1 : &columns
   return s:L.concat(
