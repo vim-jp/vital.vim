@@ -359,9 +359,9 @@ try:
                     res = director.open(req, timeout=timeout)
                 except urllib2.HTTPError as res:
                     pass
-                except urllib2.URLError as res:
+                except urllib2.URLError:
                     return ('', '')
-                except socket.timeout as e:
+                except socket.timeout:
                     return ('', '')
                 finally:
                     socket.setdefaulttimeout(default_timeout)
