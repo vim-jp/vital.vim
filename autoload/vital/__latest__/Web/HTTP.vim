@@ -357,14 +357,14 @@ try:
                     # for Python 2.5 or before
                     socket.setdefaulttimeout(timeout)
                     res = director.open(req, timeout=timeout)
-                    socket.setdefaulttimeout(default_timeout)
-                except urllib2.URLError as res:
-                    socket.setdefaulttimeout(default_timeout)
-                    # FIXME: We want body and headers if possible
-                    return (status(res.code, res.msg), '')
-                except socket.timeout as e:
-                    socket.setdefaulttimeout(default_timeout)
+                except urllib2.HTTPError as res:
+                    pass
+                except urllib2.URLError:
                     return ('', '')
+                except socket.timeout:
+                    return ('', '')
+                finally:
+                    socket.setdefaulttimeout(default_timeout)
 
                 st = status(res.code, res.msg)
                 response_headers = st + ''.join(res.info().headers)
