@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 if [ x"$HEAD" = "xyes" ]; then
-  git clone --depth 1 https://github.com/vim-jp/vim /tmp/vim
+  git clone --depth 1 https://github.com/vim/vim /tmp/vim
   cd /tmp/vim
   ./configure --prefix="$HOME/vim" --with-features=huge \
     --enable-perlinterp --enable-pythoninterp --enable-python3interp \
