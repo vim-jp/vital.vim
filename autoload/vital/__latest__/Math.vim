@@ -92,11 +92,11 @@ endfunction
 function! s:str2nr(str, ...) abort
   let base = get(a:000, 0, 10)
   let digits = s:_get_num_digits(base)
+  let str = toupper(a:str)
   if a:str =~# '^-'
-    let str = a:str[1:]
+    let str = str[1:]
     let sign = -1
   else
-    let str = a:str
     let sign = 1
   endif
   let n = 0

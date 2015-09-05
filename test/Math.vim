@@ -89,6 +89,8 @@ function! s:suite.str2nr()
   call s:assert.equals(s:M.str2nr('ZZ', 36), 1295)
   call s:assert.equals(s:M.str2nr('ABCD', 14), 29777)
   call s:assert.equals(s:M.str2nr('WXYZ', 36), 1537019)
+  call s:assert.equals(s:M.str2nr('wxyz', 36), 1537019)
+  call s:assert.equals(s:M.str2nr('WxYz', 36), 1537019)
   call s:assert.equals(s:M.str2nr('030', 10), 30)
   let Math = s:M
   Throws /^vital: Math: given string/ Math.str2nr('2', 2)
