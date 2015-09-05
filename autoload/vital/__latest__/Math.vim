@@ -82,6 +82,57 @@ function! s:round(float, ...) abort
   return round(a:float*n)/n
 endfunction
 
+function! s:_get_num_digits(base) abort
+  if a:base < 2 || a:base > 36
+    throw 'vital: Math: base number must be from 2 to 36'
+  endif
+  return (map(range(0x30, 0x39) + range(0x41, 0x5A), 'nr2char(v:val)'))[0 : a:base-1]
+endfunction
+
+function! s:str2nr(str, ...) abort
+  let base = get(a:000, 0, 10)
+  let digits = s:_get_num_digits(base)
+  if a:str =~# '^-'
+    let str = a:str[1:]
+    let sign = -1
+  else
+    let str = a:str
+    let sign = 1
+  endif
+  let n = 0
+  let total = 0
+  for c in reverse(split(str, '\zs'))
+    let idx = index(digits, c)
+    if idx == -1
+      throw 'vital: Math: given string includes out of range character'
+    endif
+    let total += idx * pow(base, n)
+    let n += 1
+  endfor
+  return sign * total
+endfunction
+
+function! s:nr2str(n, ...) abort
+  let base = get(a:000, 0, 10)
+  let digits = s:_get_num_digits(base)
+  let rest = a:n
+  if rest == 0
+    return '0'
+  endif
+  let sign = (rest >= 0) ? 1 : -1
+  let rest = rest * sign
+  let str = ''
+  while rest > 0
+    let str = digits[rest % base] . str
+    let rest = rest / base
+  endwhile
+  if sign < 0
+    let str = '-' . str
+  endif
+  return str
+endfunction
+
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

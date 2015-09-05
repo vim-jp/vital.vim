@@ -76,3 +76,41 @@ function! s:suite.round()
   call s:assert.equals(s:M.round(123, -1), 120.0)
   call s:assert.equals(s:M.round(123, 1), 123.0)
 endfunction
+
+function! s:suite.str2nr()
+  call s:assert.equals(s:M.str2nr('345'), 345)
+  call s:assert.equals(s:M.str2nr('0', 10), 0)
+  call s:assert.equals(s:M.str2nr('1', 10), 1)
+  call s:assert.equals(s:M.str2nr('10', 10), 10)
+  call s:assert.equals(s:M.str2nr('-1', 10), -1)
+  call s:assert.equals(s:M.str2nr('-10', 10), -10)
+  call s:assert.equals(s:M.str2nr('0', 2), 0)
+  call s:assert.equals(s:M.str2nr('10', 2), 2)
+  call s:assert.equals(s:M.str2nr('ZZ', 36), 1295)
+  call s:assert.equals(s:M.str2nr('ABCD', 14), 29777)
+  call s:assert.equals(s:M.str2nr('WXYZ', 36), 1537019)
+  call s:assert.equals(s:M.str2nr('030', 10), 30)
+  let Math = s:M
+  Throws /^vital: Math: given string/ Math.str2nr('2', 2)
+  Throws /^vital: Math: given string/ Math.str2nr('ZZ', 10)
+  Throws /^vital: Math: base number/ Math.str2nr('0', 1)
+  Throws /^vital: Math: base number/ Math.str2nr('0', 37)
+endfunction
+
+function! s:suite.nr2str()
+  call s:assert.equals(s:M.nr2str(345), '345')
+  call s:assert.equals(s:M.nr2str(0, 10), '0')
+  call s:assert.equals(s:M.nr2str(1, 10), '1')
+  call s:assert.equals(s:M.nr2str(10, 10), '10')
+  call s:assert.equals(s:M.nr2str(-1, 10), '-1')
+  call s:assert.equals(s:M.nr2str(-10,10), '-10')
+  call s:assert.equals(s:M.nr2str(0, 2), '0')
+  call s:assert.equals(s:M.nr2str(2, 2), '10')
+  call s:assert.equals(s:M.nr2str(1295, 36), 'ZZ')
+  call s:assert.equals(s:M.nr2str(29777, 14), 'ABCD')
+  call s:assert.equals(s:M.nr2str(1537019, 36), 'WXYZ')
+  let Math = s:M
+  Throws /^vital: Math: base number/ Math.nr2str(1, 1)
+  Throws /^vital: Math: base number/ Math.nr2str(1, 37)
+endfunction
+
