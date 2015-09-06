@@ -189,13 +189,15 @@ function! s:__parse_tree(ctx, top) abort
   " this regex matches
   " 1) the remaining until the next tag begins
   "    2) maybe closing "/" of tag name
-  "    3)  tagname
+  "    3) tagname
   "    4) the attributes of the text (optional)
   "    5) maybe closing "/" (end of tag name)
   " or
   "    6) CDATA or ''
   "    7) text content of CDATA
-  " 8) the remaining text after the tag (rest)
+  " or
+  "    8) comment
+  " 9) the remaining text after the tag (rest)
   " (These numbers correspond to the indexes in matched list m)
   let tag_mx = '^\(\_.\{-}\)\%(\%(<\(/\?\)\([^!/>[:space:]]\+\)\(\%([[:space:]]*[^/>=[:space:]]\+[[:space:]]*=[[:space:]]*\%([^"'' >\t]\+\|"[^"]*"\|''[^'']*''\)\|[[:space:]]\+[^/>=[:space:]]\+[[:space:]]*\)*\)[[:space:]]*\(/\?\)>\)\|\%(<!\[\(CDATA\)\[\(.\{-}\)\]\]>\)\|\(<!--.\{-}-->\)\)\(.*\)'
 
