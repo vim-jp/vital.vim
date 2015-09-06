@@ -135,7 +135,7 @@ function! s:_make_function(name, id) abort
   \   'function s:%s(...)',
   \   '  let closure = get(s:closures, %s)',
   \   '  if !s:is_closure(closure)',
-  \   '    throw s:error("This function has been deleted")',
+  \   '    throw s:_error("This function has been deleted")',
   \   '  endif',
   \   '  let Result = closure.apply(a:000)',
   \   '  call closure._decrease()',
@@ -175,7 +175,7 @@ endfunction
 
 function! s:from_operator(op) abort
   if !s:_is_operator(a:op)
-    throw s:error('%s is not an operator', string(a:op))
+    throw s:_error('%s is not an operator', string(a:op))
   endif
   return s:from_expr(printf('a:1%sa:2', a:op))
 endfunction
@@ -210,7 +210,7 @@ function! s:build(callable, ...) abort
     endfor
     return call('s:from_command', [a:callable] + a:000)
   endif
-  throw s:error('Can not treat as callable: %s', string(a:callable))
+  throw s:_error('Can not treat as callable: %s', string(a:callable))
 endfunction
 
 function! s:call(callable, ...) abort
@@ -299,13 +299,13 @@ function! s:_get_binding(args) abort
       if t == type({})
         call extend(binding, b)
       else
-        throw s:error('{binding} must be a Dictionary: %s', string(a:args))
+        throw s:_error('{binding} must be a Dictionary: %s', string(a:args))
       endif
       unlet b
     endfor
     return binding
   endif
-  throw s:error('{binding} must be a Dictionary: %s', string(a:args))
+  throw s:_error('{binding} must be a Dictionary: %s', string(a:args))
 endfunction
 
 function! s:_is_operator(str) abort
@@ -380,7 +380,7 @@ function! s:_sfunc(name) abort
   return function(matchstr(expand('<sfile>'), '<SNR>\d\+_\ze_\w\+$') . a:name)
 endfunction
 
-function! s:error(message, ...) abort
+function! s:_error(message, ...) abort
   let mes = printf('vital: Data.Closure: %s', a:message)
   if a:0
     let mes = call('printf', [mes] + a:000)
