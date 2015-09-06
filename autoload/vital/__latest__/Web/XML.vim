@@ -179,7 +179,7 @@ function! s:__parse_tree(ctx, top) abort
     let matches = matchlist(match, mx)
     if len(matches)
       let encoding = matches[1]
-      if len(encoding) && len(a:ctx['encoding']) == 0
+      if encoding !=# '' && a:ctx['encoding'] ==# ''
         let a:ctx['encoding'] = encoding
         let a:ctx['xml'] = iconv(a:ctx['xml'], encoding, &encoding)
       endif
@@ -200,7 +200,7 @@ function! s:__parse_tree(ctx, top) abort
   " (These numbers correspond to the indexes in matched list m)
   let tag_mx = '^\(\_.\{-}\)\%(\%(<\(/\?\)\([^!/>[:space:]]\+\)\(\%([[:space:]]*[^/>=[:space:]]\+[[:space:]]*=[[:space:]]*\%([^"'' >\t]\+\|"[^"]*"\|''[^'']*''\)\|[[:space:]]\+[^/>=[:space:]]\+[[:space:]]*\)*\)[[:space:]]*\(/\?\)>\)\|\%(<!\[\(CDATA\)\[\(.\{-}\)\]\]>\)\|\(<!--.\{-}-->\)\)'
 
-  while len(a:ctx['xml']) > 0
+  while a:ctx.xml !=# ''
     let m = matchlist(a:ctx.xml, tag_mx)
     if empty(m) | break | endif
     let a:ctx.xml = a:ctx.xml[len(m[0]) :]
@@ -209,7 +209,7 @@ function! s:__parse_tree(ctx, top) abort
     let tag_name = m[3]
     let attrs = m[4]
 
-    if len(m[1])
+    if m[1] !=# ''
       let content .= s:decodeEntityReference(m[1])
     endif
 
@@ -237,13 +237,13 @@ function! s:__parse_tree(ctx, top) abort
     let node = deepcopy(s:__template)
     let node.name = tag_name
     let attr_mx = '\([^=[:space:]]\+\)\s*\%(=\s*''\([^'']*\)''\|=\s*"\([^"]*\)"\|=\s*\(\w\+\)\|\)'
-    while len(attrs) > 0
+    while attrs !=# ''
       let attr_match = matchlist(attrs, attr_mx)
       if len(attr_match) == 0
         break
       endif
       let name = attr_match[1]
-      let value = len(attr_match[2]) ? attr_match[2] : len(attr_match[3]) ? attr_match[3] : len(attr_match[4]) ? attr_match[4] : ""
+      let value = attr_match[2] !=# '' ? attr_match[2] : attr_match[3] !=# '' ? attr_match[3] : attr_match[4] !=# '' ? attr_match[4] : ""
       if value == ""
         let value = name
       endif
