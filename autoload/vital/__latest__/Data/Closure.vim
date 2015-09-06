@@ -67,10 +67,10 @@ endfunction
 
 function! s:Closure.with_param(param_list) abort
   let [arglist, context] = s:_get_arglist_and_context(a:param_list)
-  if empty(arglist) && type(context) != type({})
+  if empty(arglist) && context is 0
     return self
   endif
-  if type(context) != type({})
+  if context is 0
     unlet context
     let context = self._context
   endif
