@@ -225,13 +225,13 @@ function! s:__parse_tree(ctx, top) abort
 
     " comment tag
     if m[8] != ''
-        continue
+      continue
     endif
 
     " if element is a CDATA
     if m[6] != ''
-        let content .= m[7]
-        continue
+      let content .= m[7]
+      continue
     endif
 
     let node = deepcopy(s:__template)
