@@ -197,14 +197,13 @@ function! s:__parse_tree(ctx, top) abort
   "    7) text content of CDATA
   " or
   "    8) comment
-  " 9) the remaining text after the tag (rest)
   " (These numbers correspond to the indexes in matched list m)
-  let tag_mx = '^\(\_.\{-}\)\%(\%(<\(/\?\)\([^!/>[:space:]]\+\)\(\%([[:space:]]*[^/>=[:space:]]\+[[:space:]]*=[[:space:]]*\%([^"'' >\t]\+\|"[^"]*"\|''[^'']*''\)\|[[:space:]]\+[^/>=[:space:]]\+[[:space:]]*\)*\)[[:space:]]*\(/\?\)>\)\|\%(<!\[\(CDATA\)\[\(.\{-}\)\]\]>\)\|\(<!--.\{-}-->\)\)\(.*\)'
+  let tag_mx = '^\(\_.\{-}\)\%(\%(<\(/\?\)\([^!/>[:space:]]\+\)\(\%([[:space:]]*[^/>=[:space:]]\+[[:space:]]*=[[:space:]]*\%([^"'' >\t]\+\|"[^"]*"\|''[^'']*''\)\|[[:space:]]\+[^/>=[:space:]]\+[[:space:]]*\)*\)[[:space:]]*\(/\?\)>\)\|\%(<!\[\(CDATA\)\[\(.\{-}\)\]\]>\)\|\(<!--.\{-}-->\)\)'
 
   while len(a:ctx['xml']) > 0
     let m = matchlist(a:ctx.xml, tag_mx)
     if empty(m) | break | endif
-    let a:ctx.xml = m[9]
+    let a:ctx.xml = a:ctx.xml[len(m[0]) :]
     let is_end_tag = m[2] == '/' && m[5] == ''
     let is_start_and_end_tag = m[2] == '' && m[5] == '/'
     let tag_name = m[3]
