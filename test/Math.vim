@@ -78,6 +78,9 @@ function! s:suite.round()
 endfunction
 
 function! s:suite.str2nr()
+  call s:assert.is_number(s:M.str2nr('0'))
+  call s:assert.is_number(s:M.str2nr('123'))
+  call s:assert.is_number(s:M.str2nr('ABCD', 16))
   call s:assert.equals(s:M.str2nr('345'), 345)
   call s:assert.equals(s:M.str2nr('0', 10), 0)
   call s:assert.equals(s:M.str2nr('1', 10), 1)

@@ -99,16 +99,17 @@ function! s:str2nr(str, ...) abort
   else
     let sign = 1
   endif
-  let n = 0
   let total = 0
+  let power_of_base = 1
   for c in reverse(split(str, '\zs'))
-    let idx = index(digits, c)
-    if idx == -1
+    let digit = index(digits, c)
+    if digit == -1
       throw 'vital: Math: given string includes out of range character'
     endif
-    let total += idx * pow(base, n)
-    let n += 1
+    let total += digit * power_of_base
+    let power_of_base = power_of_base * base
   endfor
+
   return sign * total
 endfunction
 
