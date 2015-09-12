@@ -179,7 +179,7 @@ function! s:__parse_tree(ctx, top) abort
     let matches = matchlist(match, mx)
     if len(matches)
       let encoding = matches[1]
-      if len(encoding) && len(a:ctx['encoding']) == 0
+      if encoding !=# '' && a:ctx['encoding'] ==# ''
         let a:ctx['encoding'] = encoding
         let a:ctx['xml'] = iconv(a:ctx['xml'], encoding, &encoding)
       endif
@@ -189,25 +189,27 @@ function! s:__parse_tree(ctx, top) abort
   " this regex matches
   " 1) the remaining until the next tag begins
   "    2) maybe closing "/" of tag name
-  "    3)  tagname
+  "    3) tagname
   "    4) the attributes of the text (optional)
   "    5) maybe closing "/" (end of tag name)
   " or
   "    6) CDATA or ''
   "    7) text content of CDATA
-  " 8) the remaining text after the tag (rest)
+  " or
+  "    8) comment
   " (These numbers correspond to the indexes in matched list m)
-  let tag_mx = '^\(\_.\{-}\)\%(\%(<\(/\?\)\([^!/>[:space:]]\+\)\(\%([[:space:]]*[^/>=[:space:]]\+[[:space:]]*=[[:space:]]*\%([^"'' >\t]\+\|"[^"]*"\|''[^'']*''\)\|[[:space:]]\+[^/>=[:space:]]\+[[:space:]]*\)*\)[[:space:]]*\(/\?\)>\)\|\%(<!\[\(CDATA\)\[\(.\{-}\)\]\]>\)\|\(<!--.\{-}-->\)\)\(.*\)'
+  let tag_mx = '^\(\_.\{-}\)\%(\%(<\(/\?\)\([^!/>[:space:]]\+\)\(\%([[:space:]]*[^/>=[:space:]]\+[[:space:]]*=[[:space:]]*\%([^"'' >\t]\+\|"[^"]*"\|''[^'']*''\)\|[[:space:]]\+[^/>=[:space:]]\+[[:space:]]*\)*\)[[:space:]]*\(/\?\)>\)\|\%(<!\[\(CDATA\)\[\(.\{-}\)\]\]>\)\|\(<!--.\{-}-->\)\)'
 
-  while len(a:ctx['xml']) > 0
+  while a:ctx.xml !=# ''
     let m = matchlist(a:ctx.xml, tag_mx)
     if empty(m) | break | endif
+    let a:ctx.xml = a:ctx.xml[len(m[0]) :]
     let is_end_tag = m[2] == '/' && m[5] == ''
     let is_start_and_end_tag = m[2] == '' && m[5] == '/'
     let tag_name = m[3]
     let attrs = m[4]
 
-    if len(m[1])
+    if m[1] !=# ''
       let content .= s:decodeEntityReference(m[1])
     endif
 
@@ -218,33 +220,30 @@ function! s:__parse_tree(ctx, top) abort
       if len(stack) " TODO: checking whether opened tag is exist. 
         call remove(stack, -1)
       endif
-      let a:ctx['xml'] = m[9]
       continue
     endif
 
     " comment tag
     if m[8] != ''
-        let a:ctx.xml = m[9]
-        continue
+      continue
     endif
 
     " if element is a CDATA
     if m[6] != ''
-        let content .= m[7]
-        let a:ctx.xml = m[9]
-        continue
+      let content .= m[7]
+      continue
     endif
 
     let node = deepcopy(s:__template)
     let node.name = tag_name
     let attr_mx = '\([^=[:space:]]\+\)\s*\%(=\s*''\([^'']*\)''\|=\s*"\([^"]*\)"\|=\s*\(\w\+\)\|\)'
-    while len(attrs) > 0
+    while attrs !=# ''
       let attr_match = matchlist(attrs, attr_mx)
       if len(attr_match) == 0
         break
       endif
       let name = attr_match[1]
-      let value = len(attr_match[2]) ? attr_match[2] : len(attr_match[3]) ? attr_match[3] : len(attr_match[4]) ? attr_match[4] : ""
+      let value = attr_match[2] !=# '' ? attr_match[2] : attr_match[3] !=# '' ? attr_match[3] : attr_match[4] !=# '' ? attr_match[4] : ""
       if value == ""
         let value = name
       endif
@@ -261,7 +260,6 @@ function! s:__parse_tree(ctx, top) abort
       " opening tag, continue parsing its contents
       call add(stack, node)
     endif
-    let a:ctx['xml'] = m[9]
   endwhile
 endfunction
 " @vimlint(EVL102, 0, l:content)
