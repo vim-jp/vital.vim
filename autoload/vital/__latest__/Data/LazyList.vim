@@ -26,7 +26,7 @@ endfunction
 
 function! s:file_readlines(fname) abort
   if !s:P.has_vimproc()
-    throw 'Data.LazyList.file_readlines() requires vimproc'
+    throw 'vital: Data.LazyList: file_readlines() requires vimproc'
   endif
   return [[], {
         \ 'f': vimproc#fopen(a:fname, 'r'),
