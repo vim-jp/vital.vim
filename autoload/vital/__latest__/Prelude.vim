@@ -253,13 +253,13 @@ endfunction
 function! s:input_helper(funcname, args) abort
   let success = 0
   if inputsave() !=# success
-    throw 'inputsave() failed'
+    throw 'vital: Prelude: inputsave() failed'
   endif
   try
     return call(a:funcname, a:args)
   finally
     if inputrestore() !=# success
-      throw 'inputrestore() failed'
+      throw 'vital: Prelude: inputrestore() failed'
     endif
   endtry
 endfunction
