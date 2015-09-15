@@ -278,7 +278,7 @@ Describe Data.List
     End
 
     It causes an error when the list is empty
-      Throw /^foldl1$/ List.foldl1('123', [])
+      Throw /^vital: Data.List: foldl1$/ List.foldl1('123', [])
     End
   End
 
@@ -300,7 +300,7 @@ Describe Data.List
     End
 
     It causes an error when the list is empty
-      Throw /^foldr1$/ List.foldr1('123', [])
+      Throw /^vital: Data.List: foldr1$/ List.foldr1('123', [])
     End
   End
 
