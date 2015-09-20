@@ -45,7 +45,8 @@ function! s:starts_with(str, prefix) abort
 endfunction
 
 function! s:ends_with(str, suffix) abort
-  return strridx(a:str, a:suffix) + len(a:suffix) == len(a:str)
+  let idx = strridx(a:str, a:suffix)
+  return 0 <= idx && idx + len(a:suffix) == len(a:str)
 endfunction
 
 function! s:common_head(strs) abort

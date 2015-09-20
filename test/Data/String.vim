@@ -145,6 +145,7 @@ endfunction
 function! s:suite.ends_with() abort
   call s:assert.true( s:String.ends_with('vital.vim', 'vim'))
   call s:assert.false( s:String.ends_with('vital.vim', 'vi'))
+  call s:assert.false( s:String.ends_with('vital.vim', 'hogefoobar'))
 endfunction
 
 function! s:suite.common_head()
