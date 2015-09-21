@@ -22,7 +22,7 @@ function! s:_vital_depends() abort
 endfunction
 
 function! s:parse(sexp) abort
-  if has('lua')
+  if exists('*luaeval')
     return luaeval('_G[_A[0]].vim.parse(_A[1])', [s:sfile, a:sexp])
     " return luaeval('vital_text_sexp.parse(_A)', a:sexp)
     " return luaeval('vital_text_sexp.parse(vital_text_sexp.parse(_A))', a:sexp)
