@@ -14,8 +14,6 @@ function! s:_vital_loaded(V) abort
   if exists('*luaeval')
     execute printf('lua vital_context = "%s"', s:sfile)
     call luaeval('dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
-  else
-    throw "vital: Text.Sexp: You don't have if_lua."
   endif
 endfunction
 
