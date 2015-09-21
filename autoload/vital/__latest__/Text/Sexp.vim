@@ -11,7 +11,7 @@ function! s:_vital_loaded(V) abort
   let s:P = s:V.import('Lua.Prelude')
   let s:LuaP = s:P.lua_namespace()
 
-  if has('lua')
+  if exists('*luaeval')
     execute printf('lua vital_context = "%s"', s:sfile)
     call luaeval('dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
   else
