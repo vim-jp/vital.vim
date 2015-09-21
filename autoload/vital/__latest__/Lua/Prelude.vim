@@ -11,11 +11,9 @@ set cpo&vim
 let s:sfile = tr(expand('<sfile>:p'), '\', '/')
 
 function! s:_vital_loaded(V) abort
-  if has('lua')
+  if exists('*luaeval')
     execute printf('lua vital_context = "%s"', s:sfile)
     call luaeval('dofile(_A)', s:luafile_of(s:sfile))
-  else
-    throw "Vital.Lua.Prelude: You don't have if_lua."
   endif
 endfunction
 

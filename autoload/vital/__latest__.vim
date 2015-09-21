@@ -244,11 +244,7 @@ function! s:_build_module(sid) abort
   let s:loaded[a:sid] = get(g:, 'vital_debug', 0) ? module : export_module
   if has_key(module, '_vital_loaded')
     let V = vital#{s:self_version}#new()
-    try
-      call module._vital_loaded(V)
-    catch
-      " FIXME: Show an error message for debug.
-    endtry
+    call module._vital_loaded(V)
   endif
   return copy(s:loaded[a:sid])
 endfunction

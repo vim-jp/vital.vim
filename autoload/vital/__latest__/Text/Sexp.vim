@@ -11,11 +11,9 @@ function! s:_vital_loaded(V) abort
   let s:P = s:V.import('Lua.Prelude')
   let s:LuaP = s:P.lua_namespace()
 
-  if has('lua')
+  if exists('*luaeval')
     execute printf('lua vital_context = "%s"', s:sfile)
     call luaeval('dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
-  else
-    throw "vital: Text.Sexp: You don't have if_lua."
   endif
 endfunction
 
@@ -24,7 +22,7 @@ function! s:_vital_depends() abort
 endfunction
 
 function! s:parse(sexp) abort
-  if has('lua')
+  if exists('*luaeval')
     return luaeval('_G[_A[0]].vim.parse(_A[1])', [s:sfile, a:sexp])
     " return luaeval('vital_text_sexp.parse(_A)', a:sexp)
     " return luaeval('vital_text_sexp.parse(vital_text_sexp.parse(_A))', a:sexp)
