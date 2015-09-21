@@ -8,7 +8,7 @@ Describe Random.Xor128
       let expected = readfile(getcwd() . '/test/Random/xor128_random_numbers_table.txt')
       " call X.srand(123456789)
       for e in expected
-        Assert Equals(e, X.rand())
+        Assert Equals(X.rand(), e)
       endfor
     End
   End
@@ -21,12 +21,12 @@ Describe Random.Xor128
       let a3 = X.rand()
 
       call X.srand(1)
-      Assert Equals(a1, X.rand())
-      Assert Equals(a2, X.rand())
-      Assert Equals(a3, X.rand())
+      Assert Equals(X.rand(), a1)
+      Assert Equals(X.rand(), a2)
+      Assert Equals(X.rand(), a3)
 
       call X.srand(2)
-      Assert NotEquals(a1, X.rand())
+      Assert NotEquals(X.rand(), a1)
     End
   End
 End
