@@ -18,7 +18,7 @@ endfunction
 
 let s:NONE = []
 
-function! s:_uri_new_sandbox(args, retall, NothrowValue) abort "{{{
+function! s:_uri_new_sandbox(args, retall, NothrowValue) abort
   try
     let results = call('s:_uri_new', a:args)
     return a:retall ? results : results[0]
@@ -29,19 +29,19 @@ function! s:_uri_new_sandbox(args, retall, NothrowValue) abort "{{{
       throw substitute(v:exception, '^Vim([^()]\+):', '', '')
     endif
   endtry
-endfunction "}}}
+endfunction
 
-function! s:_is_own_exception(str) abort "{{{
+function! s:_is_own_exception(str) abort
   return a:str =~# '^uri parse error:'
-endfunction "}}}
+endfunction
 
-function! s:new(uri, ...) abort "{{{
+function! s:new(uri, ...) abort
   let NothrowValue = a:0 ? a:1 : s:NONE
   return s:_uri_new_sandbox(
   \   [a:uri], 0, NothrowValue)
-endfunction "}}}
+endfunction
 
-function! s:new_from_uri_like_string(str, ...) abort "{{{
+function! s:new_from_uri_like_string(str, ...) abort
   let str = a:str
   if str !~# s:RX_SCHEME    " no scheme.
     let str = 'http://' . str
@@ -50,29 +50,29 @@ function! s:new_from_uri_like_string(str, ...) abort "{{{
   let NothrowValue = a:0 ? a:1 : s:NONE
   return s:_uri_new_sandbox(
   \   [str], 0, NothrowValue)
-endfunction "}}}
+endfunction
 
-function! s:new_from_seq_string(uri, ...) abort "{{{
+function! s:new_from_seq_string(uri, ...) abort
   let NothrowValue = a:0 ? a:1 : s:NONE
   return s:_uri_new_sandbox(
   \   [a:uri, 1], 1, NothrowValue)
-endfunction "}}}
+endfunction
 
-function! s:is_uri(str) abort "{{{
+function! s:is_uri(str) abort
   let ERROR = []
   return s:new(a:str, ERROR) isnot ERROR
-endfunction "}}}
+endfunction
 
-function! s:like_uri(str) abort "{{{
+function! s:like_uri(str) abort
   let ERROR = []
   return s:new_from_uri_like_string(a:str, ERROR) isnot ERROR
-endfunction "}}}
+endfunction
 
 " }}}
 
 " URI Object {{{
 
-function! s:_uri_new(str, ...) abort "{{{
+function! s:_uri_new(str, ...) abort
   let ignore_rest = (a:0 ? a:1 : 0)
   let [result, rest] = s:_parse_uri(a:str, ignore_rest)
   " TODO: Support punycode
@@ -86,30 +86,30 @@ function! s:_uri_new(str, ...) abort "{{{
 
   let original_url = a:str[: len(a:str)-len(rest)-1]
   return [obj, original_url, rest]
-endfunction "}}}
+endfunction
 
-function! s:_uri_scheme(...) dict abort "{{{
+function! s:_uri_scheme(...) dict abort
   if a:0 && s:_is_scheme(a:1)
     let self.__scheme = a:1
   endif
   return self.__scheme
-endfunction "}}}
+endfunction
 
-function! s:_uri_host(...) dict abort "{{{
+function! s:_uri_host(...) dict abort
   if a:0 && s:_is_host(a:1)
     let self.__host = a:1
   endif
   return self.__host
-endfunction "}}}
+endfunction
 
-function! s:_uri_port(...) dict abort "{{{
+function! s:_uri_port(...) dict abort
   if a:0 && s:_is_port(a:1)
     let self.__port = a:1
   endif
   return self.__port
-endfunction "}}}
+endfunction
 
-function! s:_uri_path(...) dict abort "{{{
+function! s:_uri_path(...) dict abort
   if a:0
     " NOTE: self.__path must not have "/" as prefix.
     let path = substitute(a:1, '^/\+', '', '')
@@ -118,9 +118,9 @@ function! s:_uri_path(...) dict abort "{{{
     endif
   endif
   return "/" . self.__path
-endfunction "}}}
+endfunction
 
-function! s:_uri_opaque(...) dict abort "{{{
+function! s:_uri_opaque(...) dict abort
   if a:0
     " TODO
     throw 'vital: Web.URI: uri.opaque(value) does not support yet.'
@@ -129,9 +129,9 @@ function! s:_uri_opaque(...) dict abort "{{{
   \           self.__host,
   \           (self.__port !=# '' ? ':' . self.__port : ''),
   \           self.__path)
-endfunction "}}}
+endfunction
 
-function! s:_uri_fragment(...) dict abort "{{{
+function! s:_uri_fragment(...) dict abort
   if a:0
     " NOTE: self.__fragment must not have "#" as prefix.
     let fragment = substitute(a:1, '^#', '', '')
@@ -140,9 +140,9 @@ function! s:_uri_fragment(...) dict abort "{{{
     endif
   endif
   return self.__fragment
-endfunction "}}}
+endfunction
 
-function! s:_uri_query(...) dict abort "{{{
+function! s:_uri_query(...) dict abort
   if a:0
     " NOTE: self.__query must not have "?" as prefix.
     let query = substitute(a:1, '^?', '', '')
@@ -151,9 +151,9 @@ function! s:_uri_query(...) dict abort "{{{
     endif
   endif
   return self.__query
-endfunction "}}}
+endfunction
 
-function! s:_uri_to_iri() dict abort "{{{
+function! s:_uri_to_iri() dict abort
   " Same as uri.to_string(), but do unescape for self.__path.
   return printf(
   \   '%s://%s%s/%s%s%s',
@@ -164,9 +164,9 @@ function! s:_uri_to_iri() dict abort "{{{
   \   (self.__query != '' ? '?' . self.__query : ''),
   \   (self.__fragment != '' ? '#' . self.__fragment : ''),
   \)
-endfunction "}}}
+endfunction
 
-function! s:_uri_to_string() dict abort "{{{
+function! s:_uri_to_string() dict abort
   return printf(
   \   '%s://%s%s/%s%s%s',
   \   self.__scheme,
@@ -176,14 +176,14 @@ function! s:_uri_to_string() dict abort "{{{
   \   (self.__query != '' ? '?' . self.__query : ''),
   \   (self.__fragment != '' ? '#' . self.__fragment : ''),
   \)
-endfunction "}}}
+endfunction
 
 
 
-function! s:_local_func(name) abort "{{{
+function! s:_local_func(name) abort
   let sid = matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__local_func$')
   return function('<SNR>' . sid . '_' . a:name)
-endfunction "}}}
+endfunction
 
 let s:uri = {
 \ '__scheme': '',
@@ -207,7 +207,7 @@ let s:uri = {
 
 " Parsing Functions {{{
 
-function! s:_parse_uri(str, ignore_rest) abort "{{{
+function! s:_parse_uri(str, ignore_rest) abort
   let rest = a:str
 
   " Ignore leading/trailing whitespaces.
@@ -267,8 +267,8 @@ function! s:_parse_uri(str, ignore_rest) abort "{{{
   \ 'query': query,
   \ 'fragment': fragment,
   \}, rest]
-endfunction "}}}
-function! s:_eat_em(str, pat) abort "{{{
+endfunction
+function! s:_eat_em(str, pat) abort
   let pat = a:pat.'\C'
   let m = matchlist(a:str, pat)
   if empty(m)
@@ -278,7 +278,7 @@ function! s:_eat_em(str, pat) abort "{{{
   let [match, want] = m[0:1]
   let rest = strpart(a:str, strlen(match))
   return [want, rest]
-endfunction "}}}
+endfunction
 
 
 " Patterns for URI syntax {{{
