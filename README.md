@@ -137,6 +137,11 @@ call s:f()
 
 We recommend you to use a capital letter for a Vital module dictionary to assign.
 
+## Plugins Using vital.vim
+Several vim plugins are already using vital.vim
+  - [wiki](https://github.com/vim-jp/vital.vim/wiki#plugins-that-use-vitalvim)
+  - [google search](https://www.google.co.jp/search?q=filetype%3Avital%20site%3Ahttps%3A%2F%2Fgithub.com)
+
 ## If you want to become a vital developer
 
 [Become a vital.vim Developer](https://github.com/vim-jp/vital.vim/wiki/Become-a-vital.vim-Developer)
