@@ -133,7 +133,7 @@ LINKS					*Vital-links*
  Let's use vital.vim (in Japanese):
    http://qiita.com/rbtnn/items/deb569ebc94d5172a5e5
 
- Vitalize command
+ Vitalize command:
   |vitalizer.txt|
 
  Vital modules				*Vital-modules*
@@ -188,6 +188,9 @@ LINKS					*Vital-links*
   |vital-web-json.txt|		  JSON parser written in pure Vim script
   |vital-web-uri.txt|		  URI manipulation library
   |vital-web-xml.txt|		  XML parser written in pure Vim script
+
+ External vital modules:
+  https://github.com/vim-jp/vital.vim/wiki/External-vital-modules
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
