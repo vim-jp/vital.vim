@@ -1,0 +1,145 @@
+function! s:clear_tab_and_windows()
+  tabnew
+  tabonly!
+endfunction
+
+Describe Vim.ViewTracer
+
+  Before all
+    let T = vital#of('vital').import('Vim.ViewTracer')
+  End
+
+  Before
+    if !(703 < v:version || (v:version == 703 && has('patch893')))
+      Skip Vim.ViewTracer requires Vim 7.3.893 or later
+    endif
+    call s:clear_tab_and_windows()
+  End
+
+  Describe .trace_window()
+    It returns window handle
+      let handle = T.trace_window()
+      Assert KeyExists(handle, 'window')
+      Assert IsDict(handle.window)
+    End
+  End
+
+  Describe .trace_tabpage()
+    It returns tabpage handle
+      let handle = T.trace_tabpage()
+      Assert KeyExists(handle, 'tabpage')
+      Assert IsDict(handle.tabpage)
+    End
+  End
+
+  Describe .find()
+    Context with window handle
+      It gets current tabnr and winnr of handle
+        let handle = T.trace_window()
+        Assert Equals(T.find(handle), [1, 1])
+        leftabove new
+        Assert Equals(T.find(handle),  [1, 2])
+        tabnew
+        tabmove 0
+        Assert Equals(T.find(handle),  [2, 2])
+        call s:clear_tab_and_windows()
+        Assert Equals(T.find(handle),  [0, 0])
+      End
+    End
+
+    Context with tabpage handle
+      It gets current tabnr of handle
+        let handle = T.trace_tabpage()
+        Assert Equals(T.find(handle),  [1, 0])
+        tabnew
+        tabmove 0
+        Assert Equals(T.find(handle),  [2, 0])
+        tabnew
+        Assert Equals(T.find(handle),  [3, 0])
+        call s:clear_tab_and_windows()
+        Assert Equals(T.find(handle),  [0, 0])
+      End
+    End
+  End
+
+  Describe .exists()
+    Context with window handle
+      It checks whether window of handle exists
+        let handle = T.trace_window()
+        Assert True(T.exists(handle))
+        call s:clear_tab_and_windows()
+        Assert False(T.exists(handle))
+      End
+    End
+
+    Context with tabpage handle
+      It checks whether tabpage of handle exists
+        let handle = T.trace_tabpage()
+        Assert True(T.exists(handle))
+        call s:clear_tab_and_windows()
+        Assert False(T.exists(handle))
+      End
+    End
+  End
+
+  Describe .tabnr()
+    It gets current tabnr of handle
+      let handle = T.trace_tabpage()
+      Assert Equals(T.tabnr(handle),  1)
+      tabnew
+      tabmove 0
+      Assert Equals(T.tabnr(handle),  2)
+      tabnew
+      Assert Equals(T.tabnr(handle),  3)
+      call s:clear_tab_and_windows()
+      Assert Equals(T.tabnr(handle),  0)
+    End
+  End
+
+  Describe .winnr()
+    It gets current winnr of handle
+      let handle = T.trace_window()
+      Assert Equals(T.winnr(handle),  1)
+      leftabove new
+      Assert Equals(T.winnr(handle),  2)
+      tabnew
+      tabmove 0
+      Assert Equals(T.winnr(handle),  2)
+      call s:clear_tab_and_windows()
+      Assert Equals(T.winnr(handle),  0)
+    End
+  End
+
+  Describe .jump()
+    Context with window handle
+      It jumps to window of handle
+        let handle = T.trace_window()
+        rightbelow new
+        Assert Equals([tabpagenr(), winnr()],  [1, 2])
+        call T.jump(handle)
+        Assert Equals([tabpagenr(), winnr()],  [1, 1])
+        tabnew
+        tabmove 0
+        Assert Equals([tabpagenr(), winnr()],  [1, 1])
+        call T.jump(handle)
+        Assert Equals([tabpagenr(), winnr()],  [2, 1])
+      End
+    End
+
+    Context with tabpage handle
+      It jumps to tabpage of handle
+        let handle = T.trace_tabpage()
+        tabnew
+        tabmove 0
+        Assert Equals(tabpagenr(),  1)
+        call T.jump(handle)
+        Assert Equals(tabpagenr(),  2)
+        tabnew
+        Assert Equals(tabpagenr(),  3)
+        call T.jump(handle)
+        Assert Equals(tabpagenr(),  2)
+      End
+    End
+  End
+
+End
