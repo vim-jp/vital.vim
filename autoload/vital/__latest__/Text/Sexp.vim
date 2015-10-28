@@ -12,7 +12,7 @@ function! s:_vital_loaded(V) abort
   let s:LuaP = s:P.lua_namespace()
 
   if exists('*luaeval')
-    execute printf('lua vital_context = "%s"', s:sfile)
+    execute printf('lua vital_context = "%s"', escape(s:sfile, '\'))
     call luaeval('dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
   endif
 endfunction
