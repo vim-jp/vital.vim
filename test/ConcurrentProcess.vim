@@ -3,20 +3,11 @@ scriptencoding utf-8
 let s:suite = themis#suite('ConcurrentProcess')
 let s:assert = themis#helper('assert')
 
-function! s:skip_test_if_inappropriate_environment()
-  if !s:CP.is_available()
-    call s:assert.skip('CP is not available. Do you have vimproc?')
-  endif
-  if !executable('cat') || !executable('sh')
-    call s:assert.skip("'cat' or 'sh' are not available. Check your $PATH.")
-  endif
-endfunction
-
 function! s:suite.before()
   let s:CP = vital#of('vital').import('ConcurrentProcess')
+endfunction
 
-  " NOTE: currently themis ignores s:assert.skip() from before.
-  " This will be fixed in the future.
+function! s:suite.before_each() abort
   if !s:CP.is_available()
     call s:assert.skip('CP is not available. Do you have vimproc?')
   endif
@@ -30,7 +21,6 @@ function! s:suite.after()
 endfunction
 
 function! s:suite.of()
-  call s:skip_test_if_inappropriate_environment()
   " Well, this also has tick() and log_dump()
   " This may depend on performance of computer as well
   let label = s:CP.of('cat -n', '/tmp', [
@@ -54,7 +44,6 @@ function! s:suite.of()
 endfunction
 
 function! s:suite.of_with_failure()
-  call s:skip_test_if_inappropriate_environment()
   try
     call s:CP.of('this-command-does-not-exist', '', [])
     call s:assert.fail('of')
@@ -66,7 +55,6 @@ function! s:suite.of_with_failure()
 endfunction
 
 function! s:suite.consume()
-  call s:skip_test_if_inappropriate_environment()
   " Well, this also has of(), and tick()
   " This may depend on performance of computer as well
   let label = s:CP.of('cat -n', '/tmp', [
@@ -107,7 +95,6 @@ function! s:suite.consume()
 endfunction
 
 function! s:suite.consume_all_blocking()
-  call s:skip_test_if_inappropriate_environment()
   let label = s:CP.of('sh -c "sleep 2; echo -n done; sleep 2"', '/tmp', [
         \ ['*read*', 'x', 'done']])
 
@@ -125,7 +112,6 @@ function! s:suite.consume_all_blocking()
 endfunction
 
 function! s:suite.read_all()
-  call s:skip_test_if_inappropriate_environment()
   " system() pattern -- execute something and get everything.
   let label = s:CP.of('sh -c "sleep 1; echo done; sleep 1"', '', [
         \ ['*read-all*', 'x']])
