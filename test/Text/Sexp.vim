@@ -12,7 +12,7 @@ function! s:suite.after()
 endfunction
 
 function! s:suite.parse()
-  if !has('lua') || !has('*luaeval')
+  if !has('lua') || !exists('*luaeval')
     call s:assert.skip('Vital.Text.Sexp: any function call needs if_lua')
   endif
   call s:assert.equals(
