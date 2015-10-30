@@ -70,12 +70,16 @@ function! s:_move(tabnr, winnr) abort
   endif
 endfunction
 
-if has('patch-7.4.434')
+if has('patch-7.4.834')
+  function! s:_gettabdict(tabnr) abort
+    return gettabvar(a:tabnr, '')
+  endfunction
+elseif has('patch-7.4.434')
   function! s:_gettabdict(tabnr) abort
     let dict = gettabvar(a:tabnr, '')
-    " XXX: gettabvar() sometimes returns '' with new tabpage.
+    " gettabvar() sometimes returns '' with new tabpage.
     " This is fixed by calling gettabvar() twice.
-    " Maybe this is a Vim's bug.
+    " This Bug is fixed in 7.4.834.
     return dict is '' ? gettabvar(a:tabnr, '') : dict
   endfunction
 else
