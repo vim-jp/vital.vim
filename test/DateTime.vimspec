@@ -187,7 +187,7 @@ Describe DateTime
   End
 
   Describe .am_pm_names()
-    Context {lowercase} = 0
+    Context {lowercase} is 0
       It returns the list of am/pm names in uppercase
         let names = DT.am_pm_names(0, 'C')
         Assert Equals(names, ['AM', 'PM'])
