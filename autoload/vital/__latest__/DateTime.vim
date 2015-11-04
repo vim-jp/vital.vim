@@ -366,10 +366,9 @@ function! s:DateTime.unix_time() abort
     if self._year < 1969 || 2038 < self._year
       let self._unix_time = -1
     else
-      let self._unix_time = (self.julian_day() - s:EPOC_TIME) *
-      \  s:SECONDS_OF_DAY + self._hour * s:SECONDS_OF_HOUR +
-      \  self._minute * s:NUM_SECONDS +
-      \  self._second - self._timezone.offset()
+      let utc = self.to(0)
+      let self._unix_time = (utc.julian_day() - s:EPOC_TIME) *
+      \  s:SECONDS_OF_DAY + utc.seconds_of_day()
       if self._unix_time < 0
         let self._unix_time = -1
       endif
