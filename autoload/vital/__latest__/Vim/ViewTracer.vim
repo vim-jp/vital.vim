@@ -91,6 +91,7 @@ else
     if a:tabnr != cur_tabnr
       let save_lazyredraw = &lazyredraw
       try
+        set lazyredraw
         noautocmd execute 'tabnext' a:tabnr
         let scope_var = t:
         noautocmd execute 'tabnext' cur_tabnr
