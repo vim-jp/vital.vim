@@ -368,9 +368,7 @@ function! s:DateTime.unix_time() abort
     else
       let utc = self.to(0)
       let self._unix_time = (utc.julian_day() - s:EPOC_TIME) *
-      \  s:SECONDS_OF_DAY + utc._hour * s:SECONDS_OF_HOUR +
-      \  utc._minute * s:NUM_SECONDS +
-      \  utc._second
+      \  s:SECONDS_OF_DAY + utc.seconds_of_day()
       if self._unix_time < 0
         let self._unix_time = -1
       endif
