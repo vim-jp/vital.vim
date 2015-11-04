@@ -70,7 +70,7 @@ function! s:scriptnames() abort
   let sdict = {} " { sid: path }
   for line in s:_capture_lines(':scriptnames')
     let [sid, path] = split(line, '\m^\s*\d\+\zs:\s\ze')
-    let sdict[str2nr(sid)] = path " str2nr(): '  1' -> 1
+    let sdict[str2nr(sid)] = s:_unify_path(path)  " str2nr(): '  1' -> 1
   endfor
   return sdict
 endfunction
@@ -106,10 +106,9 @@ endfunction
 " Assume `a:abspath` is absolute path
 function! s:_sid(abspath, scriptnames) abort
   " Handle symbolic link here
-  let tp = resolve(simplify(a:abspath)) " target path
+  let tp = s:_unify_path(a:abspath) " target path
   for sid in keys(a:scriptnames)
-    " NOTE: is simplify() necessary?
-    if tp is# simplify(fnamemodify(a:scriptnames[sid], ':p'))
+    if tp is# a:scriptnames[sid]
       return str2nr(sid)
     endif
   endfor
@@ -152,7 +151,9 @@ endfunction
 " But it matches correctly with :h /collection
 " :echo "\<SNR>" =~# "\\%#=1[\x80][\xfd]R" | " => 1
 " http://lingr.com/room/vim/archives/2015/02/13#message-21261450
-let s:SNR = join(map(range(len("\<SNR>")), '"[" . "\<SNR>"[v:val] . "]"'), '')
+" In MS Windows with old Vim, [<binary>] doesn't work, but [\xXX] works well.
+" The cause isn't being investigated.
+let s:SNR = join(map(range(len("\<SNR>")), '"[\\x" . printf("%0x", char2nr("\<SNR>"[v:val])) . "]"'), '')
 function! s:sid2sfuncs(sid) abort
   ":h :function /{pattern}
   " ->         ^________
@@ -200,6 +201,14 @@ function! s:sid2svars(sid) abort
     call writefile(lines, fullpath)
   endtry
 endfunction
+
+
+" This is copied from autoload/vital/__latest__.vim
+" FIXME: Avoid duplication.
+function! s:_unify_path(path) abort
+  return resolve(fnamemodify(a:path, ':p:gs?[\\/]?/?'))
+endfunction
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
