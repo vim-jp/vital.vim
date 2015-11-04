@@ -348,6 +348,13 @@ Describe DateTime
         Assert Equals(dt.to(9).unix_time(), 1325473445)
         Assert Equals(dt.to(-8).unix_time(), 1325473445)
       End
+
+      It can interconvert with .from_unix_time()
+        let dt = DT.from_date(2012, 1, 2, 3, 4, 5, 9)
+        let unix_time = dt.unix_time()
+        let new_dt = DT.from_unix_time(unix_time, dt.timezone())
+        Assert Equals(new_dt.to_string(), dt.to_string())
+      End
     End
 
     Describe .is_leap_year()
