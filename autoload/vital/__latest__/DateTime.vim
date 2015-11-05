@@ -448,7 +448,7 @@ function! s:DateTime.format(format, ...) abort
   return result
 endfunction
 " @vimlint(EVL102, 0, l:locale)
-function! s:DateTime.strftime(format) abort
+function! s:DateTime.strftime(format, ...) abort
   let expr = printf('strftime(%s, %d)', string(a:format), self.unix_time())
   return s:_with_locale(expr, a:0 ? a:1 : '')
 endfunction
