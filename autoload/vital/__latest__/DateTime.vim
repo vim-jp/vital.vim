@@ -266,9 +266,14 @@ endfunction
 function! s:am_pm_names(...) abort
   let [lowercase, locale] = a:000 + [0, ''][a:0 :]
   let names = s:_am_pm_names(lowercase, locale)
-  if lowercase && names[0] ==# 'P'  " System doesn't support %P
-    let names = s:_am_pm_names(0, locale)
-    call map(names, 'tolower(v:val)')
+  if lowercase
+    " Some environments do not support %P.
+    " In this case, use tolower() of %p instead of.
+    let failed = names[0] ==# '' || names[0] ==# 'P'
+    if failed
+      let names = s:_am_pm_names(0, locale)
+      call map(names, 'tolower(v:val)')
+    endif
   endif
   return names
 endfunction

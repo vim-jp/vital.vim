@@ -86,7 +86,7 @@ Describe Vim.ScriptLocal
 
   Describe .sid2path()
     It returns path from sid
-      let path = g:root . '/test/_testdata/Vim/ScriptLocal/test.vim'
+      let path = tr(g:root, '\', '/') . '/test/_testdata/Vim/ScriptLocal/test.vim'
       let sid = S.sid(path)
       Assert Equals(fnamemodify(S.sid2path(sid), ':p'), path)
     End
