@@ -68,6 +68,36 @@ function! s:like_uri(str) abort
   return s:new_from_uri_like_string(a:str, ERROR) isnot ERROR
 endfunction
 
+function! s:encode(str, ...) abort
+  let encoding = a:0 ? a:1 : 'utf-8'
+  if encoding ==# ''
+    let str = a:str
+  else
+    let str = iconv(a:str, &encoding, encoding)
+  endif
+
+  let result = ''
+  for i in range(len(str))
+    if str[i] =~# '^[a-zA-Z0-9_.~-]$'
+      let result .= str[i]
+    else
+      let result .= printf('%%%02X', char2nr(str[i]))
+    endif
+  endfor
+  return result
+endfunction
+
+function! s:decode(str, ...) abort
+  let result = substitute(a:str, '%\(\x\x\)',
+  \   '\=printf("%c", str2nr(submatch(1), 16))', 'g')
+
+  let encoding = a:0 ? a:1 : 'utf-8'
+  if encoding ==# ''
+    return result
+  endif
+  return iconv(result, encoding, &encoding)
+endfunction
+
 " }}}
 
 " URI Object {{{
