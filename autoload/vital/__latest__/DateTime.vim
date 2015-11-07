@@ -286,7 +286,7 @@ endfunction
 " ----------------------------------------------------------------------------
 let s:Class = {}
 function! s:Class._clone() abort
-  return copy(self)
+  return filter(copy(self), 'v:key !~# "^__"')
 endfunction
 function! s:_new_class(class) abort
   return extend({'class': a:class}, s:Class)
@@ -324,23 +324,23 @@ function! s:DateTime.timezone(...) abort
   return self._timezone
 endfunction
 function! s:DateTime.day_of_week() abort
-  if !has_key(self, '_day_of_week')
-    let self._day_of_week = self.timezone(0).days_from_era() % 7
+  if !has_key(self, '__day_of_week')
+    let self.__day_of_week = self.timezone(0).days_from_era() % 7
   endif
-  return self._day_of_week
+  return self.__day_of_week
 endfunction
 function! s:DateTime.day_of_year() abort
-  if !has_key(self, '_day_of_year')
-    let self._day_of_year = self.timezone(0).julian_day() -
+  if !has_key(self, '__day_of_year')
+    let self.__day_of_year = self.timezone(0).julian_day() -
     \                       s:_g2jd(self._year, 1, 1) + 1
   endif
-  return self._day_of_year
+  return self.__day_of_year
 endfunction
 function! s:DateTime.days_from_era() abort
-  if !has_key(self, '_day_from_era')
-    let self._day_from_era = self.julian_day() - s:ERA_TIME + 1
+  if !has_key(self, '__day_from_era')
+    let self.__day_from_era = self.julian_day() - s:ERA_TIME + 1
   endif
-  return self._day_from_era
+  return self.__day_from_era
 endfunction
 function! s:DateTime.julian_day(...) abort
   let utc = self.to(0)
@@ -362,19 +362,19 @@ function! s:DateTime.quarter() abort
   return (self._month - 1) / 3 + 1
 endfunction
 function! s:DateTime.unix_time() abort
-  if !has_key(self, '_unix_time')
+  if !has_key(self, '__unix_time')
     if self._year < 1969 || 2038 < self._year
-      let self._unix_time = -1
+      let self.__unix_time = -1
     else
       let utc = self.to(0)
-      let self._unix_time = (utc.julian_day() - s:EPOC_TIME) *
+      let self.__unix_time = (utc.julian_day() - s:EPOC_TIME) *
       \  s:SECONDS_OF_DAY + utc.seconds_of_day()
-      if self._unix_time < 0
-        let self._unix_time = -1
+      if self.__unix_time < 0
+        let self.__unix_time = -1
       endif
     endif
   endif
-  return self._unix_time
+  return self.__unix_time
 endfunction
 function! s:DateTime.is_leap_year() abort
   return s:is_leap_year(self._year)
@@ -448,7 +448,7 @@ function! s:DateTime.format(format, ...) abort
   return result
 endfunction
 " @vimlint(EVL102, 0, l:locale)
-function! s:DateTime.strftime(format) abort
+function! s:DateTime.strftime(format, ...) abort
   let expr = printf('strftime(%s, %d)', string(a:format), self.unix_time())
   return s:_with_locale(expr, a:0 ? a:1 : '')
 endfunction
