@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 Describe Web.URI
   Before all
     let URI = vital#of('vital').import('Web.URI')
@@ -75,6 +77,125 @@ Describe Web.URI
     It checks invalid URI
       Assert False(URI.is_uri('foo'))
       Assert False(URI.is_uri('/bar'))
+    End
+  End
+
+  Describe .encode()
+    It encodes string to Percent-encoding string
+      Assert Equals(URI.encode('abc12390'), 'abc12390')
+      Assert Equals(URI.encode("abc\x01\x0a\x0d AB-"), 'abc%01%0A%0D%20AB-')
+      Assert Equals(URI.encode("\xA4\xC1\xA4\xE3"), '%A4%C1%A4%E3')
+      Assert Equals(URI.encode("\xA4\xC1\xA4\xE5"), '%A4%C1%A4%E5')
+      Assert Equals(URI.encode("\xA4\xC1\xA4\xE7"), '%A4%C1%A4%E7')
+    End
+
+    It encodes the reserved characters in RFC3986
+      Assert Equals(URI.encode(':/?#[]@'), '%3A%2F%3F%23%5B%5D%40')
+      Assert Equals(URI.encode("!$&'()*+,;="), '%21%24%26%27%28%29%2A%2B%2C%3B%3D')
+      Assert Equals(URI.encode('%'), '%25')
+    End
+
+    It does not change the unreserved characters in RFC3986
+      for s in ['1234567890',
+      \  'abcdefghijklmnopqrstuvwxyz',
+      \  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \  '._-~',
+      \  'abc1.2345_ABCD-EZY']
+        Assert Equals(URI.encode(s), s)
+      endfor
+    End
+
+    Context with {char-enc}
+      Context is omitted
+        It is treated as "utf-8"
+          Assert Equals(URI.encode('あいうえお'), '%E3%81%82%E3%81%84%E3%81%86%E3%81%88%E3%81%8A')
+        End
+      End
+
+      Context is cp932
+        It converts {str} to cp932
+          Assert Equals(URI.encode('あいうえお', 'cp932'), '%82%A0%82%A2%82%A4%82%A6%82%A8')
+        End
+      End
+
+      Context is empty
+        Before
+          let cp932 = iconv('あいうえお', 'utf-8', 'cp932')
+          let encoding = &encoding
+          set encoding=cp932
+        End
+        After
+          let &encoding = encoding
+        End
+
+        It never converts character encoding
+          Assert Equals(URI.encode(cp932), '%E3%81%82%E3%81%84%E3%81%86%E3%81%88%E3%81%8A')
+          Assert Equals(URI.encode(cp932, ''), '%82%A0%82%A2%82%A4%82%A6%82%A8')
+        End
+      End
+    End
+  End
+
+  Describe .decode()
+    It decodes string that is encoded by Percent-encoding
+      Assert Equals(URI.decode('1234567890'), '1234567890')
+      Assert Equals(URI.decode('abc12390'), 'abc12390')
+      Assert Equals(URI.decode('%A4%C1%A4%E3'), "\xA4\xC1\xA4\xE3")
+      Assert Equals(URI.decode('%A4%C1%A4%E5'), "\xA4\xC1\xA4\xE5")
+      Assert Equals(URI.decode('%A4%C1%A4%E7'), "\xA4\xC1\xA4\xE7")
+    End
+
+    It does not change the unreserved characters
+      for s in ['1234567890',
+      \  'abcdefghijklmnopqrstuvwxyz',
+      \  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \  'abc12345ABCDEZY',
+      \  '._-~',
+      \  'abc1.2345_ABCD-EZY']
+        Assert Equals(URI.decode(s), s)
+      endfor
+    End
+
+    It encodes and decodes string
+      for s in ['1234567890',
+      \  'abcdefghijklmnopqrstuvwxyz',
+      \  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \  'abc12345ABCDEZY',
+      \  '%123ABC!"#$%&''()~=-~^|\\[]@:;+<>/\',
+      \  'あいうえお',
+      \  'ちゃちゅちょ']
+        Assert Equals(URI.decode(URI.encode(s)), s)
+      endfor
+    End
+
+    Context with {char-enc}
+      Context is omitted
+        It is treated as "utf-8"
+          Assert Equals(URI.decode('%E3%81%82%E3%81%84%E3%81%86%E3%81%88%E3%81%8A'), 'あいうえお')
+        End
+      End
+
+      Context is cp932
+        It converts {str} to cp932
+          Assert Equals(URI.decode('%82%A0%82%A2%82%A4%82%A6%82%A8', 'cp932'), 'あいうえお')
+        End
+      End
+
+      Context is empty
+        Before
+          let cp932 = iconv('あいうえお', 'utf-8', 'cp932')
+          let encoding = &encoding
+          set encoding=cp932
+        End
+        After
+          let &encoding = encoding
+        End
+
+        It never converts character encoding
+          Assert Equals(URI.decode('%E3%81%82%E3%81%84%E3%81%86%E3%81%88%E3%81%8A'), cp932)
+          Assert Equals(URI.decode('%82%A0%82%A2%82%A4%82%A6%82%A8', ''), cp932)
+        End
+      End
     End
   End
 End
