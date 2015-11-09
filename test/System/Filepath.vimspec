@@ -4,7 +4,7 @@ let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 Describe System.Filepath
   let s:P = s:V.import('System.Filepath')
 
-  Context .abspath({path})
+  Describe .abspath({path})
     It should return {path} if {path} is already an absolute path
       let abspath = s:P.join(getcwd(), 'foo.txt')
       let ret = s:P.abspath(abspath)
@@ -34,7 +34,7 @@ Describe System.Filepath
     End
   End
 
-  Context .relpath({path})
+  Describe .relpath({path})
     It should return {path} if {path} is already a relative path
       let relpath = 'foo.txt'
       let ret = s:P.relpath(relpath)
@@ -51,7 +51,7 @@ Describe System.Filepath
     End
   End
 
-  Context .unixpath({path))
+  Describe .unixpath({path))
     It should substitute backslashes in {path} to slashes
       let path = 'C:\Foo\Bar\Hoge.txt'
       let ret = s:P.unixpath(path)
@@ -61,7 +61,7 @@ Describe System.Filepath
     End
   End
 
-  Context .winpath({path))
+  Describe .winpath({path))
     It should substitute slashes in {path} to backslashes
       let path = '/Foo/Bar/Hoge.txt'
       let ret = s:P.winpath(path)
@@ -71,7 +71,7 @@ Describe System.Filepath
     End
   End
 
-  Context .realpath({path))
+  Describe .realpath({path))
     if !s:is_windows
       It should return an unix path of {path} in non Windows OS
         let path = 'C:\Foo\Bar\Hoge.txt'
