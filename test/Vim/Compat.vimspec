@@ -17,4 +17,23 @@ Describe Vim.Compat
     End
     " TODO add other specs, refering Bram's Patch 7.3.694
   End
+
+  Describe .writefile()
+    It should write {list} into {fname}
+      let list = ['hello', 'world']
+      let fname = tempname()
+      call Compat.writefile(list, fname)
+      Assert Equals(readfile(fname), list)
+      call delete(fname)
+    End
+
+    It should write {list} into {fname} in append mode with "a" flag
+      let list = ['hello', 'world']
+      let fname = tempname()
+      call Compat.writefile(list, fname, "a")
+      call Compat.writefile(list, fname, "a")
+      Assert Equals(readfile(fname), ['hello', 'world', 'hello', 'world'])
+      call delete(fname)
+    End
+  End
 End
