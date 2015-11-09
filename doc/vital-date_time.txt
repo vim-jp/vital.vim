@@ -192,7 +192,7 @@ DateTime.format({format} [, {locale}])
 	See |Vital.DateTime-format| about {format}.
 
 				*Vital.DateTime-DateTime.strftime()*
-DateTime.strftime({format})
+DateTime.strftime({format} [, {locate}])
 	Same as "strftime({format}, dt.unix_time())".
 	Note that timezone is always converted to current timezone.
 

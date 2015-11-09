@@ -51,6 +51,17 @@ like_uri({str})				*Vital.Web.URI.like_uri()*
 	(This uses |Vital.Web.URI.new_from_uri_like_string()|
 	 instead of |Vital.Web.URI.new()|)
 
+encode({str} [, {char-enc}])		*Vital.Web.URI.encode()*
+	Encodes {str} to Percent-encoding string.
+	Converts {str} to {char-enc}(or "utf-8" when omitted) before encode.
+	When {char-enc} is an empty string, {str} is not converted.
+
+decode({str} [, {char-enc}])		*Vital.Web.URI.decode()*
+	Decodes {str} that is encoded by Percent-encoding.
+	Converts result from {char-enc}(or "utf-8" when omitted) to 'encoding'
+	after decode.
+	When {char-enc} is an empty string, result is not converted.
+
 ------------------------------------------------------------------------------
 URI OBJECT				*Vital.Web.URI-object*
 

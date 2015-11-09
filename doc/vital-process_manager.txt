@@ -17,6 +17,9 @@ CONFIG				|Vital.ProcessManager-config|
 ==============================================================================
 INTRODUCTION			*Vital.ProcessManager-introduction*
 
+Note this module is going to bedeprecated. Use |Vital.ConcurrentProcess|
+instead.
+
 *Vital.ProcessManager* is a Vim's process manager library, powered by
 |vimproc|.  This manager stores external processes ran by this library, and
 provide higher layer synchronous non-blocking read/write interface.

@@ -681,6 +681,40 @@ Describe DateTime
         Assert Equals(dt.to_string(), dt.format('%c'))
       End
     End
+
+    Context when returns a new Object
+      Describe .day_of_week()
+        It does not have a old cached value
+          let dow = dt.day_of_week()
+          let new_dt = dt.to(1, 'day')
+          Assert NotEquals(new_dt.day_of_week(), dow)
+        End
+      End
+
+      Describe .day_of_year()
+        It does not have a old cached value
+          let doy = dt.day_of_year()
+          let new_dt = dt.to(1, 'day')
+          Assert NotEquals(new_dt.day_of_year(), doy)
+        End
+      End
+
+      Describe .days_from_era()
+        It does not have a old cached value
+          let dfe = dt.days_from_era()
+          let new_dt = dt.to(1, 'day')
+          Assert NotEquals(new_dt.days_from_era(), dfe)
+        End
+      End
+
+      Describe .unix_time()
+        It does not have a old cached value
+          let ut = dt.unix_time()
+          let new_dt = dt.to(1, 'day')
+          Assert NotEquals(new_dt.unix_time(), ut)
+        End
+      End
+    End
   End
 
   Describe TimeZone object
