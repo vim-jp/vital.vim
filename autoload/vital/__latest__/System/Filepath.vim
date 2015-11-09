@@ -173,7 +173,7 @@ function! s:is_case_tolerant() abort
 endfunction
 
 
-function! s:ensure_abspath(path) abort
+function! s:abspath(path) abort
   if s:is_absolute(a:path)
     return a:path
   endif
@@ -184,32 +184,32 @@ function! s:ensure_abspath(path) abort
         \ : s:join(fnamemodify(getcwd(), ':p'), a:path)
 endfunction
 
-function! s:ensure_relpath(path) abort
+function! s:relpath(path) abort
   if s:is_relative(a:path)
     return a:path
   endif
   return fnamemodify(a:path, ':~:.')
 endfunction
 
-function! s:ensure_unixpath(path) abort
+function! s:unixpath(path) abort
   return fnamemodify(a:path, ':gs?\\?/?')
 endfunction
 
-function! s:ensure_winpath(path) abort
+function! s:winpath(path) abort
   return fnamemodify(a:path, ':gs?/?\\?')
 endfunction
 
 if s:is_windows
-  function! s:ensure_realpath(path) abort
+  function! s:realpath(path) abort
     if exists('&shellslash') && &shellslash
-      return s:ensure_unixpath(a:path)
+      return s:unixpath(a:path)
     else
-      return s:ensure_winpath(a:path)
+      return s:winpath(a:path)
     endif
   endfunction
 else
-  function! s:ensure_realpath(path) abort
-    return s:ensure_unixpath(a:path)
+  function! s:realpath(path) abort
+    return s:unixpath(a:path)
   endfunction
 endif
 
