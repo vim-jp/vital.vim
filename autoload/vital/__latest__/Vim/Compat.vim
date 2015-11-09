@@ -10,6 +10,10 @@ set cpo&vim
 " e.g.)
 " echo s:has_version('7.3.629')
 " echo s:has_version('7.3')
+"
+" Note:
+" use has('patch-7.4.237') style instead if you need to check a version of Vim
+" equal and grater than 7.4.237
 function! s:has_version(version) abort
   let versions = split(a:version, '\.')
   if len(versions) == 2
@@ -37,6 +41,29 @@ elseif s:has_version('7.3.629')
 else
   function! s:shiftwidth() abort
     return &shiftwidth
+  endfunction
+endif
+
+" Patch 7.4.503
+if has('patch-7.4.503')
+  function! s:writefile(...) abort
+    return call('writefile', a:000)
+  endfunction
+else
+  function! s:writefile(list, fname, ...) abort
+    let flags = get(a:000, 0, '')
+    if flags !~# 'a'
+      return writefile(a:list, a:fname, flags)
+    endif
+    let f = tempname()
+    let r = writefile(a:list, f, substitute(flags, 'a', '', 'g'))
+    if has("win32") || has("win64")
+      silent! execute "!type ".shellescape(f) ">>".shellescape(a:fname)
+    else
+      silent! execute "!cat ".shellescape(f) ">>".shellescape(a:fname)
+    endif
+    call delete(f)
+    return r
   endfunction
 endif
 
