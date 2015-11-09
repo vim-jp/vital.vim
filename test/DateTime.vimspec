@@ -670,6 +670,36 @@ Describe DateTime
 
     End
 
+    Describe .fastformat()
+      Before
+        " Use non default timezone
+        let tz = DT.timezone().offset_string() ==# '+0300' ? '+0500' : '+0300'
+        let dt = DT.from_date(2012, 1, 2, 3, 4, 5, tz)
+      End
+
+      Context symbol "%z" with a timezone
+        It is same as "format('%z')"
+          Assert Equals(dt.fastformat('%z'), dt.format('%z'))
+        End
+
+        It is differrent from "strftime('%z')"
+          Assert NotEquals(dt.fastformat('%z'), dt.strftime('%z'))
+        End
+      End
+
+      Context with a timezone
+        It is same as "format('%Y-%m-%d %H:%M:%S')"
+          let ft = '%Y-%m-%d %H:%M:%S'
+          Assert Equals(dt.fastformat(ft), dt.format(ft))
+        End
+
+        It is differrent from "strftime('%z')"
+          let ft = '%Y-%m-%d %H:%M:%S'
+          Assert NotEquals(dt.fastformat(ft), dt.strftime(ft))
+        End
+      End
+    End
+
     Describe .strftime()
       It is same as "strftime({format}, dt.unix_time())"
         Assert Equals(dt.strftime('%c'), strftime('%c', dt.unix_time()))

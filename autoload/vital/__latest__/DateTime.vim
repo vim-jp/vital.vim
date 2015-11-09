@@ -46,6 +46,7 @@ function! s:_vital_loaded(V) abort
   \   '_days': 0,
   \   '_seconds': 0,
   \ })
+  let s:tz_default_offset = s:timezone().offset()
 endfunction
 
 function! s:_vital_depends() abort
@@ -451,6 +452,21 @@ function! s:DateTime.format(format, ...) abort
     unlet f
   endfor
   return result
+endfunction
+" @vimlint(EVL102, 0, l:locale)
+function! s:DateTime.fastformat(format, ...) abort
+  let tz = self.timezone()
+  let ts = self.unix_time() + tz.offset() - s:tz_default_offset
+  let locale = get(a:000, 0, '')
+  let format = a:format =~ '%z'
+        \ ? substitute(a:format, '%z', tz.offset_string(), 'g')
+        \ : a:format
+  if empty(locale)
+    return strftime(format, ts)
+  else
+    let expr = printf('strftime(%s, %d)', string(format), ts)
+    return s:_with_locale(expr, locale)
+  endif
 endfunction
 " @vimlint(EVL102, 0, l:locale)
 function! s:DateTime.strftime(format, ...) abort

@@ -191,6 +191,16 @@ DateTime.format({format} [, {locale}])
 	Returns the formatted string of this DateTime.
 	See |Vital.DateTime-format| about {format}.
 
+				*Vital.DateTime-DateTime.fastformat()*
+DateTime.fastformat({format} [, {locale}])
+	A faster version of |Vital.DateTime-DateTime.format()| which use
+	|strftime| internally. It substitute '%z' in {format} into the
+	value returned from |Vital.DateTime-TimeZone.offset_string()|.
+	Other accepted {format} depends on your system so it is not
+	portable.
+	See https://gist.github.com/lambdalisue/e73bd722ca8840e82bd8
+	for benchmarking.
+
 				*Vital.DateTime-DateTime.strftime()*
 DateTime.strftime({format} [, {locate}])
 	Same as "strftime({format}, dt.unix_time())".
