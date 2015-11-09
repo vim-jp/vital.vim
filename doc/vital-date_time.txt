@@ -194,7 +194,7 @@ DateTime.format({format} [, {locale}])
 				*Vital.DateTime-DateTime.fastformat()*
 DateTime.fastformat({format} [, {locale}])
 	A faster version of |Vital.DateTime-DateTime.format()| which use
-	|strftime| internally. It substitute '%z' in {format} into the
+	|strftime| internally. It substitutes '%z' in {format} into the
 	value returned from |Vital.DateTime-TimeZone.offset_string()|.
 	Other accepted {format} depends on your system so it is not
 	portable.
