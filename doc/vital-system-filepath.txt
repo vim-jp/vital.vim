@@ -62,5 +62,31 @@ basename({path})			 *Vital.System.Filepath.basename()*
 remove_last_separator({path})  *Vital.System.Filepath.remove_last_separator()*
 	Remove last directory separator if exists.
 
+abspath({path})			*Vital.System.Filepath.abspath()*
+	Return an absolute path of {path}.
+	If the {path} is already an absolute path, it return the {path}.
+    cf. |Vital.System.Filepath.relpath()|
+
+relpath({path})			*Vital.System.Filepath.relpath()*
+	Return an relative path of {path}.
+	If the {path} is already a relative path, it return the {path}.
+    cf. |Vital.System.Filepath.abspath()|
+
+unixpath({path})		*Vital.System.Filepath.unixpath()*
+	Return an unix path of {path}.
+	All backslashes (\) in {path} will be substituted to slashes (/).
+
+winpath({path})		*Vital.System.Filepath.winpath()*
+	Return a windows path of {path}.
+	All slashes (/) in {path} will be substituted to backslashes (\).
+
+realpath({path})		*Vital.System.Filepath.realpath()*
+	Return a real path of {path} of the current operation system.
+	In non Windows OS, it call |Vital.System.Filepath.unixpath()|
+	internally.
+	In windows, it call |Vital.System.Filepath.unixpath()| when the
+	Vim is compiled with '+shellslash' and |shellslash| is specified.
+	Otherwise it call |Vim.System.Filepath.winpath()| internally.
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

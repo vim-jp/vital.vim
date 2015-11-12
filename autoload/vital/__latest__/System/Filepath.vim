@@ -173,6 +173,46 @@ function! s:is_case_tolerant() abort
 endfunction
 
 
+function! s:abspath(path) abort
+  if s:is_absolute(a:path)
+    return a:path
+  endif
+  " Note:
+  "   the behavior of ':p' for non existing file path is not defined
+  return filereadable(a:path)
+        \ ? fnamemodify(a:path, ':p')
+        \ : s:join(fnamemodify(getcwd(), ':p'), a:path)
+endfunction
+
+function! s:relpath(path) abort
+  if s:is_relative(a:path)
+    return a:path
+  endif
+  return fnamemodify(a:path, ':~:.')
+endfunction
+
+function! s:unixpath(path) abort
+  return fnamemodify(a:path, ':gs?\\?/?')
+endfunction
+
+function! s:winpath(path) abort
+  return fnamemodify(a:path, ':gs?/?\\?')
+endfunction
+
+if s:is_windows
+  function! s:realpath(path) abort
+    if exists('&shellslash') && &shellslash
+      return s:unixpath(a:path)
+    else
+      return s:winpath(a:path)
+    endif
+  endfunction
+else
+  function! s:realpath(path) abort
+    return s:unixpath(a:path)
+  endfunction
+endif
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
