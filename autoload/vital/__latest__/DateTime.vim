@@ -458,7 +458,7 @@ function! s:DateTime.strftime(format, ...) abort
   let tz = self.timezone()
   let ts = self.unix_time() + tz.offset() - s:tz_default_offset
   let locale = get(a:000, 0, '')
-  let format = a:format =~ '%z'
+  let format = a:format =~? '%z'
         \ ? substitute(a:format, '%z', tz.offset_string(), 'g')
         \ : a:format
   if empty(locale)
