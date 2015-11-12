@@ -677,17 +677,13 @@ Describe DateTime
         let dt = DT.from_date(2012, 1, 2, 3, 4, 5, tz)
       End
 
-      Context symbol "%z" with a timezone
-        It is same as "format('%z')"
-          Assert Equals(dt.strftime('%z'), dt.format('%z'))
-        End
+      It is same as "format('%z')"
+        Assert Equals(dt.strftime('%z'), dt.format('%z'))
       End
 
-      Context with a timezone
-        It is same as "format('%Y-%m-%d %H:%M:%S')"
-          let ft = '%Y-%m-%d %H:%M:%S'
-          Assert Equals(dt.strftime(ft), dt.format(ft))
-        End
+      It is same as "format('%Y-%m-%d %H:%M:%S')"
+        let ft = '%Y-%m-%d %H:%M:%S'
+        Assert Equals(dt.strftime(ft), dt.format(ft))
       End
     End
 
