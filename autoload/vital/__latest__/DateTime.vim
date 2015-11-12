@@ -454,7 +454,7 @@ function! s:DateTime.format(format, ...) abort
   return result
 endfunction
 " @vimlint(EVL102, 0, l:locale)
-function! s:DateTime.fastformat(format, ...) abort
+function! s:DateTime.strftime(format, ...) abort
   let tz = self.timezone()
   let ts = self.unix_time() + tz.offset() - s:tz_default_offset
   let locale = get(a:000, 0, '')
@@ -467,11 +467,6 @@ function! s:DateTime.fastformat(format, ...) abort
     let expr = printf('strftime(%s, %d)', string(format), ts)
     return s:_with_locale(expr, locale)
   endif
-endfunction
-" @vimlint(EVL102, 0, l:locale)
-function! s:DateTime.strftime(format, ...) abort
-  let expr = printf('strftime(%s, %d)', string(a:format), self.unix_time())
-  return s:_with_locale(expr, a:0 ? a:1 : '')
 endfunction
 function! s:DateTime.to_string() abort
   return self.format('%c')
