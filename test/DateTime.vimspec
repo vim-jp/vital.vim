@@ -671,8 +671,19 @@ Describe DateTime
     End
 
     Describe .strftime()
-      It is same as "strftime({format}, dt.unix_time())"
-        Assert Equals(dt.strftime('%c'), strftime('%c', dt.unix_time()))
+      Before
+        " Use non default timezone
+        let tz = DT.timezone().offset_string() ==# '+0300' ? '+0500' : '+0300'
+        let dt = DT.from_date(2012, 1, 2, 3, 4, 5, tz)
+      End
+
+      It is same as "format('%z')"
+        Assert Equals(dt.strftime('%z'), dt.format('%z'))
+      End
+
+      It is same as "format('%Y-%m-%d %H:%M:%S')"
+        let ft = '%Y-%m-%d %H:%M:%S'
+        Assert Equals(dt.strftime(ft), dt.format(ft))
       End
     End
 
