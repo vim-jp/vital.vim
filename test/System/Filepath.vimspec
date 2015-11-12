@@ -1,0 +1,138 @@
+let s:V = vital#of('vital')
+let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
+
+Describe System.Filepath
+  let s:P = s:V.import('System.Filepath')
+
+  Describe .abspath()
+    It should return {path} if {path} is already an absolute path
+      let abspath = s:P.join(getcwd(), 'foo.txt')
+      let ret = s:P.abspath(abspath)
+      Assert Equals(ret, abspath)
+      Assert Same(ret, abspath)
+    End
+
+    It should return an absolute path of {path} which exists
+      let relpath = 'foo.txt'
+      call writefile(['foo'], relpath)
+      let ret = s:P.abspath(relpath)
+      let exp = s:P.join(getcwd(), relpath)
+      Assert NotSame(ret, relpath)
+      Assert NotEquals(ret, relpath)
+      Assert Equals(ret, exp)
+      call delete(relpath)
+    End
+
+    It should return an absolute path of {path} which does not exist
+      let relpath = s:P.join('hoge', 'bar.txt')
+      let ret = s:P.abspath(relpath)
+      Assert NotSame(ret, relpath)
+      Assert NotEquals(ret, relpath)
+      " the behavior of ':p' is not defined for non existing file
+      " thus opposite approach is required
+      Assert Equals(fnamemodify(ret, ':~:.'), relpath)
+    End
+  End
+
+  Describe .relpath()
+    It should return {path} if {path} is already a relative path
+      let relpath = 'foo.txt'
+      let ret = s:P.relpath(relpath)
+      Assert Equals(ret, relpath)
+      Assert Same(ret, relpath)
+    End
+
+    It should return a relative path of {path}
+      let abspath = s:P.join(getcwd(), 'foo.txt')
+      let ret = s:P.relpath(abspath)
+      Assert NotSame(ret, abspath)
+      Assert NotEquals(ret, abspath)
+      Assert Equals(ret, fnamemodify(abspath, ':~:.'))
+    End
+  End
+
+  Describe .unixpath()
+    It should substitute backslashes in {path} to slashes
+      let path = 'C:\Foo\Bar\Hoge.txt'
+      let ret = s:P.unixpath(path)
+      Assert NotEquals(ret, path)
+      Assert NotSame(ret, path)
+      Assert Equals(ret, 'C:/Foo/Bar/Hoge.txt')
+    End
+  End
+
+  Describe .winpath()
+    It should substitute slashes in {path} to backslashes
+      let path = '/Foo/Bar/Hoge.txt'
+      let ret = s:P.winpath(path)
+      Assert NotEquals(ret, path)
+      Assert NotSame(ret, path)
+      Assert Equals(ret, '\Foo\Bar\Hoge.txt')
+    End
+  End
+
+  Describe .realpath()
+    if !s:is_windows
+      It should return an unix path of {path} in non Windows OS
+        let path = 'C:\Foo\Bar\Hoge.txt'
+        let ret = s:P.realpath(path)
+        Assert NotEquals(ret, path)
+        Assert NotSame(ret, path)
+        Assert Equals(ret, 'C:/Foo/Bar/Hoge.txt')
+
+        let path = '/Foo/Bar/Hoge.txt'
+        let ret = s:P.realpath(path)
+        Assert Equals(ret, path)
+        Assert Same(ret, path)
+      End
+    elseif exists('&shellslash')
+      Before
+        let saved_shellslash = &shellslash
+      End
+      After
+        let &shellslash = saved_shellslash
+      End
+      It should return an unix path of {path} in Windows with '+shellslash' and shellslash
+        set shellslash
+
+        let path = 'C:\Foo\Bar\Hoge.txt'
+        let ret = s:P.realpath(path)
+        Assert NotEquals(ret, path)
+        Assert NotSame(ret, path)
+        Assert Equals(ret, 'C:/Foo/Bar/Hoge.txt')
+
+        let path = '/Foo/Bar/Hoge.txt'
+        let ret = s:P.realpath(path)
+        Assert Equals(ret, path)
+        Assert Same(ret, path)
+      End
+      It should return a windows path of {path} in Windows with '+shellslash' and noshellslash
+        set noshellslash
+
+        let path = 'C:\Foo\Bar\Hoge.txt'
+        let ret = s:P.realpath(path)
+        Assert Equals(ret, path)
+        Assert Same(ret, path)
+
+        let path = '/Foo/Bar/Hoge.txt'
+        let ret = s:P.realpath(path)
+        Assert NotEquals(ret, path)
+        Assert NotSame(ret, path)
+        Assert Equals(ret, '\Foo\Bar\Hoge.txt')
+      End
+    else
+      It should return a windows path of {path} in Windows with '-shellslash'
+        let path = 'C:\Foo\Bar\Hoge.txt'
+        let ret = s:P.realpath(path)
+        Assert Equals(ret, path)
+        Assert Same(ret, path)
+
+        let path = '/Foo/Bar/Hoge.txt'
+        let ret = s:P.realpath(path)
+        Assert NotEquals(ret, path)
+        Assert NotSame(ret, path)
+        Assert Equals(ret, '\Foo\Bar\Hoge.txt')
+      End
+    endif
+  End
+End
