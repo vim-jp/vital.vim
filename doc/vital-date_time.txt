@@ -194,14 +194,14 @@ DateTime.format({format} [, {locale}])
 				*Vital.DateTime-DateTime.strftime()*
 DateTime.strftime({format} [, {locale}])
 	An alternative version of |Vital.DateTime-DateTime.format()| which
-	use |strftime| internally. While |Vital.DateTime-DateTime.format()|
-	parse {format}, it is really slow compared to using |strftime|.
+	use |strftime()| internally. While |Vital.DateTime-DateTime.format()|
+	parse {format}, it is really slow compared to using |strftime()|.
 	However |Vital.DateTime-DateTime.format()| is required while accepted
-	{format} and a return value of |strftime| depends on the system.
+	{format} and a return value of |strftime()| depends on the system.
 	That's why this function exists for user who need performance but the
 	accuracy.
-	It substitute '%z' in {format} into the value returned from
-	|Vital.DateTime-TimeZone.offset_string()| while |strftime| always
+	It substitutes '%z' in {format} into the value returned from
+	|Vital.DateTime-TimeZone.offset_string()| while |strftime()| always
 	return the system default timezone offset string.
 	See https://gist.github.com/lambdalisue/e73bd722ca8840e82bd8
 	for benchmarking.
