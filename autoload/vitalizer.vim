@@ -143,7 +143,7 @@ endfunction
 function! s:show_changes(current, installing_modules) abort
   let confirm_required = 0
   if a:current != '_latest__'
-    let keys = split(s:git(printf("log --format=format:%%h %s..HEAD", a:current)), "\n")
+    let keys = split(s:git(printf("log --format=format:%%H %s..HEAD", a:current)), "\n")
     let changes = s:get_changes()
     for key in keys
       if has_key(changes, key)
