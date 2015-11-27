@@ -2,7 +2,7 @@
 	Modules: System.Cache
 	System.Cache is replaced with a new version.
 	The old version was moved into System.Cache.Deprecated and become deprecated.
-d4d6207
+1c545a3
 	Modules: Prelude
 	Below functions were moved to Data.String module (#295) and they are marked as
 	deprecated in Prelude. They will be removed in the near future.
@@ -89,7 +89,7 @@ f82a6fc
 	If file 'Prelude' exists in current directory,
 	vital#of('...') causes an error.
 	** All plugins using vital.vim must upgrade. **
-b262f75
+6304a3a
 	Modules: System.File
 	System.File: several functions were renamed:
 		* move_file()      => move()
@@ -133,7 +133,7 @@ ad68a83
 83a6526
 	Modules: Vim.Buffer.Manager
 	Vim.Buffer.Manager was removed completely (it was deprecated.)
-f86462b
+d378af3
 	Modules: Prelude
 	'Prelude.{iconv,has_vimproc,system}()' are deprecated.
 	(not removed but will be removed after a while)
