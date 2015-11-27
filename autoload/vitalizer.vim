@@ -7,9 +7,9 @@ let s:REQUIRED_FILES = [
 \   'autoload/vital.vim',
 \   'autoload/vital/__latest__.vim',
 \ ]
-let s:HASH_SIZE = 6
 let s:V = vital#of('vital')
 let s:L = s:V.import('Data.List')
+let s:S = s:V.import('Data.String')
 let s:F = s:V.import('System.File')
 let s:FP = s:V.import('System.Filepath')
 let s:Mes = s:V.import('Vim.Message')
@@ -43,7 +43,7 @@ function! s:git(cmd) abort
 endfunction
 
 function! s:git_hash(rev) abort
-  return s:git('rev-parse ' . a:rev)
+  return s:S.chomp(s:git('rev-parse ' . a:rev))
 endfunction
 
 function! s:git_checkout(hash) abort
@@ -319,17 +319,16 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
 
     if action ==# 'install'
       " Install vital.
-      let short_hash = hash[: s:HASH_SIZE]
       for [from, to] in install_files
         call s:copy(from, to)
       endfor
-      let content = [vital_data.name, short_hash, ''] + installing_modules
+      let content = [vital_data.name, hash, ''] + installing_modules
       call writefile(content, vital_data.vital_file)
 
       return {
       \ 'action': 'install',
       \ 'prev_hash': vital_data.hash,
-      \ 'installed_hash': short_hash,
+      \ 'installed_hash': hash,
       \}
     elseif action ==# 'uninstall'
       " Uninstall vital.
