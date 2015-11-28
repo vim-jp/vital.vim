@@ -1,8 +1,8 @@
-3ba9447
+3ba9447aef5b2a2ffc9899f0d240333bc075afa5
 	Modules: System.Cache
 	System.Cache is replaced with a new version.
 	The old version was moved into System.Cache.Deprecated and become deprecated.
-d4d6207
+1c545a392ab03a373f0c7f0ee85c80ed9ba0608c
 	Modules: Prelude
 	Below functions were moved to Data.String module (#295) and they are marked as
 	deprecated in Prelude. They will be removed in the near future.
@@ -11,18 +11,18 @@ d4d6207
 	- strwidthpart()
 	- strwidthpart_reverse()
 	- wcswidth()
-83a2dbf
+83a2dbff054dde52cffe54684deaf3aa0b6306bd
 	Modules: Prelude
 	Removed below deprecated functions:
 	- truncate_smart()
 	- set_dictionaryhelper()
-24877cc
+24877cc2268a9d19cca6cccb5e4fb6d58ae760d3
 	Modules: Data.List
 	permutations({list}[, {r}]) behavior is changed not to support string input as {list}.
-24b96f5
+24b96f52838e3d3da0410346c38b34c1246e4659
 	Modules: Vim.Buffer
 	's:get_selected_text()' is deprecated. Use 's:get_last_selected()'.
-47f7c5b
+47f7c5bc495e433bad743b0072f2767f9765bfc7
 	Modules: Web.JSON
 	encode({val}) and decode({val} [, {settings}]) behaviors are changed to
 	support 'true', 'false', and 'null' tokens.
@@ -34,62 +34,62 @@ d4d6207
 	respectively.
 	The tokens (e.g. Web.JSON.true) are represented as a Funcref which returns
 	a corresponding number (true=1, false=0, null=0).
-dab52f0
+dab52f0e9c4feb913aab7a79c83a3f341ffef746
 	Modules: Prelude
 	print_error() is removed; this has been deprecated since f82a6fc
-86a8abd
+86a8abd02fdb045d2285b0c5912accb386cdd137
 	Modules: Data.List
 	uniq() with 2nd argument is removed (it has been deprecated.)
-d62f1b7
+d62f1b7c5191711f046fcee970952f5bd6b015e0
 	Modules: OptionParser
 	Arguments of on() Funcref is changed.
 	on({name}, {short}, {description})
 	-> on({name}, {description}, {extra})
-5d02123
+5d02123e6a1fe7939bc9a079102ac79b7773355e
 	Modules: *
 	Prelude module becomes optional.
 	If you use the feature of Prelude module,
 	you must use ":Vitalize" command with "+Prelude"
-88b8aa6
+88b8aa620dd3067a784a81ffc81c64106a521a9c
 	Modules: ProcessManager
 	Removed deprecated stop()
-5d9134d
+5d9134d69f81fc720eb1ffe016af47e6cb3bcd17
 	Modules: Prelude
 	'Prelude.{iconv,has_vimproc,system,get_last_status}()'
 	are moved to Process module.
-3a85a26
+3a85a26e9cd77a64a909ab547f9484477c55c728
 	Modules: Data.List
 	Data.List: Removed deprecated max() and min().
-960f5f4
+960f5f45af90fc05c006358a99445fb6cf0fa51a
 	Modules: Data.List
 	uniq() with 2nd argument is deprecated. Please use uniq_by() instead.
-f82a6fc
+f82a6fc3f8b17f9492980b26d49dadf93bf3a915
 	Modules: Prelude
 	print_error() is deprecated. Please use Vim.Message.error() instead.
-40718a7
+40718a70c4624407978833672e09fdd0e255b1f1
 	Modules: Prelude
 	Removed obsolete is_integer().
-39974f3
+39974f30128578a41a4a8e379f77a39f94603f88
 	Modules: Vim.BufferManager, Vim.Buffer
 	move open() from Vim.BufferManager to Vim.Buffer,
 	with deprecating BufferManager's one
-1eadb4b
+1eadb4b9c63aa2339fa7023b602bdf9fa0d61fcf
 	Modules: ProcessManager
 	Abandon ProcessManager.new(). Use its touch() instead.
-36985f8
+36985f8aea11d924db85573cb0f0da325809b86d
 	Modules: ProcessManager
 	ProcessManager.stop() is now deprecated.
 	Use ProcessManager.kill() and ProcessManager.term() instead.
 	Previous stop() is same to kill().
-7998c7c
+7998c7cb1ab3a263a47dd6de0fe51fb91dae06ab
 	Modules: Prelude
     path2project_directory recognize git submodule.
-114b44e
+114b44e70a14d267b8b66bfc0ade2988144c3a42
 	Modules: *
 	If file 'Prelude' exists in current directory,
 	vital#of('...') causes an error.
 	** All plugins using vital.vim must upgrade. **
-b262f75
+6304a3a8bdb104143949105aa9d9d3e908248ae3
 	Modules: System.File
 	System.File: several functions were renamed:
 		* move_file()      => move()
@@ -98,29 +98,29 @@ b262f75
 		* copy_file()      => copy()
 		* copy_file_exe()  => copy_exe()
 		* copy_file_pure() => copy_vim()
-baed85e
+baed85e162268696cae4f1bdacacbd64ed26a9c3
 	Modules: System.File
 	System.File: rmdir() removes an empty directory not a file
 	when no 2nd arg or 'r' flag was given.
-e5d291c
+e5d291cb308e54b271dabb6a45dd3b41c646b35d
 	Modules: Data.String
 	Data.String: replace_once() -> replace_first(). Just renamed.
-e4e622e
+e4e622e6d2e35dbe638f41cb67156e6291788851
 	Modules: Data.List
 	Data.List: max() -> max_by(), min() -> min_by(). Just renamed.
-619e9ea
+619e9eabd0964b75ad055e70be7b423eb58f7431
 	Modules: Prelude
 	Prelude.truncate_smart() -> truncate_skipping(). Just renamed.
-ad68a83
+ad68a833f5619c4acc4a3b522cf1efe87604b8cd
 	Modules: Prelude
 	Prelude.is_integer() -> Prelude.is_number(). Just renamed.
-6e456e7
+6e456e7add068c89f0595956248fc7e8e0ab3a5a
 	Modules: System.Cache
 	System.Cache.delete() -> System.Cache.deletefile(). Just renamed.
-6b937ab
+6b937ab6754622fe1e5f7fd69f81434a8991ae78
 	Modules: System.Cache
 	System.Cache.create_hash() is no longer public.
-8d5b0ef
+8d5b0efe3bea9cf3ba01c33cdbb4e3df50447444
 	Modules: Web.Http, Web.Html, Web.Xml, Web.Json, Text.Ltsv, Database.Sqlite
 	Drastic changes, now vital.vim cease to treat foo_bar.vim as FooBar.
 	Following module are renamed:
@@ -130,21 +130,21 @@ ad68a83
 		Web.Json        => Web.JSON
 		Text.Ltsv       => Text.LTSV
 		Database.Sqlite => Database.SQLite
-83a6526
+83a6526faa1f107276249107f7467d770a9e7746
 	Modules: Vim.Buffer.Manager
 	Vim.Buffer.Manager was removed completely (it was deprecated.)
-f86462b
+d378af355128fb77c34c1bd1c1dd400b26e3f32f
 	Modules: Prelude
 	'Prelude.{iconv,has_vimproc,system}()' are deprecated.
 	(not removed but will be removed after a while)
 	use 'Process.{iconv,has_vimproc,system}()' instead.
-572a2db
+572a2db7de20a8abb68ab34e46be1e392743075a
 	Modules: Prelude
 	Removed Prelude.strchars(). use Data.String.strchars() instead.
-ce22f3b
+ce22f3b7b29b90d80b0ecf9a738d7ad95a342406
 	Modules: Vim.Buffer.Manager
 	Vim.Buffer.Manager was moved to Vim.BufferManager
-0c76985
+0c769859642e727a5e75b2dfc03a20fc75d87532
 	Modules: *
 	A version file '*.vital' contains '\r'.
 	** All plugins using vital.vim must upgrade. **
