@@ -16,7 +16,7 @@ addons:
       - lua5.1
 
 install:
-  - bash install-vim.sh
+  - bash scripts/install-vim.sh
   - if [ x"$HEAD" = "xyes" ]; then export PATH=$HOME/vim/bin:$PATH; fi
 
 before_script:
@@ -33,6 +33,7 @@ script:
   - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 -c func_abort=1 autoload
   # - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
   - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
+  - ruby scripts/check-changelog.rb
 notifications:
   webhooks:
     urls:

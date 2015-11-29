@@ -83,7 +83,7 @@ f82a6fc3f8b17f9492980b26d49dadf93bf3a915
 	Previous stop() is same to kill().
 7998c7cb1ab3a263a47dd6de0fe51fb91dae06ab
 	Modules: Prelude
-    path2project_directory recognize git submodule.
+	path2project_directory recognize git submodule.
 114b44e70a14d267b8b66bfc0ade2988144c3a42
 	Modules: *
 	If file 'Prelude' exists in current directory,
