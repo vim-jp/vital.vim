@@ -17,6 +17,12 @@ function! s:_vital_loaded(V) abort
   endif
 endfunction
 
+function! s:_vital_depends() abort
+  return {
+  \   'files': ['./Prelude.lua']
+  \ }
+endfunction
+
 function! s:plus(x, y) abort
   return luaeval('_G[_A[0]].vim.plus(_A[1], _A[2])', [s:sfile, a:x, a:y])
 endfunction
