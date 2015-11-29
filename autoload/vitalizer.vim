@@ -8,6 +8,7 @@ let s:REQUIRED_FILES = [
 \   'autoload/vital/__latest__.vim',
 \ ]
 let s:V = vital#of('vital')
+let s:P = s:V.import('Prelude')
 let s:L = s:V.import('Data.List')
 let s:S = s:V.import('Data.String')
 let s:F = s:V.import('System.File')
@@ -71,6 +72,7 @@ function! s:search_dependence(depends_info) abort
   let g:vital_debug = 1
   call s:V.unload()
   let all = {}
+  let data_files = []
   let entries = copy(a:depends_info)
   while !empty(entries)
     call s:L.sort_by(entries, 'type(v:val) == type([]) ? len(v:val) : 0')
@@ -82,14 +84,32 @@ function! s:search_dependence(depends_info) abort
     for module in modules
       let M = s:V.import(module, 1)
       if has_key(M, '_vital_depends')
-        call extend(entries, M._vital_depends())
+        let depends = M._vital_depends()
+        if s:P.is_dict(depends)
+          let dmodules = get(depends, 'modules', [])
+          let dfiles = get(depends, 'files', [])
+        elseif s:P.is_list(depends)
+          let [dmodules, dfiles] = s:L.partition('v:val[0] !=# "."', depends)
+        else
+          throw printf('vitalizer: %s has wrong dependence.(%s)',
+          \            module, string(depends))
+        endif
+        unlet depends
+        call extend(entries, dmodules)
+        if !empty(dfiles)
+          let module_file = s:module2file(module)
+          let module_base = s:FP.dirname(module_file)
+          call map(dfiles, 's:FP.join(module_base, v:val)')
+          call map(dfiles, 'simplify(v:val)')
+          let data_files += dfiles
+        endif
       endif
     endfor
   endwhile
   if exists('vital_debug')
     let g:vital_debug = vital_debug
   endif
-  return sort(keys(all))
+  return sort(map(keys(all), 's:module2file(v:val)') + data_files)
 endfunction
 
 function! s:is_camel_case(str) abort
@@ -286,8 +306,7 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     else
       let action = 'install'
       let installing_modules = s:L.uniq(installing_modules)
-      let files = map(s:search_dependence(installing_modules),
-      \               's:module2file(v:val)')
+      let files = s:search_dependence(installing_modules)
     endif
 
     " Show critical changes.
