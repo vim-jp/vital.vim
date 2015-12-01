@@ -120,6 +120,13 @@ clear()				*Vital.System.Cache.Memory.clear()*
 
 	Clear a cache dictionary.
 
+on_changed()			*Vital.System.Cache.Memory.on_changed()*
+
+	A user defined hook method. This method is called when the content of
+	the cache is changed, namely after |Vital.System.Cache.Memory.set()|,
+	|Vital.System.Cache.Memory.remove()|, or
+	|Vital.System.Cache.Memory.clear()| methods.
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

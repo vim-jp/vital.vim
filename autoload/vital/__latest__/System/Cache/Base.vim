@@ -36,6 +36,9 @@ endfunction
 function! s:cache.clear() abort
   throw "vital: System.Cache.Base: clear() is not implemented"
 endfunction
+function! s:cache.on_changed() abort
+  " A user defined hook function
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

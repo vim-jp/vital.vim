@@ -122,6 +122,12 @@ clear()				*Vital.System.Cache.File.clear()*
 	It remove all files in the directory. Make sure the correct cache
 	directory is specified in the instance.
 
+on_changed()			*Vital.System.Cache.File.on_changed()*
+
+	A user defined hook method. This method is called when the content of
+	the cache is changed, namely after |Vital.System.Cache.File.set()|,
+	|Vital.System.Cache.File.remove()|, or |Vital.System.Cache.File.clear()|
+	methods.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

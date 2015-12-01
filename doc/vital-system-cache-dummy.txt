@@ -102,5 +102,10 @@ clear()				*Vital.System.Cache.Dummy.clear()*
 
 	Do nothing.
 
+on_changed()			*Vital.System.Cache.Dummy.on_changed()*
+
+	Never called.
+
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

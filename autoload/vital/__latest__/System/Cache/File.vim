@@ -77,15 +77,18 @@ function! s:cache.set(name, value) abort
   let filename = self.get_cache_filename(a:name)
   let value = [string(a:value)]
   call writefile(value, filename)
+  call self.on_changed()
 endfunction
 function! s:cache.remove(name) abort
   let filename = self.get_cache_filename(a:name)
   if filereadable(filename)
     call delete(filename)
+    call self.on_changed()
   endif
 endfunction
 function! s:cache.clear() abort
   call s:File.rmdir(self.cache_dir, 'r')
+  call self.on_changed()
 endfunction
 function! s:cache.keys() abort
   let keys = split(glob(s:Path.join(self.cache_dir, '*'), 0), '\n')
