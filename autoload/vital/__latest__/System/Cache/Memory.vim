@@ -35,11 +35,13 @@ endfunction
 function! s:cache.set(name, value) abort
   let cache_key = self.cache_key(a:name)
   let self._cached[cache_key] = a:value
+  call self.on_changed()
 endfunction
 function! s:cache.remove(name) abort
   let cache_key = self.cache_key(a:name)
   if has_key(self._cached, cache_key)
     unlet self._cached[cache_key]
+    call self.on_changed()
   endif
 endfunction
 function! s:cache.keys() abort
@@ -47,6 +49,7 @@ function! s:cache.keys() abort
 endfunction
 function! s:cache.clear() abort
   let self._cached = {}
+  call self.on_changed()
 endfunction
 
 let &cpo = s:save_cpo
