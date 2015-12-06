@@ -18,7 +18,10 @@ function! s:_vital_loaded(V) abort
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Lua.Prelude']
+  return {
+  \   'modules': ['Lua.Prelude'],
+  \   'files': ['./Sexp.lua'],
+  \ }
 endfunction
 
 function! s:parse(sexp) abort
