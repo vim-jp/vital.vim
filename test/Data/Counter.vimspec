@@ -1,0 +1,230 @@
+Describe Data.Counter
+  Before all
+    let Counter = vital#of('vital').import('Data.Counter')
+  End
+
+  Describe .new()
+    It creates a new, empty counter
+      let c = Counter.new()
+      Assert Equals({}, c.to_dict())
+    End
+
+    It creates a new counter from a string
+      let c = Counter.new('gallahad')
+      Assert Equals({'a': 3, 'd': 1, 'g': 1, 'h': 1, 'l': 2}, c.to_dict())
+    End
+
+    It creates a new counter from a number list
+      let c = Counter.new([1, 2, 2, 3, 3, 3])
+      Assert Equals({'1': 1, '2': 2, '3': 3}, c.to_dict())
+    End
+
+    It creates a new counter from a string list
+      let c = Counter.new(['a', 'b', 'b'])
+      Assert Equals({'a': 1, 'b': 2}, c.to_dict())
+    End
+
+    It creates a new counter from a funcref list
+      let c = Counter.new([function('function'), function('tr'), function('tr')])
+      Assert Equals({'function(''tr'')': 2, 'function(''function'')': 1}, c.to_dict())
+    End
+
+    It expects at most 1 arguments
+      Throw /vital: Data.Counter: .new() expected at most 1 arguments, got 3/ Counter.new('a', 'b', 'b')
+    End
+  End
+
+  Describe Counter Object
+    Describe .get()
+      It returns count from counter
+        let c = Counter.new('collection')
+        Assert Equals(2, c.get('l'))
+      End
+
+      It returns 0 for missing value
+        let c = Counter.new()
+        Assert Equals(0, c.get('l'))
+      End
+
+      It returns negative count from counter
+        let c = Counter.new({'a': -1})
+        Assert Equals(-1, c.get('a'))
+      End
+    End
+
+    Describe .set()
+      It set count
+        let c = Counter.new()
+        call c.set('l', 1)
+        Assert Equals(1, c.get('l'))
+      End
+
+      It override count
+        let c = Counter.new('ll')
+        call c.set('l', 1)
+        Assert Equals(1, c.get('l'))
+      End
+    End
+
+    Describe .update()
+      It adds a new counter from a string
+        let c = Counter.new()
+        call c.update('gallahad')
+        Assert Equals({'a': 3, 'd': 1, 'g': 1, 'h': 1, 'l': 2}, c.to_dict())
+      End
+
+      It adds a new counter from a number list
+        let c = Counter.new()
+        call c.update([1, 2, 2, 3, 3, 3])
+        Assert Equals({'1': 1, '2': 2, '3': 3}, c.to_dict())
+      End
+
+      It adds a new counter from a string list
+        let c = Counter.new()
+        call c.update(['a', 'b', 'b'])
+        Assert Equals({'a': 1, 'b': 2}, c.to_dict())
+      End
+
+      It adds a new counter from a funcref list
+        let c = Counter.new()
+        call c.update([function('function'), function('tr'), function('tr')])
+        Assert Equals({'function(''tr'')': 2, 'function(''function'')': 1}, c.to_dict())
+      End
+    End
+
+    Describe .union()
+      It returns a counter of the maximum of value in either of the input
+        let c1 = Counter.new('abbb')
+        let c2 = Counter.new('bcc')
+        Assert Equals({'b': 3, 'c': 2, 'a': 1}, c1.union(c2).to_dict())
+      End
+
+      It keeps only positive count
+        let c1 = Counter.new({'a': 1, 'b': 0})
+        let c2 = Counter.new({'c': -1})
+        Assert Equals({'a': 1}, c1.union(c2).to_dict())
+      End
+
+      It should handle dictionary as an argument
+        let c1 = Counter.new({'a': 1, 'b': 0})
+        let c2 = {'c': -1}
+        Assert Equals({'a': 1}, c1.union(c2).to_dict())
+      End
+    End
+
+    Describe .intersection()
+      It returns a counter of the minimum of corresponding counts.
+        let c1 = Counter.new('abbb')
+        let c2 = Counter.new('bcc')
+        Assert Equals({'b': 1}, c1.intersection(c2).to_dict())
+      End
+
+      It keeps only positive count
+        let c1 = Counter.new({'a': 1, 'b': 0})
+        let c2 = Counter.new({'a': 2, 'c': -1})
+        Assert Equals({'a': 1}, c1.intersection(c2).to_dict())
+      End
+
+      It should handle dictionary as an argument
+        let c1 = Counter.new({'a': 1, 'b': 0})
+        let c2 = {'a': 2, 'c': -1}
+        Assert Equals({'a': 1}, c1.intersection(c2).to_dict())
+      End
+    End
+
+    Describe .clear()
+      It resets all counts
+        let c = Counter.new('abbb')
+        call c.clear()
+        Assert Equals({}, c.to_dict())
+      End
+    End
+
+    Describe elements()
+      It returns a list of elements repeating each as many times as its count
+        let c = Counter.new('ABCABC')
+        Assert Equals(['A', 'A', 'B', 'B', 'C', 'C'], sort(c.elements()))
+      End
+
+      It ignores zero or negative number
+        let c = Counter.new({'A': 2, 'B': -1})
+        Assert Equals(['A', 'A'], sort(c.elements()))
+      End
+
+      It should handle Knuth's example for prime factors
+        let prime_factors = Counter.new({2: 2, 3: 3, 17: 1})
+        let product = 1
+        for factor in prime_factors.elements()
+          let product = product * factor
+        endfor
+        Assert Equals(1836, product)
+      End
+    End
+
+    Describe .most_common()
+      It returns a list of the n most common elements
+        let c = Counter.new('abcdeabcdabcaba')
+        Assert Equals([['a', 5], ['b', 4], ['c', 3]], c.most_common(3))
+      End
+
+      It returns all element counts
+        let c = Counter.new('abcdeabcdabcaba')
+        Assert Equals([['a', 5], ['b', 4], ['c', 3], ['d', 2], ['e', 1]], c.most_common())
+      End
+    End
+
+    Describe .to_dict()
+      It returns count dictionary
+        let c = Counter.new({'A': 2, 'B': -1})
+        Assert Equals({'A': 2, 'B': -1}, c.to_dict())
+      End
+    End
+
+    Describe .to_list()
+      It returns list of element in the counter.
+        let c = Counter.new({'A': 2, 'B': -1})
+        Assert Equals(['A', 'B'], sort(c.to_list()))
+      End
+    End
+
+    Describe .values()
+      It returns list of count in the counter.
+        let c = Counter.new({'A': 2, 'B': -1})
+        Assert Equals([-1, 2], sort(c.values()))
+      End
+    End
+
+    Describe .in()
+      It returns 1 for element in the counter
+        let c = Counter.new({'A': 2, 'B': -1})
+        Assert True(c.in('A'))
+      End
+
+      It returns 0 for element in the counter
+        let c = Counter.new({'A': 2, 'B': -1})
+        Assert False(c.in('C'))
+      End
+    End
+
+    Describe .del()
+      It deletes the given element
+        let c = Counter.new({'A': 2, 'B': -1})
+        call c.del('A')
+        Assert Equals({'B': -1}, c.to_dict())
+      End
+
+      It does not raise error for missing values
+        let c = Counter.new({'A': 2, 'B': -1})
+        call c.del('C')
+      End
+    End
+
+    Describe .keep_positive()
+      It strips elements with a negative or zero count.
+        let c = Counter.new({'A': 2, 'B': -1, 'C': 0})
+        call c.keep_positive()
+        Assert Equals({'A': 2}, c.to_dict())
+      End
+    End
+  End
+End
