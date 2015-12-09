@@ -173,13 +173,13 @@ function! s:Counter.to_dict() abort
   return result
 endfunction
 
-" .to_list() returns list of element in the counter. The order is arbitary.
+" .to_list() returns list of element in the counter. The order is arbitrary.
 " @return {list<any>}
 function! s:Counter.to_list() abort
   return map(values(self._dict), 'v:val.value')
 endfunction
 
-" .values() returns list of count in the counter. The order is arbitary.
+" .values() returns list of count in the counter. The order is arbitrary.
 " @return {list<number>}
 function! s:Counter.values() abort
   return map(values(self._dict), 'v:val.count')
@@ -226,7 +226,7 @@ function! s:Counter._to_iter_countable(countable) abort
   \ : a:countable
 endfunction
 
-" ._hash() returns hasy key for given value.
+" ._hash() returns hash key for given value.
 function! s:Counter._hash(x) abort
   return type(a:x) is# type('') ? a:x : string(a:x)
 endfunction

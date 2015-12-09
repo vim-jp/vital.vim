@@ -184,14 +184,14 @@ Counter.to_dict()		*Vital.Data.Counter-Counter.to_dict()*
 	" => {'A': 2, 'B': 2, 'C': 2}
 <
 Counter.to_list()		*Vital.Data.Counter-Counter.to_list()*
-	Returns list of element in the counter. The order is arbitary.
+	Returns list of element in the counter. The order is arbitrary.
 >
 	let s:c = s:Counter.new('ABCABC')
 	echo sort(s:c.to_list())
 	" => ['A', 'B', 'C']
 <
 Counter.values()		*Vital.Data.Counter-Counter.values()*
-	Returns list of count in the counter. The order is arbitary.
+	Returns list of count in the counter. The order is arbitrary.
 >
 	let s:c = s:Counter.new('ABCABC')
 	echo sort(s:c.values())
