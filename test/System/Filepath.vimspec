@@ -135,4 +135,32 @@ Describe System.Filepath
       End
     endif
   End
+
+  Describe .is_root_directory()
+    if !s:is_windows
+      It is true only if the given string directly represents root dir of the file system (Non Windows)
+        let ret = s:P.is_root_directory('/')
+        Assert ret
+        let ret = s:P.is_root_directory('/aaa/..')
+        Assert !ret
+        let ret = s:P.is_root_directory('/aaa')
+        Assert !ret
+        let ret = s:P.is_root_directory('/aaa/bbb')
+        Assert !ret
+      End
+    else
+      It is true only if the given string directly represents root dir of the file system (Windows)
+        let ret = s:P.is_root_directory('C:/')
+        Assert ret
+        let ret = s:P.is_root_directory('C:\')
+        Assert ret
+        let ret = s:P.is_root_directory('C:/aaa/..')
+        Assert !ret
+        let ret = s:P.is_root_directory('C:/aaa')
+        Assert !ret
+        let ret = s:P.is_root_directory('C:/aaa/bbb')
+        Assert !ret
+      End
+    endif
+  End
 End
