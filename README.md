@@ -25,6 +25,7 @@ Module						 | Description
 [Data.BigNum](doc/vital-data-bignum.txt)	 | multi precision integer library
 [Data.Closure](doc/vital-data-closure.txt)	 | Provide Closure object
 [Data.Collection](doc/vital-data-collection.txt) | Utilities both for list and dict
+[Data.Counter](doc/vital-data-counter.txt) | Counter library to support convenient tallies
 [Data.Dict](doc/vital-data-dict.txt)		 | dictionary utilities library
 [Data.LazyList](doc/vital-data-lazylist.txt)	 | lazy list including file io
 [Data.List](doc/vital-data-list.txt)		 | list utilities library
