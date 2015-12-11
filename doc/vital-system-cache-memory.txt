@@ -30,10 +30,6 @@ calculated values.
 	let s:C = s:V.import('System.Cache.Memory')
 
 	let s:factorial_cache = s:C.new()
-	" override 'cache_key' method to use an integer values as a cache name
-	function! s:factorial_cache.cache_key(n)
-	  return "" . a:n
-	endfunction
 
 	function! s:factorial(n)
 	  if a:n == 0

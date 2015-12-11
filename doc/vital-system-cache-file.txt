@@ -29,7 +29,7 @@ calculated values.
 	let s:V = vital#of('vital')
 	let s:C = s:V.import('System.Cache.File')
 
-	let s:factorial_cache = s:C.new('.cache')
+	let s:factorial_cache = s:C.new({'cache_dir': '.cache'})
 
 	function! s:factorial(n)
 	  if a:n == 0
