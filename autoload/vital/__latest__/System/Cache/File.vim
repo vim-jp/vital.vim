@@ -31,6 +31,20 @@ function! s:hash(cache_dir, str) abort
   return hash
 endfunction
 
+function! s:load(filename, ...) abort
+  let default = get(a:000, 0, {})
+  let raw = filereadable(a:filename) ? readfile(a:filename) : []
+  if empty(raw)
+    return default
+  endif
+  sandbox let obj = eval(join(raw, "\n"))
+  return obj
+endfunction
+
+function! s:dump(filename, obj) abort
+  call writefile([string(a:obj)], a:filename)
+endfunction
+
 let s:cache = {
       \ '__name__': 'file',
       \}
@@ -66,17 +80,11 @@ endfunction
 function! s:cache.get(name, ...) abort
   let default = get(a:000, 0, '')
   let filename = self.get_cache_filename(a:name)
-  let raw = filereadable(filename) ? readfile(filename) : []
-  if empty(raw)
-    return default
-  endif
-  sandbox let obj = eval(join(raw, "\n"))
-  return obj
+  return s:load(filename, default)
 endfunction
 function! s:cache.set(name, value) abort
   let filename = self.get_cache_filename(a:name)
-  let value = [string(a:value)]
-  call writefile(value, filename)
+  call s:dump(filename, a:value)
   call self.on_changed()
 endfunction
 function! s:cache.remove(name) abort

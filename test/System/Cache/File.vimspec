@@ -60,6 +60,70 @@ Describe System.Cache.File
     End
   End
 
+  Context .load()
+    Before
+      let cache_dir = tempname()
+      call mkdir(cache_dir, 'p')
+    End
+
+    After
+      if isdirectory(cache_dir)
+        call s:F.rmdir(cache_dir, 'r')
+      endif
+    End
+
+    It should return an empty dictionary if a specified file is not readable
+      let r = s:C.load('unreadable_file.txt')
+      Assert Equals(r, {})
+    End
+
+    It should return 'default' if a specified file is not readable
+      let r1 = s:C.load('unreadable_file.txt', 'hello')
+      Assert Equals(r1, 'hello')
+
+      let r2 = s:C.load('unreadable_file.txt', 0)
+      Assert Equals(r2, 0)
+    End
+
+    It should return an object of content if a specified file is readable
+      let filename = s:P.join(cache_dir, 'foo')
+      call writefile(["{'foo': 'bar'}"], filename)
+      let r1 = s:C.load(filename)
+      Assert Equals(r1, {'foo': 'bar'})
+
+      call writefile(["['foo', 'bar']"], filename)
+      let r2 = s:C.load(filename)
+      Assert Equals(r2, ['foo', 'bar'])
+      call delete(filename)
+    End
+  End
+
+  Context .dump()
+    Before
+      let cache_dir = tempname()
+      call mkdir(cache_dir, 'p')
+    End
+
+    After
+      if isdirectory(cache_dir)
+        call s:F.rmdir(cache_dir, 'r')
+      endif
+    End
+
+    It should save 'obj' into a cache file
+      let filename = s:P.join(cache_dir, 'foo')
+      let obj1 = { 'foo': 'bar' }
+      call s:C.dump(filename, obj1)
+      Assert Equals(readfile(filename), ["{'foo': 'bar'}"])
+
+      let obj2 = [ 'foo', 'bar' ]
+      call s:C.dump(filename, obj2)
+      Assert Equals(readfile(filename), ["['foo', 'bar']"])
+
+      call delete(filename)
+    End
+  End
+
   Context instance
     Before
       let cache_dir = tempname()

@@ -56,6 +56,18 @@ new([{options}])			*Vital.System.Cache.File.new()*
 	specified, it will throw an exception.
 	The 'cache_dir' will automatically be created if missing.
 
+load({filename}[, {default}])		*Vital.System.Cache.File.load()*
+
+	Load a vim object from a {filename}. It use |sandbox| and |eval| internally
+	to build a vim object dumped by |Vital.System.Cache.File.dump()|.
+	If the {filename} is unreadable or the content of {filename} is empty,
+	an empty dictionary or {default} (when specified) will be returned.
+
+dump({filename}, {obj})			*Vital.System.Cache.File.dump()*
+
+	Dump a vim object ({obj}) into a {filename}.
+	Use |Vital.System.Cache.File.load()| to restore the dumped vim object.
+
 
 ==============================================================================
 METHODS					*Vital.System.Cache.File-methods*
