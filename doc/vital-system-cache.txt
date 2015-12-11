@@ -186,5 +186,12 @@ clear()				*Vital.System.Cache-instance.clear()*
 
 	Clear all caches
 
+on_changed()			*Vital.System.Cache-instance.on_changed()*
+
+	A user defined hook method. This method is called when the content of
+	the cache is changed, namely after |Vital.System.Cache-instance.set()|,
+	|Vital.System.Cache-instance.remove()|, or
+	|Vital.System.Cache-instance.clear()| methods.
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
