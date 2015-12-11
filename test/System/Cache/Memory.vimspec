@@ -46,14 +46,14 @@ Describe System.Cache.Memory
       Assert !has_key(cache2._cached, 'foo')
     End
 
-    Context .cache_key({str})
+    Context .cache_key()
       It should return an original string in default
         let r = cache.cache_key('foo')
         Assert Equals(r, 'foo')
       End
     End
 
-    Context .has({name})
+    Context .has()
       It should return 0 if a named cache is not found
         let r = cache.has('foo')
         Assert False(r)
@@ -66,7 +66,7 @@ Describe System.Cache.Memory
       End
     End
 
-    Context .get({name}[, {default}])
+    Context .get()
       It should return an empty string if a named cache is not found
         let r = cache.get('foo')
         Assert Equals(r, '')
@@ -87,7 +87,7 @@ Describe System.Cache.Memory
       End
     End
 
-    Context .set({name}, {value})
+    Context .set()
       It should save 'value' into a cache dictionary with given 'name'
         call cache.set('foo', 'foo')
         Assert HasKey(cache._cached, 'foo')
@@ -106,7 +106,7 @@ Describe System.Cache.Memory
       End
     End
 
-    Context .remove({name})
+    Context .remove()
       It should do nothing if a named cache is not found
         call cache.remove('foo')
       End
