@@ -1,0 +1,182 @@
+" Use vim-themis to execute this test
+let s:V = vital#of('vital')
+let s:F = s:V.import('System.File')
+let s:P = s:V.import('System.Filepath')
+
+Describe System.Cache.SingleFile
+  let s:C = s:V.import('System.Cache.SingleFile')
+
+  Context Usage (Factorial)
+    Before
+      let cache_file = tempname()
+      let s:factorial_cache = s:C.new({ 'cache_file': cache_file })
+    End
+    After
+      if filereadable(cache_file)
+        call delete(cache_file)
+      endif
+    End
+
+    function! s:factorial(n)
+      if a:n == 0
+        return 1
+      elseif s:factorial_cache.has(a:n)
+        return s:factorial_cache.get(a:n)
+      else
+        let x = s:factorial(a:n - 1) * a:n
+        call s:factorial_cache.set(a:n, x)
+        return x
+      endif
+    endfunction
+
+    It should return correct factorial value
+      let r = s:factorial(10)
+      Assert Equals(r, 1*2*3*4*5*6*7*8*9*10)
+    End
+  End
+
+  Context .new()
+    Before
+      let cache_file = tempname()
+    End
+    After
+      if filereadable(cache_file)
+        call delete(cache_file)
+      endif
+    End
+
+    It should return an instance
+      let cache = s:C.new({ 'cache_file': cache_file })
+      Assert HasKey(cache, 'cache_file')
+      Assert HasKey(cache, 'load')
+      Assert HasKey(cache, 'dump')
+    End
+
+    It should automatically create a parent directory of a specified cache file
+      let cache_dir = tempname()
+      let cache_file = s:P.join(cache_dir, 'cachefile')
+      call s:C.new({ 'cache_file': cache_file })
+      Assert True(isdirectory(cache_dir))
+      if isdirectory(cache_dir)
+        call s:F.rmdir(cache_dir, 'r')
+      endif
+    End
+
+    It should raise an exception if 'cache_file' option is not specified.
+      Throw call s:C.new(), '"cache_file" option is empty'
+    End
+
+    It should load cache from 'cache_file'
+      call writefile(["{'foo': 'foo', 'bar': 'bar'}"], cache_file)
+      let cache = s:C.new({ 'cache_file': cache_file })
+      Assert True(cache.has('foo'))
+      Assert True(cache.has('bar'))
+      Assert Equals(cache.get('foo'), 'foo')
+      Assert Equals(cache.get('bar'), 'bar')
+    End
+  End
+
+  Context instance
+    Before
+      let cache_file = tempname()
+      let cache = s:C.new({ 'cache_file': cache_file })
+    End
+
+    After
+      if filereadable(cache_file)
+        call delete(cache_file)
+      endif
+    End
+
+    Context .cache_key()
+      It should return an original string in default
+        let r = cache.cache_key('foo')
+        Assert Equals(r, 'foo')
+      End
+    End
+
+    Context .has()
+      It should return 0 if a named cache is not found
+        let r = cache.has('foo')
+        Assert False(r)
+      End
+
+      It should return 1 if a named cache is found
+        let cache._memory._cached = {'foo': 'bar'}
+        let r = cache.has('foo')
+        Assert True(r)
+      End
+    End
+
+    Context .get()
+      It should return an empty string if a named cache is not found
+        let r = cache.get('foo')
+        Assert Equals(r, '')
+      End
+
+      It should return 'default' if a named cache is not found and 'default' is specified
+        let r1 = cache.get('foo', 'hello')
+        Assert Equals(r1, 'hello')
+
+        let r2 = cache.get('foo', 0)
+        Assert Equals(r2, 0)
+      End
+
+      It should return a value if a named cache is found
+        let cache._memory._cached = {'foo': 'bar'}
+        let r = cache.get('foo')
+        Assert Equals(r, 'bar')
+      End
+    End
+
+    Context .set()
+      It should save 'value' into a cache dictionary with given 'name' and cache_file
+        call cache.set('foo', 'foo')
+        Assert HasKey(cache._memory._cached, 'foo')
+        Assert Equals(cache._memory._cached['foo'], 'foo')
+        let content = readfile(cache.cache_file)
+        Assert Equals(content, ["{'foo': 'foo'}"])
+      End
+    End
+
+    Context .keys()
+      It should return a list of keys
+        let cache._memory._cached = {
+              \ 'foo': 'foo',
+              \ 'bar': 'bar',
+              \}
+        let r = cache.keys()
+        Assert Equals(sort(r), sort(['foo', 'bar']))
+      End
+    End
+
+    Context .remove()
+      It should do nothing if a named cache is not found
+        call cache.remove('foo')
+      End
+
+      It should remove a named cache from a cache dictionary
+        let cache._memory._cached = {'foo': 'bar'}
+        call writefile(["{'foo': 'bar'}"], cache.cache_file)
+        call cache.remove('foo')
+        Assert !has_key(cache._memory._cached, 'foo')
+        let content = readfile(cache.cache_file)
+        Assert Equals(content, ["{}"])
+      End
+    End
+
+    Context .clear()
+      It should clear a cache dictionary
+        let cache._memory._cached = {
+              \ 'foo': 'foo',
+              \ 'bar': 'bar',
+              \}
+        call writefile(["{'foo': 'foo', 'bar': 'bar'}"], cache.cache_file)
+        call cache.clear()
+        Assert Equals(cache._memory._cached, {})
+        let content = readfile(cache.cache_file)
+        Assert Equals(content, ["{}"])
+      End
+    End
+  End
+End

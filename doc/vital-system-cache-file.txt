@@ -16,6 +16,11 @@ Methods			|Vital.System.Cache.File-methods|
 INTRODUCTIONS				*Vital.System.Cache.File-intro*
 
 *Vital.System.Cache.File* is a file based unified cache system.
+It store a value into a file in a cache directory, mean that individual files
+have one particular Vim object.
+If you prefer to store keys and values into a single file, use
+|Vital.System.Cache.SingleFile| instead.
+
 
 
 ==============================================================================
@@ -52,7 +57,7 @@ FUNCTIONS				*Vital.System.Cache.File-functions*
 new([{options}])			*Vital.System.Cache.File.new()*
 
 	Create a new instance of System.Cache.File.
-	It require 'cache_dir' option in {options}. If no 'cache_dir' is
+	It requires 'cache_dir' option in {options}. If no 'cache_dir' is
 	specified, it will throw an exception.
 	The 'cache_dir' will automatically be created if missing.
 

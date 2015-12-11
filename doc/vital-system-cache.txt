@@ -20,9 +20,10 @@ INTRODUCTIONS				*Vital.System.Cache-intro*
 the application interface so users can easily switch to a different cache
 variant. Currently the following variants are available.
 
-- |Vital.System.Cache.Dummy|  : A dummy cache system which cache nothing
-- |Vital.System.Cache.Memory| : A dictionary instance based cache system
-- |Vital.System.Cache.File|   : A file based cache system
+- |Vital.System.Cache.Dummy|      : A dummy cache system which cache nothing
+- |Vital.System.Cache.Memory|     : A dictionary instance based cache system
+- |Vital.System.Cache.File|       : A file based cache system
+- |Vital.System.Cache.SingleFile| : A single file based cache system
 
 Note |Vital.System.Cache| is replaced with a new unified cache system. An old
 version have been moved into |Vital.System.Cache.Deprecated|.
@@ -113,6 +114,9 @@ new({name}[, {options}])		*Vital.System.Cache.new()*
 
 	"file"
 	A filesystem based cache system (|Vital.System.Cache.File|)
+
+	"singlefile"
+	A single file based cache system (|Vital.System.Cache.SingleFile|)
 
 	The second argument {options} will be passed to a new method of a
 	specified variant. See a document of new function in each variant to
