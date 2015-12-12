@@ -10,6 +10,7 @@ Introductions		|Vital.System.Cache.File-intro|
 Usage			|Vital.System.Cache.File-usage|
 Functions		|Vital.System.Cache.File-functions|
 Methods			|Vital.System.Cache.File-methods|
+Properties		|Vital.System.Cache.File-properties|
 
 
 ==============================================================================
@@ -20,7 +21,6 @@ It stores a value into a file in a cache directory, mean that individual files
 have one particular Vim object.
 If you prefer to store keys and values into a single file, use
 |Vital.System.Cache.SingleFile| instead.
-
 
 
 ==============================================================================
@@ -77,61 +77,62 @@ dump({filename}, {obj})			*Vital.System.Cache.File.dump()*
 ==============================================================================
 METHODS					*Vital.System.Cache.File-methods*
 
-cache_key({obj})		*Vital.System.Cache.File.cache_key()*
+cache_key({obj})	*Vital.System.Cache.File-instance.cache_key()*
 
-	See |Vital.System.Cache.Base.cache_key()|
+	See |Vital.System.Cache.Base-instance.cache_key()|
 
-has({name})			*Vital.System.Cache.File.has()*
+has({name})		*Vital.System.Cache.File-instance.has()*
 
 	Return 1 if the cache instance has {name} in its cache directory.
 	Otherwise 0.
 
 	{name} (required)
 	A name of the cache. An actual cache key will be created via
-	|Vital.System.Cache.File.cache_key()| method thus {name} is not
+	|Vital.System.Cache.File-instance.cache_key()| method thus {name} is not
 	required to be |String|.
 
-get({name}[, {default}])	*Vital.System.Cache.File.get()*
+			*Vital.System.Cache.File-instance.get()*
+get({name}[, {default}])
 
 	Return a cached value of {name} in a cache directory. It return
 	{default} if no value is found.
 
 	{name} (required)
 	A name of the cache. An actual cache key will be created via
-	|Vital.System.Cache.File.cache_key()| method thus {name} is not
+	|Vital.System.Cache.File-instance.cache_key()| method thus {name} is not
 	required to be |String|.
 
 	{default} (optional)
 	A default value. It will be returned when no value is found in the
 	cache dictionary.
 
-set({name}, {value})		*Vital.System.Cache.File.set()*
+set({name}, {value})	*Vital.System.Cache.File-instance.set()*
 
 	Save {value} into a cache directory as {name}.
 
 	{name} (required)
 	A name of the cache. An actual cache key will be created via
-	|Vital.System.Cache.File.cache_key()| method thus {name} is not
+	|Vital.System.Cache.File-instance.cache_key()| method thus {name} is not
 	required to be |String|.
 
 	{value} (required)
 	A value of the cache.
 
-keys()				*Vital.System.Cache.File.keys()*
+keys()			*Vital.System.Cache.File-instance.keys()*
 
 	Return a list of cache keys
 
-remove({name})			*Vital.System.Cache.File.remove()*
+remove({name})		*Vital.System.Cache.File-instance.remove()*
 
 	Remove {name} from a cache directory. It does nothing when the
 	specified {name} is not found in the cache.
 
 	{name} (required)
 	A name of the cache. An actual cache key will be created via
-	|Vital.System.Cache.File.cache_key()| method thus {name} is not
+	|Vital.System.Cache.File-instance.cache_key()| method thus {name} is not
 	required to be |String|.
 
-clear()				*Vital.System.Cache.File.clear()*
+clear()			*Vital.System.Cache.File-instance.clear()*
 
 	Clear all files in the cache directory without prompts.
 
@@ -139,12 +140,23 @@ clear()				*Vital.System.Cache.File.clear()*
 	It remove all files in the directory. Make sure the correct cache
 	directory is specified in the instance.
 
-on_changed()			*Vital.System.Cache.File.on_changed()*
+on_changed()		*Vital.System.Cache.File-instance.on_changed()*
 
 	A user defined hook method. This method is called when the content of
-	the cache is changed, namely after |Vital.System.Cache.File.set()|,
-	|Vital.System.Cache.File.remove()|, or |Vital.System.Cache.File.clear()|
-	methods.
+	the cache is changed, namely after the following methods:
+	- |Vital.System.Cache.File-instance.set()|
+	- |Vital.System.Cache.File-instance.remove()|
+	- |Vital.System.Cache.File-instance.clear()|
+
 
 ==============================================================================
+PROPERTIES				*Vital.System.Cache.File-properties*
+
+cache_dir		*Vital.System.Cache.File-instance.cache_dir*
+
+	A directory path where cache files (keys) are saved.
+	The directory need to be exists if users re-define this property after
+	the |Vital.System.Cache.File-new()| function call.
+
+
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
