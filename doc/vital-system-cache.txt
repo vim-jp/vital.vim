@@ -41,9 +41,10 @@ function. The following assume that you want to use a file based cache system.
 The |Vital.System.Cache.new()| function take one or two arguments. The first
 argument is a name of a variant and currently the followings are available:
 
-- "dummy"  : For |Vital.System.Cache.Dummy|
-- "memory" : For |Vital.System.Cache.Memory|
-- "file"   : For |Vital.System.Cache.File|
+- "dummy"      : For |Vital.System.Cache.Dummy|
+- "memory"     : For |Vital.System.Cache.Memory|
+- "file"       : For |Vital.System.Cache.File|
+- "singlefile" : For |Vital.System.Cache.SingleFile|
 
 The second argument is a variant specified option dictionary. For example,
 |Vital.System.Cache.File| require 'cache_dir' option so the example code above
@@ -146,7 +147,7 @@ has({name})			*Vital.System.Cache-instance.has()*
 	cache_key() method of each variant thus {name} is not required to be
 	|String|.
 
-get({name}, [, {default}])	*Vital.System.Cache-instance.get()*
+get({name}[, {default}])	*Vital.System.Cache-instance.get()*
 
 	Return a value from a {name} cache. It no {name} cache is found, it
 	return {default} or an empty |String|.
@@ -193,9 +194,10 @@ clear()				*Vital.System.Cache-instance.clear()*
 on_changed()			*Vital.System.Cache-instance.on_changed()*
 
 	A user defined hook method. This method is called when the content of
-	the cache is changed, namely after |Vital.System.Cache-instance.set()|,
-	|Vital.System.Cache-instance.remove()|, or
-	|Vital.System.Cache-instance.clear()| methods.
+	the cache is changed, namely after the following methods:
+	- |Vital.System.Cache-instance.set()|
+	- |Vital.System.Cache-instance.remove()|
+	- |Vital.System.Cache-instance.clear()|
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
