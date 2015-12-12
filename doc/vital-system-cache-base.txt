@@ -19,9 +19,10 @@ INTRODUCTIONS				*Vital.System.Cache.Base-intro*
 *Vital.System.Cache.Base* is an abstract class of unified cache system.
 The following variants are currently available.
 
-- |Vital.System.Cache.Dummy|  : A dummy cache system
-- |Vital.System.Cache.Memory| : A dictionary instance based cache system
-- |Vital.System.Cache.File|   : A file based cache system
+- |Vital.System.Cache.Dummy|      : A dummy cache system
+- |Vital.System.Cache.Memory|     : A dictionary instance based cache system
+- |Vital.System.Cache.File|       : A file based cache system
+- |Vital.System.Cache.SingleFile| : A single file based cache system
 
 This document is for creating your own variants. See |Vital.System.Cache| for
 the cache system usage.
@@ -119,7 +120,7 @@ new([{options}])			*Vital.System.Cache.Base.new()*
 -------------------------------------------------------------------------------
 METHODS					*Vital.System.Cache.Base-methods*
 
-cache_key({obj})		*Vital.System.Cache.Base.cache_key()*
+cache_key({obj})	*Vital.System.Cache.Base-instance.cache_key()*
 
 	Return a |String| which will be used as a cache key.
 	Variants can override this method to create a cache key from {obj}.
@@ -127,7 +128,7 @@ cache_key({obj})		*Vital.System.Cache.Base.cache_key()*
 	return a string representation (See |string()| for details) of the
 	{obj}.
 
-has({name})			*Vital.System.Cache.Base.has()*
+has({name})		*Vital.System.Cache.Base-instance.has()*
 
 	Whether the cache instance has a {name} cache or not.
 	
@@ -135,7 +136,7 @@ has({name})			*Vital.System.Cache.Base.has()*
 
 	{name} (required)
 	A name of the cache. An actual cache key SHOULD be created via
-	|Vital.System.Cache.Base.cache_key()| method thus {name} is not
+	|Vital.System.Cache.Base-instance.cache_key()| method thus {name} is not
 	required to be |String|.
 
 	See the following example:
@@ -145,7 +146,8 @@ has({name})			*Vital.System.Cache.Base.has()*
 	    return has_key(self._cached, cache_key)
 	endfunction
 <
-get({name}, [, {default}])	*Vital.System.Cache.Base.get()*
+			*Vital.System.Cache.Base-instance.get()* 
+get({name}[, {default}])
 
 	Return a {name} cache. It no {name} cache is found, it return
 	{default} or an empty |String|.
@@ -154,7 +156,7 @@ get({name}, [, {default}])	*Vital.System.Cache.Base.get()*
 
 	{name} (required)
 	A name of the cache. An actual cache key SHOULD be created via
-	|Vital.System.Cache.Base.cache_key()| method thus {name} is not
+	|Vital.System.Cache.Base-instance.cache_key()| method thus {name} is not
 	required to be |String|.
 
 	{default} (optional)
@@ -172,7 +174,7 @@ get({name}, [, {default}])	*Vital.System.Cache.Base.get()*
 	    return default
 	endfunction
 <
-set({name}, {value})		*Vital.System.Cache.Base.set()*
+set({name}, {value})	*Vital.System.Cache.Base-instance.set()*
 
 	Save {value} as a {name} cache.
 
@@ -180,7 +182,7 @@ set({name}, {value})		*Vital.System.Cache.Base.set()*
 
 	{name} (required)
 	A name of the cache. An actual cache key SHOULD be created via
-	|Vital.System.Cache.Base.cache_key()| method thus {name} is not
+	|Vital.System.Cache.Base-instance.cache_key()| method thus {name} is not
 	required to be |String|.
 
 	{value} (required)
@@ -193,13 +195,13 @@ set({name}, {value})		*Vital.System.Cache.Base.set()*
 	  let self._cached[cache_key] = a:value
 	endfunction
 <
-keys()				*Vital.System.Cache.Base.keys()*
+keys()			*Vital.System.Cache.Base-instance.keys()*
 
 	Return a list of cache keys
 
 	VARIANTS MUST OVERRIDE THIS METHOD
 
-remove({name})			*Vital.System.Cache.Base.remove()*
+remove({name})		*Vital.System.Cache.Base-instance.remove()*
 
 	Remove a {name} cache. If no {name} cache is found, it should do
 	nothing.
@@ -208,7 +210,7 @@ remove({name})			*Vital.System.Cache.Base.remove()*
 
 	{name} (required)
 	A name of the cache. An actual cache key will be created via
-	|Vital.System.Cache.Base.cache_key()| method thus {name} is not
+	|Vital.System.Cache.Base-instance.cache_key()| method thus {name} is not
 	required to be |String|.
 
 	See the following example:
@@ -220,18 +222,19 @@ remove({name})			*Vital.System.Cache.Base.remove()*
 	  endif
 	endfunction
 <
-clear()				*Vital.System.Cache.Base.clear()*
+clear()			*Vital.System.Cache.Base-instance.clear()*
 
 	Clear all caches
 
 	VARIANTS MUST OVERRIDE THIS METHOD
 
-on_changed()			*Vital.System.Cache.Base.on_changed()*
+on_changed()		*Vital.System.Cache.Base-instance.on_changed()*
 
 	A user defined hook method. This method is called when the content of
-	the cache is changed, namely after |Vital.System.Cache.Base.set()|,
-	|Vital.System.Cache.Base.remove()|, or |Vital.System.Cache.Base.clear()|
-	methods.
+	the cache is changed, namely after the follwing methods:
+	- |Vital.System.Cache.Base-instance.set()|
+	- |Vital.System.Cache.Base-instance.remove()|
+	- |Vital.System.Cache.Base-instance.clear()|
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
