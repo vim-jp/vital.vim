@@ -88,5 +88,15 @@ realpath({path})		*Vital.System.Filepath.realpath()*
 	Vim is compiled with '+shellslash' and |shellslash| is specified.
 	Otherwise it call |Vim.System.Filepath.winpath()| internally.
 
+is_root_directory({path})	*Vital.System.Filepath.is_root_directory()*
+	Return 1 if the given {path} points to the root directory, otherwise
+	0.
+>
+	is_root_directory('/') == 1
+	is_root_directory('/aaa') == 0
+	is_root_directory('/aaa/..') == 0 " It doesn't resolve.
+	is_root_directory('C:/') == 1     " If it's on Windows.
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

@@ -213,6 +213,13 @@ else
   endfunction
 endif
 
+function! s:is_root_directory(path) abort
+  if a:path ==# '/'
+    return 1
+  endif
+  return (has('win32') || has('win64')) && a:path =~ '^[a-zA-Z]:[/\\]$'
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
