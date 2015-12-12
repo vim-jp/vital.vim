@@ -58,70 +58,72 @@ new([{options}])			*Vital.System.Cache.Memory.new()*
 ==============================================================================
 METHODS					*Vital.System.Cache.Memory-methods*
 
-cache_key({obj})		*Vital.System.Cache.Memory.cache_key()*
+cache_key({obj})	*Vital.System.Cache.Memory-instance.cache_key()*
 
-	See |Vital.System.Cache.Base.cache_key()|
+	See |Vital.System.Cache.Base-instance.cache_key()|
 
-has({name})			*Vital.System.Cache.Memory.has()*
+has({name})		*Vital.System.Cache.Memory-instance.has()*
 
 	Return 1 if the cache instance has {name} in its cache dictionary.
 	Otherwise 0.
 
 	{name} (required)
 	A name of the cache. An actual cache key will be created via
-	|Vital.System.Cache.Memory.cache_key()| method thus {name} is not
-	required to be |String|.
+	|Vital.System.Cache.Memory-instance.cache_key()| method thus {name} is
+	not required to be |String|.
 
-get({name}, [, {default}])	*Vital.System.Cache.Memory.get()*
+                        *Vital.System.Cache.Memory-instance.get()*
+get({name}[, {default}])
 
 	Return a cached value of {name} in a cache dictionary. It return
 	{default} if no value is found.
 
 	{name} (required)
 	A name of the cache. An actual cache key will be created via
-	|Vital.System.Cache.Memory.cache_key()| method thus {name} is not
-	required to be |String|.
+	|Vital.System.Cache.Memory-instance.cache_key()| method thus {name} is
+	not required to be |String|.
 
 	{default} (optional)
 	A default value. It will be returned when no value is found in the
 	cache dictionary.
 
-set({name}, {value})		*Vital.System.Cache.Memory.set()*
+set({name}, {value})	*Vital.System.Cache.Memory-instance.set()*
 
 	Save {value} into a cache dictionary as {name}.
 
 	{name} (required)
 	A name of the cache. An actual cache key will be created via
-	|Vital.System.Cache.Memory.cache_key()| method thus {name} is not
-	required to be |String|.
+	|Vital.System.Cache.Memory-instance.cache_key()| method thus {name} is
+	not required to be |String|.
 
 	{value} (required)
 	A value of the cache.
 
-keys()				*Vital.System.Cache.Memory.keys()*
+keys()			*Vital.System.Cache.Memory-instance.keys()*
 
 	Return a list of cache keys
 
-remove({name})			*Vital.System.Cache.Memory.remove()*
+remove({name})		*Vital.System.Cache.Memory-instance.remove()*
 
 	Remove {name} from a cache dictionary. It does nothing when the
 	specified {name} is not found in the cache.
 
 	{name} (required)
 	A name of the cache. An actual cache key will be created via
-	|Vital.System.Cache.Memory.cache_key()| method thus {name} is not
-	required to be |String|.
+	|Vital.System.Cache.Memory-instance.cache_key()| method thus {name} is
+	not required to be |String|.
 
-clear()				*Vital.System.Cache.Memory.clear()*
+clear()			*Vital.System.Cache.Memory-instance.clear()*
 
 	Clear a cache dictionary.
 
-on_changed()			*Vital.System.Cache.Memory.on_changed()*
+on_changed()		*Vital.System.Cache.Memory-instance.on_changed()*
 
 	A user defined hook method. This method is called when the content of
-	the cache is changed, namely after |Vital.System.Cache.Memory.set()|,
-	|Vital.System.Cache.Memory.remove()|, or
-	|Vital.System.Cache.Memory.clear()| methods.
+	the cache is changed, namely after the following methods:
+	- |Vital.System.Cache.Memory-instance.set()|
+	- |Vital.System.Cache.Memory-instance.remove()|
+	- |Vital.System.Cache.Memory-instance.clear()|
 
 
 ==============================================================================
