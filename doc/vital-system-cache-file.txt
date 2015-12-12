@@ -156,7 +156,7 @@ cache_dir		*Vital.System.Cache.File-instance.cache_dir*
 
 	A directory path where cache files (keys) are saved.
 	The directory need to be exists if users re-define this property after
-	the |Vital.System.Cache.File-new()| function call.
+	the |Vital.System.Cache.File.new()| function call.
 
 
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
