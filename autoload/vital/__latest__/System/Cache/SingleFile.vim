@@ -16,6 +16,7 @@ let s:cache = {
 function! s:new(...) abort
   let options = extend({
         \ 'cache_file': '',
+        \ 'autodump': 1,
         \}, get(a:000, 0, {})
         \)
   if empty(options.cache_file)
@@ -34,7 +35,9 @@ function! s:new(...) abort
   let cache._memory = s:Memory.new()
   let cache._memory.__parent__ = cache
   function! cache._memory.on_changed() abort
-    call self.__parent__.dump()
+    if self.__parent__.autodump
+      call self.__parent__.dump()
+    endif
   endfunction
   " Load cache
   call cache.load()

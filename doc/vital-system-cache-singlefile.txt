@@ -10,6 +10,7 @@ Introductions		|Vital.System.Cache.SingleFile-intro|
 Usage			|Vital.System.Cache.SingleFile-usage|
 Functions		|Vital.System.Cache.SingleFile-functions|
 Methods			|Vital.System.Cache.SingleFile-methods|
+Properties		|Vital.System.Cache.SingleFile-properties|
 
 
 ==============================================================================
@@ -60,6 +61,8 @@ new([{options}])			*Vital.System.Cache.SingleFile.new()*
 	specified, it will throw an exception.
 	The parent directory of 'cache_file' will automatically be created if
 	missing.
+	Users can use a 'autodump' option in {options} to set the initial value
+	of |Vital.System.Cache.SingleFile-instance.autodump|.
 
 
 ==============================================================================
@@ -68,8 +71,9 @@ METHODS					*Vital.System.Cache.SingleFile-methods*
 dump()			*Vital.System.Cache.SingleFile-instance.dump()*
 
 	Dump a cache content into the 'cache_file'.
-	It will be automatically called when the cache content is changed.
-	Users can call this method to dump the cache content manually.
+	It will be automatically called when the cache content is changed if
+	|Vital.System.Cache.SingleFile-instance.autodump| is 1. Otherwise users
+	need to call this method to dump the cache content into a cache file.
 
 load()			*Vital.System.Cache.SingleFile-instance.load()*
 
@@ -153,4 +157,21 @@ on_changed()		*Vital.System.Cache.SingleFile-instance.on_changed()*
 
 
 ==============================================================================
+PROPERTIES			*Vital.System.Cache.SingleFile-properties*
+
+cache_file		*Vital.System.Cache.SingleFile-instance.cache_file*
+
+	A file path where the cache content is saved.
+	The directory of this file need to be exists if users re-define this
+	property after the |Vital.System.Cache.SingleFile.new()| function call.
+
+autodump		*Vital.System.Cache.SingleFile-instance.autodump*
+
+	A boolean to enable/disable autodump feature.
+	If the value is 1, |Vital.System.Cache.SingleFile-instance.dump()|
+	will be automatically calledn when the cache content is changed.
+	Otherwise users need to call the method manually to dump the cache
+	content into a cache file.
+
+
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
