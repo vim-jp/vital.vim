@@ -16,7 +16,7 @@ Methods			|Vital.System.Cache.File-methods|
 INTRODUCTIONS				*Vital.System.Cache.File-intro*
 
 *Vital.System.Cache.File* is a file based unified cache system.
-It store a value into a file in a cache directory, mean that individual files
+It stores a value into a file in a cache directory, mean that individual files
 have one particular Vim object.
 If you prefer to store keys and values into a single file, use
 |Vital.System.Cache.SingleFile| instead.
@@ -63,7 +63,7 @@ new([{options}])			*Vital.System.Cache.File.new()*
 
 load({filename}[, {default}])		*Vital.System.Cache.File.load()*
 
-	Load a vim object from a {filename}. It use |sandbox| and |eval| internally
+	Load a vim object from a {filename}. It uses |sandbox| and |eval| internally
 	to build a vim object dumped by |Vital.System.Cache.File.dump()|.
 	If the {filename} is unreadable or the content of {filename} is empty,
 	an empty dictionary or {default} (when specified) will be returned.

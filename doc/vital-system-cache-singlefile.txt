@@ -16,8 +16,8 @@ Methods			|Vital.System.Cache.SingleFile-methods|
 INTRODUCTIONS				*Vital.System.Cache.SingleFile-intro*
 
 *Vital.System.Cache.SingleFile* is a single file based cache system.
-It store a cache dictionary into a single cache file, mean that it is similar
-to |Vital.System.Cache.Memory| but the cache is permanent.
+It stores a cache dictionary into a single cache file, mean that it is similar
+to |Vital.System.Cache.Memory| but the cache is persistent.
 If you prefer to store key and value into individual files, use
 |Vital.System.Cache.File| instead.
 
@@ -68,13 +68,13 @@ METHODS					*Vital.System.Cache.SingleFile-methods*
 dump()				*Vital.System.Cache.SingleFile.dump()*
 
 	Dump a cache content into the 'cache_file'.
-	It will automatically be called when the cache content is changed.
+	It will be automatically called when the cache content is changed.
 	Users can call this method to dump the cache content manually.
 
 load()				*Vital.System.Cache.SingleFile.load()*
 
 	Load a cache content from the 'cache_file'.
-	It will automatically be called when the cache instance is created (in
+	It will be automatically called when the cache instance is created (in
 	|Vital.System.Cache.SingleFile.new()|.
 	Users can call this method to load the cache content manually.
 	Note that this method call triggers to call
