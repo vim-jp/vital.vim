@@ -56,7 +56,8 @@ Describe System.Cache.File
     End
 
     It should raise an exception if 'cache_dir' option is not specified.
-      Throw call s:C.new(), 'No "cache_dir" option is specified'
+      let C = s:C
+      Throw /"cache_dir" option is specified/ :call C.new()
     End
   End
 
