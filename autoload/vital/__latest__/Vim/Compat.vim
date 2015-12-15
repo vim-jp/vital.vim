@@ -75,6 +75,27 @@ else
   endfunction
 endif
 
+" Workarund for MacVim redraw isue
+" https://gist.github.com/lambdalisue/94d14ff706a5627d64f5
+if has('gui_macvim') && has('gui_running')
+  function! s:redraw(...) abort
+    if get(a:000, 0, 0)
+      redraw!
+    else
+      redraw
+    endif
+    sleep 1m
+  endfunction
+else
+  function! s:redraw(...) abort
+    if get(a:000, 0, 0)
+      redraw!
+    else
+      redraw
+    endif
+  endfunction
+endif
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

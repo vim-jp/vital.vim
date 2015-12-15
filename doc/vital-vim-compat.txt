@@ -39,6 +39,11 @@ writefile({list}, {fname}[, {flags}])	*Vital.Vim.Compat.writefile()*
 	Compatibility function of |writefile()| which support 'a' flag from
 	Vim 7.4.503.
 
+redraw([{bang}])			*Vital.Vim.Compat.redraw()*
+	Compatibility function of |redraw| which has an issue on MacVim (GUI).
+	It calls |sleep| 1m just after |redraw| when called in MacVim (GUI),
+	otherwise it just calls |redraw|.
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
