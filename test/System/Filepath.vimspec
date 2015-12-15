@@ -2,12 +2,12 @@ let s:V = vital#of('vital')
 let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 
 Describe System.Filepath
-  let s:P = s:V.import('System.Filepath')
+  let s:FP = s:V.import('System.Filepath')
 
   Describe .abspath()
     It should return {path} if {path} is already an absolute path
-      let abspath = s:P.join(getcwd(), 'foo.txt')
-      let ret = s:P.abspath(abspath)
+      let abspath = s:FP.join(getcwd(), 'foo.txt')
+      let ret = s:FP.abspath(abspath)
       Assert Equals(ret, abspath)
       Assert Same(ret, abspath)
     End
@@ -15,8 +15,8 @@ Describe System.Filepath
     It should return an absolute path of {path} which exists
       let relpath = 'foo.txt'
       call writefile(['foo'], relpath)
-      let ret = s:P.abspath(relpath)
-      let exp = s:P.join(getcwd(), relpath)
+      let ret = s:FP.abspath(relpath)
+      let exp = s:FP.join(getcwd(), relpath)
       Assert NotSame(ret, relpath)
       Assert NotEquals(ret, relpath)
       Assert Equals(ret, exp)
@@ -24,8 +24,8 @@ Describe System.Filepath
     End
 
     It should return an absolute path of {path} which does not exist
-      let relpath = s:P.join('hoge', 'bar.txt')
-      let ret = s:P.abspath(relpath)
+      let relpath = s:FP.join('hoge', 'bar.txt')
+      let ret = s:FP.abspath(relpath)
       Assert NotSame(ret, relpath)
       Assert NotEquals(ret, relpath)
       " the behavior of ':p' is not defined for non existing file
@@ -37,14 +37,14 @@ Describe System.Filepath
   Describe .relpath()
     It should return {path} if {path} is already a relative path
       let relpath = 'foo.txt'
-      let ret = s:P.relpath(relpath)
+      let ret = s:FP.relpath(relpath)
       Assert Equals(ret, relpath)
       Assert Same(ret, relpath)
     End
 
     It should return a relative path of {path}
-      let abspath = s:P.join(getcwd(), 'foo.txt')
-      let ret = s:P.relpath(abspath)
+      let abspath = s:FP.join(getcwd(), 'foo.txt')
+      let ret = s:FP.relpath(abspath)
       Assert NotSame(ret, abspath)
       Assert NotEquals(ret, abspath)
       Assert Equals(ret, fnamemodify(abspath, ':~:.'))
@@ -54,7 +54,7 @@ Describe System.Filepath
   Describe .unixpath()
     It should substitute backslashes in {path} to slashes
       let path = 'C:\Foo\Bar\Hoge.txt'
-      let ret = s:P.unixpath(path)
+      let ret = s:FP.unixpath(path)
       Assert NotEquals(ret, path)
       Assert NotSame(ret, path)
       Assert Equals(ret, 'C:/Foo/Bar/Hoge.txt')
@@ -64,7 +64,7 @@ Describe System.Filepath
   Describe .winpath()
     It should substitute slashes in {path} to backslashes
       let path = '/Foo/Bar/Hoge.txt'
-      let ret = s:P.winpath(path)
+      let ret = s:FP.winpath(path)
       Assert NotEquals(ret, path)
       Assert NotSame(ret, path)
       Assert Equals(ret, '\Foo\Bar\Hoge.txt')
@@ -75,13 +75,13 @@ Describe System.Filepath
     if !s:is_windows
       It should return an unix path of {path} in non Windows OS
         let path = 'C:\Foo\Bar\Hoge.txt'
-        let ret = s:P.realpath(path)
+        let ret = s:FP.realpath(path)
         Assert NotEquals(ret, path)
         Assert NotSame(ret, path)
         Assert Equals(ret, 'C:/Foo/Bar/Hoge.txt')
 
         let path = '/Foo/Bar/Hoge.txt'
-        let ret = s:P.realpath(path)
+        let ret = s:FP.realpath(path)
         Assert Equals(ret, path)
         Assert Same(ret, path)
       End
@@ -96,13 +96,13 @@ Describe System.Filepath
         set shellslash
 
         let path = 'C:\Foo\Bar\Hoge.txt'
-        let ret = s:P.realpath(path)
+        let ret = s:FP.realpath(path)
         Assert NotEquals(ret, path)
         Assert NotSame(ret, path)
         Assert Equals(ret, 'C:/Foo/Bar/Hoge.txt')
 
         let path = '/Foo/Bar/Hoge.txt'
-        let ret = s:P.realpath(path)
+        let ret = s:FP.realpath(path)
         Assert Equals(ret, path)
         Assert Same(ret, path)
       End
@@ -110,12 +110,12 @@ Describe System.Filepath
         set noshellslash
 
         let path = 'C:\Foo\Bar\Hoge.txt'
-        let ret = s:P.realpath(path)
+        let ret = s:FP.realpath(path)
         Assert Equals(ret, path)
         Assert Same(ret, path)
 
         let path = '/Foo/Bar/Hoge.txt'
-        let ret = s:P.realpath(path)
+        let ret = s:FP.realpath(path)
         Assert NotEquals(ret, path)
         Assert NotSame(ret, path)
         Assert Equals(ret, '\Foo\Bar\Hoge.txt')
@@ -123,12 +123,12 @@ Describe System.Filepath
     else
       It should return a windows path of {path} in Windows with '-shellslash'
         let path = 'C:\Foo\Bar\Hoge.txt'
-        let ret = s:P.realpath(path)
+        let ret = s:FP.realpath(path)
         Assert Equals(ret, path)
         Assert Same(ret, path)
 
         let path = '/Foo/Bar/Hoge.txt'
-        let ret = s:P.realpath(path)
+        let ret = s:FP.realpath(path)
         Assert NotEquals(ret, path)
         Assert NotSame(ret, path)
         Assert Equals(ret, '\Foo\Bar\Hoge.txt')
@@ -139,26 +139,26 @@ Describe System.Filepath
   Describe .is_root_directory()
     if !s:is_windows
       It is true only if the given string directly represents root dir of the file system (Non Windows)
-        let ret = s:P.is_root_directory('/')
+        let ret = s:FP.is_root_directory('/')
         Assert ret
-        let ret = s:P.is_root_directory('/aaa/..')
+        let ret = s:FP.is_root_directory('/aaa/..')
         Assert !ret
-        let ret = s:P.is_root_directory('/aaa')
+        let ret = s:FP.is_root_directory('/aaa')
         Assert !ret
-        let ret = s:P.is_root_directory('/aaa/bbb')
+        let ret = s:FP.is_root_directory('/aaa/bbb')
         Assert !ret
       End
     else
       It is true only if the given string directly represents root dir of the file system (Windows)
-        let ret = s:P.is_root_directory('C:/')
+        let ret = s:FP.is_root_directory('C:/')
         Assert ret
-        let ret = s:P.is_root_directory('C:\')
+        let ret = s:FP.is_root_directory('C:\')
         Assert ret
-        let ret = s:P.is_root_directory('C:/aaa/..')
+        let ret = s:FP.is_root_directory('C:/aaa/..')
         Assert !ret
-        let ret = s:P.is_root_directory('C:/aaa')
+        let ret = s:FP.is_root_directory('C:/aaa')
         Assert !ret
-        let ret = s:P.is_root_directory('C:/aaa/bbb')
+        let ret = s:FP.is_root_directory('C:/aaa/bbb')
         Assert !ret
       End
     endif
