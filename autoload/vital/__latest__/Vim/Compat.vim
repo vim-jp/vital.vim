@@ -75,7 +75,7 @@ else
   endfunction
 endif
 
-" Workarund for MacVim redraw isue
+" Workarund for MacVim redraw issue
 " https://gist.github.com/lambdalisue/94d14ff706a5627d64f5
 if has('gui_macvim') && has('gui_running')
   function! s:redraw(...) abort
