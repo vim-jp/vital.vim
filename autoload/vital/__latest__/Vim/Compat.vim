@@ -96,6 +96,46 @@ else
   endfunction
 endif
 
+" doautocmd User with <nomodeline>
+" https://github.com/vim-jp/vim/commit/8399b184df06f80ca030b505920dd3e97be72f20
+if s:has_version('7.3.438')
+  function! s:doautocmd(expr, ...) abort
+    if get(a:000, 0, 0)
+      execute 'doautocmd <nomodeline> ' . a:expr
+    else
+      execute 'doautocmd ' . a:expr
+    endif
+  endfunction
+else
+  function! s:doautocmd(expr, ...) abort
+    execute 'doautocmd ' . a:expr
+  endfunction
+endif
+
+" https://github.com/vim-jp/vim/commit/51d92c00e8c731c3b8f79b1e5f3e6b47cb1d1192
+if s:has_version('7.3.831')
+  function! s:getbufvar(...) abort
+    return call('getbufvar', a:000)
+  endfunction
+else
+  function! s:getbufvar(expr, varname, ...) abort
+    let v = getbufvar(a:expr, a:varname)
+    return empty(v) ? get(a:000, 0, '') : v
+  endfunction
+endif
+
+" https://github.com/vim-jp/vim/commit/51d92c00e8c731c3b8f79b1e5f3e6b47cb1d1192
+if s:has_version('7.3.831')
+  function! s:getwinvar(...) abort
+    return call('getwinvar', a:000)
+  endfunction
+else
+  function! s:getwinvar(expr, varname, ...) abort
+    let v = getwinvar(a:expr, a:varname)
+    return empty(v) ? get(a:000, 0, '') : v
+  endfunction
+endif
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
