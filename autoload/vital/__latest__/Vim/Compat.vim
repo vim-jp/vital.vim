@@ -57,13 +57,21 @@ else
     endif
     let f = tempname()
     let r = writefile(a:list, f, substitute(flags, 'a', '', 'g'))
-    if has("win32") || has("win64")
-      silent! execute "!type ".shellescape(f) ">>".shellescape(a:fname)
-    else
-      silent! execute "!cat ".shellescape(f) ">>".shellescape(a:fname)
+    if r
+      return r
     endif
-    call delete(f)
-    return r
+    if has('win32') || has('win64')
+      silent! execute '!type ' . shellescape(f) '>>' . shellescape(a:fname)
+    else
+      silent! execute '!cat ' . shellescape(f) '>>' . shellescape(a:fname)
+    endif
+    if v:shell_error
+      throw printf(
+            \ 'vital: Vim.Compat: writefile() failed to append to "%s".',
+            \ a:fname,
+            \)
+    endif
+    return delete(f)
   endfunction
 endif
 
