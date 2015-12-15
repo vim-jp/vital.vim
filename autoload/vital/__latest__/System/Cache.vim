@@ -5,9 +5,10 @@ let s:registry = {}
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:P = a:V.import('Prelude')
-  call s:register('dummy',  'System.Cache.Dummy')
-  call s:register('memory', 'System.Cache.Memory')
-  call s:register('file',   'System.Cache.File')
+  call s:register('dummy',      'System.Cache.Dummy')
+  call s:register('memory',     'System.Cache.Memory')
+  call s:register('file',       'System.Cache.File')
+  call s:register('singlefile', 'System.Cache.SingleFile')
 endfunction
 function! s:_vital_depends() abort
   return [
@@ -15,6 +16,7 @@ function! s:_vital_depends() abort
         \ 'System.Cache.Dummy',
         \ 'System.Cache.Memory',
         \ 'System.Cache.File',
+        \ 'System.Cache.SingleFile',
         \]
 endfunction
 

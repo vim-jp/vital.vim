@@ -55,18 +55,19 @@ new([{options}])			*Vital.System.Cache.Dummy.new()*
 ==============================================================================
 METHODS					*Vital.System.Cache.Dummy-methods*
 
-cache_key({obj})		*Vital.System.Cache.Dummy.cache_key()*
+cache_key({obj})	*Vital.System.Cache.Dummy-instance.cache_key()*
 
-	See |Vital.System.Cache.Base.cache_key()|.
+	See |Vital.System.Cache.Base-instance.cache_key()|.
 
-has({name})			*Vital.System.Cache.Dummy.has()*
+has({name})		*Vital.System.Cache.Dummy-instance.has()*
 
 	Always return 0.
 	
 	{name} (required)
 	Dummy.
 
-get({name}, [, {default}])	*Vital.System.Cache.Dummy.get()*
+                        *Vital.System.Cache.Dummy-instance.get()*
+get({name}[, {default}])
 
 	Always return a value of {default}. If no {default} is specified, an
 	empty string will be returned.
@@ -77,7 +78,7 @@ get({name}, [, {default}])	*Vital.System.Cache.Dummy.get()*
 	{default} (optional)
 	A return value.
 
-set({name}, {value})		*Vital.System.Cache.Dummy.set()*
+set({name}, {value})	*Vital.System.Cache.Dummy-instance.set()*
 
 	Do nothing.
 
@@ -87,22 +88,22 @@ set({name}, {value})		*Vital.System.Cache.Dummy.set()*
 	{value} (required)
 	Dummy
 
-keys()				*Vital.System.Cache.Dummy.keys()*
+keys()			*Vital.System.Cache.Dummy-instance.keys()*
 
 	Always return an empty list.
 
-remove({name})			*Vital.System.Cache.Dummy.remove()*
+remove({name})		*Vital.System.Cache.Dummy-instance.remove()*
 
 	Do nothing.
 
 	{name} (required)
 	Dummy
 
-clear()				*Vital.System.Cache.Dummy.clear()*
+clear()			*Vital.System.Cache.Dummy-instance.clear()*
 
 	Do nothing.
 
-on_changed()			*Vital.System.Cache.Dummy.on_changed()*
+on_changed()		*Vital.System.Cache.Dummy-instance.on_changed()*
 
 	Never called.
 
