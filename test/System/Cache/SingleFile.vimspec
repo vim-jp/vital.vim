@@ -64,7 +64,8 @@ Describe System.Cache.SingleFile
     End
 
     It should raise an exception if 'cache_file' option is not specified.
-      Throw call s:C.new(), '"cache_file" option is empty'
+      let C = s:C
+      Throw /"cache_file" option is empty/ :call C.new()
     End
 
     It should load cache from 'cache_file'
