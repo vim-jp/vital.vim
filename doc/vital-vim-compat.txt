@@ -1,7 +1,8 @@
 *vital-vim-compat.txt*	Vim compatibility wrapper functions.
 
-Maintainer: thinca  <thinca+vim@gmail.com>
-            tyru    <tyru.exe@gmail.com>
+Maintainer: thinca	<thinca+vim@gmail.com>
+            tyru	<tyru.exe@gmail.com>
+            lambdalisue	<lambdalisue@hashnote.net>
 
 ==============================================================================
 CONTENTS				*Vital.Vim.Compat-contents*
@@ -9,7 +10,6 @@ CONTENTS				*Vital.Vim.Compat-contents*
 INTRODUCTION			|Vital.Vim.Compat-introduction|
 INTERFACE			|Vital.Vim.Compat-interface|
   FUNCTIONS			  |Vital.Vim.Compat-functions|
-
 
 
 ==============================================================================
@@ -20,6 +20,7 @@ versions/patchlevels of Vim.
 
 This module is not for multiple OS compatibilities but for versions of Vim
 itself.
+
 
 ==============================================================================
 INTERFACE				*Vital.Vim.Compat-interface*
@@ -34,6 +35,9 @@ has_version({version})			*Vital.Vim.Compat.has_version()*
 shiftwidth()				*Vital.Vim.Compat.shiftwidth()*
 	Compatibility function of |shiftwidth()| available from Vim 7.3.694.
 
+writefile({list}, {fname}[, {flags}])	*Vital.Vim.Compat.writefile()*
+	Compatibility function of |writefile()| which support 'a' flag from
+	Vim 7.4.503.
 
 
 ==============================================================================
