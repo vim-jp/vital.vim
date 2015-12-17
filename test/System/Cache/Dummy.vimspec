@@ -44,14 +44,14 @@ Describe System.Cache.Dummy
       let cache = s:C.new()
     End
 
-    Context .has({name})
+    Context .has()
       It should always return 0
         let r = cache.has('foo')
         Assert Equals(r, 0)
       End
     End
 
-    Context .get({name}[, {default}])
+    Context .get()
       It should always return an empty string
         let r = cache.get('foo')
         Assert Equals(r, '')
@@ -63,7 +63,7 @@ Describe System.Cache.Dummy
       End
     End
 
-    Context .set({name}, {value})
+    Context .set()
       It should do nothing
         call cache.set('foo', 'bar')
       End
@@ -76,7 +76,7 @@ Describe System.Cache.Dummy
       End
     End
 
-    Context .remove({name})
+    Context .remove()
       It should do nothing
         call cache.remove('foo')
       End

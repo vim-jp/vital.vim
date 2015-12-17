@@ -23,7 +23,7 @@ Describe System.Cache.Base
       let cache = s:C.new()
     End
 
-    Context .cache_key({obj})
+    Context .cache_key()
       It should return an original string if a string is specified
         let r = cache.cache_key('foo')
         Assert Equals(r, 'foo')
@@ -37,20 +37,20 @@ Describe System.Cache.Base
       End
     End
 
-    Context .has({name})
+    Context .has()
       It should throw an exception
         Throws 'has({name}) is not implemented', cache.has('foo')
       End
     End
 
-    Context .get({name}[, {default}])
+    Context .get()
       It should throw an exception
         Throws 'get({name}[, {default}]) is not implemented', cache.get('foo')
         Throws 'get({name}[, {default}]) is not implemented', cache.get('foo', 'foo')
       End
     End
 
-    Context .set({name}, {value})
+    Context .set()
       It should throw an exception
         Throws 'set({name}, {value}) is not implemented', cache.set('foo', 'foo')
       End
@@ -62,7 +62,7 @@ Describe System.Cache.Base
       End
     End
 
-    Context .remove({name})
+    Context .remove()
       It should throw an exception
         Throws 'remove({name}) is not implemented', cache.remove('foo')
       End

@@ -35,7 +35,7 @@ Describe System.Cache.File
     End
   End
 
-  Context .new({config})
+  Context .new()
     Before each
       let cache_dir = tempname()
     End
@@ -56,7 +56,72 @@ Describe System.Cache.File
     End
 
     It should raise an exception if 'cache_dir' option is not specified.
-      Throw call s:C.new(), 'No "cache_dir" option is specified'
+      let C = s:C
+      Throw /"cache_dir" option is specified/ :call C.new()
+    End
+  End
+
+  Context .load()
+    Before
+      let cache_dir = tempname()
+      call mkdir(cache_dir, 'p')
+    End
+
+    After
+      if isdirectory(cache_dir)
+        call s:F.rmdir(cache_dir, 'r')
+      endif
+    End
+
+    It should return an empty dictionary if a specified file is not readable
+      let r = s:C.load('unreadable_file.txt')
+      Assert Equals(r, {})
+    End
+
+    It should return 'default' if a specified file is not readable
+      let r1 = s:C.load('unreadable_file.txt', 'hello')
+      Assert Equals(r1, 'hello')
+
+      let r2 = s:C.load('unreadable_file.txt', 0)
+      Assert Equals(r2, 0)
+    End
+
+    It should return an object of content if a specified file is readable
+      let filename = s:P.join(cache_dir, 'foo')
+      call writefile(["{'foo': 'bar'}"], filename)
+      let r1 = s:C.load(filename)
+      Assert Equals(r1, {'foo': 'bar'})
+
+      call writefile(["['foo', 'bar']"], filename)
+      let r2 = s:C.load(filename)
+      Assert Equals(r2, ['foo', 'bar'])
+      call delete(filename)
+    End
+  End
+
+  Context .dump()
+    Before
+      let cache_dir = tempname()
+      call mkdir(cache_dir, 'p')
+    End
+
+    After
+      if isdirectory(cache_dir)
+        call s:F.rmdir(cache_dir, 'r')
+      endif
+    End
+
+    It should save 'obj' into a cache file
+      let filename = s:P.join(cache_dir, 'foo')
+      let obj1 = { 'foo': 'bar' }
+      call s:C.dump(filename, obj1)
+      Assert Equals(readfile(filename), ["{'foo': 'bar'}"])
+
+      let obj2 = [ 'foo', 'bar' ]
+      call s:C.dump(filename, obj2)
+      Assert Equals(readfile(filename), ["['foo', 'bar']"])
+
+      call delete(filename)
     End
   End
 
@@ -72,14 +137,14 @@ Describe System.Cache.File
       endif
     End
 
-    Context .cache_key({str})
+    Context .cache_key()
       It should return an original string in default
         let r = cache.cache_key('foo')
         Assert Equals(r, 'foo')
       End
     End
 
-    Context .has({name})
+    Context .has()
       It should return 0 if a named cache is not found
         let r = cache.has('undefined_cache_name')
         Assert False(r)
@@ -94,7 +159,7 @@ Describe System.Cache.File
       End
     End
 
-    Context .get({name}[, {default}])
+    Context .get()
       It should return an empty string if a named cache is not found
         let r = cache.get('foo')
         Assert Equals(r, '')
@@ -117,7 +182,7 @@ Describe System.Cache.File
       End
     End
 
-    Context .set({name}, {value})
+    Context .set()
       It should save 'value' into a cache file with given 'name'
         let filename = s:P.join(cache_dir, 'foo')
         call cache.set('foo', 'foo')
@@ -142,7 +207,7 @@ Describe System.Cache.File
       End
     End
 
-    Context .remove({name})
+    Context .remove()
       It should do nothing if a named cache is not found
         call cache.remove('foo')
       End
@@ -155,7 +220,7 @@ Describe System.Cache.File
       End
     End
 
-    Context .clear({name})
+    Context .clear()
       It should clear a cache directory
         let filename1 = s:P.join(cache_dir, 'foo')
         let filename2 = s:P.join(cache_dir, 'bar')
