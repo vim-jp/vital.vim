@@ -18,8 +18,8 @@ INTRODUCTION				*Vital.Vim.Compat-introduction*
 *Vital.Vim.Compat* provides vim compatibility wrapper functions for different
 versions/patchlevels of Vim.
 
-This module is not for multiple OS compatibilities but for versions of Vim
-itself.
+This module is not for multiple OS compatibilities or workarounds for known
+bugs but for versions of Vim itself.
 
 
 ==============================================================================
@@ -38,11 +38,6 @@ shiftwidth()				*Vital.Vim.Compat.shiftwidth()*
 writefile({list}, {fname}[, {flags}])	*Vital.Vim.Compat.writefile()*
 	Compatibility function of |writefile()| which supports 'a' flag from
 	Vim 7.4.503.
-
-redraw([{bang}])			*Vital.Vim.Compat.redraw()*
-	Compatibility function of |redraw| which has an issue on MacVim (GUI).
-	It calls |sleep| 1m just after |redraw| when called in MacVim (GUI),
-	otherwise it just calls |redraw|.
 
 doautocmd({expr}[, {nomodeline}])	*Vital.Vim.Compat.doautocmd()*
 	Compatibility function of |doautocmd| which supports '<nomodeline>'

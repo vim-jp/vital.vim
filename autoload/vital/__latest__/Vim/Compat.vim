@@ -75,27 +75,6 @@ else
   endfunction
 endif
 
-" Workarund for MacVim redraw issue
-" https://gist.github.com/lambdalisue/94d14ff706a5627d64f5
-if has('gui_macvim') && has('gui_running')
-  function! s:redraw(...) abort
-    if get(a:000, 0, 0)
-      redraw!
-    else
-      redraw
-    endif
-    sleep 1m
-  endfunction
-else
-  function! s:redraw(...) abort
-    if get(a:000, 0, 0)
-      redraw!
-    else
-      redraw
-    endif
-  endfunction
-endif
-
 " doautocmd User with <nomodeline>
 " https://github.com/vim-jp/vim/commit/8399b184df06f80ca030b505920dd3e97be72f20
 if s:has_version('7.3.438')
