@@ -57,13 +57,58 @@ else
     endif
     let f = tempname()
     let r = writefile(a:list, f, substitute(flags, 'a', '', 'g'))
-    if has("win32") || has("win64")
-      silent! execute "!type ".shellescape(f) ">>".shellescape(a:fname)
-    else
-      silent! execute "!cat ".shellescape(f) ">>".shellescape(a:fname)
+    if r
+      return r
     endif
-    call delete(f)
-    return r
+    if has('win32') || has('win64')
+      silent! execute '!type ' . shellescape(f) '>>' . shellescape(a:fname)
+    else
+      silent! execute '!cat ' . shellescape(f) '>>' . shellescape(a:fname)
+    endif
+    if v:shell_error
+      throw printf(
+            \ 'vital: Vim.Compat: writefile() failed to append to "%s".',
+            \ a:fname,
+            \)
+    endif
+    return delete(f)
+  endfunction
+endif
+
+" doautocmd User with <nomodeline>
+if s:has_version('7.3.438')
+  function! s:doautocmd(expr, ...) abort
+    if get(a:000, 0, 0)
+      execute 'doautocmd <nomodeline> ' . a:expr
+    else
+      execute 'doautocmd ' . a:expr
+    endif
+  endfunction
+else
+  function! s:doautocmd(expr, ...) abort
+    execute 'doautocmd ' . a:expr
+  endfunction
+endif
+
+if s:has_version('7.3.831')
+  function! s:getbufvar(...) abort
+    return call('getbufvar', a:000)
+  endfunction
+else
+  function! s:getbufvar(expr, varname, ...) abort
+    let v = getbufvar(a:expr, a:varname)
+    return empty(v) ? get(a:000, 0, '') : v
+  endfunction
+endif
+
+if s:has_version('7.3.831')
+  function! s:getwinvar(...) abort
+    return call('getwinvar', a:000)
+  endfunction
+else
+  function! s:getwinvar(expr, varname, ...) abort
+    let v = getwinvar(a:expr, a:varname)
+    return empty(v) ? get(a:000, 0, '') : v
   endfunction
 endif
 
