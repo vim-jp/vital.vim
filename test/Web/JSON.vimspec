@@ -105,6 +105,49 @@ Describe Web.JSON
             \)
     End
 
+    It encodes lists with indent when {settings.indent} > 0
+      let s = { 'indent': 2 }
+      Assert Equals(JSON.encode([], s), '[]')
+      Assert Equals(
+            \ JSON.encode([0, 1, 2], s),
+            \ join([
+            \   '[',
+            \   '  0,',
+            \   '  1,',
+            \   '  2',
+            \   ']',
+            \ ], "\n"),
+            \)
+      Assert Equals(
+            \ JSON.encode(['a', 'b', 'c'], s),
+            \ join([
+            \   '[',
+            \   '  "a",',
+            \   '  "b",',
+            \   '  "c"',
+            \   ']',
+            \ ], "\n"),
+            \)
+      " list should be encoded recursively
+      Assert Equals(
+            \ JSON.encode([[0, 1, 2, ['a', 'b', 'c']]], s),
+            \ join([
+            \   '[',
+            \   '  [',
+            \   '    0,',
+            \   '    1,',
+            \   '    2,',
+            \   '    [',
+            \   '      "a",',
+            \   '      "b",',
+            \   '      "c"',
+            \   '    ]',
+            \   '  ]',
+            \   ']',
+            \ ], "\n"),
+            \)
+    End
+
     It encodes dictionaries
       Assert Equals(JSON.encode({}), '{}')
       Assert Equals(
@@ -119,6 +162,48 @@ Describe Web.JSON
       Assert Equals(
             \ JSON.encode({'a': {'b': {'c': [0, 1, 2]}}}),
             \ '{"a":{"b":{"c":[0,1,2]}}}',
+            \)
+    End
+
+    It encodes dictionaries with indent when {settings.indent} > 0
+      let s = { 'indent': 2 }
+      Assert Equals(JSON.encode({}, s), '{}')
+      Assert Equals(
+            \ JSON.encode({'a': 0, 'b': 1, 'c': 2}, s),
+            \ join([
+            \   '{',
+            \   '  "a": 0,',
+            \   '  "b": 1,',
+            \   '  "c": 2',
+            \   '}'
+            \ ], "\n")
+            \)
+      Assert Equals(
+            \ JSON.encode({'a': '0', 'b': '1', 'c': '2'}, s),
+            \ join([
+            \   '{',
+            \   '  "a": "0",',
+            \   '  "b": "1",',
+            \   '  "c": "2"',
+            \   '}'
+            \ ], "\n")
+            \)
+      " dictionary should be encoded recursively
+      Assert Equals(
+            \ JSON.encode({'a': {'b': {'c': [0, 1, 2]}}}, s),
+            \ join([
+            \   '{',
+            \   '  "a": {',
+            \   '    "b": {',
+            \   '      "c": [',
+            \   '        0,',
+            \   '        1,',
+            \   '        2',
+            \   '      ]',
+            \   '    }',
+            \   '  }',
+            \   '}',
+            \ ], "\n")
             \)
     End
 

@@ -75,7 +75,11 @@ endfunction
 " @vimlint(EVL102, 0, l:true)
 " @vimlint(EVL102, 0, l:false)
 
-function! s:encode(val) abort
+function! s:encode(val, ...) abort
+  let settings = extend({
+        \ 'indent': 0,
+        \}, get(a:000, 0, {})
+        \)
   if type(a:val) == 0
     return a:val
   elseif type(a:val) == 1
@@ -96,22 +100,61 @@ function! s:encode(val) abort
       return string(a:val)
     endif
   elseif type(a:val) == 3
-    return s:_encode_list(a:val)
+    return s:_encode_list(a:val, settings)
   elseif type(a:val) == 4
-    return s:_encode_dict(a:val)
+    return s:_encode_dict(a:val, settings)
   else
     return string(a:val)
   endif
 endfunction
-function! s:_encode_list(val) abort
-  let encoded_candidates = map(copy(a:val), 's:encode(v:val)')
-  return printf('[%s]', join(encoded_candidates, ','))
+function! s:_encode_list(val, settings) abort
+  if empty(a:val)
+    return '[]'
+  elseif !a:settings.indent
+    let encoded_candidates = map(copy(a:val), 's:encode(v:val, a:settings)')
+    return printf('[%s]', join(encoded_candidates, ','))
+  else
+    let previous_indent = get(a:settings, '_previous_indent')
+    let indent = previous_indent + a:settings.indent
+    let ns = extend(copy(a:settings), {
+          \ '_previous_indent': indent,
+          \})
+    let encoded_candidates = map(
+          \ copy(a:val),
+          \ printf('''%s'' . s:encode(v:val, ns)', repeat(' ', indent)),
+          \)
+    return printf(
+          \ "[\n%s\n%s]",
+          \ join(encoded_candidates, ",\n"),
+          \ repeat(' ', previous_indent)
+          \)
+  endif
 endfunction
-function! s:_encode_dict(val) abort
-  let encoded_candidates = map(keys(a:val),
-        \ 's:encode(v:val) . '':'' . s:encode(a:val[v:val])'
-        \)
-  return printf('{%s}', join(encoded_candidates, ','))
+function! s:_encode_dict(val, settings) abort
+  if empty(a:val)
+    return '{}'
+  elseif !a:settings.indent
+    let encoded_candidates = map(keys(a:val),
+          \ 's:encode(v:val, a:settings) . '':'' . s:encode(a:val[v:val], a:settings)'
+          \)
+    return printf('{%s}', join(encoded_candidates, ','))
+  else
+    let previous_indent = get(a:settings, '_previous_indent')
+    let indent = previous_indent + a:settings.indent
+    let ns = extend(copy(a:settings), {
+          \ '_previous_indent': indent,
+          \})
+    let encoded_candidates = map(keys(a:val),
+          \ printf(
+          \   '''%s'' . s:encode(v:val, ns) . '': '' . s:encode(a:val[v:val], ns)',
+          \   repeat(' ', indent),
+          \ ),
+          \)
+    return printf("{\n%s\n%s}",
+          \ join(encoded_candidates, ",\n"),
+          \ repeat(' ', previous_indent),
+          \)
+  endif
 endfunction
 
 let &cpo = s:save_cpo
