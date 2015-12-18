@@ -13,11 +13,6 @@ function! s:_null() abort
   return 0
 endfunction
 
-let s:const = {}
-let s:const.true = function('s:_true')
-let s:const.false = function('s:_false')
-let s:const.null = function('s:_null')
-
 function! s:_resolve(val, prefix) abort
   let t = type(a:val)
   if t == type('')
@@ -34,6 +29,13 @@ endfunction
 
 function! s:_vital_created(module) abort
   " define constant variables
+  if !exists('s:const')
+    let s:const = {}
+    let s:const.true = function('s:_true')
+    let s:const.false = function('s:_false')
+    let s:const.null = function('s:_null')
+    lockvar s:const
+  endif
   call extend(a:module, s:const)
 endfunction
 
