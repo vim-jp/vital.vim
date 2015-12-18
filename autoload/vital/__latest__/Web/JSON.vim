@@ -55,7 +55,7 @@ function! s:decode(json, ...) abort
   let settings = extend({
         \ 'use_token': 0,
         \}, get(a:000, 0, {}))
-  let json = iconv(a:json, "utf-8", &encoding)
+  let json = iconv(a:json, 'utf-8', &encoding)
   let json = join(split(json, "\n"), '')
   let json = substitute(json, '\\u34;', '\\"', 'g')
   let json = substitute(json, '\\u\(\x\x\x\x\)', '\=s:string.nr2enc_char("0x".submatch(1))', 'g')
@@ -83,7 +83,7 @@ function! s:encode(val) abort
     let json = substitute(json, "\r", '\\r', 'g')
     let json = substitute(json, "\n", '\\n', 'g')
     let json = substitute(json, "\t", '\\t', 'g')
-    return iconv(json, &encoding, "utf-8")
+    return iconv(json, &encoding, 'utf-8')
   elseif type(a:val) == 2
     if s:const.true == a:val
       return 'true'
@@ -96,12 +96,22 @@ function! s:encode(val) abort
       return string(a:val)
     endif
   elseif type(a:val) == 3
-    return '[' . join(map(copy(a:val), 's:encode(v:val)'), ',') . ']'
+    return s:_encode_list(a:val)
   elseif type(a:val) == 4
-    return '{' . join(map(keys(a:val), 's:encode(v:val).":".s:encode(a:val[v:val])'), ',') . '}'
+    return s:_encode_dict(a:val)
   else
     return string(a:val)
   endif
+endfunction
+function! s:_encode_list(val) abort
+  let encoded_candidates = map(copy(a:val), 's:encode(v:val)')
+  return printf('[%s]', join(encoded_candidates, ','))
+endfunction
+function! s:_encode_dict(val) abort
+  let encoded_candidates = map(keys(a:val),
+        \ 's:encode(v:val) . '':'' . s:encode(a:val[v:val])'
+        \)
+  return printf('{%s}', join(encoded_candidates, ','))
 endfunction
 
 let &cpo = s:save_cpo
