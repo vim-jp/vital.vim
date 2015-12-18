@@ -18,8 +18,8 @@ INTRODUCTION				*Vital.Vim.Compat-introduction*
 *Vital.Vim.Compat* provides vim compatibility wrapper functions for different
 versions/patchlevels of Vim.
 
-This module is not for multiple OS compatibilities but for versions of Vim
-itself.
+This module is not for multiple OS compatibilities or workarounds for known
+bugs but for versions of Vim itself.
 
 
 ==============================================================================
@@ -36,13 +36,28 @@ shiftwidth()				*Vital.Vim.Compat.shiftwidth()*
 	Compatibility function of |shiftwidth()| available from Vim 7.3.694.
 
 writefile({list}, {fname}[, {flags}])	*Vital.Vim.Compat.writefile()*
-	Compatibility function of |writefile()| which support 'a' flag from
+	Compatibility function of |writefile()| which supports 'a' flag from
 	Vim 7.4.503.
 
-redraw([{bang}])			*Vital.Vim.Compat.redraw()*
-	Compatibility function of |redraw| which has an issue on MacVim (GUI).
-	It calls |sleep| 1m just after |redraw| when called in MacVim (GUI),
-	otherwise it just calls |redraw|.
+doautocmd({expr}[, {nomodeline}])	*Vital.Vim.Compat.doautocmd()*
+	Compatibility function of |doautocmd| which supports '<nomodeline>'
+	from Vim 7.3.438.
+	If {nomodeline} is 1, it calls {expr} with '<nomodeline>' option,
+	otherwise it calls {expr}.
+>
+	" Call 'vital_compat_doautocmd_test' without <nomodeline>
+	call s:Compat.doautocmd('User vital_compat_doautocmd_test')
+	" Call 'vital_compat_doautocmd_test' with <nomodeline> if available
+	call s:Compat.doautocmd('User vital_compat_doautocmd_test', 1)
+<
+getbufvar({expr}, {varname}[, {def}])	*Vital.Vim.Compat.getbufvar()*
+	Compatibility function of |getbufvar()| which supports a default value
+	{def} from Vim 7.3.831.
+
+getwinvar({winnr}, {varname}[, {def}])	*Vital.Vim.Compat.getwinvar()*
+	Compatibility function of |getwinvar()| which supports a default value
+	{def} from Vim 7.3.831.
+
 
 
 ==============================================================================

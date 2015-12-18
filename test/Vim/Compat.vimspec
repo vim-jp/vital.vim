@@ -36,4 +36,77 @@ Describe Vim.Compat
       call delete(fname)
     End
   End
+
+  Describe .doautocmd()
+    Before
+      let g:vital_vim_compat_autocmd_called = 0
+      augroup vital_vim_compat_autocmd
+        autocmd! *
+        autocmd User vital_vim_compat_test_autocmd
+              \ let g:vital_vim_compat_autocmd_called = 1
+      augroup END
+    End
+    After
+      unlet! g:vital_vim_compat_autocmd_called
+      augroup vital_vim_compat_autocmd
+        autocmd! *
+      augroup END
+    End
+
+    It should successfully call a user defined autocmd
+      let g:vital_vim_compat_autocmd_called = 0
+      call Compat.doautocmd('User vital_vim_compat_test_autocmd')
+      Assert True(g:vital_vim_compat_autocmd_called)
+    End
+
+    It should successfully call a user defined autocmd even with <nomodeline>
+      let g:vital_vim_compat_autocmd_called = 0
+      call Compat.doautocmd('User vital_vim_compat_test_autocmd', 1)
+      Assert True(g:vital_vim_compat_autocmd_called)
+    End
+  End
+
+  Context .getbufvar()
+    After
+      silent! unlet! b:_vital_vim_compat_getbufvar_test
+    End
+
+    It should return a value of the buffer variable
+      let b:_vital_vim_compat_getbufvar_test = 'foo'
+      let ret = Compat.getbufvar('%', '_vital_vim_compat_getbufvar_test')
+      Assert Equals(ret, 'foo')
+    End
+
+    It should return an empty string if the buffer variable does not exist
+      let ret = Compat.getbufvar('%', '_vital_vim_compat_getbufvar_test')
+      Assert Equals(ret, '')
+    End
+
+    It should return a specified value if the buffer variable does not exist
+      let ret = Compat.getbufvar('%', '_vital_vim_compat_getbufvar_test', {'foo': 'bar'})
+      Assert Equals(ret, { 'foo': 'bar' })
+    End
+  End
+
+  Context .getwinvar()
+    After
+      silent! unlet! w:_vital_vim_compat_getwinvar_test
+    End
+
+    It should return a value of the window variable
+      let w:_vital_vim_compat_getwinvar_test = 'foo'
+      let ret = Compat.getwinvar(0, '_vital_vim_compat_getwinvar_test')
+      Assert Equals(ret, 'foo')
+    End
+
+    It should return an empty string if the window variable does not exist
+      let ret = Compat.getwinvar(0, '_vital_vim_compat_getwinvar_test')
+      Assert Equals(ret, '')
+    End
+
+    It should return a specified value if the window variable does not exist
+      let ret = Compat.getwinvar(0, '_vital_vim_compat_getwinvar_test', {'foo': 'bar'})
+      Assert Equals(ret, { 'foo': 'bar' })
+    End
+  End
 End

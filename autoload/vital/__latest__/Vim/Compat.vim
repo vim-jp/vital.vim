@@ -75,24 +75,40 @@ else
   endfunction
 endif
 
-" Workarund for MacVim redraw isue
-" https://gist.github.com/lambdalisue/94d14ff706a5627d64f5
-if has('gui_macvim') && has('gui_running')
-  function! s:redraw(...) abort
+" doautocmd User with <nomodeline>
+if s:has_version('7.3.438')
+  function! s:doautocmd(expr, ...) abort
     if get(a:000, 0, 0)
-      redraw!
+      execute 'doautocmd <nomodeline> ' . a:expr
     else
-      redraw
+      execute 'doautocmd ' . a:expr
     endif
-    sleep 1m
   endfunction
 else
-  function! s:redraw(...) abort
-    if get(a:000, 0, 0)
-      redraw!
-    else
-      redraw
-    endif
+  function! s:doautocmd(expr, ...) abort
+    execute 'doautocmd ' . a:expr
+  endfunction
+endif
+
+if s:has_version('7.3.831')
+  function! s:getbufvar(...) abort
+    return call('getbufvar', a:000)
+  endfunction
+else
+  function! s:getbufvar(expr, varname, ...) abort
+    let v = getbufvar(a:expr, a:varname)
+    return empty(v) ? get(a:000, 0, '') : v
+  endfunction
+endif
+
+if s:has_version('7.3.831')
+  function! s:getwinvar(...) abort
+    return call('getwinvar', a:000)
+  endfunction
+else
+  function! s:getwinvar(expr, varname, ...) abort
+    let v = getwinvar(a:expr, a:varname)
+    return empty(v) ? get(a:000, 0, '') : v
   endfunction
 endif
 
