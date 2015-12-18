@@ -107,6 +107,8 @@ function! s:encode(val, ...) abort
     return string(a:val)
   endif
 endfunction
+
+" @vimlint(EVL102, 1, l:ns)
 function! s:_encode_list(val, settings) abort
   if empty(a:val)
     return '[]'
@@ -130,6 +132,9 @@ function! s:_encode_list(val, settings) abort
           \)
   endif
 endfunction
+" @vimlint(EVL102, 0, l:ns)
+
+" @vimlint(EVL102, 1, l:ns)
 function! s:_encode_dict(val, settings) abort
   if empty(a:val)
     return '{}'
@@ -156,6 +161,7 @@ function! s:_encode_dict(val, settings) abort
           \)
   endif
 endfunction
+" @vimlint(EVL102, 0, l:ns)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
