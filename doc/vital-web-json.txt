@@ -51,12 +51,12 @@ encode({object}[, {settings}])		*Vital.Web.JSON.encode()*
 	echo s:JSON.encode([s:JSON.true, s:JSON.false, s:JSON.null])
 	" => '[true, false, null]'
 <
-	{settings} is a |Dictionary| which allow the following:
+	{settings} is a |Dictionary| which allows the following:
 
 	'indent'
-	The number of spaces used as an indent. When the value is grater than
-	0, the encoded JSON will be formatted with the specified indent level.
-	The default value is 0.
+	The number of spaces used as an indentation. When the value is greater
+	than 0, the encoded JSON will be formatted with the specified indent
+	level. The default value is 0.
 >
 	echo s:JSON.encode({'a': 0, 'b': 1})
 	" => '{"a":0,"b":1}'
@@ -68,11 +68,11 @@ encode({object}[, {settings}])		*Vital.Web.JSON.encode()*
 <
 decode({json}[, {settings}])		*Vital.Web.JSON.decode()*
 	Decode a JSON string into an object that vim can treat.
-	{settings} is a |Dictionary| which allow the following:
+	{settings} is a |Dictionary| which allows the following:
 
 	'use_token'
-	Use special tokens (e.g. |Vital.Web.JSON.true|) to represent coresponding
-	javascript tokens (e.g. 'true').
+	Use special tokens (e.g. |Vital.Web.JSON.true|) to represent
+	corresponding javascript tokens (e.g. 'true').
 	Otherwise 1 or 0 are used to represent these.
 	The default value is 0.
 >
