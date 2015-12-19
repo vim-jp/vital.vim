@@ -1,0 +1,163 @@
+*vital-web-cookie.txt*	An HTTP Cookie utility.
+
+Maintainer: thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS			*Vital.Web.HTTP.Cookie-contents*
+
+INTRODUCTION			|Vital.Web.HTTP.Cookie-introduction|
+INTERFACE			|Vital.Web.HTTP.Cookie-interface|
+  FUNCTIONS			  |Vital.Web.HTTP.Cookie-functions|
+OBJECTS				|Vital.Web.HTTP.Cookie-objects|
+  Cookie			  |Vital.Web.HTTP.Cookie-Cookie|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.Web.HTTP.Cookie-introduction*
+
+*Vital.Web.HTTP.Cookie* is an HTTP Cookie library.
+
+If you want to manage Cookie collection, you can use |Vital.Web.HTTP.CookieJar|.
+
+>
+	let s:Cookie = vital#of('vital').import('Web.HTTP.Cookie')
+	let cookie = s:Cookie.new('name=value', 'http://example.com')
+	echo cookie.name()
+	" => 'name'
+	echo cookie.value()
+	" => 'value'
+	let data = s:Cookie.export(cookie)
+	let new_cookie = s:Cookie.import(data)
+
+
+
+==============================================================================
+INTERFACE			*Vital.Web.HTTP.Cookie-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.Web.HTTP.Cookie-functions*
+
+				*Vital.Web.HTTP.Cookie.new()*
+new({cookie-string}, {request-uri})
+	Creates a new |Vital.Web.HTTP.Cookie-Cookie| object.
+	{cookie-string} is a value of "Set-Cookie:" HTTP header.
+
+export({cookie})		*Vital.Web.HTTP.Cookie.export()*
+	Exports a {cookie} to a Dictionary.
+	This dictionary contains data only.  You can save it to file.
+
+import({data})			*Vital.Web.HTTP.Cookie.import()*
+	Creates a new |Vital.Web.HTTP.Cookie-Cookie| object from {data}.
+	{data} is created by |Vital.Web.HTTP.Cookie.export()|.
+
+
+
+==============================================================================
+OBJECTS			*Vital.Web.HTTP.Cookie-objects*
+
+------------------------------------------------------------------------------
+Cookie			*Vital.Web.HTTP.Cookie-Cookie*
+
+	A Cookie object represents an HTTP Cookie.
+
+Cookie.name()		*Vital.Web.HTTP.Cookie-Cookie.name()*
+	Returns the name of cookie.
+
+Cookie.value()		*Vital.Web.HTTP.Cookie-Cookie.value()*
+	Returns the value of cookie.
+
+Cookie.expiry_time()	*Vital.Web.HTTP.Cookie-Cookie.expiry_time()*
+	Returns expiry time from "Expires" or "Max-Age" attribute.
+	This returns |Vital.DateTime-DateTime| object.
+	If this Cookie has no expiry time, this returns a DateTime which shows
+	the far future.
+
+Cookie.domain()		*Vital.Web.HTTP.Cookie-Cookie.domain()*
+	Returns Domain of cookie.
+	This if from "Domain" attribute or the domain part of requested URI.
+
+Cookie.path()		*Vital.Web.HTTP.Cookie-Cookie.path()*
+	Returns path of cookie.
+	This if from "Path" attribute or the path part of requested URI.
+
+Cookie.creation_time()	*Vital.Web.HTTP.Cookie-Cookie.creation_time()*
+	Returns creation time of cookie.
+	This returns |Vital.DateTime-DateTime| object.
+
+			*Vital.Web.HTTP.Cookie-Cookie.last_access_time()*
+Cookie.last_access_time()
+	Returns last access time of cookie.
+	This returns |Vital.DateTime-DateTime| object.
+
+Cookie.is_persistent()	*Vital.Web.HTTP.Cookie-Cookie.is_persistent()*
+	Returns non-zero when this cookie has "Expires" or "Max-Age"
+	attribute.
+
+Cookie.is_host_only()	*Vital.Web.HTTP.Cookie-Cookie.is_host_only()*
+	Returns non-zero when this cookie doesn't have domain attribute.
+
+Cookie.is_secure()	*Vital.Web.HTTP.Cookie-Cookie.is_secure()*
+	Returns "Secure" attribute.
+	Returns 1 or 0.
+
+Cookie.is_http_only()	*Vital.Web.HTTP.Cookie-Cookie.is_http_only()*
+	Returns "HttpOnly" attribute.
+	Returns 1 or 0.
+
+Cookie.attributes()	*Vital.Web.HTTP.Cookie-Cookie.attributes()*
+	Returns Cookie attributes by |Dictionary|.
+	This dictionary may contain the following items.
+
+	"Expires"
+		The "Expires" attribute.
+		This is raw string, not a DateTime object.
+
+	"Max-Age"
+		The "Max-Age" attribute.
+		This is |Number|.
+
+	"Domain"
+		The "Domain" attribute.
+
+	"Path"
+		The "Path" attribute.
+
+	"Secure"
+		The "Secure" attribute.
+		The value of this is always empty string.
+
+	"HttpOnly"
+		The "HttpOnly" attribute.
+		The value of this is always empty string.
+
+			*Vital.Web.HTTP.Cookie-Cookie.set_value()*
+Cookie.set_value({value})
+	Sets cookie value.
+
+			*Vital.Web.HTTP.Cookie-Cookie.touch()*
+Cookie.touch([{DateTime}])
+	Updates last access time.
+
+			*Vital.Web.HTTP.Cookie-Cookie.make_cookie_header()*
+Cookie.make_cookie_header()
+	Makes "Set-Cookie:" header.
+	This does not contains "Set-Cookie:" string.
+
+Cookie.is_match({url})	*Vital.Web.HTTP.Cookie-Cookie.is_match()*
+	Returns non-zero when this cookie is used at {url}.
+
+			*Vital.Web.HTTP.Cookie-Cookie.is_expired()*
+Cookie.is_expired([{now}])
+	Returns non-zero when this cookie is expired.
+	You can change current time to check by {now}.
+	{now} is a |Vital.DateTime-DateTime| object.
+	Returns false when this cookie is persistent.
+
+Cookie.is_valid()	*Vital.Web.HTTP.Cookie-Cookie.is_valid()*
+	Returns non-zero when this cookie is valid.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

@@ -1,0 +1,297 @@
+scriptencoding utf-8
+
+Describe Web.HTTP.Cookie
+  Before all
+    let Cookie = vital#of('vital').import('Web.HTTP.Cookie')
+    let DateTime = vital#of('vital').import('DateTime')
+  End
+
+  Describe .new()
+    Before
+      let uri1 = 'http://example.com/foo'
+      let uri2 = 'https://example.com/bar'
+      let cookie_strings = [
+      \   'name1=value1; path=/foo; domain=.example.com; secure',
+      \   'cookie; expires=Sun, 09-Aug-2015 12:00:00 GMT;',
+      \ ]
+    End
+
+    It creates a new Cookie object from cookie string
+      let cookie1 = Cookie.new(cookie_strings[0], uri1)
+      Assert Equals(cookie1.name(), 'name1')
+      Assert Equals(cookie1.value(), 'value1')
+
+      let cookie2 = Cookie.new(cookie_strings[1], uri2)
+      Assert Equals(cookie2.name(), 'cookie')
+      Assert Equals(cookie2.value(), '')
+    End
+
+    It can handle escapes
+      let cookie_string1 = 'name1="\\=\""'
+      let cookie1 = Cookie.new(cookie_string1, uri1)
+      Assert Equals(cookie1.name(), 'name1')
+      Assert Equals(cookie1.value(), '\="')
+
+      let cookie_string2 = 'name2="\343\201\202"'
+      let cookie2 = Cookie.new(cookie_string2, uri2)
+      Assert Equals(cookie2.name(), 'name2')
+      Assert Equals(cookie2.value(), iconv('あ', &encoding, 'utf-8'))
+    End
+
+    It can handle percent-encoding
+      let cookie_string1 = 'name1=%5C%3D%22'
+      let cookie1 = Cookie.new(cookie_string1, uri1)
+      Assert Equals(cookie1.name(), 'name1')
+      Assert Equals(cookie1.value(), '\="')
+
+      let cookie_string2 = 'name2=%E3%81%82'
+      let cookie2 = Cookie.new(cookie_string2, uri2)
+      Assert Equals(cookie2.name(), 'name2')
+      Assert Equals(cookie2.value(), iconv('あ', &encoding, 'utf-8'))
+    End
+  End
+
+  Describe .export()
+    Before
+      let cookie = Cookie.new(
+      \   'name1=value1; path=/foo; domain=.example.com; secure',
+      \   'http://example.com'
+      \ )
+      let cookie._creation_time = DateTime.from_date(2015, 8, 1, 16).timezone(0)
+      let cookie._last_access_time = DateTime.from_date(2015, 8, 14, 0).timezone(0)
+    End
+
+    It exports a Cookie object to a Dictionary
+      let data = Cookie.export(cookie)
+      Assert Equals(data, {
+      \   'name': 'name1',
+      \   'value': 'value1',
+      \   'domain': 'example.com',
+      \   'path': '/foo',
+      \   'creation_time': '2015-08-01 16:00:00 +0000',
+      \   'last_access_time': '2015-08-14 00:00:00 +0000',
+      \   'attributes': {
+      \     'Path': '/foo',
+      \     'Domain': '.example.com',
+      \     'Secure': '',
+      \   },
+      \ })
+    End
+  End
+
+  Describe .import()
+    Before
+      let data = {
+      \   'name': 'name1',
+      \   'value': 'value1',
+      \   'domain': 'example.com',
+      \   'path': '/foo',
+      \   'creation_time': '2015-08-01 16:00:00 +0000',
+      \   'last_access_time': '2015-08-14 00:00:00 +0000',
+      \   'attributes': {
+      \     'Path': '/foo',
+      \     'Domain': '.example.com',
+      \     'Secure': '',
+      \   },
+      \ }
+    End
+
+    It creates a new Cookie object from a Dictionary
+      let cookie = Cookie.import(data)
+      Assert Equals(cookie.name(), 'name1')
+      Assert Equals(cookie.value(), 'value1')
+      Assert Equals(cookie.domain(), 'example.com')
+      Assert Equals(cookie.path(), '/foo')
+      Assert Equals(cookie.creation_time().to_string(), '2015-08-01 16:00:00 +0000')
+      Assert Equals(cookie.last_access_time().to_string(), '2015-08-14 00:00:00 +0000')
+      Assert Equals(cookie.attributes(), {
+      \   'Path': '/foo',
+      \   'Domain': '.example.com',
+      \   'Secure': '',
+      \ })
+    End
+  End
+
+  Describe Cookie
+    Before
+      let uri1 = 'https://example.com/foo'
+      let cookie1 = Cookie.new(
+      \ 'name1=value1; Path=/foo; Expires=Sun, 09-Aug-2015 12:00:00 GMT; Secure',
+      \ uri1)
+      let cookie1._creation_time = DateTime.from_date(2015, 8, 1, 16).timezone(0)
+      let cookie1._last_access_time = DateTime.from_date(2015, 8, 14, 0).timezone(0)
+
+      let uri2 = 'http://example.com/bar/buz'
+      let cookie2 = Cookie.new('name2=value2; Domain=.example.com; Max-Age=3600; HttpOnly', uri2)
+      let cookie2._creation_time = DateTime.from_date(2015, 8, 9, 11).timezone(0)
+      let cookie2._last_access_time = DateTime.from_date(2015, 8, 9, 11).timezone(0)
+    End
+
+    Describe .name()
+      It returns name of cookie
+        Assert Equals(cookie1.name(), 'name1')
+        Assert Equals(cookie2.name(), 'name2')
+      End
+    End
+
+    Describe .value()
+      It returns value of cookie
+        Assert Equals(cookie1.value(), 'value1')
+        Assert Equals(cookie2.value(), 'value2')
+      End
+    End
+
+    Describe .expiry_time()
+      It returns DateTime from "Expires" or "Max-Age" attribute
+        Assert Equals(cookie1.expiry_time().to(0).to_string(), '2015-08-09 12:00:00 +0000')
+        Assert Equals(cookie2.expiry_time().to(0).to_string(), '2015-08-09 12:00:00 +0000')
+      End
+    End
+
+    Describe .domain()
+      It returns domain of cookie
+        Assert Equals(cookie1.domain(), 'example.com')
+        Assert Equals(cookie2.domain(), 'example.com')
+      End
+    End
+
+    Describe .path()
+      It returns path of cookie
+        Assert Equals(cookie1.path(), '/foo')
+        Assert Equals(cookie2.path(), '/bar')
+      End
+    End
+
+    Describe .creation_time()
+      It returns creation time as DateTime object
+        Assert Equals(cookie1.creation_time().to(0).to_string(), '2015-08-01 16:00:00 +0000')
+        Assert Equals(cookie2.creation_time().to(0).to_string(), '2015-08-09 11:00:00 +0000')
+      End
+    End
+
+    Describe .last_access_time()
+      It returns last access time as DateTime object
+        Assert Equals(cookie1.last_access_time().to(0).to_string(), '2015-08-14 00:00:00 +0000')
+        Assert Equals(cookie2.last_access_time().to(0).to_string(), '2015-08-09 11:00:00 +0000')
+      End
+    End
+
+    Describe .is_persistent()
+      It returns true when this cookie has "Expires" or "Max-Age" attribute
+        Assert True(cookie1.is_persistent())
+        Assert True(cookie2.is_persistent())
+        let cookie3 = Cookie.new('name2=value2', uri2)
+        Assert False(cookie3.is_persistent())
+      End
+    End
+
+    Describe .is_host_only()
+      It returns true when this cookie doesn't have domain attribute
+        Assert True(cookie1.is_host_only())
+        Assert False(cookie2.is_host_only())
+      End
+    End
+
+    Describe .is_secure()
+      It returns Secure flag of cookie
+        Assert True(cookie1.is_secure())
+        Assert False(cookie2.is_secure())
+      End
+    End
+
+    Describe .is_http_only()
+      It returns HttpOnly flag of cookie
+        Assert False(cookie1.is_http_only())
+        Assert True(cookie2.is_http_only())
+      End
+    End
+
+    Describe .attributes()
+      It returns attributes of cookie by dictionary
+        Assert Equals(cookie1.attributes(), {
+        \   'Path': '/foo',
+        \   'Expires': 'Sun, 09-Aug-2015 12:00:00 GMT',
+        \   'Secure': '',
+        \ })
+        Assert Equals(cookie2.attributes(), {
+        \   'Domain': '.example.com',
+        \   'Max-Age': 3600,
+        \   'HttpOnly': '',
+        \ })
+      End
+    End
+
+    Describe .set_value()
+      It Sets cookie value
+        Assert Equals(cookie1.value(), 'value1')
+        call cookie1.set_value('abcde')
+        Assert Equals(cookie1.value(), 'abcde')
+      End
+    End
+
+    Describe .touch()
+      It updates last access time
+        call cookie1.touch(DateTime.from_date(2015, 8, 20).timezone(0))
+        Assert Equals(cookie1.last_access_time().to(0).to_string(), '2015-08-20 00:00:00 +0000')
+        call cookie2.touch(DateTime.from_date(2016, 8, 9, 11).timezone(0))
+        Assert Equals(cookie2.last_access_time().to(0).to_string(), '2016-08-09 11:00:00 +0000')
+      End
+    End
+
+    Describe .make_cookie_header()
+      It makes "Set-Cookie:" header
+        let header1 = cookie1.make_cookie_header()
+        Assert Equals(header1, 'name1=value1; Expires=Sun, 09-Aug-2015 12:00:00 GMT; Path=/foo; Secure')
+
+        let header2 = cookie2.make_cookie_header()
+        Assert Equals(header2, 'name2=value2; Max-Age=3600; Domain=.example.com; HttpOnly')
+      End
+    End
+
+    Describe .is_match()
+      It returns true when this cookie is used at {url}
+        Assert True(cookie1.is_match(uri1))
+        Assert False(cookie1.is_match('https://example.com/bar'))
+        Assert False(cookie1.is_match('http://example.com/foo'))
+
+        Assert True(cookie2.is_match(uri2))
+        Assert False(cookie2.is_match('http://example.com/foo'))
+      End
+    End
+
+    Describe .is_expired()
+      It returns true when this cookie is expired
+        Assert True(cookie1.is_expired(DateTime.from_date(2015, 8, 11)))
+        Assert True(cookie2.is_expired(DateTime.from_date(2015, 8, 9, 12, 0, 1).timezone(0)))
+      End
+
+      Context with not persistent cookie
+        It always returns false
+          Assert False(Cookie.new('name=value', uri1).is_expired())
+        End
+      End
+    End
+
+    Describe .is_valid()
+      Context with valid cookie
+        It returns true
+          let valid_cookie =
+          \   Cookie.new(
+          \     'name=value; Domain=example.com',
+          \     'http://example.com/')
+          Assert True(valid_cookie.is_valid())
+        End
+      End
+
+      Context with invalid cookie
+        It returns false
+          let invalid_cookie =
+          \   Cookie.new(
+          \     'name=value; Domain=foo.example.com',
+          \     'http://bar.example.com/')
+          Assert False(invalid_cookie.is_valid())
+        End
+      End
+    End
+  End
+End
