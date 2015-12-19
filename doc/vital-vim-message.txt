@@ -23,6 +23,9 @@ INTERFACE				*Vital.Vim.Message-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Vim.Message-functions*
 
+echo({hl}, {msg})			*Vital.Vim.Message.echo()*
+	Execute |:echo| with {hl} (|highlight-groups|).
+
 echomsg({hl}, {msg})			*Vital.Vim.Message.echomsg()*
 	Execute |:echomsg| with {hl} (|highlight-groups|).
 
