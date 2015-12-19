@@ -208,6 +208,13 @@ function! s:Counter.keep_positive() abort
   endfor
 endfunction
 
+" .reverse() reverses the sign of counts.
+function! s:Counter.reverse() abort
+  for [k, dict] in items(self._dict)
+    call self.set(k, -dict.count)
+  endfor
+endfunction
+
 " ._init_count() initializes count dictionary for given value.
 " @param {any} x
 function! s:Counter._init_count(x) abort

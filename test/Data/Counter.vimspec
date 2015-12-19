@@ -226,5 +226,13 @@ Describe Data.Counter
         Assert Equals({'A': 2}, c.to_dict())
       End
     End
+
+    Describe .reverse()
+      It reverses the sign of counts.
+        let c = Counter.new({'A': 2, 'B': -1, 'C': 0})
+        call c.reverse()
+        Assert Equals({'A': -2, 'B': 1, 'C': 0}, c.to_dict())
+      End
+    End
   End
 End

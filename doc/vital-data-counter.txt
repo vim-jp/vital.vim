@@ -220,6 +220,18 @@ Counter.keep_positive()		*Vital.Data.Counter-Counter.keep_positive()*
 	Strips elements with a negative or zero count. This is similar to
 	unary addition to collections.Counter in python.
 >
-
+        let c = s:Counter.new({'A': 2, 'B': -1, 'C': 0})
+        call c.keep_positive()
+        echo c.to_dict()
+        " => {'A': 2}
+<
+Counter.reverse()		*Vital.Data.Counter-Counter.reverse()*
+	Reverses the sign of counts.
+>
+        let c = s:Counter.new({'A': 2, 'B': -1, 'C': 0})
+        call c.reverse()
+        echo c.to_dict()
+        " => {'A': -2, 'B': 1, 'C': 0}
+<
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
