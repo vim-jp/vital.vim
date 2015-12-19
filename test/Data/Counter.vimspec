@@ -66,28 +66,28 @@ Describe Data.Counter
       End
     End
 
-    Describe .update()
+    Describe .add()
       It adds a new counter from a string
         let c = Counter.new()
-        call c.update('gallahad')
+        call c.add('gallahad')
         Assert Equals({'a': 3, 'd': 1, 'g': 1, 'h': 1, 'l': 2}, c.to_dict())
       End
 
       It adds a new counter from a number list
         let c = Counter.new()
-        call c.update([1, 2, 2, 3, 3, 3])
+        call c.add([1, 2, 2, 3, 3, 3])
         Assert Equals({'1': 1, '2': 2, '3': 3}, c.to_dict())
       End
 
       It adds a new counter from a string list
         let c = Counter.new()
-        call c.update(['a', 'b', 'b'])
+        call c.add(['a', 'b', 'b'])
         Assert Equals({'a': 1, 'b': 2}, c.to_dict())
       End
 
       It adds a new counter from a funcref list
         let c = Counter.new()
-        call c.update([function('function'), function('tr'), function('tr')])
+        call c.add([function('function'), function('tr'), function('tr')])
         Assert Equals({'function(''tr'')': 2, 'function(''function'')': 1}, c.to_dict())
       End
     End

@@ -24,7 +24,7 @@ function! s:new(...) abort
   endif
   let c = deepcopy(s:Counter)
   if a:0 is# 1
-    call call(c.update, a:000, c)
+    call call(c.add, a:000, c)
   endif
   return c
 endfunction
@@ -42,9 +42,9 @@ function! s:Counter.set(x, count) abort
   let self._dict[self._hash(a:x)].count = a:count
 endfunction
 
-" .update() adds counts from countable instead of replacing them.
+" .add() adds counts from countable instead of replacing them.
 " @param {list|string|dict} countable
-function! s:Counter.update(countable) abort
+function! s:Counter.add(countable) abort
   let iter = self._to_iter_countable(a:countable)
   if type(iter) is# type([])
     for E in iter
@@ -95,7 +95,7 @@ function! s:Counter.union(other) abort
     if new_count > 0
       let new = {}
       let new[key] = new_count
-      call result.update(new)
+      call result.add(new)
     endif
   endfor
   for [key, dict] in items(other_counter._dict)
@@ -105,7 +105,7 @@ function! s:Counter.union(other) abort
       if new_count > 0
         let new = {}
         let new[key] = new_count
-        call result.update(new)
+        call result.add(new)
       endif
     endif
   endfor
@@ -125,7 +125,7 @@ function! s:Counter.intersection(other) abort
       if new_count > 0
         let new = {}
         let new[key] = new_count
-        call result.update(new)
+        call result.add(new)
       endif
     endif
   endfor

@@ -48,8 +48,8 @@ INTRODUCTION				*Vital.Data.Counter-introduction*
 	echo s:c.get('a')
 	" => 5
 
-	" update counts from list
-	call s:c.update(['s', 'h', 'a', 'z', 'a', 'm'])
+	" add counts from list
+	call s:c.add(['s', 'h', 'a', 'z', 'a', 'm'])
 
 	" now there are seven 'a'
 	echo s:c.get('a')
@@ -111,11 +111,11 @@ Counter.set({key}, {nr})		*Vital.Data.Counter-Counter.set()*
 	call s:c.get('v')
 	" => 3
 <
-Counter.update({countable})	*Vital.Data.Counter-Counter.update()*
+Counter.add({countable})	*Vital.Data.Counter-Counter.add()*
 	Adds counts from countable instead of replacing them.
 >
 	let s:c = s:Counter.new('vim')
-	call s:c.update('vital')
+	call s:c.add('vital')
 	echo s:c.get('v')
 	" => 2
 <
