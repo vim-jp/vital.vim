@@ -84,7 +84,7 @@ INTERFACE				*Vital.Data.Counter-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Data.Counter-functions*
 
-new({countable})			*Vital.Data.Counter.new()*
+new([{countable}])			*Vital.Data.Counter.new()*
 	Return a new 'Counter' object.
 
 ==============================================================================
@@ -205,7 +205,7 @@ Counter.in({expr})		*Vital.Data.Counter-Counter.in()*
 	echo s:c.in('A')
 	" => 1
 	echo s:c.in('D')
-	" => 1
+	" => 0
 <
 Counter.del({expr})		*Vital.Data.Counter-Counter.del()*
 	Deletes the given element from the counter. Does not raise error for
