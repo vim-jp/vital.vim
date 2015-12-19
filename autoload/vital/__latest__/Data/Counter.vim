@@ -19,10 +19,10 @@ let s:Counter = {
 " s:new() creates a new instance of Counter object.
 " @param {list|string|dict?} countable (optional)
 function! s:new(...) abort
-  let c = deepcopy(s:Counter)
   if a:0 > 1
     call s:_throw(printf('.new() expected at most 1 arguments, got %d', a:0))
   endif
+  let c = deepcopy(s:Counter)
   if a:0 is# 1
     call call(c.update, a:000, c)
   endif
