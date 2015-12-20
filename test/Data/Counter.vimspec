@@ -71,7 +71,7 @@ Describe Data.Counter
         Assert Equals(c.get('l'), 1)
       End
 
-      It override count
+      It overwrites count
         let c = Counter.new('ll')
         call c.set('l', 1)
         Assert Equals(c.get('l'), 1)
@@ -103,13 +103,13 @@ Describe Data.Counter
         Assert Equals(c.to_dict(), {'function(''tr'')': 2, 'function(''function'')': 1})
       End
 
-      It add a new counter from a dictionary
+      It adds a new counter from a dictionary
         let c = Counter.new()
         call c.add({'A': 2, 'B': -1, 'C': 0})
         Assert Equals(c.to_dict(), {'A': 2, 'B': -1, 'C': 0})
       End
 
-      It add a new counter from a counter
+      It adds a new counter from a counter
         let c1 = Counter.new({'A': 2, 'B': -1, 'C': 0})
         let c2 = Counter.new({'A': -1})
         call c2.add(c1)
@@ -131,7 +131,7 @@ Describe Data.Counter
         Assert Equals(c1.union(c2).to_dict(), {'a': 1})
       End
 
-      It should handle dictionary as an argument
+      It handles dictionary as an argument
         let c1 = Counter.new({'a': 1, 'b': 0})
         let c2 = {'c': -1}
         Assert Equals(c1.union(c2).to_dict(), {'a': 1})
@@ -151,7 +151,7 @@ Describe Data.Counter
         Assert Equals(c1.intersection(c2).to_dict(), {'a': 1})
       End
 
-      It should handle dictionary as an argument
+      It handles dictionary as an argument
         let c1 = Counter.new({'a': 1, 'b': 0})
         let c2 = {'a': 2, 'c': -1}
         Assert Equals(c1.intersection(c2).to_dict(), {'a': 1})
@@ -166,7 +166,7 @@ Describe Data.Counter
       End
     End
 
-    Describe elements()
+    Describe .elements()
       It returns a list of elements repeating each as many times as its count
         let c = Counter.new('ABCABC')
         Assert Equals(sort(c.elements()), ['A', 'A', 'B', 'B', 'C', 'C'])
@@ -177,7 +177,7 @@ Describe Data.Counter
         Assert Equals(sort(c.elements()), ['A', 'A'])
       End
 
-      It should handle Knuth's example for prime factors
+      It handles Knuth's example for prime factors
         let prime_factors = Counter.new({2: 2, 3: 3, 17: 1})
         let product = 1
         for factor in prime_factors.elements()
