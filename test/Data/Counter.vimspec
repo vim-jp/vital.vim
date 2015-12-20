@@ -113,7 +113,7 @@ Describe Data.Counter
     End
 
     Describe .intersection()
-      It returns a counter of the minimum of corresponding counts.
+      It returns a counter of the minimum of corresponding counts
         let c1 = Counter.new('abbb')
         let c2 = Counter.new('bcc')
         Assert Equals(c1.intersection(c2).to_dict(), {'b': 1})
@@ -181,14 +181,14 @@ Describe Data.Counter
     End
 
     Describe .to_list()
-      It returns list of element in the counter.
+      It returns list of element in the counter
         let c = Counter.new({'A': 2, 'B': -1})
         Assert Equals(sort(c.to_list()), ['A', 'B'])
       End
     End
 
     Describe .values()
-      It returns list of count in the counter.
+      It returns list of count in the counter
         let c = Counter.new({'A': 2, 'B': -1})
         Assert Equals(sort(c.values()), [-1, 2])
       End
@@ -220,7 +220,7 @@ Describe Data.Counter
     End
 
     Describe .keep_positive()
-      It strips elements with a negative or zero count.
+      It strips elements with a negative or zero count
         let c = Counter.new({'A': 2, 'B': -1, 'C': 0})
         call c.keep_positive()
         Assert Equals(c.to_dict(), {'A': 2})
@@ -228,7 +228,7 @@ Describe Data.Counter
     End
 
     Describe .reverse()
-      It reverses the sign of counts.
+      It reverses the sign of counts
         let c = Counter.new({'A': 2, 'B': -1, 'C': 0})
         call c.reverse()
         Assert Equals(c.to_dict(), {'A': -2, 'B': 1, 'C': 0})
