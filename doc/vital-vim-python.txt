@@ -93,6 +93,8 @@ eval_expr({expr}[, {version})		*Vital.Vim.Python.eval_expr()*
 	value returned from |Vital.Vim.Python.get_major_version()|.
 	It throws an exception if the specified {version} is not available.
 
+	This function requires a Vim 7.3.601 or later.
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

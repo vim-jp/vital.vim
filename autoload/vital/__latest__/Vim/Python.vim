@@ -1,7 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-
 let s:has_python2 = has('python')
 let s:has_python3 = has('python3')
 let s:current_major_version = 0
@@ -65,14 +64,20 @@ function! s:exec_code(code, ...) abort
   execute printf('%s %s', exec, code)
 endfunction
 
-function! s:eval_expr(expr, ...) abort
-  let major_version = s:_get_valid_major_version(get(a:000, 0, 0))
-  if s:has_python2 && s:has_python3
-    return major_version == 2 ? pyeval(a:expr) : py3eval(a:expr)
-  else
-    return s:has_python2 ? pyeval(a:expr) : py3eval(a:expr)
-  endif
-endfunction
+if v:version >= 704 || (v:version == 703 && has('patch601'))
+  function! s:eval_expr(expr, ...) abort
+    let major_version = s:_get_valid_major_version(get(a:000, 0, 0))
+    if s:has_python2 && s:has_python3
+      return major_version == 2 ? pyeval(a:expr) : py3eval(a:expr)
+    else
+      return s:has_python2 ? pyeval(a:expr) : py3eval(a:expr)
+    endif
+  endfunction
+else
+  function! s:eval_expr(expr, ...) abort
+    call s:_throw('eval_expr() requires Vim 7.3.601 or later')
+  endfunction
+endif
 
 
 let &cpo = s:save_cpo
