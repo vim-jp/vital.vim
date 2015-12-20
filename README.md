@@ -61,6 +61,7 @@ Module						 | Description
 [Vim.Buffer](doc/vital-vim-buffer.txt)		 | Vim's buffer related stuff in general
 [Vim.BufferManager](doc/vital-vim-buffer_manager.txt)  | buffer manager
 [Vim.Compat](doc/vital-vim-compat.txt)		 | Vim compatibility wrapper functions
+[Vim.Python](doc/vital-vim-python.txt)		 | +python/+python3 compatibility functions
 [Vim.Message](doc/vital-vim-message.txt)	 | Vim message functions
 [Vim.Search](doc/vital-vim-search.txt)		 | Vim's [I like function
 [Vim.ScriptLocal](doc/vital-vim-script_local.txt) | Get script-local things

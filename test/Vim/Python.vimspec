@@ -1,0 +1,290 @@
+let s:has_python2 = has('python')
+let s:has_python3 = has('python3')
+
+Describe Vim.Python
+  Before all
+    let V = vital#of('vital')
+    let S = V.import('Vim.ScriptLocal')
+    let P = V.import('System.Filepath')
+    let Python = V.import('Vim.Python')
+  End
+  Before each
+    let sv = S.svars(P.realpath('autoload/vital/__latest__/Vim/Python.vim'))
+    let default_major_version = sv.default_major_version
+    if s:has_python2 && s:has_python3
+      " Make sure s:current_major_version is not set
+      let sv.current_major_version = 0
+    endif
+  End
+
+  Describe .is_enabled()
+    if s:has_python2 && s:has_python3
+      It returns 1 [+python/+python3]
+        Assert True(Python.is_enabled())
+      End
+    elseif s:has_python2
+      It returns 1 [+python/-python3]
+        Assert True(Python.is_enabled())
+      End
+    elseif s:has_python3
+      It returns 1 [-python/+python3]
+        Assert True(Python.is_enabled())
+      End
+    else
+      It returns 0 [-python/-python3]
+        Assert True(Python.is_enabled())
+      End
+    endif
+  End
+
+  Describe .get_major_version()
+    if s:has_python2 && s:has_python3
+      It returns s:default_major_version [+python/+python3]
+        Assert Equals(Python.get_major_version(), default_major_version)
+      End
+    elseif s:has_python2
+      It returns 2 [+python/-python3]
+        Assert Equals(Python.get_major_version(), 2)
+      End
+    elseif s:has_python3
+      It returns 3 [-python/+python3]
+        Assert Equals(Python.get_major_version(), 3)
+      End
+    else
+      It returns 0 [-python/-python3]
+        Assert Equals(Python.get_major_version(), 0)
+      End
+    endif
+  End
+
+  Describe .set_major_version()
+    if s:has_python2 && s:has_python3
+      It does nothing if 0 is specified [+python/+python3]
+        call Python.set_major_version(0)
+      End
+      It assigns a current major version if 2 is specified [+python/+python3]
+        call Python.set_major_version(2)
+        Assert Equals(Python.get_major_version(), 2)
+      End
+      It assigns a current major version if 3 is specified [+python/+python3]
+        call Python.set_major_version(3)
+        Assert Equals(Python.get_major_version(), 3)
+      End
+    elseif s:has_python2
+      It does nothing if 0 is specified [+python/-python3]
+        call Python.set_major_version(0)
+      End
+      It assigns a current major version if 2 is specified [+python/-python3]
+        call Python.set_major_version(2)
+        Assert Equals(Python.get_major_version(), 2)
+      End
+      It throws an exception if 3 is specified [+python/-python3]
+        Throw /+python3 is required/ Python.set_major_version(3)
+      End
+    elseif s:has_python3
+      It does nothing if 0 is specified [-python/+python3]
+        call Python.set_major_version(0)
+      End
+      It throws an exception if 2 is specified [-python/+python3]
+        Throw /+python is required/ Python.set_major_version(2)
+      End
+      It assigns a current major version if 3 is specified [0python/+python3]
+        call Python.set_major_version(3)
+        Assert Equals(Python.get_major_version(), 3)
+      End
+    else
+      It throws an exception if 0 is specified [-python/-python3]
+        Throw /+python is required/ Python.set_major_version(0)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python is required/ Python.set_major_version(2)
+      End
+      It throws an exception if 3 is specified [-python/-python3]
+        Throw /+python3 is required/ Python.set_major_version(3)
+      End
+    endif
+  End
+
+  Describe .exec_file()
+    Before
+      let path = P.realpath('test/_testdata/Vim/Python/test.py')
+    End
+    if s:has_python2 && s:has_python3
+      It executes a python file when 0 is specified [+python/+python3]
+        redir => content
+        call Python.exec_file(path, 0)
+        redir END
+        Assert Equals(content, printf("\nPython %d", default_major_version))
+      End
+      It executes a python file when 2 is specified [+python/+python3]
+        redir => content
+        call Python.exec_file(path, 2)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It execute a python file when 3 is specified [+python/+python3]
+        redir => content
+        call Python.exec_file(path, 3)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+    elseif s:has_python2
+      It executes a python file when 0 is specified [+python/-python3]
+        redir => content
+        call Python.exec_file(path, 0)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It executes a python file when 2 is specified [+python/-python3]
+        redir => content
+        call Python.exec_file(path, 2)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It throws an exception if 3 is specified [+python/-python3]
+        Throw /+python3 is required/ Python.exec_file(path, 3)
+      End
+    elseif s:has_python3
+      It executes a python file when 0 is specified [-python/+python3]
+        redir => content
+        call Python.exec_file(path, 0)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+      It throws an exception if 2 is specified [-python/+python3]
+        Throw /+python is required/ Python.exec_file(path, 2)
+      End
+      It executes a python file when 3 is specified [-python/+python3]
+        redir => content
+        call Python.exec_file(path, 3)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+    else
+      It throws an exception if 0 is specified [-python/-python3]
+        Throw /+python is required/ Python.exec_file(path, 0)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python is required/ Python.exec_file(path, 2)
+      End
+      It throws an exception if 3 is specified [-python/-python3]
+        Throw /+python3 is required/ Python.exec_file(path, 3)
+      End
+    endif
+  End
+
+  Describe .exec_code()
+    Before
+      let code = 'import sys; print("Python %s" % sys.version_info.major)'
+    End
+    if s:has_python2 && s:has_python3
+      It executes a python code when 0 is specified [+python/+python3]
+        redir => content
+        call Python.exec_code(code, 0)
+        redir END
+        Assert Equals(content, printf("\nPython %d", default_major_version))
+      End
+      It executes a python code when 2 is specified [+python/+python3]
+        redir => content
+        call Python.exec_code(code, 2)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It execute a python code when 3 is specified [+python/+python3]
+        redir => content
+        call Python.exec_code(code, 3)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+    elseif s:has_python2
+      It executes a python code when 0 is specified [+python/-python3]
+        redir => content
+        call Python.exec_code(code, 0)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It executes a python code when 2 is specified [+python/-python3]
+        redir => content
+        call Python.exec_code(code, 2)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It throws an exception if 3 is specified [+python/-python3]
+        Throw /+python3 is required/ Python.exec_code(code, 3)
+      End
+    elseif s:has_python3
+      It executes a python code when 0 is specified [-python/+python3]
+        redir => content
+        call Python.exec_code(code, 0)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+      It throws an exception if 2 is specified [-python/+python3]
+        Throw /+python is required/ Python.exec_code(code, 2)
+      End
+      It executes a python code when 3 is specified [-python/+python3]
+        redir => content
+        call Python.exec_code(code, 3)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+    else
+      It throws an exception if 0 is specified [-python/-python3]
+        Throw /+python is required/ Python.exec_code(code, 0)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python is required/ Python.exec_code(code, 2)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python3 is required/ Python.exec_code(code, 3)
+      End
+    endif
+  End
+
+  Describe .eval_expr()
+    Before
+      let expr = 'sys.version_info.major'
+    End
+    if s:has_python2 && s:has_python3
+      It evaluate a python expr when 0 is specified [+python/+python3]
+        Assert Equals(Python.eval_expr(expr, 0), 2)
+      End
+      It executes a python code when 2 is specified [+python/+python3]
+        Assert Equals(Python.eval_expr(expr, 2), 2)
+      End
+      It execute a python code when 3 is specified [+python/+python3]
+        Assert Equals(Python.eval_expr(expr, 3), 3)
+      End
+    elseif s:has_python2
+      It evaluate a python expr when 0 is specified [+python/-python3]
+        Assert Equals(Python.eval_expr(expr, 0), 2)
+      End
+      It execute a python code when 2 is specified [+python/-python3]
+        Assert Equals(Python.eval_expr(expr, 2), 2)
+      End
+      It throws an exception if 3 is specified [+python/-python3]
+        Throw /+python3 is required/ Python.eval_expr(expr, 3)
+      End
+    elseif s:has_python3
+      It evaluate a python expr when 0 is specified [-python/+python3]
+        Assert Equals(Python.eval_expr(expr, 0), 3)
+      End
+      It throws an exception if 2 is specified [-python/+python3]
+        Throw /+python is required/ Python.eval_expr(expr, 2)
+      End
+      It executes a python code when 3 is specified [-python/+python3]
+        Assert Equals(Python.eval_expr(expr, 3), 3)
+      End
+    else
+      It throws an exception if 0 is specified [-python/-python3]
+        Throw /+python is required/ Python.eval_expr(expr, 0)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python is required/ Python.eval_expr(expr, 2)
+      End
+      It throws an exception if 3 is specified [-python/-python3]
+        Throw /+python3 is required/ Python.eval_expr(expr, 3)
+      End
+    endif
+  End
+End

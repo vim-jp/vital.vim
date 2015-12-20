@@ -1,0 +1,98 @@
+*vital-vim-python.txt*	Vim python/python3 compatible function
+
+Maintainer: lambdalisue <lambdalisue@hashnote.net>
+
+==============================================================================
+CONTENTS				*Vital.Vim.Python-contents*
+
+INTRODUCTION			|Vital.Vim.Python-introduction|
+INTERFACE			|Vital.Vim.Python-interface|
+  FUNCTIONS			  |Vital.Vim.Python-functions|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Vim.Python-introduction*
+
+*Vital.Vim.Python* provides compatible functions of |python|, |pyfile|, and |pyeval|.
+It automatically uses a correct function/command to execute a Python code/file.
+>
+	let s:V = vital#of('vital')
+	let s:P = s:V.import('Vim.Python')
+
+	" Check if Python is enabled
+	echo s:P.is_enabled()
+	" => 0 or 1, depends on +python/+python3
+
+	" Execute a Python file
+	call s:P.exec_file('your/python/file.py')
+
+	" Execute a Python code
+	call s:P.exec_code('print("Hello Python")')
+
+	" Evaluate a Python expression and return
+	echo s:P.eval_expr('1 + 1')
+	" => 2
+
+	" Get a current major version
+	echo s:P.get_major_version()
+	" => 2 or 3, depends on +python/+python3
+
+	" Set a current major versioin
+	" NOTE: It only affects when a Vim was compiled with +python/+python3
+	call s:P.set_major_version(2)
+	echo s:P.eval_expr('print(sys.version_info.major)')
+	" => 2
+	call s:P.set_major_version(3)
+	echo s:P.eval_expr('print(sys.version_info.major)')
+	" => 3
+<
+
+==============================================================================
+INTERFACE				*Vital.Vim.Python-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Vim.Python-functions*
+
+is_enabled()				*Vital.Vim.Python.is_enabled()*
+
+	Return 1 if |+python| and/or |+python3| features are available.
+
+get_major_version()			*Vital.Vim.Python.get_major_version()*
+
+	Return 0, 2, or 3. Depends on |+python| and/or |+python3| features.
+	In case of |+python|/|+python3|, it returns a current major version.
+	In case of |+python|/-python3, it always returns 2.
+	In case of -python/|+python3|, it always returns 3.
+	In case of -python/-python3, it always returns 0.
+
+set_major_version({version})		*Vital.Vim.Python.set_major_version()*
+
+	Set a current major version to {version}. It throws an exception if the
+	specified {version} is not available, namely, calling this function
+	does not make any sense in a Vim not compiled with |+python|/|+python3|.
+
+exec_file({path}[, {version})		*Vital.Vim.Python.exex_file()*
+
+	Execute a Python file {path} (|String|) with a specified {version} of
+	Python. If {version} is 0 or omitted, it uses a version value returned
+	from |Vital.Vim.Python.get_major_version()|.
+	It throws an exception if the specified {version} is not available.
+
+exec_code({code}[, {version})		*Vital.Vim.Python.exex_code()*
+
+	Execute a Python {code} (|String| or |List|) with a specified {version} of
+	Python. If {version} is 0 or omitted, it uses a version value returned
+	from |Vital.Vim.Python.get_major_version()|.
+	It throws an exception if the specified {version} is not available.
+
+eval_expr({expr}[, {version})		*Vital.Vim.Python.eval_expr()*
+
+	Evaluate a Python {expr} (|String|) with a specified {version} of Python
+	and return the result. If {version} is 0 or omitted, it uses a version
+	value returned from |Vital.Vim.Python.get_major_version()|.
+	It throws an exception if the specified {version} is not available.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
