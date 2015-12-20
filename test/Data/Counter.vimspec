@@ -136,6 +136,16 @@ Describe Data.Counter
         let c2 = {'c': -1}
         Assert Equals(c1.union(c2).to_dict(), {'a': 1})
       End
+
+      It is non-destructive method
+        let c1 = Counter.new('abbb')
+        let c1_copy = deepcopy(c1)
+        let c2 = Counter.new('bcc')
+        let c2_copy = deepcopy(c2)
+        call c1.union(c2)
+        Assert Equals(c1, c1_copy)
+        Assert Equals(c2, c2_copy)
+      End
     End
 
     Describe .intersection()
@@ -155,6 +165,16 @@ Describe Data.Counter
         let c1 = Counter.new({'a': 1, 'b': 0})
         let c2 = {'a': 2, 'c': -1}
         Assert Equals(c1.intersection(c2).to_dict(), {'a': 1})
+      End
+
+      It is non-destructive method
+        let c1 = Counter.new('abbb')
+        let c1_copy = deepcopy(c1)
+        let c2 = Counter.new('bcc')
+        let c2_copy = deepcopy(c2)
+        call c1.intersection(c2)
+        Assert Equals(c1, c1_copy)
+        Assert Equals(c2, c2_copy)
       End
     End
 

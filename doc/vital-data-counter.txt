@@ -134,7 +134,8 @@ Counter.subtract({countable})	*Vital.Data.Counter-Counter.subtract()*
 Counter.union({expr})		*Vital.Data.Counter-Counter.union()*
 	{expr} is {Counter} or {count-dict}.  Returns a counter of the maximum
 	of value in either of the input counters. It keeps only positive
-	counts.
+	counts. It is non-destructive method, it doesn't change the counter
+	nor an argument.
 >
 	let s:c = s:Counter.new('vim')
 	echo s:c.union('vital').to_dict()
@@ -143,7 +144,8 @@ Counter.union({expr})		*Vital.Data.Counter-Counter.union()*
 Counter.intersection({expr})	*Vital.Data.Counter-Counter.intersection()*
 	{expr} is {Counter} or {count-dict}.  Returns a counter of the maximum
 	of value in either of the input counters. It keeps only positive
-	counts.
+	counts. It is non-destructive method, it doesn't change the counter
+	nor an argument.
 >
 	let s:c = s:Counter.new('vim')
 	echo s:c.intersection('vital').to_dict()
