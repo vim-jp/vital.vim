@@ -67,10 +67,11 @@ endfunction
 if v:version >= 704 || (v:version == 703 && has('patch601'))
   function! s:eval_expr(expr, ...) abort
     let major_version = s:_get_valid_major_version(get(a:000, 0, 0))
+    let expr = type(a:expr) == type('') ? a:expr : join(a:expr, "\n")
     if s:has_python2 && s:has_python3
-      return major_version == 2 ? pyeval(a:expr) : py3eval(a:expr)
+      return major_version == 2 ? pyeval(expr) : py3eval(expr)
     else
-      return s:has_python2 ? pyeval(a:expr) : py3eval(a:expr)
+      return s:has_python2 ? pyeval(expr) : py3eval(expr)
     endif
   endfunction
 else

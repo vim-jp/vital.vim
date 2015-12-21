@@ -175,7 +175,10 @@ Describe Vim.Python
 
   Describe .exec_code()
     Before
-      let code = 'import sys; print("Python %s" % sys.version_info.major)'
+      let code = [
+            \ 'import sys',
+            \ 'print("Python %s" % sys.version_info.major)',
+            \]
     End
     if s:has_python2 && s:has_python3
       It executes a python code when 0 is specified [+python/+python3]
@@ -244,7 +247,12 @@ Describe Vim.Python
   Describe .eval_expr()
     if v:version >= 704 || (v:version == 703 && has('patch601'))
       Before
-        let expr = 'sys.version_info.major'
+        let expr = [
+              \ 'max(',
+              \ '  sys.version_info.major,',
+              \ '  0',
+              \ ')',
+              \]
       End
       if s:has_python2 && s:has_python3
         It evaluate a python expr when 0 is specified [+python/+python3]

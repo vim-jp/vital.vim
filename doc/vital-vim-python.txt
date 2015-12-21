@@ -88,9 +88,9 @@ exec_code({code}[, {version})		*Vital.Vim.Python.exex_code()*
 
 eval_expr({expr}[, {version})		*Vital.Vim.Python.eval_expr()*
 
-	Evaluate a Python {expr} (|String|) with a specified {version} of Python
-	and return the result. If {version} is 0 or omitted, it uses a version
-	value returned from |Vital.Vim.Python.get_major_version()|.
+	Evaluate a Python {expr} (|String| or |List|) with a specified {version} of
+	Python and return the result. If {version} is 0 or omitted, it uses a
+	version value returned from |Vital.Vim.Python.get_major_version()|.
 	It throws an exception if the specified {version} is not available.
 
 	This function requires a Vim 7.3.601 or later.
