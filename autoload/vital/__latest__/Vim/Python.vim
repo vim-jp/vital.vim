@@ -50,7 +50,7 @@ function! s:exec_file(path, ...) abort
   else
     let exec = s:has_python2 ? 'pyfile' : 'py3file'
   endif
-  execute printf('%s %s', exec, a:path)
+  return printf('%s %s', exec, a:path)
 endfunction
 
 function! s:exec_code(code, ...) abort
@@ -61,7 +61,7 @@ function! s:exec_code(code, ...) abort
   else
     let exec = s:has_python2 ? 'python' : 'python3'
   endif
-  execute printf('%s %s', exec, code)
+  return printf('%s %s', exec, code)
 endfunction
 
 if v:version >= 704 || (v:version == 703 && has('patch601'))

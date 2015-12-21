@@ -111,33 +111,38 @@ Describe Vim.Python
     End
     if s:has_python2 && s:has_python3
       It executes a python file when 0 is specified [+python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_file(path, 0)
+        execute Python.exec_file(path, 0)
         redir END
         Assert Equals(content, printf("\nPython %d", default_major_version))
       End
       It executes a python file when 2 is specified [+python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_file(path, 2)
+        execute Python.exec_file(path, 2)
         redir END
         Assert Equals(content, "\nPython 2")
       End
       It execute a python file when 3 is specified [+python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_file(path, 3)
+        execute Python.exec_file(path, 3)
         redir END
         Assert Equals(content, "\nPython 3")
       End
     elseif s:has_python2
       It executes a python file when 0 is specified [+python/-python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_file(path, 0)
+        execute Python.exec_file(path, 0)
         redir END
         Assert Equals(content, "\nPython 2")
       End
       It executes a python file when 2 is specified [+python/-python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_file(path, 2)
+        execute Python.exec_file(path, 2)
         redir END
         Assert Equals(content, "\nPython 2")
       End
@@ -146,8 +151,9 @@ Describe Vim.Python
       End
     elseif s:has_python3
       It executes a python file when 0 is specified [-python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_file(path, 0)
+        execute Python.exec_file(path, 0)
         redir END
         Assert Equals(content, "\nPython 3")
       End
@@ -155,8 +161,9 @@ Describe Vim.Python
         Throw /+python is required/ Python.exec_file(path, 2)
       End
       It executes a python file when 3 is specified [-python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_file(path, 3)
+        execute Python.exec_file(path, 3)
         redir END
         Assert Equals(content, "\nPython 3")
       End
@@ -176,39 +183,47 @@ Describe Vim.Python
   Describe .exec_code()
     Before
       let code = [
-            \ 'import sys',
-            \ 'print("Python %s" % sys.version_info.major)',
+            \ 'import sys, vim',
+            \ 'print("%s %d" % (',
+            \ '  vim.eval("prefix"),',
+            \ '  sys.version_info.major,',
+            \ '))',
             \]
     End
     if s:has_python2 && s:has_python3
       It executes a python code when 0 is specified [+python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_code(code, 0)
+        execute Python.exec_code(code, 0)
         redir END
         Assert Equals(content, printf("\nPython %d", default_major_version))
       End
       It executes a python code when 2 is specified [+python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_code(code, 2)
+        execute Python.exec_code(code, 2)
         redir END
         Assert Equals(content, "\nPython 2")
       End
       It execute a python code when 3 is specified [+python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_code(code, 3)
+        execute Python.exec_code(code, 3)
         redir END
         Assert Equals(content, "\nPython 3")
       End
     elseif s:has_python2
       It executes a python code when 0 is specified [+python/-python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_code(code, 0)
+        execute Python.exec_code(code, 0)
         redir END
         Assert Equals(content, "\nPython 2")
       End
       It executes a python code when 2 is specified [+python/-python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_code(code, 2)
+        execute Python.exec_code(code, 2)
         redir END
         Assert Equals(content, "\nPython 2")
       End
@@ -217,8 +232,9 @@ Describe Vim.Python
       End
     elseif s:has_python3
       It executes a python code when 0 is specified [-python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_code(code, 0)
+        execute Python.exec_code(code, 0)
         redir END
         Assert Equals(content, "\nPython 3")
       End
@@ -226,8 +242,9 @@ Describe Vim.Python
         Throw /+python is required/ Python.exec_code(code, 2)
       End
       It executes a python code when 3 is specified [-python/+python3]
+        let prefix = "Python"
         redir => content
-        call Python.exec_code(code, 3)
+        execute Python.exec_code(code, 3)
         redir END
         Assert Equals(content, "\nPython 3")
       End

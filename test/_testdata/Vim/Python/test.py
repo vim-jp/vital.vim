@@ -1,2 +1,5 @@
-import sys
-print("Python %d" % sys.version_info.major)
+import sys, vim
+print("%s %d" % (
+    vim.eval('prefix'),
+    sys.version_info.major,
+))

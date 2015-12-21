@@ -74,17 +74,31 @@ set_major_version({version})		*Vital.Vim.Python.set_major_version()*
 
 exec_file({path}[, {version})		*Vital.Vim.Python.exex_file()*
 
-	Execute a Python file {path} (|String|) with a specified {version} of
-	Python. If {version} is 0 or omitted, it uses a version value returned
-	from |Vital.Vim.Python.get_major_version()|.
+	Return an executable |String| to execute a Python file {path} (|String|)
+	with a specified {version} of Python.
+	It is required to be called with |execute| to enable script local or
+	function local variables in the Python (|python-eval|).
+	If {version} is 0 or omitted, it uses a version value returned from
+	|Vital.Vim.Python.get_major_version()|.
 	It throws an exception if the specified {version} is not available.
+>
+	" Note: use 'execute' instead of 'call'
+	execute Python.exec_file('your/python/file.py')
+<
 
 exec_code({code}[, {version})		*Vital.Vim.Python.exex_code()*
 
-	Execute a Python {code} (|String| or |List|) with a specified {version} of
-	Python. If {version} is 0 or omitted, it uses a version value returned
+	Return an executable |String| to execute a Python {code} (|String| or |List|)
+	with a specified {version} of Python.
+	It is required to be called with |execute| to enable script local or
+	function local variables in the Python (|python-eval|).
+	If {version} is 0 or omitted, it uses a version value returned
 	from |Vital.Vim.Python.get_major_version()|.
 	It throws an exception if the specified {version} is not available.
+>
+	" Note: use 'execute' instead of 'call'
+	execute Python.exec_code('print("hello")')
+<
 
 eval_expr({expr}[, {version})		*Vital.Vim.Python.eval_expr()*
 
