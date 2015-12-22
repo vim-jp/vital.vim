@@ -220,6 +220,20 @@ function! s:is_root_directory(path) abort
   return (has('win32') || has('win64')) && a:path =~ '^[a-zA-Z]:[/\\]$'
 endfunction
 
+function! s:to_slash(path) abort
+  if (has('win32') || has('win64'))
+    return substitute(a:path, '\', '/', 'g')
+  endif
+  return a:path
+endfunction
+
+function! s:from_slash(path) abort
+  if (has('win32') || has('win64'))
+    return substitute(a:path, '/', '\', 'g')
+  endif
+  return a:path
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
