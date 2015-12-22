@@ -70,6 +70,11 @@ Describe Vim.Python
         call Python.set_major_version(3)
         Assert Equals(Python.get_major_version(), 3)
       End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version(1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('3')
+      End
     elseif s:has_python2
       It does nothing if 0 is specified [+python/-python3]
         call Python.set_major_version(0)
@@ -80,6 +85,11 @@ Describe Vim.Python
       End
       It throws an exception if 3 is specified [+python/-python3]
         Throw /+python3 is required/ Python.set_major_version(3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version(1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('3')
       End
     elseif s:has_python3
       It does nothing if 0 is specified [-python/+python3]
@@ -92,6 +102,11 @@ Describe Vim.Python
         call Python.set_major_version(3)
         Assert Equals(Python.get_major_version(), 3)
       End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version(1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('3')
+      End
     else
       It throws an exception if 0 is specified [-python/-python3]
         Throw /+python is required/ Python.set_major_version(0)
@@ -101,6 +116,11 @@ Describe Vim.Python
       End
       It throws an exception if 3 is specified [-python/-python3]
         Throw /+python3 is required/ Python.set_major_version(3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version(1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('3')
       End
     endif
   End
@@ -131,6 +151,11 @@ Describe Vim.Python
         redir END
         Assert Equals(content, "\nPython 3")
       End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '3')
+      End
     elseif s:has_python2
       It executes a python file when 0 is specified [+python/-python3]
         let prefix = "Python"
@@ -148,6 +173,11 @@ Describe Vim.Python
       End
       It throws an exception if 3 is specified [+python/-python3]
         Throw /+python3 is required/ Python.exec_file(path, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '3')
       End
     elseif s:has_python3
       It executes a python file when 0 is specified [-python/+python3]
@@ -167,6 +197,11 @@ Describe Vim.Python
         redir END
         Assert Equals(content, "\nPython 3")
       End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '3')
+      End
     else
       It throws an exception if 0 is specified [-python/-python3]
         Throw /+python is required/ Python.exec_file(path, 0)
@@ -176,6 +211,11 @@ Describe Vim.Python
       End
       It throws an exception if 3 is specified [-python/-python3]
         Throw /+python3 is required/ Python.exec_file(path, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '3')
       End
     endif
   End
@@ -212,6 +252,11 @@ Describe Vim.Python
         redir END
         Assert Equals(content, "\nPython 3")
       End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '3')
+      End
     elseif s:has_python2
       It executes a python code when 0 is specified [+python/-python3]
         let prefix = "Python"
@@ -229,6 +274,11 @@ Describe Vim.Python
       End
       It throws an exception if 3 is specified [+python/-python3]
         Throw /+python3 is required/ Python.exec_code(code, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '3')
       End
     elseif s:has_python3
       It executes a python code when 0 is specified [-python/+python3]
@@ -248,6 +298,11 @@ Describe Vim.Python
         redir END
         Assert Equals(content, "\nPython 3")
       End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '3')
+      End
     else
       It throws an exception if 0 is specified [-python/-python3]
         Throw /+python is required/ Python.exec_code(code, 0)
@@ -257,6 +312,11 @@ Describe Vim.Python
       End
       It throws an exception if 2 is specified [-python/-python3]
         Throw /+python3 is required/ Python.exec_code(code, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '3')
       End
     endif
   End
@@ -281,6 +341,11 @@ Describe Vim.Python
         It execute a python code when 3 is specified [+python/+python3]
           Assert Equals(Python.eval_expr(expr, 3), 3)
         End
+        It throws an exception if value which is not 0, 2, or 3 is specified
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
+        End
       elseif s:has_python2
         It evaluate a python expr when 0 is specified [+python/-python3]
           Assert Equals(Python.eval_expr(expr, 0), 2)
@@ -290,6 +355,11 @@ Describe Vim.Python
         End
         It throws an exception if 3 is specified [+python/-python3]
           Throw /+python3 is required/ Python.eval_expr(expr, 3)
+        End
+        It throws an exception if value which is not 0, 2, or 3 is specified
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
         End
       elseif s:has_python3
         It evaluate a python expr when 0 is specified [-python/+python3]
@@ -301,6 +371,11 @@ Describe Vim.Python
         It executes a python code when 3 is specified [-python/+python3]
           Assert Equals(Python.eval_expr(expr, 3), 3)
         End
+        It throws an exception if value which is not 0, 2, or 3 is specified
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
+        End
       else
         It throws an exception if 0 is specified [-python/-python3]
           Throw /+python is required/ Python.eval_expr(expr, 0)
@@ -310,6 +385,11 @@ Describe Vim.Python
         End
         It throws an exception if 3 is specified [-python/-python3]
           Throw /+python3 is required/ Python.eval_expr(expr, 3)
+        End
+        It throws an exception if value which is not 0, 2, or 3 is specified
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
         End
       endif
     else

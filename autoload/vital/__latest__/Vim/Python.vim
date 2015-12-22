@@ -11,7 +11,9 @@ function! s:_throw(msg) abort
 endfunction
 
 function! s:_get_valid_major_version(version) abort
-  if a:version == 2 && !s:has_python2
+  if index([0, 2, 3], a:version) == -1
+    call s:_throw('"version" requires to be 0, 2, or 3')
+  elseif a:version == 2 && !s:has_python2
     call s:_throw('+python is required')
   elseif a:version == 3 && !s:has_python3
     call s:_throw('+python3 is required')

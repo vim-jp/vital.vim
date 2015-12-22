@@ -36,7 +36,7 @@ It automatically uses a correct function/command to execute a Python code/file.
 
 	" Get a current major version
 	echo s:P.get_major_version()
-	" => 2 or 3, depends on +python/+python3
+	" => 0, 2, or 3, depends on +python/+python3
 
 	" Set a current major versioin
 	" NOTE: It only affects when a Vim was compiled with +python/+python3
@@ -68,9 +68,11 @@ get_major_version()			*Vital.Vim.Python.get_major_version()*
 
 set_major_version({version})		*Vital.Vim.Python.set_major_version()*
 
-	Set a current major version to {version}. It throws an exception if the
-	specified {version} is not available, namely, calling this function
-	does not make any sense in a Vim not compiled with |+python|/|+python3|.
+	Set a current major version to {version}. It throws an exception if
+	the specified {version} is not available or an invalid {version} is
+	specified.
+	Calling this function does not make any sense in a Vim not compiled
+	with |+python|/|+python3|.
 
 exec_file({path}[, {version})		*Vital.Vim.Python.exex_file()*
 
@@ -80,7 +82,8 @@ exec_file({path}[, {version})		*Vital.Vim.Python.exex_file()*
 	function local variables in the Python (|python-eval|).
 	If {version} is 0 or omitted, it uses a version value returned from
 	|Vital.Vim.Python.get_major_version()|.
-	It throws an exception if the specified {version} is not available.
+	It throws an exception if the specified {version} is not available or
+	an invalid {version} is specified.
 >
 	" Note: use 'execute' instead of 'call'
 	execute Python.exec_file('your/python/file.py')
@@ -94,7 +97,8 @@ exec_code({code}[, {version})		*Vital.Vim.Python.exex_code()*
 	function local variables in the Python (|python-eval|).
 	If {version} is 0 or omitted, it uses a version value returned
 	from |Vital.Vim.Python.get_major_version()|.
-	It throws an exception if the specified {version} is not available.
+	It throws an exception if the specified {version} is not available or
+	an invalid {version} is specified.
 >
 	" Note: use 'execute' instead of 'call'
 	execute Python.exec_code('print("hello")')
@@ -105,7 +109,8 @@ eval_expr({expr}[, {version})		*Vital.Vim.Python.eval_expr()*
 	Evaluate a Python {expr} (|String| or |List|) with a specified {version} of
 	Python and return the result. If {version} is 0 or omitted, it uses a
 	version value returned from |Vital.Vim.Python.get_major_version()|.
-	It throws an exception if the specified {version} is not available.
+	It throws an exception if the specified {version} is not available or
+	an invalid {version} is specified.
 
 	This function requires a Vim 7.3.601 or later.
 
