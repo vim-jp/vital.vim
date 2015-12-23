@@ -141,7 +141,7 @@ This example allows more tolerant URI parsing.
 The default PatternSet is very strict
 because it is completely RFC3986 based implementation.
 (_default_ means the object which
-*Vital.Web.URI.new_default_pattern_set()* returns)
+|Vital.Web.URI.new_default_pattern_set()| returns)
 
 According to RFC3986, URI allows
 * ' (single quote)
