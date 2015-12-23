@@ -8,7 +8,8 @@ CONTENTS				*Vital.Web.URI-contents*
 INTRODUCTION			|Vital.Web.URI-introduction|
 INTERFACE				|Vital.Web.URI-interface|
   Functions				|Vital.Web.URI-functions|
-  URI Object			|Vital.Web.URI-object|
+  URI Object			|Vital.Web.URI-URI|
+  PatternSet Object		|Vital.Web.URI-PatternSet|
 TODO					|Vital.Web.URI-todo|
 REFERENCES				|Vital.Web.URI-references|
 
@@ -22,18 +23,31 @@ INTERFACE				*Vital.Web.URI-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.URI-functions*
 
-new({str} [, {default}])		*Vital.Web.URI.new()*
-	Returns a |Vital.Web.URI-object| constructed by {str}.
+new({str} [, {default} [, {patternset}]])		*Vital.Web.URI.new()*
+	Returns a |Vital.Web.URI-URI| object constructed by {str}.
 	If {default} is given and {str} is invalid,
 	returns {default}.
 	Otherwise, throws an exception.
+	See |Vital.Web.URI-PatternSet| for {patternset}.
 
-new_from_uri_like_string({str} [, {default}])
+new_from_uri_like_string({str} [, {default} [, {patternset}]])
 					*Vital.Web.URI.new_from_uri_like_string()*
 	This is same as |Vital.Web.URI.new()|
 	except when {str} has no scheme.
-	then this function prepends the string "http://" to {str}
-	and returns a |Vital.Web.URI-object|.
+	then this function prepends the string "http://" to {str}.
+
+new_from_seq_string({str} [, {default} [, {patternset}]])
+					*Vital.Web.URI.new_from_seq_string()*
+	This is same as |Vital.Web.URI.new()|, except
+	1. When {str} has illegal string.
+	   then this function DOES NOT throw an exception.
+	2. Returns |List| of [{uri}, {origuri}, {rest}]
+	   {uri}
+	      |Vital.Web.URI-URI| object constructed by {str}.
+	   {origuri}
+	      Original string which was used for constructing {uri}.
+	   {rest}
+	      Rest of string after parsing {str}.
 
 is_uri({str})				*Vital.Web.URI.is_uri()*
 	Returns non-zero value if {str} is URI.
@@ -51,6 +65,10 @@ like_uri({str})				*Vital.Web.URI.like_uri()*
 	(This uses |Vital.Web.URI.new_from_uri_like_string()|
 	 instead of |Vital.Web.URI.new()|)
 
+					*Vital.Web.URI.new_default_pattern_set()*
+new_default_pattern_set()
+	Returns |Vital.Web.URI-PatternSet|.
+
 encode({str} [, {char-enc}])		*Vital.Web.URI.encode()*
 	Encodes {str} to Percent-encoding string.
 	Converts {str} to {char-enc}(or "utf-8" when omitted) before encode.
@@ -63,15 +81,22 @@ decode({str} [, {char-enc}])		*Vital.Web.URI.decode()*
 	When {char-enc} is an empty string, result is not converted.
 
 ------------------------------------------------------------------------------
-URI OBJECT				*Vital.Web.URI-object*
+URI OBJECT				*Vital.Web.URI-URI* *Vital.Web.URI-object*
 
-scheme([{str}])				*Vital.Web.URI-object.scheme()*
-host([{str}])				*Vital.Web.URI-object.host()*
-port([{str}])				*Vital.Web.URI-object.port()*
-path([{str}])				*Vital.Web.URI-object.path()*
-opaque([{str}])				*Vital.Web.URI-object.opaque()*
-query([{str}])				*Vital.Web.URI-object.query()*
-fragment([{str}])			*Vital.Web.URI-object.fragment()*
+*Vital.Web.URI-URI.scheme()* *Vital.Web.URI-object.scheme()*
+*Vital.Web.URI-URI.host()* *Vital.Web.URI-object.host()*
+*Vital.Web.URI-URI.port()* *Vital.Web.URI-object.port()*
+*Vital.Web.URI-URI.path()* *Vital.Web.URI-object.path()*
+*Vital.Web.URI-URI.opaque()* *Vital.Web.URI-object.opaque()*
+*Vital.Web.URI-URI.query()* *Vital.Web.URI-object.query()*
+*Vital.Web.URI-URI.fragment()* *Vital.Web.URI-object.fragment()*
+scheme([{str}])
+host([{str}])
+port([{str}])
+path([{str}])
+opaque([{str}])
+query([{str}])
+fragment([{str}])
 
 	Returns each part if no arguments are given.
 	Set {str} as each part if {str} is given.
@@ -85,12 +110,99 @@ to_iri()				*Vital.Web.URI-object.to_iri()*
 to_string()				*Vital.Web.URI-object.to_string()*
 	Returns URI representation of this object.
 
+*Vital.Web.URI-URI.is_scheme()*
+*Vital.Web.URI-URI.is_host()*
+*Vital.Web.URI-URI.is_port()*
+*Vital.Web.URI-URI.is_path()*
+*Vital.Web.URI-URI.is_query()*
+*Vital.Web.URI-URI.is_fragment()*
+is_scheme({str})
+is_host({str})
+is_port({str})
+is_path({str})
+is_query({str})
+is_fragment({str})
+is_opaque({str}) (TODO)
+
+    Returns non-zero value if {str} has right syntax
+    for each component. Returns zero otherwise.
+
+------------------------------------------------------------------------------
+PATTERNSET OBJECT				*Vital.Web.URI-PatternSet*
+
+PatternSet object is the set of patterns for URI syntax.
+This object has each method for URI components based on RFC3986
+and all components are fully customizable.
+e.g.: scheme(), host(), path(), ...
+
+Below is the example how to customize URI component definition.
+This example allows more tolerant URI parsing.
+(This example is from https://github.com/tyru/open-browser.vim/issues/72)
+The default PatternSet is very strict
+because it is completely RFC3986 based implementation.
+(_default_ means the object which
+*Vital.Web.URI.new_default_pattern_set()* returns)
+
+According to RFC3986, URI allows
+* ' (single quote)
+* ( (left parenthesis)
+* ) (right parenthesis)
+but these characters often appears in ordinary text.
+This code lets the parser ignore these characters. >
+
+    let s:LoosePatternSet = s:URI.new_default_pattern_set()
+
+    " Remove "'", "(", ")".
+    function! s:LoosePatternSet.sub_delims() abort
+        return '[!$&*+,;=]'
+    endfunction
+<
+------------------------------------------------------------------------------
+METHODS				*Vital.Web.URI-PatternSet-methods*
+
+get({component})			*Vital.Web.URI-PatternSet.get()*
+
+    Returns each component definition.
+>
+    let s:PatternSet = s:URI.new_default_pattern_set()
+    echo s:PatternSet.get('scheme')
+<
+Listing all customizable components here.
+NOTE: DON'T call these methods directly.
+These methods are used when defining custimized PatternSet.
+See how-to at |Vital.Web.URI-PatternSet|.
+
+hexdig()					*Vital.Web.URI-PatternSet.hexdig()*
+unreserved()				*Vital.Web.URI-PatternSet.unreserved()*
+pct_encoded()				*Vital.Web.URI-PatternSet.pct_encoded()*
+sub_delims()				*Vital.Web.URI-PatternSet.sub_delims()*
+dec_octet()					*Vital.Web.URI-PatternSet.dec_octet()*
+ipv4address()				*Vital.Web.URI-PatternSet.ipv4address()*
+ip_literal()				*Vital.Web.URI-PatternSet.ip_literal()*
+reg_name()					*Vital.Web.URI-PatternSet.reg_name()*
+pchar()						*Vital.Web.URI-PatternSet.pchar()*
+segment()					*Vital.Web.URI-PatternSet.segment()*
+segment_nz()				*Vital.Web.URI-PatternSet.segment_nz()*
+segment_nz_nc()				*Vital.Web.URI-PatternSet.segment_nz_nc()*
+path_abempty()				*Vital.Web.URI-PatternSet.path_abempty()*
+path_absolute()				*Vital.Web.URI-PatternSet.path_absolute()*
+path_noscheme()				*Vital.Web.URI-PatternSet.path_noscheme()*
+path_rootless()				*Vital.Web.URI-PatternSet.path_rootless()*
+scheme()					*Vital.Web.URI-PatternSet.scheme()*
+userinfo()					*Vital.Web.URI-PatternSet.userinfo()*
+host()						*Vital.Web.URI-PatternSet.host()*
+port()						*Vital.Web.URI-PatternSet.port()*
+path()						*Vital.Web.URI-PatternSet.path()*
+query()						*Vital.Web.URI-PatternSet.query()*
+fragment()					*Vital.Web.URI-PatternSet.fragment()*
+
+
 ==============================================================================
 TODO					*Vital.Web.URI-todo*
 
 * Punycode
-* Vital.Web.URI-object.userinfo()
-* |Vital.Web.URI-object.opaque()| with an argument
+* |Vital.Web.URI-URI.opaque()| with an argument
+* |Vital.Web.URI-URI.is_opaque()|
 
 ==============================================================================
 REFERENCES				*Vital.Web.URI-references*
