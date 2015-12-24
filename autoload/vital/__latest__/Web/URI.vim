@@ -191,13 +191,13 @@ endfunction
 
 function! s:_eat_em(str, pat) abort
   let pat = a:pat.'\C'
-  let match = matchstr(a:str, pat)
-  if match ==# ''
+  let m = matchlist(a:str, pat)
+  if empty(m)
     throw 'uri parse error: '
     \   . printf("can't parse '%s' with '%s'.", a:str, pat)
   endif
-  let rest = strpart(a:str, strlen(match))
-  return [match, rest]
+  let rest = strpart(a:str, strlen(m[0]))
+  return [m[0], rest]
 endfunction
 
 " NOTE: More s:_eat_*() functions are defined by s:_create_eat_functions().
