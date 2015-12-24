@@ -490,7 +490,7 @@ function! s:DefaultPatternSet.scheme() abort
   return '[[:alpha:]][[:alpha:]0-9+.-]*'
 endfunction
 function! s:DefaultPatternSet.userinfo() abort
-  return join([self.unreserved(), self.pct_encoded(), self.sub_delims(), ':'], '\|')
+  return '\%(' . join([self.unreserved(), self.pct_encoded(), self.sub_delims(), ':'], '\|') . '\)*'
 endfunction
 function! s:DefaultPatternSet.host() abort
   return join([self.ipv4address(), self.reg_name()], '\|')
