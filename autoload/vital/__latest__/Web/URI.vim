@@ -1,8 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Imports {{{
-
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:HTTP = s:V.import('Web.HTTP')
@@ -12,38 +10,14 @@ function! s:_vital_depends() abort
   return ['Web.HTTP']
 endfunction
 
-" }}}
-
-" Public Functions {{{
-
-let s:NONE = []
-
-function! s:_uri_new_sandbox(uri, ignore_rest, pattern_set, retall, NothrowValue) abort "{{{
-  try
-    let results = call('s:_uri_new', [a:uri, a:ignore_rest, a:pattern_set])
-    return a:retall ? results : results[0]
-  catch
-    if a:NothrowValue isnot s:NONE && s:_is_own_exception(v:exception)
-      return a:NothrowValue
-    else
-      let ex = substitute(v:exception, '^Vim([^()]\+):', '', '')
-      throw ex . ' @ ' . v:throwpoint
-    endif
-  endtry
-endfunction "}}}
-
-function! s:_is_own_exception(str) abort "{{{
-  return a:str =~# '^uri parse error:'
-endfunction "}}}
-
-function! s:new(uri, ...) abort "{{{
+function! s:new(uri, ...) abort
   let NothrowValue = get(a:000, 0, s:NONE)
   let pattern_set = get(a:000, 1, s:DefaultPatternSet)
   return s:_uri_new_sandbox(
   \   a:uri, 0, pattern_set, 0, NothrowValue)
-endfunction "}}}
+endfunction
 
-function! s:new_from_uri_like_string(str, ...) abort "{{{
+function! s:new_from_uri_like_string(str, ...) abort
   let NothrowValue = get(a:000, 0, s:NONE)
   let pattern_set  = get(a:000, 1, s:DefaultPatternSet)
   " Prepend http if no scheme.
@@ -55,24 +29,24 @@ function! s:new_from_uri_like_string(str, ...) abort "{{{
 
   return s:_uri_new_sandbox(
   \   str, 0, pattern_set, 0, NothrowValue)
-endfunction "}}}
+endfunction
 
-function! s:new_from_seq_string(uri, ...) abort "{{{
+function! s:new_from_seq_string(uri, ...) abort
   let NothrowValue = get(a:000, 0, s:NONE)
   let pattern_set  = get(a:000, 1, s:DefaultPatternSet)
   return s:_uri_new_sandbox(
   \   a:uri, 1, pattern_set, 1, NothrowValue)
-endfunction "}}}
+endfunction
 
-function! s:is_uri(str) abort "{{{
+function! s:is_uri(str) abort
   let ERROR = []
   return s:new(a:str, ERROR) isnot ERROR
-endfunction "}}}
+endfunction
 
-function! s:like_uri(str) abort "{{{
+function! s:like_uri(str) abort
   let ERROR = []
   return s:new_from_uri_like_string(a:str, ERROR) isnot ERROR
-endfunction "}}}
+endfunction
 
 function! s:encode(str, ...) abort
   let encoding = a:0 ? a:1 : 'utf-8'
@@ -104,9 +78,29 @@ function! s:decode(str, ...) abort
   return iconv(result, encoding, &encoding)
 endfunction
 
-" }}}
 
-" Parsing Functions {{{
+let s:NONE = []
+
+function! s:_uri_new_sandbox(uri, ignore_rest, pattern_set, retall, NothrowValue) abort
+  try
+    let results = call('s:_uri_new', [a:uri, a:ignore_rest, a:pattern_set])
+    return a:retall ? results : results[0]
+  catch
+    if a:NothrowValue isnot s:NONE && s:_is_own_exception(v:exception)
+      return a:NothrowValue
+    else
+      let ex = substitute(v:exception, '^Vim([^()]\+):', '', '')
+      throw ex . ' @ ' . v:throwpoint
+    endif
+  endtry
+endfunction
+
+function! s:_is_own_exception(str) abort
+  return a:str =~# '^uri parse error:'
+endfunction
+
+
+" ================ Parsing Functions ================
 
 " @return instance of s:URI .
 "
@@ -122,7 +116,7 @@ endfunction
 "           / path-rootless
 "           / path-empty
 " authority = [ userinfo "@" ] host [ ":" port ]
-function! s:_parse_uri(str, ignore_rest, pattern_set) abort "{{{
+function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   let rest = a:str
 
   " Ignore leading/trailing whitespaces.
@@ -193,9 +187,9 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort "{{{
   call obj.query(query)
   call obj.fragment(fragment)
   return [obj, rest]
-endfunction "}}}
+endfunction
 
-function! s:_eat_em(str, pat) abort "{{{
+function! s:_eat_em(str, pat) abort
   let pat = a:pat.'\C'
   let match = matchstr(a:str, pat)
   if match ==# ''
@@ -204,15 +198,15 @@ function! s:_eat_em(str, pat) abort "{{{
   endif
   let rest = strpart(a:str, strlen(match))
   return [match, rest]
-endfunction "}}}
+endfunction
 
 " NOTE: More s:_eat_*() functions are defined by s:_create_eat_functions().
+" =============== Parsing Functions ===============
 
-" }}}
 
-" s:URI {{{
+" ===================== s:URI =====================
 
-function! s:_uri_new(str, ignore_rest, pattern_set) abort "{{{
+function! s:_uri_new(str, ignore_rest, pattern_set) abort
   let [obj, rest] = s:_parse_uri(a:str, a:ignore_rest, a:pattern_set)
   if a:ignore_rest
     let original_url = a:str[: len(a:str)-len(rest)-1]
@@ -220,37 +214,37 @@ function! s:_uri_new(str, ignore_rest, pattern_set) abort "{{{
   else
     return [obj, a:str, '']
   endif
-endfunction "}}}
+endfunction
 
-function! s:_uri_scheme(...) dict abort "{{{
+function! s:_uri_scheme(...) dict abort
   if a:0 && self.is_scheme(a:1)
     let self.__scheme = a:1
   endif
   return self.__scheme
-endfunction "}}}
+endfunction
 
-function! s:_uri_userinfo(...) dict abort "{{{
+function! s:_uri_userinfo(...) dict abort
   if a:0 && self.is_userinfo(a:1)
     let self.__userinfo = a:1
   endif
   return self.__userinfo
-endfunction "}}}
+endfunction
 
-function! s:_uri_host(...) dict abort "{{{
+function! s:_uri_host(...) dict abort
   if a:0 && self.is_host(a:1)
     let self.__host = a:1
   endif
   return self.__host
-endfunction "}}}
+endfunction
 
-function! s:_uri_port(...) dict abort "{{{
+function! s:_uri_port(...) dict abort
   if a:0 && self.is_port(a:1)
     let self.__port = a:1
   endif
   return self.__port
-endfunction "}}}
+endfunction
 
-function! s:_uri_path(...) dict abort "{{{
+function! s:_uri_path(...) dict abort
   if a:0
     " NOTE: self.__path must not have "/" as prefix.
     let path = substitute(a:1, '^/\+', '', '')
@@ -259,9 +253,9 @@ function! s:_uri_path(...) dict abort "{{{
     endif
   endif
   return "/" . self.__path
-endfunction "}}}
+endfunction
 
-function! s:_uri_opaque(...) dict abort "{{{
+function! s:_uri_opaque(...) dict abort
   if a:0
     " TODO
     throw 'vital: Web.URI: uri.opaque(value) does not support yet.'
@@ -270,9 +264,9 @@ function! s:_uri_opaque(...) dict abort "{{{
   \           self.__host,
   \           (self.__port !=# '' ? ':' . self.__port : ''),
   \           self.__path)
-endfunction "}}}
+endfunction
 
-function! s:_uri_query(...) dict abort "{{{
+function! s:_uri_query(...) dict abort
   if a:0
     " NOTE: self.__query must not have "?" as prefix.
     let query = substitute(a:1, '^?', '', '')
@@ -281,9 +275,9 @@ function! s:_uri_query(...) dict abort "{{{
     endif
   endif
   return self.__query
-endfunction "}}}
+endfunction
 
-function! s:_uri_fragment(...) dict abort "{{{
+function! s:_uri_fragment(...) dict abort
   if a:0
     " NOTE: self.__fragment must not have "#" as prefix.
     let fragment = substitute(a:1, '^#', '', '')
@@ -292,9 +286,9 @@ function! s:_uri_fragment(...) dict abort "{{{
     endif
   endif
   return self.__fragment
-endfunction "}}}
+endfunction
 
-function! s:_uri_to_iri() dict abort "{{{
+function! s:_uri_to_iri() dict abort
   " Same as uri.to_string(), but do unescape for self.__path.
   return printf(
   \   '%s://%s%s%s/%s%s%s',
@@ -306,9 +300,9 @@ function! s:_uri_to_iri() dict abort "{{{
   \   (self.__query != '' ? '?' . self.__query : ''),
   \   (self.__fragment != '' ? '#' . self.__fragment : ''),
   \)
-endfunction "}}}
+endfunction
 
-function! s:_uri_to_string() dict abort "{{{
+function! s:_uri_to_string() dict abort
   return printf(
   \   '%s://%s%s%s/%s%s%s',
   \   self.__scheme,
@@ -319,7 +313,7 @@ function! s:_uri_to_string() dict abort "{{{
   \   (self.__query != '' ? '?' . self.__query : ''),
   \   (self.__fragment != '' ? '#' . self.__fragment : ''),
   \)
-endfunction "}}}
+endfunction
 
 
 let s:FUNCTION_DESCS = [
@@ -360,10 +354,10 @@ endfunction
 call s:_create_check_functions()
 
 
-function! s:_local_func(name) abort "{{{
+function! s:_local_func(name) abort
   let sid = matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__local_func$')
   return function('<SNR>' . sid . '_' . a:name)
-endfunction "}}}
+endfunction
 
 let s:URI = {
 \ '__scheme': '',
@@ -396,9 +390,12 @@ let s:URI = {
 \ 'is_query': s:_local_func('_uri_is_query'),
 \ 'is_fragment': s:_local_func('_uri_is_fragment'),
 \}
-" }}}
 
-" s:PatternSet: Patterns for URI syntax {{{
+" ===================== s:URI =====================
+
+
+" ================= s:PatternSet ==================
+" s:PatternSet: Patterns for URI syntax
 "
 " The main parts of URLs
 "   http://tools.ietf.org/html/rfc1738#section-2.1
@@ -510,6 +507,6 @@ function! s:DefaultPatternSet.fragment() abort
   return self.query()
 endfunction
 
-" }}}
+" ================= s:PatternSet ==================
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:fen:
