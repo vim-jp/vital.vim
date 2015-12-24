@@ -96,7 +96,7 @@ function! s:_uri_new_sandbox(uri, ignore_rest, pattern_set, retall, NothrowValue
 endfunction
 
 function! s:_is_own_exception(str) abort
-  return a:str =~# '^uri parse error:'
+  return a:str =~# '^uri parse error\%((\w\+)\)\?:'
 endfunction
 
 
@@ -183,12 +183,13 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   return [obj, rest]
 endfunction
 
-function! s:_eat_em(str, pat) abort
+function! s:_eat_em(str, pat, ...) abort
   let pat = a:pat.'\C'
   let m = matchlist(a:str, pat)
   if empty(m)
-    throw 'uri parse error: '
-    \   . printf("can't parse '%s' with '%s'.", a:str, pat)
+    let prefix = printf("uri parse error%s: ", (a:0 ? '('.a:1.')' : ''))
+    let msg = printf("can't parse '%s' with '%s'.", a:str, pat)
+    throw prefix . msg
   endif
   let rest = strpart(a:str, strlen(m[0]))
   return [m[0], rest]
@@ -320,7 +321,7 @@ function! s:_create_eat_functions() abort
   for where in s:FUNCTION_DESCS
     execute join([
     \ 'function! s:_eat_'.where.'(str, pattern_set) abort',
-    \   'return s:_eat_em(a:str, "^" . a:pattern_set.get('.string(where).'))',
+    \   'return s:_eat_em(a:str, "^" . a:pattern_set.get('.string(where).'), '.string(where).')',
     \ 'endfunction',
     \], "\n")
   endfor
