@@ -90,7 +90,7 @@ function! s:_uri_new_sandbox(uri, ignore_rest, pattern_set, retall, NothrowValue
       return a:NothrowValue
     else
       let ex = substitute(v:exception, '^Vim([^()]\+):', '', '')
-      throw ex . ' @ ' . v:throwpoint
+      throw 'vital: Web.URI: ' . ex . ' @ ' . v:throwpoint
     endif
   endtry
 endfunction
