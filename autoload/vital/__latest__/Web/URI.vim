@@ -125,9 +125,6 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
 
   " scheme
   let [scheme, rest] = s:_eat_scheme(rest, a:pattern_set)
-  if scheme ==# ''
-    throw 'uri parse error: could not parse scheme.'
-  endif
 
   let rest = s:_eat_em(rest, '^://')[1]
 
@@ -143,9 +140,6 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
 
   " host
   let [host, rest] = s:_eat_host(rest, a:pattern_set)
-  if host ==# ''
-    throw 'uri parse error: could not parse host.'
-  endif
 
   " port
   if rest[0] ==# ':'
