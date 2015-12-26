@@ -250,14 +250,24 @@ function! s:_uri_path(...) dict abort
   return "/" . self.__path
 endfunction
 
+function! s:_uri_authority(...) dict abort
+  if a:0
+    " TODO
+    throw 'vital: Web.URI: uri.authority(value) does not support yet.'
+  endif
+  return
+  \   (self.__userinfo != '' ? self.__userinfo . '@' : '')
+  \   . self.__host
+  \   . (self.__port !=# '' ? ':' . self.__port : '')
+endfunction
+
 function! s:_uri_opaque(...) dict abort
   if a:0
     " TODO
     throw 'vital: Web.URI: uri.opaque(value) does not support yet.'
   endif
-  return printf('//%s%s/%s',
-  \           self.__host,
-  \           (self.__port !=# '' ? ':' . self.__port : ''),
+  return printf('//%s/%s',
+  \           self.authority(),
   \           self.__path)
 endfunction
 
@@ -286,11 +296,9 @@ endfunction
 function! s:_uri_to_iri() dict abort
   " Same as uri.to_string(), but do unescape for self.__path.
   return printf(
-  \   '%s://%s%s%s/%s%s%s',
+  \   '%s://%s/%s%s%s',
   \   self.__scheme,
-  \   (self.__userinfo != '' ? self.__userinfo . '@' : ''),
-  \   self.__host,
-  \   (self.__port !=# '' ? ':' . self.__port : ''),
+  \   self.authority(),
   \   s:HTTP.decodeURI(self.__path),
   \   (self.__query != '' ? '?' . self.__query : ''),
   \   (self.__fragment != '' ? '#' . self.__fragment : ''),
@@ -299,11 +307,9 @@ endfunction
 
 function! s:_uri_to_string() dict abort
   return printf(
-  \   '%s://%s%s%s/%s%s%s',
+  \   '%s://%s/%s%s%s',
   \   self.__scheme,
-  \   (self.__userinfo != '' ? self.__userinfo . '@' : ''),
-  \   self.__host,
-  \   (self.__port !=# '' ? ':' . self.__port : ''),
+  \   self.authority(),
   \   self.__path,
   \   (self.__query != '' ? '?' . self.__query : ''),
   \   (self.__fragment != '' ? '#' . self.__fragment : ''),
@@ -370,6 +376,7 @@ let s:URI = {
 \ 'host': s:_local_func('_uri_host'),
 \ 'port': s:_local_func('_uri_port'),
 \ 'path': s:_local_func('_uri_path'),
+\ 'authority': s:_local_func('_uri_authority'),
 \ 'opaque': s:_local_func('_uri_opaque'),
 \ 'query': s:_local_func('_uri_query'),
 \ 'fragment': s:_local_func('_uri_fragment'),
