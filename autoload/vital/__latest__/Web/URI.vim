@@ -425,7 +425,7 @@ function! s:DefaultPatternSet.get(component, ...) abort
   return ret
 endfunction
 
-" unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+" unreserved    = ALPHA / DIGIT / "." / "_" / "~" / "-"
 function! s:DefaultPatternSet.unreserved() abort
   return '[[:alpha:]0-9._~-]'
 endfunction
@@ -448,7 +448,8 @@ function! s:DefaultPatternSet.dec_octet() abort
 endfunction
 " IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
 function! s:DefaultPatternSet.ipv4address() abort
-  return self.dec_octet() . '\.' . self.dec_octet() . '\.' . self.dec_octet() . '\.' . self.dec_octet()
+  return self.dec_octet() . '\.' . self.dec_octet()
+  \    . '\.' . self.dec_octet() . '\.' . self.dec_octet()
 endfunction
 " IPv6address =                            6( h16 ":" ) ls32
 "             /                       "::" 5( h16 ":" ) ls32
@@ -465,31 +466,37 @@ endfunction
 " https://github.com/vim/vim/blob/cde885473099296c4837de261833f48b24caf87c/src/regexp.c#L1884
 function! s:DefaultPatternSet.ipv6address() abort
   return '\%(' . join([
-  \                                                         repeat('\%(' . self.h16() . ':\)', 6) . self.ls32(),
-  \                                                       '::' . repeat('\%(' . self.h16() . ':\)', 5) . self.ls32(),
-  \ '\%('                              . self.h16() . '\)\?::' . repeat('\%(' . self.h16() . ':\)', 4) . self.ls32(),
-  \ '\%(\%(' . self.h16() . ':\)\?' . self.h16() . '\)\?::' . repeat('\%(' . self.h16() . ':\)', 3) . self.ls32(),
-  \ '\%(\%(' . self.h16() . ':\)\{,2}' . self.h16() . '\)\?::' . repeat('\%(' . self.h16() . ':\)', 2) . self.ls32(),
-  \ '\%(\%(' . self.h16() . ':\)\{,3}' . self.h16() . '\)\?::'    . self.h16() . ':' . self.ls32(),
-  \ '\%(\%(' . self.h16() . ':\)\{,4}' . self.h16() . '\)\?::'    . self.ls32(),
-  \ '\%(\%(' . self.h16() . ':\)\{,5}' . self.h16() . '\)\?::'    . self.h16(),
-  \ '\%(\%(' . self.h16() . ':\)\{,6}' . self.h16() . '\)\?::'
+  \ (repeat('\%(' . self.h16() . ':\)', 6) . self.ls32()),
+  \ ('::' . repeat('\%(' . self.h16() . ':\)', 5) . self.ls32()),
+  \ ('\%(' . self.h16() . '\)\?::'
+  \   . repeat('\%(' . self.h16() . ':\)', 4) . self.ls32()),
+  \ ('\%(\%(' . self.h16() . ':\)\?'    . self.h16() . '\)\?::'
+  \   . repeat('\%(' . self.h16() . ':\)', 3) . self.ls32()),
+  \ ('\%(\%(' . self.h16() . ':\)\{,2}' . self.h16() . '\)\?::'
+  \   . repeat('\%(' . self.h16() . ':\)', 2) . self.ls32()),
+  \ ('\%(\%(' . self.h16() . ':\)\{,3}' . self.h16() . '\)\?::'
+  \   . self.h16() . ':' . self.ls32()),
+  \ ('\%(\%(' . self.h16() . ':\)\{,4}' . self.h16() . '\)\?::' . self.ls32()),
+  \ ('\%(\%(' . self.h16() . ':\)\{,5}' . self.h16() . '\)\?::' . self.h16()),
+  \ ('\%(\%(' . self.h16() . ':\)\{,6}' . self.h16() . '\)\?::')
   \], '\|') . '\)'
 endfunction
 " h16 = 1*4HEXDIG
 "     ; 16 bits of address represented in hexadecimal
 function! s:DefaultPatternSet.h16() abort
-  return '\%(\x\)\{1,4}'
+  return '\x\{1,4}'
 endfunction
 " ls32 = ( h16 ":" h16 ) / IPv4address
 "      ; least-significant 32 bits of address
 function! s:DefaultPatternSet.ls32() abort
-  return '\%(' . self.h16() . ':' . self.h16() . '\)\|' . self.ipv4address()
+  return '\%(' . self.h16() . ':' . self.h16()
+  \    . '\|' . self.ipv4address() . '\)'
 endfunction
 " IPvFuture = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
 function! s:DefaultPatternSet.ipv_future() abort
-  return 'v\%(\x\)\+\.'
-  \    . '\%(' . join([self.unreserved(), self.sub_delims(), ':'], '\|') . '\)\+'
+  return 'v\x\+\.'
+  \    . '\%(' . join([self.unreserved(),
+  \                    self.sub_delims(), ':'], '\|') . '\)\+'
 endfunction
 " IP-Literal = "[" ( IPv6address / IPvFuture  ) "]"
 function! s:DefaultPatternSet.ip_literal() abort
@@ -497,11 +504,13 @@ function! s:DefaultPatternSet.ip_literal() abort
 endfunction
 " reg-name = *( unreserved / pct-encoded / sub-delims )
 function! s:DefaultPatternSet.reg_name() abort
-  return '\%(' . join([self.unreserved(), self.pct_encoded(), self.sub_delims()], '\|') . '\)*'
+  return '\%(' . join([self.unreserved(), self.pct_encoded(),
+  \                    self.sub_delims()], '\|') . '\)*'
 endfunction
 " pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
 function! s:DefaultPatternSet.pchar() abort
-  return '\%(' . join([self.unreserved(), self.pct_encoded(), self.sub_delims(), ':', '@'], '\|') . '\)'
+  return '\%(' . join([self.unreserved(), self.pct_encoded(),
+  \                    self.sub_delims(), ':', '@'], '\|') . '\)'
 endfunction
 " segment = *pchar
 function! s:DefaultPatternSet.segment() abort
@@ -509,12 +518,13 @@ function! s:DefaultPatternSet.segment() abort
 endfunction
 " segment-nz = 1*pchar
 function! s:DefaultPatternSet.segment_nz() abort
-  return self.pchar()
+  return self.pchar() . '\+'
 endfunction
 " segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
 "               ; non-zero-length segment without any colon ":"
 function! s:DefaultPatternSet.segment_nz_nc() abort
-  return '\%(' . join([self.unreserved(), self.pct_encoded(), self.sub_delims(), '@'], '\|') . '\)'
+  return '\%(' . join([self.unreserved(), self.pct_encoded(),
+  \                    self.sub_delims(), '@'], '\|') . '\)\+'
 endfunction
 " path-abempty = *( "/" segment )
 function! s:DefaultPatternSet.path_abempty() abort
@@ -526,24 +536,26 @@ function! s:DefaultPatternSet.path_absolute() abort
 endfunction
 " path-noscheme = segment-nz-nc *( "/" segment )
 function! s:DefaultPatternSet.path_noscheme() abort
-  return self.segment_nz_nc() . '\%(/' . self.segment() . '\)'
+  return self.segment_nz_nc() . '\%(/' . self.segment() . '\)*'
 endfunction
 " path-rootless = segment-nz *( "/" segment )
 function! s:DefaultPatternSet.path_rootless() abort
   return self.segment_nz() . '\%(/' . self.segment() . '\)*'
 endfunction
 
-" scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+" scheme = ALPHA *( ALPHA / DIGIT / "+" / "." / "-" )
 function! s:DefaultPatternSet.scheme() abort
   return '[[:alpha:]][[:alpha:]0-9+.-]*'
 endfunction
 " userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
 function! s:DefaultPatternSet.userinfo() abort
-  return '\%(' . join([self.unreserved(), self.pct_encoded(), self.sub_delims(), ':'], '\|') . '\)*'
+  return '\%(' . join([self.unreserved(), self.pct_encoded(),
+  \                    self.sub_delims(), ':'], '\|') . '\)*'
 endfunction
 " host = IP-literal / IPv4address / reg-name
 function! s:DefaultPatternSet.host() abort
-  return join([self.ip_literal(), self.ipv4address(), self.reg_name()], '\|')
+  return '\%(' . join([self.ip_literal(), self.ipv4address(),
+  \                    self.reg_name()], '\|') . '\)'
 endfunction
 " port = *DIGIT
 function! s:DefaultPatternSet.port() abort
@@ -555,7 +567,9 @@ endfunction
 "      / path-rootless   ; begins with a segment
 "      / path-empty      ; zero characters
 function! s:DefaultPatternSet.path() abort
-  return join([self.path_abempty(), self.path_absolute(), self.path_noscheme(), self.path_rootless(), ''], '\|')
+  return '\%(' . join([self.path_abempty(), self.path_absolute(),
+  \                    self.path_noscheme(), self.path_rootless(),
+  \                    ''], '\|') . '\)'
 endfunction
 " query = *( pchar / "/" / "?" )
 function! s:DefaultPatternSet.query() abort
@@ -563,7 +577,7 @@ function! s:DefaultPatternSet.query() abort
 endfunction
 " fragment = *( pchar / "/" / "?" )
 function! s:DefaultPatternSet.fragment() abort
-  return self.query()
+  return '\%(' . join([self.pchar(), '/', '?'], '\|') . '\)*'
 endfunction
 
 " ================= s:PatternSet ==================
