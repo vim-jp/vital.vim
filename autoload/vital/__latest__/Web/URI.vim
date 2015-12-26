@@ -436,19 +436,34 @@ endfunction
 function! s:DefaultPatternSet.ipv4address() abort
   return self.dec_octet() . '\.' . self.dec_octet() . '\.' . self.dec_octet() . '\.' . self.dec_octet()
 endfunction
+function! s:DefaultPatternSet.ipv6address() abort
+  " NOTE: Use repeat() in some parts because
+  " can't use /\{ at most 10 in whole regexp.
+  " https://github.com/vim/vim/blob/cde885473099296c4837de261833f48b24caf87c/src/regexp.c#L1884
+  return '\%(' . join([
+  \                                                         repeat('\%(' . self.h16() . ':\)', 6) . self.ls32(),
+  \                                                       '::' . repeat('\%(' . self.h16() . ':\)', 5) . self.ls32(),
+  \ '\%('                              . self.h16() . '\)\?::' . repeat('\%(' . self.h16() . ':\)', 4) . self.ls32(),
+  \ '\%(\%(' . self.h16() . ':\)\?' . self.h16() . '\)\?::' . repeat('\%(' . self.h16() . ':\)', 3) . self.ls32(),
+  \ '\%(\%(' . self.h16() . ':\)\{,2}' . self.h16() . '\)\?::' . repeat('\%(' . self.h16() . ':\)', 2) . self.ls32(),
+  \ '\%(\%(' . self.h16() . ':\)\{,3}' . self.h16() . '\)\?::'    . self.h16() . ':' . self.ls32(),
+  \ '\%(\%(' . self.h16() . ':\)\{,4}' . self.h16() . '\)\?::'    . self.ls32(),
+  \ '\%(\%(' . self.h16() . ':\)\{,5}' . self.h16() . '\)\?::'    . self.h16(),
+  \ '\%(\%(' . self.h16() . ':\)\{,6}' . self.h16() . '\)\?::'
+  \], '\|') . '\)'
+endfunction
+function! s:DefaultPatternSet.h16() abort
+  return '\%(' . self.hexdig() . '\)\{1,4}'
+endfunction
+function! s:DefaultPatternSet.ls32() abort
+  return '\%(' . self.h16() . ':' . self.h16() . '\)\|' . self.ipv4address()
+endfunction
+function! s:DefaultPatternSet.ipv_future() abort
+  return 'v\%(' . self.hexdig() . '\)\+\.'
+  \    . '\%(' . join([self.unreserved(), self.sub_delims(), ':'], '\|') . '\)\+'
+endfunction
 function! s:DefaultPatternSet.ip_literal() abort
-  " TODO
-  " IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
-  " IPvFuture     = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
-  " IPv6address   =                            6( h16 ":" ) ls32
-  "               /                       "::" 5( h16 ":" ) ls32
-  "               / [               h16 ] "::" 4( h16 ":" ) ls32
-  "               / [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
-  "               / [ *2( h16 ":" ) h16 ] "::" 2( h16 ":" ) ls32
-  "               / [ *3( h16 ":" ) h16 ] "::"    h16 ":"   ls32
-  "               / [ *4( h16 ":" ) h16 ] "::"              ls32
-  "               / [ *5( h16 ":" ) h16 ] "::"              h16
-  "               / [ *6( h16 ":" ) h16 ] "::"
+  return '\[\%(' . self.ipv6address() . '\|' . self.ipv_future() . '\)\]'
 endfunction
 function! s:DefaultPatternSet.reg_name() abort
   return '\%(' . join([self.unreserved(), self.pct_encoded(), self.sub_delims()], '\|') . '\)*'
@@ -485,9 +500,7 @@ function! s:DefaultPatternSet.userinfo() abort
   return '\%(' . join([self.unreserved(), self.pct_encoded(), self.sub_delims(), ':'], '\|') . '\)*'
 endfunction
 function! s:DefaultPatternSet.host() abort
-  return join([self.ipv4address(), self.reg_name()], '\|')
-  " TODO
-  " return join([self.ip_literal(), self.ipv4address(), self.reg_name()], '\|')
+  return join([self.ip_literal(), self.ipv4address(), self.reg_name()], '\|')
 endfunction
 function! s:DefaultPatternSet.port() abort
   return '[0-9]\+'
