@@ -425,16 +425,13 @@ function! s:DefaultPatternSet.get(component, ...) abort
   return ret
 endfunction
 
-function! s:DefaultPatternSet.hexdig() abort
-  return '[0-9A-Fa-f]'
-endfunction
 " unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
 function! s:DefaultPatternSet.unreserved() abort
   return '[[:alpha:]0-9._~-]'
 endfunction
 " pct-encoded   = "%" HEXDIG HEXDIG
 function! s:DefaultPatternSet.pct_encoded() abort
-  return '%' . self.hexdig() . self.hexdig()
+  return '%\x\x'
 endfunction
 " sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
 "               / "*" / "+" / "," / ";" / "="
@@ -482,7 +479,7 @@ endfunction
 " h16 = 1*4HEXDIG
 "     ; 16 bits of address represented in hexadecimal
 function! s:DefaultPatternSet.h16() abort
-  return '\%(' . self.hexdig() . '\)\{1,4}'
+  return '\%(\x\)\{1,4}'
 endfunction
 " ls32 = ( h16 ":" h16 ) / IPv4address
 "      ; least-significant 32 bits of address
@@ -491,7 +488,7 @@ function! s:DefaultPatternSet.ls32() abort
 endfunction
 " IPvFuture = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
 function! s:DefaultPatternSet.ipv_future() abort
-  return 'v\%(' . self.hexdig() . '\)\+\.'
+  return 'v\%(\x\)\+\.'
   \    . '\%(' . join([self.unreserved(), self.sub_delims(), ':'], '\|') . '\)\+'
 endfunction
 " IP-Literal = "[" ( IPv6address / IPvFuture  ) "]"
