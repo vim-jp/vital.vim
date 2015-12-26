@@ -148,7 +148,7 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
     let port = ''
   endif
 
-  " path (string after authority in hier-part)
+  " path
   let [path, rest] = s:_eat_path(rest, a:pattern_set)
 
   " query
@@ -172,7 +172,7 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   let obj = deepcopy(s:URI)
   let obj.__pattern_set = a:pattern_set
   " TODO: No need to use setter?
-  " Just set property to directly.
+  " Just set the values to each property directly.
   call obj.scheme(scheme)
   call obj.userinfo(userinfo)
   call obj.host(host)
