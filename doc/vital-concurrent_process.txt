@@ -29,9 +29,11 @@ This module is most likely used for following types of Vim plugins:
   language runtime process.
   (e.g. neoclojure.vim provides clojure code completion and execution with
   using leiningen as a persistent external process)
+  https://github.com/ujihisa/neoclojure.vim
 * Networking with using external process.
   (e.g. create a zeromq connection via external ruby process, and use it from
   Vim concurrently)
+
 ConcurrentProcess is particularly powerful if the external process takes long
 time to start, comparing to do without using ConcurrentProcess, because it's
 managed by ConcurrentProcess.
@@ -86,7 +88,7 @@ Things to learn from this example:
 * The ls process will be created in the beginning of list_files(), and will be
   terminated during the function.
 
-2. like system(cmd, input)
+2. like `system(cmd, input)`
 
 You can give text to stdin as well.
 >
