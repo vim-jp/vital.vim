@@ -167,7 +167,7 @@ function! s:tick(label) abort
     call s:tick(a:label)
   else
     " must not happen
-    throw "ConcurrentProcess: must not happen"
+    throw 'ConcurrentProcess: must not happen'
   endif
 endfunction
 
@@ -201,7 +201,7 @@ function! s:is_done(label, rname) abort
 
   let reads = filter(
         \ copy(s:_process_info[a:label].queries),
-        \ 'v:val[0] ==# "*read*" || v:val[0] ==# "*read-all*"')
+        \ "v:val[0] ==# '*read*' || v:val[0] ==# '*read-all*'")
   return s:L.all(
         \ printf('v:val[1] !=# %s', string(a:rname)),
         \ reads)
