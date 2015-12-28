@@ -20,10 +20,23 @@ INTERFACE				*Vital.Process-interface*
 FUNCTIONS				*Vital.Process-functions*
 
 spawn({command} [, {special}])		*Vital.Process.spawn()*
+	Execute program in the background from Vim.  Return an empty string
+	always.
+
 	{command} is |List| or |String| to run as background process.
-	This function returns nothing.
+	If {command} is a |List|, it'll |shellescape()| each argument.
 	If {command} is |String| and {special} was given and non-zero,
 	escape special characters.
+
+	Windows:
+	Using :!start , execute program without via cmd.exe.
+	Spawning 'expr' with 'noshellslash'
+	keep special characters from unwanted expansion.
+	(see :help shellescape())
+	
+	Unix:
+	using :! , execute program in the background by shell.
+
 	See |shellescape()|'s {special} argument for the details.
 
 iconv({expr}, {from}, {to})		*Vital.Process.iconv()*
