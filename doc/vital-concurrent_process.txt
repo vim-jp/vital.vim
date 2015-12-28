@@ -126,9 +126,21 @@ are different, but in this example they behave exactly samely.
 		\ ['*read-all*', 'x']])
 <
 
-3. like system(cmd, input), but reuse the process
+3. like `system(cmd, input)`, but reuse the process
 
-TODO
+>
+	function! s:calc_ruby_sync(expr) abort
+	  " This spawns `irb` process only if
+	  " it does not exist.
+	  let label = s:CP.of('irb', '', [])
+	  " Let the irb calculate the given `expr`
+	  call s:CP.queue(label, [
+		\ ['*writeln*', a:expr],
+		\ ['*read*', '> ']])
+	  let [out, err] = s:CP.consume(label, 'x')
+	  return out " Usually you also handle stderr based on `err`
+	endfunction
+<
 
 ==============================================================================
 PRINCIPLE			*Vital.ConcurrentProcess-principle*
