@@ -184,6 +184,7 @@ LINKS					*Vital-links*
   |vital-vim-search.txt|	  Vim's [I like function
   |vital-vim-script_local.txt|	  Get script-local things
   |vital-vim-view_tracer.txt|	  Trace |window| and |tabpage|
+  |vital-vim-guard.txt|		  Guard options/variables
   |vital-web-html.txt|		  HTML parser written in pure Vim script
   |vital-web-http.txt|		  simple HTTP client library
   |vital-web-json.txt|		  JSON parser written in pure Vim script

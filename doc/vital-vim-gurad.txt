@@ -1,0 +1,110 @@
+*vital-vim-gurad.txt*		Vim options/variables guard utility
+
+Maintainer: lambdalisue <lambdalisue@hashnote.net>
+
+==============================================================================
+CONTENTS				*Vital.Vim.Guard-contents*
+
+INTRODUCTION			|Vital.Vim.Guard-introduction|
+USAGE				|Vital.Vim.Guard-usage|
+INTERFACE			|Vital.Vim.Guard-interface|
+  FUNCTIONS			  |Vital.Vim.Guard-functions|
+
+
+==============================================================================
+INTRODUCTION				*Vital.Vim.Guard-introduction*
+
+*Vital.Vim.Guard* is used to restore previous values of options/variables.
+The followings are supported
+
+- Restoring values of options
+  - |options|
+  - |global-local|
+  - |local-options|
+- Restoring values of variable
+  - |buffer-variable| (b:)
+  - |window-variable| (w:)
+  - |tabpage-variable| (t:)
+  - |global-variable| (g:)
+- Restoring values in a dictionary
+  - |local-variable| (l:)
+  - |script-variable| (s:)
+  - |dict|
+
+
+==============================================================================
+USAGE					*Vital.Vim.Guard-usage*
+
+Specify options/variables to |Vital.Vim.Guard.new()| and restore previous
+values with |Vital.Vim.Guard-instance.restore()| like:
+
+>
+	let s:G = s:V.import('Vim.Guard')
+	let g:foo = 'foo'
+
+	function! s:foobar() abort
+	  let foo = 'foo'
+
+	  " Gurad options/variables
+	  let gurad = s:G.new(
+	    \ '&backup',
+	    \ 'g:foo',
+	    \ ['foo', l:],
+	    \)
+
+	  " Assign temporary values
+	  set nobackup
+	  unlet g:foo
+	  let g:foo = 1
+	  unlet foo
+	  let foo = []
+
+	  " restore previous values
+	  call gurad.restore()
+
+	  " Check if the value is restored
+	  echo &backup
+	  " => 1
+	  echo g:foo
+	  " => 'foo'
+	  echo foo
+	  " => foo
+	endfunction
+<
+
+==============================================================================
+INTERFACE				*Vital.Vim.Guard-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Vim.Guard-functions*
+
+new([{name}, ...])	*Vital.Vim.Guard.new()*
+	Create a new gurad instance. Values of {name} options/variables will
+	be stored in the instance and can be restored by calling .restore()
+	method of the instance.
+
+	The following type of value is allowed for {name}
+
+	|List|
+	Components of the list is [{attr}, {namespace}] where {attr} is a name
+	of attribute in {namespace}. If {attr} does not exist in {namespace},
+	The {attr} in {namespace} will be removed from {namespace} if exists
+	when .restore() method of the guard instance is called.
+	Use this type to gurad |local-variable| (|l:|), |script-variable| (|s:|), or
+	attributes in |dict|.
+
+	|String|
+	An option name or variable name. If the {name} starts from b:, w:, t:,
+	or g:, a named |buffer-variable|, |window-variable|, |tabpage-variable|, or
+	|global-variable| would be guarded, otherwise the named option would
+	be guarded. To specify global or local option, use &g: or &l: prefix.
+
+------------------------------------------------------------------------------
+INSTANCE				*Vital.Vim.Guard-instance*
+
+restore()		*Vital.Vim.Guard-instance.restore()*
+	Restore guarded options/variables.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

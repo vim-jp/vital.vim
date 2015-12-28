@@ -65,6 +65,7 @@ Module						 | Description
 [Vim.Search](doc/vital-vim-search.txt)		 | Vim's [I like function
 [Vim.ScriptLocal](doc/vital-vim-script_local.txt) | Get script-local things
 [Vim.ViewTracer](doc/vital-vim-view_tracer.txt) | Trace window and tabpage
+[Vim.Guard](doc/vital-vim-guard.txt)		 | Guard options/variables
 [Web.HTML](doc/vital-web-html.txt)		 | HTML parser written in pure Vim script
 [Web.HTTP](doc/vital-web-http.txt)		 | simple HTTP client library
 [Web.JSON](doc/vital-web-json.txt)		 | JSON parser written in pure Vim script
