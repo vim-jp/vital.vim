@@ -241,7 +241,7 @@ Describe Vim.Guard
     End
   End
 
-  Describe .new({option_or_variable}...)
+  Describe .store({option_or_variable}...)
     Before
       let previous_backup = &backup
       let previous_g_backupcopy = &g:backupcopy
@@ -272,7 +272,7 @@ Describe Vim.Guard
       unlet s:VitalVimGuardTest
     End
     It returns a guard instance for options
-      let guard = Guard.new(
+      let guard = Guard.store(
             \ '&backup',
             \ '&backupcopy',
             \ '&binary',
@@ -280,7 +280,7 @@ Describe Vim.Guard
             \)
       Assert KeyExists(guard, 'restore')
       " NOTE: first character & of names are omittable
-      let guard = Guard.new(
+      let guard = Guard.store(
             \ 'backup',
             \ 'backupcopy',
             \ 'binary',
@@ -291,7 +291,7 @@ Describe Vim.Guard
     It returns a guard instance for variables
       let namespace = { 'VitalVimGuardTest': 1 }
       let VitalVimGuardTest = 1
-      let guard = Guard.new(
+      let guard = Guard.store(
             \ ['VitalVimGuardTest', b:],
             \ ['VitalVimGuardTest', w:],
             \ ['VitalVimGuardTest', t:],
@@ -302,7 +302,7 @@ Describe Vim.Guard
             \)
       Assert KeyExists(guard, 'restore')
       " NOTE: namespace variables of b:, w:, t:, g: are omittable
-      let guard = Guard.new(
+      let guard = Guard.store(
             \ 'b:VitalVimGuardTest',
             \ 'w:VitalVimGuardTest',
             \ 't:VitalVimGuardTest',
@@ -317,7 +317,7 @@ Describe Vim.Guard
       It restore options and variables assigned
         let namespace = { 'VitalVimGuardTest': 1 }
         let VitalVimGuardTest = 1
-        let guard = Guard.new(
+        let guard = Guard.store(
               \ 'backup',
               \ 'backupcopy',
               \ 'binary',

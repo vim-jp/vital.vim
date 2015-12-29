@@ -35,7 +35,7 @@ The followings are supported
 ==============================================================================
 USAGE					*Vital.Vim.Guard-usage*
 
-Specify options/variables to |Vital.Vim.Guard.new()| and restore previous
+Specify options/variables to |Vital.Vim.Guard.store()| and restore previous
 values with |Vital.Vim.Guard-instance.restore()| like:
 
 >
@@ -46,7 +46,7 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	  let foo = 'foo'
 
 	  " Guard options/variables
-	  let guard = s:G.new(
+	  let guard = s:G.store(
 	    \ '&backup',
 	    \ 'g:foo',
 	    \ ['foo', l:],
@@ -78,7 +78,7 @@ INTERFACE				*Vital.Vim.Guard-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Vim.Guard-functions*
 
-new([{name}, ...])	*Vital.Vim.Guard.new()*
+store([{name}, ...])	*Vital.Vim.Guard.store()*
 	Create a new guard instance. Values of {name} options/variables will
 	be stored in the instance and can be restored by calling .restore()
 	method of the instance.

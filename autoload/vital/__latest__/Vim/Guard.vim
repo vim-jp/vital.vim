@@ -77,7 +77,7 @@ function! s:variable.restore() abort
 endfunction
 
 let s:guard = {}
-function! s:new(...) abort
+function! s:store(...) abort
   let resources = []
   for meta in a:000
     if type(meta) == type([])
