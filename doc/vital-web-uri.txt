@@ -158,10 +158,17 @@ This code lets the parser ignore these characters. >
 
     let s:LoosePatternSet = s:URI.new_default_pattern_set()
 
-    " Remove "'", "(", ")" from default set.
+    " Remove "'", "(", ")" from default sub_delims().
     function! s:LoosePatternSet.sub_delims() abort
         return '[!$&*+,;=]'
     endfunction
+
+    " Ignore trailing string after URI.
+    let NONE = []
+    let ret = URI.new_from_seq_string('http://example.com)', NONE, pattern_set)
+    if ret isnot NONE
+        ...
+    endif
 <
 ------------------------------------------------------------------------------
 METHODS				*Vital.Web.URI-PatternSet-methods*
