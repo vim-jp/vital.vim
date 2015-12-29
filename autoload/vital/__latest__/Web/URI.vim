@@ -446,7 +446,9 @@ let s:URI = {
 let s:DefaultPatternSet = {'_cache': {}}
 
 function! s:new_default_pattern_set() abort
-  return deepcopy(s:DefaultPatternSet)
+  let pattern_set = deepcopy(s:DefaultPatternSet)
+  let pattern_set._cache = {}
+  return pattern_set
 endfunction
 
 " Memoize
