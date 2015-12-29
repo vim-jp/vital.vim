@@ -21,7 +21,7 @@ function! s:new_from_uri_like_string(str, ...) abort
   let NothrowValue = get(a:000, 0, s:NONE)
   let pattern_set  = get(a:000, 1, s:DefaultPatternSet)
   " Prepend http if no scheme.
-  if a:str !~# '^'.pattern_set.get('scheme')
+  if a:str !~# '^' . pattern_set.get('scheme') . '://'
     let str = 'http://' . a:str
   else
     let str = a:str
