@@ -31,8 +31,6 @@ Describe Vim.Guard
       Assert KeyExists(option, 'restore')
       Assert Equals(option.name, '&backup')
       Assert Equals(option.value, &backup)
-      Throw /E741: Value is locked/ :let option.name = 'hello'
-      Throw /E741: Value is locked/ :let option.value = 'hello'
     End
     Context An option instance
       Before
@@ -131,8 +129,6 @@ Describe Vim.Guard
       Assert KeyExists(variable, 'restore')
       Assert Equals(variable.name, 'foo')
       Assert Equals(variable.value, namespace.foo)
-      Throw /E741: Value is locked/ :let variable.name = 'hello'
-      Throw /E741: Value is locked/ :let variable.value = 'hello'
 
       let VitalVimGuardTest = 1
       let variable = sf._new_variable('VitalVimGuardTest', l:)
@@ -141,8 +137,6 @@ Describe Vim.Guard
       Assert KeyExists(variable, 'restore')
       Assert Equals(variable.name, 'VitalVimGuardTest')
       Assert Equals(variable.value, VitalVimGuardTest)
-      Throw /E741: Value is locked/ :let variable.name = 'hello'
-      Throw /E741: Value is locked/ :let variable.value = 'hello'
 
       let variable = sf._new_variable('VitalVimGuardTest', s:)
       Assert KeyExists(variable, 'name')
@@ -151,8 +145,6 @@ Describe Vim.Guard
       Assert Equals(variable.name, 'VitalVimGuardTest')
       let s = s:VitalVimGuardTest
       Assert Equals(variable.value, s)
-      Throw /E741: Value is locked/ :let variable.name = 'hello'
-      Throw /E741: Value is locked/ :let variable.value = 'hello'
     End
     It returns an variable instance of {name} in a {namespace} specified as a prefix of {name}
       let variable = sf._new_variable('b:VitalVimGuardTest')
@@ -161,8 +153,6 @@ Describe Vim.Guard
       Assert KeyExists(variable, 'restore')
       Assert Equals(variable.name, 'VitalVimGuardTest')
       Assert Equals(variable.value, b:VitalVimGuardTest)
-      Throw /E741: Value is locked/ :let variable.name = 'hello'
-      Throw /E741: Value is locked/ :let variable.value = 'hello'
 
       let variable = sf._new_variable('w:VitalVimGuardTest')
       Assert KeyExists(variable, 'name')
@@ -170,8 +160,6 @@ Describe Vim.Guard
       Assert KeyExists(variable, 'restore')
       Assert Equals(variable.name, 'VitalVimGuardTest')
       Assert Equals(variable.value, w:VitalVimGuardTest)
-      Throw /E741: Value is locked/ :let variable.name = 'hello'
-      Throw /E741: Value is locked/ :let variable.value = 'hello'
 
       let variable = sf._new_variable('t:VitalVimGuardTest')
       Assert KeyExists(variable, 'name')
@@ -179,8 +167,6 @@ Describe Vim.Guard
       Assert KeyExists(variable, 'restore')
       Assert Equals(variable.name, 'VitalVimGuardTest')
       Assert Equals(variable.value, t:VitalVimGuardTest)
-      Throw /E741: Value is locked/ :let variable.name = 'hello'
-      Throw /E741: Value is locked/ :let variable.value = 'hello'
 
       let variable = sf._new_variable('g:VitalVimGuardTest')
       Assert KeyExists(variable, 'name')
@@ -188,8 +174,6 @@ Describe Vim.Guard
       Assert KeyExists(variable, 'restore')
       Assert Equals(variable.name, 'VitalVimGuardTest')
       Assert Equals(variable.value, g:VitalVimGuardTest)
-      Throw /E741: Value is locked/ :let variable.name = 'hello'
-      Throw /E741: Value is locked/ :let variable.value = 'hello'
     End
     Context A variable instance
       It restore a value of the variable when assigned
