@@ -208,7 +208,7 @@ function! s:_eat_hier_part(rest, pattern_set) abort
       let [path, rest] = s:_eat_path_absolute(rest, a:pattern_set)
     elseif rest =~# '^[^:]'    " begins with a non-colon segment
       let [path, rest] = s:_eat_path_noscheme(rest, a:pattern_set)
-    elseif rest =~# a:path.segment_nz()    " begins with a segment
+    elseif rest =~# a:pattern_set.segment_nz()    " begins with a segment
       let [path, rest] = s:_eat_path_rootless(rest, a:pattern_set)
     elseif rest ==# '' || rest =~# '^[?#]'    " zero characters
       let path = ''
