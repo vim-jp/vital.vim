@@ -236,6 +236,8 @@ REFERENCES				*Vital.Web.URI-references*
   https://url.spec.whatwg.org/#informative
 * RFC3986
   http://tools.ietf.org/html/rfc3986
+* Errata
+  https://www.rfc-editor.org/errata_search.php?rfc=3987
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
