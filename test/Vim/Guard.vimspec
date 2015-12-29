@@ -231,7 +231,7 @@ Describe Vim.Guard
         let s = s:VitalVimGuardTest
         Assert Equals(s, previous)
       End
-      It deepcopy List or Dictionary to prevent E741: Value is locked
+      It deepcopy List or Dictionary
         let namespace = {
               \ 'list': ['a', 'b', 'c'],
               \ 'dict': {

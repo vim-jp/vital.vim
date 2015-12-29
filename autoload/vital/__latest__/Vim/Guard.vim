@@ -31,8 +31,6 @@ function! s:_new_option(name) abort
   let option = copy(s:option)
   let option.name = a:name
   let option.value = eval(a:name)
-  lockvar 1 option.name
-  lockvar 1 option.value
   return option
 endfunction
 function! s:option.restore() abort
@@ -66,8 +64,6 @@ function! s:_new_variable(name, ...) abort
         \   ? deepcopy(variable.value)
         \   : variable.value
   let variable._namespace = namespace
-  lockvar 1 variable.name
-  lockvar 1 variable.value
   return variable
 endfunction
 function! s:variable.restore() abort
@@ -76,7 +72,6 @@ function! s:variable.restore() abort
   if type(self.value) == type(s:UNDEFINED) && self.value == s:UNDEFINED
     " do nothing, leave the variable as undefined
   else
-    unlockvar 1 self.value
     let self._namespace[self.name] = self.value
   endif
 endfunction
