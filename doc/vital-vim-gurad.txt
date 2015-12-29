@@ -1,4 +1,4 @@
-*vital-vim-gurad.txt*		Vim options/variables guard utility
+*vital-vim-guard.txt*		Vim options/variables guard utility
 
 Maintainer: lambdalisue <lambdalisue@hashnote.net>
 
@@ -45,8 +45,8 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	function! s:foobar() abort
 	  let foo = 'foo'
 
-	  " Gurad options/variables
-	  let gurad = s:G.new(
+	  " Guard options/variables
+	  let guard = s:G.new(
 	    \ '&backup',
 	    \ 'g:foo',
 	    \ ['foo', l:],
@@ -60,7 +60,7 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	  let foo = []
 
 	  " restore previous values
-	  call gurad.restore()
+	  call guard.restore()
 
 	  " Check if the value is restored
 	  echo &backup
@@ -79,7 +79,7 @@ INTERFACE				*Vital.Vim.Guard-interface*
 FUNCTIONS				*Vital.Vim.Guard-functions*
 
 new([{name}, ...])	*Vital.Vim.Guard.new()*
-	Create a new gurad instance. Values of {name} options/variables will
+	Create a new guard instance. Values of {name} options/variables will
 	be stored in the instance and can be restored by calling .restore()
 	method of the instance.
 
@@ -90,7 +90,7 @@ new([{name}, ...])	*Vital.Vim.Guard.new()*
 	of attribute in {namespace}. If {attr} does not exist in {namespace},
 	The {attr} in {namespace} will be removed from {namespace} if exists
 	when .restore() method of the guard instance is called.
-	Use this type to gurad |local-variable| (|l:|), |script-variable| (|s:|), or
+	Use this type to guard |local-variable| (|l:|), |script-variable| (|s:|), or
 	attributes in |dict|.
 
 	|String|
