@@ -97,7 +97,8 @@ new([{name}, ...])	*Vital.Vim.Guard.new()*
 	An option name or variable name. If the {name} starts from b:, w:, t:,
 	or g:, a named |buffer-variable|, |window-variable|, |tabpage-variable|, or
 	|global-variable| would be guarded, otherwise the named option would
-	be guarded. To specify global or local option, use &g: or &l: prefix.
+	be guarded. To specify global or local option, use &g: or &l: prefix
+	in Vim 7.4 (individual assignment does not work on Vim 7.3).
 
 ------------------------------------------------------------------------------
 INSTANCE				*Vital.Vim.Guard-instance*
