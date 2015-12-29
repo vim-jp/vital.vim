@@ -10,7 +10,7 @@ Describe Vim.Guard
           \)
     let sf = s:S.sfuncs(sfile)
   End
-  Context [PRIVATE] s:_new_option({name})
+  Describe [PRIVATE] s:_new_option({name})
     " NOTE:
     "   backup      - glocal
     "   backupcopy  - global or local to buffer
@@ -32,7 +32,7 @@ Describe Vim.Guard
       Assert Equals(option.name, '&backup')
       Assert Equals(option.value, &backup)
     End
-    Context An option instance
+    Describe An option instance
       Before
         let previous_backup = &backup
         let previous_g_backupcopy = &g:backupcopy
@@ -96,7 +96,7 @@ Describe Vim.Guard
       End
     End
   End
-  Context [PRIVATE] s:_new_variable({name}[, {namespace}])
+  Describe [PRIVATE] s:_new_variable({name}[, {namespace}])
     Before
       let g:VitalVimGuardTest = 1
       let b:VitalVimGuardTest = 1
@@ -175,7 +175,7 @@ Describe Vim.Guard
       Assert Equals(variable.name, 'VitalVimGuardTest')
       Assert Equals(variable.value, g:VitalVimGuardTest)
     End
-    Context A variable instance
+    Describe A variable instance
       It restore a value of the variable when assigned
         let variable = sf._new_variable('b:VitalVimGuardTest')
         let previous = b:VitalVimGuardTest
@@ -241,7 +241,7 @@ Describe Vim.Guard
     End
   End
 
-  Context .new({option_or_variable}...)
+  Describe .new({option_or_variable}...)
     Before
       let previous_backup = &backup
       let previous_g_backupcopy = &g:backupcopy
@@ -313,7 +313,7 @@ Describe Vim.Guard
             \)
       Assert KeyExists(guard, 'restore')
     End
-    Context A guard instance
+    Describe A guard instance
       It restore options and variables assigned
         let namespace = { 'VitalVimGuardTest': 1 }
         let VitalVimGuardTest = 1
