@@ -40,7 +40,7 @@ new_from_uri_like_string({str} [, {default} [, {patternset}]])
 new_from_seq_string({str} [, {default} [, {patternset}]])
 					*Vital.Web.URI.new_from_seq_string()*
 	This is same as |Vital.Web.URI.new()|, except
-	1. When {str} has illegal string.
+	1. When {str} contains illegal trailing string,
 	   then this function DOES NOT throw an exception.
 	2. Returns |List| of [{uri}, {origuri}, {rest}]
 	   {uri}
