@@ -95,6 +95,48 @@ Describe Web.URI
     End
   End
 
+  Describe .new_from_uri_like_string()
+    It parses valid URIs
+      Throws URI.new_from_uri_like_string('local[host]')
+      Assert Equals(URI.new_from_uri_like_string('local[host]', 'Error!'), 'Error!')
+
+      Assert NotEquals(URI.new_from_uri_like_string('localhost', 'Error!'), 'Error!')
+      Assert Equals(URI.new_from_uri_like_string('example.com/').to_string(), 'http://example.com/')
+      Assert Equals(URI.new_from_uri_like_string('example.com').to_string(), 'http://example.com/')
+      Assert Equals(URI.new_from_uri_like_string('/home/tyru').to_string(), 'http:///home/tyru')
+      Assert Equals(URI.new_from_uri_like_string('user:password@example.com:8080/path/for/test?q=query#fragment').to_string(), 'http://user:password@example.com:8080/path/for/test?q=query#fragment')
+    End
+  End
+
+  Describe .new_from_seq_string()
+    It parses valid URIs with trailing string
+      Throws URI.new_from_seq_string('[http://example.com]')
+      Assert Equals(URI.new_from_seq_string('[http://example.com]', 'Error!'), 'Error!')
+
+      for [input, expected] in [
+      \  ['http://example.com/ blah blah',
+      \    ['http://example.com/', 'http://example.com/', ' blah blah']],
+      \  ['http://example.com gera gera',
+      \    ['http://example.com/', 'http://example.com', ' gera gera']],
+      \  ['file:///home/tyru   # My home directory',
+      \    ['file:///home/tyru', 'file:///home/tyru',
+      \     '   # My home directory']],
+      \  ['http:///home/tyru   # Hmm...',
+      \    ['http:///home/tyru', 'http:///home/tyru',
+      \     '   # Hmm...']],
+      \  ['http://user:password@example.com:8080/path/for/test?q=query#fragment[Whoa!What Complex URL]',
+      \    ['http://user:password@example.com:8080/path/for/test?q=query#fragment',
+      \     'http://user:password@example.com:8080/path/for/test?q=query#fragment',
+      \     '[Whoa!What Complex URL]']]
+      \]
+        let ret = URI.new_from_seq_string(input)
+        " Stringify URI object.
+        let [uri, origuri, rest] = [ret[0].to_string()] + ret[1:2]
+        Assert Equals([uri, origuri, rest], expected)
+      endfor
+    End
+  End
+
   Describe .is_uri()
     It checks valid URI
       Assert True(URI.is_uri('http://example.com/'))
