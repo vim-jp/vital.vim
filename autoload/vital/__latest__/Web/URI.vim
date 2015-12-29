@@ -96,7 +96,7 @@ function! s:_uri_new_sandbox(uri, ignore_rest, pattern_set, retall, NothrowValue
 endfunction
 
 function! s:_is_own_exception(str) abort
-  return a:str =~# '^uri parse error\%((\w\+)\)\?:'
+  return a:str =~# '^uri parse error\%(([^)]\+)\)\?:'
 endfunction
 
 
@@ -126,30 +126,8 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   " scheme
   let [scheme, rest] = s:_eat_scheme(rest, a:pattern_set)
 
-  let rest = s:_eat_em(rest, '^://')[1]
-
-  " userinfo
-  try
-    let oldrest = rest
-    let [userinfo, rest] = s:_eat_userinfo(rest, a:pattern_set)
-    let rest = s:_eat_em(rest, '^@')[1]
-  catch
-    let rest = oldrest
-    let userinfo = ''
-  endtry
-
-  " host
-  let [host, rest] = s:_eat_host(rest, a:pattern_set)
-
-  " port
-  if rest[0] ==# ':'
-    let [port, rest] = s:_eat_port(rest[1:], a:pattern_set)
-  else
-    let port = ''
-  endif
-
-  " path
-  let [path, rest] = s:_eat_path(rest, a:pattern_set)
+  " hier-part
+  let [hier_part, rest] = s:_eat_hier_part(rest, a:pattern_set)
 
   " query
   if rest[0] ==# '?'
@@ -174,10 +152,10 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   " TODO: No need to use setter?
   " Just set the values to each property directly.
   call obj.scheme(scheme)
-  call obj.userinfo(userinfo)
-  call obj.host(host)
-  call obj.port(port)
-  call obj.path(path)
+  call obj.userinfo(hier_part.userinfo)
+  call obj.host(hier_part.host)
+  call obj.port(hier_part.port)
+  call obj.path(hier_part.path)
   call obj.query(query)
   call obj.fragment(fragment)
   return [obj, rest]
@@ -193,6 +171,58 @@ function! s:_eat_em(str, pat, ...) abort
   endif
   let rest = strpart(a:str, strlen(m[0]))
   return [m[0], rest]
+endfunction
+
+function! s:_eat_hier_part(rest, pattern_set) abort
+  let rest = a:rest
+  if rest =~# '^://'
+    " authority
+    let rest = rest[3:]
+    " authority(userinfo)
+    try
+      let oldrest = rest
+      let [userinfo, rest] = s:_eat_userinfo(rest, a:pattern_set)
+      let rest = s:_eat_em(rest, '^@')[1]
+    catch
+      let rest = oldrest
+      let userinfo = ''
+    endtry
+    " authority(host)
+    let [host, rest] = s:_eat_host(rest, a:pattern_set)
+    " authority(port)
+    if rest[0] ==# ':'
+      let [port, rest] = s:_eat_port(rest[1:], a:pattern_set)
+    else
+      let port = ''
+    endif
+    " path
+    let [path, rest] = s:_eat_path_abempty(rest, a:pattern_set)
+  elseif rest =~# ':'
+    let rest = rest[1:]
+    let userinfo = ''
+    let host = ''
+    let port = ''
+    " path
+    if rest =~# '^/[^/]'    " begins with '/' but not '//'
+      let [path, rest] = s:_eat_path_absolute(rest, a:pattern_set)
+    elseif rest =~# '^[^:]'    " begins with a non-colon segment
+      let [path, rest] = s:_eat_path_noscheme(rest, a:pattern_set)
+    elseif rest =~# a:path.segment_nz()    " begins with a segment
+      let [path, rest] = s:_eat_path_rootless(rest, a:pattern_set)
+    elseif rest ==# '' || rest =~# '^[?#]'    " zero characters
+      let path = ''
+    else
+      throw printf("uri parse error(hier-part): can't parse '%s'.", rest)
+    endif
+  else
+    throw printf("uri parse error(hier-part): can't parse '%s'.", rest)
+  endif
+  return [{
+  \ 'userinfo': userinfo,
+  \ 'host': host,
+  \ 'port': port,
+  \ 'path': path,
+  \}, rest]
 endfunction
 
 " NOTE: More s:_eat_*() functions are defined by s:_create_eat_functions().
@@ -319,7 +349,10 @@ endfunction
 
 let s:FUNCTION_DESCS = [
 \ 'scheme', 'userinfo', 'host',
-\ 'port', 'path', 'query', 'fragment'
+\ 'port', 'path', 'path_abempty',
+\ 'path_absolute', 'path_noscheme',
+\ 'path_rootless',
+\ 'query', 'fragment'
 \]
 
 " Create s:_eat_*() functions.
