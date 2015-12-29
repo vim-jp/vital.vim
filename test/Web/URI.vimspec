@@ -137,6 +137,47 @@ Describe Web.URI
     End
   End
 
+  Describe .new_default_pattern_set()
+    Before each
+      " Define loose pattern set.
+      let pattern_set = URI.new_default_pattern_set()
+
+      " Remove "'", "(", ")" from default sub_delims().
+      function! pattern_set.sub_delims() abort
+          return '[!$&*+,;=]'
+      endfunction
+
+      let NONE = []
+    End
+
+    It allows to ignore some characters (:help Vital.Web.URI-PatternSet)
+      for [input, expected] in [
+      \  ['http://example.com)',
+      \    ['http://example.com/', 'http://example.com', ')']],
+      \  ['https://en.wikipedia.org/wiki/Markdown)',
+      \    ['https://en.wikipedia.org/wiki/Markdown', 'https://en.wikipedia.org/wiki/Markdown', ')']],
+      \  ['http://example.com/?q=query)',
+      \    ['http://example.com/?q=query', 'http://example.com/?q=query', ')']],
+      \  ['http://example.com/#fragment)',
+      \    ['http://example.com/#fragment', 'http://example.com/#fragment', ')']],
+      \
+      \  ["http://example.com'",
+      \    ['http://example.com/', 'http://example.com', "'"]],
+      \  ["https://github.com/Lokaltog/vim-easymotion'",
+      \    ['https://github.com/Lokaltog/vim-easymotion', 'https://github.com/Lokaltog/vim-easymotion', "'"]],
+      \  ["http://example.com/?q=query'",
+      \    ['http://example.com/?q=query', 'http://example.com/?q=query', "'"]],
+      \  ["http://example.com/#fragment'",
+      \    ['http://example.com/#fragment', 'http://example.com/#fragment', "'"]],
+      \]
+        let ret = URI.new_from_seq_string(input, NONE, pattern_set)
+        " Stringify URI object.
+        let [uri, origuri, rest] = [ret[0].to_string()] + ret[1:2]
+        Assert Equals([uri, origuri, rest], expected)
+      endfor
+    End
+  End
+
   Describe .is_uri()
     It checks valid URI
       Assert True(URI.is_uri('http://example.com/'))

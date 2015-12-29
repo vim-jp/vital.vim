@@ -158,7 +158,7 @@ This code lets the parser ignore these characters. >
 
     let s:LoosePatternSet = s:URI.new_default_pattern_set()
 
-    " Remove "'", "(", ")".
+    " Remove "'", "(", ")" from default set.
     function! s:LoosePatternSet.sub_delims() abort
         return '[!$&*+,;=]'
     endfunction
