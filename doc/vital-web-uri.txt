@@ -108,10 +108,12 @@ opaque([{str}])
 query([{str}])
 fragment([{str}])
 
-	Returns each part if no arguments are given.
-	Set {str} as each part if {str} is given.
+	If no arguments are given, returns each part value.
+	If {str} is given, sets {str} as each part value,
+	and returns URI object itself.
 
-	NOTE: path() always returns a string prefixed by "/".
+	NOTE: path() with no arguments always returns
+	a string prefixed by "/".
 	NOTE: opaque(), authority() do not support {str} yet.
 
 to_iri()				*Vital.Web.URI-object.to_iri()*
