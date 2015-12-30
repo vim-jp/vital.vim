@@ -36,6 +36,44 @@ Describe Vim.Python
       End
     endif
   End
+  Describe .is_python2_enabled()
+    if s:has_python2 && s:has_python3
+      It returns 1 [+python/+python3]
+        Assert True(Python.is_python2_enabled())
+      End
+    elseif s:has_python2
+      It returns 1 [+python/-python3]
+        Assert True(Python.is_python2_enabled())
+      End
+    elseif s:has_python3
+      It returns 0 [-python/+python3]
+        Assert False(Python.is_python2_enabled())
+      End
+    else
+      It returns 0 [-python/-python3]
+        Assert False(Python.is_python2_enabled())
+      End
+    endif
+  End
+  Describe .is_python3_enabled()
+    if s:has_python2 && s:has_python3
+      It returns 1 [+python/+python3]
+        Assert True(Python.is_python3_enabled())
+      End
+    elseif s:has_python2
+      It returns 1 [+python/-python3]
+        Assert False(Python.is_python3_enabled())
+      End
+    elseif s:has_python3
+      It returns 0 [-python/+python3]
+        Assert True(Python.is_python3_enabled())
+      End
+    else
+      It returns 0 [-python/-python3]
+        Assert False(Python.is_python3_enabled())
+      End
+    endif
+  End
 
   Describe .get_major_version()
     if s:has_python2 && s:has_python3

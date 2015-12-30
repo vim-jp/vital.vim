@@ -56,8 +56,21 @@ FUNCTIONS				*Vital.Vim.Python-functions*
 
 is_enabled()				*Vital.Vim.Python.is_enabled()*
 
-	Return 1 if |+python| and/or |+python3| features are available.
+	Return 1 if |Vital.Vim.Python.is_python2_enabled()| or
+	|Vital.Vim.Python.is_python3_enabled()| return 1.
 
+is_python2_enabled()			*Vital.Vim.Python.is_python2_enabled()*
+
+	Return 1 if |+python| and the following code exit without exceptions.
+>
+        python import sys
+<
+is_python3_enabled()			*Vital.Vim.Python.is_python3_enabled()*
+
+	Return 1 if |+python3| and the following code exit without exceptions.
+>
+        python3 import sys
+<
 get_major_version()			*Vital.Vim.Python.get_major_version()*
 
 	Return 0, 2, or 3. Depends on |+python| and/or |+python3| features.
