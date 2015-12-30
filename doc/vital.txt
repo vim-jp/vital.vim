@@ -144,6 +144,7 @@ LINKS					*Vital-links*
   |vital-data-bignum.txt|	  multi precision integer library
   |vital-data-closure.txt|	  Provide Closure object
   |vital-data-collection.txt|	  Utilities both for list and dict
+  |vital-data-counter.txt|      Counter library to support convenient tallies
   |vital-data-dict.txt|		  dictionary utilities library
   |vital-data-lazylist.txt|	  lazy list including file io
   |vital-data-list.txt|		  list utilities library

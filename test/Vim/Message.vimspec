@@ -14,7 +14,7 @@ Describe Vim.Message
       Assert Equals(output, "\nhi")
     End
   End
-  
+
   Describe .capture()
     It returns output string of Vim {command}
       let output = Message.capture('echo "hi"')
