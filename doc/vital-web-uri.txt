@@ -84,6 +84,12 @@ decode({str} [, {char-enc}])		*Vital.Web.URI.decode()*
 ------------------------------------------------------------------------------
 URI OBJECT				*Vital.Web.URI-URI* *Vital.Web.URI-object*
 
+NOTE: See |Vital.Web.HTTP| for encoding/decoding functions.
+* |Vital.Web.HTTP.encodeURI()|
+* |Vital.Web.HTTP.encodeURIComponent()|
+* |Vital.Web.HTTP.decodeURI()|
+
+
 *Vital.Web.URI-URI.scheme()* *Vital.Web.URI-object.scheme()*
 *Vital.Web.URI-URI.host()* *Vital.Web.URI-object.host()*
 *Vital.Web.URI-URI.port()* *Vital.Web.URI-object.port()*
@@ -165,13 +171,12 @@ This code lets the parser ignore these characters. >
 
     " Ignore trailing string after URI.
     let NONE = []
-    let ret = URI.new_from_seq_string('http://example.com)', NONE, pattern_set)
+    let ret = URI.new_from_seq_string(
+    \               'http://example.com)', NONE, s:LoosePatternSet)
     if ret isnot NONE
         ...
     endif
 <
-------------------------------------------------------------------------------
-METHODS				*Vital.Web.URI-PatternSet-methods*
 
 get({component})			*Vital.Web.URI-PatternSet.get()*
 
@@ -231,7 +236,7 @@ needs to raise an error for him or herself.
 ==============================================================================
 TODO					*Vital.Web.URI-todo*
 
-* Punycode
+* Punycode (RFC3492)
 * IRI support (RFC3987)
 * |Vital.Web.URI-URI.opaque()| with an argument
 * |Vital.Web.URI-URI.authority()| with an argument
