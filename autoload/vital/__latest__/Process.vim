@@ -21,21 +21,6 @@ let s:TYPE_DICT = type({})
 let s:TYPE_LIST = type([])
 let s:TYPE_STRING = type("")
 
-
-" Execute program in the background from Vim.
-" Return an empty string always.
-"
-" If a:expr is a List, shellescape() each argument.
-" If a:expr is a String, the arguments are passed as-is.
-"
-" Windows:
-" Using :!start , execute program without via cmd.exe.
-" Spawning 'expr' with 'noshellslash'
-" keep special characters from unwanted expansion.
-" (see :help shellescape())
-"
-" Unix:
-" using :! , execute program in the background by shell.
 function! s:spawn(expr, ...) abort
   let shellslash = 0
   if s:is_windows
