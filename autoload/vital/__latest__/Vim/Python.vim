@@ -39,7 +39,7 @@ function! s:is_python2_enabled() abort
     let s:is_python2_enabled = 0
   else
     try
-      python import sys
+      python 0
       let s:is_python2_enabled = 1
     catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\)/
       let s:is_python2_enabled = 0
@@ -55,7 +55,7 @@ function! s:is_python3_enabled() abort
     let s:is_python3_enabled = 0
   else
     try
-      python3 import sys
+      python3 0
       let s:is_python3_enabled = 1
     catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\)/
       let s:is_python3_enabled = 0
