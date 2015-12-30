@@ -294,14 +294,12 @@ Describe Vim.Guard
     End
     It returns a guard instance for variables
       let namespace = { 'VitalVimGuardTest': 1 }
-      let VitalVimGuardTest = 1
       let guard = Guard.store(
             \ ['VitalVimGuardTest', b:],
             \ ['VitalVimGuardTest', w:],
             \ ['VitalVimGuardTest', t:],
             \ ['VitalVimGuardTest', g:],
             \ ['VitalVimGuardTest', s:],
-            \ ['VitalVimGuardTest', l:],
             \ ['VitalVimGuardTest', namespace],
             \)
       Assert KeyExists(guard, 'restore')
@@ -312,7 +310,6 @@ Describe Vim.Guard
             \ 't:VitalVimGuardTest',
             \ 'g:VitalVimGuardTest',
             \ ['VitalVimGuardTest', s:],
-            \ ['VitalVimGuardTest', l:],
             \ ['VitalVimGuardTest', namespace],
             \)
       Assert KeyExists(guard, 'restore')
@@ -320,7 +317,6 @@ Describe Vim.Guard
     Describe A guard instance
       It restore options and variables assigned
         let namespace = { 'VitalVimGuardTest': 1 }
-        let VitalVimGuardTest = 1
         let guard = Guard.store(
               \ 'backup',
               \ 'backupcopy',
@@ -331,7 +327,6 @@ Describe Vim.Guard
               \ 't:VitalVimGuardTest',
               \ 'g:VitalVimGuardTest',
               \ ['VitalVimGuardTest', s:],
-              \ ['VitalVimGuardTest', l:],
               \ ['VitalVimGuardTest', namespace],
               \)
         set nobackup
@@ -342,7 +337,6 @@ Describe Vim.Guard
         let w:VitalVimGuardTest = 2
         let t:VitalVimGuardTest = 2
         let g:VitalVimGuardTest = 2
-        let VitalVimGuardTest = 2
         let s:VitalVimGuardTest = 2
         let namespace.VitalVimGuardTest = 2
         call guard.restore()
@@ -354,7 +348,6 @@ Describe Vim.Guard
         Assert Equals(w:VitalVimGuardTest, 1)
         Assert Equals(t:VitalVimGuardTest, 1)
         Assert Equals(g:VitalVimGuardTest, 1)
-        Assert Equals(VitalVimGuardTest, 1)
         let s = s:VitalVimGuardTest
         Assert Equals(s, 1)
         Assert Equals(namespace.VitalVimGuardTest, 1)
