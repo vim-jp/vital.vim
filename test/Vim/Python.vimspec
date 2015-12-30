@@ -32,7 +32,7 @@ Describe Vim.Python
       End
     else
       It returns 0 [-python/-python3]
-        Assert True(Python.is_enabled())
+        Assert False(Python.is_enabled())
       End
     endif
   End
@@ -109,7 +109,7 @@ Describe Vim.Python
       End
     else
       It throws an exception if 0 is specified [-python/-python3]
-        Throw /+python is required/ Python.set_major_version(0)
+        Throw /+python and\/or +python3 is required/ Python.set_major_version(0)
       End
       It throws an exception if 2 is specified [-python/-python3]
         Throw /+python is required/ Python.set_major_version(2)
@@ -204,7 +204,7 @@ Describe Vim.Python
       End
     else
       It throws an exception if 0 is specified [-python/-python3]
-        Throw /+python is required/ Python.exec_file(path, 0)
+        Throw /+python and\/or +python3 is required/ Python.exec_file(path, 0)
       End
       It throws an exception if 2 is specified [-python/-python3]
         Throw /+python is required/ Python.exec_file(path, 2)
@@ -305,7 +305,7 @@ Describe Vim.Python
       End
     else
       It throws an exception if 0 is specified [-python/-python3]
-        Throw /+python is required/ Python.exec_code(code, 0)
+        Throw /+python and\/or +python3 is required/ Python.exec_code(code, 0)
       End
       It throws an exception if 2 is specified [-python/-python3]
         Throw /+python is required/ Python.exec_code(code, 2)
@@ -378,7 +378,7 @@ Describe Vim.Python
         End
       else
         It throws an exception if 0 is specified [-python/-python3]
-          Throw /+python is required/ Python.eval_expr(expr, 0)
+          Throw /+python and\/or +python3 is required/ Python.eval_expr(expr, 0)
         End
         It throws an exception if 2 is specified [-python/-python3]
           Throw /+python is required/ Python.eval_expr(expr, 2)
