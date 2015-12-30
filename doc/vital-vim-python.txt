@@ -63,13 +63,13 @@ is_python2_enabled()			*Vital.Vim.Python.is_python2_enabled()*
 
 	Return 1 if |+python| and the following code exit without exceptions.
 >
-        python import sys
+        python 0
 <
 is_python3_enabled()			*Vital.Vim.Python.is_python3_enabled()*
 
 	Return 1 if |+python3| and the following code exit without exceptions.
 >
-        python3 import sys
+        python3 0
 <
 get_major_version()			*Vital.Vim.Python.get_major_version()*
 
