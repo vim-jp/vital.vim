@@ -247,6 +247,7 @@ function! s:_uri_scheme(...) dict abort
   if a:0
     if self.is_scheme(a:1)
       let self.__scheme = a:1
+      return self
     else
       throw 'vital: Web.URI: scheme(): '
       \   . 'invalid argument (' . string(a:1) . ')'
@@ -259,6 +260,7 @@ function! s:_uri_userinfo(...) dict abort
   if a:0
     if self.is_userinfo(a:1)
       let self.__userinfo = a:1
+      return self
     else
       throw 'vital: Web.URI: userinfo(): '
       \   . 'invalid argument (' . string(a:1) . ')'
@@ -271,6 +273,7 @@ function! s:_uri_host(...) dict abort
   if a:0
     if self.is_host(a:1)
       let self.__host = a:1
+      return self
     else
       throw 'vital: Web.URI: host(): '
       \   . 'invalid argument (' . string(a:1) . ')'
@@ -283,6 +286,7 @@ function! s:_uri_port(...) dict abort
   if a:0
     if self.is_port(a:1)
       let self.__port = a:1
+      return self
     else
       throw 'vital: Web.URI: port(): '
       \   . 'invalid argument (' . string(a:1) . ')'
@@ -297,6 +301,7 @@ function! s:_uri_path(...) dict abort
     let path = substitute(a:1, '^/\+', '', '')
     if self.is_path(path)
       let self.__path = path
+      return self
     else
       throw 'vital: Web.URI: path(): '
       \   . 'invalid argument (' . string(a:1) . ')'
@@ -332,6 +337,7 @@ function! s:_uri_query(...) dict abort
     let query = substitute(a:1, '^?', '', '')
     if self.is_query(query)
       let self.__query = query
+      return self
     else
       throw 'vital: Web.URI: query(): '
       \   . 'invalid argument (' . string(a:1) . ')'
@@ -346,6 +352,7 @@ function! s:_uri_fragment(...) dict abort
     let fragment = substitute(a:1, '^#', '', '')
     if self.is_fragment(fragment)
       let self.__fragment = fragment
+      return self
     else
       throw 'vital: Web.URI: fragment(): '
       \   . 'invalid argument (' . string(a:1) . ')'
