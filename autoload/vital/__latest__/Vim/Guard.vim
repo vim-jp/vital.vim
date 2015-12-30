@@ -7,12 +7,6 @@ function! s:undefined() abort
 endfunction
 let s:UNDEFINED = function('s:undefined')
 
-function! s:_vital_loaded(V) abort
-endfunction
-function! s:_vital_depends() abort
-  return []
-endfunction
-
 function! s:_throw(msg) abort
   throw printf('vital: Vim.Guard: %s', a:msg)
 endfunction
