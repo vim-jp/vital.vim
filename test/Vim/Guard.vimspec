@@ -130,13 +130,15 @@ Describe Vim.Guard
       Assert Equals(variable.name, 'foo')
       Assert Equals(variable.value, namespace.foo)
 
-      let VitalVimGuardTest = 1
-      let variable = sf._new_variable('VitalVimGuardTest', l:)
-      Assert KeyExists(variable, 'name')
-      Assert KeyExists(variable, 'value')
-      Assert KeyExists(variable, 'restore')
-      Assert Equals(variable.name, 'VitalVimGuardTest')
-      Assert Equals(variable.value, VitalVimGuardTest)
+      if Guard.is_local_variable_supported
+        let VitalVimGuardTest = 1
+        let variable = sf._new_variable('VitalVimGuardTest', l:)
+        Assert KeyExists(variable, 'name')
+        Assert KeyExists(variable, 'value')
+        Assert KeyExists(variable, 'restore')
+        Assert Equals(variable.name, 'VitalVimGuardTest')
+        Assert Equals(variable.value, VitalVimGuardTest)
+      endif
 
       let variable = sf._new_variable('VitalVimGuardTest', s:)
       Assert KeyExists(variable, 'name')
@@ -201,12 +203,14 @@ Describe Vim.Guard
         call variable.restore()
         Assert Equals(g:VitalVimGuardTest, previous)
 
-        let VitalVimGuardTest = 1
-        let variable = sf._new_variable('VitalVimGuardTest', l:)
-        let previous = VitalVimGuardTest
-        let VitalVimGuardTest = 2
-        call variable.restore()
-        Assert Equals(VitalVimGuardTest, previous)
+        if Guard.is_local_variable_supported
+          let VitalVimGuardTest = 1
+          let variable = sf._new_variable('VitalVimGuardTest', l:)
+          let previous = VitalVimGuardTest
+          let VitalVimGuardTest = 2
+          call variable.restore()
+          Assert Equals(VitalVimGuardTest, previous)
+        endif
 
         let variable = sf._new_variable('VitalVimGuardTest', s:)
         let previous = s:VitalVimGuardTest

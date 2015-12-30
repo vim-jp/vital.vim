@@ -7,6 +7,14 @@ function! s:undefined() abort
 endfunction
 let s:UNDEFINED = function('s:undefined')
 
+function! s:_vital_created(module) abort
+  " define constant variables
+  let s:const = {}
+  let s:const.is_local_variable_supported =
+      \ v:version > 703 || (v:version == 703 && has('patch560'))
+  lockvar s:const
+  call extend(a:module, s:const)
+endfunction
 function! s:_throw(msg) abort
   throw printf('vital: Vim.Guard: %s', a:msg)
 endfunction

@@ -27,7 +27,7 @@ The followings are supported
   - |tabpage-variable| (t:)
   - |global-variable| (g:)
 - Restoring values in a dictionary
-  - |local-variable| (l:)
+  - |local-variable| (l:), in Vim 7.3.560 or later
   - |script-variable| (s:)
   - |dict|
 
@@ -76,6 +76,18 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 INTERFACE				*Vital.Vim.Guard-interface*
 
 ------------------------------------------------------------------------------
+CONSTANTS				*Vital.Vim.Guard-constants*
+
+			*Vital.Vim.Guard.is_local_variable_supported*
+is_local_variable_supported
+	1 or 0 to indicate whether the |local-variable| is supported.
+	A |lockvar| flag of |local-variable| in Vim 7.3.559 or earlier is not
+	initialized and the value of the flag is undetermined. That mean the
+	method |Vital.Vim.Guard-instance.restore()| may fail due to |E741|.
+	Developers should not use this module to store/restore |local-variable|
+	when this constant is 0.
+
+------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Vim.Guard-functions*
 
 store([{name}, ...])	*Vital.Vim.Guard.store()*
@@ -92,6 +104,8 @@ store([{name}, ...])	*Vital.Vim.Guard.store()*
 	when .restore() method of the guard instance is called.
 	Use this type to guard |local-variable| (|l:|), |script-variable| (|s:|), or
 	attributes in |dict|.
+	See |Vital.Vim.Guard.is_local_variable_supported| if you would like to
+	store/restore |local-variable| in Vim 7.3.559 or earlier.
 
 	|String|
 	An option name or variable name. If the {name} starts from b:, w:, t:,
