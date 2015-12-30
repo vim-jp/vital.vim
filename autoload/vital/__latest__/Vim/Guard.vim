@@ -86,6 +86,8 @@ function! s:store(...) abort
       call add(resources, call('s:_new_variable', meta))
     elseif type(meta) == type('')
       if meta =~# '^[bwtgls]:'
+        " Note:
+        " To improve an error message, handle l:XXX or s:XXX as well
         call add(resources, s:_new_variable(meta))
       elseif meta =~# '^&'
         call add(resources, s:_new_option(meta))
