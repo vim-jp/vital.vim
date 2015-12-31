@@ -102,6 +102,26 @@ Describe Web.URI
       Assert Equals(uri.path(), '/pub/vim/unix/vim-7.4.tar.bz2')
       Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2')
     End
+
+    " The following four URIs are equivalent:
+    " * http://example.com
+    " * http://example.com/
+    " * http://example.com:/
+    " * http://example.com:80/
+    Describe .canonicalize()
+      It canonicalizes given URI
+        for [input, expected] in [
+        \ ['http://example.com', 'http://example.com/'],
+        \ ['http://example.com/', 'http://example.com/'],
+        \ ['http://example.com:/', 'http://example.com/'],
+        \ ['http://example.com:80/', 'http://example.com/'],
+        \ ['http://example.com:8080/', 'http://example.com:8080/'],
+        \]
+            let got = URI.new(input).canonicalize().to_string()
+            Assert Equals(got, expected)
+        endfor
+      End
+    End
   End
 
   Describe .new_from_uri_like_string()

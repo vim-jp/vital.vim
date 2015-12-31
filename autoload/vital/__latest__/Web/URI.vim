@@ -1,13 +1,14 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:V = {}
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:HTTP = s:V.import('Web.HTTP')
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Web.HTTP']
+  return ['Web.HTTP', 'Web.URI.HTTP']
 endfunction
 
 " NOTE: See s:DefaultPatternSet about the reason
@@ -155,7 +156,6 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   endif
 
   let obj = deepcopy(s:URI)
-  let obj.__pattern_set = a:pattern_set
   let obj.__scheme = scheme
   let obj.__userinfo = hier_part.userinfo
   let obj.__host = hier_part.host
@@ -165,7 +165,24 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   let obj.__query = substitute(query, '^?', '', '')
   " NOTE: obj.__fragment must not have "#" as prefix.
   let obj.__fragment = substitute(fragment, '^#', '', '')
+  let obj.__pattern_set = a:pattern_set
+  let obj.__handler = s:_get_handler_module(scheme, obj)
   return [obj, rest]
+endfunction
+
+function! s:_get_handler_module(scheme, uriobj) abort
+  if a:scheme ==# ''
+    return {}
+  endif
+  let name = 'Web.URI.' . toupper(a:scheme)
+  if !s:V.exists(name)
+    return {}
+  endif
+  let m = s:V.import(name)
+  if has_key(m, 'on_loaded')
+    call m.on_loaded(a:uriobj)
+  endif
+  return m
 endfunction
 
 function! s:_eat_em(str, pat, ...) abort
@@ -367,6 +384,23 @@ function! s:_uri_fragment(...) dict abort
   return self.__fragment
 endfunction
 
+function! s:_uri_canonicalize() dict abort
+  return s:_call_handler_method(self, 'canonicalize', [])
+endfunction
+
+function! s:_uri_default_port() dict abort
+  return s:_call_handler_method(self, 'default_port', [])
+endfunction
+
+function! s:_call_handler_method(this, name, args) abort
+  if empty(a:this.__handler)
+    throw 'vital: Web.URI: ' . a:name . '(): '
+    \   . "Handler was not found for scheme '" . a:this.__scheme . "'."
+  endif
+  call call(a:this.__handler[a:name], a:args, a:this.__handler)
+  return a:this
+endfunction
+
 function! s:_uri_to_iri() dict abort
   " Same as uri.to_string(), but do unescape for self.__path.
   return printf(
@@ -457,6 +491,9 @@ let s:URI = {
 \ 'opaque': s:_local_func('_uri_opaque'),
 \ 'query': s:_local_func('_uri_query'),
 \ 'fragment': s:_local_func('_uri_fragment'),
+\
+\ 'canonicalize': s:_local_func('_uri_canonicalize'),
+\ 'default_port': s:_local_func('_uri_default_port'),
 \
 \ 'to_iri': s:_local_func('_uri_to_iri'),
 \ 'to_string': s:_local_func('_uri_to_string'),
