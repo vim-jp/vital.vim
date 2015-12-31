@@ -10,13 +10,17 @@ function! s:_vital_depends() abort
   return ['Web.HTTP']
 endfunction
 
+" NOTE: See s:DefaultPatternSet about the reason
+" why s:DefaultPatternSet is not deepcopy()ed here.
 function! s:new(uri, ...) abort
   let NothrowValue = get(a:000, 0, s:NONE)
-  let pattern_set = get(a:000, 1, s:DefaultPatternSet)
+  let pattern_set  = get(a:000, 1, s:DefaultPatternSet)
   return s:_uri_new_sandbox(
   \   a:uri, 0, pattern_set, 0, NothrowValue)
 endfunction
 
+" NOTE: See s:DefaultPatternSet about the reason
+" why s:DefaultPatternSet is not deepcopy()ed here.
 function! s:new_from_uri_like_string(str, ...) abort
   let NothrowValue = get(a:000, 0, s:NONE)
   let pattern_set  = get(a:000, 1, s:DefaultPatternSet)
@@ -31,6 +35,8 @@ function! s:new_from_uri_like_string(str, ...) abort
   \   str, 0, pattern_set, 0, NothrowValue)
 endfunction
 
+" NOTE: See s:DefaultPatternSet about the reason
+" why s:DefaultPatternSet is not deepcopy()ed here.
 function! s:new_from_seq_string(uri, ...) abort
   let NothrowValue = get(a:000, 0, s:NONE)
   let pattern_set  = get(a:000, 1, s:DefaultPatternSet)
@@ -467,19 +473,17 @@ let s:URI = {
 " ===================== s:URI =====================
 
 
-" ================= s:PatternSet ==================
-" s:PatternSet: Patterns for URI syntax
+" ================= s:DefaultPatternSet ==================
+" s:DefaultPatternSet: Default patterns for URI syntax
 "
-" The main parts of URLs
-"   http://tools.ietf.org/html/rfc1738#section-2.1
-" BNF for specific URL schemes
-"   http://tools.ietf.org/html/rfc1738#section-5
-" Collected ABNF for URI
-"   http://tools.ietf.org/html/rfc3986#appendix-A
-" Parsing a URI Reference with a Regular Expression
-" NOTE: Using this regexp pattern in urilib.vim
-"   http://tools.ietf.org/html/rfc3986#appendix-B
+" @seealso http://tools.ietf.org/html/rfc3986
 
+" s:new*() methods do not create new copy of s:DefaultPatternSet
+" Thus it shares this instance also cache.
+" But it is no problem because of the following reasons.
+" 1. Each component's return value doesn't change
+"    unless it is overriden by a user. but...
+" 2. s:DefaultPatternSet can't be accessed by a user.
 let s:DefaultPatternSet = {'_cache': {}}
 
 function! s:new_default_pattern_set() abort
@@ -653,6 +657,6 @@ function! s:DefaultPatternSet.fragment() abort
   return '\%(' . join([self.pchar(), '/', '?'], '\|') . '\)*'
 endfunction
 
-" ================= s:PatternSet ==================
+" ================= s:DefaultPatternSet ==================
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:fen:
