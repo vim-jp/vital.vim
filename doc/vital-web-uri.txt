@@ -112,8 +112,6 @@ fragment([{str}])
 	If {str} is given, sets {str} as each part value,
 	and returns URI object itself.
 
-	NOTE: path() with no arguments always returns
-	a string prefixed by "/".
 	NOTE: opaque(), authority() do not support {str} yet.
 
 to_iri()				*Vital.Web.URI-object.to_iri()*

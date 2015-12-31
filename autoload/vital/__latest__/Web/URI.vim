@@ -160,8 +160,7 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   let obj.__userinfo = hier_part.userinfo
   let obj.__host = hier_part.host
   let obj.__port = hier_part.port
-  " NOTE: obj.__path must not have "/" as prefix.
-  let obj.__path = substitute(hier_part.path, '^/\+', '', '')
+  let obj.__path = hier_part.path
   " NOTE: obj.__query must not have "?" as prefix.
   let obj.__query = substitute(query, '^?', '', '')
   " NOTE: obj.__fragment must not have "#" as prefix.
@@ -303,17 +302,15 @@ endfunction
 
 function! s:_uri_path(...) dict abort
   if a:0
-    " NOTE: self.__path must not have "/" as prefix.
-    let path = substitute(a:1, '^/\+', '', '')
-    if self.is_path(path)
-      let self.__path = path
+    if self.is_path(a:1)
+      let self.__path = a:1
       return self
     else
       throw 'vital: Web.URI: path(): '
       \   . 'invalid argument (' . string(a:1) . ')'
     endif
   endif
-  return "/" . self.__path
+  return self.__path
 endfunction
 
 function! s:_uri_authority(...) dict abort
@@ -332,7 +329,7 @@ function! s:_uri_opaque(...) dict abort
     " TODO
     throw 'vital: Web.URI: uri.opaque(value) does not support yet.'
   endif
-  return printf('//%s/%s',
+  return printf('//%s%s',
   \           self.authority(),
   \           self.__path)
 endfunction
@@ -370,7 +367,7 @@ endfunction
 function! s:_uri_to_iri() dict abort
   " Same as uri.to_string(), but do unescape for self.__path.
   return printf(
-  \   '%s://%s/%s%s%s',
+  \   '%s://%s%s%s%s',
   \   self.__scheme,
   \   self.authority(),
   \   s:HTTP.decodeURI(self.__path),
@@ -381,7 +378,7 @@ endfunction
 
 function! s:_uri_to_string() dict abort
   return printf(
-  \   '%s://%s/%s%s%s',
+  \   '%s://%s%s%s%s',
   \   self.__scheme,
   \   self.authority(),
   \   self.__path,
