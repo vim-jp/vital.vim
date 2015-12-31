@@ -673,7 +673,7 @@ function! s:DefaultPatternSet.host() abort
 endfunction
 " port = *DIGIT
 function! s:DefaultPatternSet.port() abort
-  return '[0-9]\+'
+  return '[0-9]*'
 endfunction
 " path = path-abempty    ; begins with "/" or is empty
 "      / path-absolute   ; begins with "/" but not "//"
