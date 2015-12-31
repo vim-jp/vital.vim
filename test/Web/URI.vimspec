@@ -115,12 +115,58 @@ Describe Web.URI
         \ ['http://example.com/', 'http://example.com/'],
         \ ['http://example.com:/', 'http://example.com/'],
         \ ['http://example.com:80/', 'http://example.com/'],
+        \ ['http://example.com:80', 'http://example.com/'],
         \ ['http://example.com:8080/', 'http://example.com:8080/'],
         \]
             let got = URI.new(input).canonicalize().to_string()
             Assert Equals(got, expected)
         endfor
       End
+    End
+
+    It resolves relative URI
+      for [base, rel, expected] in [
+      \ ['http://example.com/', '/a/b/c', 'http://example.com/a/b/c'],
+      \ ['http://example.com', '/a/b/c', 'http://example.com/a/b/c'],
+      \ ['http://example.com/', 'a/b/c', 'http://example.com/a/b/c'],
+      \ ['http://example.com', 'a/b/c', 'http://example.com/a/b/c'],
+      \
+      \ ['http://example.com/', '../d', 'http://example.com/d'],
+      \ ['http://example.com/', '/../d', 'http://example.com/d'],
+      \ ['http://example.com/', 'd/../e', 'http://example.com/e'],
+      \ ['http://example.com/', 'd/e/../../f', 'http://example.com/f'],
+      \ ['http://example.com/', 'd/..', 'http://example.com/'],
+      \ ['http://example.com/', 'd/../', 'http://example.com/'],
+      \ ['http://example.com/', 'd/e/../..', 'http://example.com/'],
+      \
+      \ ['http://example.com/a/b/c', '../d', 'http://example.com/a/d'],
+      \ ['http://example.com/a/b/c', '/../d', 'http://example.com/d'],
+      \ ['http://example.com/a/b/c', 'd/../e', 'http://example.com/a/b/e'],
+      \ ['http://example.com/a/b/c', 'd/e/../../f', 'http://example.com/a/b/f'],
+      \ ['http://example.com/a/b/c', 'd/..', 'http://example.com/a/b/'],
+      \ ['http://example.com/a/b/c', 'd/../', 'http://example.com/a/b/'],
+      \ ['http://example.com/a/b/c', 'd/e/../..', 'http://example.com/a/b/'],
+      \
+      \ ['http://example.com/', './d', 'http://example.com/d'],
+      \ ['http://example.com/', '/./d', 'http://example.com/d'],
+      \ ['http://example.com/', 'd/./e', 'http://example.com/d/e'],
+      \ ['http://example.com/', 'd/././e', 'http://example.com/d/e'],
+      \ ['http://example.com/', 'd/.', 'http://example.com/d/'],
+      \ ['http://example.com/', 'd/./', 'http://example.com/d/'],
+      \ ['http://example.com/', 'd/./.', 'http://example.com/d/'],
+      \
+      \ ['http://example.com/a/b/c', './d', 'http://example.com/a/b/d'],
+      \ ['http://example.com/a/b/c', '/./d', 'http://example.com/d'],
+      \ ['http://example.com/a/b/c', 'd/./e', 'http://example.com/a/b/d/e'],
+      \ ['http://example.com/a/b/c', 'd/././e', 'http://example.com/a/b/d/e'],
+      \ ['http://example.com/a/b/c', 'd/.', 'http://example.com/a/b/d/'],
+      \ ['http://example.com/a/b/c', 'd/./', 'http://example.com/a/b/d/'],
+      \ ['http://example.com/a/b/c', 'd/./.', 'http://example.com/a/b/d/'],
+      \]
+        let got = URI.new(base).relative(rel).to_string()
+        let msg = printf('base:%s, rel:%s', base, rel)
+        Assert Equals(got, expected, msg)
+      endfor
     End
   End
 

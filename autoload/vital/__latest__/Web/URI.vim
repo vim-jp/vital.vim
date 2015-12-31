@@ -202,23 +202,10 @@ function! s:_eat_hier_part(rest, pattern_set) abort
   if rest =~# '^://'
     " authority
     let rest = rest[3:]
-    " authority(userinfo)
-    try
-      let oldrest = rest
-      let [userinfo, rest] = s:_eat_userinfo(rest, a:pattern_set)
-      let rest = s:_eat_em(rest, '^@')[1]
-    catch
-      let rest = oldrest
-      let userinfo = ''
-    endtry
-    " authority(host)
-    let [host, rest] = s:_eat_host(rest, a:pattern_set)
-    " authority(port)
-    if rest[0] ==# ':'
-      let [port, rest] = s:_eat_port(rest[1:], a:pattern_set)
-    else
-      let port = ''
-    endif
+    let [authority, rest] = s:_eat_authority(rest, a:pattern_set)
+    let userinfo = authority.userinfo
+    let host = authority.host
+    let port = authority.port
     " path
     let [path, rest] = s:_eat_path_abempty(rest, a:pattern_set)
   elseif rest =~# ':'
@@ -246,6 +233,32 @@ function! s:_eat_hier_part(rest, pattern_set) abort
   \ 'host': host,
   \ 'port': port,
   \ 'path': path,
+  \}, rest]
+endfunction
+
+function! s:_eat_authority(str, pattern_set) abort
+  let rest = a:str
+  " authority(userinfo)
+  try
+    let oldrest = rest
+    let [userinfo, rest] = s:_eat_userinfo(rest, a:pattern_set)
+    let rest = s:_eat_em(rest, '^@')[1]
+  catch
+    let rest = oldrest
+    let userinfo = ''
+  endtry
+  " authority(host)
+  let [host, rest] = s:_eat_host(rest, a:pattern_set)
+  " authority(port)
+  if rest[0] ==# ':'
+    let [port, rest] = s:_eat_port(rest[1:], a:pattern_set)
+  else
+    let port = ''
+  endif
+  return [{
+  \ 'userinfo': userinfo,
+  \ 'host': host,
+  \ 'port': port,
   \}, rest]
 endfunction
 
@@ -401,6 +414,176 @@ function! s:_call_handler_method(this, name, args) abort
   return a:this
 endfunction
 
+function! s:_uri_relative(relstr) dict abort
+  call self.canonicalize()
+  let relobj = s:_parse_relative_ref(a:relstr, self.__pattern_set)
+  call s:_resolve_relative(self, relobj)
+  return self
+endfunction
+
+" @seealso s:_parse_uri()
+"
+" URI-reference = URI / relative-ref
+" relative-ref = relative-part [ "?" query ] [ "#" fragment ]
+function! s:_parse_relative_ref(relstr, pattern_set) abort
+  " relative-part
+  let [relpart, rest] = s:_parse_relative_part(a:relstr, a:pattern_set)
+  " query
+  if rest[0] ==# '?'
+    let [query, rest] = s:_eat_query(rest[1:], a:pattern_set)
+  else
+    let query = ''
+  endif
+  " fragment
+  if rest[0] ==# '#'
+    let [fragment, rest] = s:_eat_fragment(rest[1:], a:pattern_set)
+  else
+    let fragment = ''
+  endif
+  " no trailing string allowed.
+  if rest != ''
+    throw 'uri parse error(relative-ref): unnecessary string at the end.'
+  endif
+
+  let obj = deepcopy(s:URI)
+  let obj.__pattern_set = s:clone_pattern_set(a:pattern_set)
+  let obj.__scheme = ''
+  let obj.__userinfo = relpart.userinfo
+  let obj.__host = relpart.host
+  let obj.__port = relpart.port
+  let obj.__path = relpart.path
+  " NOTE: obj.__query must not have "?" as prefix.
+  let obj.__query = substitute(query, '^?', '', '')
+  " NOTE: obj.__fragment must not have "#" as prefix.
+  let obj.__fragment = substitute(fragment, '^#', '', '')
+  return obj
+endfunction
+
+" @seealso s:_eat_hier_part()
+"
+" relative-part = "//" authority path-abempty
+"               / path-absolute
+"               / path-noscheme
+"               / path-empty
+function! s:_parse_relative_part(rel_uri, pattern_set) abort
+  let rest = a:rel_uri
+  if rest =~# '^//'
+    " authority
+    let rest = rest[2:]
+    let [authority, rest] = s:_eat_authority(rest, a:pattern_set)
+    let userinfo = authority.userinfo
+    let host = authority.host
+    let port = authority.port
+    " path
+    let [path, rest] = s:_eat_path_abempty(rest, a:pattern_set)
+  else
+    let userinfo = ''
+    let host = ''
+    let port = ''
+    " path
+    if rest =~# '^/[^/]'    " begins with '/' but not '//'
+      let [path, rest] = s:_eat_path_absolute(rest, a:pattern_set)
+    elseif rest =~# '^[^:]'    " begins with a non-colon segment
+      let [path, rest] = s:_eat_path_noscheme(rest, a:pattern_set)
+    elseif rest ==# '' || rest =~# '^[?#]'    " zero characters
+      let path = ''
+    else
+      throw printf("uri parse error(relative-part): can't parse '%s'.", rest)
+    endif
+  endif
+  return [{
+  \ 'userinfo': userinfo,
+  \ 'host': host,
+  \ 'port': port,
+  \ 'path': path,
+  \}, rest]
+endfunction
+
+" https://tools.ietf.org/html/rfc3986#section-5.2.2
+function! s:_resolve_relative(obj, relobj) abort
+  if a:relobj.__scheme !=# ''
+    let a:obj.__scheme   = a:relobj.__scheme
+    let a:obj.__userinfo = a:relobj.__userinfo
+    let a:obj.__host     = a:relobj.__host
+    let a:obj.__port     = a:relobj.__port
+    let a:obj.__path     = s:_remove_dot_segments(a:relobj.__path)
+    let a:obj.__query    = a:relobj.__query
+  else
+    if a:relobj.authority() !=# ''
+      let a:obj.__userinfo = a:relobj.__userinfo
+      let a:obj.__host     = a:relobj.__host
+      let a:obj.__port     = a:relobj.__port
+      let a:obj.__path     = a:relobj.__path
+      let a:obj.__query    = a:relobj.__query
+    else
+      if a:relobj.__path ==# ''
+        if a:relobj.__query !=# ''
+          let a:obj.__query = a:relobj.__query
+        endif
+      else
+        if a:relobj.__path[0] ==# '/'
+          let a:obj.__path = s:_remove_dot_segments(a:relobj.__path)
+        else
+          let a:obj.__path = s:_merge_paths(a:obj, a:relobj)
+          let a:obj.__path = s:_remove_dot_segments(a:obj.__path)
+        endif
+        let a:obj.__query = a:relobj.__query
+      endif
+    endif
+  endif
+  let a:obj.__fragment = a:relobj.__fragment
+endfunction
+
+" Merge base URI and relative URI.
+"
+" 5.2.3. Merge Paths
+" https://tools.ietf.org/html/rfc3986#section-5.2.3
+function! s:_merge_paths(baseobj, relobj) abort
+  if a:baseobj.authority() !=# '' && a:baseobj.__path ==# ''
+    return a:relobj.__path
+  else
+    return substitute(a:baseobj.__path, '/\zs[^/]\+$', '', '')
+    \    . a:relobj.__path
+  endif
+endfunction
+
+" Remove '.' or '..' in a:path.
+" Trailing '.' or '..' leaves '/' at the end.
+" e.g.:
+"   base: http://example.com/a/b/c
+"   rel: d/.
+"   result: http://example.com/a/b/d/
+"
+" 5.2.4. Remove Dot Segments
+" https://tools.ietf.org/html/rfc3986#section-5.2.4
+function! s:_remove_dot_segments(path) abort
+  " Get rid of continuous '/'.
+  " May exist empty string because of starting/trailing '/'.
+  let paths = split(a:path, '/\+', 1)
+  let i = 0
+  while i < len(paths)
+    if paths[i] ==# '.'
+      call remove(paths, i)
+      if i >=# len(paths)
+        call add(paths, '')
+      endif
+    elseif paths[i] ==# '..'
+      call remove(paths, i)
+      " except starting '/..' or '..'
+      if !empty(paths) && i > 0 && paths[i-1] !=# ''
+        call remove(paths, i-1)
+        let i -= 1
+      endif
+      if i >=# len(paths)
+        call add(paths, '')
+      endif
+    else
+      let i += 1
+    endif
+  endwhile
+  return join(paths, '/')
+endfunction
+
 function! s:_uri_to_iri() dict abort
   " Same as uri.to_string(), but do unescape for self.__path.
   return printf(
@@ -492,6 +675,7 @@ let s:URI = {
 \ 'query': s:_local_func('_uri_query'),
 \ 'fragment': s:_local_func('_uri_fragment'),
 \
+\ 'relative': s:_local_func('_uri_relative'),
 \ 'canonicalize': s:_local_func('_uri_canonicalize'),
 \ 'default_port': s:_local_func('_uri_default_port'),
 \
@@ -524,7 +708,11 @@ let s:URI = {
 let s:DefaultPatternSet = {'_cache': {}}
 
 function! s:new_default_pattern_set() abort
-  let pattern_set = deepcopy(s:DefaultPatternSet)
+  return s:clone_pattern_set(s:DefaultPatternSet)
+endfunction
+
+function! s:clone_pattern_set(pattern_set) abort
+  let pattern_set = deepcopy(a:pattern_set)
   let pattern_set._cache = {}
   return pattern_set
 endfunction
