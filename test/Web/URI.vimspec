@@ -26,12 +26,12 @@ Describe Web.URI
       Assert Equals(uri.userinfo(), '')
       Assert Equals(uri.host(), 'example.com')
       Assert Equals(uri.port(), '')
-      Assert Equals(uri.path(), '/')
+      Assert Equals(uri.path(), '')
       Assert Equals(uri.authority(), 'example.com')
-      Assert Equals(uri.opaque(), '//example.com/')
+      Assert Equals(uri.opaque(), '//example.com')
       Assert Equals(uri.query(), '')
       Assert Equals(uri.fragment(), '')
-      Assert Equals(uri.to_string(), 'http://example.com/')
+      Assert Equals(uri.to_string(), 'http://example.com')
     End
 
     It allows empty authority (:help Vital.Web.URI-notes)
@@ -84,11 +84,6 @@ Describe Web.URI
       call uri.host('ftp.vim.org')
       Assert Equals(uri.host(), 'ftp.vim.org')
       Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/')
-      " uri.path({str}) prepends '/' if {str} doesn't have it.
-      call uri.path('pub/vim/unix/vim-7.3.tar.bz2')
-      Assert Equals(uri.path(), '/pub/vim/unix/vim-7.3.tar.bz2')
-      Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.3.tar.bz2')
-      " uri.path({str}) doesn't prepend '/' if {str} has it.
       call uri.path('/pub/vim/unix/vim-7.4.tar.bz2')
       Assert Equals(uri.path(), '/pub/vim/unix/vim-7.4.tar.bz2')
       Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2')
@@ -102,7 +97,7 @@ Describe Web.URI
 
       Assert NotEquals(URI.new_from_uri_like_string('localhost', 'Error!'), 'Error!')
       Assert Equals(URI.new_from_uri_like_string('example.com/').to_string(), 'http://example.com/')
-      Assert Equals(URI.new_from_uri_like_string('example.com').to_string(), 'http://example.com/')
+      Assert Equals(URI.new_from_uri_like_string('example.com').to_string(), 'http://example.com')
       Assert Equals(URI.new_from_uri_like_string('/home/tyru').to_string(), 'http:///home/tyru')
       Assert Equals(URI.new_from_uri_like_string('user:password@example.com:8080/path/for/test?q=query#fragment').to_string(), 'http://user:password@example.com:8080/path/for/test?q=query#fragment')
     End
@@ -117,7 +112,7 @@ Describe Web.URI
       \  ['http://example.com/ blah blah',
       \    ['http://example.com/', 'http://example.com/', ' blah blah']],
       \  ['http://example.com gera gera',
-      \    ['http://example.com/', 'http://example.com', ' gera gera']],
+      \    ['http://example.com', 'http://example.com', ' gera gera']],
       \  ['file:///home/tyru   # My home directory',
       \    ['file:///home/tyru', 'file:///home/tyru',
       \     '   # My home directory']],
@@ -153,7 +148,7 @@ Describe Web.URI
     It allows to ignore some characters (:help Vital.Web.URI-PatternSet)
       for [input, expected] in [
       \  ['http://example.com)',
-      \    ['http://example.com/', 'http://example.com', ')']],
+      \    ['http://example.com', 'http://example.com', ')']],
       \  ['https://en.wikipedia.org/wiki/Markdown)',
       \    ['https://en.wikipedia.org/wiki/Markdown', 'https://en.wikipedia.org/wiki/Markdown', ')']],
       \  ['http://example.com/?q=query)',
@@ -162,7 +157,7 @@ Describe Web.URI
       \    ['http://example.com/#fragment', 'http://example.com/#fragment', ')']],
       \
       \  ["http://example.com'",
-      \    ['http://example.com/', 'http://example.com', "'"]],
+      \    ['http://example.com', 'http://example.com', "'"]],
       \  ["https://github.com/Lokaltog/vim-easymotion'",
       \    ['https://github.com/Lokaltog/vim-easymotion', 'https://github.com/Lokaltog/vim-easymotion', "'"]],
       \  ["http://example.com/?q=query'",
