@@ -113,6 +113,7 @@ fragment([{str}])
 	and returns URI object itself.
 
 	NOTE: opaque(), authority() do not support {str} yet.
+	NOTE: port({str}) allows both Number and String for {str}.
 
 to_iri()				*Vital.Web.URI-object.to_iri()*
 	Same as |Vital.Web.URI-object.to_string()|,
