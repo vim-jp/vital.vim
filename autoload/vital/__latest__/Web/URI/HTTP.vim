@@ -11,6 +11,8 @@ endfunction
 " * http://example.com/
 " * http://example.com:/
 " * http://example.com:80/
+"
+" https://tools.ietf.org/html/rfc3986#section-6.2.3
 function! s:canonicalize() dict abort
   if s:super.path() ==# ''
     call s:super.path('/')
