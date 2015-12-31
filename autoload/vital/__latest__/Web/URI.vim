@@ -8,7 +8,7 @@ function! s:_vital_loaded(V) abort
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Web.HTTP', 'Web.URI.HTTP']
+  return ['Web.HTTP', 'Web.URI.HTTP', 'Web.URI.HTTPS']
 endfunction
 
 " NOTE: See s:DefaultPatternSet about the reason
