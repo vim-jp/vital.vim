@@ -118,11 +118,6 @@ endfunction
 " RFC3986: http://tools.ietf.org/html/rfc3986
 "
 " URI = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
-" hier-part = "//" authority path-abempty
-"           / path-absolute
-"           / path-noscheme
-"           / path-rootless
-"           / path-empty
 " authority = [ userinfo "@" ] host [ ":" port ]
 function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   let rest = a:str
@@ -197,6 +192,11 @@ function! s:_eat_em(str, pat, ...) abort
   return [m[0], rest]
 endfunction
 
+" hier-part = "//" authority path-abempty
+"           / path-absolute
+"           / path-noscheme
+"           / path-rootless
+"           / path-empty
 function! s:_eat_hier_part(rest, pattern_set) abort
   let rest = a:rest
   if rest =~# '^://'
