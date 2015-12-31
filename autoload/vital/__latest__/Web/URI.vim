@@ -289,7 +289,10 @@ endfunction
 
 function! s:_uri_port(...) dict abort
   if a:0
-    if self.is_port(a:1)
+    if type(a:1) ==# type(0)
+      let self.__port = "" . a:1
+      return self
+    elseif type(a:1) ==# type("") && self.is_port(a:1)
       let self.__port = a:1
       return self
     else
