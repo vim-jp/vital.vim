@@ -109,7 +109,7 @@ Describe Web.URI
     " * http://example.com:/
     " * http://example.com:80/
     Describe .canonicalize()
-      It canonicalizes given URI
+      It canonicalizes given http URL
         for [input, expected] in [
         \ ['http://example.com', 'http://example.com/'],
         \ ['http://example.com/', 'http://example.com/'],
@@ -117,6 +117,20 @@ Describe Web.URI
         \ ['http://example.com:80/', 'http://example.com/'],
         \ ['http://example.com:80', 'http://example.com/'],
         \ ['http://example.com:8080/', 'http://example.com:8080/'],
+        \]
+            let got = URI.new(input).canonicalize().to_string()
+            Assert Equals(got, expected)
+        endfor
+      End
+
+      It canonicalizes given https URL
+        for [input, expected] in [
+        \ ['https://example.com', 'https://example.com/'],
+        \ ['https://example.com/', 'https://example.com/'],
+        \ ['https://example.com:/', 'https://example.com/'],
+        \ ['https://example.com:443/', 'https://example.com/'],
+        \ ['https://example.com:443', 'https://example.com/'],
+        \ ['https://example.com:8443/', 'https://example.com:8443/'],
         \]
             let got = URI.new(input).canonicalize().to_string()
             Assert Equals(got, expected)
