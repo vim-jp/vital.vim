@@ -4,11 +4,10 @@ set cpo&vim
 let s:V = {}
 function! s:_vital_loaded(V) abort
   let s:V = a:V
-  let s:HTTP = s:V.import('Web.HTTP')
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Web.HTTP', 'Web.URI.HTTP', 'Web.URI.HTTPS']
+  return ['Web.URI.HTTP', 'Web.URI.HTTPS']
 endfunction
 
 " NOTE: See s:DefaultPatternSet about the reason
@@ -584,13 +583,13 @@ function! s:_remove_dot_segments(path) abort
   return join(paths, '/')
 endfunction
 
-function! s:_uri_to_iri() dict abort
+function! s:_uri_to_iri(...) dict abort
   " Same as uri.to_string(), but do unescape for self.__path.
   return printf(
   \   '%s://%s%s%s%s',
   \   self.__scheme,
   \   self.authority(),
-  \   s:HTTP.decodeURI(self.__path),
+  \   call('s:decode', [self.__path] + (a:0 ? [a:1] : [])),
   \   (self.__query != '' ? '?' . self.__query : ''),
   \   (self.__fragment != '' ? '#' . self.__fragment : ''),
   \)
