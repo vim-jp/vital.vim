@@ -80,6 +80,12 @@ decode({str} [, {char-enc}])		*Vital.Web.URI.decode()*
 	Converts result from {char-enc}(or "utf-8" when omitted) to 'encoding'
 	after decode.
 	When {char-enc} is an empty string, result is not converted.
+	Note that this function does not convert "+" to " ".
+	Because this function is based on percent-encoding in RFC3986.
+	http://tools.ietf.org/html/rfc3986#section-2.1
+	But "+" conversion is based on
+	application/x-www-form-urlencoded in RFC1866.
+	http://tools.ietf.org/html/rfc1866#section-8.2.1
 
 ------------------------------------------------------------------------------
 URI OBJECT				*Vital.Web.URI-URI* *Vital.Web.URI-object*
