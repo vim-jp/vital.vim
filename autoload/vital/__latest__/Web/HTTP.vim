@@ -471,7 +471,7 @@ let s:clients.curl.errcode[86] = 'RTSP: mismatch of Session Identifiers'
 let s:clients.curl.errcode[87] = 'unable to parse FTP file list'
 let s:clients.curl.errcode[88] = 'FTP chunk callback reported error'
 let s:clients.curl.errcode[89] = 'No connection available, the session will be queued'
-let s:clients.curl.errcode[-1] = 'More error codes will appear here in future releases. The existing ones are meant to never change.'
+let s:clients.curl.errcode[90] = 'SSL public key does not matched pinned public key'
 
 
 function! s:clients.curl.available(settings) abort
@@ -531,10 +531,11 @@ function! s:clients.curl.request(settings) abort
   let header_chunks = split(headerstr, "\r\n\r\n")
   let headers = map(header_chunks, 'split(v:val, "\r\n")')
   if retcode != 0 && empty(headers)
-    if !has_key(s:clients.curl.errcode, retcode)
-      let retcode = -1
+    if has_key(s:clients.curl.errcode, retcode)
+      throw 'vital: Web.HTTP: ' . s:clients.curl.errcode[retcode]
+    else
+      throw 'vital: Web.HTTP: Unknown error code has occured in curl: code=' . retcode
     endif
-    throw 'vital: Web.HTTP: ' . s:clients.curl.errcode[retcode]
   endif
   if !empty(headers)
     let responses = map(headers, '[v:val, ""]')
