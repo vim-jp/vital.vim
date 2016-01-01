@@ -449,7 +449,11 @@ function! s:clients.curl.request(settings) abort
   let headerstr = s:_readfile(a:settings._file.header)
   let header_chunks = split(headerstr, "\r\n\r\n")
   let headers = map(header_chunks, 'split(v:val, "\r\n")')
-  let responses = map(headers, '[v:val, ""]')
+  if !empty(headers)
+    let responses = map(headers, '[v:val, ""]')
+  else
+    let responses = [[[], '']]
+  endif
   if has_output_file
     let content = ''
   else
