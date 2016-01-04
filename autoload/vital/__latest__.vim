@@ -209,8 +209,8 @@ function! s:_vital_files(pattern) abort
     call map(s:_vital_files_cache, 'fnamemodify(v:val, mod)')
     let s:_vital_files_cache_runtimepath = &runtimepath
   endif
-  let target = substitute(a:pattern, '\.', '/', 'g')
-  let target = substitute(target, '\*', '[^/]*', 'g')
+  let tr = {'.': '/', '*': '[^/]*', '**': '.*'}
+  let target = substitute(a:pattern, '\.\|\*\*\?', '\=tr[submatch(0)]', 'g')
   let regexp = printf('autoload/vital/%s/%s.vim', s:self_version, target)
   return filter(copy(s:_vital_files_cache), 'v:val =~# regexp')
 endfunction
