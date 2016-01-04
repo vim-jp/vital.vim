@@ -113,6 +113,10 @@ store([{name}, ...])	*Vital.Vim.Guard.store()*
 	|global-variable| would be guarded, otherwise the named option would
 	be guarded. To specify global or local option, use &g: or &l: prefix
 	in Vim 7.4 (individual assignment does not work on Vim 7.3).
+	Note that the guard instance is insensible of the change of the 
+	current buffer, mean that |buffer-variable|, |window-variable|, or
+	|tabpage-variable| would not be correctly re-stored when users move the
+	buffer to the other before |Vital.Vim.Guard-instance.restore()|.
 
 ------------------------------------------------------------------------------
 INSTANCE				*Vital.Vim.Guard-instance*
