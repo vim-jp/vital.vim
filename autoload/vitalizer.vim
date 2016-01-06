@@ -82,7 +82,7 @@ function! s:search_dependence(depends_info) abort
     let modules = s:expand_modules(entry, all)
 
     for module in modules
-      let M = s:V.import(module, 1)
+      let M = s:V.import(module)
       if has_key(M, '_vital_depends')
         let depends = M._vital_depends()
         if s:P.is_dict(depends)
