@@ -79,30 +79,6 @@ function! s:search(pattern) abort
   return s:_uniq(modules)
 endfunction
 
-function! s:expand_modules(entry, all) abort
-  if type(a:entry) == type([])
-    let candidates = s:_concat(map(copy(a:entry), 's:search(v:val)'))
-    if empty(candidates)
-      throw printf('vital: Any of module %s is not found', string(a:entry))
-    endif
-    if eval(join(map(copy(candidates), 'has_key(a:all, v:val)'), '+'))
-      let modules = []
-    else
-      let modules = [candidates[0]]
-    endif
-  else
-    let modules = s:search(a:entry)
-    if empty(modules)
-      throw printf('vital: Module %s is not found', a:entry)
-    endif
-  endif
-  call filter(modules, '!has_key(a:all, v:val)')
-  for module in modules
-    let a:all[module] = 1
-  endfor
-  return modules
-endfunction
-
 function! s:_import(name) abort
   if type(a:name) == type(0)
     return s:_build_module(a:name)
@@ -285,14 +261,6 @@ else
     return a:list
   endfunction
 endif
-
-function! s:_concat(lists) abort
-  let result_list = []
-  for list in a:lists
-    let result_list += list
-  endfor
-  return result_list
-endfunction
 
 function! s:_redir(cmd) abort
   let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
