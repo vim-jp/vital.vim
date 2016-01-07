@@ -1,8 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:has_python2 = has('python')
-let s:has_python3 = has('python3')
 let s:current_major_version = 0
 let s:default_major_version = 2
 
