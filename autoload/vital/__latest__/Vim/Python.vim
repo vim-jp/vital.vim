@@ -2,7 +2,6 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:current_major_version = 0
-let s:default_major_version = 2
 
 function! s:_throw(msg) abort
   throw printf('vital: Vim.Python: %s', a:msg)
@@ -20,7 +19,9 @@ function! s:_get_valid_major_version(version) abort
   endif
   return a:version == 0
         \ ? s:current_major_version == 0
-        \   ? s:default_major_version
+        \   ? s:is_python2_enabled()
+        \     ? 2
+        \     : 3
         \   : s:current_major_version
         \ : a:version
 endfunction

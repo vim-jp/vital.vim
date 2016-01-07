@@ -12,7 +12,6 @@ Describe Vim.Python
   End
   Before each
     let sv = S.svars(P.realpath('autoload/vital/__latest__/Vim/Python.vim'))
-    let default_major_version = sv.default_major_version
     if s:is_python2_enabled && s:is_python3_enabled
       " Make sure s:current_major_version is not set
       let sv.current_major_version = 0
@@ -79,8 +78,8 @@ Describe Vim.Python
 
   Describe .get_major_version()
     if s:is_python2_enabled && s:is_python3_enabled
-      It returns s:default_major_version [+python/+python3]
-        Assert Equals(Python.get_major_version(), default_major_version)
+      It returns 2 [+python/+python3]
+        Assert Equals(Python.get_major_version(), 2)
       End
     elseif s:is_python2_enabled
       It returns 2 [+python/-python3]
@@ -175,7 +174,7 @@ Describe Vim.Python
         redir => content
         execute Python.exec_file(path, 0)
         redir END
-        Assert Equals(content, printf("\nPython %d", default_major_version))
+        Assert Equals(content, printf("\nPython %d", 2))
       End
       It executes a python file when 2 is specified [+python/+python3]
         let prefix = "Python"
@@ -276,7 +275,7 @@ Describe Vim.Python
         redir => content
         execute Python.exec_code(code, 0)
         redir END
-        Assert Equals(content, printf("\nPython %d", default_major_version))
+        Assert Equals(content, printf("\nPython %d", 2))
       End
       It executes a python code when 2 is specified [+python/+python3]
         let prefix = "Python"
