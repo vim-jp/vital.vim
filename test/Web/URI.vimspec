@@ -6,72 +6,185 @@ Describe Web.URI
   End
 
   Describe .new()
-    It parses @tyru's twitter URL
-      let uri = URI.new('http://twitter.com/tyru')
+    It parses a simple URL
+      let uri = URI.new('http://example.com/')
       Assert Equals(uri.scheme(), 'http')
-      Assert Equals(uri.host(), 'twitter.com')
-      Assert Equals(uri.path(), '/tyru')
-      Assert Equals(uri.opaque(), '//twitter.com/tyru')
+      Assert Equals(uri.userinfo(), '')
+      Assert Equals(uri.host(), 'example.com')
+      Assert Equals(uri.port(), '')
+      Assert Equals(uri.path(), '/')
+      Assert Equals(uri.authority(), 'example.com')
+      Assert Equals(uri.opaque(), '//example.com/')
+      Assert Equals(uri.query(), '')
       Assert Equals(uri.fragment(), '')
-      Assert Equals(uri.to_string(), 'http://twitter.com/tyru')
+      Assert Equals(uri.to_string(), 'http://example.com/')
     End
 
-    It parses tyru's blog URL
-      let uri = URI.new('http://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c')
+    It parses a URL without slash
+      let uri = URI.new('http://example.com')
       Assert Equals(uri.scheme(), 'http')
-      Assert Equals(uri.host(), 'd.hatena.ne.jp')
-      Assert Equals(uri.path(), '/tyru/20100619/git_push_vim_plugins_to_github')
-      Assert Equals(uri.opaque(), '//d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github')
-      Assert Equals(uri.fragment(), 'c')
-      Assert Equals(uri.to_string(), 'http://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c')
+      Assert Equals(uri.userinfo(), '')
+      Assert Equals(uri.host(), 'example.com')
+      Assert Equals(uri.port(), '')
+      Assert Equals(uri.path(), '/')
+      Assert Equals(uri.authority(), 'example.com')
+      Assert Equals(uri.opaque(), '//example.com/')
+      Assert Equals(uri.query(), '')
+      Assert Equals(uri.fragment(), '')
+      Assert Equals(uri.to_string(), 'http://example.com/')
+    End
+
+    It allows empty authority (:help Vital.Web.URI-notes)
+      let uri = URI.new('file:///home/tyru/')
+      Assert Equals(uri.scheme(), 'file')
+      Assert Equals(uri.userinfo(), '')
+      Assert Equals(uri.host(), '')
+      Assert Equals(uri.port(), '')
+      Assert Equals(uri.path(), '/home/tyru/')
+      Assert Equals(uri.authority(), '')
+      Assert Equals(uri.opaque(), '///home/tyru/')
+      Assert Equals(uri.query(), '')
+      Assert Equals(uri.fragment(), '')
+      Assert Equals(uri.to_string(), 'file:///home/tyru/')
+    End
+
+    It also allows empty authority for http scheme (:help Vital.Web.URI-notes)
+      let uri = URI.new('http:///home/tyru/')
+      Assert Equals(uri.scheme(), 'http')
+      Assert Equals(uri.userinfo(), '')
+      Assert Equals(uri.host(), '')
+      Assert Equals(uri.port(), '')
+      Assert Equals(uri.path(), '/home/tyru/')
+      Assert Equals(uri.authority(), '')
+      Assert Equals(uri.opaque(), '///home/tyru/')
+      Assert Equals(uri.query(), '')
+      Assert Equals(uri.fragment(), '')
+      Assert Equals(uri.to_string(), 'http:///home/tyru/')
+    End
+
+    It parses a complex URL
+      let uri = URI.new('http://user:password@example.com:8080/path/for/test?q=query#fragment')
+      Assert Equals(uri.scheme(), 'http')
+      Assert Equals(uri.userinfo(), 'user:password')
+      Assert Equals(uri.host(), 'example.com')
+      Assert Equals(uri.port(), '8080')
+      Assert Equals(uri.path(), '/path/for/test')
+      Assert Equals(uri.authority(), 'user:password@example.com:8080')
+      Assert Equals(uri.opaque(), '//user:password@example.com:8080/path/for/test')
+      Assert Equals(uri.query(), 'q=query')
+      Assert Equals(uri.fragment(), 'fragment')
+      Assert Equals(uri.to_string(), 'http://user:password@example.com:8080/path/for/test?q=query#fragment')
     End
 
     It builds URI with given parts
-      let uri = URI.new('http://twitter.com/tyru')
+      let uri = URI.new('http://example.com/')
       call uri.scheme('ftp')
       Assert Equals(uri.scheme(), 'ftp')
-      Assert Equals(uri.to_string(), 'ftp://twitter.com/tyru')
+      Assert Equals(uri.to_string(), 'ftp://example.com/')
       call uri.host('ftp.vim.org')
       Assert Equals(uri.host(), 'ftp.vim.org')
-      Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/tyru')
+      Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/')
+      " uri.path({str}) prepends '/' if {str} doesn't have it.
       call uri.path('pub/vim/unix/vim-7.3.tar.bz2')
       Assert Equals(uri.path(), '/pub/vim/unix/vim-7.3.tar.bz2')
       Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.3.tar.bz2')
-      call uri.path('/pub/vim/unix/vim-7.3.tar.bz2')
-      " uri.path() ignores head slashes.
-      Assert Equals(uri.path(), '/pub/vim/unix/vim-7.3.tar.bz2')
-      Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.3.tar.bz2')
+      " uri.path({str}) doesn't prepend '/' if {str} has it.
+      call uri.path('/pub/vim/unix/vim-7.4.tar.bz2')
+      Assert Equals(uri.path(), '/pub/vim/unix/vim-7.4.tar.bz2')
+      Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2')
+    End
+  End
+
+  Describe .new_from_uri_like_string()
+    It parses valid URIs
+      Throws URI.new_from_uri_like_string('local[host]')
+      Assert Equals(URI.new_from_uri_like_string('local[host]', 'Error!'), 'Error!')
+
+      Assert NotEquals(URI.new_from_uri_like_string('localhost', 'Error!'), 'Error!')
+      Assert Equals(URI.new_from_uri_like_string('example.com/').to_string(), 'http://example.com/')
+      Assert Equals(URI.new_from_uri_like_string('example.com').to_string(), 'http://example.com/')
+      Assert Equals(URI.new_from_uri_like_string('/home/tyru').to_string(), 'http:///home/tyru')
+      Assert Equals(URI.new_from_uri_like_string('user:password@example.com:8080/path/for/test?q=query#fragment').to_string(), 'http://user:password@example.com:8080/path/for/test?q=query#fragment')
+    End
+  End
+
+  Describe .new_from_seq_string()
+    It parses valid URIs with trailing string
+      Throws URI.new_from_seq_string('[http://example.com]')
+      Assert Equals(URI.new_from_seq_string('[http://example.com]', 'Error!'), 'Error!')
+
+      for [input, expected] in [
+      \  ['http://example.com/ blah blah',
+      \    ['http://example.com/', 'http://example.com/', ' blah blah']],
+      \  ['http://example.com gera gera',
+      \    ['http://example.com/', 'http://example.com', ' gera gera']],
+      \  ['file:///home/tyru   # My home directory',
+      \    ['file:///home/tyru', 'file:///home/tyru',
+      \     '   # My home directory']],
+      \  ['http:///home/tyru   # Hmm...',
+      \    ['http:///home/tyru', 'http:///home/tyru',
+      \     '   # Hmm...']],
+      \  ['http://user:password@example.com:8080/path/for/test?q=query#fragment[Whoa!What Complex URL]',
+      \    ['http://user:password@example.com:8080/path/for/test?q=query#fragment',
+      \     'http://user:password@example.com:8080/path/for/test?q=query#fragment',
+      \     '[Whoa!What Complex URL]']]
+      \]
+        let ret = URI.new_from_seq_string(input)
+        " Stringify URI object.
+        let [uri, origuri, rest] = [ret[0].to_string()] + ret[1:2]
+        Assert Equals([uri, origuri, rest], expected)
+      endfor
+    End
+  End
+
+  Describe .new_default_pattern_set()
+    Before each
+      " Define loose pattern set.
+      let pattern_set = URI.new_default_pattern_set()
+
+      " Remove "'", "(", ")" from default sub_delims().
+      function! pattern_set.sub_delims() abort
+          return '[!$&*+,;=]'
+      endfunction
+
+      let NONE = []
     End
 
-    It modifies URI with given parts
-      let uri = URI.new('http://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c')
-      call uri.scheme('https')
-      Assert Equals(uri.scheme(), 'https')
-      Assert Equals(uri.to_string(), 'https://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c')
-      call uri.host('github.com')
-      Assert Equals(uri.host(), 'github.com')
-      Assert Equals(uri.to_string(), 'https://github.com/tyru/20100619/git_push_vim_plugins_to_github#c')
-      call uri.path('tyru/urilib.vim/blob/master/autoload/urilib.vim')
-      Assert Equals(uri.path(), '/tyru/urilib.vim/blob/master/autoload/urilib.vim')
-      Assert Equals(uri.to_string(), 'https://github.com/tyru/urilib.vim/blob/master/autoload/urilib.vim#c')
-      call uri.fragment('L32')
-      Assert Equals(uri.fragment(), 'L32')
-      Assert Equals(uri.to_string(), 'https://github.com/tyru/urilib.vim/blob/master/autoload/urilib.vim#L32')
-      call uri.fragment('#L32')
-      " uri.fragment({fragment}) ignores head # characters.
-      Assert Equals(uri.fragment(), 'L32')
-      Assert Equals(uri.to_string(), 'https://github.com/tyru/urilib.vim/blob/master/autoload/urilib.vim#L32')
+    It allows to ignore some characters (:help Vital.Web.URI-PatternSet)
+      for [input, expected] in [
+      \  ['http://example.com)',
+      \    ['http://example.com/', 'http://example.com', ')']],
+      \  ['https://en.wikipedia.org/wiki/Markdown)',
+      \    ['https://en.wikipedia.org/wiki/Markdown', 'https://en.wikipedia.org/wiki/Markdown', ')']],
+      \  ['http://example.com/?q=query)',
+      \    ['http://example.com/?q=query', 'http://example.com/?q=query', ')']],
+      \  ['http://example.com/#fragment)',
+      \    ['http://example.com/#fragment', 'http://example.com/#fragment', ')']],
+      \
+      \  ["http://example.com'",
+      \    ['http://example.com/', 'http://example.com', "'"]],
+      \  ["https://github.com/Lokaltog/vim-easymotion'",
+      \    ['https://github.com/Lokaltog/vim-easymotion', 'https://github.com/Lokaltog/vim-easymotion', "'"]],
+      \  ["http://example.com/?q=query'",
+      \    ['http://example.com/?q=query', 'http://example.com/?q=query', "'"]],
+      \  ["http://example.com/#fragment'",
+      \    ['http://example.com/#fragment', 'http://example.com/#fragment', "'"]],
+      \]
+        let ret = URI.new_from_seq_string(input, NONE, pattern_set)
+        " Stringify URI object.
+        let [uri, origuri, rest] = [ret[0].to_string()] + ret[1:2]
+        Assert Equals([uri, origuri, rest], expected)
+      endfor
     End
   End
 
   Describe .is_uri()
     It checks valid URI
-      Assert True(URI.is_uri('http://twitter.com/tyru'))
-      Assert True(URI.is_uri('http://d.hatena.ne.jp/tyru/20100619/git_push_vim_plugins_to_github#c'))
-      Assert True(URI.is_uri('file://baz/'))
-      Assert True(URI.is_uri('file:///home/tyru/'))
+      Assert True(URI.is_uri('http://example.com/'))
+      Assert True(URI.is_uri('http://example.com'))
       Assert True(URI.is_uri('file:///home/tyru'))
-      Assert True(URI.is_uri('ftp://withoutslash.com'))
+      Assert True(URI.is_uri('http:///home/tyru'))
+      Assert True(URI.is_uri('http://user:password@example.com:8080/path/for/test?q=query#fragment'))
     End
 
     It checks invalid URI
