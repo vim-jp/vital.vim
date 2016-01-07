@@ -275,20 +275,16 @@ Describe Vim.Guard
       unlet g:VitalVimGuardTest
       unlet s:VitalVimGuardTest
     End
+    It throws an exception when unknown {option_or_variable} is specified
+      Throws /Unknown option or variable "backup" was specified/
+            \ Guard.store('backup')
+    End
     It returns a guard instance for options
       let guard = Guard.store(
             \ '&backup',
             \ '&backupcopy',
             \ '&binary',
             \ '&list',
-            \)
-      Assert KeyExists(guard, 'restore')
-      " NOTE: first character & of names are omittable
-      let guard = Guard.store(
-            \ 'backup',
-            \ 'backupcopy',
-            \ 'binary',
-            \ 'list',
             \)
       Assert KeyExists(guard, 'restore')
     End
@@ -318,10 +314,10 @@ Describe Vim.Guard
       It restore options and variables assigned
         let namespace = { 'VitalVimGuardTest': 1 }
         let guard = Guard.store(
-              \ 'backup',
-              \ 'backupcopy',
-              \ 'binary',
-              \ 'list',
+              \ '&backup',
+              \ '&backupcopy',
+              \ '&binary',
+              \ '&list',
               \ 'b:VitalVimGuardTest',
               \ 'w:VitalVimGuardTest',
               \ 't:VitalVimGuardTest',

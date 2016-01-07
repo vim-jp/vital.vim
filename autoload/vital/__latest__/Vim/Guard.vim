@@ -92,7 +92,10 @@ function! s:store(...) abort
       elseif meta =~# '^&'
         call add(resources, s:_new_option(meta))
       else
-        call add(resources, s:_new_option('&' . meta))
+        call s:_throw(printf(
+              \ 'Unknown option or variable "%s" was specified',
+              \ meta
+              \))
       endif
     endif
     unlet meta
