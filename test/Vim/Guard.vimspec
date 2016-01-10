@@ -1,0 +1,353 @@
+let s:V = vital#of('vital')
+let s:P = s:V.import('System.Filepath')
+let s:S = s:V.import('Vim.ScriptLocal')
+
+Describe Vim.Guard
+  Before
+    let Guard = s:V.import('Vim.Guard')
+    let sfile = s:P.realpath(
+          \ 'autoload/vital/__latest__/Vim/Guard.vim'
+          \)
+    let sf = s:S.sfuncs(sfile)
+  End
+  Describe [PRIVATE] s:_new_option({name})
+    " NOTE:
+    "   backup      - glocal
+    "   backupcopy  - global or local to buffer
+    "   binary      - local to buffer
+    "   list        - local to window
+    It throws an exception if {name} does not start from "&"
+      Throw /An option name "foo" requires to be started from "&"/
+            \ sf._new_option('foo')
+    End
+    It throws an exception if {name} does not exist as an option
+      Throw /An option name "&foo" does not exist/
+            \ sf._new_option('&foo')
+    End
+    It returns an option instance of {name}
+      let option = sf._new_option('&backup')
+      Assert KeyExists(option, 'name')
+      Assert KeyExists(option, 'value')
+      Assert KeyExists(option, 'restore')
+      Assert Equals(option.name, '&backup')
+      Assert Equals(option.value, &backup)
+    End
+    Describe An option instance
+      Before
+        let previous_backup = &backup
+        let previous_g_backupcopy = &g:backupcopy
+        let previous_l_backupcopy = &l:backupcopy
+        let previous_b_binary = &binary
+        let previous_w_list = &list
+        set backup
+        setg backupcopy=yes
+        setl backupcopy=yes
+        set binary
+        set list
+      End
+      After
+        let &backup = previous_backup
+        let &g:backupcopy = previous_g_backupcopy
+        let &l:backupcopy = previous_l_backupcopy
+        let &binary = previous_b_binary
+        let &list = previous_w_list
+      End
+      It restore a value of the option when assigned [global]
+        let option = sf._new_option('&backup')
+        set nobackup
+        call option.restore()
+        Assert Equals(&backup, 1)
+      End
+      It restore a value of the option when assigned [global-local with &]
+        let option = sf._new_option('&backupcopy')
+        setg backupcopy=no
+        setl backupcopy=no
+        call option.restore()
+        Assert Equals(&g:backupcopy, 'yes')
+        Assert Equals(&l:backupcopy, v:version >= 704 ? '' : 'yes')
+      End
+      It restore a value of the option when assigned [global-local with &g:]
+        let option = sf._new_option('&g:backupcopy')
+        setg backupcopy=no
+        setl backupcopy=no
+        call option.restore()
+        Assert Equals(&g:backupcopy, 'yes')
+        Assert Equals(&l:backupcopy, v:version >= 704 ? 'no' : 'yes')
+      End
+      It restore a value of the option when assigned [global-local with &l:]
+        let option = sf._new_option('&l:backupcopy')
+        setg backupcopy=no
+        setl backupcopy=no
+        call option.restore()
+        Assert Equals(&g:backupcopy, v:version >= 704 ? 'no' : 'yes')
+        Assert Equals(&l:backupcopy, 'yes')
+      End
+      It restore a value of the option when assigned [local to buffer]
+        let option = sf._new_option('&binary')
+        set nobinary
+        call option.restore()
+        Assert Equals(&binary, 1)
+      End
+      It restore a value of the option when assigned [local to window]
+        let option = sf._new_option('&list')
+        set nolist
+        call option.restore()
+        Assert Equals(&list, 1)
+      End
+    End
+  End
+  Describe [PRIVATE] s:_new_variable({name}[, {namespace}])
+    Before
+      let g:VitalVimGuardTest = 1
+      let b:VitalVimGuardTest = 1
+      let w:VitalVimGuardTest = 1
+      let t:VitalVimGuardTest = 1
+      let s:VitalVimGuardTest = 1
+    End
+    After
+      unlet g:VitalVimGuardTest
+      unlet b:VitalVimGuardTest
+      unlet w:VitalVimGuardTest
+      unlet t:VitalVimGuardTest
+      unlet s:VitalVimGuardTest
+    End
+    It throws an exception when no {namespace} is specified and {name} does not start from b:, w:, t:, or g:
+      Throw /An variable name "foo" requires to start from b:, w:, t:, or g:/
+            \ sf._new_variable('foo')
+      Throw /An variable name "l:foo" requires to start from b:, w:, t:, or g:/
+            \ sf._new_variable('l:foo')
+      Throw /An variable name "s:foo" requires to start from b:, w:, t:, or g:/
+            \ sf._new_variable('s:foo')
+    End
+    It returns an variable instance of {name} in a {namespace}
+      let namespace = {
+            \ 'foo': 'bar',
+            \}
+      let variable = sf._new_variable('foo', namespace)
+      Assert KeyExists(variable, 'name')
+      Assert KeyExists(variable, 'value')
+      Assert KeyExists(variable, 'restore')
+      Assert Equals(variable.name, 'foo')
+      Assert Equals(variable.value, namespace.foo)
+
+      if Guard.is_local_variable_supported
+        let VitalVimGuardTest = 1
+        let variable = sf._new_variable('VitalVimGuardTest', l:)
+        Assert KeyExists(variable, 'name')
+        Assert KeyExists(variable, 'value')
+        Assert KeyExists(variable, 'restore')
+        Assert Equals(variable.name, 'VitalVimGuardTest')
+        Assert Equals(variable.value, VitalVimGuardTest)
+      endif
+
+      let variable = sf._new_variable('VitalVimGuardTest', s:)
+      Assert KeyExists(variable, 'name')
+      Assert KeyExists(variable, 'value')
+      Assert KeyExists(variable, 'restore')
+      Assert Equals(variable.name, 'VitalVimGuardTest')
+      let s = s:VitalVimGuardTest
+      Assert Equals(variable.value, s)
+    End
+    It returns an variable instance of {name} in a {namespace} specified as a prefix of {name}
+      let variable = sf._new_variable('b:VitalVimGuardTest')
+      Assert KeyExists(variable, 'name')
+      Assert KeyExists(variable, 'value')
+      Assert KeyExists(variable, 'restore')
+      Assert Equals(variable.name, 'VitalVimGuardTest')
+      Assert Equals(variable.value, b:VitalVimGuardTest)
+
+      let variable = sf._new_variable('w:VitalVimGuardTest')
+      Assert KeyExists(variable, 'name')
+      Assert KeyExists(variable, 'value')
+      Assert KeyExists(variable, 'restore')
+      Assert Equals(variable.name, 'VitalVimGuardTest')
+      Assert Equals(variable.value, w:VitalVimGuardTest)
+
+      let variable = sf._new_variable('t:VitalVimGuardTest')
+      Assert KeyExists(variable, 'name')
+      Assert KeyExists(variable, 'value')
+      Assert KeyExists(variable, 'restore')
+      Assert Equals(variable.name, 'VitalVimGuardTest')
+      Assert Equals(variable.value, t:VitalVimGuardTest)
+
+      let variable = sf._new_variable('g:VitalVimGuardTest')
+      Assert KeyExists(variable, 'name')
+      Assert KeyExists(variable, 'value')
+      Assert KeyExists(variable, 'restore')
+      Assert Equals(variable.name, 'VitalVimGuardTest')
+      Assert Equals(variable.value, g:VitalVimGuardTest)
+    End
+    Describe A variable instance
+      It restore a value of the variable when assigned
+        let variable = sf._new_variable('b:VitalVimGuardTest')
+        let previous = b:VitalVimGuardTest
+        let b:VitalVimGuardTest = 2
+        call variable.restore()
+        Assert Equals(b:VitalVimGuardTest, previous)
+
+        let variable = sf._new_variable('w:VitalVimGuardTest')
+        let previous = w:VitalVimGuardTest
+        let w:VitalVimGuardTest = 2
+        call variable.restore()
+        Assert Equals(w:VitalVimGuardTest, previous)
+
+        let variable = sf._new_variable('t:VitalVimGuardTest')
+        let previous = t:VitalVimGuardTest
+        let t:VitalVimGuardTest = 2
+        call variable.restore()
+        Assert Equals(t:VitalVimGuardTest, previous)
+
+        let variable = sf._new_variable('g:VitalVimGuardTest')
+        let previous = g:VitalVimGuardTest
+        let g:VitalVimGuardTest = 2
+        call variable.restore()
+        Assert Equals(g:VitalVimGuardTest, previous)
+
+        if Guard.is_local_variable_supported
+          let VitalVimGuardTest = 1
+          let variable = sf._new_variable('VitalVimGuardTest', l:)
+          let previous = VitalVimGuardTest
+          let VitalVimGuardTest = 2
+          call variable.restore()
+          Assert Equals(VitalVimGuardTest, previous)
+        endif
+
+        let variable = sf._new_variable('VitalVimGuardTest', s:)
+        let previous = s:VitalVimGuardTest
+        let s:VitalVimGuardTest = 2
+        call variable.restore()
+        let s = s:VitalVimGuardTest
+        Assert Equals(s, previous)
+      End
+      It deepcopy List or Dictionary
+        let namespace = {
+              \ 'list': ['a', 'b', 'c'],
+              \ 'dict': {
+              \   'a': 'a',
+              \   'b': 'b',
+              \   'c': 'c',
+              \ },
+              \}
+        let variable = sf._new_variable('list', namespace)
+        let namespace.list = ['foo', 'bar', 'hoge']
+        call variable.restore()
+        Assert Equals(namespace.list, ['a', 'b', 'c'])
+
+        let variable = sf._new_variable('dict', namespace)
+        let namespace.dict = { 'foo': 'foo', 'bar': 'bar' }
+        call variable.restore()
+        Assert Equals(namespace.dict, {
+              \ 'a': 'a',
+              \ 'b': 'b',
+              \ 'c': 'c',
+              \})
+      End
+    End
+  End
+
+  Describe .store({option_or_variable}...)
+    Before
+      let previous_backup = &backup
+      let previous_g_backupcopy = &g:backupcopy
+      let previous_l_backupcopy = &l:backupcopy
+      let previous_b_binary = &binary
+      let previous_w_list = &list
+      set backup
+      setg backupcopy=yes
+      setl backupcopy=yes
+      set binary
+      set list
+      let b:VitalVimGuardTest = 1
+      let w:VitalVimGuardTest = 1
+      let t:VitalVimGuardTest = 1
+      let g:VitalVimGuardTest = 1
+      let s:VitalVimGuardTest = 1
+    End
+    After
+      let &backup = previous_backup
+      let &g:backupcopy = previous_g_backupcopy
+      let &l:backupcopy = previous_l_backupcopy
+      let &binary = previous_b_binary
+      let &list = previous_w_list
+      unlet b:VitalVimGuardTest
+      unlet w:VitalVimGuardTest
+      unlet t:VitalVimGuardTest
+      unlet g:VitalVimGuardTest
+      unlet s:VitalVimGuardTest
+    End
+    It throws an exception when unknown {option_or_variable} is specified
+      Throws /Unknown option or variable "backup" was specified/
+            \ Guard.store('backup')
+    End
+    It returns a guard instance for options
+      let guard = Guard.store(
+            \ '&backup',
+            \ '&backupcopy',
+            \ '&binary',
+            \ '&list',
+            \)
+      Assert KeyExists(guard, 'restore')
+    End
+    It returns a guard instance for variables
+      let namespace = { 'VitalVimGuardTest': 1 }
+      let guard = Guard.store(
+            \ ['VitalVimGuardTest', b:],
+            \ ['VitalVimGuardTest', w:],
+            \ ['VitalVimGuardTest', t:],
+            \ ['VitalVimGuardTest', g:],
+            \ ['VitalVimGuardTest', s:],
+            \ ['VitalVimGuardTest', namespace],
+            \)
+      Assert KeyExists(guard, 'restore')
+      " NOTE: namespace variables of b:, w:, t:, g: are omittable
+      let guard = Guard.store(
+            \ 'b:VitalVimGuardTest',
+            \ 'w:VitalVimGuardTest',
+            \ 't:VitalVimGuardTest',
+            \ 'g:VitalVimGuardTest',
+            \ ['VitalVimGuardTest', s:],
+            \ ['VitalVimGuardTest', namespace],
+            \)
+      Assert KeyExists(guard, 'restore')
+    End
+    Describe A guard instance
+      It restore options and variables assigned
+        let namespace = { 'VitalVimGuardTest': 1 }
+        let guard = Guard.store(
+              \ '&backup',
+              \ '&backupcopy',
+              \ '&binary',
+              \ '&list',
+              \ 'b:VitalVimGuardTest',
+              \ 'w:VitalVimGuardTest',
+              \ 't:VitalVimGuardTest',
+              \ 'g:VitalVimGuardTest',
+              \ ['VitalVimGuardTest', s:],
+              \ ['VitalVimGuardTest', namespace],
+              \)
+        set nobackup
+        set backupcopy=no
+        set nobinary
+        set nolist
+        let b:VitalVimGuardTest = 2
+        let w:VitalVimGuardTest = 2
+        let t:VitalVimGuardTest = 2
+        let g:VitalVimGuardTest = 2
+        let s:VitalVimGuardTest = 2
+        let namespace.VitalVimGuardTest = 2
+        call guard.restore()
+        Assert Equals(&backup, 1)
+        Assert Equals(&backupcopy, 'yes')
+        Assert Equals(&binary, 1)
+        Assert Equals(&list, 1)
+        Assert Equals(b:VitalVimGuardTest, 1)
+        Assert Equals(w:VitalVimGuardTest, 1)
+        Assert Equals(t:VitalVimGuardTest, 1)
+        Assert Equals(g:VitalVimGuardTest, 1)
+        let s = s:VitalVimGuardTest
+        Assert Equals(s, 1)
+        Assert Equals(namespace.VitalVimGuardTest, 1)
+      End
+    End
+  End
+End
