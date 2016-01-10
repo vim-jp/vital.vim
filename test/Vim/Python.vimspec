@@ -1,0 +1,440 @@
+let s:V = vital#of('vital')
+let s:P = s:V.import('Vim.Python')
+let s:is_python2_enabled = s:P.is_python2_enabled()
+let s:is_python3_enabled = s:P.is_python3_enabled()
+
+Describe Vim.Python
+  Before all
+    let V = vital#of('vital')
+    let S = V.import('Vim.ScriptLocal')
+    let P = V.import('System.Filepath')
+    let Python = V.import('Vim.Python')
+  End
+  Before each
+    let sv = S.svars(P.realpath('autoload/vital/__latest__/Vim/Python.vim'))
+    if s:is_python2_enabled && s:is_python3_enabled
+      " Make sure s:current_major_version is not set
+      let sv.current_major_version = 0
+    endif
+  End
+
+  Describe .is_enabled()
+    if s:is_python2_enabled && s:is_python3_enabled
+      It returns 1 [+python/+python3]
+        Assert True(Python.is_enabled())
+      End
+    elseif s:is_python2_enabled
+      It returns 1 [+python/-python3]
+        Assert True(Python.is_enabled())
+      End
+    elseif s:is_python3_enabled
+      It returns 1 [-python/+python3]
+        Assert True(Python.is_enabled())
+      End
+    else
+      It returns 0 [-python/-python3]
+        Assert False(Python.is_enabled())
+      End
+    endif
+  End
+  Describe .is_python2_enabled()
+    if s:is_python2_enabled && s:is_python3_enabled
+      It returns 1 [+python/+python3]
+        Assert True(Python.is_python2_enabled())
+      End
+    elseif s:is_python2_enabled
+      It returns 1 [+python/-python3]
+        Assert True(Python.is_python2_enabled())
+      End
+    elseif s:is_python3_enabled
+      It returns 0 [-python/+python3]
+        Assert False(Python.is_python2_enabled())
+      End
+    else
+      It returns 0 [-python/-python3]
+        Assert False(Python.is_python2_enabled())
+      End
+    endif
+  End
+  Describe .is_python3_enabled()
+    if s:is_python2_enabled && s:is_python3_enabled
+      It returns 1 [+python/+python3]
+        Assert True(Python.is_python3_enabled())
+      End
+    elseif s:is_python2_enabled
+      It returns 1 [+python/-python3]
+        Assert False(Python.is_python3_enabled())
+      End
+    elseif s:is_python3_enabled
+      It returns 0 [-python/+python3]
+        Assert True(Python.is_python3_enabled())
+      End
+    else
+      It returns 0 [-python/-python3]
+        Assert False(Python.is_python3_enabled())
+      End
+    endif
+  End
+
+  Describe .get_major_version()
+    if s:is_python2_enabled && s:is_python3_enabled
+      It returns 2 [+python/+python3]
+        Assert Equals(Python.get_major_version(), 2)
+      End
+    elseif s:is_python2_enabled
+      It returns 2 [+python/-python3]
+        Assert Equals(Python.get_major_version(), 2)
+      End
+    elseif s:is_python3_enabled
+      It returns 3 [-python/+python3]
+        Assert Equals(Python.get_major_version(), 3)
+      End
+    else
+      It returns 0 [-python/-python3]
+        Assert Equals(Python.get_major_version(), 0)
+      End
+    endif
+  End
+
+  Describe .set_major_version()
+    if s:is_python2_enabled && s:is_python3_enabled
+      It does nothing if 0 is specified [+python/+python3]
+        call Python.set_major_version(0)
+      End
+      It assigns a current major version if 2 is specified [+python/+python3]
+        call Python.set_major_version(2)
+        Assert Equals(Python.get_major_version(), 2)
+      End
+      It assigns a current major version if 3 is specified [+python/+python3]
+        call Python.set_major_version(3)
+        Assert Equals(Python.get_major_version(), 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version(1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('3')
+      End
+    elseif s:is_python2_enabled
+      It does nothing if 0 is specified [+python/-python3]
+        call Python.set_major_version(0)
+      End
+      It assigns a current major version if 2 is specified [+python/-python3]
+        call Python.set_major_version(2)
+        Assert Equals(Python.get_major_version(), 2)
+      End
+      It throws an exception if 3 is specified [+python/-python3]
+        Throw /+python3 is required/ Python.set_major_version(3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version(1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('3')
+      End
+    elseif s:is_python3_enabled
+      It does nothing if 0 is specified [-python/+python3]
+        call Python.set_major_version(0)
+      End
+      It throws an exception if 2 is specified [-python/+python3]
+        Throw /+python is required/ Python.set_major_version(2)
+      End
+      It assigns a current major version if 3 is specified [0python/+python3]
+        call Python.set_major_version(3)
+        Assert Equals(Python.get_major_version(), 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version(1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('3')
+      End
+    else
+      It throws an exception if 0 is specified [-python/-python3]
+        Throw /+python and\/or +python3 is required/ Python.set_major_version(0)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python is required/ Python.set_major_version(2)
+      End
+      It throws an exception if 3 is specified [-python/-python3]
+        Throw /+python3 is required/ Python.set_major_version(3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version(1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.set_major_version('3')
+      End
+    endif
+  End
+
+  Describe .exec_file()
+    Before
+      let path = P.realpath('test/_testdata/Vim/Python/test.py')
+    End
+    if s:is_python2_enabled && s:is_python3_enabled
+      It executes a python file when 0 is specified [+python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_file(path, 0)
+        redir END
+        Assert Equals(content, printf("\nPython %d", 2))
+      End
+      It executes a python file when 2 is specified [+python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_file(path, 2)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It execute a python file when 3 is specified [+python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_file(path, 3)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '3')
+      End
+    elseif s:is_python2_enabled
+      It executes a python file when 0 is specified [+python/-python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_file(path, 0)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It executes a python file when 2 is specified [+python/-python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_file(path, 2)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It throws an exception if 3 is specified [+python/-python3]
+        Throw /+python3 is required/ Python.exec_file(path, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '3')
+      End
+    elseif s:is_python3_enabled
+      It executes a python file when 0 is specified [-python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_file(path, 0)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+      It throws an exception if 2 is specified [-python/+python3]
+        Throw /+python is required/ Python.exec_file(path, 2)
+      End
+      It executes a python file when 3 is specified [-python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_file(path, 3)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '3')
+      End
+    else
+      It throws an exception if 0 is specified [-python/-python3]
+        Throw /+python and\/or +python3 is required/ Python.exec_file(path, 0)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python is required/ Python.exec_file(path, 2)
+      End
+      It throws an exception if 3 is specified [-python/-python3]
+        Throw /+python3 is required/ Python.exec_file(path, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_file(path, '3')
+      End
+    endif
+  End
+
+  Describe .exec_code()
+    Before
+      let code = [
+            \ 'import sys, vim',
+            \ 'print("%s %d" % (',
+            \ '  vim.eval("prefix"),',
+            \ '  sys.version_info.major,',
+            \ '))',
+            \]
+    End
+    if s:is_python2_enabled && s:is_python3_enabled
+      It executes a python code when 0 is specified [+python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_code(code, 0)
+        redir END
+        Assert Equals(content, printf("\nPython %d", 2))
+      End
+      It executes a python code when 2 is specified [+python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_code(code, 2)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It execute a python code when 3 is specified [+python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_code(code, 3)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '3')
+      End
+    elseif s:is_python2_enabled
+      It executes a python code when 0 is specified [+python/-python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_code(code, 0)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It executes a python code when 2 is specified [+python/-python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_code(code, 2)
+        redir END
+        Assert Equals(content, "\nPython 2")
+      End
+      It throws an exception if 3 is specified [+python/-python3]
+        Throw /+python3 is required/ Python.exec_code(code, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '3')
+      End
+    elseif s:is_python3_enabled
+      It executes a python code when 0 is specified [-python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_code(code, 0)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+      It throws an exception if 2 is specified [-python/+python3]
+        Throw /+python is required/ Python.exec_code(code, 2)
+      End
+      It executes a python code when 3 is specified [-python/+python3]
+        let prefix = "Python"
+        redir => content
+        execute Python.exec_code(code, 3)
+        redir END
+        Assert Equals(content, "\nPython 3")
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '3')
+      End
+    else
+      It throws an exception if 0 is specified [-python/-python3]
+        Throw /+python and\/or +python3 is required/ Python.exec_code(code, 0)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python is required/ Python.exec_code(code, 2)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python3 is required/ Python.exec_code(code, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.exec_code(code, '3')
+      End
+    endif
+  End
+
+  Describe .eval_expr()
+    if v:version >= 704 || (v:version == 703 && has('patch601'))
+      Before
+        let expr = [
+              \ 'max(',
+              \ '  sys.version_info.major,',
+              \ '  0',
+              \ ')',
+              \]
+      End
+      if s:is_python2_enabled && s:is_python3_enabled
+        It evaluate a python expr when 0 is specified [+python/+python3]
+          Assert Equals(Python.eval_expr(expr, 0), 2)
+        End
+        It executes a python code when 2 is specified [+python/+python3]
+          Assert Equals(Python.eval_expr(expr, 2), 2)
+        End
+        It execute a python code when 3 is specified [+python/+python3]
+          Assert Equals(Python.eval_expr(expr, 3), 3)
+        End
+        It throws an exception if value which is not 0, 2, or 3 is specified
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
+        End
+      elseif s:is_python2_enabled
+        It evaluate a python expr when 0 is specified [+python/-python3]
+          Assert Equals(Python.eval_expr(expr, 0), 2)
+        End
+        It execute a python code when 2 is specified [+python/-python3]
+          Assert Equals(Python.eval_expr(expr, 2), 2)
+        End
+        It throws an exception if 3 is specified [+python/-python3]
+          Throw /+python3 is required/ Python.eval_expr(expr, 3)
+        End
+        It throws an exception if value which is not 0, 2, or 3 is specified
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
+        End
+      elseif s:is_python3_enabled
+        It evaluate a python expr when 0 is specified [-python/+python3]
+          Assert Equals(Python.eval_expr(expr, 0), 3)
+        End
+        It throws an exception if 2 is specified [-python/+python3]
+          Throw /+python is required/ Python.eval_expr(expr, 2)
+        End
+        It executes a python code when 3 is specified [-python/+python3]
+          Assert Equals(Python.eval_expr(expr, 3), 3)
+        End
+        It throws an exception if value which is not 0, 2, or 3 is specified
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
+        End
+      else
+        It throws an exception if 0 is specified [-python/-python3]
+          Throw /+python and\/or +python3 is required/ Python.eval_expr(expr, 0)
+        End
+        It throws an exception if 2 is specified [-python/-python3]
+          Throw /+python is required/ Python.eval_expr(expr, 2)
+        End
+        It throws an exception if 3 is specified [-python/-python3]
+          Throw /+python3 is required/ Python.eval_expr(expr, 3)
+        End
+        It throws an exception if value which is not 0, 2, or 3 is specified
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
+        End
+      endif
+    else
+      It throws an exception in Vim 7.3.600 or earlier
+        Throw /eval_expr() requires Vim 7\.3\.601 or later/ Python.eval_expr('')
+      End
+    endif
+  End
+End

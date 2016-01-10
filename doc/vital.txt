@@ -181,6 +181,7 @@ LINKS					*Vital-links*
   |vital-vim-buffer.txt|	  Vim's buffer related stuff in general
   |vital-vim-buffer_manager.txt|    buffer manager
   |vital-vim-compat.txt|	  Vim compatibility wrapper functions
+  |vital-vim-python.txt|	  +python/+python3 compatibility functions
   |vital-vim-message.txt|	  Vim message functions
   |vital-vim-search.txt|	  Vim's [I like function
   |vital-vim-script_local.txt|	  Get script-local things
