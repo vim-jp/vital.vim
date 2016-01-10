@@ -178,7 +178,7 @@ endif
 " Copy a file.
 " Implemented by pure Vim script.
 function! s:copy_vim(src, dest) abort "{{{
-  let ret = writefile(readfile(a:src, "b"), a:dest, "b")
+  let ret = writefile(readfile(a:src, 'b'), a:dest, 'b')
   if ret == -1
     return 0
   endif
@@ -213,7 +213,7 @@ if s:is_unix
 elseif s:is_windows
   function! s:rmdir(path, ...) abort
     let flags = a:0 ? a:1 : ''
-    if &shell =~? "sh$"
+    if &shell =~? 'sh$'
       let cmd = flags =~# 'r' ? 'rm -r' : 'rmdir'
       let cmd .= flags =~# 'f' && cmd ==# 'rm -r' ? ' -f' : ''
       let ret = system(cmd . ' ' . shellescape(a:path))

@@ -120,7 +120,7 @@ function! s:table.header(...) abort
     let header = deepcopy(a:1)
 
     if len(header) != len(self.__column_defs)
-      throw "vital: Text.Table: Not match column size."
+      throw 'vital: Text.Table: Not match column size.'
     endif
 
     let self.__header = header
@@ -167,7 +167,7 @@ function! s:table.add_row(row) abort
   let row = deepcopy(a:row)
 
   if len(row) != len(self.__column_defs)
-    throw "vital: Text.Table: Not match column size."
+    throw 'vital: Text.Table: Not match column size.'
   endif
 
   let self.__rows += [row]
@@ -180,7 +180,7 @@ function! s:table.footer(...) abort
     let footer = deepcopy(a:1)
 
     if len(footer) != len(self.__column_defs)
-      throw "vital: Text.Table: Not match column size."
+      throw 'vital: Text.Table: Not match column size.'
     endif
 
     let self.__footer = footer

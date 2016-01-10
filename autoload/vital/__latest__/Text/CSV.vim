@@ -60,7 +60,7 @@ endfunction
 
 function! s:dump_record(record) abort
   if type(a:record) is type([])
-    return join(map(copy(a:record), 's:_to_s(v:val)'), ",")
+    return join(map(copy(a:record), 's:_to_s(v:val)'), ',')
   else
     throw 'vital: Text.CSV: dump_record(): Argument is not List.'
   endif

@@ -63,7 +63,7 @@ endfunction
 function! s:_valid_args(args) abort
   for Arg in a:args
     if !s:is_optional(Arg)
-      throw "vital: Data.Optional: Non-optional argument"
+      throw 'vital: Data.Optional: Non-optional argument'
     endif
     unlet Arg
   endfor
@@ -83,7 +83,7 @@ function! s:apply(f, ...) abort
     return s:none()
   endif
 
-  return s:some(call(a:f, map(copy(a:000), "v:val[0]")))
+  return s:some(call(a:f, map(copy(a:000), 'v:val[0]')))
 endfunction
 
 function! s:bind(f, ...) abort
@@ -91,7 +91,7 @@ function! s:bind(f, ...) abort
     return s:none()
   endif
 
-  return call(a:f, map(copy(a:000), "v:val[0]"))
+  return call(a:f, map(copy(a:000), 'v:val[0]'))
 endfunction
 
 function! s:flatten(o, ...) abort

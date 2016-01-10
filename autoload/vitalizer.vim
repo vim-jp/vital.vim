@@ -61,7 +61,7 @@ function! s:copy(from, to) abort
     call mkdir(todir, 'p')
   endif
   let convert_newline = 'substitute(v:val, "\\r$", "", "")'
-  call writefile(map(readfile(a:from, "b"), convert_newline), a:to, "b")
+  call writefile(map(readfile(a:from, 'b'), convert_newline), a:to, 'b')
 endfunction
 
 function! s:search_dependence(depends_info) abort
@@ -162,8 +162,8 @@ endfunction
 
 function! s:show_changes(current, installing_modules) abort
   let confirm_required = 0
-  if a:current != '_latest__'
-    let keys = split(s:git(printf("log --format=format:%%H %s..HEAD", a:current)), "\n")
+  if a:current !=# '_latest__'
+    let keys = split(s:git(printf('log --format=format:%%H %s..HEAD', a:current)), "\n")
     let changes = s:get_changes()
     for key in keys
       if has_key(changes, key)
@@ -176,7 +176,7 @@ function! s:show_changes(current, installing_modules) abort
         else
           " Show the only installed modules in specified one
           let common = s:L.intersect(changes[key].modules, a:installing_modules)
-          echomsg '    Modules: ' . join(common, ", ")
+          echomsg '    Modules: ' . join(common, ', ')
         endif
         for line in split(changes[key].text, "\n")
           if line =~# '^\*\*.*\*\*$'
@@ -294,7 +294,7 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     endif
     let initial_install = !isdirectory(s:FP.join(a:to, 'autoload', 'vital'))
     if empty(installing_modules) && !initial_install
-      if confirm("vitalizer: Are you sure you want to uninstall vital?", "&Yes\n&No") == 2
+      if confirm('vitalizer: Are you sure you want to uninstall vital?', "&Yes\n&No") == 2
         return {
         \ 'action': 'canceled',
         \ 'prev_hash': '',
@@ -315,8 +315,8 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     if !empty(vital_data.hash) &&
     \   s:show_changes(vital_data.hash, installing_modules)
       call s:Mes.warn('*** WARNING *** There are critical changes from previous vital you installed.')
-      if confirm("Would you like to install a new version?", "&Y\n&n", 1) !=# 1
-        echomsg "Canceled"
+      if confirm('Would you like to install a new version?', "&Y\n&n", 1) !=# 1
+        echomsg 'Canceled'
         return {}
       endif
     endif
@@ -371,8 +371,8 @@ endfunction
 
 function! vitalizer#complete(arglead, cmdline, cursorpos) abort
   let options = ['--name=', '--hash=', '--help']
-  let args = filter(split(a:cmdline[: a:cursorpos], '[^\\]\zs\s\+'), 'v:val!~"^--"')
-  if a:arglead =~ '^--'
+  let args = filter(split(a:cmdline[: a:cursorpos], '[^\\]\zs\s\+'), 'v:val !~# "^--"')
+  if a:arglead =~# '^--'
     return filter(options, 'stridx(v:val, a:arglead)!=-1')
   elseif len(args) > 2 || (len(args) == 2 && a:cmdline =~# '\s$')
     let prefix = a:arglead =~# '^[+-]' ? a:arglead[0] : ''
@@ -381,7 +381,7 @@ function! vitalizer#complete(arglead, cmdline, cursorpos) abort
   else
     let pattern = a:arglead
     let pattern .= isdirectory(a:arglead) ? s:FP.separator() : ''
-    return map(filter(split(glob(pattern . "*", 1), "\n"),
+    return map(filter(split(glob(pattern . '*', 1), "\n"),
     \  'isdirectory(v:val)'), 'escape(v:val, " ")')
   endif
 endfunction
@@ -393,8 +393,8 @@ function! vitalizer#command(args) abort
     call s:Mes.error(v:exception)
     return
   endtry
-  let options = filter(copy(a:args), 'v:val=~"^--"')
-  let args = filter(copy(a:args), 'v:val!~"^--"')
+  let options = filter(copy(a:args), 'v:val =~# "^--"')
+  let args = filter(copy(a:args), 'v:val !~# "^--"')
   let to = ''
   let modules = []
   let name = ''
@@ -406,20 +406,20 @@ function! vitalizer#command(args) abort
   endif
   let hash = ''
   for option in options
-    if option =~ '^--help'
-      echo "Usage :Vitalize [options ...] {target-dir} [module ...]"
+    if option =~# '^--help'
+      echo 'Usage :Vitalize [options ...] {target-dir} [module ...]'
       return
-    elseif option =~ '^--name=\S'
+    elseif option =~# '^--name=\S'
       let name = option[7:]
-    elseif option =~ '^--hash=\S'
+    elseif option =~# '^--hash=\S'
       let hash = option[7:]
     else
-      call s:Mes.error("Invalid argument: " . option)
+      call s:Mes.error('Invalid argument: ' . option)
       return
     endif
   endfor
   if len(args) == 0
-    call s:Mes.error("Argument required")
+    call s:Mes.error('Argument required')
     return
   endif
   try
@@ -435,7 +435,7 @@ function! vitalizer#command(args) abort
       endif
       call s:Mes.echomsg('MoreMsg', mes)
     elseif !empty(result) && result.action ==# 'uninstall'
-      call s:Mes.echomsg('MoreMsg', "vitalizer: uninstalled vital. You can specify the name on next time.")
+      call s:Mes.echomsg('MoreMsg', 'vitalizer: uninstalled vital. You can specify the name on next time.')
     endif
   catch /^vitalizer:/
     call s:Mes.error(v:exception)

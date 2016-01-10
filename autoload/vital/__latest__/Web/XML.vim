@@ -168,7 +168,7 @@ function! s:__parse_tree(ctx, top) abort
   let node = a:top
   let stack = [a:top]
   " content accumulates the text only tags
-  let content = ""
+  let content = ''
   let append_content_to_parent = 'if len(stack) && content != "" | call add(stack[-1].child, content) | let content ="" | endif'
 
   let mx = '^\s*\(<?xml[^>]\+>\)'
@@ -204,8 +204,8 @@ function! s:__parse_tree(ctx, top) abort
     let m = matchlist(a:ctx.xml, tag_mx)
     if empty(m) | break | endif
     let a:ctx.xml = a:ctx.xml[len(m[0]) :]
-    let is_end_tag = m[2] == '/' && m[5] == ''
-    let is_start_and_end_tag = m[2] == '' && m[5] == '/'
+    let is_end_tag = m[2] ==# '/' && m[5] ==# ''
+    let is_start_and_end_tag = m[2] ==# '' && m[5] ==# '/'
     let tag_name = m[3]
     let attrs = m[4]
 
@@ -224,12 +224,12 @@ function! s:__parse_tree(ctx, top) abort
     endif
 
     " comment tag
-    if m[8] != ''
+    if m[8] !=# ''
       continue
     endif
 
     " if element is a CDATA
-    if m[6] != ''
+    if m[6] !=# ''
       let content .= m[7]
       continue
     endif
@@ -243,8 +243,8 @@ function! s:__parse_tree(ctx, top) abort
         break
       endif
       let name = attr_match[1]
-      let value = attr_match[2] !=# '' ? attr_match[2] : attr_match[3] !=# '' ? attr_match[3] : attr_match[4] !=# '' ? attr_match[4] : ""
-      if value == ""
+      let value = attr_match[2] !=# '' ? attr_match[2] : attr_match[3] !=# '' ? attr_match[3] : attr_match[4] !=# '' ? attr_match[4] : ''
+      if value ==# ''
         let value = name
       endif
       let node.attr[name] = s:decodeEntityReference(value)
@@ -282,7 +282,7 @@ function! s:parse(xml) abort
     let &maxmempattern = oldmaxmempattern
     let &maxfuncdepth = oldmaxfuncdepth
   endtry
-  throw "Parse Error"
+  throw 'Parse Error'
 endfunction
 
 function! s:parseFile(fname) abort

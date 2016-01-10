@@ -107,7 +107,7 @@ endfunction
 
 function! s:filter(xs, f) abort
   let [fs, xs] = a:xs
-  let f = printf("%s ? [v:val] : []", a:f)
+  let f = printf('%s ? [v:val] : []', a:f)
   return [s:L.conj(fs, f), xs]
 endfunction
 

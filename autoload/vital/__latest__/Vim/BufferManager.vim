@@ -146,8 +146,8 @@ endfunction
 
 function! s:Manager.do(cmd) abort
   let cmd =
-        \ a:cmd =~ '%s' ? a:cmd
-        \               : a:cmd . ' %s'
+        \ a:cmd =~# '%s' ? a:cmd
+        \                : a:cmd . ' %s'
   for bufnr in self.list()
     execute substitute(cmd, '%s', bufnr, '')
   endfor
@@ -160,17 +160,17 @@ function! s:new(...) abort
 endfunction
 
 function! s:open(buffer, opener) abort
-  call s:_deprecated("open")
+  call s:_deprecated('open')
   return s:B.open(a:buffer, a:opener)
 endfunction
 
 function! s:_deprecated(fname) abort
-  echomsg printf("Vital.Vim.BufferManager.%s is deprecated! Please use Vital.Vim.Buffer.%s instead.",
+  echomsg printf('Vital.Vim.BufferManager.%s is deprecated! Please use Vital.Vim.Buffer.%s instead.',
         \ a:fname, a:fname)
 endfunction
 
 function! s:is_cmdwin() abort
-  call s:_deprecated("is_cmdwin")
+  call s:_deprecated('is_cmdwin')
   return s:B.is_cmdwin()
 endfunction
 

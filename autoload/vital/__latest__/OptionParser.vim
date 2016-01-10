@@ -67,7 +67,7 @@ function! s:_extract_special_opts(argc, argv) abort
     elseif arg_type == s:_STRING_TYPE
       if arg ==# '!'
         let ret.specials.__bang__ = arg
-      elseif arg != ''
+      elseif arg !=# ''
         let ret.specials.__reg__ = arg
       endif
     endif
@@ -177,7 +177,7 @@ endfunction
 let s:_DEFAULT_PARSER = {'options' : {}}
 
 function! s:_DEFAULT_PARSER.help() abort
-  let definitions = map(values(self.options), "[s:_make_option_definition_for_help(v:val), s:_make_option_description_for_help(v:val)]")
+  let definitions = map(values(self.options), '[s:_make_option_definition_for_help(v:val), s:_make_option_description_for_help(v:val)]')
   let key_width = len(s:L.max_by(definitions, 'len(v:val[0])')[0])
   return "Options:\n" .
         \ join(map(definitions, '
@@ -220,14 +220,14 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...) abort
     throw 'vital: OptionParser: Invalid option "' . a:def . '"'
   endif
   let [name, value] = matched
-  let has_value = value != ''
+  let has_value = value !=# ''
 
   let no = name =~# '^\[no-]'
   if no
     let name = matchstr(name, '^\[no-]\zs.\+')
   endif
 
-  if name == ''
+  if name ==# ''
     throw 'vital: OptionParser: Option of key is invalid: ' . a:def
   endif
 

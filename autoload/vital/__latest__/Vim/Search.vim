@@ -17,7 +17,7 @@ function! s:finddef(str) abort
     let lines = s:_lines(result)
     let tokens = []
     for line in lines
-      if line =~ '^\s*\d'
+      if line =~# '^\s*\d'
         let matches = matchlist(line, '\s*\d\+:\s\+\(\d\+\)\(.*\)')
         let lnum = matches[1]
         let body = matches[2]

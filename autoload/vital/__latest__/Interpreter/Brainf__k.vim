@@ -56,7 +56,7 @@ function! s:_vim_parse(tokens) abort
     return [[ast1] + ast2, rest2]
   elseif t ==# ']'
     return [[], tokens]
-  elseif t =~ '[+-><,\.]'
+  elseif t =~# '[+-><,\.]'
     let [asts, rest] = s:_vim_parse(tokens)
     return [[t] + asts, rest]
   else
@@ -89,15 +89,15 @@ function! s:_vim_execute(asts, pointer, tape) abort
         let asts = [ast] + asts
       endif
     else
-      if ast == '+'
+      if ast ==# '+'
         let tape[pointer] = get(tape, pointer, 0) + 1
-      elseif ast == '-'
+      elseif ast ==# '-'
         let tape[pointer] = get(tape, pointer, 0) - 1
-      elseif ast == '>'
+      elseif ast ==# '>'
         let pointer += 1
-      elseif ast == '<'
+      elseif ast ==# '<'
         let pointer -= 1
-      elseif ast == '.'
+      elseif ast ==# '.'
         echon nr2char(get(tape, pointer, 0))
       endif
     endif

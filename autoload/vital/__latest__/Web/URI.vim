@@ -144,7 +144,7 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
     let fragment = ''
   endif
 
-  if !a:ignore_rest && rest != ''
+  if !a:ignore_rest && rest !=# ''
     throw 'uri parse error: unnecessary string at the end.'
   endif
 
@@ -166,7 +166,7 @@ function! s:_eat_em(str, pat, ...) abort
   let pat = a:pat.'\C'
   let m = matchlist(a:str, pat)
   if empty(m)
-    let prefix = printf("uri parse error%s: ", (a:0 ? '('.a:1.')' : ''))
+    let prefix = printf('uri parse error%s: ', (a:0 ? '('.a:1.')' : ''))
     let msg = printf("can't parse '%s' with '%s'.", a:str, pat)
     throw prefix . msg
   endif
@@ -287,7 +287,7 @@ function! s:_uri_authority(...) dict abort
     throw 'vital: Web.URI: uri.authority(value) does not support yet.'
   endif
   return
-  \   (self.__userinfo != '' ? self.__userinfo . '@' : '')
+  \   (self.__userinfo !=# '' ? self.__userinfo . '@' : '')
   \   . self.__host
   \   . (self.__port !=# '' ? ':' . self.__port : '')
 endfunction
@@ -331,8 +331,8 @@ function! s:_uri_to_iri() dict abort
   \   self.__scheme,
   \   self.authority(),
   \   s:HTTP.decodeURI(self.__path),
-  \   (self.__query != '' ? '?' . self.__query : ''),
-  \   (self.__fragment != '' ? '#' . self.__fragment : ''),
+  \   (self.__query !=# '' ? '?' . self.__query : ''),
+  \   (self.__fragment !=# '' ? '#' . self.__fragment : ''),
   \)
 endfunction
 
@@ -342,8 +342,8 @@ function! s:_uri_to_string() dict abort
   \   self.__scheme,
   \   self.authority(),
   \   self.__path,
-  \   (self.__query != '' ? '?' . self.__query : ''),
-  \   (self.__fragment != '' ? '#' . self.__fragment : ''),
+  \   (self.__query !=# '' ? '?' . self.__query : ''),
+  \   (self.__fragment !=# '' ? '#' . self.__fragment : ''),
   \)
 endfunction
 

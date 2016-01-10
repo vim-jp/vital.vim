@@ -274,7 +274,6 @@ function! s:suite.dstring()
   " wraps the result string not with single-quotes but with double-quotes.
   call s:assert.equals( s:String.dstring(123), '"123"')
   call s:assert.equals( s:String.dstring('abc'), '"abc"')
-  call s:assert.equals( s:String.dstring("abc"), '"abc"')
 endfunction
 
 function! s:suite.lines()
@@ -299,7 +298,7 @@ function! s:suite.pad_left()
   " Can't use non-half-width characters for padding.
   try
     call s:String.pad_left('test', 11, '＋')
-    call s:assert.fail("pad_left")
+    call s:assert.fail('pad_left')
   catch
   endtry
 endfunction
@@ -312,7 +311,7 @@ function! s:suite.pad_right()
   " Can't use non-half-width characters for padding.
   try
     call s:String.pad_right('test', 11, '＋')
-    call s:assert.fail("pad_right")
+    call s:assert.fail('pad_right')
   catch
   endtry
 endfunction
@@ -325,7 +324,7 @@ function! s:suite.pad_both_sides()
   " Can't use non-half-width characters for padding.
   try
     call s:String.pad_both_sides('test', 11, '＋')
-    call s:assert.fail("pad_both_sides")
+    call s:assert.fail('pad_both_sides')
   catch
   endtry
 endfunction
@@ -342,22 +341,22 @@ function! s:suite.pad_between_letters()
   " Can't use non-half-width characters for padding.
   try
     call s:String.pad_between_letters('test', 11, '＋')
-    call s:assert.fail("pad_between_letters")
+    call s:assert.fail('pad_between_letters')
   catch
   endtry
 endfunction
 
 function! s:suite.justify_equal_spacing()
   " returns a string justified equals spacing with the given half-width character or white-space, considering non-half-width characters.
-  call s:assert.equals( s:String.justify_equal_spacing("sushi", 12, '_'), 's__u__s__h_i')
-  call s:assert.equals( s:String.justify_equal_spacing("中トロ", 12)    , '中   ト   ロ')
-  call s:assert.equals( s:String.justify_equal_spacing("サーモン", 12)  , 'サ  ー モ ン')
-  call s:assert.equals( s:String.justify_equal_spacing("ウニ", 12)      , 'ウ        ニ')
-  call s:assert.equals( s:String.justify_equal_spacing("イクラ", 12)    , 'イ   ク   ラ')
+  call s:assert.equals( s:String.justify_equal_spacing('sushi', 12, '_'), 's__u__s__h_i')
+  call s:assert.equals( s:String.justify_equal_spacing('中トロ', 12)    , '中   ト   ロ')
+  call s:assert.equals( s:String.justify_equal_spacing('サーモン', 12)  , 'サ  ー モ ン')
+  call s:assert.equals( s:String.justify_equal_spacing('ウニ', 12)      , 'ウ        ニ')
+  call s:assert.equals( s:String.justify_equal_spacing('イクラ', 12)    , 'イ   ク   ラ')
   " Can't use non-half-width characters for padding.
   try
     call s:String.justify_equal_spacing('test', 11, '＋')
-    call s:assert.fail("justify_equal_spacing")
+    call s:assert.fail('justify_equal_spacing')
   catch
   endtry
 endfunction

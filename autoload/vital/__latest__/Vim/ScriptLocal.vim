@@ -158,7 +158,7 @@ function! s:sid2sfuncs(sid) abort
   ":h :function /{pattern}
   " ->         ^________
   "    function <SNR>14_functionname(args, ...)
-  let fs = s:_capture_lines(':function ' . printf("/^%s%s_", s:SNR, a:sid))
+  let fs = s:_capture_lines(':function ' . printf('/^%s%s_', s:SNR, a:sid))
   let r = {}
   " ->         ^--------____________-
   "    function <SNR>14_functionname(args, ...)
