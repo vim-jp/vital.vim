@@ -245,7 +245,7 @@ Describe Web.URI
       " Define loose pattern set.
       let pattern_set = URI.new_default_pattern_set()
 
-      " Remove "'", "(", ")" from default sub_delims().
+      " Remove "'", '(', ')' from default sub_delims().
       function! pattern_set.sub_delims() abort
           return '[!$&*+,;=]'
       endfunction
