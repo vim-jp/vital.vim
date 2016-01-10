@@ -70,7 +70,9 @@ function! s:search_dependence(depends_info) abort
     let vital_debug = g:vital_debug
   endif
   let g:vital_debug = 1
-  call s:V.unload()
+  let V = vital#of('vital')
+  call V.unload()
+  let V.vital_files = s:available_module_files()
   let all = {}
   let data_files = []
   let entries = copy(a:depends_info)
@@ -79,10 +81,10 @@ function! s:search_dependence(depends_info) abort
     unlet! entry
     let entry = remove(entries, 0)
 
-    let modules = s:expand_modules(entry, all)
+    let modules = s:expand_modules(V, entry, all)
 
     for module in modules
-      let M = s:V.import(module)
+      let M = V.import(module)
       if has_key(M, '_vital_depends')
         let depends = M._vital_depends()
         if s:P.is_dict(depends)
@@ -112,7 +114,7 @@ function! s:search_dependence(depends_info) abort
   return sort(map(keys(all), 's:module2file(v:val)') + data_files)
 endfunction
 
-function! s:expand_modules(entry, all) abort
+function! s:expand_modules(V, entry, all) abort
   if type(a:entry) == type([])
     let candidates = s:L.concat(map(copy(a:entry), 's:search(v:val)'))
     if empty(candidates)
@@ -124,7 +126,7 @@ function! s:expand_modules(entry, all) abort
       let modules = [candidates[0]]
     endif
   else
-    let modules = s:V.search(a:entry)
+    let modules = a:V.search(a:entry)
     if empty(modules)
       throw printf('vital: Module %s is not found', a:entry)
     endif
