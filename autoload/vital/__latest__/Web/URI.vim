@@ -161,6 +161,9 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   let obj.__fragment = substitute(fragment, '^#', '', '')
   let obj.__pattern_set = a:pattern_set
   let obj.__handler = s:_get_handler_module(scheme, obj)
+  if !empty(obj.__handler)
+    call extend(obj.__handler, obj.__handler.new(obj))
+  endif
   return [obj, rest]
 endfunction
 
@@ -172,11 +175,7 @@ function! s:_get_handler_module(scheme, uriobj) abort
   if !s:V.exists(name)
     return {}
   endif
-  let m = s:V.import(name)
-  if has_key(m, 'on_loaded')
-    call m.on_loaded(a:uriobj)
-  endif
-  return m
+  return s:V.import(name)
 endfunction
 
 function! s:_eat_em(str, pat, ...) abort

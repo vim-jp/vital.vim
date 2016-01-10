@@ -10,8 +10,8 @@ function! s:_vital_depends() abort
   return ['Web.URI.HTTP']
 endfunction
 
-function! s:on_loaded(super) abort
-  call s:HTTP.on_loaded(a:super)
+function! s:new(super) abort
+  return s:HTTP.new(a:super)
 endfunction
 
 

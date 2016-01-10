@@ -1,9 +1,9 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:super = {}
-function! s:on_loaded(super) abort
-  let s:super = a:super
+
+function! s:new(super) abort
+  return {'super': a:super}
 endfunction
 
 " The following four URIs are equivalent:
@@ -14,11 +14,11 @@ endfunction
 "
 " https://tools.ietf.org/html/rfc3986#section-6.2.3
 function! s:canonicalize() dict abort
-  if s:super.path() ==# ''
-    call s:super.path('/')
+  if self.super.path() ==# ''
+    call self.super.path('/')
   endif
-  if s:super.port() ==# self.default_port()
-    call s:super.port('')
+  if self.super.port() ==# self.default_port()
+    call self.super.port('')
   endif
 endfunction
 
