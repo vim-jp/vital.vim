@@ -1,0 +1,428 @@
+scriptencoding utf-8
+
+Describe Web.HTTP.CookieJar
+  Before all
+    let Cookie = vital#of('vital').import('Web.HTTP.Cookie')
+    let Jar = vital#of('vital').import('Web.HTTP.CookieJar')
+    let DateTime = vital#of('vital').import('DateTime')
+  End
+
+  Describe .new()
+    It creates a new Jar object
+      let jar = Jar.new()
+      Assert IsDict(jar)
+      Assert KeyExists(jar, 'get')
+      Assert IsFunc(jar.get)
+    End
+
+    Context with {data}
+      Before
+        let data = {
+        \   'cookies': [
+        \     {
+        \       'name': 'name1',
+        \       'value': 'value1',
+        \       'domain': 'example.com',
+        \       'path': '/foo',
+        \       'creation_time': '2015-08-01 16:00:00 +0000',
+        \       'last_access_time': '2015-08-14 00:00:00 +0000',
+        \       'attributes': {
+        \         'Path': '/foo',
+        \         'Domain': '.example.com',
+        \         'Secure': '',
+        \       },
+        \     },
+        \     {
+        \       'name': 'name2',
+        \       'value': 'value2',
+        \       'domain': 'example.com',
+        \       'path': '/',
+        \       'creation_time': '2015-08-01 12:00:00 +0000',
+        \       'last_access_time': '2015-08-01 12:00:00 +0000',
+        \       'attributes': {
+        \         'Expires': 'Sun, 09-Aug-2015 12:00:00 GMT',
+        \       },
+        \     },
+        \     {
+        \       'name': 'name3',
+        \       'value': 'value3',
+        \       'domain': 'example.com',
+        \       'path': '/foo',
+        \       'creation_time': '2015-08-01 16:00:00 +0000',
+        \       'last_access_time': '2015-08-14 00:00:00 +0000',
+        \       'attributes': {
+        \         'Path': '/foo',
+        \         'Domain': '.example.com',
+        \         'Max-Age': 86400,
+        \         'HttpOnly': '',
+        \       },
+        \     },
+        \   ],
+        \ }
+      End
+
+      It creates a new Jar object from {data}
+        let jar = Jar.new(data)
+        Assert IsDict(jar)
+        Assert KeyExists(jar, 'get')
+        Assert IsFunc(jar.get)
+        Assert LengthOf(jar.get_all(), 3)
+      End
+    End
+  End
+
+  Describe .build_http_header()
+    Before
+      let uri = 'http://example.com/'
+      let cookies = [
+      \   Cookie.new('name1=value1', uri),
+      \   Cookie.new('name2=value2', uri),
+      \ ]
+    End
+
+    It builds a string for "Cookie:" header
+      Assert Equals(Jar.build_http_header(cookies), 'name1=value1; name2=value2')
+    End
+
+    It escapes key and value by percent-encoding
+      let cookie_string = iconv('名前=値', &encoding, 'utf-8')
+      let cookies += [Cookie.new(cookie_string, uri)]
+      let header = Jar.build_http_header(cookies)
+      Assert Equals(header, 'name1=value1; name2=value2; %E5%90%8D%E5%89%8D=%E5%80%A4')
+    End
+  End
+
+  Describe Jar
+    Before
+      let jar = Jar.new()
+      let uri = 'http://example.com/'
+    End
+
+    Describe .add()
+      It adds a Cookie to this Jar
+        let cookie = Cookie.new('name=value', uri)
+        call jar.add(cookie)
+        Assert LengthOf(jar.get_all(), 1)
+      End
+
+      It overwrites the same cookie
+        let cond = {'url': uri, 'name': 'test'}
+        call jar.add(Cookie.new('test=before', uri))
+        Assert Equals(jar.get(cond).value(), 'before')
+        call jar.add(Cookie.new('test=after', uri))
+        Assert Equals(jar.get(cond).value(), 'after')
+      End
+
+      It doesn't overwrite the different cookie
+        let foo_path = 'http://example.com/foo'
+        let cond = {'url': foo_path, 'name': 'test'}
+        call jar.add(Cookie.new('test=before; Path=/foo', uri))
+        Assert Equals(jar.get(cond).value(), 'before')
+        call jar.add(Cookie.new('test=after; Path=/bar', uri))
+        Assert Equals(jar.get(cond).value(), 'before')
+      End
+    End
+
+    Describe .add_all()
+      It adds all cookies to this Jar
+        let cookies = [
+        \   Cookie.new('name1=value1', uri),
+        \   Cookie.new('name2=value2', uri),
+        \ ]
+        call jar.add_all(cookies)
+        Assert LengthOf(jar.get_all(), 2)
+      End
+    End
+
+    Describe .add_from_headers()
+      Before
+        let headers = [
+        \   'Set-Cookie: name1=value1; path=/foo; domain=.example.com; secure',
+        \   'Set-Cookie: cookie; expires=Sun, 09-Aug-2015 12:00:00 GMT;',
+        \ ]
+      End
+
+      It adds cookies from headers
+        call jar.add_from_headers(headers, uri)
+        let cookies = jar.get_all()
+
+        Assert LengthOf(cookies, 2)
+      End
+
+      It skips non cookie lines
+        let headers = ['Content-Type: text/html'] + headers
+        call jar.add_from_headers(headers, uri)
+        let cookies = jar.get_all()
+        Assert LengthOf(cookies, 2)
+      End
+
+    End
+
+    Describe .get()
+      Before
+        call jar.add_from_headers([
+        \   'Set-Cookie: name1=value1; Domain=example.com; Path=/bar',
+        \   'Set-Cookie: name2=value2; Domain=foo.example.com; Path=/foo/bar',
+        \   'Set-Cookie: name3=value3; Domain=example.com; Path=/bar/buz',
+        \   'Set-Cookie: name4=value4; Domain=example.com; Path=/fo',
+        \   'Set-Cookie: name5=value5; Domain=example.com; Path=/foo; Max-Age=-1',
+        \ ], uri)
+      End
+
+      Context with {condition} has "url"
+        It returns cookies that was filtered by url
+          let cookies = jar.get({'url': 'http://foo.example.com/foo'})
+          Assert Equals(cookies.name(), 'name5')
+        End
+      End
+
+      Context with {condition} has "name"
+        It returns cookies that was filtered by name
+          let cookies = jar.get({'name': 'name3'})
+          Assert Equals(cookies.name(), 'name3')
+        End
+      End
+
+      Context with {condition} has "name_pattern"
+        It returns cookies that was filtered by pattern for name
+          let cookies = jar.get({'name_pattern': 'name[5-9]'})
+          Assert Equals(cookies.name(), 'name5')
+        End
+      End
+
+      Context with {condition} has "expired"
+        It returns cookies that was filtered by expired flag
+          let cookies = jar.get({'expired': 1})
+          Assert Equals(cookies.name(), 'name5')
+        End
+      End
+
+      Context with {condition} has "valid"
+        It returns cookies that was filtered by valid flag
+          let cookies = jar.get({'valid': 0})
+          Assert Equals(cookies.name(), 'name2')
+        End
+      End
+    End
+
+    Describe .get_all()
+      Before
+        call jar.add_from_headers([
+        \   'Set-Cookie: name1=value1; Domain=example.com; Path=/bar',
+        \   'Set-Cookie: name2=value2; Domain=foo.example.com; Path=/foo/bar',
+        \   'Set-Cookie: name3=value3; Domain=example.com; Path=/bar/buz',
+        \   'Set-Cookie: name4=value4; Domain=example.com; Path=/fo',
+        \   'Set-Cookie: name5=value5; Domain=example.com; Path=/foo; Max-Age=-1',
+        \ ], uri)
+      End
+
+      Context with {condition} is empty
+        It returns cookies that was not filtered
+          let cookies = jar.get_all()
+          Assert LengthOf(cookies, 5)
+        End
+      End
+
+      Context with {condition} has "url"
+        It returns cookies that was filtered by url
+          let cookies = jar.get_all({'url': 'http://foo.example.com/foo'})
+          Assert LengthOf(cookies, 1)
+          Assert Equals(cookies[0].name(), 'name5')
+        End
+      End
+
+      Context with {condition} has "name"
+        It returns cookies that was filtered by name
+          let cookies = jar.get_all({'name': 'name3'})
+          Assert LengthOf(cookies, 1)
+          Assert Equals(cookies[0].name(), 'name3')
+        End
+      End
+
+      Context with {condition} has "name_pattern"
+        It returns cookies that was filtered by pattern for name
+          let cookies = jar.get_all({'name_pattern': 'name[2-4]'})
+          Assert LengthOf(cookies, 3)
+        End
+      End
+
+      Context with {condition} has "expired"
+        It returns cookies that was filtered by expired flag
+          let cookies = jar.get_all({'expired': 1})
+          Assert LengthOf(cookies, 1)
+          Assert Equals(cookies[0].name(), 'name5')
+        End
+      End
+
+      Context with {condition} has "valid"
+        It returns cookies that was filtered by valid flag
+          let cookies = jar.get_all({'valid': 0})
+          Assert LengthOf(cookies, 1)
+          Assert Equals(cookies[0].name(), 'name2')
+        End
+      End
+    End
+
+    Describe .build_http_header()
+      It builds a string for "Cookie:" header
+        let headers = [
+        \   'Set-Cookie: name1=value1; Path=/foo; Domain=.example.com',
+        \   'Set-Cookie: name2=value2',
+        \ ]
+        call jar.add_from_headers(headers, uri)
+        Assert Equals(jar.build_http_header(uri), 'name2=value2')
+      End
+
+      It escapes key and value by percent-encoding
+        let cookie_string = iconv('名前=値', &encoding, 'utf-8')
+        call jar.add(Cookie.new(cookie_string, uri))
+        let header = jar.build_http_header(uri)
+        Assert Equals(header, '%E5%90%8D%E5%89%8D=%E5%80%A4')
+      End
+
+      Context with {dry-run}
+        Before
+          let cookie = Cookie.new('name=value', uri)
+          let before_time = DateTime.now().to(-10, 'days')
+          let cookie._creation_time = before_time
+          let cookie._last_access_time = before_time
+          call jar.add(cookie)
+        End
+
+        It is false, updates last access time of Cookie
+          call  jar.build_http_header(uri, 0)
+          Assert Falsy(cookie.last_access_time().is(before_time))
+        End
+
+        It is true, doesn't update last access time of Cookie
+          call  jar.build_http_header(uri, 1)
+          Assert Truthy(cookie.last_access_time().is(before_time))
+        End
+      End
+    End
+
+    Describe .sweep_expired()
+      Before
+        call jar.add_from_headers([
+        \   'Set-Cookie: name1=value1',
+        \   'Set-Cookie: name2=value2; Max-Age=3600',
+        \   'Set-Cookie: name3=value3; expires=Sun, 09-Aug-2015 12:00:00 GMT',
+        \ ], uri)
+        let now = DateTime.from_date(2015, 8, 9, 13).timezone(0)
+      End
+
+      It removes all expired cookies
+        Assert LengthOf(jar.get_all(), 3)
+        call jar.sweep_expired(now)
+        Assert LengthOf(jar.get_all(), 2)
+        call jar.sweep_expired(DateTime.now().to(3601, 'sec'))
+        Assert LengthOf(jar.get_all(), 1)
+      End
+    End
+
+    Describe .clear()
+      It removes all cookies
+        call jar.add_from_headers([
+        \   'Set-Cookie: name1=value1; Domain=foo.example.com',
+        \   'Set-Cookie: name2=value2; Domain=bar.example.com',
+        \   'Set-Cookie: name3=value3; Domain=buz.example.com',
+        \ ], uri)
+        Assert LengthOf(jar.get_all(), 3)
+        call jar.clear()
+        Assert LengthOf(jar.get_all(), 0)
+      End
+    End
+
+    Describe .export()
+      Before
+        call jar.add_from_headers([
+        \   'Set-Cookie: name1=value1; path=/foo; domain=.example.com; secure',
+        \   'Set-Cookie: name2=value2; Max-Age=3600',
+        \   'Set-Cookie: name3=value3; expires=Sun, 09-Aug-2015 12:00:00 GMT;',
+        \ ], 'http://example.com/')
+      End
+
+      Context with {all} is false
+        It exports a Jar object to a Dictionary without non-persistent cookies
+          let data = jar.export()
+          Assert KeyExists(data, 'cookies')
+          Assert LengthOf(data.cookies, 2)
+        End
+      End
+
+      Context with {all} is true
+        It exports a Jar object to a Dictionary it contains all cookies
+          let data = jar.export(1)
+          Assert LengthOf(jar.get_all(), 3)
+          Assert KeyExists(data, 'cookies')
+          Assert LengthOf(data.cookies, 3)
+        End
+      End
+    End
+
+    Describe .import()
+      Before
+        let data = {
+        \   'cookies': [
+        \     {
+        \       'name': 'name1',
+        \       'value': 'value1',
+        \       'domain': 'example.com',
+        \       'path': '/foo',
+        \       'creation_time': '2015-08-01 16:00:00 +0000',
+        \       'last_access_time': '2015-08-14 00:00:00 +0000',
+        \       'attributes': {
+        \         'Path': '/foo',
+        \         'Domain': '.example.com',
+        \         'Secure': '',
+        \       },
+        \     },
+        \     {
+        \       'name': 'name2',
+        \       'value': 'value2',
+        \       'domain': 'example.com',
+        \       'path': '/',
+        \       'creation_time': '2015-08-01 12:00:00 +0000',
+        \       'last_access_time': '2015-08-01 12:00:00 +0000',
+        \       'attributes': {
+        \         'Expires': 'Sun, 09-Aug-2015 12:00:00 GMT',
+        \       },
+        \     },
+        \     {
+        \       'name': 'name3',
+        \       'value': 'value3',
+        \       'domain': 'example.com',
+        \       'path': '/foo',
+        \       'creation_time': '2015-08-01 16:00:00 +0000',
+        \       'last_access_time': '2015-08-14 00:00:00 +0000',
+        \       'attributes': {
+        \         'Path': '/foo',
+        \         'Domain': '.example.com',
+        \         'Max-Age': 86400,
+        \         'HttpOnly': '',
+        \       },
+        \     },
+        \   ],
+        \ }
+        let jar = Jar.new()
+      End
+
+      It imports data
+        Assert LengthOf(jar.get_all(), 0)
+        call jar.import(data)
+        Assert LengthOf(jar.get_all(), 3)
+      End
+
+      It does not remove cookies
+        call jar.add(Cookie.new('foo=bar', 'http://example.com'))
+        Assert LengthOf(jar.get_all(), 1)
+        call jar.import(data)
+        Assert LengthOf(jar.get_all(), 4)
+      End
+
+    End
+
+  End
+
+End
+
