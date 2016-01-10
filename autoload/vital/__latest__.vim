@@ -12,7 +12,11 @@ let s:_vital_files_cache_runtimepath = ''
 let s:_vital_files_cache = []
 let s:_unify_path_cache = {}
 
-function! s:import(name, ...) abort
+function! s:_vital_created(module) abort
+  let a:module.vital_files = s:_vital_files()
+endfunction
+
+function! s:import(name, ...) dict abort
   let target = {}
   let functions = []
   for a in a:000
@@ -23,7 +27,7 @@ function! s:import(name, ...) abort
     endif
     unlet a
   endfor
-  let module = s:_import(a:name)
+  let module = s:_import(a:name, self.vital_files)
   if empty(functions)
     call extend(target, module, 'keep')
   else
@@ -56,7 +60,7 @@ function! s:load(...) dict abort
     endwhile
 
     if exists('dict')
-      call extend(dict, s:_import(name))
+      call extend(dict, s:_import(name, self.vital_files))
     endif
     unlet arg
   endfor
@@ -69,21 +73,21 @@ function! s:unload() abort
   let s:cache_module_path = {}
 endfunction
 
-function! s:exists(name) abort
-  return s:_get_module_path(a:name) !=# ''
+function! s:exists(name) dict abort
+  return s:_get_module_path(a:name, self.vital_files) !=# ''
 endfunction
 
-function! s:search(pattern) abort
-  let paths = s:_search_vital_files(a:pattern)
+function! s:search(pattern) dict abort
+  let paths = s:_extract_files(a:pattern, self.vital_files)
   let modules = sort(map(paths, 's:_file2module(v:val)'))
   return s:_uniq(modules)
 endfunction
 
-function! s:_import(name) abort
+function! s:_import(name, vital_files) abort
   if type(a:name) == type(0)
     return s:_build_module(a:name)
   endif
-  let path = s:_get_module_path(a:name)
+  let path = s:_get_module_path(a:name, a:vital_files)
   if path ==# ''
     throw 'vital: module not found: ' . a:name
   endif
@@ -102,7 +106,7 @@ function! s:_import(name) abort
   return s:_build_module(sid)
 endfunction
 
-function! s:_get_module_path(name) abort
+function! s:_get_module_path(name, vital_files) abort
   let key = a:name . '_'
   if has_key(s:cache_module_path, key)
     return s:cache_module_path[key]
@@ -113,7 +117,7 @@ function! s:_get_module_path(name) abort
   if a:name ==# ''
     let paths = [s:self_file]
   elseif a:name =~# '\v^\u\w*%(\.\u\w*)*$'
-    let paths = s:_search_vital_files(a:name)
+    let paths = s:_extract_files(a:name, a:vital_files)
   else
     throw 'vital: Invalid module name: ' . a:name
   endif
@@ -177,10 +181,6 @@ else
   endfunction
 endif
 
-function! s:_search_vital_files(pattern) abort
-  return s:_extract_files(a:pattern, s:_vital_files())
-endfunction
-
 function! s:_vital_files() abort
   if s:_vital_files_cache_runtimepath !=# &runtimepath
     let path = printf('autoload/vital/%s/**/*.vim', s:self_version)
@@ -196,7 +196,7 @@ function! s:_extract_files(pattern, files) abort
   let tr = {'.': '/', '*': '[^/]*', '**': '.*'}
   let target = substitute(a:pattern, '\.\|\*\*\?', '\=tr[submatch(0)]', 'g')
   let regexp = printf('autoload/vital/[^/]\+/%s.vim$', target)
-  return filter(a:files, 'v:val =~# regexp')
+  return filter(copy(a:files), 'v:val =~# regexp')
 endfunction
 
 " Copy from System.Filepath
@@ -281,5 +281,5 @@ function! s:_redir(cmd) abort
 endfunction
 
 function! vital#{s:self_version}#new() abort
-  return s:_import('')
+  return s:_import('', [s:self_file])
 endfunction
