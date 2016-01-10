@@ -64,6 +64,27 @@ function! s:copy(from, to) abort
   call writefile(map(readfile(a:from, 'b'), convert_newline), a:to, 'b')
 endfunction
 
+function! s:rmdir(dir) abort
+  if isdirectory(a:dir)
+    call s:F.rmdir(a:dir, 'rf')
+  endif
+endfunction
+
+function! s:rmdir_if_empty(dir) abort
+  if isdirectory(a:dir)
+    try
+      call s:F.rmdir(a:dir)
+    catch
+    endtry
+  endif
+endfunction
+
+function! s:rmfile(file) abort
+  if filereadable(a:file)
+    call delete(a:file)
+  endif
+endfunction
+
 function! s:search_dependence(depends_info) abort
   " XXX Not smart...
   if exists('g:vital_debug')
@@ -225,13 +246,13 @@ function! s:show_changes(current, installing_modules) abort
 endfunction
 
 " Uninstall vital from {target-dir}.
-function! s:uninstall(target_dir) abort
-  if isdirectory(a:target_dir . '/autoload/vital')
-    call s:F.rmdir(a:target_dir . '/autoload/vital', 'rf')
-  endif
-  if filereadable(a:target_dir . '/autoload/vital.vim')
-    call delete(a:target_dir . '/autoload/vital.vim')
-  endif
+function! s:uninstall(target_dir, name) abort
+  let base = s:FP.join(a:target_dir, 'autoload', 'vital')
+  call s:rmdir(s:FP.join(base, '_' . a:name))
+  call s:rmfile(s:FP.join(base, '_' . a:name . '.vim'))
+  call s:rmfile(s:FP.join(base, a:name . '.vital'))
+  call s:rmdir_if_empty(base)
+  call s:rmfile(s:FP.join(a:target_dir, 'autoload', 'vital.vim'))
 endfunction
 
 " Search *.vital file in a target directory.
@@ -364,7 +385,7 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     endfor
 
     " Remove previous vital.
-    call s:uninstall(a:to)
+    call s:uninstall(a:to, vital_data.name)
 
     if action ==# 'install'
       " Install vital.
