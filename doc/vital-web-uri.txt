@@ -305,6 +305,25 @@ TODO					*Vital.Web.URI-todo*
 * IRI support (RFC3987)
 * |Vital.Web.URI-URI.opaque()| with an argument
 * |Vital.Web.URI-URI.authority()| with an argument
+* Perl's URI, URI::Find module
+  * `URI::eq()`
+  * `URI::query_form()`
+  * `URI::query_keywords()`
+  * `URI::ihost()`
+  * `URI::Find::find()`
+* RFC 5890: IDNA (Internationalized Domain Names for Applications)
+  * A Label
+  * U Label
+  * NR-LDH Label
+* `s:URI.to_string()` should recompose string by the algorithm
+  based on https://tools.ietf.org/html/rfc3986#section-5.3
+* `s:URI.to_iri()`: Write tests
+* `s:URI.to_iri()`: Write document
+* URN Support
+  * urn:isbn
+  * urn:uuid
+  * urn:ietf:rfc
+  * urn:oid
 
 ==============================================================================
 REFERENCES				*Vital.Web.URI-references*
