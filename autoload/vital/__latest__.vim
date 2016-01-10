@@ -74,7 +74,7 @@ function! s:exists(name) abort
 endfunction
 
 function! s:search(pattern) abort
-  let paths = s:_vital_files(a:pattern)
+  let paths = s:_search_vital_files(a:pattern)
   let modules = sort(map(paths, 's:_file2module(v:val)'))
   return s:_uniq(modules)
 endfunction
@@ -113,7 +113,7 @@ function! s:_get_module_path(name) abort
   if a:name ==# ''
     let paths = [s:self_file]
   elseif a:name =~# '\v^\u\w*%(\.\u\w*)*$'
-    let paths = s:_vital_files(a:name)
+    let paths = s:_search_vital_files(a:name)
   else
     throw 'vital: Invalid module name: ' . a:name
   endif
@@ -177,7 +177,11 @@ else
   endfunction
 endif
 
-function! s:_vital_files(pattern) abort
+function! s:_search_vital_files(pattern) abort
+  return s:_extract_files(a:pattern, s:_vital_files())
+endfunction
+
+function! s:_vital_files() abort
   if s:_vital_files_cache_runtimepath !=# &runtimepath
     let path = printf('autoload/vital/%s/**/*.vim', s:self_version)
     let s:_vital_files_cache = s:_runtime_files(path)
@@ -185,10 +189,14 @@ function! s:_vital_files(pattern) abort
     call map(s:_vital_files_cache, 'fnamemodify(v:val, mod)')
     let s:_vital_files_cache_runtimepath = &runtimepath
   endif
+  return copy(s:_vital_files_cache)
+endfunction
+
+function! s:_extract_files(pattern, files) abort
   let tr = {'.': '/', '*': '[^/]*', '**': '.*'}
   let target = substitute(a:pattern, '\.\|\*\*\?', '\=tr[submatch(0)]', 'g')
-  let regexp = printf('autoload/vital/%s/%s.vim', s:self_version, target)
-  return filter(copy(s:_vital_files_cache), 'v:val =~# regexp')
+  let regexp = printf('autoload/vital/[^/]\+/%s.vim$', target)
+  return filter(a:files, 'v:val =~# regexp')
 endfunction
 
 " Copy from System.Filepath
