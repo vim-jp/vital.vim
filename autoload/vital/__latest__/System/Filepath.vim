@@ -77,7 +77,7 @@ else
             let full = glob(substitute(
             \               toupper(full), '\u:\@!', '[\0\L\0]', 'g'), 1)
           endif
-          if full != ''
+          if full !=# ''
             return full
           endif
         endif
@@ -133,7 +133,7 @@ function! s:dirname(path) abort
   let orig = a:path
 
   let path = s:remove_last_separator(path)
-  if path == ''
+  if path ==# ''
     return orig    " root directory
   endif
 
@@ -149,7 +149,7 @@ function! s:basename(path) abort
   let orig = a:path
 
   let path = s:remove_last_separator(path)
-  if path == ''
+  if path ==# ''
     return orig    " root directory
   endif
 
@@ -160,7 +160,7 @@ endfunction
 " Remove the separator at the end of a:path.
 function! s:remove_last_separator(path) abort
   let sep = s:separator()
-  let pat = (sep == '\' ? '\\' : '/') . '\+$'
+  let pat = (sep ==# '\' ? '\\' : '/') . '\+$'
   return substitute(a:path, pat, '', '')
 endfunction
 
@@ -217,7 +217,7 @@ function! s:is_root_directory(path) abort
   if a:path ==# '/'
     return 1
   endif
-  return (has('win32') || has('win64')) && a:path =~ '^[a-zA-Z]:[/\\]$'
+  return (has('win32') || has('win64')) && a:path =~# '^[a-zA-Z]:[/\\]$'
 endfunction
 
 let &cpo = s:save_cpo

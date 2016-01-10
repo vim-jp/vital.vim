@@ -140,7 +140,7 @@ function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale) abo
       let width = Captor[1]
     endif
     let pattern = '\d\{1,' . width . '}'
-    if flag == '_'
+    if flag ==# '_'
       let pattern = '\s*' . pattern
     endif
   else  " if s:Prelude.is_string(Captor)
@@ -186,7 +186,7 @@ function! s:timezone(...) abort
   if s:_is_class(info, 'TimeZone')
     return info
   endif
-  if info is ''
+  if info is# ''
     unlet info
     let info = s:_default_tz()
   endif
@@ -777,7 +777,7 @@ function! s:_split_format(format) abort
   let res = []
   let pat = '\C%\([-_0^#]\?\)\(\d*\)\(' . s:DESCRIPTORS_PATTERN . '\)'
   let format = a:format
-  while format != ''
+  while format !=# ''
     let i = match(format, pat)
     if i < 0
       let res += [format]

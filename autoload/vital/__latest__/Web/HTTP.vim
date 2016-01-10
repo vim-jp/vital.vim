@@ -78,7 +78,7 @@ function! s:encodeURIComponent(items) abort
       let ch = items[i]
       if ch =~# '[0-9A-Za-z-._~!''()*]'
         let ret .= ch
-      elseif ch == ' '
+      elseif ch ==# ' '
         let ret .= '+'
       else
         let ret .= '%' . substitute('0' . s:String.nr2hex(char2nr(ch)), '^.*\(..\)$', '\1', '')
@@ -640,7 +640,7 @@ function! s:clients.wget.request(settings) abort
 endfunction
 
 function! s:_quote() abort
-  return &shellxquote == '"' ?  "'" : '"'
+  return &shellxquote ==# '"' ?  "'" : '"'
 endfunction
 
 let &cpo = s:save_cpo

@@ -27,7 +27,7 @@ function! s:open(buffer, opener) abort
     if s:P.is_funcref(a:opener)
       let loaded = !bufloaded(a:buffer)
       call a:opener(a:buffer)
-    elseif a:buffer is 0 || a:buffer is ''
+    elseif a:buffer is 0 || a:buffer is# ''
       let loaded = 1
       silent execute a:opener
       enew
@@ -85,7 +85,7 @@ function! s:get_last_selected() abort
       \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
       \         + [getline(end[1])[: end[2]-2]]
     endif
-    return join(lines, "\n") . lastchar . (visualmode() ==# "V" ? "\n" : "")
+    return join(lines, "\n") . lastchar . (visualmode() ==# 'V' ? "\n" : '')
   endif
 endfunction
 

@@ -24,7 +24,7 @@ function! s:from_string(str) abort
     call s:_throw('is not number: '.a:str)
   endif
   let bignum = deepcopy(s:_ZERO)
-  let bignum.sign = (a:str[0] == "-") ? -1 : 1
+  let bignum.sign = (a:str[0] ==# '-') ? -1 : 1
   if a:str =~# '^[+-]'
     let l:str = a:str[1:]
   else

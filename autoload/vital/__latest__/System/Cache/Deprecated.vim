@@ -49,7 +49,7 @@ function! s:_encode_name(cache_dir, filename) abort
     call mkdir(a:cache_dir, 'p')
   endif
   let cache_dir = a:cache_dir
-  if cache_dir !~ '/$'
+  if cache_dir !~# '/$'
     let cache_dir .= '/'
   endif
 

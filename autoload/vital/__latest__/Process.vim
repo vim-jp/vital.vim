@@ -19,7 +19,7 @@ let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 
 let s:TYPE_DICT = type({})
 let s:TYPE_LIST = type([])
-let s:TYPE_STRING = type("")
+let s:TYPE_STRING = type('')
 
 function! s:spawn(expr, ...) abort
   let shellslash = 0
@@ -55,11 +55,11 @@ endfunction
 
 " iconv() wrapper for safety.
 function! s:iconv(expr, from, to) abort
-  if a:from == '' || a:to == '' || a:from ==? a:to
+  if a:from ==# '' || a:to ==# '' || a:from ==? a:to
     return a:expr
   endif
   let result = iconv(a:expr, a:from, a:to)
-  return result != '' ? result : a:expr
+  return result !=# '' ? result : a:expr
 endfunction
 
 " Check vimproc.

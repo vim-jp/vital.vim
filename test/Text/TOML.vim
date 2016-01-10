@@ -305,22 +305,22 @@ function! s:suite.__parse__()
     \], "\n"))
 
     call s:assert.equals(data, {
-    \ "fruit": [
+    \ 'fruit': [
     \   {
-    \     "name": "apple",
-    \     "physical": {
-    \       "color": "red",
-    \       "shape": "round"
+    \     'name': 'apple',
+    \     'physical': {
+    \       'color': 'red',
+    \       'shape': 'round'
     \     },
-    \     "variety": [
-    \       { "name": "red delicious" },
-    \       { "name": "granny smith" }
+    \     'variety': [
+    \       { 'name': 'red delicious' },
+    \       { 'name': 'granny smith' }
     \     ]
     \   },
     \   {
-    \     "name": "banana",
-    \     "variety": [
-    \       { "name": "plantain" }
+    \     'name': 'banana',
+    \     'variety': [
+    \       { 'name': 'plantain' }
     \     ]
     \   }
     \ ]

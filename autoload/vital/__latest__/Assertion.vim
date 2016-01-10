@@ -30,15 +30,15 @@ function! s:_outputter(dict) abort
   if ! a:dict.is_success
     echohl Error
   endif
-  echo  printf("%s %s :%s",
+  echo  printf('%s %s :%s',
         \ a:dict.cmd,
         \ a:dict.expr,
         \ (a:dict.is_success ? 'Succeeded' : 'Failed'),
         \ )
   if ! a:dict.is_success
-    echo  printf("> assert_point: %s", a:dict.assert_point)
-    echo  printf("> lhs: %s", a:dict.lhs)
-    echo  printf("> rhs: %s", a:dict.rhs)
+    echo  printf('> assert_point: %s', a:dict.assert_point)
+    echo  printf('> lhs: %s', a:dict.lhs)
+    echo  printf('> rhs: %s', a:dict.rhs)
     echohl None
 
     throw 'vital: Assertion: EXIT_FAILURE'
@@ -62,8 +62,8 @@ function! s:_define_scriptfunction(fname) abort
   let scriptnames_list = map(split(s:_redir('scriptnames'),"\n"),'matchlist(v:val,''^\s*\(\d\+\)\s*:\s*\(.*\)\s*$'')[:2]')
   let targets = filter(copy(scriptnames_list),printf('fnamemodify(get(v:val,2,""),":p") ==# fnamemodify(%s,":p")',string(expand('%'))))
   if ! empty(targets)
-    if exists(printf("*<SNR>%d_%s", targets[0][1], a:fname[2:]))
-      execute printf('let %s = function(%s)',a:fname,string(printf("<SNR>%d_%s",targets[0][1],a:fname[2:])))
+    if exists(printf('*<SNR>%d_%s', targets[0][1], a:fname[2:]))
+      execute printf('let %s = function(%s)',a:fname,string(printf('<SNR>%d_%s',targets[0][1],a:fname[2:])))
     endif
   endif
 endfunction
@@ -99,7 +99,7 @@ function! s:_assertion( q_args, local, scriptfilename, about_currline, cmd) abor
     let s:_local.lhs_text = join(map(s:_local.lhs_tkns ,'v:val.matched_text'),'')
     let s:_local.rhs_text = join(map(s:_local.rhs_tkns ,'v:val.matched_text'),'')
     let s:_local.is_success = 0
-    if type("") == type(eval(s:_local.lhs_text))
+    if type('') == type(eval(s:_local.lhs_text))
       let s:_local.is_success = eval(s:_local.lhs_text) ==# eval(s:_local.rhs_text)
     else
       let s:_local.is_success = eval(s:_local.lhs_text) == eval(s:_local.rhs_text)

@@ -24,7 +24,7 @@ endfunction
 
 " Convert [Callable Object] to [Functor].
 " NOTE: `s:wrap(callable).do` must be Funcref value.
-let s:TYPE_STRING  = type("")
+let s:TYPE_STRING  = type('')
 let s:TYPE_FUNCREF = type(function('tr'))
 let s:TYPE_DICT    = type({})
 function! s:wrap(callable) abort
