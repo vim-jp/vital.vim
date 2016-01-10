@@ -1,15 +1,10 @@
 let s:self_version = expand('<sfile>:t:r')
 let s:self_file = expand('<sfile>')
 
-" Note: The extra argument to globpath() was added in Patch 7.2.051.
-let s:globpath_third_arg = v:version > 702 || v:version == 702 && has('patch51')
-
 let s:loaded = {}
 let s:cache_module_path = {}
 let s:cache_sid = {}
 
-let s:_vital_files_cache_runtimepath = ''
-let s:_vital_files_cache = []
 let s:_unify_path_cache = {}
 
 function! s:_vital_created(module) abort
@@ -135,7 +130,7 @@ function! s:_get_sid_by_script(path) abort
 
   let path = s:_unify_path(a:path)
   for line in filter(split(s:_redir('scriptnames'), "\n"),
-  \                  'stridx(v:val, s:self_version) > 0')
+  \                  'stridx(v:val, "vital") > 0')
     let list = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
     if !empty(list) && s:_unify_path(list[2]) ==# path
       let s:cache_sid[a:path] = list[1] - 0
@@ -171,24 +166,14 @@ else
   endfunction
 endif
 
-if s:globpath_third_arg
-  function! s:_runtime_files(path) abort
-    return split(globpath(&runtimepath, a:path, 1), "\n")
-  endfunction
-else
-  function! s:_runtime_files(path) abort
-    return split(globpath(&runtimepath, a:path), "\n")
-  endfunction
-endif
-
 function! s:_vital_files() abort
-  if s:_vital_files_cache_runtimepath !=# &runtimepath
-    let path = printf('autoload/vital/%s/**/*.vim', s:self_version)
-    let s:_vital_files_cache = s:_runtime_files(path)
-    let mod = ':p:gs?[\\/]\+?/?'
-    call map(s:_vital_files_cache, 'fnamemodify(v:val, mod)')
-    let s:_vital_files_cache_runtimepath = &runtimepath
+  if exists('s:_vital_files_cache')
+    return copy(s:_vital_files_cache)
   endif
+  let base = fnamemodify(s:self_file, ':h') . '/*/**/*.vim'
+  let files = split(glob(base, 1), "\n")
+  let mod = ':p:gs?[\\/]\+?/?'
+  let s:_vital_files_cache = map(files, 'fnamemodify(v:val, mod)')
   return copy(s:_vital_files_cache)
 endfunction
 
