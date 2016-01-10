@@ -413,6 +413,10 @@ function! s:_call_handler_method(this, name, args) abort
   return a:this
 endfunction
 
+function! s:_uri_clone() dict abort
+  return deepcopy(self)
+endfunction
+
 function! s:_uri_relative(relstr) dict abort
   call self.canonicalize()
   let relobj = s:_parse_relative_ref(a:relstr, self.__pattern_set)
@@ -674,6 +678,7 @@ let s:URI = {
 \ 'query': s:_local_func('_uri_query'),
 \ 'fragment': s:_local_func('_uri_fragment'),
 \
+\ 'clone': s:_local_func('_uri_clone'),
 \ 'relative': s:_local_func('_uri_relative'),
 \ 'canonicalize': s:_local_func('_uri_canonicalize'),
 \ 'default_port': s:_local_func('_uri_default_port'),

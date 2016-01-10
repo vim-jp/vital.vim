@@ -167,6 +167,15 @@ Describe Web.URI
     End
   End
 
+  Describe .clone()
+    It clones self
+      let uri = URI.new('http://example.com/')
+      let copyuri = uri.clone().relative('/a/b/c')
+      Assert Equals(uri.to_string(), 'http://example.com/')
+      Assert Equals(copyuri.to_string(), 'http://example.com/a/b/c')
+    End
+  End
+
   " The following four URIs are equivalent:
   " * http://example.com
   " * http://example.com/
