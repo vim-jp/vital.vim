@@ -147,6 +147,18 @@ is_fragment({str})
     Returns non-zero value if {str} has right syntax
     for each component. Returns zero otherwise.
 
+*Vital.Web.URI-URI.clone()*
+clone()
+
+    This method clones a URI object itself. >
+    let s:URI = vital#of('vital').import('Web.URI')
+    let uri = s:URI.new('http://example.com/')
+    let copyuri = uri.clone().relative('/a/b/c')
+    echo uri.to_string()
+    " => 'http://example.com/'
+    echo copyuri.to_string()
+    " => 'http://example.com/a/b/c'
+<
 *Vital.Web.URI-URI.relative()*
 relative({reluri})
 
@@ -162,7 +174,7 @@ relative({reluri})
     let BASE_URI = 'http://example.com/foo/bar'
     let RELATIVE_URI = '../baz'
     echo s:URI.new(BASE_URI).relative(RELATIVE_URI).to_string()
-    " => http://example.com/foo/baz
+    " => 'http://example.com/foo/baz'
 <
 *Vital.Web.URI-URI.canonicalize()*
 canonicalize()
@@ -183,7 +195,7 @@ canonicalize()
     Example: >
     let s:URI = vital#of('vital').import('Web.URI')
     echo s:URI.new('http://example.com:80/').to_string()
-    " => http://example.com/
+    " => 'http://example.com/'
 <
 *Vital.Web.URI-URI.default_port()*
 default_port()
