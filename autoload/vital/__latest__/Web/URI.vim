@@ -1,7 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:V = {}
 function! s:_vital_loaded(V) abort
   let s:V = a:V
 endfunction
@@ -161,9 +160,6 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   let obj.__fragment = substitute(fragment, '^#', '', '')
   let obj.__pattern_set = a:pattern_set
   let obj.__handler = s:_get_handler_module(scheme, obj)
-  if !empty(obj.__handler)
-    call extend(obj.__handler, obj.__handler.new(obj))
-  endif
   return [obj, rest]
 endfunction
 
@@ -408,7 +404,7 @@ function! s:_call_handler_method(this, name, args) abort
     throw 'vital: Web.URI: ' . a:name . '(): '
     \   . "Handler was not found for scheme '" . a:this.__scheme . "'."
   endif
-  call call(a:this.__handler[a:name], a:args, a:this.__handler)
+  call call(a:this.__handler[a:name], [a:this] + a:args, a:this.__handler)
   return a:this
 endfunction
 
