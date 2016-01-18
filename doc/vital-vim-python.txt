@@ -25,10 +25,10 @@ It automatically uses a correct function/command to execute a Python code/file.
 	" => 0 or 1, depends on +python/+python3
 
 	" Execute a Python file
-	call s:P.exec_file('your/python/file.py')
+	execute s:P.exec_file('your/python/file.py')
 
 	" Execute a Python code
-	call s:P.exec_code('print("Hello Python")')
+	execute s:P.exec_code('print("Hello Python")')
 
 	" Evaluate a Python expression and return
 	echo s:P.eval_expr('1 + 1')
