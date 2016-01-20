@@ -95,7 +95,7 @@ function! s:read_content(content, ...) abort
   let tempfile = empty(tempfile) ? tempname() : tempfile
   try
     call writefile(a:content, tempfile, 'b')
-    execute printf('keepalt keepjumps read %s', shellescape(tempfile))
+    execute printf('keepalt keepjumps read %s', fnameescape(tempfile))
   finally
     call delete(tempfile)
   endtry

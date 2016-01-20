@@ -2,6 +2,7 @@ scriptencoding utf-8
 
 let s:V = vital#of('vital')
 let s:P = s:V.import('System.Filepath')
+let s:G = s:V.import('Vim.Guard')
 
 Describe Vim.Buffer
   Before all
@@ -119,6 +120,109 @@ Describe Vim.Buffer
         execute "normal! gg\<C-v>ly"
         let text = Buffer.get_last_selected()
         Assert Equals("あi", text)
+      End
+    End
+  End
+
+  Describe read_content()
+    Before
+      let guard = s:G.store('&fileencodings')
+      " Note:
+      " 'read_content' uses 'read' command thus fileencodings requires to be
+      " correctly configured.
+      set fileencodings=utf-8,euc-jp,sjis
+    End
+    After
+      call guard.restore()
+    End
+
+    Context for utf-8 contents
+      It appends contents to the current buffer
+        call setline(1, 'あいうえお')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.read_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \ 'あいうえお',
+              \])
+      End
+    End
+    Context for sjis contents
+      It appends contents to the current buffer
+        call setline(1, 'あいうえお')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/sjis.txt')
+              \)
+        call Buffer.read_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \ 'あいうえお',
+              \])
+      End
+    End
+    Context for euc-jp contents
+      It appends contents to the current buffer
+        call setline(1, 'あいうえお')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
+              \)
+        call Buffer.read_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \ 'あいうえお',
+              \])
+      End
+    End
+  End
+
+  Describe edit_content()
+    Before
+      let guard = s:G.store('&fileencodings')
+      " Note:
+      " 'edit_content' uses 'read' command thus fileencodings requires to be
+      " correctly configured.
+      set fileencodings=utf-8,euc-jp,sjis
+    End
+    After
+      call guard.restore()
+    End
+
+    Context for utf-8 contents
+      It replaces contents to the current buffer
+        call setline(1, 'かきくけこ')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.edit_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \])
+      End
+    End
+    Context for sjis contents
+      It replaces contents to the current buffer
+        call setline(1, 'かきくけこ')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/sjis.txt')
+              \)
+        call Buffer.edit_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \])
+      End
+    End
+    Context for euc-jp contents
+      It replaces contents to the current buffer
+        call setline(1, 'かきくけこ')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
+              \)
+        call Buffer.edit_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \])
       End
     End
   End
