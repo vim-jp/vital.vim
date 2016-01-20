@@ -89,6 +89,43 @@ function! s:get_last_selected() abort
   endif
 endfunction
 
+function! s:read_content(content, ...) abort
+  let tempfile = get(a:000, 0, tempname())
+  try
+    call writefile(a:content, tempfile, 'b')
+    execute printf('keepalt keepjumps read %s', shellescape(tempfile))
+  finally
+    call delete(tempfile)
+  endtry
+endfunction
+
+function! s:edit_content(content, ...) abort
+  let saved_view = winsaveview()
+  let saved_modifiable = &l:modifiable
+  let saved_undolevels = &l:undolevels
+  let &l:modifiable=1
+  let &l:undolevels=-1
+  silent keepjumps %delete_
+  silent call s:read_content(a:content, get(a:000, 0, tempname()))
+  silent keepjumps 1delete_
+  keepjump call winrestview(saved_view)
+  let &l:modifiable = saved_modifiable
+  let &l:undolevels = saved_undolevels
+  setlocal nomodified
+endfunction
+
+function! s:wipeout_all() abort
+  let buflist = []
+  for i in range(tabpagenr('$'))
+    call extend(buflist, tabpagebuflist(i + 1))
+  endfor
+  for bufnum in buflist
+    if bufexists(bufnum)
+      silent execute printf('%dbwipeout!', bufnum)
+    endif
+  endfor
+  silent bwipeout!
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
