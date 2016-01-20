@@ -1,6 +1,8 @@
 *vital-vim-buffer.txt*	Vim's buffer related stuff in general.
 
-Maintainers: thinca <thinca+vim@gmail.com>, ujihisa <ujihisa at gmail com>
+Maintainers: thinca <thinca+vim@gmail.com>
+             ujihisa <ujihisa at gmail com>
+             lambdalisue <lambdalisue@hashnote.net>
 
 ==============================================================================
 CONTENTS			*Vital.Vim.Buffer-contents*
@@ -63,6 +65,16 @@ open({buffer}, {opener})		*Vital.Vim.Buffer.open()*
 	(See |bufname()|). If a |Funcref| is specified, the function will be called
 	with the {buffer} as a first argument.
 
+read_content({content}[, {tempfile}])	*Vital.Vim.Buffer.read_content()*
+	Insert {content} (|List|) below the cursor of the current buffer.
+	It uses |:read| command internally to allow automatic fileencoding
+	detection of Vim (See |fileencodings|).
+	The {tempfile} is a name of temporary file. Note that the file will be
+	removed automatically.
+
+edit_content({content}[, {tempfile}])	*Vital.Vim.Bufer.edit_content()*
+	Replace content of the current buffer to {content}.
+	It calls |Vital.Vim.Buffer.read_content()| internally.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
