@@ -117,19 +117,6 @@ function! s:edit_content(content, ...) abort
   setlocal nomodified
 endfunction
 
-function! s:wipeout_all() abort
-  let buflist = []
-  for i in range(tabpagenr('$'))
-    call extend(buflist, tabpagebuflist(i + 1))
-  endfor
-  for bufnum in buflist
-    if bufexists(bufnum)
-      silent execute printf('%dbwipeout!', bufnum)
-    endif
-  endfor
-  silent bwipeout!
-endfunction
-
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
