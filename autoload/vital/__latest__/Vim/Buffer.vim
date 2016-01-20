@@ -91,7 +91,8 @@ function! s:get_last_selected() abort
 endfunction
 
 function! s:read_content(content, ...) abort
-  let tempfile = get(a:000, 0, tempname())
+  let tempfile = get(a:000, 0, '')
+  let tempfile = empty(tempfile) ? tempname() : tempfile
   try
     call writefile(a:content, tempfile, 'b')
     execute printf('keepalt keepjumps read %s', shellescape(tempfile))
@@ -107,7 +108,7 @@ function! s:edit_content(content, ...) abort
     let &l:modifiable=1
     let &l:undolevels=-1
     silent keepjumps %delete_
-    silent call s:read_content(a:content, get(a:000, 0, tempname()))
+    silent call s:read_content(a:content, get(a:000, 0, ''))
     silent keepjumps 1delete_
     keepjump call winrestview(saved_view)
   finally
