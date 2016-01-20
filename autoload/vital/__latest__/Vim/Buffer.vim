@@ -102,11 +102,10 @@ function! s:read_content(content, ...) abort
 endfunction
 
 function! s:edit_content(content, ...) abort
-  let guard = s:G.store('&l:modifiable', '&l:undolevels')
+  let guard = s:G.store('&l:modifiable')
   let saved_view = winsaveview()
   try
     let &l:modifiable=1
-    let &l:undolevels=-1
     silent keepjumps %delete _
     silent call s:read_content(a:content, get(a:000, 0, ''))
     silent keepjumps 1delete _
