@@ -4,10 +4,11 @@ set cpo&vim
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:P = s:V.import('Prelude')
+  let s:G = s:V.import('Vim.Guard')
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Prelude']
+  return ['Prelude', 'Vim.Guard']
 endfunction
 
 if exists('*getcmdwintype')
@@ -100,17 +101,18 @@ function! s:read_content(content, ...) abort
 endfunction
 
 function! s:edit_content(content, ...) abort
+  let guard = s:G.store('&l:modifiable', '&l:undolevels')
   let saved_view = winsaveview()
-  let saved_modifiable = &l:modifiable
-  let saved_undolevels = &l:undolevels
-  let &l:modifiable=1
-  let &l:undolevels=-1
-  silent keepjumps %delete_
-  silent call s:read_content(a:content, get(a:000, 0, tempname()))
-  silent keepjumps 1delete_
-  keepjump call winrestview(saved_view)
-  let &l:modifiable = saved_modifiable
-  let &l:undolevels = saved_undolevels
+  try
+    let &l:modifiable=1
+    let &l:undolevels=-1
+    silent keepjumps %delete_
+    silent call s:read_content(a:content, get(a:000, 0, tempname()))
+    silent keepjumps 1delete_
+    keepjump call winrestview(saved_view)
+  finally
+    call guard.restore()
+  endtry
   setlocal nomodified
 endfunction
 
