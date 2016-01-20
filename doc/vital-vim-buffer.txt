@@ -65,14 +65,17 @@ open({buffer}, {opener})		*Vital.Vim.Buffer.open()*
 	(See |bufname()|). If a |Funcref| is specified, the function will be called
 	with the {buffer} as a first argument.
 
-read_content({content}[, {tempfile}])	*Vital.Vim.Buffer.read_content()*
+read_content({content}[, {options}])	*Vital.Vim.Buffer.read_content()*
 	Insert {content} (|List|) below the cursor of the current buffer.
 	It uses |:read| command internally to allow automatic fileencoding
 	detection of Vim (See |fileencodings|).
-	The {tempfile} is a name of temporary file. Note that the file will be
-	removed automatically.
+	The following attributes are allowed in {options}:
 
-edit_content({content}[, {tempfile}])	*Vital.Vim.Bufer.edit_content()*
+	'tempfile'
+	a name of temporary file. Note that the file will be removed
+	automatically.
+
+edit_content({content}[, {options}])	*Vital.Vim.Bufer.edit_content()*
 	Replace content of the current buffer to {content}.
 	It calls |Vital.Vim.Buffer.read_content()| internally.
 

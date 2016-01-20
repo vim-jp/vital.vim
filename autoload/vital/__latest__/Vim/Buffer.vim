@@ -91,8 +91,10 @@ function! s:get_last_selected() abort
 endfunction
 
 function! s:read_content(content, ...) abort
-  let tempfile = get(a:000, 0, '')
-  let tempfile = empty(tempfile) ? tempname() : tempfile
+  let options = extend({
+        \ 'tempfile': '',
+        \}, get(a:000, 0, {}))
+  let tempfile = empty(options.tempfile) ? tempname() : options.tempfile
   try
     call writefile(a:content, tempfile, 'b')
     execute printf('keepalt keepjumps read %s', fnameescape(tempfile))
@@ -107,7 +109,7 @@ function! s:edit_content(content, ...) abort
   try
     let &l:modifiable=1
     silent keepjumps %delete _
-    silent call s:read_content(a:content, get(a:000, 0, ''))
+    silent call s:read_content(a:content, get(a:000, 0, {}))
     silent keepjumps 1delete _
   finally
     keepjump call winrestview(saved_view)
