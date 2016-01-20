@@ -93,23 +93,44 @@ endfunction
 function! s:read_content(content, ...) abort
   let options = extend({
         \ 'tempfile': '',
+        \ 'fileformat': '',
+        \ 'encoding': '',
+        \ 'binary': 0,
+        \ 'nobinary': 0,
+        \ 'bad': '',
+        \ 'edit': 0,
         \}, get(a:000, 0, {}))
   let tempfile = empty(options.tempfile) ? tempname() : options.tempfile
+  let optnames = [
+        \ empty(options.fileformat) ? '' : '++ff=' . options.fileformat,
+        \ empty(options.encoding) ? '' : '++enc=' . options.encoding,
+        \ empty(options.binary) ? '' : '++bin',
+        \ empty(options.nobinary) ? '' : '++nobin',
+        \ empty(options.bad) ? '' : '++bad=' . options.bad,
+        \ empty(options.edit) ? '' : '++edit',
+        \]
+  let optname = join(filter(optnames, '!empty(v:val)'))
   try
     call writefile(a:content, tempfile, 'b')
-    execute printf('keepalt keepjumps read %s', fnameescape(tempfile))
+    execute printf('keepalt keepjumps read %s%s',
+          \ empty(optname) ? '' : optname . ' ',
+          \ fnameescape(tempfile),
+          \)
   finally
     call delete(tempfile)
   endtry
 endfunction
 
 function! s:edit_content(content, ...) abort
+  let options = extend({
+        \ 'edit': 1,
+        \}, get(a:000, 0, {}))
   let guard = s:G.store('&l:modifiable')
   let saved_view = winsaveview()
   try
     let &l:modifiable=1
     silent keepjumps %delete _
-    silent call s:read_content(a:content, get(a:000, 0, {}))
+    silent call s:read_content(a:content, options)
     silent keepjumps 1delete _
   finally
     keepjump call winrestview(saved_view)

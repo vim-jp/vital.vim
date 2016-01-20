@@ -126,11 +126,12 @@ Describe Vim.Buffer
 
   Describe read_content()
     Before
-      let guard = s:G.store('&fileencodings')
+      let guard = s:G.store('&fileencodings', '&fileencoding')
       " Note:
       " 'read_content' uses 'read' command thus fileencodings requires to be
       " correctly configured.
       set fileencodings=utf-8,euc-jp,sjis
+      set fileencoding=utf-8
     End
     After
       call guard.restore()
@@ -147,6 +148,7 @@ Describe Vim.Buffer
               \ 'あいうえお',
               \ 'あいうえお',
               \])
+        Assert Equals(&fileencoding, 'utf-8')
       End
     End
     Context for sjis contents
@@ -160,6 +162,7 @@ Describe Vim.Buffer
               \ 'あいうえお',
               \ 'あいうえお',
               \])
+        Assert Equals(&fileencoding, 'utf-8')
       End
     End
     Context for euc-jp contents
@@ -173,17 +176,19 @@ Describe Vim.Buffer
               \ 'あいうえお',
               \ 'あいうえお',
               \])
+        Assert Equals(&fileencoding, 'utf-8')
       End
     End
   End
 
   Describe edit_content()
     Before
-      let guard = s:G.store('&fileencodings')
+      let guard = s:G.store('&fileencodings', '&fileencoding')
       " Note:
       " 'edit_content' uses 'read' command thus fileencodings requires to be
       " correctly configured.
       set fileencodings=utf-8,euc-jp,sjis
+      set fileencoding=utf-8
     End
     After
       call guard.restore()
@@ -199,6 +204,7 @@ Describe Vim.Buffer
         Assert Equals(getline(1, '$'), [
               \ 'あいうえお',
               \])
+        Assert Equals(&fileencoding, 'utf-8')
       End
     End
     Context for sjis contents
@@ -211,6 +217,7 @@ Describe Vim.Buffer
         Assert Equals(getline(1, '$'), [
               \ 'あいうえお',
               \])
+        Assert Equals(&fileencoding, 'sjis')
       End
     End
     Context for euc-jp contents
@@ -223,6 +230,7 @@ Describe Vim.Buffer
         Assert Equals(getline(1, '$'), [
               \ 'あいうえお',
               \])
+        Assert Equals(&fileencoding, 'euc-jp')
       End
     End
   End

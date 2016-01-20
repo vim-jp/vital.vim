@@ -72,12 +72,35 @@ read_content({content}[, {options}])	*Vital.Vim.Buffer.read_content()*
 	The following attributes are allowed in {options}:
 
 	'tempfile'
-	a name of temporary file. Note that the file will be removed
-	automatically.
+	A name of temporary file.
+	Note that the file will be removed automatically.
+	A default value is a result |String| of |tempname()|.
+	'fileformat'
+	To overrides 'fileformat'. See |++ff|.
+	A default value is ''.
+	'encoding'
+	To overrides 'fileencoding'. See |++enc|.
+	A default value is ''.
+	'binary'
+	To sets 'binary'. See |++bin|.
+	A default value is 0.
+	'nobin'
+	To resets 'binary'. See |++nobin|.
+	A default value is 0.
+	'bad'
+	To specifies behavior for bad characters. See |++bad|.
+	A default value is ''.
+	'edit'
+	To keep option values as if editing a file. See |++edit|.
+	A default value is 0.
 
 edit_content({content}[, {options}])	*Vital.Vim.Bufer.edit_content()*
-	Replace content of the current buffer to {content}.
-	It calls |Vital.Vim.Buffer.read_content()| internally.
+	Replace content of the current buffer to {content}. It is similar to
+	|:edit| command, mean that |fileformat|, |fileencoding|, and |binary|
+	options of the current buffer will be overwritten in default behavior.
+	It calls |Vital.Vim.Buffer.read_content()| with options.edit=1 in default
+	so developers can change the behavior of internal |:read| command as
+	|Vital.Vim.Buffer.read_content()|.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
