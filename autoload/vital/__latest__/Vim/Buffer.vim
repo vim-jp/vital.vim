@@ -107,9 +107,9 @@ function! s:edit_content(content, ...) abort
   try
     let &l:modifiable=1
     let &l:undolevels=-1
-    silent keepjumps %delete_
+    silent keepjumps %delete _
     silent call s:read_content(a:content, get(a:000, 0, ''))
-    silent keepjumps 1delete_
+    silent keepjumps 1delete _
     keepjump call winrestview(saved_view)
   finally
     call guard.restore()
