@@ -110,8 +110,8 @@ function! s:edit_content(content, ...) abort
     silent keepjumps %delete _
     silent call s:read_content(a:content, get(a:000, 0, ''))
     silent keepjumps 1delete _
-    keepjump call winrestview(saved_view)
   finally
+    keepjump call winrestview(saved_view)
     call guard.restore()
   endtry
   setlocal nomodified
