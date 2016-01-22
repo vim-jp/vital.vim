@@ -1,5 +1,6 @@
 let s:self_version = expand('<sfile>:t:r')
 let s:self_file = expand('<sfile>')
+let s:base_dir = expand('<sfile>:h')
 
 let s:loaded = {}
 let s:cache_module_path = {}
@@ -9,6 +10,11 @@ let s:_unify_path_cache = {}
 
 function! s:_vital_created(module) abort
   let a:module.vital_files = s:_vital_files()
+endfunction
+
+function! s:plugin_name() abort
+  let info_file = get(split(glob(s:base_dir . '/*.vital', 1), "\n"), 0, '')
+  return fnamemodify(info_file, ':t:r')
 endfunction
 
 function! s:import(name, ...) dict abort
