@@ -9,7 +9,7 @@ let s:cache_sid = {}
 let s:_unify_path_cache = {}
 
 function! s:_vital_created(module) abort
-  let a:module.vital_files = s:_vital_files()
+  let a:module.vital_files = copy(s:vital_files)
 endfunction
 
 function! s:plugin_name() abort
@@ -172,7 +172,7 @@ else
   endfunction
 endif
 
-function! s:_vital_files() abort
+function! s:_self_vital_files() abort
   if exists('s:_vital_files_cache')
     return copy(s:_vital_files_cache)
   endif
@@ -182,6 +182,16 @@ function! s:_vital_files() abort
   let s:_vital_files_cache = map(files, 'fnamemodify(v:val, mod)')
   return copy(s:_vital_files_cache)
 endfunction
+
+function! s:_global_vital_files() abort
+  let pattern = 'autoload/vital/__latest__/**/*.vim'
+  return split(globpath(&runtimepath, pattern, 1), "\n")
+endfunction
+
+let s:vital_files =
+\   s:plugin_name() ==# 'vital'
+\     ? s:_global_vital_files()
+\     : s:_self_vital_files()
 
 function! s:_extract_files(pattern, files) abort
   let tr = {'.': '/', '*': '[^/]*', '**': '.*'}

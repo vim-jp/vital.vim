@@ -93,7 +93,6 @@ function! s:search_dependence(depends_info) abort
   let g:vital_debug = 1
   let V = vital#of('vital')
   call V.unload()
-  let V.vital_files = s:available_module_files()
   let all = {}
   let data_files = []
   let entries = copy(a:depends_info)
