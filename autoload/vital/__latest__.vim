@@ -111,9 +111,7 @@ function! s:_get_module_path(name) abort
   if s:_is_absolute_path(a:name) && filereadable(a:name)
     return a:name
   endif
-  if a:name ==# ''
-    let paths = [s:self_file]
-  elseif a:name =~# '\v^\u\w*%(\.\u\w*)*$'
+  if a:name =~# '\v^\u\w*%(\.\u\w*)*$'
     let paths = s:_extract_files(a:name, s:vital_files)
   else
     throw 'vital: Invalid module name: ' . a:name
@@ -278,5 +276,6 @@ function! s:_redir(cmd) abort
 endfunction
 
 function! vital#{s:self_version}#new() abort
-  return s:_import('')
+  let sid = s:_get_sid_by_script(s:self_file)
+  return s:_build_module(sid)
 endfunction
