@@ -8,16 +8,12 @@ let s:cache_sid = {}
 
 let s:_unify_path_cache = {}
 
-function! s:_vital_created(module) abort
-  let a:module.vital_files = copy(s:vital_files)
-endfunction
-
 function! s:plugin_name() abort
   let info_file = get(split(glob(s:base_dir . '/*.vital', 1), "\n"), 0, '')
   return fnamemodify(info_file, ':t:r')
 endfunction
 
-function! s:import(name, ...) dict abort
+function! s:import(name, ...) abort
   let target = {}
   let functions = []
   for a in a:000
@@ -28,7 +24,7 @@ function! s:import(name, ...) dict abort
     endif
     unlet a
   endfor
-  let module = s:_import(a:name, self.vital_files)
+  let module = s:_import(a:name)
   if empty(functions)
     call extend(target, module, 'keep')
   else
@@ -61,7 +57,7 @@ function! s:load(...) dict abort
     endwhile
 
     if exists('dict')
-      call extend(dict, s:_import(name, self.vital_files))
+      call extend(dict, s:_import(name))
     endif
     unlet arg
   endfor
@@ -74,21 +70,21 @@ function! s:unload() abort
   let s:cache_module_path = {}
 endfunction
 
-function! s:exists(name) dict abort
-  return s:_get_module_path(a:name, self.vital_files) !=# ''
+function! s:exists(name) abort
+  return s:_get_module_path(a:name) !=# ''
 endfunction
 
-function! s:search(pattern) dict abort
-  let paths = s:_extract_files(a:pattern, self.vital_files)
+function! s:search(pattern) abort
+  let paths = s:_extract_files(a:pattern, s:vital_files)
   let modules = sort(map(paths, 's:_file2module(v:val)'))
   return s:_uniq(modules)
 endfunction
 
-function! s:_import(name, vital_files) abort
+function! s:_import(name) abort
   if type(a:name) == type(0)
     return s:_build_module(a:name)
   endif
-  let path = s:_get_module_path(a:name, a:vital_files)
+  let path = s:_get_module_path(a:name)
   if path ==# ''
     throw 'vital: module not found: ' . a:name
   endif
@@ -107,7 +103,7 @@ function! s:_import(name, vital_files) abort
   return s:_build_module(sid)
 endfunction
 
-function! s:_get_module_path(name, vital_files) abort
+function! s:_get_module_path(name) abort
   let key = a:name . '_'
   if has_key(s:cache_module_path, key)
     return s:cache_module_path[key]
@@ -118,7 +114,7 @@ function! s:_get_module_path(name, vital_files) abort
   if a:name ==# ''
     let paths = [s:self_file]
   elseif a:name =~# '\v^\u\w*%(\.\u\w*)*$'
-    let paths = s:_extract_files(a:name, a:vital_files)
+    let paths = s:_extract_files(a:name, s:vital_files)
   else
     throw 'vital: Invalid module name: ' . a:name
   endif
@@ -282,5 +278,5 @@ function! s:_redir(cmd) abort
 endfunction
 
 function! vital#{s:self_version}#new() abort
-  return s:_import('', [s:self_file])
+  return s:_import('')
 endfunction
