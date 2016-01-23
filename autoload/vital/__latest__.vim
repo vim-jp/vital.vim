@@ -168,9 +168,7 @@ endif
 
 function! s:_self_vital_files() abort
   let base = fnamemodify(s:self_file, ':h') . '/*/**/*.vim'
-  let files = split(glob(base, 1), "\n")
-  let mod = ':p:gs?[\\/]\+?/?'
-  return map(files, 'fnamemodify(v:val, mod)')
+  return split(glob(base, 1), "\n")
 endfunction
 
 function! s:_global_vital_files() abort
@@ -179,9 +177,11 @@ function! s:_global_vital_files() abort
 endfunction
 
 let s:vital_files =
-\   s:plugin_name() ==# 'vital'
-\     ? s:_global_vital_files()
-\     : s:_self_vital_files()
+\   map(
+\     s:plugin_name() ==# 'vital'
+\       ? s:_global_vital_files()
+\       : s:_self_vital_files(),
+\     'fnamemodify(v:val, ":p:gs?[\\\\/]?/?")')
 
 function! s:_extract_files(pattern, files) abort
   let tr = {'.': '/', '*': '[^/]*', '**': '.*'}
