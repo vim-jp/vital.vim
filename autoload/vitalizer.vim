@@ -337,19 +337,11 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
         endif
       endfor
     endif
+    let action = 'install'  " TODO: We need --uninstall option
     let initial_install = !isdirectory(s:FP.join(a:to, 'autoload', 'vital'))
     if empty(installing_modules) && !initial_install
-      if confirm('vitalizer: Are you sure you want to uninstall vital?', "&Yes\n&No") == 2
-        return {
-        \ 'action': 'canceled',
-        \ 'prev_hash': '',
-        \ 'installed_hash': '',
-        \}
-      endif
-      let action = 'uninstall'
       let files = []
     else
-      let action = 'install'
       let installing_modules = s:L.uniq(installing_modules)
       let files = s:search_dependence(installing_modules)
     endif
