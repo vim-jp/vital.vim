@@ -167,14 +167,10 @@ else
 endif
 
 function! s:_self_vital_files() abort
-  if exists('s:_vital_files_cache')
-    return copy(s:_vital_files_cache)
-  endif
   let base = fnamemodify(s:self_file, ':h') . '/*/**/*.vim'
   let files = split(glob(base, 1), "\n")
   let mod = ':p:gs?[\\/]\+?/?'
-  let s:_vital_files_cache = map(files, 'fnamemodify(v:val, mod)')
-  return copy(s:_vital_files_cache)
+  return map(files, 'fnamemodify(v:val, mod)')
 endfunction
 
 function! s:_global_vital_files() abort
