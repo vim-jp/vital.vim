@@ -177,13 +177,8 @@ function! s:file2module(file) abort
   return join(split(tail, '[\\/]\+'), '.')
 endfunction
 
-function! s:available_module_files() abort
-  let pattern = 'autoload/vital/__latest__/**/*.vim'
-  return split(globpath(&runtimepath, pattern, 1), "\n")
-endfunction
-
 function! s:available_module_names() abort
-  return sort(s:L.uniq(filter(map(s:available_module_files(),
+  return sort(s:L.uniq(filter(map(s:V.vital_files(),
   \          's:file2module(v:val)'), 's:is_module_name(v:val)')))
 endfunction
 

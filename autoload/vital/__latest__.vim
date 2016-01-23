@@ -13,6 +13,10 @@ function! s:plugin_name() abort
   return fnamemodify(info_file, ':t:r')
 endfunction
 
+function! s:vital_files() abort
+  return copy(s:vital_files)
+endfunction
+
 function! s:import(name, ...) abort
   let target = {}
   let functions = []
