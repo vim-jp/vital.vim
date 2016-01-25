@@ -168,8 +168,8 @@ A lot of vim plugins are using vital.vim
   [tyru](http://github.com/tyru)
 * ![](https://secure.gravatar.com/avatar/1ba93fd9e39ebf48777f217c38e768fd)
   [mattn](http://github.com/mattn)
-* ![](https://avatars2.githubusercontent.com/u/823277?v=3&s=80)
-  [rhysd](https://github.com/rhysd)
+* ![](https://avatars1.githubusercontent.com/u/546312?v=3&s=80)
+  [lambdalisue](https://github.com/lambdalisue)
 * ... and lots more <https://github.com/vim-jp/vital.vim/graphs/contributors>
 
 ## License
