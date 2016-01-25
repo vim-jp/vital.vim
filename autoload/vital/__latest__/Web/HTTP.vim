@@ -508,6 +508,7 @@ function! s:clients.curl.request(settings) abort
   endif
   if has_key(a:settings, 'username')
     let auth = a:settings.username . ':' . get(a:settings, 'password', '')
+    let auth = escape(auth, quote)
     if has_key(a:settings, 'authMethod')
       if index(['basic', 'digest', 'ntlm', 'negotiate'], a:settings.authMethod) == -1
         throw 'vital: Web.HTTP: Invalid authorization method: ' . a:settings.authMethod
@@ -602,10 +603,10 @@ function! s:clients.wget.request(settings) abort
     let command .= ' --timeout=' . timeout
   endif
   if has_key(a:settings, 'username')
-    let command .= ' --http-user=' . quote . a:settings.username . quote
+    let command .= ' --http-user=' . quote . escape(a:settings.username, quote) . quote
   endif
   if has_key(a:settings, 'password')
-    let command .= ' --http-password=' . quote . a:settings.password . quote
+    let command .= ' --http-password=' . quote . escape(a:settings.password, quote) . quote
   endif
   let command .= ' ' . quote . a:settings.url . quote
   if has_key(a:settings, 'data')
