@@ -480,7 +480,7 @@ endfunction
 "             / "2" %x30-34 DIGIT     ; 200-249
 "             / "25" %x30-35          ; 250-255
 function! s:DefaultPatternSet.dec_octet() abort
-  return '\%([0-9]\|[1-9][0-9]\|1[0-9][0-9]\|2[0-4][0-9]\|25[0-5]\)'
+  return '\%(1[0-9][0-9]\|2[0-4][0-9]\|25[0-5]\|[1-9][0-9]\|[0-9]\)'
 endfunction
 " IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
 function! s:DefaultPatternSet.ipv4address() abort

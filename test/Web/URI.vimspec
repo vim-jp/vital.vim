@@ -62,6 +62,20 @@ Describe Web.URI
       Assert Equals(uri.to_string(), 'http:///home/tyru/')
     End
 
+    It parses a IPv4 Address URL
+      let uri = URI.new('http://203.0.113.11')
+      Assert Equals(uri.scheme(), 'http')
+      Assert Equals(uri.userinfo(), '')
+      Assert Equals(uri.host(), '203.0.113.11')
+      Assert Equals(uri.port(), '')
+      Assert Equals(uri.path(), '/')
+      Assert Equals(uri.authority(), '203.0.113.11')
+      Assert Equals(uri.opaque(), '//203.0.113.11/')
+      Assert Equals(uri.query(), '')
+      Assert Equals(uri.fragment(), '')
+      Assert Equals(uri.to_string(), 'http://203.0.113.11/')
+    End
+
     It parses a complex URL
       let uri = URI.new('http://user:password@example.com:8080/path/for/test?q=query#fragment')
       Assert Equals(uri.scheme(), 'http')
@@ -105,6 +119,9 @@ Describe Web.URI
       Assert Equals(URI.new_from_uri_like_string('example.com').to_string(), 'http://example.com/')
       Assert Equals(URI.new_from_uri_like_string('/home/tyru').to_string(), 'http:///home/tyru')
       Assert Equals(URI.new_from_uri_like_string('user:password@example.com:8080/path/for/test?q=query#fragment').to_string(), 'http://user:password@example.com:8080/path/for/test?q=query#fragment')
+      Assert Equals(URI.new_from_uri_like_string('http://198.51.100.1/').to_string(), 'http://198.51.100.1/')
+      Assert Equals(URI.new_from_uri_like_string('http://198.51.100.22/').to_string(), 'http://198.51.100.22/')
+      Assert Equals(URI.new_from_uri_like_string('http://198.51.100.199/').to_string(), 'http://198.51.100.199/')
     End
   End
 
