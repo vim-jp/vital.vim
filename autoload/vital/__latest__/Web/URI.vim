@@ -392,7 +392,8 @@ function! s:_uri_fragment(...) dict abort
 endfunction
 
 function! s:_uri_canonicalize() dict abort
-  return s:_call_handler_method(self, 'canonicalize', [])
+  call s:_call_handler_method(self, 'canonicalize', [])
+  return self
 endfunction
 
 function! s:_uri_default_port() dict abort
@@ -404,8 +405,7 @@ function! s:_call_handler_method(this, name, args) abort
     throw 'vital: Web.URI: ' . a:name . '(): '
     \   . "Handler was not found for scheme '" . a:this.__scheme . "'."
   endif
-  call call(a:this.__handler[a:name], [a:this] + a:args, a:this.__handler)
-  return a:this
+  return call(a:this.__handler[a:name], [a:this] + a:args)
 endfunction
 
 function! s:_uri_clone() dict abort

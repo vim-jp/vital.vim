@@ -11,13 +11,11 @@ function! s:_vital_depends() abort
 endfunction
 
 
-" In order to let s:HTTP.canonicalize()
-" calls s:HTTPS.default_port(), pass self.
-function! s:canonicalize(uriobj) dict abort
-  return call(s:HTTP.canonicalize, [a:uriobj], self)
+function! s:canonicalize(uriobj) abort
+  return s:HTTP.canonicalize(a:uriobj)
 endfunction
 
-function! s:default_port(uriobj) dict abort
+function! s:default_port(uriobj) abort
   return '443'
 endfunction
 
