@@ -171,7 +171,7 @@ else
 endif
 
 function! s:_self_vital_files() abort
-  let base = fnamemodify(s:self_file, ':h') . '/*/**/*.vim'
+  let base = s:base_dir . '/*/**/*.vim'
   return split(glob(base, 1), "\n")
 endfunction
 
