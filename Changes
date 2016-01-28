@@ -1,3 +1,14 @@
+6703d4694c3bc0f23d7eb01b1bf79f85902a5edf
+	Modules: Web.URI
+	URI.path() behavior is changed to not prepend '/' for empty path.
+	e.g.: http://example.com
+	But URI.canonicalize() does this.
+b2fd058b94361ca0a9b982f2ba8976dd4f8cda20
+	Modules: Web.URI
+	All URI object methods behavior with arguments(setter) are changed to return URI object itself.
+b96e772738125ad23b9a396761ab2e37be3b0b2e
+	Modules: Web.URI
+	All URI object methods behavior are changed to throw an exception for invalid arguments.
 3ba9447aef5b2a2ffc9899f0d240333bc075afa5
 	Modules: System.Cache
 	System.Cache is replaced with a new version.
