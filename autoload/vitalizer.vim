@@ -91,8 +91,7 @@ function! s:search_dependence(depends_info) abort
     let vital_debug = g:vital_debug
   endif
   let g:vital_debug = 1
-  let V = vital#of('vital')
-  call V.unload()
+  call s:V.unload()
   let all = {}
   let data_files = []
   let entries = copy(a:depends_info)
@@ -101,10 +100,10 @@ function! s:search_dependence(depends_info) abort
     unlet! entry
     let entry = remove(entries, 0)
 
-    let modules = s:expand_modules(V, entry, all)
+    let modules = s:expand_modules(s:V, entry, all)
 
     for module in modules
-      let M = V.import(module)
+      let M = s:V.import(module)
       if has_key(M, '_vital_depends')
         let depends = M._vital_depends()
         if s:P.is_dict(depends)
