@@ -14,6 +14,14 @@ function! s:plugin_name() abort
 endfunction
 
 function! s:vital_files() abort
+  if !exists('s:vital_files')
+    let s:vital_files =
+    \   map(
+    \     s:plugin_name() ==# 'vital'
+    \       ? s:_global_vital_files()
+    \       : s:_self_vital_files(),
+    \     'fnamemodify(v:val, ":p:gs?[\\\\/]?/?")')
+  endif
   return copy(s:vital_files)
 endfunction
 
@@ -72,6 +80,7 @@ function! s:unload() abort
   let s:loaded = {}
   let s:cache_sid = {}
   let s:cache_module_path = {}
+  unlet! s:vital_files
 endfunction
 
 function! s:exists(name) abort
@@ -79,7 +88,7 @@ function! s:exists(name) abort
 endfunction
 
 function! s:search(pattern) abort
-  let paths = s:_extract_files(a:pattern, s:vital_files)
+  let paths = s:_extract_files(a:pattern, s:vital_files())
   let modules = sort(map(paths, 's:_file2module(v:val)'))
   return s:_uniq(modules)
 endfunction
@@ -116,7 +125,7 @@ function! s:_get_module_path(name) abort
     return a:name
   endif
   if a:name =~# '\v^\u\w*%(\.\u\w*)*$'
-    let paths = s:_extract_files(a:name, s:vital_files)
+    let paths = s:_extract_files(a:name, s:vital_files())
   else
     throw 'vital: Invalid module name: ' . a:name
   endif
@@ -180,18 +189,11 @@ function! s:_global_vital_files() abort
   return split(globpath(&runtimepath, pattern, 1), "\n")
 endfunction
 
-let s:vital_files =
-\   map(
-\     s:plugin_name() ==# 'vital'
-\       ? s:_global_vital_files()
-\       : s:_self_vital_files(),
-\     'fnamemodify(v:val, ":p:gs?[\\\\/]?/?")')
-
 function! s:_extract_files(pattern, files) abort
   let tr = {'.': '/', '*': '[^/]*', '**': '.*'}
   let target = substitute(a:pattern, '\.\|\*\*\?', '\=tr[submatch(0)]', 'g')
   let regexp = printf('autoload/vital/[^/]\+/%s.vim$', target)
-  return filter(copy(a:files), 'v:val =~# regexp')
+  return filter(a:files, 'v:val =~# regexp')
 endfunction
 
 " Copy from System.Filepath
