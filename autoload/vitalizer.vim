@@ -103,34 +103,39 @@ function! s:search_dependence(depends_info) abort
     let modules = s:expand_modules(s:V, entry, all)
 
     for module in modules
-      let M = s:V.import(module)
-      if has_key(M, '_vital_depends')
-        let depends = M._vital_depends()
-        if s:P.is_dict(depends)
-          let dmodules = get(depends, 'modules', [])
-          let dfiles = get(depends, 'files', [])
-        elseif s:P.is_list(depends)
-          let [dmodules, dfiles] = s:L.partition('v:val[0] !=# "."', depends)
-        else
-          throw printf('vitalizer: %s has wrong dependence.(%s)',
-          \            module, string(depends))
-        endif
-        unlet depends
-        call extend(entries, dmodules)
-        if !empty(dfiles)
-          let module_file = s:module2file(module)
-          let module_base = s:FP.dirname(module_file)
-          call map(dfiles, 's:FP.join(module_base, v:val)')
-          call map(dfiles, 'simplify(v:val)')
-          let data_files += dfiles
-        endif
-      endif
+      let [dmodules, dfiles] = s:get_dependence(s:V, module)
+      let entries += dmodules
+      let data_files += dfiles
     endfor
   endwhile
   if exists('vital_debug')
     let g:vital_debug = vital_debug
   endif
   return sort(map(keys(all), 's:module2file(v:val)') + data_files)
+endfunction
+
+function! s:get_dependence(V, module) abort
+  let M = a:V.import(a:module)
+  if !has_key(M, '_vital_depends')
+    return [[], []]
+  endif
+  let depends = M._vital_depends()
+  if s:P.is_dict(depends)
+    let dmodules = get(depends, 'modules', [])
+    let dfiles = get(depends, 'files', [])
+  elseif s:P.is_list(depends)
+    let [dmodules, dfiles] = s:L.partition('v:val[0] !=# "."', depends)
+  else
+    throw printf('vitalizer: %s has wrong dependence.(%s)',
+    \            a:module, string(depends))
+  endif
+  if !empty(dfiles)
+    let module_file = s:module2file(a:module)
+    let module_base = s:FP.dirname(module_file)
+    call map(dfiles, 's:FP.join(module_base, v:val)')
+    call map(dfiles, 'simplify(v:val)')
+  endif
+  return [dmodules, dfiles]
 endfunction
 
 function! s:expand_modules(V, entry, all) abort
