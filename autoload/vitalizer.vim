@@ -85,16 +85,26 @@ function! s:rmfile(file) abort
   endif
 endfunction
 
-function! s:search_dependence(depends_info) abort
+function! s:search_dependence(depends_info, to) abort
   " XXX Not smart...
   if exists('g:vital_debug')
     let vital_debug = g:vital_debug
   endif
   let g:vital_debug = 1
+  let save_rtp = &runtimepath
+  let &runtimepath = a:to . ',' . &runtimepath
+
   call s:V.unload()
   let all = {}
   let data_files = []
   let entries = copy(a:depends_info)
+
+  for module in s:builtin_modules(a:to)
+    " Ignore dfiles because it is builtin
+    let dmodules = s:get_dependence(s:V, module)[0]
+    let entries += dmodules
+  endfor
+
   while !empty(entries)
     call s:L.sort_by(entries, 'type(v:val) == type([]) ? len(v:val) : 0')
     unlet! entry
@@ -108,9 +118,12 @@ function! s:search_dependence(depends_info) abort
       let data_files += dfiles
     endfor
   endwhile
+
   if exists('vital_debug')
     let g:vital_debug = vital_debug
   endif
+  let &runtimepath = save_rtp
+
   return sort(map(keys(all), 's:module2file(v:val)') + data_files)
 endfunction
 
@@ -184,6 +197,12 @@ endfunction
 function! s:available_module_names() abort
   return sort(s:L.uniq(filter(map(s:V.vital_files(),
   \          's:file2module(v:val)'), 's:is_module_name(v:val)')))
+endfunction
+
+function! s:builtin_modules(rtp_dir) abort
+  let pat = s:FP.join(a:rtp_dir, 'autoload/vital/__latest__/**/*.vim')
+  let files = split(glob(pat, 1), "\n")
+  return map(files, 's:file2module(v:val)')
 endfunction
 
 function! s:get_changes() abort
@@ -342,13 +361,8 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
       endfor
     endif
     let action = 'install'  " TODO: We need --uninstall option
-    let initial_install = !isdirectory(s:FP.join(a:to, 'autoload', 'vital'))
-    if empty(installing_modules) && !initial_install
-      let files = []
-    else
-      let installing_modules = s:L.uniq(installing_modules)
-      let files = s:search_dependence(installing_modules)
-    endif
+    let installing_modules = s:L.uniq(installing_modules)
+    let files = s:search_dependence(installing_modules, a:to)
 
     " Show critical changes.
     " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
