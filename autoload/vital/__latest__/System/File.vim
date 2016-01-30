@@ -56,7 +56,7 @@ function! s:open(filename) abort
           \ shellescape(filename)))
   else
     " Give up.
-    throw 'Not supported.'
+    throw 'vital: System.File: open(): Not supported.'
   endif
 endfunction
 
@@ -83,7 +83,7 @@ elseif s:is_windows
   endfunction
 else
   function! s:_has_move_exe() abort
-    throw 'vital: System.File._has_move_exe(): your platform is not supported'
+    throw 'vital: System.File: _has_move_exe(): your platform is not supported'
   endfunction
 endif
 
@@ -116,7 +116,7 @@ elseif s:is_windows
   endfunction
 else
   function! s:move_exe() abort
-    throw 'vital: System.File.move_exe(): your platform is not supported'
+    throw 'vital: System.File: move_exe(): your platform is not supported'
   endfunction
 endif
 
@@ -146,7 +146,7 @@ elseif s:is_windows
   endfunction
 else
   function! s:_has_copy_exe() abort
-    throw 'vital: System.File._has_copy_exe(): your platform is not supported'
+    throw 'vital: System.File: _has_copy_exe(): your platform is not supported'
   endfunction
 endif
 
@@ -171,7 +171,7 @@ elseif s:is_windows
   endfunction
 else
   function! s:copy_exe() abort
-    throw 'vital: System.File.copy_exe(): your platform is not supported'
+    throw 'vital: System.File: copy_exe(): your platform is not supported'
   endfunction
 endif
 
@@ -206,7 +206,7 @@ if s:is_unix
     let ret = system(cmd . ' ' . shellescape(a:path))
     if v:shell_error
       let ret = iconv(ret, 'char', &encoding)
-      throw substitute(ret, '\n', '', 'g')
+      throw 'vital: System.File: rmdir(): ' . substitute(ret, '\n', '', 'g')
     endif
   endfunction
 
@@ -225,13 +225,13 @@ elseif s:is_windows
     endif
     if v:shell_error
       let ret = iconv(ret, 'char', &encoding)
-      throw substitute(ret, '\n', '', 'g')
+      throw 'vital: System.File: rmdir(): ' . substitute(ret, '\n', '', 'g')
     endif
   endfunction
 
 else
   function! s:rmdir(...) abort
-    throw 'vital: System.File.rmdir(): your platform is not supported'
+    throw 'vital: System.File: rmdir(): your platform is not supported'
   endfunction
 endif
 
