@@ -198,7 +198,17 @@ endfunction
 
 
 " Delete a file/directory.
-if s:is_unix
+if has('patch-7.4.1128')
+  function! s:rmdir(path, ...) abort
+    let flags = a:0 ? a:1 : ''
+    let delete_flags = flags =~# 'r' ? 'rf' : 'd'
+    let result = delete(a:path, delete_flags)
+    if result == -1
+      throw 'vital: System.File: rmdir(): cannot delete "' . a:path . '"'
+    endif
+  endfunction
+
+elseif s:is_unix
   function! s:rmdir(path, ...) abort
     let flags = a:0 ? a:1 : ''
     let cmd = flags =~# 'r' ? 'rm -r' : 'rmdir'
