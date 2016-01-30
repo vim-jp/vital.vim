@@ -111,7 +111,7 @@ function! s:read_content(content, ...) abort
         \]
   let optname = join(filter(optnames, '!empty(v:val)'))
   try
-    call writefile(a:content, tempfile, 'b')
+    call writefile(a:content, tempfile)
     execute printf('keepalt keepjumps read %s%s',
           \ empty(optname) ? '' : optname . ' ',
           \ fnameescape(tempfile),
