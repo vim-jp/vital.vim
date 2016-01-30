@@ -15,7 +15,7 @@ let s:is_mac = !s:is_windows && !s:is_cygwin
 let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 
 " Open a file.
-function! s:open(filename) abort "{{{
+function! s:open(filename) abort
   let filename = fnamemodify(a:filename, ':p')
 
   " Detect desktop environment.
@@ -58,20 +58,20 @@ function! s:open(filename) abort "{{{
     " Give up.
     throw 'Not supported.'
   endif
-endfunction "}}}
+endfunction
 
 
 " Move a file.
 " Dispatch s:move_exe() or s:move_vim().
 " FIXME: Currently s:move_vim() does not support
 " moving a directory.
-function! s:move(src, dest) abort "{{{
+function! s:move(src, dest) abort
   if s:_has_move_exe() || isdirectory(a:src)
     return s:move_exe(a:src, a:dest)
   else
     return s:move_vim(a:src, a:dest)
   endif
-endfunction "}}}
+endfunction
 
 if s:is_unix
   function! s:_has_move_exe() abort
@@ -122,19 +122,19 @@ endif
 
 " Move a file.
 " Implemented by pure Vim script.
-function! s:move_vim(src, dest) abort "{{{
+function! s:move_vim(src, dest) abort
   return !rename(a:src, a:dest)
-endfunction "}}}
+endfunction
 
 " Copy a file.
 " Dispatch s:copy_exe() or s:copy_vim().
-function! s:copy(src, dest) abort "{{{
+function! s:copy(src, dest) abort
   if s:_has_copy_exe()
     return s:copy_exe(a:src, a:dest)
   else
     return s:copy_vim(a:src, a:dest)
   endif
-endfunction "}}}
+endfunction
 
 if s:is_unix
   function! s:_has_copy_exe() abort
@@ -177,24 +177,24 @@ endif
 
 " Copy a file.
 " Implemented by pure Vim script.
-function! s:copy_vim(src, dest) abort "{{{
+function! s:copy_vim(src, dest) abort
   let ret = writefile(readfile(a:src, 'b'), a:dest, 'b')
   if ret == -1
     return 0
   endif
   return 1
-endfunction "}}}
+endfunction
 
 " mkdir() but does not throw an exception.
 " Returns true if success.
 " Returns false if failure.
-function! s:mkdir_nothrow(...) abort "{{{
+function! s:mkdir_nothrow(...) abort
   try
     return call('mkdir', a:000)
   catch
     return 0
   endtry
-endfunction "}}}
+endfunction
 
 
 " Delete a file/directory.
