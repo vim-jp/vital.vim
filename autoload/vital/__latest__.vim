@@ -142,8 +142,8 @@ function! s:_get_sid_by_script(path) abort
   endif
 
   let path = s:_unify_path(a:path)
-  for line in filter(split(s:_redir('scriptnames'), "\n"),
-  \                  'stridx(v:val, "vital") > 0')
+  let p = 'stridx(v:val, s:self_version) > 0 || stridx(v:val, "__latest__") > 0'
+  for line in filter(split(s:_redir('scriptnames'), "\n"), p)
     let list = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
     if !empty(list) && s:_unify_path(list[2]) ==# path
       let s:cache_sid[a:path] = list[1] - 0
