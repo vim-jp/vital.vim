@@ -26,12 +26,12 @@ Describe Web.URI
       Assert Equals(uri.userinfo(), '')
       Assert Equals(uri.host(), 'example.com')
       Assert Equals(uri.port(), '')
-      Assert Equals(uri.path(), '/')
+      Assert Equals(uri.path(), '')
       Assert Equals(uri.authority(), 'example.com')
-      Assert Equals(uri.opaque(), '//example.com/')
+      Assert Equals(uri.opaque(), '//example.com')
       Assert Equals(uri.query(), '')
       Assert Equals(uri.fragment(), '')
-      Assert Equals(uri.to_string(), 'http://example.com/')
+      Assert Equals(uri.to_string(), 'http://example.com')
     End
 
     It allows empty authority (:help Vital.Web.URI-notes)
@@ -68,12 +68,12 @@ Describe Web.URI
       Assert Equals(uri.userinfo(), '')
       Assert Equals(uri.host(), '203.0.113.11')
       Assert Equals(uri.port(), '')
-      Assert Equals(uri.path(), '/')
+      Assert Equals(uri.path(), '')
       Assert Equals(uri.authority(), '203.0.113.11')
-      Assert Equals(uri.opaque(), '//203.0.113.11/')
+      Assert Equals(uri.opaque(), '//203.0.113.11')
       Assert Equals(uri.query(), '')
       Assert Equals(uri.fragment(), '')
-      Assert Equals(uri.to_string(), 'http://203.0.113.11/')
+      Assert Equals(uri.to_string(), 'http://203.0.113.11')
     End
 
     It parses a complex URL
@@ -98,11 +98,6 @@ Describe Web.URI
       call uri.host('ftp.vim.org')
       Assert Equals(uri.host(), 'ftp.vim.org')
       Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/')
-      " uri.path({str}) prepends '/' if {str} doesn't have it.
-      call uri.path('pub/vim/unix/vim-7.3.tar.bz2')
-      Assert Equals(uri.path(), '/pub/vim/unix/vim-7.3.tar.bz2')
-      Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.3.tar.bz2')
-      " uri.path({str}) doesn't prepend '/' if {str} has it.
       call uri.path('/pub/vim/unix/vim-7.4.tar.bz2')
       Assert Equals(uri.path(), '/pub/vim/unix/vim-7.4.tar.bz2')
       Assert Equals(uri.to_string(), 'ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2')
@@ -116,12 +111,103 @@ Describe Web.URI
 
       Assert NotEquals(URI.new_from_uri_like_string('localhost', 'Error!'), 'Error!')
       Assert Equals(URI.new_from_uri_like_string('example.com/').to_string(), 'http://example.com/')
-      Assert Equals(URI.new_from_uri_like_string('example.com').to_string(), 'http://example.com/')
+      Assert Equals(URI.new_from_uri_like_string('example.com').to_string(), 'http://example.com')
       Assert Equals(URI.new_from_uri_like_string('/home/tyru').to_string(), 'http:///home/tyru')
       Assert Equals(URI.new_from_uri_like_string('user:password@example.com:8080/path/for/test?q=query#fragment').to_string(), 'http://user:password@example.com:8080/path/for/test?q=query#fragment')
       Assert Equals(URI.new_from_uri_like_string('http://198.51.100.1/').to_string(), 'http://198.51.100.1/')
       Assert Equals(URI.new_from_uri_like_string('http://198.51.100.22/').to_string(), 'http://198.51.100.22/')
       Assert Equals(URI.new_from_uri_like_string('http://198.51.100.199/').to_string(), 'http://198.51.100.199/')
+    End
+  End
+
+  Describe .relative()
+    It resolves relative URI
+      for [base, rel, expected] in [
+      \ ['http://example.com/', '/a/b/c', 'http://example.com/a/b/c'],
+      \ ['http://example.com', '/a/b/c', 'http://example.com/a/b/c'],
+      \ ['http://example.com/', 'a/b/c', 'http://example.com/a/b/c'],
+      \ ['http://example.com', 'a/b/c', 'http://example.com/a/b/c'],
+      \
+      \ ['http://example.com/', '../d', 'http://example.com/d'],
+      \ ['http://example.com/', '/../d', 'http://example.com/d'],
+      \ ['http://example.com/', 'd/../e', 'http://example.com/e'],
+      \ ['http://example.com/', 'd/e/../../f', 'http://example.com/f'],
+      \ ['http://example.com/', 'd/..', 'http://example.com/'],
+      \ ['http://example.com/', 'd/../', 'http://example.com/'],
+      \ ['http://example.com/', 'd/e/../..', 'http://example.com/'],
+      \
+      \ ['http://example.com/a/b/c', '../d', 'http://example.com/a/d'],
+      \ ['http://example.com/a/b/c', '/../d', 'http://example.com/d'],
+      \ ['http://example.com/a/b/c', 'd/../e', 'http://example.com/a/b/e'],
+      \ ['http://example.com/a/b/c', 'd/e/../../f', 'http://example.com/a/b/f'],
+      \ ['http://example.com/a/b/c', 'd/..', 'http://example.com/a/b/'],
+      \ ['http://example.com/a/b/c', 'd/../', 'http://example.com/a/b/'],
+      \ ['http://example.com/a/b/c', 'd/e/../..', 'http://example.com/a/b/'],
+      \
+      \ ['http://example.com/', './d', 'http://example.com/d'],
+      \ ['http://example.com/', '/./d', 'http://example.com/d'],
+      \ ['http://example.com/', 'd/./e', 'http://example.com/d/e'],
+      \ ['http://example.com/', 'd/././e', 'http://example.com/d/e'],
+      \ ['http://example.com/', 'd/.', 'http://example.com/d/'],
+      \ ['http://example.com/', 'd/./', 'http://example.com/d/'],
+      \ ['http://example.com/', 'd/./.', 'http://example.com/d/'],
+      \
+      \ ['http://example.com/a/b/c', './d', 'http://example.com/a/b/d'],
+      \ ['http://example.com/a/b/c', '/./d', 'http://example.com/d'],
+      \ ['http://example.com/a/b/c', 'd/./e', 'http://example.com/a/b/d/e'],
+      \ ['http://example.com/a/b/c', 'd/././e', 'http://example.com/a/b/d/e'],
+      \ ['http://example.com/a/b/c', 'd/.', 'http://example.com/a/b/d/'],
+      \ ['http://example.com/a/b/c', 'd/./', 'http://example.com/a/b/d/'],
+      \ ['http://example.com/a/b/c', 'd/./.', 'http://example.com/a/b/d/'],
+      \]
+        let got = URI.new(base).relative(rel).to_string()
+        let msg = printf('base:%s, rel:%s', base, rel)
+        Assert Equals(got, expected, msg)
+      endfor
+    End
+  End
+
+  Describe .clone()
+    It clones self
+      let uri = URI.new('http://example.com/')
+      let copyuri = uri.clone().relative('/a/b/c')
+      Assert Equals(uri.to_string(), 'http://example.com/')
+      Assert Equals(copyuri.to_string(), 'http://example.com/a/b/c')
+    End
+  End
+
+  " The following four URIs are equivalent:
+  " * http://example.com
+  " * http://example.com/
+  " * http://example.com:/
+  " * http://example.com:80/
+  Describe .canonicalize()
+    It canonicalizes given http URL
+      for [input, expected] in [
+      \ ['http://example.com', 'http://example.com/'],
+      \ ['http://example.com/', 'http://example.com/'],
+      \ ['http://example.com:/', 'http://example.com/'],
+      \ ['http://example.com:80/', 'http://example.com/'],
+      \ ['http://example.com:80', 'http://example.com/'],
+      \ ['http://example.com:8080/', 'http://example.com:8080/'],
+      \]
+          let got = URI.new(input).canonicalize().to_string()
+          Assert Equals(got, expected)
+      endfor
+    End
+
+    It canonicalizes given https URL
+      for [input, expected] in [
+      \ ['https://example.com', 'https://example.com/'],
+      \ ['https://example.com/', 'https://example.com/'],
+      \ ['https://example.com:/', 'https://example.com/'],
+      \ ['https://example.com:443/', 'https://example.com/'],
+      \ ['https://example.com:443', 'https://example.com/'],
+      \ ['https://example.com:8443/', 'https://example.com:8443/'],
+      \]
+          let got = URI.new(input).canonicalize().to_string()
+          Assert Equals(got, expected)
+      endfor
     End
   End
 
@@ -134,7 +220,7 @@ Describe Web.URI
       \  ['http://example.com/ blah blah',
       \    ['http://example.com/', 'http://example.com/', ' blah blah']],
       \  ['http://example.com gera gera',
-      \    ['http://example.com/', 'http://example.com', ' gera gera']],
+      \    ['http://example.com', 'http://example.com', ' gera gera']],
       \  ['file:///home/tyru   # My home directory',
       \    ['file:///home/tyru', 'file:///home/tyru',
       \     '   # My home directory']],
@@ -159,7 +245,7 @@ Describe Web.URI
       " Define loose pattern set.
       let pattern_set = URI.new_default_pattern_set()
 
-      " Remove "'", "(", ")" from default sub_delims().
+      " Remove "'", '(', ')' from default sub_delims().
       function! pattern_set.sub_delims() abort
           return '[!$&*+,;=]'
       endfunction
@@ -170,7 +256,7 @@ Describe Web.URI
     It allows to ignore some characters (:help Vital.Web.URI-PatternSet)
       for [input, expected] in [
       \  ['http://example.com)',
-      \    ['http://example.com/', 'http://example.com', ')']],
+      \    ['http://example.com', 'http://example.com', ')']],
       \  ['https://en.wikipedia.org/wiki/Markdown)',
       \    ['https://en.wikipedia.org/wiki/Markdown', 'https://en.wikipedia.org/wiki/Markdown', ')']],
       \  ['http://example.com/?q=query)',
@@ -179,7 +265,7 @@ Describe Web.URI
       \    ['http://example.com/#fragment', 'http://example.com/#fragment', ')']],
       \
       \  ["http://example.com'",
-      \    ['http://example.com/', 'http://example.com', "'"]],
+      \    ['http://example.com', 'http://example.com', "'"]],
       \  ["https://github.com/Lokaltog/vim-easymotion'",
       \    ['https://github.com/Lokaltog/vim-easymotion', 'https://github.com/Lokaltog/vim-easymotion', "'"]],
       \  ["http://example.com/?q=query'",
