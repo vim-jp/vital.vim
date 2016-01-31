@@ -1,134 +1,236 @@
 scriptencoding utf-8
 
+let s:V = vital#of('vital')
+let s:P = s:V.import('System.Filepath')
+let s:G = s:V.import('Vim.Guard')
 
 Describe Vim.Buffer
   Before all
-    let VB = vital#of('vital').import('Vim.Buffer')
+    let Buffer = s:V.import('Vim.Buffer')
+  End
+  After all
+    windo bwipeout!
+  End
+  Before
+    windo bwipeout!
   End
 
   Describe .is_cmdwin()
     It detects if current window is cmdwin.
       " FIXME: CmdWin can not open from test environment
-      Assert Falsy(VB.is_cmdwin())
+      Assert Falsy(Buffer.is_cmdwin())
     End
   End
 
   Describe .get_last_selected()
     Context for single byte characters
-      Before each
-        %delete _
-        append
-foo
-bar
-baz
-.
+      Before
+        execute printf('edit %s',
+              \ s:P.realpath('test/_testdata/Vim/Buffer/single.txt')
+              \)
       End
 
       It can get the last selected text without textlock error.
         normal! ggVGygg
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals(text, "foo\nbar\nbaz\n")
 
         normal! ggvjly
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals(text, "foo\nba")
 
         execute "normal! gg\<C-v>jly"
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals(text, "fo\nba")
       End
 
       It can apply to oneline
         normal! ggVygg
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("foo\n", text)
 
         normal! ggvly
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("fo", text)
 
         execute "normal! gg\<C-v>ly"
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("fo", text)
       End
 
       It does not destroy unnamed register content
-        %delete _
-        append
-foo
-bar
-baz
-.
-
         normal! ggVGy
         let @" = "ajapa-"
-        call VB.get_last_selected()
+        call Buffer.get_last_selected()
         Assert Equals("ajapa-", @")
       End
     End
 
     Context for wide characters
-      It can apply to wide characters string
-        %delete _
-        append
-あいうえお
-かきくけこ
-ほげら
-.
+      Before
+        execute printf('edit %s',
+              \ s:P.realpath('test/_testdata/Vim/Buffer/wide.txt')
+              \)
+      End
 
+      It can apply to wide characters string
         normal! ggVGygg
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("あいうえお\nかきくけこ\nほげら\n", text)
 
         normal! ggvjly
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("あいうえお\nかき", text)
 
         execute "normal! gg\<C-v>jly"
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("あい\nかき", text)
+      End
+    End
+    Context for mixed characters
+      Before
+        execute printf('edit %s',
+              \ s:P.realpath('test/_testdata/Vim/Buffer/mixed.txt')
+              \)
       End
 
       It can apply to mixed string
-        %delete _
-        append
-あiうeお
-kaきkuけko
-ほgeら
-.
-
         normal! ggVGygg
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("あiうeお\nkaきkuけko\nほgeら\n", text)
 
         normal! ggvjly
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("あiうeお\nka", text)
 
         execute "normal! gg\<C-v>jly"
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("あ\nka", text)
       End
 
       It can apply to mixed oneline string
-        %delete _
-        append
-あiうeお
-kaきkuけko
-ほgeら
-.
-
         normal! ggVygg
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("あiうeお\n", text)
 
         normal! ggvly
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("あi", text)
 
         execute "normal! gg\<C-v>ly"
-        let text = VB.get_last_selected()
+        let text = Buffer.get_last_selected()
         Assert Equals("あi", text)
+      End
+    End
+  End
+
+  Describe read_content()
+    Before
+      let guard = s:G.store('&fileencodings', '&fileencoding')
+      " Note:
+      " 'read_content' uses 'read' command thus fileencodings requires to be
+      " correctly configured.
+      set fileencodings=utf-8,euc-jp,sjis
+      set fileencoding=utf-8
+    End
+    After
+      call guard.restore()
+    End
+
+    Context for utf-8 contents
+      It appends contents to the current buffer
+        call setline(1, 'あいうえお')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.read_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \ 'あいうえお',
+              \])
+        Assert Equals(&fileencoding, 'utf-8')
+      End
+    End
+    Context for sjis contents
+      It appends contents to the current buffer
+        call setline(1, 'あいうえお')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/sjis.txt')
+              \)
+        call Buffer.read_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \ 'あいうえお',
+              \])
+        Assert Equals(&fileencoding, 'utf-8')
+      End
+    End
+    Context for euc-jp contents
+      It appends contents to the current buffer
+        call setline(1, 'あいうえお')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
+              \)
+        call Buffer.read_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \ 'あいうえお',
+              \])
+        Assert Equals(&fileencoding, 'utf-8')
+      End
+    End
+  End
+
+  Describe edit_content()
+    Before
+      let guard = s:G.store('&fileencodings', '&fileencoding')
+      " Note:
+      " 'edit_content' uses 'read' command thus fileencodings requires to be
+      " correctly configured.
+      set fileencodings=utf-8,euc-jp,sjis
+      set fileencoding=utf-8
+    End
+    After
+      call guard.restore()
+    End
+
+    Context for utf-8 contents
+      It replaces contents to the current buffer
+        call setline(1, 'かきくけこ')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.edit_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \])
+        Assert Equals(&fileencoding, 'utf-8')
+      End
+    End
+    Context for sjis contents
+      It replaces contents to the current buffer
+        call setline(1, 'かきくけこ')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/sjis.txt')
+              \)
+        call Buffer.edit_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \])
+        Assert Equals(&fileencoding, 'sjis')
+      End
+    End
+    Context for euc-jp contents
+      It replaces contents to the current buffer
+        call setline(1, 'かきくけこ')
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
+              \)
+        call Buffer.edit_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \])
+        Assert Equals(&fileencoding, 'euc-jp')
       End
     End
   End

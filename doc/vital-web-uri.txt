@@ -80,6 +80,12 @@ decode({str} [, {char-enc}])		*Vital.Web.URI.decode()*
 	Converts result from {char-enc}(or "utf-8" when omitted) to 'encoding'
 	after decode.
 	When {char-enc} is an empty string, result is not converted.
+	Note that this function does not convert "+" to " ".
+	Because this function is based on percent-encoding in RFC3986.
+	http://tools.ietf.org/html/rfc3986#section-2.1
+	But "+" conversion is based on
+	application/x-www-form-urlencoded in RFC1866.
+	http://tools.ietf.org/html/rfc1866#section-8.2.1
 
 ------------------------------------------------------------------------------
 URI OBJECT				*Vital.Web.URI-URI* *Vital.Web.URI-object*
@@ -108,15 +114,17 @@ opaque([{str}])
 query([{str}])
 fragment([{str}])
 
-	Returns each part if no arguments are given.
-	Set {str} as each part if {str} is given.
+	If no arguments are given, returns each part value.
+	If {str} is given, sets {str} as each part value,
+	and returns the URI object itself.
 
-	NOTE: path() always returns a string prefixed by "/".
 	NOTE: opaque(), authority() do not support {str} yet.
+	NOTE: port({str}) allows both Number and String for {str}.
 
-to_iri()				*Vital.Web.URI-object.to_iri()*
+to_iri([{char-enc}])				*Vital.Web.URI-object.to_iri()*
 	Same as |Vital.Web.URI-object.to_string()|,
 	but do URI-unescape for |Vital.Web.URI-object.path()| part.
+	Passes {char-enc} to |Vital.Web.URI.decode()| if specified.
 
 to_string()				*Vital.Web.URI-object.to_string()*
 	Returns URI representation of this object.
@@ -138,6 +146,63 @@ is_fragment({str})
 
     Returns non-zero value if {str} has right syntax
     for each component. Returns zero otherwise.
+
+*Vital.Web.URI-URI.clone()*
+clone()
+
+    This method clones a URI object itself. >
+    let s:URI = vital#of('vital').import('Web.URI')
+    let uri = s:URI.new('http://example.com/')
+    let copyuri = uri.clone().relative('/a/b/c')
+    echo uri.to_string()
+    " => 'http://example.com/'
+    echo copyuri.to_string()
+    " => 'http://example.com/a/b/c'
+<
+*Vital.Web.URI-URI.relative()*
+relative({reluri})
+
+    This method ...
+    * Calculates a URI from
+    base URI and relative URI({reluri}).
+    * Changes the URI object itself (destructive).
+    * Returns the URI object itself.
+    * Calls |Vital.Web.URI-URI.relative()| implicitly.
+
+    Example: >
+    let s:URI = vital#of('vital').import('Web.URI')
+    let BASE_URI = 'http://example.com/foo/bar'
+    let RELATIVE_URI = '../baz'
+    echo s:URI.new(BASE_URI).relative(RELATIVE_URI).to_string()
+    " => 'http://example.com/foo/baz'
+<
+*Vital.Web.URI-URI.canonicalize()*
+canonicalize()
+
+    This method ...
+    * Canonicalizes the URI.
+    * Changes the URI object itself (destructive).
+    * Returns the URI object itself.
+
+    See Web.URI.* modules for supported schemes.
+    For example, the following four URIs
+    becomes equivalent URI (http://example.com/).
+    * http://example.com
+    * http://example.com/
+    * http://example.com:/
+    * http://example.com:80/
+
+    Example: >
+    let s:URI = vital#of('vital').import('Web.URI')
+    echo s:URI.new('http://example.com:80/').to_string()
+    " => 'http://example.com/'
+<
+*Vital.Web.URI-URI.default_port()*
+default_port()
+
+    This method returns the default port for current scheme.
+    (e.g.: 80 for "http" scheme)
+    See Web.URI.* modules for supported schemes.
 
 ------------------------------------------------------------------------------
 PATTERNSET OBJECT				*Vital.Web.URI-PatternSet*
@@ -240,6 +305,25 @@ TODO					*Vital.Web.URI-todo*
 * IRI support (RFC3987)
 * |Vital.Web.URI-URI.opaque()| with an argument
 * |Vital.Web.URI-URI.authority()| with an argument
+* Perl's URI, URI::Find module
+  * `URI::eq()`
+  * `URI::query_form()`
+  * `URI::query_keywords()`
+  * `URI::ihost()`
+  * `URI::Find::find()`
+* RFC 5890: IDNA (Internationalized Domain Names for Applications)
+  * A Label
+  * U Label
+  * NR-LDH Label
+* `s:URI.to_string()` should recompose string by the algorithm
+  based on https://tools.ietf.org/html/rfc3986#section-5.3
+* `s:URI.to_iri()`: Write tests
+* `s:URI.to_iri()`: Write document
+* URN Support
+  * urn:isbn
+  * urn:uuid
+  * urn:ietf:rfc
+  * urn:oid
 
 ==============================================================================
 REFERENCES				*Vital.Web.URI-references*

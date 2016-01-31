@@ -96,10 +96,14 @@ Vital.exists({module-name})		*Vital-Vital.exists()*
 
 Vital.search({pattern})			*Vital-Vital.search()*
 	Searches available modules.  Returns module names by |List|.
-	Wildcard '*' is available in {pattern}.
+	Wildcard '*' is available in {pattern}.  This matches to any strings
+	in the part of module name that excludes ".".
+	Wildcard '**' is available in {pattern}.  This is similar to '*' but
+	also matches to ".".
 >
 	echo s:V.search('Data.*')
 	echo s:V.search('Data.*List')
+	echo s:V.search('**')  " returns all available module names
 
 
 
