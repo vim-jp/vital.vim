@@ -64,52 +64,115 @@ function! s:copy(from, to) abort
   call writefile(map(readfile(a:from, 'b'), convert_newline), a:to, 'b')
 endfunction
 
-function! s:search_dependence(depends_info) abort
+function! s:rmdir(dir) abort
+  if isdirectory(a:dir)
+    call s:F.rmdir(a:dir, 'rf')
+  endif
+endfunction
+
+function! s:rmdir_if_empty(dir) abort
+  if isdirectory(a:dir)
+    try
+      call s:F.rmdir(a:dir)
+    catch
+    endtry
+  endif
+endfunction
+
+function! s:rmfile(file) abort
+  if filereadable(a:file)
+    call delete(a:file)
+  endif
+endfunction
+
+function! s:search_dependence(depends_info, to) abort
   " XXX Not smart...
   if exists('g:vital_debug')
     let vital_debug = g:vital_debug
   endif
   let g:vital_debug = 1
+  let save_rtp = &runtimepath
+  let &runtimepath = a:to . ',' . &runtimepath
+
   call s:V.unload()
   let all = {}
   let data_files = []
   let entries = copy(a:depends_info)
+
+  for module in s:builtin_modules(a:to)
+    " Ignore dfiles because it is builtin
+    let dmodules = s:get_dependence(s:V, module)[0]
+    let entries += dmodules
+  endfor
+
   while !empty(entries)
     call s:L.sort_by(entries, 'type(v:val) == type([]) ? len(v:val) : 0')
     unlet! entry
     let entry = remove(entries, 0)
 
-    let modules = s:V.expand_modules(entry, all)
+    let modules = s:expand_modules(s:V, entry, all)
 
     for module in modules
-      let M = s:V.import(module, 1)
-      if has_key(M, '_vital_depends')
-        let depends = M._vital_depends()
-        if s:P.is_dict(depends)
-          let dmodules = get(depends, 'modules', [])
-          let dfiles = get(depends, 'files', [])
-        elseif s:P.is_list(depends)
-          let [dmodules, dfiles] = s:L.partition('v:val[0] !=# "."', depends)
-        else
-          throw printf('vitalizer: %s has wrong dependence.(%s)',
-          \            module, string(depends))
-        endif
-        unlet depends
-        call extend(entries, dmodules)
-        if !empty(dfiles)
-          let module_file = s:module2file(module)
-          let module_base = s:FP.dirname(module_file)
-          call map(dfiles, 's:FP.join(module_base, v:val)')
-          call map(dfiles, 'simplify(v:val)')
-          let data_files += dfiles
-        endif
-      endif
+      let [dmodules, dfiles] = s:get_dependence(s:V, module)
+      let entries += dmodules
+      let data_files += dfiles
     endfor
   endwhile
+
   if exists('vital_debug')
     let g:vital_debug = vital_debug
   endif
+  let &runtimepath = save_rtp
+
   return sort(map(keys(all), 's:module2file(v:val)') + data_files)
+endfunction
+
+function! s:get_dependence(V, module) abort
+  let M = a:V.import(a:module)
+  if !has_key(M, '_vital_depends')
+    return [[], []]
+  endif
+  let depends = M._vital_depends()
+  if s:P.is_dict(depends)
+    let dmodules = get(depends, 'modules', [])
+    let dfiles = get(depends, 'files', [])
+  elseif s:P.is_list(depends)
+    let [dmodules, dfiles] = s:L.partition('v:val[0] !=# "."', depends)
+  else
+    throw printf('vitalizer: %s has wrong dependence.(%s)',
+    \            a:module, string(depends))
+  endif
+  if !empty(dfiles)
+    let module_file = s:module2file(a:module)
+    let module_base = s:FP.dirname(module_file)
+    call map(dfiles, 's:FP.join(module_base, v:val)')
+    call map(dfiles, 'simplify(v:val)')
+  endif
+  return [dmodules, dfiles]
+endfunction
+
+function! s:expand_modules(V, entry, all) abort
+  if type(a:entry) == type([])
+    let candidates = s:L.concat(map(copy(a:entry), 's:search(v:val)'))
+    if empty(candidates)
+      throw printf('vital: Any of module %s is not found', string(a:entry))
+    endif
+    if eval(join(map(copy(candidates), 'has_key(a:all, v:val)'), '+'))
+      let modules = []
+    else
+      let modules = [candidates[0]]
+    endif
+  else
+    let modules = a:V.search(a:entry)
+    if empty(modules)
+      throw printf('vital: Module %s is not found', a:entry)
+    endif
+  endif
+  call filter(modules, '!has_key(a:all, v:val)')
+  for module in modules
+    let a:all[module] = 1
+  endfor
+  return modules
 endfunction
 
 function! s:is_camel_case(str) abort
@@ -132,9 +195,14 @@ function! s:file2module(file) abort
 endfunction
 
 function! s:available_module_names() abort
-  return sort(s:L.uniq(filter(map(split(globpath(&runtimepath,
-  \          'autoload/vital/__latest__/**/*.vim', 1), "\n"),
+  return sort(s:L.uniq(filter(map(s:V.vital_files(),
   \          's:file2module(v:val)'), 's:is_module_name(v:val)')))
+endfunction
+
+function! s:builtin_modules(rtp_dir) abort
+  let pat = s:FP.join(a:rtp_dir, 'autoload/vital/__latest__/**/*.vim')
+  let files = split(glob(pat, 1), "\n")
+  return map(files, 's:file2module(v:val)')
 endfunction
 
 function! s:get_changes() abort
@@ -195,13 +263,13 @@ function! s:show_changes(current, installing_modules) abort
 endfunction
 
 " Uninstall vital from {target-dir}.
-function! s:uninstall(target_dir) abort
-  if isdirectory(a:target_dir . '/autoload/vital')
-    call s:F.rmdir(a:target_dir . '/autoload/vital', 'rf')
-  endif
-  if filereadable(a:target_dir . '/autoload/vital.vim')
-    call delete(a:target_dir . '/autoload/vital.vim')
-  endif
+function! s:uninstall(target_dir, name) abort
+  let base = s:FP.join(a:target_dir, 'autoload', 'vital')
+  call s:rmdir(s:FP.join(base, '_' . a:name))
+  call s:rmfile(s:FP.join(base, '_' . a:name . '.vim'))
+  call s:rmfile(s:FP.join(base, a:name . '.vital'))
+  call s:rmdir_if_empty(base)
+  call s:rmfile(s:FP.join(a:target_dir, 'autoload', 'vital.vim'))
 endfunction
 
 " Search *.vital file in a target directory.
@@ -292,22 +360,9 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
         endif
       endfor
     endif
-    let initial_install = !isdirectory(s:FP.join(a:to, 'autoload', 'vital'))
-    if empty(installing_modules) && !initial_install
-      if confirm('vitalizer: Are you sure you want to uninstall vital?', "&Yes\n&No") == 2
-        return {
-        \ 'action': 'canceled',
-        \ 'prev_hash': '',
-        \ 'installed_hash': '',
-        \}
-      endif
-      let action = 'uninstall'
-      let files = []
-    else
-      let action = 'install'
-      let installing_modules = s:L.uniq(installing_modules)
-      let files = s:search_dependence(installing_modules)
-    endif
+    let action = 'install'  " TODO: We need --uninstall option
+    let installing_modules = s:L.uniq(installing_modules)
+    let files = s:search_dependence(installing_modules, a:to)
 
     " Show critical changes.
     " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
@@ -334,7 +389,7 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     endfor
 
     " Remove previous vital.
-    call s:uninstall(a:to)
+    call s:uninstall(a:to, vital_data.name)
 
     if action ==# 'install'
       " Install vital.
