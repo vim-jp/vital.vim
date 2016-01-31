@@ -241,10 +241,17 @@ function! s:_build_module(sid) abort
     call module._vital_created(module)
   endif
   let export_module = filter(copy(module), 'v:key =~# "^\\a"')
+  " Cache module before calling module.vital_debug() to avoid cyclic
+  " dependences but remove the cache if module._vital_loaded() fails.
   let s:loaded[a:sid] = get(g:, 'vital_debug', 0) ? module : export_module
   if has_key(module, '_vital_loaded')
-    let V = vital#{s:self_version}#new()
-    call module._vital_loaded(V)
+    try
+      let V = vital#{s:self_version}#new()
+      call module._vital_loaded(V)
+    catch
+      unlet s:loaded[a:sid]
+      throw 'vital: fail to call ._vital_loaded(): ' . v:exception
+    endtry
   endif
   return copy(s:loaded[a:sid])
 endfunction
