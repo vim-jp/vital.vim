@@ -153,7 +153,7 @@ endfunction
 
 function! s:expand_modules(V, entry, all) abort
   if type(a:entry) == type([])
-    let candidates = s:L.concat(map(copy(a:entry), 's:search(v:val)'))
+    let candidates = s:L.concat(map(copy(a:entry), 'a:V.search(v:val)'))
     if empty(candidates)
       throw printf('vital: Any of module %s is not found', string(a:entry))
     endif
