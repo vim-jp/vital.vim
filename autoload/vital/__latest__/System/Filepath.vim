@@ -220,6 +220,16 @@ function! s:is_root_directory(path) abort
   return (has('win32') || has('win64')) && a:path =~# '^[a-zA-Z]:[/\\]$'
 endfunction
 
+function! s:contains(path, base) abort
+  let pathlist = s:split(a:path)
+  let baselist = s:split(a:base)
+  let min = min([len(pathlist), len(baselist)]) - 1
+  if min <# 0
+    return 0
+  endif
+  return pathlist[: min] ==# baselist[: min]
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
