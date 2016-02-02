@@ -165,41 +165,80 @@ Describe System.Filepath
   End
 
   Describe .contains()
-    It should return non-zero if /foo/bar contains /foo/bar
-      let ret = s:FP.contains('/foo/bar', '/foo/bar')
-      Assert ret
-    End
-    It should return non-zero if /foo/bar contains /foo
-      let ret = s:FP.contains('/foo/bar', '/foo')
-      Assert ret
-    End
-    It should return zero if /foo contains /foo/bar
-      let ret = s:FP.contains('/foo', '/foo/bar')
-      Assert !ret
-    End
-    It should return non-zero if /foo contains /foo
-      let ret = s:FP.contains('/foo', '/foo')
-      Assert ret
-    End
-    It should return non-zero if /foo contains /
-      let ret = s:FP.contains('/foo', '/')
-      Assert ret
-    End
-    It should return zero if / contains /foo
-      let ret = s:FP.contains('/', '/foo')
-      Assert !ret
-    End
-    It should return non-zero if / contains /
-      let ret = s:FP.contains('/', '/')
-      Assert ret
-    End
-    It should return zero for empty paths
-      let ret = s:FP.contains('', '')
-      Assert !ret
-      let ret = s:FP.contains('/', '')
-      Assert !ret
-      let ret = s:FP.contains('', '/')
-      Assert !ret
-    End
+    if !s:is_windows
+      It should return non-zero if /foo/bar contains /foo/bar (Non Windows)
+        let ret = s:FP.contains('/foo/bar', '/foo/bar')
+        Assert ret
+      End
+      It should return non-zero if /foo/bar contains /foo (Non Windows)
+        let ret = s:FP.contains('/foo/bar', '/foo')
+        Assert ret
+      End
+      It should return zero if /foo contains /foo/bar (Non Windows)
+        let ret = s:FP.contains('/foo', '/foo/bar')
+        Assert !ret
+      End
+      It should return non-zero if /foo contains /foo (Non Windows)
+        let ret = s:FP.contains('/foo', '/foo')
+        Assert ret
+      End
+      It should return non-zero if /foo contains / (Non Windows)
+        let ret = s:FP.contains('/foo', '/')
+        Assert ret
+      End
+      It should return zero if / contains /foo (Non Windows)
+        let ret = s:FP.contains('/', '/foo')
+        Assert !ret
+      End
+      It should return non-zero if / contains / (Non Windows)
+        let ret = s:FP.contains('/', '/')
+        Assert ret
+      End
+      It should return zero for empty paths (Non Windows)
+        let ret = s:FP.contains('', '')
+        Assert !ret
+        let ret = s:FP.contains('/', '')
+        Assert !ret
+        let ret = s:FP.contains('', '/')
+        Assert !ret
+      End
+    else
+      It should return non-zero if C:\foo\bar contains C:\foo\bar (Windows)
+        let ret = s:FP.contains('C:\foo\bar', 'C:\foo\bar')
+        Assert ret
+      End
+      It should return non-zero if C:\foo\bar contains C:\foo (Windows)
+        let ret = s:FP.contains('C:\foo\bar', 'C:\foo')
+        Assert ret
+      End
+      It should return zero if C:\foo contains C:\foo\bar (Windows)
+        let ret = s:FP.contains('C:\foo', 'C:\foo\bar')
+        Assert !ret
+      End
+      It should return non-zero if C:\foo contains C:\foo (Windows)
+        let ret = s:FP.contains('C:\foo', 'C:\foo')
+        Assert ret
+      End
+      It should return non-zero if C:\foo contains C:\ (Windows)
+        let ret = s:FP.contains('C:\foo', 'C:\')
+        Assert ret
+      End
+      It should return zero if C:\ contains C:\foo (Windows)
+        let ret = s:FP.contains('C:\', 'C:\foo')
+        Assert !ret
+      End
+      It should return non-zero if C:\ contains C:\ (Windows)
+        let ret = s:FP.contains('C:\', 'C:\')
+        Assert ret
+      End
+      It should return zero for empty paths (Windows)
+        let ret = s:FP.contains('', '')
+        Assert !ret
+        let ret = s:FP.contains('C:\', '')
+        Assert !ret
+        let ret = s:FP.contains('', 'C:\')
+        Assert !ret
+      End
+    endif
   End
 End
