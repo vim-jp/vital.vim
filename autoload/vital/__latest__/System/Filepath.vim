@@ -221,13 +221,17 @@ function! s:is_root_directory(path) abort
 endfunction
 
 function! s:contains(path, base) abort
+  if a:path ==# '' || a:base ==# ''
+    return 0
+  endif
   let pathlist = s:split(a:path)
   let baselist = s:split(a:base)
   let min = min([len(pathlist), len(baselist)]) - 1
-  if min <# 0
+  if len(pathlist) >=# len(baselist)
+    return min <# 0 ? 1 : (pathlist[: min] ==# baselist[: min])
+  else
     return 0
   endif
-  return pathlist[: min] ==# baselist[: min]
 endfunction
 
 let &cpo = s:save_cpo

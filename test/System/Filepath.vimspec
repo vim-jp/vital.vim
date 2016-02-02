@@ -163,4 +163,43 @@ Describe System.Filepath
       End
     endif
   End
+
+  Describe .contains()
+    It should return non-zero if /foo/bar contains /foo/bar
+      let ret = s:FP.contains('/foo/bar', '/foo/bar')
+      Assert ret
+    End
+    It should return non-zero if /foo/bar contains /foo
+      let ret = s:FP.contains('/foo/bar', '/foo')
+      Assert ret
+    End
+    It should return zero if /foo contains /foo/bar
+      let ret = s:FP.contains('/foo', '/foo/bar')
+      Assert !ret
+    End
+    It should return non-zero if /foo contains /foo
+      let ret = s:FP.contains('/foo', '/foo')
+      Assert ret
+    End
+    It should return non-zero if /foo contains /
+      let ret = s:FP.contains('/foo', '/')
+      Assert ret
+    End
+    It should return zero if / contains /foo
+      let ret = s:FP.contains('/', '/foo')
+      Assert !ret
+    End
+    It should return non-zero if / contains /
+      let ret = s:FP.contains('/', '/')
+      Assert ret
+    End
+    It should return zero for empty paths
+      let ret = s:FP.contains('', '')
+      Assert !ret
+      let ret = s:FP.contains('/', '')
+      Assert !ret
+      let ret = s:FP.contains('', '/')
+      Assert !ret
+    End
+  End
 End
