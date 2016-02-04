@@ -12,6 +12,7 @@ let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
+let s:is_case_tolerant = filereadable(expand('<sfile>:r') . '.VIM')
 
 " Get the directory separator.
 function! s:separator() abort
@@ -167,7 +168,6 @@ endfunction
 
 " Return true if filesystem ignores alphabetic case of a filename.
 " Return false otherwise.
-let s:is_case_tolerant = filereadable(expand('<sfile>:r') . '.VIM')
 function! s:is_case_tolerant() abort
   return s:is_case_tolerant
 endfunction
@@ -226,12 +226,19 @@ function! s:contains(path, base) abort
   endif
   let pathlist = s:split(a:path)
   let baselist = s:split(a:base)
-  let min = min([len(pathlist), len(baselist)]) - 1
-  if len(pathlist) >=# len(baselist)
-    return min <# 0 ? 1 : (pathlist[: min] ==# baselist[: min])
-  else
+  let pathlistlen = len(pathlist)
+  let baselistlen = len(baselist)
+  if pathlistlen < baselistlen
     return 0
   endif
+  if baselistlen == 0
+    return 1
+  endif
+  if s:is_case_tolerant
+    call map(pathlist, 'tolower(v:val)')
+    call map(baselist, 'tolower(v:val)')
+  endif
+  return pathlist[: baselistlen - 1] ==# baselist
 endfunction
 
 let &cpo = s:save_cpo
