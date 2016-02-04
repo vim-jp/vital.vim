@@ -202,6 +202,17 @@ Describe System.Filepath
         let ret = s:FP.contains('', '/')
         Assert !ret
       End
+      It should ignore the last directory separator in {base} (Non Windows)
+        let ret = s:FP.contains('/foo', '/foo/')
+        Assert ret
+      End
+
+      Context in case-sensitive system
+        It should not ignore case
+          let ret = s:FP.contains('/etc/x11/xinit', '/etc/X11')
+          Assert !ret
+        End
+      End
     else
       It should return non-zero if C:\foo\bar contains C:\foo\bar (Windows)
         let ret = s:FP.contains('C:\foo\bar', 'C:\foo\bar')
@@ -238,6 +249,21 @@ Describe System.Filepath
         Assert !ret
         let ret = s:FP.contains('', 'C:\')
         Assert !ret
+      End
+      It should return non-zero if C:\ contains C:\ (Windows)
+        let ret = s:FP.contains('C:\', 'C:\')
+        Assert ret
+      End
+      It should ignore the last directory separator in {base} (Windows)
+        let ret = s:FP.contains('C:\foo', 'C:\foo\')
+        Assert ret
+      End
+
+      Context in case-insensitive system
+        It should ignore case
+          let ret = s:FP.contains('c:\program files\Vim', 'C:\Program Files')
+          Assert ret
+        End
       End
     endif
   End
