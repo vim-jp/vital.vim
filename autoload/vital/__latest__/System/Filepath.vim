@@ -161,7 +161,7 @@ endfunction
 " Remove the separator at the end of a:path.
 function! s:remove_last_separator(path) abort
   let sep = s:separator()
-  let pat = (sep ==# '\' ? '\\' : '/') . '\+$'
+  let pat = escape(sep, '\') . '\+$'
   return substitute(a:path, pat, '', '')
 endfunction
 
