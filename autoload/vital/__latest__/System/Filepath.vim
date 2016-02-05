@@ -213,12 +213,15 @@ else
   endfunction
 endif
 
-function! s:is_root_directory(path) abort
-  if a:path ==# '/'
-    return 1
-  endif
-  return (has('win32') || has('win64')) && a:path =~# '^[a-zA-Z]:[/\\]$'
-endfunction
+if s:is_windows
+  function! s:is_root_directory(path) abort
+    return a:path =~# '^[a-zA-Z]:[/\\]$'
+  endfunction
+else
+  function! s:is_root_directory(path) abort
+    return a:path ==# '/'
+  endfunction
+endif
 
 function! s:contains(path, base) abort
   if a:path ==# '' || a:base ==# ''
