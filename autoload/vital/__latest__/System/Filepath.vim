@@ -33,7 +33,7 @@ function! s:path_extensions() abort
         let pathext = $PATHEXT
       else
         " get default PATHEXT
-        let pathext = matchstr(system('set pathext'), '^pathext=\zs.*\ze\n', 'i')
+        let pathext = matchstr(system('set pathext'), '\C^pathext=\zs.*\ze\n', 'i')
       endif
       let s:path_extensions = map(split(pathext, s:path_separator), 'tolower(v:val)')
     elseif s:is_cygwin
