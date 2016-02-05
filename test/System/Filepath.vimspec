@@ -141,27 +141,18 @@ Describe System.Filepath
   Describe .is_root_directory()
     if !s:is_windows
       It is true only if the given string directly represents root dir of the file system (Non Windows)
-        let ret = FP.is_root_directory('/')
-        Assert ret
-        let ret = FP.is_root_directory('/aaa/..')
-        Assert !ret
-        let ret = FP.is_root_directory('/aaa')
-        Assert !ret
-        let ret = FP.is_root_directory('/aaa/bbb')
-        Assert !ret
+        Assert True(FP.is_root_directory('/'))
+        Assert False(FP.is_root_directory('/aaa/..'))
+        Assert False(FP.is_root_directory('/aaa'))
+        Assert False(FP.is_root_directory('/aaa/bbb'))
       End
     else
       It is true only if the given string directly represents root dir of the file system (Windows)
-        let ret = FP.is_root_directory('C:/')
-        Assert ret
-        let ret = FP.is_root_directory('C:\')
-        Assert ret
-        let ret = FP.is_root_directory('C:/aaa/..')
-        Assert !ret
-        let ret = FP.is_root_directory('C:/aaa')
-        Assert !ret
-        let ret = FP.is_root_directory('C:/aaa/bbb')
-        Assert !ret
+        Assert True(FP.is_root_directory('C:/'))
+        Assert True(FP.is_root_directory('C:\'))
+        Assert False(FP.is_root_directory('C:/aaa/..'))
+        Assert False(FP.is_root_directory('C:/aaa'))
+        Assert False(FP.is_root_directory('C:/aaa/bbb'))
       End
     endif
   End
@@ -169,102 +160,77 @@ Describe System.Filepath
   Describe .contains()
     if !s:is_windows
       It should return non-zero if /foo/bar contains /foo/bar (Non Windows)
-        let ret = FP.contains('/foo/bar', '/foo/bar')
-        Assert ret
+        Assert True(FP.contains('/foo/bar', '/foo/bar'))
       End
       It should return non-zero if /foo/bar contains /foo (Non Windows)
-        let ret = FP.contains('/foo/bar', '/foo')
-        Assert ret
+        Assert True(FP.contains('/foo/bar', '/foo'))
       End
       It should return zero if /foo contains /foo/bar (Non Windows)
-        let ret = FP.contains('/foo', '/foo/bar')
-        Assert !ret
+        Assert False(FP.contains('/foo', '/foo/bar'))
       End
       It should return non-zero if /foo contains /foo (Non Windows)
-        let ret = FP.contains('/foo', '/foo')
-        Assert ret
+        Assert True(FP.contains('/foo', '/foo'))
       End
       It should return non-zero if /foo contains / (Non Windows)
-        let ret = FP.contains('/foo', '/')
-        Assert ret
+        Assert True(FP.contains('/foo', '/'))
       End
       It should return zero if / contains /foo (Non Windows)
-        let ret = FP.contains('/', '/foo')
-        Assert !ret
+        Assert False(FP.contains('/', '/foo'))
       End
       It should return non-zero if / contains / (Non Windows)
-        let ret = FP.contains('/', '/')
-        Assert ret
+        Assert True(FP.contains('/', '/'))
       End
       It should return zero for empty paths (Non Windows)
-        let ret = FP.contains('', '')
-        Assert !ret
-        let ret = FP.contains('/', '')
-        Assert !ret
-        let ret = FP.contains('', '/')
-        Assert !ret
+        Assert False(FP.contains('', ''))
+        Assert False(FP.contains('/', ''))
+        Assert False(FP.contains('', '/'))
       End
       It should ignore the last directory separator in {base} (Non Windows)
-        let ret = FP.contains('/foo', '/foo/')
-        Assert ret
+        Assert True(FP.contains('/foo', '/foo/'))
       End
 
       Context in case-sensitive system
         It should not ignore case
-          let ret = FP.contains('/etc/x11/xinit', '/etc/X11')
-          Assert !ret
+          Assert False(FP.contains('/etc/x11/xinit', '/etc/X11'))
         End
       End
     else
       It should return non-zero if C:\foo\bar contains C:\foo\bar (Windows)
-        let ret = FP.contains('C:\foo\bar', 'C:\foo\bar')
-        Assert ret
+        Assert True(FP.contains('C:\foo\bar', 'C:\foo\bar'))
       End
       It should return non-zero if C:\foo\bar contains C:\foo (Windows)
-        let ret = FP.contains('C:\foo\bar', 'C:\foo')
-        Assert ret
+        Assert True(FP.contains('C:\foo\bar', 'C:\foo'))
       End
       It should return zero if C:\foo contains C:\foo\bar (Windows)
-        let ret = FP.contains('C:\foo', 'C:\foo\bar')
-        Assert !ret
+        Assert False(FP.contains('C:\foo', 'C:\foo\bar'))
       End
       It should return non-zero if C:\foo contains C:\foo (Windows)
-        let ret = FP.contains('C:\foo', 'C:\foo')
-        Assert ret
+        Assert True(FP.contains('C:\foo', 'C:\foo'))
       End
       It should return non-zero if C:\foo contains C:\ (Windows)
-        let ret = FP.contains('C:\foo', 'C:\')
-        Assert ret
+        Assert True(FP.contains('C:\foo', 'C:\'))
       End
       It should return zero if C:\ contains C:\foo (Windows)
-        let ret = FP.contains('C:\', 'C:\foo')
-        Assert !ret
+        Assert False(FP.contains('C:\', 'C:\foo'))
       End
       It should return non-zero if C:\ contains C:\ (Windows)
-        let ret = FP.contains('C:\', 'C:\')
-        Assert ret
+        Assert True(FP.contains('C:\', 'C:\'))
       End
       It should return zero for empty paths (Windows)
-        let ret = FP.contains('', '')
-        Assert !ret
-        let ret = FP.contains('C:\', '')
-        Assert !ret
-        let ret = FP.contains('', 'C:\')
-        Assert !ret
+        Assert False(FP.contains('', ''))
+        Assert False(FP.contains('C:\', ''))
+        Assert False(FP.contains('', 'C:\'))
       End
       It should return non-zero if C:\ contains C:\ (Windows)
-        let ret = FP.contains('C:\', 'C:\')
-        Assert ret
+        Assert True(FP.contains('C:\', 'C:\'))
       End
       It should ignore the last directory separator in {base} (Windows)
-        let ret = FP.contains('C:\foo', 'C:\foo\')
-        Assert ret
+        Assert True(FP.contains('C:\foo', 'C:\foo\'))
       End
 
       Context in case-insensitive system
         It should ignore case
-          let ret = FP.contains('c:\program files\Vim', 'C:\Program Files')
-          Assert ret
+          Assert True(FP.contains('c:\program files\Vim', 'C:\Program Files'))
         End
       End
     endif
