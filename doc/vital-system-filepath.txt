@@ -62,6 +62,10 @@ basename({path})			 *Vital.System.Filepath.basename()*
 remove_last_separator({path})  *Vital.System.Filepath.remove_last_separator()*
 	Remove last directory separator if exists.
 
+is_case_tolerant()		*Vital.System.Filepath.is_case_tolerant()*
+	Return non-zero if filesystem ignores alphabetic case of a filename,
+	zero otherwise.
+
 abspath({path})			*Vital.System.Filepath.abspath()*
 	Return an absolute path of {path}.
 	If the {path} is already an absolute path, it return the {path}.
