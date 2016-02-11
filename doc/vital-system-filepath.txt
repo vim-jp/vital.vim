@@ -97,6 +97,14 @@ is_root_directory({path})	*Vital.System.Filepath.is_root_directory()*
 	is_root_directory('/aaa/..') == 0 " It doesn't resolve.
 	is_root_directory('C:/') == 1     " If it's on Windows.
 <
+contains({path}, {base})	*Vital.System.Filepath.contains()*
+	Return 1 if {path} contains {base}, otherwise 0.
+	{path} and {base} must be a full path.
+>
+	contains('/foo/bar/buz', '/foo/bar') == 1
+	contains('/foo/hoge/buz', '/foo/bar') == 0
+<
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

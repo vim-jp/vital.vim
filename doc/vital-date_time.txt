@@ -94,7 +94,7 @@ month_names([{longname} [, {locale}]])	*Vital.DateTime.month_names()*
 	Returns month names according to the current or specified locale.
 	If {longname} is supplied and it is true, returns long name.
 
-weekday_names([{longname} [, {locale}]])*Vital.DateTime.weekday_names()*
+weekday_names([{longname} [, {locale}]]) *Vital.DateTime.weekday_names()*
 	Returns weekday names according to the current or specified locale.
 	If {longname} is supplied and it is true, returns long name.
 

@@ -99,9 +99,11 @@ function! s:search_dependence(depends_info, to) abort
   let data_files = []
   let entries = copy(a:depends_info)
 
-  for module in s:builtin_modules(a:to)
+  let builtin_modules = s:builtin_modules(a:to)
+  for module in builtin_modules
     " Ignore dfiles because it is builtin
     let dmodules = s:get_dependence(s:V, module)[0]
+    let all[module] = 1
     let entries += dmodules
   endfor
 
@@ -123,6 +125,10 @@ function! s:search_dependence(depends_info, to) abort
     let g:vital_debug = vital_debug
   endif
   let &runtimepath = save_rtp
+
+  for module in builtin_modules
+    call remove(all, module)
+  endfor
 
   return sort(map(keys(all), 's:module2file(v:val)') + data_files)
 endfunction
@@ -153,7 +159,7 @@ endfunction
 
 function! s:expand_modules(V, entry, all) abort
   if type(a:entry) == type([])
-    let candidates = s:L.concat(map(copy(a:entry), 's:search(v:val)'))
+    let candidates = s:L.concat(map(copy(a:entry), 'a:V.search(v:val)'))
     if empty(candidates)
       throw printf('vital: Any of module %s is not found', string(a:entry))
     endif
