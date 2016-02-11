@@ -33,7 +33,7 @@ function! s:path_extensions() abort
         let pathext = $PATHEXT
       else
         " get default PATHEXT
-        let pathext = matchstr(system('set pathext'), '^pathext=\zs.*\ze\n', 'i')
+        let pathext = matchstr(system('set pathext'), '\C^pathext=\zs.*\ze\n', 'i')
       endif
       let s:path_extensions = map(split(pathext, s:path_separator), 'tolower(v:val)')
     elseif s:is_cygwin
@@ -161,7 +161,7 @@ endfunction
 " Remove the separator at the end of a:path.
 function! s:remove_last_separator(path) abort
   let sep = s:separator()
-  let pat = (sep ==# '\' ? '\\' : '/') . '\+$'
+  let pat = escape(sep, '\') . '\+$'
   return substitute(a:path, pat, '', '')
 endfunction
 
@@ -213,12 +213,15 @@ else
   endfunction
 endif
 
-function! s:is_root_directory(path) abort
-  if a:path ==# '/'
-    return 1
-  endif
-  return (has('win32') || has('win64')) && a:path =~# '^[a-zA-Z]:[/\\]$'
-endfunction
+if s:is_windows
+  function! s:is_root_directory(path) abort
+    return a:path =~# '^[a-zA-Z]:[/\\]$'
+  endfunction
+else
+  function! s:is_root_directory(path) abort
+    return a:path ==# '/'
+  endfunction
+endif
 
 function! s:contains(path, base) abort
   if a:path ==# '' || a:base ==# ''
