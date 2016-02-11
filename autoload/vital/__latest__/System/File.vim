@@ -211,8 +211,7 @@ if has('patch-7.4.1128')
 elseif s:is_unix
   function! s:rmdir(path, ...) abort
     let flags = a:0 ? a:1 : ''
-    let cmd = flags =~# 'r' ? 'rm -r' : 'rmdir'
-    let cmd .= flags =~# 'f' && cmd ==# 'rm -r' ? ' -f' : ''
+    let cmd = flags =~# 'r' ? 'rm -rf' : 'rmdir'
     let ret = system(cmd . ' ' . shellescape(a:path))
     if v:shell_error
       let ret = iconv(ret, 'char', &encoding)
@@ -224,8 +223,7 @@ elseif s:is_windows
   function! s:rmdir(path, ...) abort
     let flags = a:0 ? a:1 : ''
     if &shell =~? 'sh$'
-      let cmd = flags =~# 'r' ? 'rm -r' : 'rmdir'
-      let cmd .= flags =~# 'f' && cmd ==# 'rm -r' ? ' -f' : ''
+      let cmd = flags =~# 'r' ? 'rm -rf' : 'rmdir'
       let ret = system(cmd . ' ' . shellescape(a:path))
     else
       " 'f' flag does not make sense.
