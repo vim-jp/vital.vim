@@ -218,11 +218,11 @@ except ImportError:
         def urlopen_from_terminal(literal_request):
             request = ast.literal_eval(literal_request)
             try:
-                url, headers, body = urlopen(request)
+                url, raw_headers, raw_body = urlopen(request)
                 print(url)
-                for key, value in headers.items():
-                    print('%s: %s' % (key, value))
-                print(response_body)
+                print(raw_headers)
+                print('')
+                print(raw_body)
                 return 0
             except:
                 exception = format_exception()
@@ -237,9 +237,9 @@ except ImportError:
             request = {
                 'url': base + url1
             }
-            url, headers, body = urlopen(request)
+            url, raw_headers, raw_body = urlopen(request)
             assert url == base + url1
-            assert body == 'test'
+            assert raw_body == 'test'
 
         # To support ancient python and modern python
         # do not use optparse/argparse
