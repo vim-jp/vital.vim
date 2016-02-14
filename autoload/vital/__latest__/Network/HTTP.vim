@@ -13,7 +13,12 @@ function! s:_vital_loaded(V) abort
   call s:register('Network.HTTP.Python', 'python')
 endfunction
 function! s:_vital_depends() abort
-  return ['Prelude', 'Data.String']
+  return [
+        \ 'Prelude',
+        \ 'Data.Dict',
+        \ 'Data.String',
+        \ 'Network.HTTP.Python',
+        \]
 endfunction
 
 function! s:_throw(msg) abort
@@ -26,6 +31,7 @@ function! s:_get_default_request() abort
         \ 'headers': {},
         \ 'output_file': '',
         \ 'timeout': 0,
+        \ 'realm': '',
         \ 'username': '',
         \ 'password': '',
         \ 'max_redirect': 20,
@@ -103,7 +109,7 @@ function! s:encodeURIComponent(items) abort
       let ch = items[i]
       if ch =~# '[0-9A-Za-z-._~!''()*]'
         let ret .= ch
-      elseif ch == ' '
+      elseif ch ==# ' '
         let ret .= '+'
       else
         let ret .= '%' . substitute('0' . s:String.nr2hex(char2nr(ch)), '^.*\(..\)$', '\1', '')
@@ -123,6 +129,7 @@ function! s:build_request(request) abort
         \ 'content_type': '',
         \ 'output_file': '',
         \ 'timeout': 0,
+        \ 'realm': '',
         \ 'username': '',
         \ 'password': '',
         \ 'max_redirect': 20,
@@ -168,6 +175,7 @@ function! s:build_request(request) abort
         \ 'headers',
         \ 'output_file',
         \ 'timeout',
+        \ 'realm',
         \ 'username',
         \ 'password',
         \ 'max_redirect',
@@ -179,16 +187,29 @@ function! s:build_request(request) abort
 endfunction
 function! s:build_response(response) abort
   let response = extend({
+        \ 'raw_status': 'HTTP/1.1 500 Internal Server Error',
         \ 'raw_headers': '',
         \ 'raw_content': '',
         \}, a:response)
-  " XXX: Use Syste.Process.split_posix_text instead
-  let response.headers = split(response.raw_headers, '\r\?\n')
+  let response.headers = {}
+  for header in split(response.raw_headers, '\r\?\n')
+    let [key, value] = matchlist(header, '^\([^:]\+\): \(.*\)$')[1 : 2]
+    let response.headers[key] = value
+  endfor
+  " XXX: Use System.Process.split_posix_text instead
   let response.content = split(response.raw_content, '\r\?\n', 1)
-  let status = response.headers[0]
-  let response.version = matchstr(status, 'HTTP/\zs1\.[01]')
-  let response.status = str2nr(matchstr(status, 'HTTP/1\.[01] \zs\d\+'))
-  let response.status_text = matchstr(status, 'HTTP/1\.[01] \d\+ \zs.*$')
+  let response.version = matchstr(
+        \ response.raw_status,
+        \ 'HTTP/\zs1\.[01]'
+        \)
+  let response.status = str2nr(matchstr(
+        \ response.raw_status,
+        \ 'HTTP/1\.[01] \zs\d\+'
+        \))
+  let response.status_text = matchstr(
+        \ response.raw_status,
+        \ 'HTTP/1\.[01] \d\+ \zs.*$'
+        \)
   let response.success = ('' . response.status) =~# '^2'
   return response
 endfunction
@@ -237,7 +258,7 @@ function! s:open(request, ...) abort
         \ a:request,
         \)
   let settings = extend({
-        \ 'clients': keys(s:registry),
+        \ 'clients': s:priority,
         \}, get(a:000, 0, {})
         \)
   for alias in settings.clients
@@ -257,7 +278,7 @@ function! s:open_async(request, ...) abort
         \ a:request,
         \)
   let settings = extend({
-        \ 'clients': keys(s:registry),
+        \ 'clients': s:priority,
         \}, get(a:000, 0, {})
         \)
   for alias in settings.clients

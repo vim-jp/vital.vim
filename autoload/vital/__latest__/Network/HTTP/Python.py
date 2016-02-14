@@ -104,6 +104,7 @@ def _vital_vim_network_http_define():
             'headers': {},
             'output_file': '',
             'timeout': 0,
+            'realm': None,
             'username': '',
             'password': '',
             'max_redirect': 20,
@@ -118,6 +119,7 @@ def _vital_vim_network_http_define():
             'headers': get('headers'),
             'output_file': get('output_file'),
             'timeout': int(get('timeout')),
+            'realm': get('realm'),
             'username': get('username'),
             'password': get('password'),
             'max_redirect': int(get('max_redirect')),
@@ -125,8 +127,9 @@ def _vital_vim_network_http_define():
             'gzip_decompress': bool(int(get('gzip_decompress'))),
             'insecure': bool(int(get('insecure'))),
         })
-        r['data'] = r['data'].encode('utf-8') if r['data'] else None
+        r['data'] = "\n".join(r['data']).encode('utf-8') if r['data'] else None
         r['timeout'] = r['timeout'] if r['timeout'] else None
+        r['realm'] = r['realm'] if r['realm'] else None
         return r
 
     def build_unverified_ssl_context():
@@ -146,7 +149,8 @@ def _vital_vim_network_http_define():
         if request['username']:
             passmgr = HTTPPasswordMgrWithDefaultRealm()
             passmgr.add_password(
-                None, request['url'],
+                request.get('realm', None),
+                request['url'],
                 request['username'],
                 request['password'],
             )
@@ -181,22 +185,28 @@ def _vital_vim_network_http_define():
             '1.1' if res.version == 11 else '1.0',
             res.code, res.msg,
         )
-        response_headers = str(res.headers)
-        response_body = res.read()
-        if (request['gzip_decompress']
-                and res.headers.get('Content-Encoding') == 'gzip'):
-            response_body = gzip_decompress(response_body)
-        if hasattr(res.headers, 'get_content_charset'):
-            # Python 3
-            response_encoding = res.headers.get_content_charset()
+        # NOTE:
+        # res might be HTTPError instance thus might not have headers/read
+        response_headers = str(getattr(res, 'headers', ''))
+        response_body = getattr(res, 'read', lambda:'')()
+        if hasattr(res, 'headers'):
+            if (request['gzip_decompress']
+                    and res.headers.get('Content-Encoding') == 'gzip'):
+                response_body = gzip_decompress(response_body)
+            if hasattr(res.headers, 'get_content_charset'):
+                # Python 3
+                response_encoding = res.headers.get_content_charset()
+            else:
+                # Python 2
+                response_encoding = res.headers.getparam('charset')
         else:
-            # Python 2
-            response_encoding = res.headers.getparam('charset')
+            response_encoding = None
         if response_encoding:
             response_body = response_body.decode(response_encoding)
         return (
             request['url'],
-            response_status + response_headers,
+            response_status,
+            response_headers,
             response_body,
         )
 
@@ -237,8 +247,9 @@ except ImportError:
         def urlopen_from_terminal(literal_request):
             request = ast.literal_eval(literal_request)
             try:
-                url, raw_headers, raw_body = urlopen(request)
+                url, status, raw_headers, raw_body = urlopen(request)
                 print(url)
+                print(status)
                 print(raw_headers)
                 print('')
                 print(raw_body)

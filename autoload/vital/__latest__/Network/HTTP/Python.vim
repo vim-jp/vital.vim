@@ -39,9 +39,10 @@ function! s:open(request, settings) abort
   if s:Prelude.is_string(response)
     call s:_throw(response)
   endif
-  let [url, headers, body] = response
+  let [url, status, headers, body] = response
   return {
         \ 'url': url,
+        \ 'raw_status': substitute(status, '\r\?\n$', '', ''),
         \ 'raw_headers': headers,
         \ 'raw_content': body,
         \}

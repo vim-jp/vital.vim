@@ -1,16 +1,70 @@
 let s:V = vital#of('vital')
-let s:JSON = s:V.import('Web.JSON')
 
 Describe Network.HTTP.Python
   Before
     let settings = {
           \ 'clients': ['python'],
           \}
+    let JSON = s:V.import('Web.JSON')
     let HTTP = s:V.import('Network.HTTP')
   End
 
   Describe .open()
-    It request a remote content by GET
+    It AUTH http://httpbin.org/basic-auth/username/password
+      let url = 'http://httpbin.org/basic-auth/username/password'
+      let request = HTTP.request(url)
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 0)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 401)
+      Assert Equals(response.status_text, 'Unauthorized')
+
+      let request = HTTP.request(url, {
+            \ 'username': 'username',
+            \ 'password': 'password',
+            \})
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 1)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 200)
+      Assert Equals(response.status_text, 'OK')
+      Assert Equals(
+            \ response.headers['Content-Type'],
+            \ 'application/json',
+            \)
+      let json = JSON.decode(response.raw_content)
+      Assert Equals(json.authenticated, 1)
+      Assert Equals(json.user, 'username')
+    End
+    It AUTH http://httpbin.org/digest-auth/auth/username/password
+      let url = 'http://httpbin.org/digest-auth/auth/username/password'
+      let request = HTTP.request(url)
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 0)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 401)
+      Assert Equals(response.status_text, 'Unauthorized')
+
+      let request = HTTP.request(url, {
+            \ 'realm': 'me@kennethreitz.com',
+            \ 'username': 'username',
+            \ 'password': 'password',
+            \})
+      let response = HTTP.open(request, settings)
+      Assert Equals(response, {})
+      Assert Equals(response.success, 0)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 200)
+      Assert Equals(response.status_text, 'OK')
+      Assert Equals(
+            \ response.headers['Content-Type'],
+            \ 'application/json',
+            \)
+      let json = JSON.decode(response.raw_content)
+      Assert Equals(json.authenticated, 1)
+      Assert Equals(json.user, 'username')
+    End
+    It GET http://httpbin.org/get
       let url = 'http://httpbin.org/get'
       let request = HTTP.request(url)
       let response = HTTP.open(request, settings)
@@ -18,7 +72,126 @@ Describe Network.HTTP.Python
       Assert Equals(response.version, '1.1')
       Assert Equals(response.status, 200)
       Assert Equals(response.status_text, 'OK')
-      " XXX: Test content as well
+      Assert Equals(
+            \ response.headers['Content-Type'],
+            \ 'application/json',
+            \)
+      let json = JSON.decode(response.raw_content)
+      Assert Equals(json.args, {})
+      Assert Equals(json.url, 'http://httpbin.org/get')
+    End
+    It GET http://httpbin.org/gzip (gzip encoded response)
+      let url = 'http://httpbin.org/gzip'
+      let request = HTTP.request(url, {
+            \ 'gzip_decompress': 1,
+            \})
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 1)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 200)
+      Assert Equals(response.status_text, 'OK')
+      Assert Equals(
+            \ response.headers['Content-Type'],
+            \ 'application/json',
+            \)
+      let json = JSON.decode(response.raw_content)
+      Assert Equals(json.method, 'GET')
+      Assert Equals(json.gzipped, 1)
+    End
+    It GET http://httpbin.org/status/418
+      let url = 'http://httpbin.org/status/418'
+      let request = HTTP.request(url)
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 0)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 418)
+      Assert Equals(response.status_text, 'Unknown')
+      Assert Match(response.raw_content, 'teapot')
+    End
+    It GET http://httpbin.org/redirect/3
+      let url = 'http://httpbin.org/redirect/3'
+      let request = HTTP.request(url)
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 1)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 200)
+      Assert Equals(response.status_text, 'OK')
+      Assert Equals(
+            \ response.headers['Content-Type'],
+            \ 'application/json',
+            \)
+      let json = JSON.decode(response.raw_content)
+      Assert Equals(json.args, {})
+      Assert Equals(json.url, 'http://httpbin.org/get')
+    End
+    It POST http://httpbin.org/post with Dictionary {data}
+      let url = 'http://httpbin.org/post'
+      let request = HTTP.request('POST', url, {
+            \ 'data': {'foobar': 'hogehoge'},
+            \})
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 1)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 200)
+      Assert Equals(response.status_text, 'OK')
+      Assert Equals(
+            \ response.headers['Content-Type'],
+            \ 'application/json',
+            \)
+      let json = JSON.decode(response.raw_content)
+      Assert Equals(json.args, {})
+      Assert Equals(json.data, '')
+      Assert Equals(json.files, {})
+      Assert Equals(json.form, {'foobar': 'hogehoge'})
+      Assert Equals(json.url, 'http://httpbin.org/post')
+    End
+    It POST http://httpbin.org/post with List {data}
+      let url = 'http://httpbin.org/post'
+      let request = HTTP.request('POST', url, {
+            \ 'content_type': 'application/json',
+            \ 'data': [
+            \   '{',
+            \   '  "foobar": "hogehoge"',
+            \   '}',
+            \ ],
+            \})
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 1)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 200)
+      Assert Equals(response.status_text, 'OK')
+      Assert Equals(
+            \ response.headers['Content-Type'],
+            \ 'application/json',
+            \)
+      let json = JSON.decode(response.raw_content)
+      Assert Equals(json.args, {})
+      Assert Equals(JSON.decode(json.data), {'foobar': 'hogehoge'})
+      Assert Equals(json.files, {})
+      Assert Equals(json.form, {})
+      Assert Equals(json.url, 'http://httpbin.org/post')
+    End
+    It POST http://httpbin.org/post with String {data}
+      let url = 'http://httpbin.org/post'
+      let request = HTTP.request('POST', url, {
+            \ 'content_type': 'application/json',
+            \ 'data': '{"foobar": "hogehoge"}',
+            \})
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 1)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 200)
+      Assert Equals(response.status_text, 'OK')
+      Assert Equals(
+            \ response.headers['Content-Type'],
+            \ 'application/json',
+            \)
+      let json = JSON.decode(response.raw_content)
+      Assert Equals(json.args, {})
+      Assert Equals(JSON.decode(json.data), {'foobar': 'hogehoge'})
+      Assert Equals(json.files, {})
+      Assert Equals(json.form, {})
+      Assert Equals(json.url, 'http://httpbin.org/post')
     End
   End
 End
