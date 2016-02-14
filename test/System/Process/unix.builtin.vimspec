@@ -1,0 +1,146 @@
+scriptencoding utf-8
+
+let s:V = vital#of('vital')
+let s:Prelude = s:V.import('Prelude')
+let s:Path = s:V.import('System.Filepath')
+let s:Process = s:V.import('System.Process')
+let s:testdata = './test/_testdata/System/Process/'
+
+if s:Prelude.is_windows()
+  finish
+endif
+
+Describe System.Process
+  Before
+    let Process = s:Process
+  End
+  Describe .system({args}[, {input}, {timeout}, {options}])
+    Context [builtin]
+      Before
+        let options = {
+              \ 'use_vimproc': 0,
+              \}
+      End
+      Context with List {args}
+        It executes command without spaces
+          let args = ['echo', 'hello']
+          Assert Equal(Process.system(args, options), "hello\n")
+
+          let args = ['echo', '-n', 'hello']
+          Assert Equal(Process.system(args, options), "hello")
+        End
+        It executes command with spaces
+          let args = ['echo', 'h e l l o']
+          Assert Equal(Process.system(args, options), "h e l l o\n")
+
+          let args = ['echo', '-n', 'h e l l o']
+          Assert Equal(Process.system(args, options), "h e l l o")
+        End
+        It throw exception with enclosed spaces (in strict mode)
+          let args = ['echo', '"h e l l o"']
+          Throws /An element "h e l l o" seems escaped/
+                \ Process.system(args, options)
+
+          let args = ['echo', "'h e l l o'"]
+          Throws /An element 'h e l l o' seems escaped/
+                \ Process.system(args, options)
+        End
+        It executes command with non ascii characters
+          let args = ['echo', 'あいうえお']
+          Assert Equal(Process.system(args, options), "あいうえお\n")
+
+          let args = ['echo', 'あ い う え お']
+          Assert Equal(Process.system(args, options), "あ い う え お\n")
+        End
+        It executes command without spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 'test.txt')]
+          Assert Equal(Process.system(args, options), "test\n")
+        End
+        It executes command with spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 't e s t.txt')]
+          Assert Equal(Process.system(args, options), "test\n")
+        End
+        It executes command with non ascii characters (filename)
+          " NOTE:
+          " output should not be encoded while the file is utf-8
+          let options.encode_output = 0
+          let args = ['cat', s:Path.realpath(s:testdata . 'テスト.txt')]
+          Assert Equal(Process.system(args, options), "テスト\n")
+
+          let args = ['cat', s:Path.realpath(s:testdata . 'テ ス ト.txt')]
+          Assert Equal(Process.system(args, options), "テスト\n")
+        End
+      End
+
+      Context with String {args}
+        It executes command without spaces
+          let args = 'echo hello'
+          Assert Equal(Process.system(args, options), "hello\n")
+
+          let args = 'echo -n hello'
+          Assert Equal(Process.system(args, options), "hello")
+        End
+        It executes command with spaces
+          let args = 'echo "h e l l o"'
+          Assert Equal(Process.system(args, options), "h e l l o\n")
+
+          let args = "echo 'h e l l o'"
+          Assert Equal(Process.system(args, options), "h e l l o\n")
+
+          let args = 'echo -n "h e l l o"'
+          Assert Equal(Process.system(args, options), "h e l l o")
+
+          let args = "echo -n 'h e l l o'"
+          Assert Equal(Process.system(args, options), "h e l l o")
+        End
+        It executes command with non ascii characters
+          let args = 'echo あいうえお'
+          Assert Equal(Process.system(args, options), "あいうえお\n")
+
+          let args = 'echo "あ い う え お"'
+          Assert Equal(Process.system(args, options), "あ い う え お\n")
+
+          let args = "echo 'あ い う え お'"
+          Assert Equal(Process.system(args, options), "あ い う え お\n")
+        End
+        It executes command without spaces (filename)
+          let args = printf('cat %s',
+                \ s:Path.realpath(s:testdata . 'test.txt')
+                \)
+          Assert Equal(Process.system(args, options), "test\n")
+        End
+        It executes command with spaces (filename)
+          let args = printf('cat "%s"',
+                \ s:Path.realpath(s:testdata . 't e s t.txt')
+                \)
+          Assert Equal(Process.system(args, options), "test\n")
+
+          let args = printf("cat '%s'",
+                \ s:Path.realpath(s:testdata . 't e s t.txt')
+                \)
+          Assert Equal(Process.system(args, options), "test\n")
+        End
+        It executes command with non ascii characters (filename)
+          " NOTE:
+          " output should not be encoded while the file is utf-8
+          let options.encode_output = 0
+          let args = printf('cat %s',
+                \ s:Path.realpath(s:testdata . 'テスト.txt')
+                \)
+          Assert Equal(Process.system(args, options), "テスト\n")
+
+          let args = printf('cat "%s"',
+                \ s:Path.realpath(s:testdata . 'テ ス ト.txt')
+                \)
+          Assert Equal(Process.system(args, options), "テスト\n")
+
+          let args = printf("cat '%s'",
+                \ s:Path.realpath(s:testdata . 'テ ス ト.txt')
+                \)
+          Assert Equal(Process.system(args, options), "テスト\n")
+        End
+      End
+    End
+  End
+End
+
