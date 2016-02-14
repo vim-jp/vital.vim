@@ -24,27 +24,16 @@ function! s:open(request, settings) abort
         \ 'python': 0,
         \}, a:settings)
   let python = settings.python == 1 ? 0 : settings.python
-  let prefix = '_vital_vim_network_http'
-  let code = [
-        \ 'import vim',
-        \ printf(
-        \   'from _vital_vim_network_http import urlopen_from_vim as %s_urlopen',
-        \   prefix,
-        \ ),
-        \ printf(
-        \   '%s_urlopen_result = %s_urlopen(vim.eval("a:request"))',
-        \   prefix, prefix,
-        \ ),
-        \]
-  call s:Python.add_pythonpath(s:Path.join(s:script_root, 'Python'))
-  execute s:Python.exec_code(code, python)
+  execute s:Python.exec_file(s:Path.join(s:script_root, 'Python.py'), python)
   " NOTE:
   " To support neovim, bindeval cannot be used for now.
   " That's why eval_expr is required to call separatly
   let response = s:Python.eval_expr('_vital_vim_network_http_urlopen_result')
+  let prefix = '_vital_vim_network_http'
   let code = [
         \ printf('del %s_urlopen', prefix),
         \ printf('del %s_urlopen_result', prefix),
+        \ printf('del %s_format_exception', prefix),
         \]
   execute s:Python.exec_code(code, python)
   if s:Prelude.is_string(response)
