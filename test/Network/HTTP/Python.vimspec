@@ -1,7 +1,7 @@
 let s:V = vital#of('vital')
 
-if (v:version == 703 && has('patch893')) || v:version < 703
-  call themis#log('Network.HTTP.Python is not supported in Vim 7.3.892 or earlier')
+if (v:version == 703 && !has('patch601')) || v:version < 703
+  call themis#log('Network.HTTP.Python is not supported in Vim 7.3.600 or earlier')
   finish
 endif
 
