@@ -22,7 +22,7 @@ Describe Network.HTTP.Python
       Assert Equals(response.success, 0)
       Assert Equals(response.version, '1.1')
       Assert Equals(response.status, 401)
-      Assert Equals(response.status_text, 'Unauthorized')
+      Assert Equals(toupper(response.status_text), 'UNAUTHORIZED')
 
       let request = HTTP.request(url, {
             \ 'username': 'username',
@@ -48,7 +48,7 @@ Describe Network.HTTP.Python
       Assert Equals(response.success, 0)
       Assert Equals(response.version, '1.1')
       Assert Equals(response.status, 401)
-      Assert Equals(response.status_text, 'Unauthorized')
+      Assert Equals(toupper(response.status_text), 'UNAUTHORIZED')
 
       let request = HTTP.request(url, {
             \ 'realm': 'me@kennethreitz.com',
@@ -110,7 +110,7 @@ Describe Network.HTTP.Python
       Assert Equals(response.success, 0)
       Assert Equals(response.version, '1.1')
       Assert Equals(response.status, 418)
-      Assert Equals(response.status_text, 'Unknown')
+      Assert Match(response.status_text, '^\%(Unknown\|I''M A TEAPOT\)$')
       Assert Match(response.raw_content, 'teapot')
     End
     It GET http://httpbin.org/redirect/3

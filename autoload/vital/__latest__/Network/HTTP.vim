@@ -193,8 +193,10 @@ function! s:build_response(response) abort
         \}, a:response)
   let response.headers = {}
   for header in split(response.raw_headers, '\r\?\n')
-    let [key, value] = matchlist(header, '^\([^:]\+\): \(.*\)$')[1 : 2]
-    let response.headers[key] = value
+    let m = matchlist(header, '^\([^:]\+\): \(.*\)$')
+    if len(m) > 0
+      let response.headers[m[1]] = m[2]
+    endif
   endfor
   " XXX: Use System.Process.split_posix_text instead
   let response.content = split(response.raw_content, '\r\?\n', 1)
