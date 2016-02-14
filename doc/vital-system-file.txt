@@ -47,8 +47,8 @@ copy({src}, {dest})			*Vital.System.File.copy()*
 	call s:F.copy("/tmp/old", "/tmp/new")
 <
 
-mkdir_nothrow({name} [, {path} [, {prot}]])
 					*Vital.System.File.mkdir_nothrow()*
+mkdir_nothrow({name} [, {path} [, {prot}]])
 	Creates a directory {name} without throwing any exception.  The
 	arguments are used like with |mkdir()|.  Returns a non-zero Number
 	if successful, otherwise 0.
