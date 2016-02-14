@@ -134,10 +134,8 @@ def _vital_vim_network_http_define():
             context = ssl._create_unverified_context()
         elif hasattr(ssl, '_create_stdlib_context'):
             context = ssl._create_stdlib_context()
-        elif hasattr(ssl, 'SSLContext'):
-            context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
         else:
-            context = None
+            context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
         return context
 
     def urlopen(request):
