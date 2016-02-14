@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 def _vital_vim_network_http_define():
     import sys
+    import ssl
     import copy
     import gzip
     import time
@@ -108,6 +109,7 @@ def _vital_vim_network_http_define():
             'max_redirect': 20,
             'retry': 1,
             'gzip_decompress': 0,
+            'insecure': 0,
         }
         r.update({
             'url': request['url'],
@@ -121,10 +123,22 @@ def _vital_vim_network_http_define():
             'max_redirect': int(get('max_redirect')),
             'retry': int(get('retry')),
             'gzip_decompress': bool(int(get('gzip_decompress'))),
+            'insecure': bool(int(get('insecure'))),
         })
         r['data'] = r['data'].encode('utf-8') if r['data'] else None
         r['timeout'] = r['timeout'] if r['timeout'] else None
         return r
+
+    def build_unverified_ssl_context():
+        if hasattr(ssl, '_create_unverified_context'):
+            context = ssl._create_unverified_context()
+        elif hasattr(ssl, '_create_stdlib_context'):
+            context = ssl._create_stdlib_context()
+        elif hasattr(ssl, 'SSLContext'):
+            context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        else:
+            context = None
+        return context
 
     def urlopen(request):
         request = build_request(request)
@@ -149,9 +163,16 @@ def _vital_vim_network_http_define():
         if request['gzip_decompress']:
             req.add_header('Accept-encoding', 'gzip')
         try:
-            res = retry(tries=request['retry'])(opener.open)(
-                req, timeout=request['timeout']
-            )
+            if request['insecure']:
+                context = buld_unverified_ssl_context()
+                res = retry(tries=request['retry'])(opener.open)(
+                    req, timeout=request['timeout'],
+                    context=context,
+                )
+            else:
+                res = retry(tries=request['retry'])(opener.open)(
+                    req, timeout=request['timeout']
+                )
         except HTTPError as e:
             res = e
         if not hasattr(res, 'version'):

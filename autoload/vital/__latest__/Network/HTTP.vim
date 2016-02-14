@@ -32,6 +32,7 @@ function! s:_get_default_request() abort
         \ 'retry': 1,
         \ 'auth_method': '',
         \ 'gzip_decompress': 0,
+        \ 'insecure': 0,
         \}
 endfunction
 function! s:__urlencode_char(c) abort
@@ -128,6 +129,7 @@ function! s:build_request(request) abort
         \ 'retry': 1,
         \ 'auth_method': '',
         \ 'gzip_decompress': 0,
+        \ 'insecure': 0,
         \}, a:request
         \)
   if !has_key(request, 'url')
@@ -172,6 +174,7 @@ function! s:build_request(request) abort
         \ 'retry',
         \ 'auth_method',
         \ 'gzip_decompress',
+        \ 'insecure',
         \])
 endfunction
 function! s:build_response(response) abort
