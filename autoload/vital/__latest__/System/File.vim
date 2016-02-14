@@ -169,7 +169,7 @@ endif
 " Implemented by pure Vim script.
 function! s:copy_dir_vim(src, dest) abort
   if isdirectory(a:src)
-    for src in s:Prelude.glob(s:Filepath.join(a:src, '*'), 1, 1)
+    for src in s:Prelude.glob(s:Filepath.join(a:src, '*'))
       let basename = s:Filepath.basename(src)
       let dest = s:Filepath.join(a:dest, basename)
       if !s:copy_dir_vim(src, dest)
