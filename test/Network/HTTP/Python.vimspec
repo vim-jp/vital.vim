@@ -1,0 +1,24 @@
+let s:V = vital#of('vital')
+let s:JSON = s:V.import('Web.JSON')
+
+Describe Network.HTTP.Python
+  Before
+    let settings = {
+          \ 'clients': ['python'],
+          \}
+    let HTTP = s:V.import('Network.HTTP')
+  End
+
+  Describe .open()
+    It request a remote content by GET
+      let url = 'http://httpbin.org/get'
+      let request = HTTP.request(url)
+      let response = HTTP.open(request, settings)
+      Assert Equals(response.success, 1)
+      Assert Equals(response.version, '1.1')
+      Assert Equals(response.status, 200)
+      Assert Equals(response.status_text, 'OK')
+      " XXX: Test content as well
+    End
+  End
+End
