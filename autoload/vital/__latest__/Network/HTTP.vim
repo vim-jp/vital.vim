@@ -220,12 +220,12 @@ endfunction
 " request({url}[, {config}])
 " request({method}, {url}[, {config}])
 function! s:request(...) abort
+  let config = {}
   if a:0 == 0
     call s:_throw('request() require at least one argument')
   elseif a:0 == 1
     if s:Prelude.is_string(a:1)
       " config({url})
-      let config = {}
       let config.url = a:1
     else
       " config({config})
@@ -234,7 +234,6 @@ function! s:request(...) abort
   elseif a:0 == 2
     if s:Prelude.is_string(a:2)
       " config({method}, {url})
-      let config = {}
       let config.url = a:2
       let config.method = a:1
     else
