@@ -113,6 +113,16 @@ else
   endfunction
 endif
 
+function! s:add_pythonpath(path, ...) abort
+  let major_version = s:_get_valid_major_version(get(a:000, 0, 0))
+  let code = [
+        \ 'import sys',
+        \ printf('if "%s" not in sys.path:', a:path),
+        \ printf('  sys.path.insert(0, "%s")', a:path),
+        \]
+  execute s:exec_code(code, major_version)
+endfunction
+
 
 let &cpo = s:save_cpo
 unlet! s:save_cpo
