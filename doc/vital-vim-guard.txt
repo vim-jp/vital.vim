@@ -127,7 +127,7 @@ store([{name}, ...])	*Vital.Vim.Guard.store()*
 	|List|
 	If the {name} contains:
 	- One item, the item is assumed as an instance of |List| or
-	  |Dictionary| and the instance will be garded. Note that if you assign
+	  |Dictionary| and the instance will be guarded. Note that if you assign
 	  a different instance after store, it won't restore the values.
 	- Two items, the list is assumed as [{attr}, {namespace}] where
 	  {attr} is a name of attribute in {namespace}.
