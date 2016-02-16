@@ -1,6 +1,7 @@
 let s:V = vital#of('vital')
 let s:P = s:V.import('System.Filepath')
 let s:S = s:V.import('Vim.ScriptLocal')
+let s:is_windows = has('win16') || has('win32') || has('win64')
 
 Describe Vim.Guard
   Before
@@ -145,20 +146,31 @@ Describe Vim.Guard
         Assert Equals(getreg('a'), 'foobar')
         Assert Equals(getreg('b'), 'hogehoge')
       End
-      It restore a RAW value of the expression register when assigned
-        call setreg('=', '100 + 100 + 100')
-        let register = sf._new_register('@=')
-        call setreg('=', '100 * 5')
-        call register.restore()
-        Assert Equals(getreg('='), '300')
-        Assert Equals(getreg('=', 1), '100 + 100 + 100')
-      End
+      if v:version >= 704
+        " NOTE:
+        " It seems expression register does not work in Vim 7.3 ?
+        " https://travis-ci.org/vim-jp/vital.vim/jobs/109619393
+        It restore a RAW value of the expression register when assigned
+          call setreg('=', '100 + 100 + 100')
+          let register = sf._new_register('@=')
+          call setreg('=', '100 * 5')
+          call register.restore()
+          Assert Equals(getreg('='), '300')
+          Assert Equals(getreg('=', 1), '100 + 100 + 100')
+        End
+      endif
     End
   End
   Describe [PRIVATE] s:_new_environment({name})
+    After
+      " Remove used environment variables (Works in Windows only)
+      let $_VITAL_VIM_GUARD_EMPTY = ''
+      let $_VITAL_VIM_GUARD_A = ''
+      let $_VITAL_VIM_GUARD_B = ''
+    End
     " NOTE:
     "   $PATH  : it should exist
-    "   $_EMPTY : it should exist and empty
+    "   $_VITAL_VIM_GUARD_EMPTY : it should exist and empty (Not in Windows)
     "   $_INVALID : it should NOT exist
     It throws an exception if {name} does not start from "$"
       Throw /An environment variable name "foo" requires to be started from "$"/
@@ -176,16 +188,18 @@ Describe Vim.Guard
       Assert Equals(environment.name, '$PATH')
       Assert Equals(environment.value, $PATH)
     End
-    It returns an environment variable instance of {name} even it is an empty string
-      let $_VITAL_VIM_GUARD_EMPTY = ''
-      let environment = sf._new_environment('$_VITAL_VIM_GUARD_EMPTY')
-      Assert KeyExists(environment, 'name')
-      Assert KeyExists(environment, 'value')
-      Assert KeyExists(environment, 'restore')
-      Assert Equals(environment.name, '$_VITAL_VIM_GUARD_EMPTY')
-      Assert Equals(environment.value, $_VITAL_VIM_GUARD_EMPTY)
-      " there is no way to unlet environment variable so leave it
-    End
+    if !s:is_windows
+      It returns an environment variable instance of {name} even it is an empty string
+        let $_VITAL_VIM_GUARD_EMPTY = ''
+        let environment = sf._new_environment('$_VITAL_VIM_GUARD_EMPTY')
+        Assert KeyExists(environment, 'name')
+        Assert KeyExists(environment, 'value')
+        Assert KeyExists(environment, 'restore')
+        Assert Equals(environment.name, '$_VITAL_VIM_GUARD_EMPTY')
+        Assert Equals(environment.value, $_VITAL_VIM_GUARD_EMPTY)
+        " there is no way to unlet environment variable so leave it
+      End
+    endif
     Describe An environment variable instance
       It restore a value of the environment when assigned
         let $_VITAL_VIM_GUARD_A = 'A'
