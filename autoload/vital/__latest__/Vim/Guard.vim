@@ -1,11 +1,11 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Use a Funcref as a special term UNDEFINED
+" Use a Funcref as a special term _UNDEFINED
 function! s:undefined() abort
   return 'undefined'
 endfunction
-let s:UNDEFINED = function('s:undefined')
+let s:_UNDEFINED = function('s:undefined')
 
 function! s:_vital_loaded(V) abort
   let s:V = a:V
@@ -120,7 +120,7 @@ function! s:_new_variable(name, ...) abort
   endif
   let variable = copy(s:variable)
   let variable.name = name
-  let variable.value = get(namespace, name, s:UNDEFINED)
+  let variable.value = get(namespace, name, s:_UNDEFINED)
   let variable.value =
         \ type(variable.value) == type({}) || type(variable.value) == type([])
         \   ? deepcopy(variable.value)
@@ -131,7 +131,7 @@ endfunction
 function! s:variable.restore() abort
   " unlet the variable to prevent variable type mis-match in case
   silent! unlet! self._namespace[self.name]
-  if type(self.value) == type(s:UNDEFINED) && self.value == s:UNDEFINED
+  if type(self.value) == type(s:_UNDEFINED) && self.value == s:_UNDEFINED
     " do nothing, leave the variable as undefined
   else
     let self._namespace[self.name] = self.value
