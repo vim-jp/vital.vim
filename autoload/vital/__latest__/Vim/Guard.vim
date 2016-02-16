@@ -7,6 +7,15 @@ function! s:undefined() abort
 endfunction
 let s:UNDEFINED = function('s:undefined')
 
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:Prelude = s:V.import('Prelude')
+  let s:List = s:V.import('Data.List')
+  let s:Dict = s:V.import('Data.Dict')
+endfunction
+function! s:_vital_depends() abort
+  return ['Prelude', 'Data.List', 'Data.Dict']
+endfunction
 function! s:_vital_created(module) abort
   " define constant variables
   if !exists('s:const')
@@ -38,6 +47,55 @@ function! s:_new_option(name) abort
   return option
 endfunction
 function! s:option.restore() abort
+  execute printf('let %s = %s', self.name, string(self.value))
+endfunction
+
+let s:register = {}
+function! s:_new_register(name) abort
+  if len(a:name) != 2
+    call s:_throw(printf(
+          \'A register name "%s" requires to be "@" + a single character', a:name
+          \))
+  elseif a:name !~# '^@'
+    call s:_throw(printf(
+          \'A register name "%s" requires to be started from "@"', a:name
+          \))
+  elseif a:name =~# '^@[:.%]$'
+    call s:_throw(printf(
+          \'A register name "%s" is read only', a:name
+          \))
+  elseif a:name !~# '^@[@0-9a-zA-Z#=*+~_/-]$'
+    call s:_throw(printf(
+          \'A register name "%s" does not exist. See ":help let-register"', a:name
+          \))
+  endif
+  let name = a:name ==# '@@' ? '' : a:name[1]
+  let register = copy(s:register)
+  let register.name = name
+  let register.value = getreg(name, 1)
+  return register
+endfunction
+function! s:register.restore() abort
+  call setreg(self.name, self.value)
+endfunction
+
+let s:environment = {}
+function! s:_new_environment(name) abort
+  if a:name !~# '^\$'
+    call s:_throw(printf(
+          \'An environment variable name "%s" requires to be started from "$"', a:name
+          \))
+  elseif !exists(a:name)
+    call s:_throw(printf(
+          \'An environment variable name "%s" does not exist. While Vim cannot unlet environment variable, it requires to exist', a:name
+          \))
+  endif
+  let environment = copy(s:environment)
+  let environment.name = a:name
+  let environment.value = eval(a:name)
+  return environment
+endfunction
+function! s:environment.restore() abort
   execute printf('let %s = %s', self.name, string(self.value))
 endfunction
 
@@ -80,12 +138,39 @@ function! s:variable.restore() abort
   endif
 endfunction
 
+let s:instance = {}
+function! s:_new_instance(instance) abort
+  if !s:Prelude.is_list(a:instance) && !s:Prelude.is_dict(a:instance)
+    call s:_throw(printf(
+          \'An instance "%s" requires to be List or Dictionary', string(a:instance)
+          \))
+  endif
+  let instance = copy(s:instance)
+  let instance.instance = a:instance
+  let instance.values = deepcopy(a:instance)
+  return instance
+endfunction
+function! s:instance.restore() abort
+  if s:Prelude.is_list(self.instance)
+    call s:List.clear(self.instance)
+  else
+    call s:Dict.clear(self.instance)
+  endif
+  call extend(self.instance, self.values)
+endfunction
+
 let s:guard = {}
 function! s:store(...) abort
   let resources = []
   for meta in a:000
-    if type(meta) == type([])
-      call add(resources, call('s:_new_variable', meta))
+    if s:Prelude.is_list(meta)
+      if len(meta) == 1
+        call add(resources, s:_new_instance(meta[0]))
+      elseif len(meta) == 2
+        call add(resources, call('s:_new_variable', meta))
+      else
+        call s:_throw('List assignment requires one or two elements')
+      endif
     elseif type(meta) == type('')
       if meta =~# '^[bwtgls]:'
         " Note:
@@ -93,9 +178,13 @@ function! s:store(...) abort
         call add(resources, s:_new_variable(meta))
       elseif meta =~# '^&'
         call add(resources, s:_new_option(meta))
+      elseif meta =~# '^@'
+        call add(resources, s:_new_register(meta))
+      elseif meta =~# '^\$'
+        call add(resources, s:_new_environment(meta))
       else
         call s:_throw(printf(
-              \ 'Unknown option or variable "%s" was specified',
+              \ 'Unknown value "%s" was specified',
               \ meta
               \))
       endif
