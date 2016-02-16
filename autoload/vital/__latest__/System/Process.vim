@@ -18,6 +18,76 @@ function! s:_throw(msg) abort
   throw printf('vital: System.Process: %s', a:msg)
 endfunction
 
+function! s:_normalize_arguments(name, arguments) abort
+  let input   = 0
+  let timeout = 0
+  let options = {}
+  let narguments = len(a:arguments)
+  if narguments == 3
+    " e.g. system({args}, {input}, {timeout}, {options})
+    let options = a:arguments[2]
+    let timeout = a:arguments[1]
+    let input   = a:arguments[0]
+  elseif narguments == 2
+    if s:Prelude.is_dict(a:arguments[1])
+      " e.g. system({args}, {input}, {options})
+      let options = a:arguments[1]
+      let input   = a:arguments[0]
+    else
+      " e.g. system({args}, {input}, {timeout})
+      let timeout = a:arguments[1]
+      let input   = a:arguments[0]
+    endif
+  elseif narguments == 1
+    if s:Prelude.is_dict(a:arguments[0])
+      " e.g. system({args}, {options})
+      let options = a:arguments[0]
+    else
+      " e.g. system({args}, {input})
+      let input = a:arguments[0]
+    endif
+  elseif narguments == 0
+    " e.g. system({args})
+  else
+    call s:_throw(printf(
+          \ 'Process.%s() expects 1-4 arguments but %d arguments were specified',
+          \ a:name, narguments + 1
+          \))
+  endif
+  " Validate variable types
+  if !s:Prelude.is_dict(options)
+    call s:_throw(printf(
+          \ '{options} of Process.%s() requires to be a dictionary but "%s" was specified',
+          \ a:name, string(options),
+          \))
+  endif
+  if !s:Prelude.is_number(timeout)
+    call s:_throw(printf(
+          \ '{timeout} of Process.%s() requires to be a number but "%s" was specified',
+          \ a:name, string(options),
+          \))
+  endif
+  if !(s:Prelude.is_number(input) && input == 0) && !s:Prelude.is_string(input) && !s:Prelude.is_list(input)
+    call s:_throw(printf(
+          \ '{input} of Process.%s() requires to be a string or list but "%s" was specified',
+          \ a:name, string(options),
+          \))
+  endif
+  let _input = (s:Prelude.is_number(input) && input == 0) || s:Prelude.is_string(input)
+        \ ? input
+        \ : s:join_posix_lines(input)
+  return extend({
+        \ 'use_vimproc': s:has_vimproc(),
+        \ 'input': _input,
+        \ 'timeout': timeout,
+        \ 'background': 0,
+        \ 'repair_input': 1,
+        \ 'encode_input': 1,
+        \ 'encode_output': 1,
+        \}, options)
+endfunction
+
+
 function! s:get_config() abort
   return deepcopy(s:config)
 endfunction
@@ -125,54 +195,35 @@ function! s:shellescape(string, ...) abort
   let special = get(a:000, 0, 0)
   let vimproc = get(a:000, 1, s:has_vimproc())
   if vimproc
-    " vimproc use '' instead of '\'' thus do not use shellescape while '\''
-    " disrubt vimproc operations
-    let string = substitute(a:string, "'", "''", 'g')
-    let string = "'" . string . "'"
-    if special
-      let string = escape(string, '!%#')
-      let string = substitute(string, '<cword>', '\\<cword>', 'g')
-    endif
+    " NOTE:
+    " Forget about {special} while vimproc does not require special escape
+    let string = vimproc#shellescape(a:string)
   else
     let string = shellescape(a:string, special)
   endif
   return string
 endfunction
 
-function! s:is_escaped(string) abort
-  let modified = a:string
-  " is shellescaped?
-  let modified = substitute(modified, '^''\(.*\)''$', '\1', 'g')
-  let modified = substitute(modified, '^"\(.*\)"$', '\1', 'g')
-  " is fnameescaped? (partial: ' or " is allowed to be escaped)
-  let modified = substitute(modified, '\\[*?[{`$%#|!<\ ]', '', 'g')
-  return len(a:string) != len(modified)
-endfunction
-
-function! s:_system(args, options) abort
-  if s:Prelude.is_list(a:args)
-    " Assume that non of element of a:args are escaped.
-    " Warn if any escaped element is found if v:verbose is set
-    if s:is_debug() || s:config.strict
-      for element in a:args
-        if s:is_escaped(element)
-          throw printf(
-                \ 'vital: System.Process: An element %s seems escaped in %s',
-                \ element, string(a:args),
-                \)
-        endif
-      endfor
-    endif
-    let cmdline = join(map(
-          \ copy(a:args),
-          \ 's:shellescape(v:val, 0, a:options.use_vimproc)'
-          \), ' ')
-  else
-    " Assume that everything is correctly escaped.
-    " So that even cmd.exe does not eliminate '\' but vimproc in Windows, do
-    " not touch the content of a:args
-    let cmdline = a:args
+" system({cmdline}, {input}, {timeout}, {options})
+" system({cmdline}, {input}, {options})
+" system({cmdline}, {input}, {timeout})
+" system({cmdline}, {options})
+" system({cmdline}, {input})
+function! s:system(cmdline, ...) abort
+  let options = s:_normalize_arguments('system', a:000)
+  if !s:Prelude.is_string(a:cmdline)
+    call s:_throw(printf(
+          \ '{cmdline} of Process.system() requires to be a string but "%s" was specified',
+          \ string(options),
+          \))
   endif
+  return s:_system(a:cmdline, options)
+endfunction
+function! s:_system(cmdline, options) abort
+  " Assume that everything is correctly escaped.
+  " So that even cmd.exe does not eliminate '\' but vimproc in Windows, do
+  " not touch the content of a:args
+  let cmdline = a:cmdline
   if s:Prelude.is_windows()
     if !a:options.use_vimproc
       " NOTE:
@@ -200,7 +251,7 @@ function! s:_system(args, options) abort
     let input = s:repair_posix_text(input)
   endif
   let fname = a:options.use_vimproc ? 'vimproc#system' : 'system'
-  if &verbose > 0
+  if s:is_debug()
     echomsg printf('vital: System.Process: %s() : %s', fname, cmdline)
   endif
   if !a:options.use_vimproc
@@ -225,93 +276,54 @@ function! s:_system(args, options) abort
   return output
 endfunction
 
-function! s:system(args, ...) abort
-  if a:0 == 3
-    " system({args}, {input}, {timeout}, {options})
-    let options = a:3
-    let timeout = a:2
-    let input = a:1
-  elseif a:0 == 2
-    if s:Prelude.is_dict(a:2)
-      " system({args}, {input}, {options})
-      let options = a:2
-      let timeout = 0
-      let input = a:1
-    else
-      " system({args}, {input}, {timeout})
-      let options = {}
-      let timeout = a:2
-      let input = a:1
-    endif
-  elseif a:0 == 1
-    if s:Prelude.is_dict(a:1)
-      " system({args}, {options})
-      let options = a:1
-      let timeout = 0
-      let input = 0
-    else
-      " system({args}, {input})
-      let options = {}
-      let timeout = 0
-      let input = a:1
-    endif
-  elseif a:0 == 0
-    " system({args})
-    let options = {}
-    let timeout = 0
-    let input = 0
-  else
+" execute({args}, {input}, {timeout}, {options})
+" execute({args}, {input}, {options})
+" execute({args}, {input}, {timeout})
+" execute({args}, {options})
+" execute({args}, {input})
+function! s:execute(args, ...) abort
+  let options = s:_normalize_arguments('execute', a:000)
+  if !s:Prelude.is_list(a:args)
     call s:_throw(printf(
-          \ 'system() expects 1-4 arguments but %d arguments were specified',
-          \ a:0 + 1
-          \))
-    " the following is not called but for lint
-    let options = {}
-    let timeout = 0
-    let input = 0
-  endif
-  " Validate variable types
-  if !s:Prelude.is_dict(options)
-    call s:_throw(printf(
-          \ '{options} of system() requires to be a dictionary but "%s" was specified',
+          \ '{args} of Process.execute() requires to be a list but "%s" was specified',
           \ string(options),
           \))
   endif
-  if !s:Prelude.is_number(timeout)
-    call s:_throw(printf(
-          \ '{timeout} of system() requires to be a number but "%s" was specified',
-          \ string(options),
-          \))
-  endif
-  if !(s:Prelude.is_number(input) && input == 0) && !s:Prelude.is_string(input) && !s:Prelude.is_list(input)
-    call s:_throw(printf(
-          \ '{input} of system() requires to be a string or list but "%s" was specified',
-          \ string(options),
-          \))
-  endif
-  if !s:Prelude.is_string(a:args) && !s:Prelude.is_list(a:args)
-    call s:_throw(printf(
-          \ '{args} of system() requires to be a string or list but "%s" was specified',
-          \ string(options),
-          \))
-  endif
-  let _input = (s:Prelude.is_number(input) && input == 0) || s:Prelude.is_string(input)
-        \ ? input
-        \ : s:join_posix_lines(input)
+  let cmdline = join(map(
+        \ copy(a:args),
+        \ 's:shellescape(v:val, 0, options.use_vimproc)'
+        \), ' ')
+  " NOTE:
+  " execute() is a command for executing program WITHOUT using shell.
+  let guard = s:Guard.store(
+        \ '&shell',
+        \ '&shellslash',
+        \ '&shelltemp',
+        \ '&shelltype',
+        \ '&shellquote',
+        \ '&shellredir',
+        \ '&shellpipe',
+        \ '&shellcmdflag',
+        \ '&shellxescape',
+        \ '&shellxquote',
+        \)
+  return s:_system(args, options)
+endfunction
+function! s:_execute(args, options)
   let options = extend({
-        \ 'use_vimproc': s:has_vimproc(),
-        \ 'input': _input,
-        \ 'timeout': timeout,
-        \ 'background': 0,
-        \ 'repair_input': 1,
-        \ 'encode_input': 1,
-        \ 'encode_output': 1,
-        \}, options)
-  let guard = s:Guard.store('&shell')
-  try
-    set shell&
-    return s:_system(a:args, options)
-  finally
-    call guard.restore()
-  endtry
+        \ 'is_pty': 0,
+        \ 'input': 0,
+        \}, a:options)
+  let process = vimproc#popen3(a:args, options.is_pty)
+  let stdout = ''
+  let stderr = ''
+  if s:Prelude.is_string(options.input)
+    call process.stdin.write(options.input)
+  endif
+  while !process.stdout.eof || !process.stderr.eof
+    let stdout .= process.stdout.read()
+    let stderr .= process.stderr.read()
+  endwhile
+  let [cond, status] = process.waitpid()
+
 endfunction
