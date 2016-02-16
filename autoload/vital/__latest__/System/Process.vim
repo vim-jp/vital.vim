@@ -19,9 +19,6 @@ function! s:_throw(msg) abort
 endfunction
 
 function! s:_normalize_arguments(name, arguments) abort
-  let input   = 0
-  let timeout = 0
-  let options = {}
   let narguments = len(a:arguments)
   if narguments == 3
     " e.g. system({args}, {input}, {timeout}, {options})
@@ -32,9 +29,11 @@ function! s:_normalize_arguments(name, arguments) abort
     if s:Prelude.is_dict(a:arguments[1])
       " e.g. system({args}, {input}, {options})
       let options = a:arguments[1]
+      let timeout = 0
       let input   = a:arguments[0]
     else
       " e.g. system({args}, {input}, {timeout})
+      let options = {}
       let timeout = a:arguments[1]
       let input   = a:arguments[0]
     endif
@@ -42,17 +41,27 @@ function! s:_normalize_arguments(name, arguments) abort
     if s:Prelude.is_dict(a:arguments[0])
       " e.g. system({args}, {options})
       let options = a:arguments[0]
+      let timeout = 0
+      let input   = 0
     else
       " e.g. system({args}, {input})
+      let options = {}
+      let timeout = 0
       let input = a:arguments[0]
     endif
   elseif narguments == 0
     " e.g. system({args})
+    let input   = 0
+    let timeout = 0
+    let options = {}
   else
     call s:_throw(printf(
           \ 'Process.%s() expects 1-4 arguments but %d arguments were specified',
           \ a:name, narguments + 1
           \))
+    let input   = 0
+    let timeout = 0
+    let options = {}
   endif
   " Validate variable types
   if !s:Prelude.is_dict(options)
@@ -289,41 +298,72 @@ function! s:execute(args, ...) abort
           \ string(options),
           \))
   endif
-  let cmdline = join(map(
-        \ copy(a:args),
-        \ 's:shellescape(v:val, 0, options.use_vimproc)'
-        \), ' ')
-  " NOTE:
-  " execute() is a command for executing program WITHOUT using shell.
-  let guard = s:Guard.store(
-        \ '&shell',
-        \ '&shellslash',
-        \ '&shelltemp',
-        \ '&shelltype',
-        \ '&shellquote',
-        \ '&shellredir',
-        \ '&shellpipe',
-        \ '&shellcmdflag',
-        \ '&shellxescape',
-        \ '&shellxquote',
-        \)
-  return s:_system(args, options)
+  let result = get(options, 'use_vimproc', s:has_vimproc())
+        \ ? s:_execute_vimproc(a:args, options)
+        \ : s:_execute_system(a:args, options)
+  let result.content = s:split_posix_text(result.output)
+  return result
 endfunction
-function! s:_execute(args, options)
+function! s:_execute_vimproc(args, options) abort
   let options = extend({
         \ 'is_pty': 0,
         \ 'input': 0,
         \}, a:options)
-  let process = vimproc#popen3(a:args, options.is_pty)
+  let process = vimproc#popen2(a:args, options.is_pty)
   let stdout = ''
-  let stderr = ''
   if s:Prelude.is_string(options.input)
     call process.stdin.write(options.input)
   endif
-  while !process.stdout.eof || !process.stderr.eof
+  while !process.stdout.eof
     let stdout .= process.stdout.read()
-    let stderr .= process.stderr.read()
   endwhile
-  let [cond, status] = process.waitpid()
-
+  let status = process.waitpid()[1]
+  return {
+        \ 'status': status,
+        \ 'output': stdout,
+        \}
+endfunction
+function! s:_execute_system(args, options) abort
+  let options = extend({}, a:options)
+  " NOTE:
+  " execute() is a command for executing program WITHOUT using shell.
+  " so mimic that behaviour with shell
+  let guard = s:Guard.store(
+        \ '&shell',
+        \ '&shellcmdflag',
+        \ '&shellquote',
+        \ '&shellredir',
+        \ '&shelltemp',
+        \ '&shelltype',
+        \ '&shellxescape',
+        \ '&shellxquote',
+        \)
+  let guard_shellslash = call(
+        \ s:Guard.store,
+        \ exists('+shellslash') ? ['&shellslash'] : [],
+        \ s:Guard,
+        \)
+  try
+    if s:Prelude.is_windows()
+      set shell&
+      set shellslash&
+    else
+      " shell& set it to $SHELL though
+      set shell=sh
+    endif
+    set shellcmdflag& shellquote& shellredir& shelltemp& shelltype&
+    set shellxescape& shellxquote&
+    let cmdline = join(map(
+          \ copy(a:args),
+          \ 's:shellescape(v:val, 0, 0)'
+          \), ' ')
+    let output = s:_system(cmdline, options)
+    return {
+          \ 'status': s:get_last_status(),
+          \ 'output': output,
+          \}
+  finally
+    call guard.restore()
+    call guard_shellslash.restore()
+  endtry
 endfunction

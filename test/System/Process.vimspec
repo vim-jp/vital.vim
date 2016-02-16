@@ -74,19 +74,23 @@ Describe System.Process
       It returns result of vimproc#get_last_status() if {use_vimproc} is omitted and vimproc is installed
         call vimproc#system(escape(s:TRUE, '\'))
         call system(s:FALSE)
+        sleep 1
         Assert Equals(Process.get_last_status(), 0)
 
         call vimproc#system(escape(s:FALSE, '\'))
         call system(s:TRUE)
+        sleep 1
         Assert Equals(Process.get_last_status(), 1)
       End
       It returns result of vimproc#get_last_status() if {use_vimproc} is 1
         call vimproc#system(escape(s:TRUE, '\'))
         call system(s:FALSE)
+        sleep 1
         Assert Equals(Process.get_last_status(1), 0)
 
         call vimproc#system(escape(s:FALSE, '\'))
         call system(s:TRUE)
+        sleep 1
         Assert Equals(Process.get_last_status(1), 1)
       End
       It returns v:shell_error if {use_vimproc} is 0
@@ -228,22 +232,22 @@ Describe System.Process
                 \ "'He said \"I am Vimmer.\"'"
                 \)
         End
-        It escapes special characters such as ! % # <cword> if {special} is specified
+        It does not escape special characters such as ! % # <cword> even if {special} is specified
           Assert Equals(
                 \ Process.shellescape('! ! !', 1, 1),
-                \ "'\\! \\! \\!'"
+                \ "'! ! !'"
                 \)
           Assert Equals(
                 \ Process.shellescape('% % %', 1, 1),
-                \ "'\\% \\% \\%'"
+                \ "'% % %'"
                 \)
           Assert Equals(
                 \ Process.shellescape('# # #', 1, 1),
-                \ "'\\# \\# \\#'"
+                \ "'# # #'"
                 \)
           Assert Equals(
                 \ Process.shellescape('<cword> <cword> <cword>', 1, 1),
-                \ "'\\<cword> \\<cword> \\<cword>'"
+                \ "'<cword> <cword> <cword>'"
                 \)
         End
       End
@@ -323,114 +327,193 @@ Describe System.Process
     endif
   End
 
-  Describe .is_escaped({string})
-    It returns 1 if {string} is shellescaped
-      Assert True(Process.is_escaped("'foo'"))
-      Assert True(Process.is_escaped('"foo"'))
-    End
-    It returns 1 if {string} is fnameescaped
-      Assert True(Process.is_escaped('AAA\ BBB'))
-      Assert True(Process.is_escaped('AAA\*BBB'))
-      Assert True(Process.is_escaped('AAA\?BBB'))
-      Assert True(Process.is_escaped('AAA\[BBB'))
-      Assert True(Process.is_escaped('AAA\{BBB'))
-      Assert True(Process.is_escaped('AAA\`BBB'))
-      Assert True(Process.is_escaped('AAA\$BBB'))
-      Assert True(Process.is_escaped('AAA\%BBB'))
-      Assert True(Process.is_escaped('AAA\#BBB'))
-      Assert True(Process.is_escaped('AAA\|BBB'))
-      Assert True(Process.is_escaped('AAA\!BBB'))
-      Assert True(Process.is_escaped('AAA\<BBB'))
-      Assert True(Process.is_escaped('AAA\\BBB'))
-    End
-    It return 0 if {string} is fnameescaped but only for ' or " (exception)
-      Assert False(Process.is_escaped('AAA\''BBB'))
-      Assert False(Process.is_escaped('AAA\"BBB'))
-    End
-    It return 0 if {string} is not shellsecaped nor fnameescaped
-      Assert False(Process.is_escaped('AAA BBB'))
-      Assert False(Process.is_escaped('AAA BBB'))
-    End
-  End
-
-  Describe .system({args}[, {input}, {timeout}, {options}])
+  Describe .system({cmdline}[, {input}, {timeout}, {options}])
     It throws an exception when more than 4 arguments are specified
       Throws /expects 1-4 arguments/
             \ Process.system(0, 0, 0, 0, 0)
     End
     It throws an exception when {options} is not a dictionary
-      " system({args}, {input}, {timeout}, {options})
-      Throws /{options} of system() requires to be/
+      " system({cmdline}, {input}, {timeout}, {options})
+      Throws /{options} of Process.system() requires to be/
             \ Process.system('echo', '', 0, 0)
-      Throws /{options} of system() requires to be/
+      Throws /{options} of Process.system() requires to be/
             \ Process.system('echo', '', 0, '')
-      Throws /{options} of system() requires to be/
+      Throws /{options} of Process.system() requires to be/
             \ Process.system('echo', '', 0, [])
     End
     It throws an exception when {timeout} is not number
-      " system({args}, {input}, {timeout}, {options})
-      Throws /{timeout} of system() requires to be/
+      " system({cmdline}, {input}, {timeout}, {options})
+      Throws /{timeout} of Process.system() requires to be/
             \ Process.system('echo', '', '', {})
-      Throws /{timeout} of system() requires to be/
+      Throws /{timeout} of Process.system() requires to be/
             \ Process.system('echo', '', {}, {})
-      Throws /{timeout} of system() requires to be/
+      Throws /{timeout} of Process.system() requires to be/
             \ Process.system('echo', '', [], {})
 
-      " system({args}, {input}, {timeout})
-      Throws /{timeout} of system() requires to be/
+      " system({cmdline}, {input}, {timeout})
+      Throws /{timeout} of Process.system() requires to be/
             \ Process.system('echo', '', [])
-      Throws /{timeout} of system() requires to be/
+      Throws /{timeout} of Process.system() requires to be/
             \ Process.system('echo', '', '')
     End
     It throws an exception when {input} is not string nor list
-      " system({args}, {input}, {timeout}, {options})
-      Throws /{input} of system() requires to be/
+      " system({cmdline}, {input}, {timeout}, {options})
+      Throws /{input} of Process.system() requires to be/
             \ Process.system('echo', 1, 0, {})
-      Throws /{input} of system() requires to be/
+      Throws /{input} of Process.system() requires to be/
             \ Process.system('echo', {}, 0, {})
 
-      " system({args}, {input}, {options})
-      Throws /{input} of system() requires to be/
+      " system({cmdline}, {input}, {options})
+      Throws /{input} of Process.system() requires to be/
             \ Process.system('echo', 1, {})
-      Throws /{input} of system() requires to be/
+      Throws /{input} of Process.system() requires to be/
             \ Process.system('echo', {}, {})
 
-      " system({args}, {input}, {timeout})
-      Throws /{input} of system() requires to be/
+      " system({cmdline}, {input}, {timeout})
+      Throws /{input} of Process.system() requires to be/
             \ Process.system('echo', 1, 0)
-      Throws /{input} of system() requires to be/
+      Throws /{input} of Process.system() requires to be/
             \ Process.system('echo', {}, 0)
 
-      " system({args}, {input})
-      Throws /{input} of system() requires to be/
+      " system({cmdline}, {input})
+      Throws /{input} of Process.system() requires to be/
             \ Process.system('echo', 1)
     End
-    It throws an exception when {args} is not string nor list
-      Throws /{args} of system() requires to be/
+    It throws an exception when {cmdline} is not string
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system(0, '', 0, {})
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system(0, '', 0)
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system(0, '', {})
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system(0, '')
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system(0, {})
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system(0)
 
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system({}, '', 0, {})
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system({}, '', 0)
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system({}, '', {})
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system({}, '')
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system({}, {})
-      Throws /{args} of system() requires to be/
+      Throws /{cmdline} of Process.system() requires to be/
             \ Process.system({})
+
+      Throws /{cmdline} of Process.system() requires to be/
+            \ Process.system([], '', 0, {})
+      Throws /{cmdline} of Process.system() requires to be/
+            \ Process.system([], '', 0)
+      Throws /{cmdline} of Process.system() requires to be/
+            \ Process.system([], '', {})
+      Throws /{cmdline} of Process.system() requires to be/
+            \ Process.system([], '')
+      Throws /{cmdline} of Process.system() requires to be/
+            \ Process.system([], {})
+      Throws /{cmdline} of Process.system() requires to be/
+            \ Process.system([])
+    End
+    " NOTE:
+    " Individual execution tests is in separated files
+  End
+
+  Describe .execute({args}[, {input}, {timeout}, {options}])
+    It throws an exception when more than 4 arguments are specified
+      Throws /expects 1-4 arguments/
+            \ Process.execute(0, 0, 0, 0, 0)
+    End
+    It throws an exception when {options} is not a dictionary
+      " execute({args}, {input}, {timeout}, {options})
+      Throws /{options} of Process.execute() requires to be/
+            \ Process.execute('echo', '', 0, 0)
+      Throws /{options} of Process.execute() requires to be/
+            \ Process.execute('echo', '', 0, '')
+      Throws /{options} of Process.execute() requires to be/
+            \ Process.execute('echo', '', 0, [])
+    End
+    It throws an exception when {timeout} is not number
+      " execute({args}, {input}, {timeout}, {options})
+      Throws /{timeout} of Process.execute() requires to be/
+            \ Process.execute('echo', '', '', {})
+      Throws /{timeout} of Process.execute() requires to be/
+            \ Process.execute('echo', '', {}, {})
+      Throws /{timeout} of Process.execute() requires to be/
+            \ Process.execute('echo', '', [], {})
+
+      " execute({args}, {input}, {timeout})
+      Throws /{timeout} of Process.execute() requires to be/
+            \ Process.execute('echo', '', [])
+      Throws /{timeout} of Process.execute() requires to be/
+            \ Process.execute('echo', '', '')
+    End
+    It throws an exception when {input} is not string nor list
+      " execute({args}, {input}, {timeout}, {options})
+      Throws /{input} of Process.execute() requires to be/
+            \ Process.execute('echo', 1, 0, {})
+      Throws /{input} of Process.execute() requires to be/
+            \ Process.execute('echo', {}, 0, {})
+
+      " execute({args}, {input}, {options})
+      Throws /{input} of Process.execute() requires to be/
+            \ Process.execute('echo', 1, {})
+      Throws /{input} of Process.execute() requires to be/
+            \ Process.execute('echo', {}, {})
+
+      " execute({args}, {input}, {timeout})
+      Throws /{input} of Process.execute() requires to be/
+            \ Process.execute('echo', 1, 0)
+      Throws /{input} of Process.execute() requires to be/
+            \ Process.execute('echo', {}, 0)
+
+      " execute({args}, {input})
+      Throws /{input} of Process.execute() requires to be/
+            \ Process.execute('echo', 1)
+    End
+    It throws an exception when {args} is not list
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute(0, '', 0, {})
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute(0, '', 0)
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute(0, '', {})
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute(0, '')
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute(0, {})
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute(0)
+
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute({}, '', 0, {})
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute({}, '', 0)
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute({}, '', {})
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute({}, '')
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute({}, {})
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute({})
+
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute('', '', 0, {})
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute('', '', 0)
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute('', '', {})
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute('', '')
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute('', {})
+      Throws /{args} of Process.execute() requires to be/
+            \ Process.execute('')
     End
     " NOTE:
     " Individual execution tests is in separated files
