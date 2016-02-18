@@ -298,72 +298,55 @@ function! s:execute(args, ...) abort
           \ string(options),
           \))
   endif
-  let result = get(options, 'use_vimproc', s:has_vimproc())
-        \ ? s:_execute_vimproc(a:args, options)
-        \ : s:_execute_system(a:args, options)
+  let result = s:_execute(a:args, options)
   let result.content = s:split_posix_text(result.output)
   return result
 endfunction
-function! s:_execute_vimproc(args, options) abort
-  let options = extend({
-        \ 'is_pty': 0,
-        \ 'input': 0,
-        \}, a:options)
-  let process = vimproc#popen2(a:args, options.is_pty)
-  let stdout = ''
-  if s:Prelude.is_string(options.input)
-    call process.stdin.write(options.input)
-  endif
-  while !process.stdout.eof
-    let stdout .= process.stdout.read()
-  endwhile
-  let status = process.waitpid()[1]
-  return {
-        \ 'status': status,
-        \ 'output': stdout,
-        \}
-endfunction
-function! s:_execute_system(args, options) abort
-  let options = extend({}, a:options)
-  " NOTE:
-  " execute() is a command for executing program WITHOUT using shell.
-  " so mimic that behaviour with shell
-  let guard = s:Guard.store(
-        \ '&shell',
-        \ '&shellcmdflag',
-        \ '&shellquote',
-        \ '&shellredir',
-        \ '&shelltemp',
-        \ '&shelltype',
-        \ '&shellxescape',
-        \ '&shellxquote',
-        \)
-  let guard_shellslash = call(
-        \ s:Guard.store,
-        \ exists('+shellslash') ? ['&shellslash'] : [],
-        \ s:Guard,
-        \)
+function! s:_execute(args, options) abort
   try
-    if s:Prelude.is_windows()
-      set shell&
-      set shellslash&
-    else
-      " shell& set it to $SHELL though
-      set shell=sh
+    let guard = s:Guard.store()
+    if !a:options.use_vimproc
+      " NOTE:
+      " execute() is a command for executing program WITHOUT using shell.
+      " so mimic that behaviour with shell
+      let guard = call(s:Guard.store, filter([
+            \ '&shell',
+            \ '&shellcmdflag',
+            \ '&shellquote',
+            \ '&shellredir',
+            \ '&shelltemp',
+            \ '&shelltype',
+            \ (exists('+shellxescape') ? '&shellxescape' : ''),
+            \ (exists('+shellxquote') ? '&shellxquote' : ''),
+            \ (exists('+shellslash') ? '&shellslash' : ''),
+            \], '!empty(v:val)'), s:Guard)
+      if s:Prelude.is_windows()
+        set shell&
+        if exists('+shellslash')
+          set shellslash&
+        endif
+      else
+        " shell& set it to $SHELL though
+        set shell=sh
+      endif
+      set shellcmdflag& shellquote& shellredir& shelltemp& shelltype&
+      if exists('+shellxescape')
+        set shellxescape&
+      endif
+      if exists('+shellxquote')
+        set shellxquote&
+      endif
     endif
-    set shellcmdflag& shellquote& shellredir& shelltemp& shelltype&
-    set shellxescape& shellxquote&
     let cmdline = join(map(
           \ copy(a:args),
-          \ 's:shellescape(v:val, 0, 0)'
+          \ 's:shellescape(v:val, 0, a:options.use_vimproc)'
           \), ' ')
-    let output = s:_system(cmdline, options)
+    let output = s:_system(cmdline, a:options)
     return {
           \ 'status': s:get_last_status(),
           \ 'output': output,
           \}
   finally
     call guard.restore()
-    call guard_shellslash.restore()
   endtry
 endfunction
