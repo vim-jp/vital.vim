@@ -55,7 +55,7 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	  let foo = 'foo'
 	  let l:list1 = ['foo']
 	  let l:dict1 = {'foo': 'bar'}
-	  let l:list2 = [['foo']
+	  let l:list2 = [['foo']]
 	  let l:dict2 = {'foo': ['bar']}
 
 	  " Guard options/variables
