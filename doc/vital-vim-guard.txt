@@ -53,8 +53,10 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	  call setreg('a', 'foo')
 	  let $EDITOR = 'vim'
 	  let foo = 'foo'
-	  let l:list = ['foo']
-	  let l:dict = {'foo': 'bar'}
+	  let l:list1 = ['foo']
+	  let l:dict1 = {'foo': 'bar'}
+	  let l:list2 = [['foo']
+	  let l:dict2 = {'foo': ['bar']}
 
 	  " Guard options/variables
 	  let guard = s:G.store(
@@ -63,8 +65,10 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	    \ '$EDITOR',
 	    \ 'g:foo',
 	    \ ['foo', l:],
-	    \ [l:list],
-	    \ [l:dict],
+	    \ [l:list1],
+	    \ [l:dict1],
+	    \ [l:list2, 1],
+	    \ [l:dict2, 1],
 	    \)
 
 	  " Assign temporary values
@@ -75,8 +79,10 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	  let g:foo = 1
 	  unlet foo
 	  let foo = []
-	  call remove(l:list, 0)
-	  unlet l:dict['foo']
+	  call remove(l:list1, 0)
+	  unlet l:dict1['foo']
+	  call remove(l:list2, 0)
+	  unlet l:dict2['foo']
 
 	  " restore previous values
 	  call guard.restore()
@@ -92,10 +98,14 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	  " => 'foo'
 	  echo foo
 	  " => foo
-	  echo l:list
+	  echo l:list1
 	  " => ['foo']
-	  echo l:dict
+	  echo l:dict1
 	  " => {'foo': 'bar'}
+	  echo l:list2
+	  " => [['foo']]
+	  echo l:dict2
+	  " => {'foo': ['bar']}
 	endfunction
 <
 
@@ -126,18 +136,27 @@ store([{name}, ...])	*Vital.Vim.Guard.store()*
 
 	|List|
 	If the {name} contains:
-	- One item, the item is assumed as an instance of |List| or
-	  |Dictionary| and the instance will be guarded. Note that if you assign
-	  a different instance after store, it won't restore the values.
-	- Two items, the list is assumed as [{attr}, {namespace}] where
-	  {attr} is a name of attribute in {namespace}.
+	- One item, the item is assumed as an instance of |List| or |Dictionary|
+	  and the instance will be guarded. Note that if you assign a
+	  different instance after store, it won't restore the values.
+	  It works equal to [{instance}, 0] explained below.
+	- Two items, the list is assumed as 1.) [{attr}, {namespace}] or 2.)
+	  [{instance}, {shallow}] described individually below:
+	  1.) Where {attr} is a name of attribute in {namespace} |Dictionary|.
 	  If {attr} does not exist in {namespace}, The {attr} in {namespace}
-	  will be removed from {namespace} if exists when .restore() method
-	  of the guard instance is called.
+	  will be removed from {namespace} if exists when
+	  .restore() method of the guard instance is called.
 	  Use this type to guard |local-variable| (|l:|), |script-variable| (|s:|),
 	  or attributes in |dict|.
 	  See |Vital.Vim.Guard.is_local_variable_supported| if you would like
 	  to store/restore |local-variable| in Vim 7.3.559 or earlier.
+	  2.) Where {instance} is an instance of |List| or |Dictionary| and
+	  {shallow} is a flag to use |copy| instead of |deepcopy| to store
+	  contents of the instance. When {shallow} is 1, the content of the
+	  instance is copied rather than deepcopied, indicating that values
+	  could not be restored when user changes the contents inside the
+	  contents of the instance. Use {shallow} when the reference of the
+	  each contents are prior to the content itself.
 	It will raise an exception when {name} contains less or more number
 	of items than expect.
 

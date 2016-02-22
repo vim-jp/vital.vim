@@ -148,7 +148,8 @@ function! s:variable.restore() abort
 endfunction
 
 let s:instance = {}
-function! s:_new_instance(instance) abort
+function! s:_new_instance(instance, ...) abort
+  let shallow = get(a:000, 0, 0)
   if !s:Prelude.is_list(a:instance) && !s:Prelude.is_dict(a:instance)
     call s:_throw(printf(
           \'An instance "%s" requires to be List or Dictionary', string(a:instance)
@@ -156,7 +157,7 @@ function! s:_new_instance(instance) abort
   endif
   let instance = copy(s:instance)
   let instance.instance = a:instance
-  let instance.values = deepcopy(a:instance)
+  let instance.values = shallow ? copy(a:instance) : deepcopy(a:instance)
   return instance
 endfunction
 function! s:instance.restore() abort
@@ -176,7 +177,11 @@ function! s:store(...) abort
       if len(meta) == 1
         call add(resources, s:_new_instance(meta[0]))
       elseif len(meta) == 2
-        call add(resources, call('s:_new_variable', meta))
+        if s:Prelude.is_string(meta[0])
+          call add(resources, call('s:_new_variable', meta))
+        else
+          call add(resources, call('s:_new_instance', meta))
+        endif
       else
         call s:_throw('List assignment requires one or two elements')
       endif

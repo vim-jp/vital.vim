@@ -388,7 +388,7 @@ Describe Vim.Guard
       End
     End
   End
-  Describe [PRIVATE] s:_new_instance({instance})
+  Describe [PRIVATE] s:_new_instance({instance}[, {shallow}])
     It throws an exception if {instance} is not a instance instance
       Throw /An instance "'foo'" requires to be List or Dictionary/
             \ sf._new_instance('foo')
@@ -397,7 +397,7 @@ Describe Vim.Guard
     End
     Context with List
       It returns a instance instance of {name}
-        let l:list = ['a', 'b', 'c']
+        let l:list = [['a'], ['b'], ['c']]
         let instance = sf._new_instance(l:list)
         Assert KeyExists(instance, 'instance')
         Assert KeyExists(instance, 'values')
@@ -406,6 +406,27 @@ Describe Vim.Guard
         Assert Same(instance.instance, l:list)
         Assert Equals(instance.values, l:list)
         Assert NotSame(instance.values, l:list)
+        " NOTE:
+        " {shallow} is not specified (0) so the content should NOT be SAME
+        Assert NotSame(instance.values[0], l:list[0])
+        Assert NotSame(instance.values[1], l:list[1])
+        Assert NotSame(instance.values[2], l:list[2])
+      End
+      It returns a instance instance of {name} with {shallow}
+        let l:list = [['a'], ['b'], ['c']]
+        let instance = sf._new_instance(l:list, 1)
+        Assert KeyExists(instance, 'instance')
+        Assert KeyExists(instance, 'values')
+        Assert KeyExists(instance, 'restore')
+        Assert Equals(instance.instance, l:list)
+        Assert Same(instance.instance, l:list)
+        Assert Equals(instance.values, l:list)
+        Assert NotSame(instance.values, l:list)
+        " NOTE:
+        " {shallow} is 1 so the content should be SAME
+        Assert Same(instance.values[0], l:list[0])
+        Assert Same(instance.values[1], l:list[1])
+        Assert Same(instance.values[2], l:list[2])
       End
       Describe A instance instance
         It restore values of the instance when assigned
@@ -426,7 +447,7 @@ Describe Vim.Guard
     End
     Context with Dictionary
       It returns a instance instance of {name}
-        let l:dict = {'foo': 'bar'}
+        let l:dict = {'foo': {}, 'bar': {}}
         let instance = sf._new_instance(l:dict)
         Assert KeyExists(instance, 'instance')
         Assert KeyExists(instance, 'values')
@@ -435,6 +456,25 @@ Describe Vim.Guard
         Assert Same(instance.instance, l:dict)
         Assert Equals(instance.values, l:dict)
         Assert NotSame(instance.values, l:dict)
+        " NOTE:
+        " {shallow} is not specified (0) so content should NOT be SAME
+        Assert NotSame(instance.values.foo, l:dict.foo)
+        Assert NotSame(instance.values.bar, l:dict.bar)
+      End
+      It returns a instance instance of {name} with {shallow}
+        let l:dict = {'foo': {}, 'bar': {}}
+        let instance = sf._new_instance(l:dict, 1)
+        Assert KeyExists(instance, 'instance')
+        Assert KeyExists(instance, 'values')
+        Assert KeyExists(instance, 'restore')
+        Assert Equals(instance.instance, l:dict)
+        Assert Same(instance.instance, l:dict)
+        Assert Equals(instance.values, l:dict)
+        Assert NotSame(instance.values, l:dict)
+        " NOTE:
+        " {shallow} is 1 so content should be SAME
+        Assert Same(instance.values.foo, l:dict.foo)
+        Assert Same(instance.values.bar, l:dict.bar)
       End
       Describe A instance instance
         It restore values of the instance when assigned
@@ -541,6 +581,10 @@ Describe Vim.Guard
       let guard = Guard.store(
             \ [[]],
             \ [{}],
+            \ [[], 0],
+            \ [{}, 0],
+            \ [[], 1],
+            \ [{}, 1],
             \)
       Assert KeyExists(guard, 'restore')
     End
