@@ -121,19 +121,28 @@ Describe Vim.Guard
             \ sf._new_register('@!')
     End
     It returns a register instace of {name}
+      call setreg('', 'foo')
       let register = sf._new_register('@@')
       Assert KeyExists(register, 'name')
       Assert KeyExists(register, 'value')
       Assert KeyExists(register, 'restore')
       Assert Equals(register.name, '')
-      Assert Equals(register.value, getreg('', 1))
+      if Guard.is_third_argument_of_getreg_supported
+        Assert Equals(register.value, getreg('', 1, 1))
+      else
+        Assert Equals(register.value, getreg('', 1))
+      endif
 
       let register = sf._new_register('@=')
       Assert KeyExists(register, 'name')
       Assert KeyExists(register, 'value')
       Assert KeyExists(register, 'restore')
       Assert Equals(register.name, '=')
-      Assert Equals(register.value, getreg('=', 1))
+      if Guard.is_third_argument_of_getreg_supported
+        Assert Equals(register.value, getreg('=', 1, 1))
+      else
+        Assert Equals(register.value, getreg('=', 1))
+      endif
     End
     Describe A register variable instace
       It restore a value of the register when assigned
