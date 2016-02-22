@@ -125,6 +125,7 @@ Describe Vim.Guard
       let register = sf._new_register('@@')
       Assert KeyExists(register, 'name')
       Assert KeyExists(register, 'value')
+      Assert KeyExists(register, 'type')
       Assert KeyExists(register, 'restore')
       Assert Equals(register.name, '')
       if Guard.is_third_argument_of_getreg_supported
@@ -132,17 +133,34 @@ Describe Vim.Guard
       else
         Assert Equals(register.value, getreg('', 1))
       endif
+      Assert Equals(register.type, 'v')
 
       let register = sf._new_register('@=')
       Assert KeyExists(register, 'name')
       Assert KeyExists(register, 'value')
       Assert KeyExists(register, 'restore')
+      Assert KeyExists(register, 'type')
       Assert Equals(register.name, '=')
       if Guard.is_third_argument_of_getreg_supported
         Assert Equals(register.value, getreg('=', 1, 1))
       else
         Assert Equals(register.value, getreg('=', 1))
       endif
+      Assert Equals(register.type, 'v')
+
+      call setreg('a', 'hoge', 'V')
+      let register = sf._new_register('@a')
+      Assert KeyExists(register, 'name')
+      Assert KeyExists(register, 'value')
+      Assert KeyExists(register, 'restore')
+      Assert KeyExists(register, 'type')
+      Assert Equals(register.name, 'a')
+      if Guard.is_third_argument_of_getreg_supported
+        Assert Equals(register.value, getreg('a', 1, 1))
+      else
+        Assert Equals(register.value, getreg('a', 1))
+      endif
+      Assert Equals(register.type, 'V')
     End
     Describe A register variable instace
       It restore a value of the register when assigned
