@@ -1,6 +1,7 @@
 let s:V = vital#of('vital')
 let s:P = s:V.import('System.Filepath')
 let s:S = s:V.import('Vim.ScriptLocal')
+let s:is_windows = has('win16') || has('win32') || has('win64')
 
 Describe Vim.Guard
   Before
@@ -93,6 +94,149 @@ Describe Vim.Guard
         set nolist
         call option.restore()
         Assert Equals(&list, 1)
+      End
+    End
+  End
+  Describe [PRIVATE] s:_new_register({name})
+    It throws a exception if {name} is longer or shorter tha two characters
+      Throw /A register name "f" requires to be "@" + a single character/
+            \ sf._new_register('f')
+      Throw /A register name "foo" requires to be "@" + a single character/
+            \ sf._new_register('foo')
+    End
+    It throws a exception if {name} does not start from "@"
+      Throw /A register name "ff" requires to be started from "@"/
+            \ sf._new_register('ff')
+    End
+    It throws a exception if {name} is a read-only register
+      Throw /A register name "@:" is read only/
+            \ sf._new_register('@:')
+      Throw /A register name "@." is read only/
+            \ sf._new_register('@.')
+      Throw /A register name "@%" is read only/
+            \ sf._new_register('@%')
+    End
+    It throws a exception if {name} does not exist as a register variable
+      Throw /A register name "@!" does not exist/
+            \ sf._new_register('@!')
+    End
+    It returns a register instace of {name}
+      call setreg('', 'foo')
+      let register = sf._new_register('@@')
+      Assert KeyExists(register, 'name')
+      Assert KeyExists(register, 'value')
+      Assert KeyExists(register, 'type')
+      Assert KeyExists(register, 'restore')
+      Assert Equals(register.name, '')
+      if Guard.is_third_argument_of_getreg_supported
+        Assert Equals(register.value, getreg('', 1, 1))
+      else
+        Assert Equals(register.value, getreg('', 1))
+      endif
+      Assert Equals(register.type, 'v')
+
+      let register = sf._new_register('@=')
+      Assert KeyExists(register, 'name')
+      Assert KeyExists(register, 'value')
+      Assert KeyExists(register, 'restore')
+      Assert KeyExists(register, 'type')
+      Assert Equals(register.name, '=')
+      if Guard.is_third_argument_of_getreg_supported
+        Assert Equals(register.value, getreg('=', 1, 1))
+      else
+        Assert Equals(register.value, getreg('=', 1))
+      endif
+      Assert Equals(register.type, 'v')
+
+      call setreg('a', 'hoge', 'V')
+      let register = sf._new_register('@a')
+      Assert KeyExists(register, 'name')
+      Assert KeyExists(register, 'value')
+      Assert KeyExists(register, 'restore')
+      Assert KeyExists(register, 'type')
+      Assert Equals(register.name, 'a')
+      if Guard.is_third_argument_of_getreg_supported
+        Assert Equals(register.value, getreg('a', 1, 1))
+      else
+        Assert Equals(register.value, getreg('a', 1))
+      endif
+      Assert Equals(register.type, 'V')
+    End
+    Describe A register variable instace
+      It restore a value of the register when assigned
+        call setreg('a', 'foobar')
+        call setreg('b', 'foobar')
+        let register = sf._new_register('@a')
+        call setreg('a', 'hogehoge')
+        call setreg('b', 'hogehoge')
+        call register.restore()
+        Assert Equals(getreg('a'), 'foobar')
+        Assert Equals(getreg('b'), 'hogehoge')
+      End
+      if v:version >= 704
+        " NOTE:
+        " It seems expression register does not work in Vim 7.3 ?
+        " https://travis-ci.org/vim-jp/vital.vim/jobs/109619393
+        It restore a RAW value of the expression register when assigned
+          call setreg('=', '100 + 100 + 100')
+          let register = sf._new_register('@=')
+          call setreg('=', '100 * 5')
+          call register.restore()
+          Assert Equals(getreg('='), '300')
+          Assert Equals(getreg('=', 1), '100 + 100 + 100')
+        End
+      endif
+    End
+  End
+  Describe [PRIVATE] s:_new_environment({name})
+    After
+      " Remove used environment variables (Works in Windows only)
+      let $_VITAL_VIM_GUARD_EMPTY = ''
+      let $_VITAL_VIM_GUARD_A = ''
+      let $_VITAL_VIM_GUARD_B = ''
+    End
+    " NOTE:
+    "   $PATH  : it should exist
+    "   $_VITAL_VIM_GUARD_EMPTY : it should exist and empty (Not in Windows)
+    "   $_INVALID : it should NOT exist
+    It throws an exception if {name} does not start from "$"
+      Throw /An environment variable name "foo" requires to be started from "$"/
+            \ sf._new_environment('foo')
+    End
+    It throws an exception if {name} does not exist as an environment variable
+      Throw /An environment variable name "$_INVALID" does not exist/
+            \ sf._new_environment('$_INVALID')
+    End
+    It returns an environment variable instance of {name}
+      let environment = sf._new_environment('$PATH')
+      Assert KeyExists(environment, 'name')
+      Assert KeyExists(environment, 'value')
+      Assert KeyExists(environment, 'restore')
+      Assert Equals(environment.name, '$PATH')
+      Assert Equals(environment.value, $PATH)
+    End
+    if !s:is_windows
+      It returns an environment variable instance of {name} even it is an empty string
+        let $_VITAL_VIM_GUARD_EMPTY = ''
+        let environment = sf._new_environment('$_VITAL_VIM_GUARD_EMPTY')
+        Assert KeyExists(environment, 'name')
+        Assert KeyExists(environment, 'value')
+        Assert KeyExists(environment, 'restore')
+        Assert Equals(environment.name, '$_VITAL_VIM_GUARD_EMPTY')
+        Assert Equals(environment.value, $_VITAL_VIM_GUARD_EMPTY)
+        " there is no way to unlet environment variable so leave it
+      End
+    endif
+    Describe An environment variable instance
+      It restore a value of the environment when assigned
+        let $_VITAL_VIM_GUARD_A = 'A'
+        let $_VITAL_VIM_GUARD_B = 'B'
+        let environment = sf._new_environment('$_VITAL_VIM_GUARD_A')
+        let $_VITAL_VIM_GUARD_A = 'B'
+        let $_VITAL_VIM_GUARD_B = 'A'
+        call environment.restore()
+        Assert Equals($_VITAL_VIM_GUARD_A, 'A')
+        Assert Equals($_VITAL_VIM_GUARD_B, 'A')
       End
     End
   End
@@ -244,6 +388,108 @@ Describe Vim.Guard
       End
     End
   End
+  Describe [PRIVATE] s:_new_instance({instance}[, {shallow}])
+    It throws an exception if {instance} is not a instance instance
+      Throw /An instance "'foo'" requires to be List or Dictionary/
+            \ sf._new_instance('foo')
+      Throw /An instance "100" requires to be List or Dictionary/
+            \ sf._new_instance(100)
+    End
+    Context with List
+      It returns a instance instance of {name}
+        let l:list = [['a'], ['b'], ['c']]
+        let instance = sf._new_instance(l:list)
+        Assert KeyExists(instance, 'instance')
+        Assert KeyExists(instance, 'values')
+        Assert KeyExists(instance, 'restore')
+        Assert Equals(instance.instance, l:list)
+        Assert Same(instance.instance, l:list)
+        Assert Equals(instance.values, l:list)
+        Assert NotSame(instance.values, l:list)
+        " NOTE:
+        " {shallow} is not specified (0) so the content should NOT be SAME
+        Assert NotSame(instance.values[0], l:list[0])
+        Assert NotSame(instance.values[1], l:list[1])
+        Assert NotSame(instance.values[2], l:list[2])
+      End
+      It returns a instance instance of {name} with {shallow}
+        let l:list = [['a'], ['b'], ['c']]
+        let instance = sf._new_instance(l:list, 1)
+        Assert KeyExists(instance, 'instance')
+        Assert KeyExists(instance, 'values')
+        Assert KeyExists(instance, 'restore')
+        Assert Equals(instance.instance, l:list)
+        Assert Same(instance.instance, l:list)
+        Assert Equals(instance.values, l:list)
+        Assert NotSame(instance.values, l:list)
+        " NOTE:
+        " {shallow} is 1 so the content should be SAME
+        Assert Same(instance.values[0], l:list[0])
+        Assert Same(instance.values[1], l:list[1])
+        Assert Same(instance.values[2], l:list[2])
+      End
+      Describe A instance instance
+        It restore values of the instance when assigned
+          let list1 = ['a', 'b', 'c']
+          let list2 = ['a', 'b', 'c']
+          let instance = sf._new_instance(list1)
+          let list1[0] = 'f'
+          let list1[1] = 'o'
+          let list1[2] = 'o'
+          let list2[0] = 'f'
+          let list2[1] = 'o'
+          let list2[2] = 'o'
+          call l:instance.restore()
+          Assert Equals(list1, ['a', 'b', 'c'])
+          Assert Equals(list2, ['f', 'o', 'o'])
+        End
+      End
+    End
+    Context with Dictionary
+      It returns a instance instance of {name}
+        let l:dict = {'foo': {}, 'bar': {}}
+        let instance = sf._new_instance(l:dict)
+        Assert KeyExists(instance, 'instance')
+        Assert KeyExists(instance, 'values')
+        Assert KeyExists(instance, 'restore')
+        Assert Equals(instance.instance, l:dict)
+        Assert Same(instance.instance, l:dict)
+        Assert Equals(instance.values, l:dict)
+        Assert NotSame(instance.values, l:dict)
+        " NOTE:
+        " {shallow} is not specified (0) so content should NOT be SAME
+        Assert NotSame(instance.values.foo, l:dict.foo)
+        Assert NotSame(instance.values.bar, l:dict.bar)
+      End
+      It returns a instance instance of {name} with {shallow}
+        let l:dict = {'foo': {}, 'bar': {}}
+        let instance = sf._new_instance(l:dict, 1)
+        Assert KeyExists(instance, 'instance')
+        Assert KeyExists(instance, 'values')
+        Assert KeyExists(instance, 'restore')
+        Assert Equals(instance.instance, l:dict)
+        Assert Same(instance.instance, l:dict)
+        Assert Equals(instance.values, l:dict)
+        Assert NotSame(instance.values, l:dict)
+        " NOTE:
+        " {shallow} is 1 so content should be SAME
+        Assert Same(instance.values.foo, l:dict.foo)
+        Assert Same(instance.values.bar, l:dict.bar)
+      End
+      Describe A instance instance
+        It restore values of the instance when assigned
+          let dict1 = {'foo': 'bar'}
+          let dict2 = {'foo': 'bar'}
+          let instance = sf._new_instance(dict1)
+          let dict1['foo'] = 'hoge'
+          let dict2['foo'] = 'hoge'
+          call instance.restore()
+          Assert Equals(dict1, {'foo': 'bar'})
+          Assert Equals(dict2, {'foo': 'hoge'})
+        End
+      End
+    End
+  End
 
   Describe .store({option_or_variable}...)
     Before
@@ -257,6 +503,9 @@ Describe Vim.Guard
       setl backupcopy=yes
       set binary
       set list
+      let previous_a_register = getreg('a')
+      call setreg('a', 'foo')
+      let $_VITAL_VIM_GUARD_A = 'foo'
       let b:VitalVimGuardTest = 1
       let w:VitalVimGuardTest = 1
       let t:VitalVimGuardTest = 1
@@ -269,6 +518,8 @@ Describe Vim.Guard
       let &l:backupcopy = previous_l_backupcopy
       let &binary = previous_b_binary
       let &list = previous_w_list
+      call setreg('a', previous_a_register)
+      let $_VITAL_VIM_GUARD_A = ''
       unlet b:VitalVimGuardTest
       unlet w:VitalVimGuardTest
       unlet t:VitalVimGuardTest
@@ -276,7 +527,7 @@ Describe Vim.Guard
       unlet s:VitalVimGuardTest
     End
     It throws an exception when unknown {option_or_variable} is specified
-      Throws /Unknown option or variable "backup" was specified/
+      Throws /Unknown value "backup" was specified/
             \ Guard.store('backup')
     End
     It returns a guard instance for options
@@ -285,6 +536,22 @@ Describe Vim.Guard
             \ '&backupcopy',
             \ '&binary',
             \ '&list',
+            \)
+      Assert KeyExists(guard, 'restore')
+    End
+    It returns a guard instance for register
+      let guard = Guard.store(
+            \ '@@',
+            \ '@a',
+            \ '@b',
+            \ '@=',
+            \)
+      Assert KeyExists(guard, 'restore')
+    End
+    It returns a guard instance for environment variable
+      let guard = Guard.store(
+            \ '$PATH',
+            \ '$_VITAL_VIM_GUARD_A',
             \)
       Assert KeyExists(guard, 'restore')
     End
@@ -310,36 +577,61 @@ Describe Vim.Guard
             \)
       Assert KeyExists(guard, 'restore')
     End
+    It returns a guard instance for instance
+      let guard = Guard.store(
+            \ [[]],
+            \ [{}],
+            \ [[], 0],
+            \ [{}, 0],
+            \ [[], 1],
+            \ [{}, 1],
+            \)
+      Assert KeyExists(guard, 'restore')
+    End
     Describe A guard instance
       It restore options and variables assigned
         let namespace = { 'VitalVimGuardTest': 1 }
+        let l:list = ['foo', 'bar', 'hoge']
+        let l:dict = {'foo': 'bar', 'hoge': 'hoge'}
         let guard = Guard.store(
               \ '&backup',
               \ '&backupcopy',
               \ '&binary',
               \ '&list',
+              \ '@a',
+              \ '$_VITAL_VIM_GUARD_A',
               \ 'b:VitalVimGuardTest',
               \ 'w:VitalVimGuardTest',
               \ 't:VitalVimGuardTest',
               \ 'g:VitalVimGuardTest',
               \ ['VitalVimGuardTest', s:],
               \ ['VitalVimGuardTest', namespace],
+              \ [l:list],
+              \ [l:dict],
               \)
         set nobackup
         set backupcopy=no
         set nobinary
         set nolist
+        call setreg('a', 'hogehoge')
+        let $_VITAL_VIM_GUARD_A = 'hogehoge'
         let b:VitalVimGuardTest = 2
         let w:VitalVimGuardTest = 2
         let t:VitalVimGuardTest = 2
         let g:VitalVimGuardTest = 2
         let s:VitalVimGuardTest = 2
         let namespace.VitalVimGuardTest = 2
+        let l:list[0] = 'hello'
+        call remove(l:list, 1)
+        let l:dict['foo'] = 'hoge'
+        unlet l:dict['hoge']
         call guard.restore()
         Assert Equals(&backup, 1)
         Assert Equals(&backupcopy, 'yes')
         Assert Equals(&binary, 1)
         Assert Equals(&list, 1)
+        Assert Equals(getreg('a'), 'foo')
+        Assert Equals($_VITAL_VIM_GUARD_A, 'foo')
         Assert Equals(b:VitalVimGuardTest, 1)
         Assert Equals(w:VitalVimGuardTest, 1)
         Assert Equals(t:VitalVimGuardTest, 1)
@@ -347,6 +639,8 @@ Describe Vim.Guard
         let s = s:VitalVimGuardTest
         Assert Equals(s, 1)
         Assert Equals(namespace.VitalVimGuardTest, 1)
+        Assert Equals(l:list, ['foo', 'bar', 'hoge'])
+        Assert Equals(l:dict, {'foo': 'bar', 'hoge': 'hoge'})
       End
     End
   End
