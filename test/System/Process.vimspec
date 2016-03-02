@@ -1,49 +1,11 @@
 scriptencoding utf-8
 
 let s:V = vital#of('vital')
-let s:Prelude = s:V.import('Prelude')
-let s:File = s:V.import('System.File')
 let s:Path = s:V.import('System.Filepath')
-let s:Guard = s:V.import('Vim.Guard')
-let s:ScriptLocal = s:V.import('Vim.ScriptLocal')
-let s:Process = s:V.import('System.Process')
-let s:testdata = './test/_testdata/System/Process/'
-let s:is_shellslash = exists('&shellslash') && &shellslash
-let s:is_travis = !empty($TRAVIS)
-let s:is_appveyor = !empty($APPVEYOR)
-
-if s:Prelude.is_windows()
-  let s:TRUE = shellescape(
-        \ fnameescape(s:Path.realpath(s:testdata . 'TRUE.bat'))
-        \)
-  let s:FALSE = shellescape(
-        \ fnameescape(s:Path.realpath(s:testdata . 'FALSE.bat'))
-        \)
-else
-  let s:TRUE = 'true'
-  let s:FALSE = 'false'
-endif
 
 Describe System.Process
   Before
-    let Process = s:Process
-    let scriptfile = s:Path.realpath(
-          \ 'autoload/vital/__latest__/System/Process.vim'
-          \)
-    let sf = s:ScriptLocal.sfuncs(scriptfile)
-  End
-
-  Describe .has_vimproc()
-    It returns wheter vimproc is available or not
-      " NOTE:
-      " Quickly check runtimepath to find if vimproc is installed.
-      " Acutally this is not enough while vimproc requires a dll file and
-      " '.has_vimproc()' should returns more correct status.
-      " However, this is just a test so assume the environments such as
-      " vimproc is correctly configured or no vimproc is installed.
-      let has_vimproc = &runtimepath =~# '/vimproc,\?'
-      Assert Equals(Process.has_vimproc(), has_vimproc)
-    End
+    let Process = s:V.import('System.Process')
   End
 
   Describe .iconv({expr}, {from}, {to})
@@ -54,78 +16,24 @@ Describe System.Process
       Assert Same(Process.iconv(expr, '', 'utf-8'), expr)
       Assert Same(Process.iconv(expr, 'utf-8', 'utf-8'), expr)
     End
+
     It return {expr} when the conversion completely fails
       " XXX : Give an example code to force iconv to fail completely
       Skip Need knowledge about how to force iconv to fail completely
     End
+
     It return string with '?' for unconvertable characters
       let expr = "aあiいuうeえoお"
       Assert Equal(Process.iconv(expr, 'euc-jp', 'sjis'), 'a??i??u??e??o??')
     End
+
     It return string with {to} encoding
       let expr = "aあiいuうeえoお"
       let sjis = readfile(s:Path.realpath(
-            \ './test/_testdata/System/Process/sjis.txt'
+            \ 'test/_testdata/System/Process/sjis.txt'
             \))[0]
       Assert Equal(Process.iconv(expr, 'utf-8', 'sjis'), sjis)
     End
-  End
-
-  Describe .get_last_status([{use_vimproc}])
-    if s:Process.has_vimproc()
-      It returns result of vimproc#get_last_status() if {use_vimproc} is omitted and vimproc is installed
-        if s:is_travis || s:is_appveyor
-          Skip this test randomly fail in CI so cannot be tested
-        endif
-        call vimproc#system(escape(s:TRUE, '\'))
-        call system(s:FALSE)
-        Assert Equals(Process.get_last_status(), 0)
-
-        call vimproc#system(escape(s:FALSE, '\'))
-        call system(s:TRUE)
-        Assert Equals(Process.get_last_status(), 1)
-      End
-      It returns result of vimproc#get_last_status() if {use_vimproc} is 1
-        if s:is_travis || s:is_appveyor
-          Skip this test randomly fail in CI so cannot be tested
-        endif
-        call vimproc#system(escape(s:TRUE, '\'))
-        call system(s:FALSE)
-        Assert Equals(Process.get_last_status(1), 0)
-
-        call vimproc#system(escape(s:FALSE, '\'))
-        call system(s:TRUE)
-        Assert Equals(Process.get_last_status(1), 1)
-      End
-      It returns v:shell_error if {use_vimproc} is 0
-        call vimproc#system(escape(s:TRUE, '\'))
-        call system(s:FALSE)
-        Assert Equals(Process.get_last_status(0), 1)
-
-        call vimproc#system(escape(s:FALSE, '\'))
-        call system(s:TRUE)
-        Assert Equals(Process.get_last_status(0), 0)
-      End
-    else
-      It returns v:shell_error if {use_vimproc} is omitted and vimproc is not installed
-        call system(s:TRUE)
-        Assert Equals(Process.get_last_status(), 0)
-
-        call system(s:FALSE)
-        Assert Equals(Process.get_last_status(), 1)
-      End
-      It throws an exception if {use_vimproc} is 1
-        Throws /{use_vimproc} is specified but vimproc is not available/
-              \ Process.get_last_status(1)
-      End
-      It returns v:shell_error if {use_vimproc} is 0
-        call system(s:TRUE)
-        Assert Equals(Process.get_last_status(0), 0)
-
-        call system(s:FALSE)
-        Assert Equals(Process.get_last_status(0), 1)
-      End
-    endif
   End
 
   Describe .repair_posix_text({text})
@@ -133,6 +41,7 @@ Describe System.Process
       let text = "abcdefg\nhijklmn\nopqrstu"
       Assert Equals(Process.repair_posix_text(text), "abcdefg\nhijklmn\nopqrstu\n")
     End
+
     It does nothing if a trailing newline is found
       let text = "abcdefg\nhijklmn\nopqrstu\n"
       Assert Same(Process.repair_posix_text(text), text)
@@ -185,6 +94,7 @@ Describe System.Process
       let text = "AAAAA\r\nBBBBB\r\nCCCCC\r\n"
       Assert Equals(Process.split_posix_text(text), exp)
     End
+
     It split a POSIX text file into lines, even for empty lines
       let exp = [
             \ '',
@@ -201,6 +111,7 @@ Describe System.Process
       let text = "\r\n\r\nAAAAA\r\nBBBBB\r\nCCCCC\r\n\r\n\r\n"
       Assert Equals(Process.split_posix_text(text), exp)
     End
+
     It split an invalid POSIX text file into lines
       let exp = [
             \ 'AAAAA',
@@ -216,310 +127,5 @@ Describe System.Process
       let text = "AAAAA\r\nBBBBB\r\nCCCCC"
       Assert Equals(Process.split_posix_text(text), exp)
     End
-  End
-
-  Describe .shellescape({string}[, {special}, {use_vimproc})
-    if s:Process.has_vimproc()
-      Context [vimproc]
-        It enclose {string} with single quotes
-          Assert Equals(Process.shellescape('foobar', 0, 1), "'foobar'")
-        End
-        It replace single quotes in {string} into ''
-          Assert Equals(
-                \ Process.shellescape("C'mon Vim's shellslash", 0, 1),
-                \ "'C''mon Vim''s shellslash'"
-                \)
-        End
-        It does not replace double quotes in {string}
-          Assert Equals(
-                \ Process.shellescape('He said "I am Vimmer."', 0, 1),
-                \ "'He said \"I am Vimmer.\"'"
-                \)
-        End
-        It does not escape special characters such as ! % # <cword> even if {special} is specified
-          Assert Equals(
-                \ Process.shellescape('! ! !', 1, 1),
-                \ "'! ! !'"
-                \)
-          Assert Equals(
-                \ Process.shellescape('% % %', 1, 1),
-                \ "'% % %'"
-                \)
-          Assert Equals(
-                \ Process.shellescape('# # #', 1, 1),
-                \ "'# # #'"
-                \)
-          Assert Equals(
-                \ Process.shellescape('<cword> <cword> <cword>', 1, 1),
-                \ "'<cword> <cword> <cword>'"
-                \)
-        End
-      End
-    endif
-    if s:Prelude.is_windows() && !s:is_shellslash
-      Context [builtin]
-        It enclose {string} with double quotes
-          Assert Equals(Process.shellescape('foobar', 0, 0), '"foobar"')
-        End
-        It does not replace single quotes in {string}
-          Assert Equals(
-                \ Process.shellescape("C'mon Vim's shellslash", 0, 0),
-                \ '"C''mon Vim''s shellslash"',
-                \)
-        End
-        It replace double quotes in {string} into double double quotes ("")
-          Assert Equals(
-                \ Process.shellescape('He said "I am Vimmer."', 0, 0),
-                \ '"He said ""I am Vimmer."""'
-                \)
-        End
-        It escapes special characters such as ! % # <cword> if {special} is specified
-          Assert Equals(
-                \ Process.shellescape('! ! !', 1, 0),
-                \ '"\! \! \!"'
-                \)
-          Assert Equals(
-                \ Process.shellescape('% % %', 1, 0),
-                \ '"\% \% \%"'
-                \)
-          Assert Equals(
-                \ Process.shellescape('# # #', 1, 0),
-                \ '"\# \# \#"'
-                \)
-          Assert Equals(
-                \ Process.shellescape('<cword> <cword> <cword>', 1, 0),
-                \ '"\<cword> \<cword> \<cword>"'
-                \)
-        End
-      End
-    else
-      Context [builtin]
-        It enclose {string} with single quotes
-          Assert Equals(Process.shellescape('foobar', 0, 0), "'foobar'")
-        End
-        It replace single quotes in {string} into '\''
-          Assert Equals(
-                \ Process.shellescape("C'mon Vim's shellslash", 0, 0),
-                \ "'C'\\''mon Vim'\\''s shellslash'"
-                \)
-        End
-        It does not replace double quotes in {string}
-          Assert Equals(
-                \ Process.shellescape('He said "I am Vimmer."', 0, 0),
-                \ "'He said \"I am Vimmer.\"'"
-                \)
-        End
-        It escapes special characters such as ! % # <cword> if {special} is specified
-          Assert Equals(
-                \ Process.shellescape('! ! !', 1, 0),
-                \ "'\\! \\! \\!'"
-                \)
-          Assert Equals(
-                \ Process.shellescape('% % %', 1, 0),
-                \ "'\\% \\% \\%'"
-                \)
-          Assert Equals(
-                \ Process.shellescape('# # #', 1, 0),
-                \ "'\\# \\# \\#'"
-                \)
-          Assert Equals(
-                \ Process.shellescape('<cword> <cword> <cword>', 1, 0),
-                \ "'\\<cword> \\<cword> \\<cword>'"
-                \)
-        End
-      End
-    endif
-  End
-
-  Describe .system({cmdline}[, {input}, {timeout}, {options}])
-    It throws an exception when more than 4 arguments are specified
-      Throws /expects 1-4 arguments/
-            \ Process.system(0, 0, 0, 0, 0)
-    End
-    It throws an exception when {options} is not a dictionary
-      " system({cmdline}, {input}, {timeout}, {options})
-      Throws /{options} of Process.system() requires to be/
-            \ Process.system('echo', '', 0, 0)
-      Throws /{options} of Process.system() requires to be/
-            \ Process.system('echo', '', 0, '')
-      Throws /{options} of Process.system() requires to be/
-            \ Process.system('echo', '', 0, [])
-    End
-    It throws an exception when {timeout} is not number
-      " system({cmdline}, {input}, {timeout}, {options})
-      Throws /{timeout} of Process.system() requires to be/
-            \ Process.system('echo', '', '', {})
-      Throws /{timeout} of Process.system() requires to be/
-            \ Process.system('echo', '', {}, {})
-      Throws /{timeout} of Process.system() requires to be/
-            \ Process.system('echo', '', [], {})
-
-      " system({cmdline}, {input}, {timeout})
-      Throws /{timeout} of Process.system() requires to be/
-            \ Process.system('echo', '', [])
-      Throws /{timeout} of Process.system() requires to be/
-            \ Process.system('echo', '', '')
-    End
-    It throws an exception when {input} is not string nor list
-      " system({cmdline}, {input}, {timeout}, {options})
-      Throws /{input} of Process.system() requires to be/
-            \ Process.system('echo', 1, 0, {})
-      Throws /{input} of Process.system() requires to be/
-            \ Process.system('echo', {}, 0, {})
-
-      " system({cmdline}, {input}, {options})
-      Throws /{input} of Process.system() requires to be/
-            \ Process.system('echo', 1, {})
-      Throws /{input} of Process.system() requires to be/
-            \ Process.system('echo', {}, {})
-
-      " system({cmdline}, {input}, {timeout})
-      Throws /{input} of Process.system() requires to be/
-            \ Process.system('echo', 1, 0)
-      Throws /{input} of Process.system() requires to be/
-            \ Process.system('echo', {}, 0)
-
-      " system({cmdline}, {input})
-      Throws /{input} of Process.system() requires to be/
-            \ Process.system('echo', 1)
-    End
-    It throws an exception when {cmdline} is not string
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system(0, '', 0, {})
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system(0, '', 0)
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system(0, '', {})
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system(0, '')
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system(0, {})
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system(0)
-
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system({}, '', 0, {})
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system({}, '', 0)
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system({}, '', {})
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system({}, '')
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system({}, {})
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system({})
-
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system([], '', 0, {})
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system([], '', 0)
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system([], '', {})
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system([], '')
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system([], {})
-      Throws /{cmdline} of Process.system() requires to be/
-            \ Process.system([])
-    End
-    " NOTE:
-    " Individual execution tests is in separated files
-  End
-
-  Describe .execute({args}[, {input}, {timeout}, {options}])
-    It throws an exception when more than 4 arguments are specified
-      Throws /expects 1-4 arguments/
-            \ Process.execute(0, 0, 0, 0, 0)
-    End
-    It throws an exception when {options} is not a dictionary
-      " execute({args}, {input}, {timeout}, {options})
-      Throws /{options} of Process.execute() requires to be/
-            \ Process.execute('echo', '', 0, 0)
-      Throws /{options} of Process.execute() requires to be/
-            \ Process.execute('echo', '', 0, '')
-      Throws /{options} of Process.execute() requires to be/
-            \ Process.execute('echo', '', 0, [])
-    End
-    It throws an exception when {timeout} is not number
-      " execute({args}, {input}, {timeout}, {options})
-      Throws /{timeout} of Process.execute() requires to be/
-            \ Process.execute('echo', '', '', {})
-      Throws /{timeout} of Process.execute() requires to be/
-            \ Process.execute('echo', '', {}, {})
-      Throws /{timeout} of Process.execute() requires to be/
-            \ Process.execute('echo', '', [], {})
-
-      " execute({args}, {input}, {timeout})
-      Throws /{timeout} of Process.execute() requires to be/
-            \ Process.execute('echo', '', [])
-      Throws /{timeout} of Process.execute() requires to be/
-            \ Process.execute('echo', '', '')
-    End
-    It throws an exception when {input} is not string nor list
-      " execute({args}, {input}, {timeout}, {options})
-      Throws /{input} of Process.execute() requires to be/
-            \ Process.execute('echo', 1, 0, {})
-      Throws /{input} of Process.execute() requires to be/
-            \ Process.execute('echo', {}, 0, {})
-
-      " execute({args}, {input}, {options})
-      Throws /{input} of Process.execute() requires to be/
-            \ Process.execute('echo', 1, {})
-      Throws /{input} of Process.execute() requires to be/
-            \ Process.execute('echo', {}, {})
-
-      " execute({args}, {input}, {timeout})
-      Throws /{input} of Process.execute() requires to be/
-            \ Process.execute('echo', 1, 0)
-      Throws /{input} of Process.execute() requires to be/
-            \ Process.execute('echo', {}, 0)
-
-      " execute({args}, {input})
-      Throws /{input} of Process.execute() requires to be/
-            \ Process.execute('echo', 1)
-    End
-    It throws an exception when {args} is not list
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute(0, '', 0, {})
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute(0, '', 0)
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute(0, '', {})
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute(0, '')
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute(0, {})
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute(0)
-
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute({}, '', 0, {})
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute({}, '', 0)
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute({}, '', {})
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute({}, '')
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute({}, {})
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute({})
-
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute('', '', 0, {})
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute('', '', 0)
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute('', '', {})
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute('', '')
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute('', {})
-      Throws /{args} of Process.execute() requires to be/
-            \ Process.execute('')
-    End
-    " NOTE:
-    " Individual execution tests is in separated files
   End
 End

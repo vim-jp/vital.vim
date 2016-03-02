@@ -1,0 +1,120 @@
+scriptencoding utf-8
+
+let s:V = vital#of('vital')
+let s:Prelude = s:V.import('Prelude')
+let s:Path = s:V.import('System.Filepath')
+let s:testdata = './test/_testdata/System/Process/'
+
+Describe System.Process.Vimproc
+  Before
+    let Process = s:V.import('System.Process')
+    let options = {
+          \ 'clients': ['vimproc'],
+          \}
+  End
+
+  if s:Prelude.is_windows()
+    Context [Windows]
+
+    " TODO
+    " Write corresponding tests of Unix
+
+    End
+  else
+    Context [Unix]
+      Describe .execute({args}[, {options}])
+        It DOES NOT throws an exception when {options.timeout} is specified
+          let options.timeout = 100
+          let args = ['sleep', '10']
+          let result = Process.execute(args, options)
+          " While the execution time reachs the timeout, the success is 0.
+          Assert Equals(result.success, 0)
+        End
+
+        It DOES NOT throws an exception when {options.background} is specified
+          let options.background = 1
+          let args = ['false']
+          let result = Process.execute(args, options)
+          " While the process is executed in background, the success is 1.
+          Assert Equals(result.success, 1)
+        End
+
+        It returns {result.success: 1} when a command success
+          let args = ['true']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+        End
+
+        It returns {result.success: 0} when a command fail
+          let args = ['false']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 0)
+        End
+
+        It executes command without spaces
+          let args = ['echo', 'hello']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.output, "hello\n")
+          Assert Equals(result.content, ['hello'])
+        End
+
+        It executes command with spaces
+          let args = ['echo', 'h e l l o']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.output, "h e l l o\n")
+          Assert Equals(result.content, ['h e l l o'])
+        End
+
+        It executes command with non ascii characters without spaces
+          let args = ['echo', 'あいうえお']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.output, "あいうえお\n")
+          Assert Equals(result.content, ['あいうえお'])
+        End
+
+        It executes command with non ascii characters with spaces
+          let args = ['echo', 'あ い う え お']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.output, "あ い う え お\n")
+          Assert Equals(result.content, ['あ い う え お'])
+        End
+
+        It executes command without spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 'test.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.output, "test\n")
+          Assert Equals(result.content, ['test'])
+        End
+
+        It executes command with spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 't e s t.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.output, "t e s t\n")
+          Assert Equals(result.content, ['t e s t'])
+        End
+
+        It executes command with non ascii characters without spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 'テスト.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.output, "テスト\n")
+          Assert Equals(result.content, ['テスト'])
+        End
+
+        It executes command with non ascii characters with spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 'テ ス ト.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.output, "テ ス ト\n")
+          Assert Equals(result.content, ['テ ス ト'])
+        End
+      End
+    End
+  endif
+End
