@@ -96,10 +96,16 @@ function! s:execute(args, options) abort
       " It is probably an issue of pipe in Windows so remove it.
       let output = substitute(output, '\s\n$', '\n', '')
     endif
+    " NOTE:
+    " Vim 7.4 always return exit_status:0 for background process so mimic
+    let status = options.background ? 0 : v:shell_error
+    " NOTE:
+    " success, output are COMMON information
+    " status is EXTRA information
     return {
-          \ 'success': v:shell_error == 0,
+          \ 'success': status == 0,
           \ 'output': output,
-          \ 'status': v:shell_error,
+          \ 'status': status,
           \}
   finally
     call guard.restore()
