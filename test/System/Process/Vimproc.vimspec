@@ -39,6 +39,19 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
         End
 
+        It throws an exception when {options.background} and {options.input}/{options.timeout} are specified
+          let options.background = 1
+          let options.input = 'foo'
+          Throws /None of client support/
+                \ Process.execute([], options)
+
+          let options.background = 1
+          let options.input = 0
+          let options.timeout = 100
+          Throws /None of client support/
+                \ Process.execute([], options)
+        End
+
         It returns {result.success: 1} when a command success
           let args = ['true']
           let result = Process.execute(args, options)
