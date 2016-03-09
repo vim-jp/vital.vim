@@ -81,7 +81,7 @@ split_posix_text({text}[, {newline}])
 execute({args}[, {options}])
 	Execute a process specified by {args} (|List|).
 	It tries process clients listed in 'clients' attribute of {options}
-	and return a result |Dictionary| a client supports {options}.
+	and return a result |Dictionary| when a client supports {options}.
 	Otherwise it raises an exception 'None of client support options:'.
 
 	The following attributes are supported in {options}
@@ -120,7 +120,7 @@ execute({args}[, {options}])
 		value of 'encode_output'.
 
 		'embed_content'
-		IF 1, a POSIX |List| of 'output' value in {result} will be
+		If 1, a POSIX |List| of 'output' value in {result} will be
 		embed into {result} dictionary as 'content'.
 		It use |Vital.Process.split_posix_text()| internally.
 
