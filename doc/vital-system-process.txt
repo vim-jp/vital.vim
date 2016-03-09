@@ -88,8 +88,8 @@ execute({args}[, {options}])
 
 		'clients'
 		A |List| of client (alias) names registered by register()
-		function. The default value is ['vimproc', 'builtin'] when
-		vimproc is available or ['builtin'].
+		function. The default value is ['vimproc', 'system'] when
+		vimproc is available or ['system'].
 
 		'input'
 		A |String| or |Number|. If |String| is specified, the value will be

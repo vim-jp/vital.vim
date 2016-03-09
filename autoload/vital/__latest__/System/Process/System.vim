@@ -81,7 +81,7 @@ function! s:execute(args, options) abort
     endif
     if &verbose > 0
       echomsg printf(
-            \ 'vital: System.Process.Builtin: %s',
+            \ 'vital: System.Process.System: %s',
             \ cmdline
             \)
     endif

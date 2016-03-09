@@ -8,14 +8,14 @@ function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = a:V.import('Prelude')
   call s:register('System.Process.Vimproc', 'vimproc')
-  call s:register('System.Process.Builtin', 'builtin')
+  call s:register('System.Process.System', 'system')
 endfunction
 
 function! s:_vital_depends() abort
   return [
         \ 'Prelude',
         \ 'System.Process.Vimproc',
-        \ 'System.Process.Builtin',
+        \ 'System.Process.System',
         \]
 endfunction
 
