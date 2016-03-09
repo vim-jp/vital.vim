@@ -24,7 +24,11 @@ Describe System.Process
 
     It return string with '?' for unconvertable characters
       let expr = "aあiいuうeえoお"
-      Assert Equal(Process.iconv(expr, 'euc-jp', 'sjis'), 'a??i??u??e??o??')
+      if &encoding ==# 'eucjp'
+        Assert Equal(Process.iconv(expr, 'sjis', 'latin1'), 'a??i??u??e??o??')
+      else
+        Assert Equal(Process.iconv(expr, 'eucjp', 'latin1'), 'a??i??u??e??o??')
+      endif
     End
 
     It return string with {to} encoding
@@ -32,7 +36,7 @@ Describe System.Process
       let sjis = readfile(s:Path.realpath(
             \ 'test/_testdata/System/Process/sjis.txt'
             \))[0]
-      Assert Equal(Process.iconv(expr, 'utf-8', 'sjis'), sjis)
+      Assert Equal(Process.iconv(expr, &encoding, 'sjis'), sjis)
     End
   End
 
