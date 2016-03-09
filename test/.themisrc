@@ -1,4 +1,5 @@
-set encoding=utf-8  " Use multibyte environment
+let &termencoding=&encoding
+set encoding=utf-8
 
 call themis#option('recursive', 1)
 call themis#option('exclude', ['test/_testdata/', 'test/README.md'])

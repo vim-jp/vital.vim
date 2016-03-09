@@ -4,6 +4,10 @@ environment:
   matrix:
     - VIM_URL: http://files.kaoriya.net/vim/vim74-kaoriya-win64.zip
     - VIM_URL: http://files.kaoriya.net/vim/2011/vim73-kaoriya-win64-20110306.zip
+init:
+  # http://qiita.com/kento1218@github/items/0978237aae1534caefd9
+  - ps: Set-WinSystemLocale ja-JP
+  - ps: Restart-Computer
 install:
   - 'cd %APPVEYOR_BUILD_FOLDER%'
   - 'appveyor DownloadFile %VIM_URL% -FileName %TEMP%\vim.zip'
