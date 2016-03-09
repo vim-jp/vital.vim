@@ -116,16 +116,16 @@ Describe System.Process.Vimproc
           let args = ['cat', s:Path.realpath(s:testdata . 'テスト.txt')]
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
-          Assert Equals(result.output, "テスト\n")
-          Assert Equals(result.content, ['テスト'])
+          Assert Equals(result.output, "test\n")
+          Assert Equals(result.content, ['test'])
         End
 
         It executes command with non ascii characters with spaces (filename)
           let args = ['cat', s:Path.realpath(s:testdata . 'テ ス ト.txt')]
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
-          Assert Equals(result.output, "テ ス ト\n")
-          Assert Equals(result.content, ['テ ス ト'])
+          Assert Equals(result.output, "t e s t\n")
+          Assert Equals(result.content, ['t e s t'])
         End
       End
     End
