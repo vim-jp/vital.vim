@@ -70,6 +70,7 @@ function! s:execute(args, options) abort
         \ 'output': output,
         \ 'status': status,
         \ 'errormsg': vimproc#get_last_errmsg(),
+        \ 'cmdline': cmdline,
         \}
 endfunction
 
