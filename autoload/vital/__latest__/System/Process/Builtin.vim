@@ -27,6 +27,16 @@ function! s:is_supported(options) abort
   return 1
 endfunction
 
+function! s:shellescape(string) abort
+  if s:Prelude.is_windows()
+    " NOTE:
+    " In windows, a string which does not contain space SHOULD NOT be escaped
+    return a:string =~# '\s' ? shellescape(a:string) : a:string
+  else
+    return shellescape(a:string)
+  endif
+endfunction
+
 function! s:execute(args, options) abort
   let options = extend({
         \ 'input': 0,
@@ -64,17 +74,8 @@ function! s:execute(args, options) abort
     endif
     let cmdline = join(map(
           \ copy(a:args),
-          \ 'shellescape(v:val)',
+          \ 's:shellescape(v:val)',
           \))
-    if s:Prelude.is_windows()
-      " NOTE:
-      " it seems that cmd.exe does not understand double quote enclosed
-      " command so remove double quotes when the first argument does not
-      " contains space
-      if cmdline =~# '^"[^ ]\{-}"'
-        let cmdline = substitute(cmdline, '^"\([^ ]\{-}\)"', '\1', '')
-      endif
-    endif
     if options.background && !s:Prelude.is_windows()
       let cmdline = cmdline . ' &'
     endif
@@ -106,6 +107,7 @@ function! s:execute(args, options) abort
           \ 'success': status == 0,
           \ 'output': output,
           \ 'status': status,
+          \ 'cmdline': cmdline,
           \}
   finally
     call guard.restore()
