@@ -7,3 +7,20 @@ let g:Expect = themis#helper('expect')
 call themis#helper('command').with(themis#helper('assert')).with({'Expect': g:Expect})
 
 let g:root = fnamemodify(expand('<sfile>'), ':h:h')
+
+" Show environmental information for debugging
+call themis#log('***********************************************************')
+if has('win16') || has('win32') || has('win64')
+  call themis#log('Code page:      ' . substitute(system('chcp'), '\D', '', 'g'))
+endif
+call themis#log('$LANG:          ' . $LANG)
+call themis#log('&encoding:      ' . &encoding)
+call themis#log('&termencoding:  ' . &termencoding)
+call themis#log('&fileencodings: ' . &fileencodings)
+call themis#log('&fileformats:   ' . &fileformats)
+call themis#log('&shellslash:    ' . (exists('&shellslash') ? &shellslash : -1))
+call themis#log('&runtimepath:')
+for runtimepath in split(&runtimepath, ',')
+  call themis#log('  ' . runtimepath)
+endfor
+call themis#log('***********************************************************')
