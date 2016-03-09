@@ -288,7 +288,7 @@ function! s:clients.python.available(settings) abort
     " 'retry' is not supported yet
     return 0
   endif
-  if has_key(a:settings, 'authMethod')
+  if get(a:settings, 'authMethod', 'basic') !~# '^\%(basic\|digest\|anyauth\)$'
     return 0
   endif
   return 1
@@ -565,7 +565,7 @@ let s:clients.wget.errcode[8] = 'Server issued an error response.'
 
 
 function! s:clients.wget.available(settings) abort
-  if has_key(a:settings, 'authMethod')
+  if get(a:settings, 'authMethod', 'basic') !~# '^\%(basic\|digest\|ntlm\|anyauth\)$'
     return 0
   endif
   return executable(self._command(a:settings))
