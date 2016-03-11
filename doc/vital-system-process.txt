@@ -123,7 +123,7 @@ execute({args}[, {options}])
 		'embed_content'
 		If 1, a POSIX |List| of 'output' value in {result} will be
 		embed into {result} dictionary as 'content'.
-		It use |Vital.Process.split_posix_text()| internally.
+		It uses |Vital.Process.split_posix_text()| internally.
 
 	The following attributes exists in {result} dictionary and the value
 	should be equal among clients and environments:
