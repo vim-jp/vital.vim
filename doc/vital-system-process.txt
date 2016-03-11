@@ -196,9 +196,8 @@ When you create a new process client, register that with the following
 function in 's:_vital_loaded()' function of Vital.System.Process module.
 
 				*Vital.System.Process.register()*
-register({name}[, {alias}])
-	Register a {name} Vital module as a process client with {alias}.
-	If {alias} is omit, the {name} is used.
+register({name})
+	Register a {name} Vital module as a process client.
 	It only register when 'is_available()' method of the module returns
 	truth value.
 	The order of the registration effect the default priority of the

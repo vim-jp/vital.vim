@@ -7,8 +7,8 @@ let s:priority = []
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = a:V.import('Prelude')
-  call s:register('System.Process.Vimproc', 'vimproc')
-  call s:register('System.Process.System', 'system')
+  call s:register('System.Process.Vimproc')
+  call s:register('System.Process.System')
 endfunction
 
 function! s:_vital_depends() abort
@@ -23,12 +23,11 @@ function! s:_throw(msg) abort
   throw printf('vital: System.Process: %s', a:msg)
 endfunction
 
-function! s:register(name, ...) abort
-  let alias = get(a:000, 0, a:name)
+function! s:register(name) abort
   let client = s:V.import(a:name)
   if client.is_available()
-    let s:registry[alias] = client
-    call add(s:priority, alias)
+    let s:registry[a:name] = client
+    call add(s:priority, a:name)
   endif
 endfunction
 
@@ -94,8 +93,8 @@ function! s:split_posix_text(text, ...) abort
 endfunction
 
 function! s:_execute(args, options) abort
-  for alias in a:options.clients
-    let client = s:registry[alias]
+  for name in a:options.clients
+    let client = s:registry[name]
     if !client.is_supported(a:options)
       continue
     endif

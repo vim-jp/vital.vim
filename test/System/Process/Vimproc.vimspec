@@ -19,7 +19,7 @@ Describe System.Process.Vimproc
   Before
     let Process = s:V.import('System.Process')
     let options = {
-          \ 'clients': ['vimproc'],
+          \ 'clients': ['System.Process.Vimproc'],
           \}
   End
 
