@@ -93,7 +93,8 @@ execute({args}[, {options}])
 
 		'input'
 		A |String| or |Number|. If |String| is specified, the value will be
-		passed to the process through the stdin.
+		passed to the process through the stdin. If |Number| is
+		specified, no value will be passed to the process.
 
 		'timeout'
 		A process timeout in seconds (|Number|). A system process
