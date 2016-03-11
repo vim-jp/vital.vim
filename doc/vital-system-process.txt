@@ -96,12 +96,12 @@ execute({args}[, {options}])
 		passed to the process through the stdin.
 
 		'timeout'
-		A process timeout in seconds (|Number|). A builtin process
+		A process timeout in seconds (|Number|). A system process
 		client does not support this option, mean that vimproc is
 		required to be available.
 
 		'background'
-		If 1, the process will be executed in background. A builtin
+		If 1, the process will be executed in background. A system
 		process client does not support this option in Windows, mean
 		that vimproc is required to be available to use in Windows.
 		When the process is executed in background, the 'success' in
