@@ -4,6 +4,7 @@ set cpoptions&vim
 function! s:_vital_loaded(V) abort
   let s:Prelude = a:V.import('Prelude')
 endfunction
+
 function! s:_vital_depends() abort
   return [
         \ 'Prelude',
@@ -64,7 +65,7 @@ function! s:execute(args, options) abort
   endif
     " NOTE:
     " success, output are COMMON information
-    " status, errormsg are EXTRA information
+    " status, errormsg, cmdline are EXTRA information
   return {
         \ 'success': status == 0,
         \ 'output': output,

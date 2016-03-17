@@ -6,6 +6,7 @@ function! s:_vital_loaded(V) abort
   let s:Guard = a:V.import('Vim.Guard')
   let s:Process = a:V.import('System.Process')
 endfunction
+
 function! s:_vital_depends() abort
   return [
         \ 'Prelude',
@@ -102,7 +103,7 @@ function! s:execute(args, options) abort
     let status = options.background ? 0 : v:shell_error
     " NOTE:
     " success, output are COMMON information
-    " status is EXTRA information
+    " status, cmdline are EXTRA information
     return {
           \ 'success': status == 0,
           \ 'output': output,
