@@ -10,10 +10,6 @@ set cpo&vim
 " e.g.)
 " echo s:has_version('7.3.629')
 " echo s:has_version('7.3')
-"
-" Note:
-" use has('patch-7.4.237') style instead if you need to check a version of Vim
-" equal and grater than 7.4.237
 if has('patch-7.4.237')
   function! s:has_version(version) abort
     return has('patch-' . a:version)
