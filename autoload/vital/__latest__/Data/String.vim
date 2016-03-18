@@ -574,6 +574,10 @@ function! s:splitargs(str) abort
   return split(a:str, pattern . '*\zs\%(\s\+\|$\)\ze')
 endfunction
 
+function! s:remove_ansi_sequences(text) abort
+  return substitute(a:text, '\e\[\%(\%(\d;\)\?\d\{1,2}\)\?[mK]', '', 'g')
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
