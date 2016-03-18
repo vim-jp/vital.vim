@@ -580,34 +580,3 @@ function! s:suite.strwidthpart_reverse()
   call s:assert.equals(s:String.strwidthpart_reverse('あいうえお', 10), 'あいうえお')
   call s:assert.equals(s:String.strwidthpart_reverse('あいうえお', 20), 'あいうえお')
 endfunction
-
-function! s:suite.splitargs() abort
-  call s:assert.equals(s:String.splitargs('foo'), ['foo'])
-  call s:assert.equals(s:String.splitargs('foo bar'), ['foo', 'bar'])
-  call s:assert.equals(s:String.splitargs('foo "bar bar" hoge'), ['foo', '"bar bar"', 'hoge'])
-  call s:assert.equals(s:String.splitargs('"foo foo" "bar bar" "hoge hoge"'), ['"foo foo"', '"bar bar"', '"hoge hoge"'])
-  call s:assert.equals(s:String.splitargs("foo 'bar bar' hoge"), ['foo', '''bar bar''', 'hoge'])
-  call s:assert.equals(s:String.splitargs("'foo foo' 'bar bar' 'hoge hoge'"), ["'foo foo'", "'bar bar'", "'hoge hoge'"])
-  call s:assert.equals(s:String.splitargs('foo="bar" hoge=''piyo'''), ['foo="bar"', 'hoge=''piyo'''])
-endfunction
-
-function! s:suite.remove_ansi_sequences() abort
-  call s:assert.equals(s:String.remove_ansi_sequences("\033[47m\033[32mGreen\033[0m"), 'Green')
-endfunction
-
-function! s:suite.escape_pattern() abort
-  call s:assert.equals(s:String.escape_pattern('^\a\b.*$'), '\^\\a\\b\.\*\$')
-  call s:assert.equals(s:String.escape_pattern('C:\Windows\Test.txt'), 'C:\\Windows\\Test\.txt')
-endfunction
-
-function! s:suite.unescape_pattern() abort
-  call s:assert.equals(s:String.unescape_pattern('\^\\a\\b\.\*\$'), '^\a\b.*$')
-  call s:assert.equals(s:String.unescape_pattern('C:\\Windows\\Test\.txt'), 'C:\Windows\Test.txt')
-endfunction
-
-function! s:suite.unescape() abort
-  call s:assert.equals(s:String.unescape('\\\^\*\a\b\[\]', '\^*[]'), '\^*\a\b[]')
-  call s:assert.equals(s:String.unescape('\*n\*n\*n', '*'), '*n*n*n')
-  call s:assert.equals(s:String.unescape('\\n\\n\\n', '\'), '\n\n\n')
-  call s:assert.equals(s:String.unescape('\\\\n\\\\n\\\\n', '\'), '\\n\\n\\n')
-endfunction

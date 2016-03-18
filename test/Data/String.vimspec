@@ -1,0 +1,112 @@
+Describe Data.String
+  Before all
+    let String = vital#of('vital').import('Data.String')
+  End
+
+  Context .splitargs()
+    It return ['foo'] for 'foo'
+      let ret = String.splitargs('foo')
+      let exp = ['foo']
+      Assert Equals(ret, exp)
+    End
+    It return ['foo', 'bar'] for 'foo bar'
+      let ret = String.splitargs('foo bar')
+      let exp = ['foo', 'bar']
+      Assert Equals(ret, exp)
+    End
+    It return ['foo', '"bar bar"', 'hoge'] for 'foo "bar bar" hoge'
+      let ret = String.splitargs('foo "bar bar" hoge')
+      let exp = ['foo', '"bar bar"', 'hoge']
+      Assert Equals(ret, exp)
+    End
+    It return ['"foo foo"', '"bar bar"', '"hoge hoge"'] for '"foo foo" "bar bar" "hoge hoge"'
+      let ret = String.splitargs('"foo foo" "bar bar" "hoge hoge"')
+      let exp = ['"foo foo"', '"bar bar"', '"hoge hoge"']
+      Assert Equals(ret, exp)
+    End
+    It return ["foo", "'bar bar"', "hoge"] for "foo 'bar bar' hoge"
+      let ret = String.splitargs("foo 'bar bar' hoge")
+      let exp = ["foo", "'bar bar'", "hoge"]
+      Assert Equals(ret, exp)
+    End
+    It return ["'foo foo'", "'bar bar'", "'hoge hoge'"] for "'foo foo' 'bar bar' 'hoge hoge'"
+      let ret = String.splitargs("'foo foo' 'bar bar' 'hoge hoge'")
+      let exp = ["'foo foo'", "'bar bar'", "'hoge hoge'"]
+      Assert Equals(ret, exp)
+    End
+    It return ['foo="bar"', "hoge='piyo'"] for 'foo="bar" hoge=''piyo'''
+      let ret = String.splitargs('foo="bar" hoge=''piyo''')
+      let exp = ['foo="bar"', "hoge='piyo'"]
+      Assert Equals(ret, exp)
+    End
+  End
+
+  Context .remove_ansi_sequences()
+    It should remove ANSI sequences in {val}
+      let val = "\033[47m\033[32mGreen\033[0m"
+      Assert Equals(String.remove_ansi_sequences(val), 'Green')
+    End
+  End
+
+  Describe .escape_pattern()
+    It escape unescaped characters in {str} which involved in regex pattern
+      Assert Equals(String.escape_pattern('^\a\b.*$'), '\^\\a\\b\.\*\$')
+      Assert Equals(
+            \ String.escape_pattern('C:\Windows\Test.txt'),
+            \ 'C:\\Windows\\Test\.txt',
+            \)
+    End
+    It escape escaped characters in {str} which involved in regex pattern
+      Assert Equals(
+            \ String.escape_pattern(String.escape_pattern('^\a\b.*$')),
+            \ '\\\^\\\\a\\\\b\\\.\\\*\\\$'
+            \)
+      Assert Equals(
+            \ String.escape_pattern(String.escape_pattern('C:\Windows\Test.txt')),
+            \ 'C:\\\\Windows\\\\Test\\\.txt',
+            \)
+    End
+  End
+
+  Describe .unescape_pattern()
+    It unescape escaped characters in {str} which involved in regex pattern
+      Assert Equals(String.unescape_pattern('\^\\a\\b\.\*\$'), '^\a\b.*$')
+      Assert Equals(
+            \ String.unescape_pattern('C:\\Windows\\Test\.txt'),
+            \ 'C:\Windows\Test.txt'
+            \)
+    End
+
+    It unescape unescaped characters in {str} which involved in regex pattern
+      Assert Equals(
+            \ String.unescape_pattern(String.unescape_pattern('\\\^\\\\a\\\\b\\\.\\\*\\\$')),
+            \ '^\a\b.*$'
+            \)
+      Assert Equals(
+            \ String.unescape_pattern(String.unescape_pattern('C:\\\\Windows\\\\Test\\\.txt')),
+            \ 'C:\Windows\Test.txt'
+            \)
+    End
+  End
+
+  Describe .unescape()
+    It unescape escaped {chars} in {str}
+      Assert Equals(
+            \ String.unescape('\\\^\*\a\b\[\]', '\^*[]'),
+            \ '\^*\a\b[]',
+            \)
+      Assert Equals(
+            \ String.unescape('\*n\*n\*n', '*'),
+            \ '*n*n*n',
+            \)
+      Assert Equals(
+            \ String.unescape('\\n\\n\\n', '\'),
+            \ '\n\n\n',
+            \)
+      Assert Equals(
+            \ String.unescape('\\\\n\\\\n\\\\n', '\'),
+            \ '\\n\\n\\n',
+            \)
+    End
+  End
+End
