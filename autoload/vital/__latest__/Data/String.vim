@@ -316,7 +316,7 @@ function! s:levenshtein_distance(str1, str2) abort
   let letters2 = split(a:str2, '\zs')
   let length1 = len(letters1)
   let length2 = len(letters2)
-  let distances = map(range(1, length1 + 1), 'map(range(1, length2 + 1), "0")')
+  let distances = map(range(1, length1 + 1), 'map(range(1, length2 + 1), ''0'')')
 
   for i1 in range(0, length1)
     let distances[i1][0] = i1
@@ -561,6 +561,18 @@ else
     return 1
   endfunction
 endif
+
+function! s:splitargs(str) abort
+  let single_quote = '''\zs[^'']\+\ze'''
+  let double_quote = '"\zs[^"]\+\ze"'
+  let bare_strings = '[^ \t''"]\+'
+  let pattern = '\%(' . join([
+        \ single_quote,
+        \ double_quote,
+        \ bare_strings,
+        \], '\|') . '\)'
+  return split(a:str, pattern . '*\zs\%(\s\+\|$\)\ze')
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

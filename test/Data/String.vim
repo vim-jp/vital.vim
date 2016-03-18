@@ -580,3 +580,13 @@ function! s:suite.strwidthpart_reverse()
   call s:assert.equals(s:String.strwidthpart_reverse('あいうえお', 10), 'あいうえお')
   call s:assert.equals(s:String.strwidthpart_reverse('あいうえお', 20), 'あいうえお')
 endfunction
+
+function! s:suite.splitargs() abort
+  call s:assert.equals(s:String.splitargs('foo'), ['foo'])
+  call s:assert.equals(s:String.splitargs('foo bar'), ['foo', 'bar'])
+  call s:assert.equals(s:String.splitargs('foo "bar bar" hoge'), ['foo', '"bar bar"', 'hoge'])
+  call s:assert.equals(s:String.splitargs('"foo foo" "bar bar" "hoge hoge"'), ['"foo foo"', '"bar bar"', '"hoge hoge"'])
+  call s:assert.equals(s:String.splitargs("foo 'bar bar' hoge"), ['foo', '''bar bar''', 'hoge'])
+  call s:assert.equals(s:String.splitargs("'foo foo' 'bar bar' 'hoge hoge'"), ["'foo foo'", "'bar bar'", "'hoge hoge'"])
+  call s:assert.equals(s:String.splitargs('foo="bar" hoge=''piyo'''), ['foo="bar"', 'hoge=''piyo'''])
+endfunction
