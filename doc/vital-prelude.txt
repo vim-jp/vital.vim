@@ -133,7 +133,7 @@ escape_file_searching({str})		*Vital.Prelude.escape_file_searching()*
 	TODO
 
 escape_pattern({str})			*Vital.Prelude.escape_pattern()*
-	TODO
+	Use |Vital.Data.String.escape_pattern()| instead.
 
 getchar(...)					*Vital.Prelude.getchar()*
 	This is like builtin |getchar()| but always returns string.

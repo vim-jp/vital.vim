@@ -99,8 +99,8 @@ Describe Data.String
             \ '\^*\a\b[]',
             \)
       Assert Equals(
-            \ String.unescape('\*n\*n\*n', '*'),
-            \ '*n*n*n',
+            \ String.unescape('\*n\n\\n', '*\'),
+            \ '*n\n\n',
             \)
       Assert Equals(
             \ String.unescape('\\n\\n\\n', '\'),
