@@ -1,6 +1,9 @@
+
 Describe Data.String
   Before all
-    let String = vital#of('vital').import('Data.String')
+    let Vital = vital#of('vital')
+    let Path = Vital.import('System.Filepath')
+    let String = Vital.import('Data.String')
   End
 
   Context .splitargs()
@@ -107,6 +110,131 @@ Describe Data.String
             \ String.unescape('\\\\n\\\\n\\\\n', '\'),
             \ '\\n\\n\\n',
             \)
+    End
+  End
+
+  Describe .iconv()
+    It does nothing when {from} or {to} is an empty string or {from} is equal to {to}
+      let expr = "aあiいuうeえoお"
+      Assert Same(String.iconv(expr, '', ''), expr)
+      Assert Same(String.iconv(expr, 'utf-8', ''), expr)
+      Assert Same(String.iconv(expr, '', 'utf-8'), expr)
+      Assert Same(String.iconv(expr, 'utf-8', 'utf-8'), expr)
+    End
+
+    It return {expr} when the conversion completely fails
+      " XXX : Give an example code to force iconv to fail completely
+      Skip Need knowledge about how to force iconv to fail completely
+    End
+
+    It return string with '?' for unconvertable characters
+      let expr = "aあiいuうeえoお"
+      if &encoding ==# 'eucjp'
+        Assert Equals(String.iconv(expr, 'sjis', 'latin1'), 'a??i??u??e??o??')
+      else
+        Assert Equals(String.iconv(expr, 'eucjp', 'latin1'), 'a??i??u??e??o??')
+      endif
+    End
+
+    It return string with {to} encoding
+      let expr = "aあiいuうeえoお"
+      let sjis = readfile(Path.realpath(
+            \ 'test/_testdata/Data/String/sjis.txt'
+            \))[0]
+      Assert Equals(String.iconv(expr, &encoding, 'sjis'), sjis)
+    End
+  End
+
+  Describe .repair_posix_text()
+    It append a trailing "\n" if no trailing newline (\r?\n) is found
+      let text = "abcdefg\nhijklmn\nopqrstu"
+      Assert Equals(String.repair_posix_text(text), "abcdefg\nhijklmn\nopqrstu\n")
+    End
+
+    It does nothing if a trailing newline is found
+      let text = "abcdefg\nhijklmn\nopqrstu\n"
+      Assert Same(String.repair_posix_text(text), text)
+      let text = "abcdefg\nhijklmn\nopqrstu\r\n"
+      Assert Same(String.repair_posix_text(text), text)
+      let text = "abcdefg\nhijklmn\nopqrstu\r\n\n"
+      Assert Same(String.repair_posix_text(text), text)
+      let text = "abcdefg\nhijklmn\nopqrstu\r\n\r\n"
+      Assert Same(String.repair_posix_text(text), text)
+    End
+  End
+
+  Describe .join_posix_lines()
+    It return a POSIX text
+      let exp = "AAAAA\nBBBBB\nCCCCC\n"
+      let lines = [
+            \ 'AAAAA',
+            \ 'BBBBB',
+            \ 'CCCCC',
+            \]
+      Assert Equals(String.join_posix_lines(lines), exp)
+
+      let exp = "\n\nAAAAA\nBBBBB\nCCCCC\n\n\n"
+      let lines = [
+            \ '',
+            \ '',
+            \ 'AAAAA',
+            \ 'BBBBB',
+            \ 'CCCCC',
+            \ '',
+            \ '',
+            \]
+      Assert Equals(String.join_posix_lines(lines), exp)
+    End
+  End
+
+  Describe .split_posix_text()
+    It split a POSIX text file into lines
+      " NOTE:
+      " POSIX text file is a corretion of lines
+      " POSIX line is a character correction ends with a newline
+      let exp = [
+            \ 'AAAAA',
+            \ 'BBBBB',
+            \ 'CCCCC',
+            \]
+      let text = "AAAAA\nBBBBB\nCCCCC\n"
+      Assert Equals(String.split_posix_text(text), exp)
+
+      let text = "AAAAA\r\nBBBBB\r\nCCCCC\r\n"
+      Assert Equals(String.split_posix_text(text), exp)
+    End
+
+    It split a POSIX text file into lines, even for empty lines
+      let exp = [
+            \ '',
+            \ '',
+            \ 'AAAAA',
+            \ 'BBBBB',
+            \ 'CCCCC',
+            \ '',
+            \ '',
+            \]
+      let text = "\n\nAAAAA\nBBBBB\nCCCCC\n\n\n"
+      Assert Equals(String.split_posix_text(text), exp)
+
+      let text = "\r\n\r\nAAAAA\r\nBBBBB\r\nCCCCC\r\n\r\n\r\n"
+      Assert Equals(String.split_posix_text(text), exp)
+    End
+
+    It split an invalid POSIX text file into lines
+      let exp = [
+            \ 'AAAAA',
+            \ 'BBBBB',
+            \ 'CCCCC',
+            \]
+      " NOTE:
+      " The following text is invalid while no trailing newline exists
+      let text = "AAAAA\nBBBBB\nCCCCC"
+      Assert Equals(String.split_posix_text(text), exp)
+
+      " The following text is invalid while no trailing newline exists
+      let text = "AAAAA\r\nBBBBB\r\nCCCCC"
+      Assert Equals(String.split_posix_text(text), exp)
     End
   End
 End

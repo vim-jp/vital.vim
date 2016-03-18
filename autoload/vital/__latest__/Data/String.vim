@@ -597,7 +597,67 @@ function! s:unescape(str, chars) abort
   return str
 endfunction
 
+function! s:iconv(expr, from, to) abort
+  if a:from ==# '' || a:to ==# '' || a:from ==? a:to
+    return a:expr
+  endif
+  let result = iconv(a:expr, a:from, a:to)
+  return empty(result) ? a:expr : result
+endfunction
+
+" NOTE:
+" A definition of a TEXT file is "A file that contains characters organized
+" into one or more lines."
+" A definition of a LINE is "A sequence of zero ore more non- <newline>s
+" plus a terminating <newline>"
+" That's why {stdin} always end with <newline> ideally. However, there are
+" some program which does not follow the POSIX rule and a Vim's way to join
+" List into TEXT; join({text}, "\n"); does not add <newline> to the end of
+" the last line.
+" That's why add a trailing <newline> if it does not exist.
+" REF:
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_392
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_205
+" :help split()
+" NOTE:
+" it does nothing if the text is a correct POSIX text
+function! s:repair_posix_text(text, ...) abort
+  let newline = get(a:000, 0, "\n")
+  return a:text =~# '\r\?\n$' ? a:text : a:text . newline
+endfunction
+
+" NOTE:
+" A definition of a TEXT file is "A file that contains characters organized
+" into one or more lines."
+" A definition of a LINE is "A sequence of zero ore more non- <newline>s
+" plus a terminating <newline>"
+" REF:
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_392
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_205
+function! s:join_posix_lines(lines, ...) abort
+  let newline = get(a:000, 0, "\n")
+  return join(a:lines, newline) . newline
+endfunction
+
+" NOTE:
+" A definition of a TEXT file is "A file that contains characters organized
+" into one or more lines."
+" A definition of a LINE is "A sequence of zero ore more non- <newline>s
+" plus a terminating <newline>"
+" TEXT into List; split({text}, '\r\?\n', 1); add an extra empty line at the
+" end of List because the end of TEXT ends with <newline> and keepempty=1 is
+" specified. (btw. keepempty=0 cannot be used because it will remove
+" emptylines in head and tail).
+" That's why remove a trailing <newline> before proceeding to 'split'
+" REF:
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_392
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_205
+function! s:split_posix_text(text, ...) abort
+  let newline = get(a:000, 0, '\r\?\n')
+  let text = substitute(a:text, newline . '$', '', '')
+  return split(text, newline, 1)
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
 " vim:set et ts=2 sts=2 sw=2 tw=0:
