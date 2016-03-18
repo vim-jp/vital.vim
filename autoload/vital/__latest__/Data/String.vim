@@ -578,13 +578,13 @@ function! s:remove_ansi_sequences(text) abort
   return substitute(a:text, '\e\[\%(\%(\d;\)\?\d\{1,2}\)\?[mK]', '', 'g')
 endfunction
 
-function! s:escape_pattern(pattern) abort
+function! s:escape_pattern(str) abort
   " escape characters for no-magic
-  return escape(a:pattern, '"^$~.*[]\')
+  return escape(a:str, '"^$~.*[]\')
 endfunction
 
 function! s:unescape_pattern(str) abort
-  " unescape characters which is already escaped to prevent double escape
+  " unescape characters for no-magic
   return s:unescape(a:str, '"^$~.*[]\')
 endfunction
 
