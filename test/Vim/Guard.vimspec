@@ -10,8 +10,6 @@ Describe Vim.Guard
           \ 'autoload/vital/__latest__/Vim/Guard.vim'
           \)
     let sf = s:S.sfuncs(sfile)
-    call sf._vital_loaded(s:V)
-    call sf._vital_created(Guard)
   End
   Describe [PRIVATE] s:_new_option({name})
     " NOTE:
