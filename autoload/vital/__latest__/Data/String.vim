@@ -578,6 +578,25 @@ function! s:remove_ansi_sequences(text) abort
   return substitute(a:text, '\e\[\%(\%(\d;\)\?\d\{1,2}\)\?[mK]', '', 'g')
 endfunction
 
+function! s:escape_pattern(pattern) abort
+  " escape characters for no-magic
+  return escape(a:pattern, '"^$~.*[]\')
+endfunction
+
+function! s:unescape_pattern(str) abort
+  " unescape characters which is already escaped to prevent double escape
+  return s:unescape(a:str, '"^$~.*[]\')
+endfunction
+
+function! s:unescape(str, chars) abort
+  let str = a:str
+  for char in split(a:chars, '\zs')
+    let escaped_char = s:escape_pattern(char)
+    let str = substitute(str, '\\' . escaped_char, char, 'g')
+  endfor
+  return str
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
