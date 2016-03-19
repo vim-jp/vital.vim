@@ -608,10 +608,10 @@ endfunction
 " NOTE:
 " A definition of a TEXT file is "A file that contains characters organized
 " into one or more lines."
-" A definition of a LINE is "A sequence of zero ore more non- <newline>s
+" A definition of a LINE is "A sequence of zero or more non- <newline>s
 " plus a terminating <newline>"
-" That's why {stdin} always end with <newline> ideally. However, there are
-" some program which does not follow the POSIX rule and a Vim's way to join
+" That's why {stdin} always ends with <newline> ideally. However, there are
+" some programs which does not follow the POSIX rule and a Vim's way to join
 " List into TEXT; join({text}, "\n"); does not add <newline> to the end of
 " the last line.
 " That's why add a trailing <newline> if it does not exist.
@@ -629,7 +629,7 @@ endfunction
 " NOTE:
 " A definition of a TEXT file is "A file that contains characters organized
 " into one or more lines."
-" A definition of a LINE is "A sequence of zero ore more non- <newline>s
+" A definition of a LINE is "A sequence of zero or more non- <newline>s
 " plus a terminating <newline>"
 " REF:
 " http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_392
@@ -642,13 +642,13 @@ endfunction
 " NOTE:
 " A definition of a TEXT file is "A file that contains characters organized
 " into one or more lines."
-" A definition of a LINE is "A sequence of zero ore more non- <newline>s
+" A definition of a LINE is "A sequence of zero or more non- <newline>s
 " plus a terminating <newline>"
 " TEXT into List; split({text}, '\r\?\n', 1); add an extra empty line at the
 " end of List because the end of TEXT ends with <newline> and keepempty=1 is
 " specified. (btw. keepempty=0 cannot be used because it will remove
-" emptylines in head and tail).
-" That's why remove a trailing <newline> before proceeding to 'split'
+" emptylines in the head and the tail).
+" That's why removing a trailing <newline> before proceeding to 'split' is required
 " REF:
 " http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_392
 " http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_205
