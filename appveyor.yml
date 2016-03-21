@@ -2,14 +2,21 @@ version: '{build}'
 clone_depth: 1
 environment:
   matrix:
-    - VIM_URL: http://files.kaoriya.net/vim/vim74-kaoriya-win64.zip
-    - VIM_URL: http://files.kaoriya.net/vim/2011/vim73-kaoriya-win64-20110306.zip
+   - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/latest/win64/
+   - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim73/oldest/win64/
+   # To test with 7.3 final +kaoriya Vim binary, uncomment below line.
+   #- VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim73/final/win64/
+   # To test with latest official Vim binary, uncomment below line.
+   #- VIM_URL: http://vim-jp.org/redirects/vim/vim-win32-installer/latest/x64/
 install:
-  - 'cd %APPVEYOR_BUILD_FOLDER%'
-  - 'appveyor DownloadFile %VIM_URL% -FileName %TEMP%\vim.zip'
-  - '7z x -o%TEMP% %TEMP%\vim.zip > nul'
-  - ps: $Env:THEMIS_VIM = (Get-ChildItem $Env:TEMP | Select-Object -First 1).FullName + '\vim.exe'
-
+  - ps: |
+      $zip = $Env:APPVEYOR_BUILD_FOLDER + '\vim.zip'
+      $vim = $Env:APPVEYOR_BUILD_FOLDER + '\vim\'
+      $redirect = Invoke-WebRequest -URI $Env:VIM_URL
+      (New-Object Net.WebClient).DownloadFile($redirect.Links[0].href, $zip)
+      [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') > $null
+      [System.IO.Compression.ZipFile]::ExtractToDirectory($zip, $vim)
+      $Env:THEMIS_VIM = $vim + (Get-ChildItem $vim).Name + '\vim.exe'
   - 'git -c advice.detachedHead=false clone https://github.com/Shougo/vimproc.vim --quiet --branch ver.9.2 --single-branch --depth 1 %TEMP%\vimproc'
   - 'appveyor DownloadFile https://github.com/Shougo/vimproc.vim/releases/download/ver.9.2/vimproc_win64.dll -FileName %TEMP%\vimproc\lib\vimproc_win64.dll'
 
