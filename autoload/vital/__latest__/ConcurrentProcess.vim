@@ -236,7 +236,7 @@ function! s:log_dump(label) abort
   for [stdin, stdout, stderr] in s:_process_info[a:label].logs
     echon stdin
     echon stdout
-    if stderr
+    if stderr !=# ''
       echon printf('!!!%s!!!', stderr)
     endif
   endfor
