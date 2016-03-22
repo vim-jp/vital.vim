@@ -5,12 +5,11 @@ set cpo&vim
 
 function! s:_vital_loaded(V) abort
   let s:V = a:V
-  let s:P = s:V.import('Prelude')
   let s:L = s:V.import('Data.List')
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Prelude', 'Data.List']
+  return ['Data.List']
 endfunction
 
 " Substitute a:from => a:to by string.
