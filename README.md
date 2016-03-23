@@ -146,17 +146,18 @@ A lot of vim plugins are using vital.vim
   - [wiki](https://github.com/vim-jp/vital.vim/wiki#plugins-that-use-vitalvim)
   - [google search](https://www.google.co.jp/search?q=filetype%3Avital%20site%3Ahttps%3A%2F%2Fgithub.com)
 
-### Budges
+### Badges
 
-It is not necessary but make the vital.vim developers happy by adding [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg)](https://github.com/vim-jp/vital.vim) budge into your README.
+It is not necessary but we recommend to add a badge to your project README to make the vital.vim developers happy ;-)
 The following is a markdown snippet.
 
 ```
 [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg)](https://github.com/vim-jp/vital.vim)
 ```
 
-The above badge use [Shields.io](http://shields.io/) so you can customize the looks as like:
+The badge uses [Shields.io](http://shields.io/) so you can customize the looks as like:
 
+- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg)](https://github.com/vim-jp/vital.vim) (Default)
 - [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg?style=plastic)](https://github.com/vim-jp/vital.vim) by adding `?style=plastic`
 - [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg?style=flat)](https://github.com/vim-jp/vital.vim) by adding `?style=flat`
 - [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg?style=flat-square)](https://github.com/vim-jp/vital.vim) by adding `?style=flat-square`
