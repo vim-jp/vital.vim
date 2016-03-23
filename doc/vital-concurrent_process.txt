@@ -166,11 +166,13 @@ The following function is to terminate a process.
 	|Vital.ConcurrentProcess.shutdown()|
 The following function is to add queries in queue.
 	|Vital.ConcurrentProcess.queue()|
+The following function is to obtain information without side effect, based on
+queries in the queue and etc.
+	|Vital.ConcurrentProcess.is_done()|
 The following functions are to obtain information with side effect, based on
 queries in the queue and etc.
 	|Vital.ConcurrentProcess.consume()|
 	|Vital.ConcurrentProcess.consume_all_blocking()|
-	|Vital.ConcurrentProcess.is_done()|
 	|Vital.ConcurrentProcess.is_busy()|
 The following functions are for debugging.
 	|Vital.ConcurrentProcess.log_clear()|
