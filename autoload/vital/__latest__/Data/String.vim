@@ -579,12 +579,12 @@ endfunction
 
 function! s:escape_pattern(str) abort
   " escape characters for no-magic
-  return escape(a:str, '"^$~.*[]\')
+  return escape(a:str, '^$~.*[]\')
 endfunction
 
 function! s:unescape_pattern(str) abort
   " unescape characters for no-magic
-  return s:unescape(a:str, '"^$~.*[]\')
+  return s:unescape(a:str, '^$~.*[]\')
 endfunction
 
 function! s:unescape(str, chars) abort
