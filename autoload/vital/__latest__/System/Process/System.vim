@@ -51,7 +51,7 @@ function! s:execute(args, options) abort
         \ '&shellquote',
         \ '&shellredir',
         \ '&shelltemp',
-        \ '&shelltype',
+        \ (exists('+shelltype') ? '&shelltype' : ''),
         \ (exists('+shellxescape') ? '&shellxescape' : ''),
         \ (exists('+shellxquote') ? '&shellxquote' : ''),
         \ (exists('+shellslash') ? '&shellslash' : ''),
@@ -66,7 +66,10 @@ function! s:execute(args, options) abort
     else
       set shell=sh
     endif
-    set shellcmdflag& shellquote& shellredir& shelltemp& shelltype&
+    set shellcmdflag& shellquote& shellredir& shelltemp&
+    if exists('+shelltype')
+      set shelltype&
+    endif
     if exists('+shellxescape')
       set shellxescape&
     endif
