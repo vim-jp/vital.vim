@@ -1,0 +1,153 @@
+Describe vital
+
+  Before all
+    let V = vital#of('vital')
+    let File = V.import('System.File')
+    let Filepath = V.import('System.Filepath')
+    let ScriptLocal = V.import('Vim.ScriptLocal')
+
+    let vitalize_modules  = ['Data.List', 'Data.LazyList', 'Data.String', 'Web.JSON', 'Cyclic1']
+    execute 'Vitalize --name=testplugin ' . Filepath.unixpath(g:testplugin_root) . ' ' . join(vitalize_modules, ' ')
+  End
+
+  After all
+    call File.rmdir(Filepath.join(g:testplugin_root, printf('autoload/vital/_%s/', g:testplugin_name)), 'r')
+    let delete_files = [
+    \   Filepath.join(g:testplugin_root, 'autoload/vital.vim'),
+    \   Filepath.join(g:testplugin_root, printf('autoload/vital/_%s.vim', g:testplugin_name)),
+    \   Filepath.join(g:testplugin_root, printf('autoload/vital/%s.vim', g:testplugin_name)),
+    \   Filepath.join(g:testplugin_root, printf('autoload/vital/%s.vital', g:testplugin_name))
+    \ ]
+    for f in delete_files
+      call delete(f)
+    endfor
+  End
+
+  Describe :Vitalize
+    It succeeded in Before all
+        let vital_data = Filepath.realpath(Filepath.join(
+        \   g:testplugin_root, 'autoload', 'vital', g:testplugin_name . '.vital'))
+        Assert True(filereadable(vital_data))
+    End
+
+    Describe .new()
+      It fails with invalid path
+        let vitalizer = ScriptLocal.sfuncs('autoload/vitalizer.vim')
+        Throws /vitalizer: .* not found./ :call vitalizer.revitalize('invalid-path')
+      End
+    End
+  End
+
+  Describe vital#{plugin-name}#of()
+    It creates a vital object
+      let V = vital#{g:testplugin_name}#of()
+      Assert Equals(type(V), type({}))
+      Assert HasKey(V, 'import')
+    End
+  End
+
+  Describe revital-Vital-object
+    Before all
+      let V = vital#{g:testplugin_name}#of()
+    End
+
+    Describe .import
+      It imports a basic vital module
+        let List = V.import('Data.List')
+        Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+      End
+
+      It supports s:_vital_loaded(V)
+        let JSON = V.import('Web.JSON')
+        Assert Equals(JSON.decode('[1, "ni"]'), [1, "ni"])
+      End
+
+      It supports s:_vital_created(V)
+        let JSON = V.import('Web.JSON')
+        Assert HasKey(JSON, 'true')
+      End
+
+      It supports self module
+        let Selfmodule = V.import('Selfmodule')
+        Assert True(Selfmodule.return1())
+      End
+
+      It supports cyclic dependencies
+        Assert True(V.import('Cyclic1').return1())
+      End
+    End
+
+    Describe .load
+      It imports a basic vital module
+        let V = vital#{g:testplugin_name}#of()
+        call V.load('Data.List')
+        Assert Equals(V.Data.List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+      End
+
+      It supports s:_vital_loaded(V)
+        let V = vital#{g:testplugin_name}#of()
+        call V.load('Web.JSON')
+        Assert Equals(V.Web.JSON.decode('[1, "ni"]'), [1, "ni"])
+      End
+
+      It supports s:_vital_created(V)
+        let V = vital#{g:testplugin_name}#of()
+        call V.load('Web.JSON')
+        Assert HasKey(V.Web.JSON, 'true')
+      End
+
+      It supports self module
+        let V = vital#{g:testplugin_name}#of()
+        call V.load('Selfmodule')
+        Assert True(V.Selfmodule.return1())
+      End
+
+      It supports cyclic dependencies
+        let V = vital#{g:testplugin_name}#of()
+        call V.load('Cyclic1')
+        Assert True(V.Cyclic1.return1())
+      End
+    End
+
+    Describe .exists()
+      It returns 1 for existing module
+        let V = vital#{g:testplugin_name}#of()
+        Assert True(V.exists('Data.List'))
+      End
+
+      It returns 1 for existing which didn't be sorced yet
+        let V = vital#{g:testplugin_name}#of()
+        Assert True(V.exists('Data.LazyList'))
+      End
+
+      It returns 0 for non-existing module
+        let V = vital#{g:testplugin_name}#of()
+        Assert False(V.exists('not-exists'))
+      End
+    End
+
+    Describe .search()
+      Before all
+        let V = vital#{g:testplugin_name}#of()
+      End
+
+      It searches existing module
+        Assert Equals(V.search('Data.List'), ['Data.List'])
+      End
+
+      It returns empty list for non-existing module
+        Assert Equals(V.search('not-exists*'), [])
+      End
+
+      It supports *
+        Assert True(len(V.search('Cyclic*')) >= 2, 'Cyclic1 and Cyclic2 exists')
+        Assert True(len(V.search('Data.*List')) >= 1, 'Data.List exists at least')
+      End
+
+      It supports **
+        Assert True(len(V.search('**')) >= len(vitalize_modules), 'Vitalized modules exists at least')
+      End
+    End
+
+  End
+End

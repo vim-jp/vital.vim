@@ -538,7 +538,7 @@ function! s:Revitalizer.__init__(project_root_dir) abort
   let self.project_root_dir = fnamemodify(a:project_root_dir, ':p')
   let self.vital_data = s:build_vital_data(self.project_root_dir, '')
   if !filereadable(self.vital_data.vital_file)
-    call self.throw(printf('%s not found. Please :Vitalize before :Revitalize', self.vital_data.vital_file))
+    call self.throw(printf('%s not found.', self.vital_data.vital_file))
   endif
   let self.vital_dir_rel = s:FP.join('autoload', 'vital', '_' . self.vital_data.name)
   let self.vital_dir = s:FP.join([self.project_root_dir, self.vital_dir_rel])
