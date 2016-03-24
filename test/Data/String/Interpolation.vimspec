@@ -1,0 +1,65 @@
+Describe Data.String.Interpolation
+
+  Before all
+    let g:I = vital#of('vital').import('Data.String.Interpolation')
+  End
+
+  After all
+    delfunction Func
+    delfunction FuncA
+  End
+
+  function! Func() abort
+    let year = 2015
+    return g:I.interpolate('Happy new year, ${year}!', l:)
+  endfunction
+
+  function! FuncA(x, y, ...) abort
+    return g:I.interpolate('x is ${x}. y is ${y}', a:)
+  endfunction
+
+  Describe .interpolate()
+    It evaluate lots of patterns
+      let r = Func()
+      Assert Equals(r, 'Happy new year, 2015!')
+      Assert Equals(g:I.interpolate('It handles Function as well: ${Func()}')
+      \  , 'It handles Function as well: Happy new year, 2015!')
+      Assert Equals(g:I.interpolate('Hi, my name is ${name}.', {'name': 'haya14busa'})
+      \  , 'Hi, my name is haya14busa.')
+      Assert Equals(g:I.interpolate('1 + 1 = ${1 + 1}'), '1 + 1 = 2')
+      Assert Equals(g:I.interpolate('${repeat} and ${repeat}', {'repeat': 'again'}), 'again and again')
+      Assert Equals(g:I.interpolate('${0}'), '0')
+      Assert Equals(g:I.interpolate('${string({})}'), '{}')
+      Assert Equals(g:I.interpolate('${string({"a": "hello"})}'), "{'a': 'hello'}")
+      let x = '1 + 2 + 3 + 4 + 5'
+      Assert Equals(g:I.interpolate('${x} = ${eval(x)} ${"${x}"}', l:)
+      \  , '1 + 2 + 3 + 4 + 5 = 15 ${x}')
+      let y = '${y}'
+      Assert Equals(g:I.interpolate('${y}', l:), '${y}')
+      Assert Equals(g:I.interpolate('${repeat}${repeat}', {'repeat': 'again'}), 'againagain')
+      Assert Equals(g:I.interpolate('${1}${2}${3}'), '123')
+      Assert Equals(g:I.interpolate('${x}${y}', {'x': '${y}', 'y': '${x}'}), '${y}${x}')
+      Assert Equals(g:I.interpolate('hi${string({"a": {}})}foo'), "hi{'a': {}}foo")
+      Assert Equals(g:I.interpolate('hi${string({"a": {"b": {}}})}foo'), "hi{'a': {'b': {}}}foo")
+      " line-break for syntax
+      Assert Equals(g:I.interpolate('${1 + 1 . "}{''"}'),
+      \"2}{'")
+      Assert Equals(g:I.interpolate("${'}'}"), '}')
+      Assert Equals(g:I.interpolate("${'{'}"), '{')
+      Assert Equals(g:I.interpolate("${'{}}}{{}{}'}"), '{}}}{{}{}')
+      Assert Equals(g:I.interpolate("${'hoge\"{'}"), 'hoge"{')
+    End
+    It handle reassignment different type
+      Assert Equals(g:I.interpolate('${a} ${b}', {'a': 1, 'b': '1'}), '1 1')
+      Throws /Vim(let):E806:/ g:I.interpolate('${a} ${b}', {'a': 1, 'b': 1.0E-6})
+    End
+    It doesn't raise Vim(let):E704: Funcref variable name must start with a capital
+      Throws /Vim(let):E729:/ g:I.interpolate('${Funcref}', {'Funcref': function('Func')})
+    End
+    It can accept a:
+      Assert Equals(FuncA('X', 'Y'), 'x is X. y is Y')
+    End
+  End
+
+End
+
