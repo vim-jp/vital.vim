@@ -1,10 +1,10 @@
 Describe vital
 
   Before all
-    let V = vital#of('vital')
-    let File = V.import('System.File')
-    let Filepath = V.import('System.Filepath')
-    let ScriptLocal = V.import('Vim.ScriptLocal')
+    let Vital = vital#of('vital')
+    let File = Vital.import('System.File')
+    let Filepath = Vital.import('System.Filepath')
+    let ScriptLocal = Vital.import('Vim.ScriptLocal')
 
     let vitalize_modules  = ['Data.List', 'Data.LazyList', 'Data.String', 'Web.JSON', 'Cyclic1']
     execute 'Vitalize --name=testplugin ' . Filepath.unixpath(g:testplugin_root) . ' ' . join(vitalize_modules, ' ')
