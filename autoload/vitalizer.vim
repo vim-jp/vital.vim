@@ -548,7 +548,7 @@ function! s:Revitalizer.__init__(project_root_dir) abort
   " `:source` the file later if the file is not found in self.path2sid
   let in_runtime_path = globpath(&rtp, self.vital_dir_rel) !=# ''
   if in_runtime_path
-    execute 'runtime!' s:FP.join(self.vital_dir_rel, '/autoload/vital/**/*.vim')
+    execute 'runtime!' s:FP.join(self.vital_dir_rel, '**/*.vim')
   else
     call self.source_modules()
   endif
