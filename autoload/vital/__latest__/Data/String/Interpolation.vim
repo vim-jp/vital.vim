@@ -18,15 +18,13 @@ function! s:interpolate(string, ...) abort
 endfunction
 
 "" Contextual eval()
+" NOTE: Old vim doesn't support extending l:
+" call extend(l:, a:context)
 function! s:_context_eval(expr, context) abort
-  call s:_extend(l:, a:context)
+  for s:key in filter(keys(a:context), "v:val !~# '^\\d*$'")
+      let {s:key} = a:context[s:key]
+  endfor
   sandbox return eval(a:expr)
-endfunction
-
-" NOTE: Old vim doesn't support `extend(l:, a:context)`
-" It filter out invalid key as a varibale name
-function! s:_extend(l, dict) abort
-  return extend(a:l, filter(copy(a:dict), "v:key !~# '^\\d*$'"))
 endfunction
 
 " Pair Parser:
