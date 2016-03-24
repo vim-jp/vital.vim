@@ -180,7 +180,7 @@ let s:Vital._get_module = function('s:_get_module')
 
 function! s:orig_vital() abort
   if !exists('s:orig_vital')
-    let s:orig_vital = vital#of(s:vital_name)
+    let s:orig_vital = vital#_{s:vital_name}#new_orig()
   endif
   return s:orig_vital
 endfunction
