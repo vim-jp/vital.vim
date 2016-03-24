@@ -175,6 +175,7 @@ endfunction
 function! s:consume_all_blocking(label, varname, timeout_sec) abort
   let start = reltime()
   while 1
+    call s:tick(a:label)
     if s:is_done(a:label, a:varname)
       return s:consume(a:label, a:varname) + [0] " 0 as 'Did not timed out'
     elseif reltime(start)[0] >= a:timeout_sec
@@ -197,8 +198,6 @@ function! s:consume(label, varname) abort
 endfunction
 
 function! s:is_done(label, rname) abort
-  call s:tick(a:label)
-
   let reads = filter(
         \ copy(s:_process_info[a:label].queries),
         \ "v:val[0] ==# '*read*' || v:val[0] ==# '*read-all*'")
