@@ -346,16 +346,6 @@ wcswidth({str})					*Vital.Data.String.wcswidth()*
 	echo s:S.wcswidth('あいうえお')
 	" 10
 <
-splitargs({str})			*Vital.Data.String.splitargs()*
-	Split a {str} (|String|) into a |List|.
->
-	echo s:S.splitargs('foo bar')
-	" ['foo', 'bar']
-	echo s:S.splitargs('foo "bar bar" hoge')
-	" ['foo', '"bar bar"', 'hoge']
-	echo s:S.splitargs('foo=foo bar="bar bar" hoge')
-	" ['foo=foo', 'bar="bar bar"', 'hoge']
-<
 remove_ansi_sequences({text})	*Vital.Data.String.remove_ansi_sequences()*
 	Remove ANSI sequences from {text}
 >

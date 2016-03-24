@@ -6,44 +6,6 @@ Describe Data.String
     let String = Vital.import('Data.String')
   End
 
-  Context .splitargs()
-    It return ['foo'] for 'foo'
-      let ret = String.splitargs('foo')
-      let exp = ['foo']
-      Assert Equals(ret, exp)
-    End
-    It return ['foo', 'bar'] for 'foo bar'
-      let ret = String.splitargs('foo bar')
-      let exp = ['foo', 'bar']
-      Assert Equals(ret, exp)
-    End
-    It return ['foo', '"bar bar"', 'hoge'] for 'foo "bar bar" hoge'
-      let ret = String.splitargs('foo "bar bar" hoge')
-      let exp = ['foo', '"bar bar"', 'hoge']
-      Assert Equals(ret, exp)
-    End
-    It return ['"foo foo"', '"bar bar"', '"hoge hoge"'] for '"foo foo" "bar bar" "hoge hoge"'
-      let ret = String.splitargs('"foo foo" "bar bar" "hoge hoge"')
-      let exp = ['"foo foo"', '"bar bar"', '"hoge hoge"']
-      Assert Equals(ret, exp)
-    End
-    It return ["foo", "'bar bar"', "hoge"] for "foo 'bar bar' hoge"
-      let ret = String.splitargs("foo 'bar bar' hoge")
-      let exp = ["foo", "'bar bar'", "hoge"]
-      Assert Equals(ret, exp)
-    End
-    It return ["'foo foo'", "'bar bar'", "'hoge hoge'"] for "'foo foo' 'bar bar' 'hoge hoge'"
-      let ret = String.splitargs("'foo foo' 'bar bar' 'hoge hoge'")
-      let exp = ["'foo foo'", "'bar bar'", "'hoge hoge'"]
-      Assert Equals(ret, exp)
-    End
-    It return ['foo="bar"', "hoge='piyo'"] for 'foo="bar" hoge=''piyo'''
-      let ret = String.splitargs('foo="bar" hoge=''piyo''')
-      let exp = ['foo="bar"', "hoge='piyo'"]
-      Assert Equals(ret, exp)
-    End
-  End
-
   Context .remove_ansi_sequences()
     It should remove ANSI sequences in {val}
       let val = "\033[47m\033[32mGreen\033[0m"

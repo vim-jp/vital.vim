@@ -561,18 +561,6 @@ else
   endfunction
 endif
 
-function! s:splitargs(str) abort
-  let single_quote = '''\zs[^'']\+\ze'''
-  let double_quote = '"\zs[^"]\+\ze"'
-  let bare_strings = '[^ \t''"]\+'
-  let pattern = '\%(' . join([
-        \ single_quote,
-        \ double_quote,
-        \ bare_strings,
-        \], '\|') . '\)'
-  return split(a:str, pattern . '*\zs\%(\s\+\|$\)\ze')
-endfunction
-
 function! s:remove_ansi_sequences(text) abort
   return substitute(a:text, '\e\[\%(\%(\d;\)\?\d\{1,2}\)\?[mK]', '', 'g')
 endfunction
