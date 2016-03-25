@@ -585,8 +585,8 @@ function! s:Revitalizer.autoloadablize(vital_file) abort
   let data = self.autoloadablize_data(a:vital_file)
   if !self.is_autoloadablized(a:vital_file)
     let save_module_lines = readfile(a:vital_file)
-    call writefile(split(s:I.interpolate(join(s:AUTOLOADABLIZE_TEMPLATE, "\n"), data), "\n"), a:vital_file)
-    call writefile(save_module_lines, a:vital_file, 'a')
+    let lines = split(s:I.interpolate(join(s:AUTOLOADABLIZE_TEMPLATE, "\n"), data), "\n") + save_module_lines
+    call writefile(lines, a:vital_file)
   endif
   return data.module
 endfunction

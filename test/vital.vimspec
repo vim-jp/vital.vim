@@ -24,10 +24,14 @@ Describe vital
   End
 
   Describe :Vitalize
-    It succeeded in Before all
-        let vital_data = Filepath.realpath(Filepath.join(
-        \   g:testplugin_root, 'autoload', 'vital', g:testplugin_name . '.vital'))
-        Assert True(filereadable(vital_data))
+    It succeeded in :Vitalize
+      let vital_data = Filepath.realpath(Filepath.join(
+      \   g:testplugin_root, 'autoload', 'vital', g:testplugin_name . '.vital'))
+      Assert True(filereadable(vital_data))
+    End
+
+    It inserts import autoload function
+      Assert IsDict(vital#_{g:testplugin_name}#Data#List#import())
     End
 
     Describe .new()
