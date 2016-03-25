@@ -195,7 +195,7 @@ endfunction
 
 function! s:_module_sid(name) abort
   let module_rel_path = 'autoload/vital/__latest__/' . substitute(a:name, '\.', '/', 'g') . '.vim'
-  let module_full_path = get(split(globpath(s:_module_sid_base_dir(), module_rel_path, 0), "\n"), 0, '')
+  let module_full_path = s:_unify_path(get(split(globpath(s:_module_sid_base_dir(), module_rel_path, 0), "\n"), 0, ''))
   if !filereadable(module_full_path)
     throw 'vital: module not found: ' . a:name
   endif
@@ -204,6 +204,9 @@ function! s:_module_sid(name) abort
   if !sid
     call s:_source(module_full_path)
     let sid = s:_sid(module_full_path, p)
+    if !sid
+      throw 'vital: cannot get <SID> from path'
+    endif
   endif
   return sid
 endfunction
