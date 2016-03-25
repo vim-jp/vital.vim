@@ -196,10 +196,13 @@ endfunction
 function! s:_module_sid(name) abort
   let module_rel_path = 'autoload/vital/__latest__/' . substitute(a:name, '\.', '/', 'g') . '.vim'
   let module_full_path = get(split(globpath(s:_module_sid_base_dir(), module_rel_path, 0), "\n"), 0, '')
+  if !filereadable(module_full_path)
+    throw 'vital: module not found: ' . a:name
+  endif
   let p = substitute(module_rel_path, '/', '[/\\\\]\\+', 'g')
   let sid = s:_sid(module_full_path, p)
   if !sid
-    call s:_source_module(module_full_path)
+    call s:_source(module_full_path)
     let sid = s:_sid(module_full_path, p)
   endif
   return sid
@@ -209,14 +212,8 @@ function! s:_module_sid_base_dir() abort
   return s:is_vital_vim ? &rtp : s:project_root
 endfunction
 
-function! s:_source_module(path) abort
-  try
-    execute 'source' fnameescape(a:path)
-  catch /^Vim\%((\a\+)\)\?:E484/
-    throw 'vital: module not found: ' . a:name
-  catch /^Vim\%((\a\+)\)\?:E127/
-    " Ignore.
-  endtry
+function! s:_source(path) abort
+  execute 'source' fnameescape(a:path)
 endfunction
 
 function! s:_sid(fullpath, filter_pattern) abort
