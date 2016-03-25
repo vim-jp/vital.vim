@@ -229,6 +229,8 @@ function! s:_sid(fullpath, filter_pattern) abort
   return 0
 endfunction
 
+" @vimlint(EVL102, 1, l:_)
+" @vimlint(EVL102, 1, l:__)
 " @return {path: sid}
 function! s:_scriptnames() abort
   let sdict = {}
