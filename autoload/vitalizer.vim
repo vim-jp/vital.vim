@@ -652,8 +652,7 @@ endfunction
 " a:project_root_dir is same as {target-dir} in :h :Vitalize
 " @return {list<string>}
 function! s:Revitalizer.get_vital_files() abort
-  let path = s:FP.join(self.vital_dir)
-  return s:ls_R_vimfiles(path)
+  return s:ls_R_vimfiles(self.vital_dir)
 endfunctio
 
 function! s:Revitalizer.throw(message) abort
