@@ -7,21 +7,21 @@ Describe Data.String
   End
 
   Context .remove_ansi_sequences()
-    It should remove ANSI sequences in {val}
+    It removes ANSI sequences in {val}
       let val = "\033[47m\033[32mGreen\033[0m"
       Assert Equals(String.remove_ansi_sequences(val), 'Green')
     End
   End
 
   Describe .escape_pattern()
-    It escape unescaped characters in {str} which involved in regex pattern
+    It escapes unescaped characters in {str} which involved in regex pattern
       Assert Equals(String.escape_pattern('^\a\b.*$'), '\^\\a\\b\.\*\$')
       Assert Equals(
             \ String.escape_pattern('C:\Windows\Test.txt'),
             \ 'C:\\Windows\\Test\.txt',
             \)
     End
-    It escape escaped characters in {str} which involved in regex pattern
+    It escapes escaped characters in {str} which involved in regex pattern
       Assert Equals(
             \ String.escape_pattern(String.escape_pattern('^\a\b.*$')),
             \ '\\\^\\\\a\\\\b\\\.\\\*\\\$'
@@ -34,7 +34,7 @@ Describe Data.String
   End
 
   Describe .unescape_pattern()
-    It unescape escaped characters in {str} which involved in regex pattern
+    It unescapes escaped characters in {str} which involved in regex pattern
       Assert Equals(String.unescape_pattern('\^\\a\\b\.\*\$'), '^\a\b.*$')
       Assert Equals(
             \ String.unescape_pattern('C:\\Windows\\Test\.txt'),
@@ -42,7 +42,7 @@ Describe Data.String
             \)
     End
 
-    It unescape unescaped characters in {str} which involved in regex pattern
+    It unescapes unescaped characters in {str} which involved in regex pattern
       Assert Equals(
             \ String.unescape_pattern(String.unescape_pattern('\\\^\\\\a\\\\b\\\.\\\*\\\$')),
             \ '^\a\b.*$'
@@ -55,7 +55,7 @@ Describe Data.String
   End
 
   Describe .unescape()
-    It unescape escaped {chars} in {str}
+    It unescapes escaped {chars} in {str}
       Assert Equals(
             \ String.unescape('\\\^\*\a\b\[\]', '\^*[]'),
             \ '\^*\a\b[]',
@@ -84,12 +84,12 @@ Describe Data.String
       Assert Same(String.iconv(expr, 'utf-8', 'utf-8'), expr)
     End
 
-    It return {expr} when the conversion completely fails
+    It returns {expr} when the conversion completely fails
       " XXX : Give an example code to force iconv to fail completely
       Skip Need knowledge about how to force iconv to fail completely
     End
 
-    It return string with '?' for unconvertable characters
+    It returns string with '?' for unconvertable characters
       let expr = "aあiいuうeえoお"
       if &encoding ==# 'eucjp'
         Assert Equals(String.iconv(expr, 'sjis', 'latin1'), 'a??i??u??e??o??')
@@ -98,7 +98,7 @@ Describe Data.String
       endif
     End
 
-    It return string with {to} encoding
+    It returns string with {to} encoding
       let expr = "aあiいuうeえoお"
       let sjis = readfile(Path.realpath(
             \ 'test/_testdata/Data/String/sjis.txt'
@@ -108,7 +108,7 @@ Describe Data.String
   End
 
   Describe .repair_posix_text()
-    It append a trailing "\n" if no trailing newline (\r?\n) is found
+    It appends a trailing "\n" if no trailing newline (\r?\n) is found
       let text = "abcdefg\nhijklmn\nopqrstu"
       Assert Equals(String.repair_posix_text(text), "abcdefg\nhijklmn\nopqrstu\n")
     End
@@ -126,7 +126,7 @@ Describe Data.String
   End
 
   Describe .join_posix_lines()
-    It return a POSIX text
+    It returns a POSIX text
       let exp = "AAAAA\nBBBBB\nCCCCC\n"
       let lines = [
             \ 'AAAAA',
@@ -150,7 +150,7 @@ Describe Data.String
   End
 
   Describe .split_posix_text()
-    It split a POSIX text file into lines
+    It splits a POSIX text file into lines
       " NOTE:
       " POSIX text file is a corretion of lines
       " POSIX line is a character correction ends with a newline
@@ -166,7 +166,7 @@ Describe Data.String
       Assert Equals(String.split_posix_text(text), exp)
     End
 
-    It split a POSIX text file into lines, even for empty lines
+    It splits a POSIX text file into lines, even for empty lines
       let exp = [
             \ '',
             \ '',
@@ -183,7 +183,7 @@ Describe Data.String
       Assert Equals(String.split_posix_text(text), exp)
     End
 
-    It split an invalid POSIX text file into lines
+    It splits an invalid POSIX text file into lines
       let exp = [
             \ 'AAAAA',
             \ 'BBBBB',
@@ -197,6 +197,630 @@ Describe Data.String
       " The following text is invalid while no trailing newline exists
       let text = "AAAAA\r\nBBBBB\r\nCCCCC"
       Assert Equals(String.split_posix_text(text), exp)
+    End
+  End
+
+  Describe .trim()
+    It trims leading/trailing whitespaces
+      Assert Equals(String.trim('hello'), 'hello')
+      Assert Equals(String.trim('hello '), 'hello')
+      Assert Equals(String.trim(' hello'), 'hello')
+      Assert Equals(String.trim(' hello '), 'hello')
+      Assert Equals(String.trim('hello   '), 'hello')
+      Assert Equals(String.trim('   hello'), 'hello')
+      Assert Equals(String.trim('   hello  world !     '), 'hello  world !')
+      Assert Equals(String.trim(''), '')
+      Assert Equals(String.trim('  '), '')
+    End
+  End
+
+  Describe .trim_start()
+    It trims only leading whitespaces
+      Assert Equals(String.trim_start('hello'), 'hello')
+      Assert Equals(String.trim_start('hello '), 'hello ')
+      Assert Equals(String.trim_start(' hello'), 'hello')
+      Assert Equals(String.trim_start(' hello '), 'hello ')
+      Assert Equals(String.trim_start('hello   '), 'hello   ')
+      Assert Equals(String.trim_start('   hello'), 'hello')
+      Assert Equals(String.trim_start('   hello  world !     '), 'hello  world !     ')
+      Assert Equals(String.trim(''), '')
+      Assert Equals(String.trim('  '), '')
+    End
+  End
+
+  Describe .trim_end()
+    It trims only trailing whitespaces
+      Assert Equals(String.trim_end('hello'), 'hello')
+      Assert Equals(String.trim_end('hello '), 'hello')
+      Assert Equals(String.trim_end(' hello'), ' hello')
+      Assert Equals(String.trim_end(' hello '), ' hello')
+      Assert Equals(String.trim_end('hello   '), 'hello')
+      Assert Equals(String.trim_end('   hello'), '   hello')
+      Assert Equals(String.trim_end('   hello  world !     '), '   hello  world !')
+      Assert Equals(String.trim(''), '')
+      Assert Equals(String.trim('  '), '')
+    End
+  End
+
+  Describe .wrap()
+    It makes a list from the given string, considering linebreak and width like wrap option
+      Assert Equals( ['a', 'hello, world!'], String.wrap("a\nhello, world!"))
+      Assert Equals( ['a', 'hello, world!'], String.wrap("a\r\nhello, world!"))
+      Assert Equals( ['a', 'hello, world!'], String.wrap("a\rhello, world!"))
+      let [&columns, columns] = [12, &columns]
+      Assert Equals( ['a', 'hello, worl', 'd!'], String.wrap("a\nhello, world!"))
+      let &columns = columns
+    End
+  End
+
+  Describe .replace(), .replace_first() (common)
+    It substitutes arg2 to arg3 from arg1
+      " Common tests for replace(), replace_first()
+      for method in ['replace', 'replace_first']
+        Assert Equals(String[method]('foobar', 'ob', ''), 'foar', method)
+        Assert Equals(String[method]('foobar', 'foo', ''), 'bar', method)
+        Assert Equals(String[method]('foobar', 'ar', ''), 'foob', method)
+        Assert Equals(String[method]('', 'foo', ''), '', method)
+        Assert Equals(String[method]('foobar', '', ''), 'foobar', method)
+        Assert Equals(String[method]('foobar', 'bar', 'barbaz'), 'foobarbaz', method)
+        Assert Equals(String[method]('foobar', 'bar', 'baz'), 'foobaz', method)
+      endfor
+    End
+  End
+
+  Describe .replace()
+    It substitutes arg2 to arg3 from arg1
+      Assert Equals(String.replace('hello', 'l', ''), 'heo')
+      Assert Equals(String.replace('hello', 'l', 'L'), 'heLLo')
+      Assert Equals(String.replace('hello', 'l', 'LL'), 'heLLLLo')
+      Assert Equals(String.replace('queue', 'ue', ''), 'q')
+      Assert Equals(String.replace('queue', 'ue', 'u'), 'quu')
+      Assert Equals(String.replace('queue', 'ue', 'uu'), 'quuuu')
+      Assert Equals(String.replace('mimic', 'mi', ''), 'c')
+      Assert Equals(String.replace('mimic', 'mi', 'm'), 'mmc')
+      Assert Equals(String.replace('mimic', 'mi', 'mm'), 'mmmmc')
+      Assert Equals(String.replace('\(.*\)', '.', ''), '\(*\)')
+      Assert Equals(String.replace('\v.\m.\M.', '.', ''), '\v\m\M')
+      Assert Equals(String.replace('\v.\m.\M.', '\', ''), 'v.m.M.')
+      Assert Equals(String.replace('\(.*\)', '.', '\0'), '\(\0*\)')
+      Assert Equals(String.replace('\(.*\)', '.', '\=submatch(1)'), '\(\=submatch(1)*\)')
+    End
+  End
+
+  Describe .replace_first()
+    It is like Data.String.replace(), but this substitutes the first matching substring, not all
+      Assert Equals(String.replace_first('hello', 'l', ''), 'helo')
+      Assert Equals(String.replace_first('hello', 'l', 'L'), 'heLlo')
+      Assert Equals(String.replace_first('hello', 'l', 'LL'), 'heLLlo')
+      Assert Equals(String.replace_first('queue', 'ue', ''), 'que')
+      Assert Equals(String.replace_first('queue', 'ue', 'u'), 'quue')
+      Assert Equals(String.replace_first('queue', 'ue', 'uu'), 'quuue')
+      Assert Equals(String.replace_first('mimic', 'mi', ''), 'mic')
+      Assert Equals(String.replace_first('mimic', 'mi', 'm'), 'mmic')
+      Assert Equals(String.replace_first('mimic', 'mi', 'mm'), 'mmmic')
+      Assert Equals(String.replace_first('\(.*\)', '.', ''), '\(*\)')
+      Assert Equals(String.replace_first('\v.\m.\M.', '.', ''), '\v\m.\M.')
+      Assert Equals(String.replace_first('\v.\m.\M.', '\', ''), 'v.\m.\M.')
+      Assert Equals(String.replace_first('\(.*\)', '.', '\0'), '\(\0*\)')
+      Assert Equals(String.replace_first('\(.*\)', '.', '\=submatch(1)'), '\(\=submatch(1)*\)')
+    End
+  End
+
+  Describe .scan()
+    It scans a string by a pattern and returns a list of matched strings
+      Assert Equals(String.scan('neo compl cache', 'c\w\+'), ['compl', 'cache'])
+      Assert Equals(String.scan('[](){}', '[{()}]'), ['(', ')', '{', '}'])
+      Assert Equals(String.scan('string', '.*'), ['string'])
+      " These versions of Vim contains a bug
+      " https://github.com/vim-jp/issues/issues/503
+      if !(704 == v:version && has('patch45') && !has('patch158'))
+        Assert Equals(String.scan('string', '.\zs'), ['', '', '', '', '', ''])
+      endif
+      Assert Equals(String.scan('string', ''), ['', '', '', '', '', '', ''])
+    End
+  End
+
+  Describe .reverse()
+    It returns a reversed string
+      Assert Equals(String.reverse('string'), 'gnirts')
+      Assert Equals(String.reverse(''), '')
+    End
+    It works on character base
+      Assert Equals(String.reverse('あいうえお'), 'おえういあ')
+    End
+  End
+
+  Describe .starts_with()
+    It starts with arg2
+      Assert True(String.starts_with('vital.vim', 'vi'))
+      Assert False(String.starts_with('vital.vim', 'vim'))
+    End
+  End
+
+  Describe .ends_with()
+    It ends with arg2
+      Assert True(String.ends_with('vital.vim', 'vim'))
+      Assert False(String.ends_with('vital.vim', 'vi'))
+      Assert False(String.ends_with('vital.vim', 'hogefoobar'))
+    End
+  End
+
+  Describe .common_head()
+    It returns common part of head of strings
+      Assert Equals(String.common_head(['neocomplcache', 'neosnippet', 'neobundle']), 'neo')
+      Assert Equals(String.common_head(['neocomplcache', 'vimshell']), '')
+    End
+    It returns an empty string if empty string in list
+      Assert Equals(String.common_head(['neocomplcache', '']), '')
+      Assert Equals(String.common_head(['', 'neocomplcache']), '')
+      Assert Equals(String.common_head(['', '']), '')
+      Assert Equals(String.common_head(['']), '')
+    End
+    It is case-sensitive
+      set ignorecase
+      try
+        Assert Equals(String.common_head(['call', 'Completion', 'common']), '')
+        Assert Equals(String.common_head(['HEAD', 'Hear']), 'H')
+      finally
+        set ignorecase&
+      endtry
+    End
+    It returns an empty string with empty list
+      Assert Equals(String.common_head([]), '')
+    End
+    It is safe for regexp characters
+      Assert Equals(String.common_head(['^o^', '^oo^']), '^o')
+      Assert Equals(String.common_head(['\', '\']), '\')
+      Assert Equals(String.common_head(['*_*', '*_*']), '*_*')
+      Assert Equals(String.common_head(['...-..--', '...-..--']), '...-..--')
+      Assert Equals(String.common_head(['[', '[']), '[')
+      Assert Equals(String.common_head([']', ']']), ']')
+    End
+  End
+
+  Describe .split3()
+    It splits into two substrings: left/right substring next to matched string with pattern
+      Assert Equals(String.split3('neocomplcache', 'compl'), ['neo', 'compl', 'cache'])
+      Assert Equals(String.split3('autocomplpop', 'compl'), ['auto', 'compl', 'pop'])
+      Assert Equals(String.split3('neocomplcache', 'neo'), ['', 'neo', 'complcache'])
+      Assert Equals(String.split3('autocomplpop', 'auto'), ['', 'auto', 'complpop'])
+      Assert Equals(String.split3('neocomplcache', 'cache'), ['neocompl', 'cache', ''])
+      Assert Equals(String.split3('autocomplpop', 'pop'), ['autocompl', 'pop', ''])
+    End
+    It returns an empty string for invalid arguments
+      Assert Equals(String.split3('', 'compl'), ['', '', ''])
+      Assert Equals(String.split3('neo', ''), ['', '', ''])
+      Assert Equals(String.split3('', ''), ['', '', ''])
+    End
+    It returns an empty string for no match
+      Assert Equals(String.split3('neocomplcache', 'neocon'), ['', '', ''])
+      Assert Equals(String.split3('neocomplcache', 'neco'), ['', '', ''])
+    End
+    It works for regexp pattern of course
+      Assert Equals(String.split3('neocomplcache', '...\zs.....'), ['neo', 'compl', 'cache'])
+      Assert Equals(String.split3('neocomplcache', '.\zs..\ze.....'), ['n', 'eo', 'complcache'])
+      Assert Equals(String.split3('neocomplcache', '........'), ['', 'neocompl', 'cache'])
+      Assert Equals(String.split3('neocomplcache', '........\zs....\ze.'), ['neocompl', 'cach', 'e'])
+      Assert Equals(String.split3('neocomplcache', 'neo\zscompl.....'), ['neo', 'complcache', ''])
+    End
+  End
+
+  Describe .split_leftright()
+    It splits into two substrings: left/right substring next to matched string with pattern
+      Assert Equals(String.split_leftright('neocomplcache', 'compl'), ['neo', 'cache'])
+      Assert Equals(String.split_leftright('autocomplpop', 'compl'), ['auto', 'pop'])
+      Assert Equals(String.split_leftright('neocomplcache', 'neo'), ['', 'complcache'])
+      Assert Equals(String.split_leftright('autocomplpop', 'auto'), ['', 'complpop'])
+      Assert Equals(String.split_leftright('neocomplcache', 'cache'), ['neocompl', ''])
+      Assert Equals(String.split_leftright('autocomplpop', 'pop'), ['autocompl', ''])
+    End
+    It returns an empty string for invalid arguments
+      Assert Equals(String.split_leftright('', 'compl'), ['', ''])
+      Assert Equals(String.split_leftright('neo', ''), ['', ''])
+      Assert Equals(String.split_leftright('', ''), ['', ''])
+    End
+    It returns an empty string for no match
+      Assert Equals(String.split_leftright('neocomplcache', 'neocon'), ['', ''])
+      Assert Equals(String.split_leftright('neocomplcache', 'neco'), ['', ''])
+    End
+    It works for regexp pattern of course
+      Assert Equals(String.split_leftright('neocomplcache', '...\zs.....'), ['neo', 'cache'])
+      Assert Equals(String.split_leftright('neocomplcache', '.\zs..\ze.....'), ['n', 'complcache'])
+      Assert Equals(String.split_leftright('neocomplcache', '........'), ['', 'cache'])
+      Assert Equals(String.split_leftright('neocomplcache', '........\zs....\ze.'), ['neocompl', 'e'])
+      Assert Equals(String.split_leftright('neocomplcache', 'neo\zscompl.....'), ['neo', ''])
+    End
+  End
+
+  Describe .strchars()
+    It returns the number of character, not byte
+      Assert Equals(String.strchars('this'), 4)
+      Assert Equals(String.strchars('あいうえお'), 5)
+      Assert Equals(String.strchars('aiueo'), 5)
+      Assert Equals(String.strchars(''), 0)
+      Assert Equals(String.strchars('あiうeお'), 5)
+      Assert Equals(String.strchars('aいuえo'), 5)
+      if &ambiwidth ==# 'single'
+        Assert Equals(String.strchars('Shougo△'), 7)
+      elseif &ambiwidth ==# 'double'
+        Assert Equals(String.strchars('Shougo△'), 8)
+      elseif &ambiwidth ==# 'auto'
+        " TODO: I don't know +kaoriya version's "auto" behavior...
+      else
+        " wtf?
+        let be_nonsense = 0
+        Should be_nonsense
+      endif
+    End
+  End
+
+  Describe .nsplit()
+    It splits into strings determines number with pattern
+      Assert Equals(String.nsplit('neo compl_cache', 2, '[ _]'), ['neo', 'compl_cache'])
+      Assert Equals(String.nsplit('neo compl_cache', 3, '[ _]'), ['neo', 'compl', 'cache'])
+      Assert Equals(String.nsplit('neo compl__cache', 2, '[ _]'), ['neo', 'compl__cache'])
+      Assert Equals(String.nsplit('neo compl__cache', 3, '[ _]'), ['neo', 'compl', '_cache'])
+      Assert Equals(String.nsplit('neo compl__cache', 4, '[ _]'), ['neo', 'compl', '', 'cache'])
+      Assert Equals(String.nsplit('neo compl__cache', 2, '[ _]', 0), ['neo', 'compl__cache'])
+      Assert Equals(String.nsplit('neo compl__cache', 3, '[ _]', 0), ['neo', 'compl', '_cache'])
+      Assert Equals(String.nsplit('neo compl__cache', 4, '[ _]', 0), ['neo', 'compl', 'cache'])
+    End
+  End
+
+  Describe .diffidx()
+    It returns the index that different character appears in a string
+      Assert Equals(String.diffidx('abcde', 'abdce'), 2)
+      Assert Equals(String.diffidx('', ''), -1)
+      Assert Equals(String.diffidx('', 'a'), 0)
+      Assert Equals(String.diffidx('a', ''), 0)
+      Assert Equals(String.diffidx('a', 'ab'), 1)
+      Assert Equals(String.diffidx('a', 'a'), -1)
+      Assert Equals(String.diffidx('▽', '▼'), 0)
+    End
+  End
+
+  Describe .substitute_last()
+    It makes new string substituting a given string with the given regexp pattern, but only the last matched part
+      Assert Equals(String.substitute_last('vital is vim', 'i', 'ooo'), 'vital is vooom')
+    End
+  End
+
+  Describe .dstring()
+    It wraps the result string not with single-quotes but with double-quotes
+      Assert Equals(String.dstring(123), '"123"')
+      Assert Equals(String.dstring('abc'), '"abc"')
+    End
+  End
+
+  Describe .lines()
+    It splits into list of strings of each lines of {str}
+      Assert Equals(String.lines("a\nb\r\nc"), ['a', 'b', 'c'])
+    End
+  End
+
+  Describe .contains_multibyte()
+    It returns 1 if the string contains multibyte
+      Assert Equals(String.contains_multibyte('あ'), 1)
+      Assert Equals(String.contains_multibyte('a'), 0)
+      Assert Equals(String.contains_multibyte('aあ'), 1)
+      Assert Equals(String.contains_multibyte('aあa'), 1)
+      Assert Equals(String.contains_multibyte(''), 0)
+    End
+  End
+
+  Describe .pad_left()
+    It returns a string padded left side until given width with the given half-width character or white-space, considering non-half-width characters
+      Assert Equals(String.pad_left('test', 11)       , '       test')
+      Assert Equals(String.pad_left('テスト', 11)     , '     テスト')
+      Assert Equals(String.pad_left('テスト', 11, '-'), '-----テスト')
+    End
+    It can't use non-half-width characters for padding
+      try
+        call String.pad_left('test', 11, '＋')
+        Fail pad_left
+      catch
+      endtry
+    End
+  End
+
+  Describe .pad_right()
+    It returns a string padded right side until given width with the given half-width character or white-space, considering non-half-width characters
+      Assert Equals(String.pad_right('test', 11)       , 'test       ')
+      Assert Equals(String.pad_right('テスト', 11)     , 'テスト     ')
+      Assert Equals(String.pad_right('テスト', 11, '-'), 'テスト-----')
+    End
+    It can't use non-half-width characters for padding
+      try
+        call String.pad_right('test', 11, '＋')
+        Fail pad_right
+      catch
+      endtry
+    End
+  End
+
+  Describe .pad_both_sides()
+    It returns a string padded left and right side until given width with the given half-width character or white-space, considering non-half-width characters
+      Assert Equals(String.pad_both_sides('test', 11)       , '   test    ')
+      Assert Equals(String.pad_both_sides('テスト', 11)     , '  テスト   ')
+      Assert Equals(String.pad_both_sides('テスト', 11, '-'), '--テスト---')
+    End
+    It can't use non-half-width characters for padding
+      try
+        call String.pad_both_sides('test', 11, '＋')
+        Fail pad_both_sides
+      catch
+      endtry
+    End
+  End
+
+  Describe .pad_between_letters()
+    It returns a string padded between letters until given width with the given half-width character or white-space, considering non-half-width characters
+      Assert Equals(String.pad_between_letters('test', 11)       , '  t e s t  ')
+      Assert Equals(String.pad_between_letters('テスト', 11)     , ' テ ス ト  ')
+      Assert Equals(String.pad_between_letters('テスト', 12, '-'), '-テ--ス--ト-')
+      Assert Equals(String.pad_between_letters('テスト', 13, '-'), '--テ--ス--ト-')
+      Assert Equals(String.pad_between_letters('テスト', 14, '-'), '--テ--ス--ト--')
+      Assert Equals(String.pad_between_letters('テスト', 15, '-'), '-テ---ス---ト--')
+      Assert Equals(String.pad_between_letters('テスト', 16, '-'), '--テ---ス---ト--')
+    End
+    It can't use non-half-width characters for padding
+      try
+        call String.pad_between_letters('test', 11, '＋')
+        Fail pad_between_letters
+      catch
+      endtry
+    End
+  End
+
+  Describe .justify_equal_spacing()
+    It returns a string justified equals spacing with the given half-width character or white-space, considering non-half-width characters
+      Assert Equals(String.justify_equal_spacing('sushi', 12, '_'), 's__u__s__h_i')
+      Assert Equals(String.justify_equal_spacing('中トロ', 12)    , '中   ト   ロ')
+      Assert Equals(String.justify_equal_spacing('サーモン', 12)  , 'サ  ー モ ン')
+      Assert Equals(String.justify_equal_spacing('ウニ', 12)      , 'ウ        ニ')
+      Assert Equals(String.justify_equal_spacing('イクラ', 12)    , 'イ   ク   ラ')
+    End
+    It can't use non-half-width characters for padding
+      try
+        call String.justify_equal_spacing('test', 11, '＋')
+        Fail justify_equal_spacing
+      catch
+      endtry
+    End
+  End
+
+  Describe .levenshtein_distance()
+    It returns a minimum edit distance
+      Assert Equals(String.levenshtein_distance('kitten', 'sitting'), 3)
+      Assert Equals(String.levenshtein_distance('', ''), 0)
+      Assert Equals(String.levenshtein_distance('中トロ', ''), 3)
+      Assert Equals(String.levenshtein_distance('', '大トロ'), 3)
+      Assert Equals(String.levenshtein_distance('ちからうどん', 'からげんき'), 4)
+    End
+  End
+
+  Describe .split_by_displaywidth()
+    It splits by display width
+      let float = -1
+      let width = 0
+      Assert Equals(String.split_by_displaywidth('あaいbうcえdおe', width, float, 1), [''])
+      Assert Equals(String.split_by_displaywidth('あaいbうcえdおe', width, float, 0), [''])
+      Assert Equals(String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 0), [''])
+      Assert Equals(String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 1), [''])
+
+      let float = -1
+      let width = 1
+      Assert Equals(String.split_by_displaywidth('あaいbうcえdおe', width, float, 1), [' '])
+      Assert Equals(String.split_by_displaywidth('あaいbうcえdおe', width, float, 0), [' '])
+      Assert Equals(String.split_by_displaywidth('aあbいcうdえeお', width, float, 1), ['a', ' '])
+      Assert Equals(String.split_by_displaywidth('aあbいcうdえeお', width, float, 0), ['a'])
+      Assert Equals(String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 0), [' ', ' ', ' ', ' ', ' '])
+      Assert Equals(String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 1), [' ', ' ', ' ', ' ', ' '])
+
+      let float = -1
+      let width = 2
+      Assert Equals(String.split_by_displaywidth('12', width, float, 1), ['12'])
+      Assert Equals(String.split_by_displaywidth('12', width, float, 0), ['12'])
+      Assert Equals(String.split_by_displaywidth('あ12', width, float, 1), ['あ', '12'])
+      Assert Equals(String.split_by_displaywidth('あ12', width, float, 0), ['あ'])
+      Assert Equals(String.split_by_displaywidth('あ1', width, float, 1), ['あ', '1 '])
+      Assert Equals(String.split_by_displaywidth('あ1', width, float, 0), ['あ'])
+
+      let float = -1
+      let width = 4
+      Assert Equals(String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 0), ['あa ', '    ', 'うc ', 'えd '])
+      Assert Equals(String.split_by_displaywidth("あaいb\nうc\nえdおe", width, float, 1), ['あa ', 'いb ', 'うc ', 'えd ', 'おe '])
+
+      let float = -1
+      let width = 5
+      Assert Equals(String.split_by_displaywidth('1234567890abcde', width, float, 1), ['12345', '67890', 'abcde'])
+      Assert Equals(String.split_by_displaywidth('1234567890abcde', width, float, 0), ['12345'])
+      Assert Equals(String.split_by_displaywidth('あaいbうcえdおe', width, float, 1), ['あaい', 'bうc ', 'えdお', 'e    '])
+      Assert Equals(String.split_by_displaywidth('あaいbうcえdおe', width, float, 0), ['あaい'])
+      Assert Equals(String.split_by_displaywidth('1234567890', width, float, 1), ['12345', '67890'])
+      Assert Equals(String.split_by_displaywidth('1234567890', width, float, 0), ['12345'])
+      Assert Equals(String.split_by_displaywidth('あいうえお', width, float, 1), ['あい ', 'うえ ', 'お   '])
+      Assert Equals(String.split_by_displaywidth('あいうえお', width, float, 0), ['あい '])
+      Assert Equals(String.split_by_displaywidth('12345678', width, float, 1), ['12345', '678  '])
+      Assert Equals(String.split_by_displaywidth('12345678', width, float, 0), ['12345'])
+
+      let float = -1
+      let width = 6
+      Assert Equals(String.split_by_displaywidth('1234567890abcde', width, float, 1), ['123456', '7890ab', 'cde   '])
+      Assert Equals(String.split_by_displaywidth('1234567890abcde', width, float, 0), ['123456'])
+      Assert Equals(String.split_by_displaywidth('1234567890', width, float, 1), ['123456', '7890  '])
+      Assert Equals(String.split_by_displaywidth('1234567890', width, float, 0), ['123456'])
+      Assert Equals(String.split_by_displaywidth('あいうえお', width, float, 1), ['あいう', 'えお  '])
+      Assert Equals(String.split_by_displaywidth('あいうえお', width, float, 0), ['あいう'])
+      Assert Equals(String.split_by_displaywidth('12345678', width, float, 1), ['123456', '78    '])
+      Assert Equals(String.split_by_displaywidth('12345678', width, float, 0), ['123456'])
+      Assert Equals(String.split_by_displaywidth('12', width, float, 1), ['12    '])
+      Assert Equals(String.split_by_displaywidth('12', width, float, 0), ['12    '])
+
+      let float = 0
+      let width = 5
+      Assert Equals(String.split_by_displaywidth('あいうえお', width, float, 1), ['あい ', 'うえ ', ' お  '])
+      let float = 0
+      let width = 3
+      Assert Equals(String.split_by_displaywidth('あいうえお', width, float, 1), ['あ ', 'い ', 'う ', 'え ', 'お '])
+
+      let float = 1
+      let width = 5
+      Assert Equals(String.split_by_displaywidth('あいうえお', width, float, 1), [' あい', ' うえ', '   お'])
+      let float = 1
+      let width = 3
+      Assert Equals(String.split_by_displaywidth('あいうえお', width, float, 1), [' あ', ' い', ' う', ' え', ' お'])
+
+    End
+  End
+
+  Describe .padding_by_displaywidth()
+    It pads by display width
+      let width = 6
+      Assert Equals(String.padding_by_displaywidth('abc', width, -1), 'abc   ')
+      Assert Equals(String.padding_by_displaywidth('abc', width, 1),  '   abc')
+      Assert Equals(String.padding_by_displaywidth('abc', width, 0),  ' abc  ')
+      Assert Equals(String.padding_by_displaywidth('abcdefgh', width, -1),  'abcdefgh')
+      Assert Equals(String.padding_by_displaywidth('abcdefgh', width, 0),  'abcdefgh')
+      Assert Equals(String.padding_by_displaywidth('abcdefgh', width, 1),  'abcdefgh')
+
+      let width = 5
+      Assert Equals(String.padding_by_displaywidth('abc', width, -1), 'abc  ')
+      Assert Equals(String.padding_by_displaywidth('abc', width, 0),  ' abc ')
+      Assert Equals(String.padding_by_displaywidth('abc', width, 1),  '  abc')
+      Assert Equals(String.padding_by_displaywidth('abcdefgh', width, -1),  'abcdefgh')
+      Assert Equals(String.padding_by_displaywidth('abcdefgh', width, 0),  'abcdefgh')
+      Assert Equals(String.padding_by_displaywidth('abcdefgh', width, 1),  'abcdefgh')
+
+      let width = 0
+      Assert Equals(String.padding_by_displaywidth('abc', width, -1), 'abc')
+      Assert Equals(String.padding_by_displaywidth('abc', width, 0), 'abc')
+      Assert Equals(String.padding_by_displaywidth('abc', width, 1), 'abc')
+      "
+      let width = -3
+      Assert Equals(String.padding_by_displaywidth('abc', width, -1), 'abc')
+      Assert Equals(String.padding_by_displaywidth('abc', width, 0), 'abc')
+      Assert Equals(String.padding_by_displaywidth('abc', width, 1), 'abc')
+
+      let width = 12
+      Assert Equals(String.padding_by_displaywidth('あいう'   , width, -1), 'あいう      ')
+      Assert Equals(String.padding_by_displaywidth('あいう'   , width, 0), '   あいう   ')
+      Assert Equals(String.padding_by_displaywidth('あいう'   , width, 1), '      あいう')
+      Assert Equals(String.padding_by_displaywidth('あaいbうc', width, -1), 'あaいbうc   ')
+      Assert Equals(String.padding_by_displaywidth('あaいbうc', width, 0), ' あaいbうc  ')
+      Assert Equals(String.padding_by_displaywidth('あaいbうc', width, 1), '   あaいbうc')
+      Assert Equals(String.padding_by_displaywidth('あいうえおかき', width, -1), 'あいうえおかき')
+      Assert Equals(String.padding_by_displaywidth('あいうえおかき', width, 0), 'あいうえおかき')
+      Assert Equals(String.padding_by_displaywidth('あいうえおかき', width, 1), 'あいうえおかき')
+
+      let width = 0
+      Assert Equals(String.padding_by_displaywidth('あいう'   , width, -1), 'あいう')
+      Assert Equals(String.padding_by_displaywidth('あaいbうc', width, 0), 'あaいbうc')
+      Assert Equals(String.padding_by_displaywidth('あいうえおかき', width, 1), 'あいうえおかき')
+
+      let width = -2
+      Assert Equals(String.padding_by_displaywidth('あいう'   , width, -1), 'あいう')
+      Assert Equals(String.padding_by_displaywidth('あaいbうc', width, 0), 'あaいbうc')
+      Assert Equals(String.padding_by_displaywidth('あいうえおかき', width, 1), 'あいうえおかき')
+
+    End
+  End
+
+  Describe .hash()
+    It maps from arbitrary length string arg1 to another string
+      "
+      " Test by property
+      " TODO use something like quickcheck once themis add it.
+      "
+      for str1 in ['', 'sample text', "longer\ntest\nexample", 'サンプルテキスト']
+        " Hashed strings should be different to original strings
+        Assert NotEquals(str1, String.hash(str1))
+
+        for str2 in ['', 'sample text', "longer\ntest\nexample", 'サンプルテキスト']
+          if str1 ==# str2
+            " This is idempotent; hashed strings with same string should equal
+            Assert Equals(String.hash(str1), String.hash(str2))
+          else
+            " Hashed strings should be different if original strings are different
+            Assert NotEquals(String.hash(str1), String.hash(str2))
+          endif
+        endfor
+      endfor
+
+      " Test by concrete values
+      if exists('*sha256')
+        Assert Equals('45d233b7fdfe9fcac08ec47c797a8d99bebfb0718b9d2acbcdf50df7d6aeb84c', String.hash('ujihisa'))
+      else
+        Assert Equals('b8a', String.hash('ujihisa'))
+      endif
+    End
+  End
+
+  Describe .truncate()
+    It truncates the string arg1 to the specified arg2
+      Assert Equals(String.truncate('this is a pen', -1), '')
+      Assert Equals(String.truncate('this is a pen', 0), '')
+      Assert Equals(String.truncate('this is a pen', 2), 'th')
+      Assert Equals(String.truncate('this is a pen', 13), 'this is a pen')
+      Assert Equals(String.truncate('this is a pen', 20), 'this is a pen       ')
+      Assert Equals(String.truncate('あいうえお', -1), '')
+      Assert Equals(String.truncate('あいうえお', 1), ' ')
+      Assert Equals(String.truncate('あいうえお', 2), 'あ')
+      Assert Equals(String.truncate('あいうえお', 8), 'あいうえ')
+      Assert Equals(String.truncate('あいうえお', 9), 'あいうえ ')
+      Assert Equals(String.truncate('あいうえお', 15), 'あいうえお     ')
+    End
+  End
+
+  Describe .truncate_skipping()
+    It splits the string arg1 into two parts and joins with the given arg4
+      Assert Equals(String.truncate_skipping('this is a pen', 10, 1, '/'), 'this is /n')
+      Assert Equals(String.truncate_skipping('this is a pen', 10, 3, '...'), 'this...pen')
+      Assert Equals(String.truncate_skipping('this is a pen', 20, 3, '...'), 'this is a pen       ')
+      Assert Equals(String.truncate_skipping('this is a pen', 10, 3, '...................'), '..........')
+      Assert Equals(String.truncate_skipping('あいうえおかきくけこ.', 10, 1, '/'), 'あいうえ/.')
+      Assert Equals(String.truncate_skipping('あいうえおかきくけこ', 10, 2, ' .. '), 'あい .. こ')
+      Assert Equals(String.truncate_skipping('あいうえおかきくけこ', 15, 2, ' .. '), 'あいうえ .. こ ')
+      Assert Equals(String.truncate_skipping('あいうえおかきくけこ', 20, 2, ' .. '), 'あいうえおかきくけこ')
+    End
+  End
+
+  Describe .strwidthpart()
+    It returns the part of the string arg1 the displayed width of which is narrower than the given arg2
+      Assert Equals(String.strwidthpart('', 0), '')
+      Assert Equals(String.strwidthpart('', 1), '')
+      Assert Equals(String.strwidthpart('a', 1), 'a')
+      Assert Equals(String.strwidthpart('ab', 2), 'ab')
+      Assert Equals(String.strwidthpart('this is a pen', -1), '')
+      Assert Equals(String.strwidthpart('this is a pen', 0), '')
+      Assert Equals(String.strwidthpart('this is a pen', 5), 'this ')
+      Assert Equals(String.strwidthpart('this is a pen', 20), 'this is a pen')
+      Assert Equals(String.strwidthpart('あ', 1), '')
+      Assert Equals(String.strwidthpart('あ', 2), 'あ')
+      Assert Equals(String.strwidthpart('あいうえお', -1), '')
+      Assert Equals(String.strwidthpart('あいうえお', 0), '')
+      Assert Equals(String.strwidthpart('あいうえお', 5), 'あい')
+      Assert Equals(String.strwidthpart('あいうえお', 6), 'あいう')
+      Assert Equals(String.strwidthpart('あいうえお', 10), 'あいうえお')
+      Assert Equals(String.strwidthpart('あいうえお', 20), 'あいうえお')
+    End
+  End
+
+  Describe .strwidthpart_reverse()
+    It returns the part of the string {str} like strwidthpart(), but takes the part of the string from the right
+      Assert Equals(String.strwidthpart_reverse('a', 1), 'a')
+      Assert Equals(String.strwidthpart_reverse('this is a pen', -1), '')
+      Assert Equals(String.strwidthpart_reverse('this is a pen', 0), '')
+      Assert Equals(String.strwidthpart_reverse('this is a pen', 5), 'a pen')
+      Assert Equals(String.strwidthpart_reverse('this is a pen', 20), 'this is a pen')
+      Assert Equals(String.strwidthpart_reverse('あ', 1), '')
+      Assert Equals(String.strwidthpart_reverse('あ', 2), 'あ')
+      Assert Equals(String.strwidthpart_reverse('あいうえお', -1), '')
+      Assert Equals(String.strwidthpart_reverse('あいうえお', 0), '')
+      Assert Equals(String.strwidthpart_reverse('あいうえお', 5), 'えお')
+      Assert Equals(String.strwidthpart_reverse('あいうえお', 6), 'うえお')
+      Assert Equals(String.strwidthpart_reverse('あいうえお', 10), 'あいうえお')
+      Assert Equals(String.strwidthpart_reverse('あいうえお', 20), 'あいうえお')
     End
   End
 End
