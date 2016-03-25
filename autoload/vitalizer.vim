@@ -94,11 +94,6 @@ function! s:rmfile(file) abort
 endfunction
 
 function! s:search_dependence(depends_info, to) abort
-  " XXX Not smart...
-  if exists('g:vital_debug')
-    let vital_debug = g:vital_debug
-  endif
-  let g:vital_debug = 1
   let save_rtp = &runtimepath
   let &runtimepath = a:to . ',' . &runtimepath
 
@@ -129,9 +124,6 @@ function! s:search_dependence(depends_info, to) abort
     endfor
   endwhile
 
-  if exists('vital_debug')
-    let g:vital_debug = vital_debug
-  endif
   let &runtimepath = save_rtp
 
   for module in builtin_modules

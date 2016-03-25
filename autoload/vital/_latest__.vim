@@ -161,7 +161,7 @@ function! s:_import(name) abort dict
   " Cache module before calling module.vital_loaded() to avoid cyclic
   " dependences but remove the cache if module._vital_loaded() fails.
   " let s:loaded[a:name] = export_module
-  let s:loaded[a:name] = get(g:, 'vital_debug', 0) ? module : export_module
+  let s:loaded[a:name] = export_module
   if has_key(module, '_vital_loaded')
     try
       call module._vital_loaded(vital#{s:plugin_name}#of())
