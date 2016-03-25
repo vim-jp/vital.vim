@@ -26,6 +26,7 @@ install:
   - 'set PATH=%PYTHON%;%PATH%'
   - 'reg copy HKLM\SOFTWARE\Python\PythonCore\2.7 HKLM\SOFTWARE\Python\PythonCore\2.7-32 /s /reg:32'
   - 'reg copy HKLM\SOFTWARE\Python\PythonCore\2.7 HKLM\SOFTWARE\Python\PythonCore\2.7-32 /s /reg:64'
+  - 'python --version'
 build: off
 test_script:
   - '%THEMIS_VIM% --version'
