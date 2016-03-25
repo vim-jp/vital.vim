@@ -141,8 +141,11 @@ function! s:search_dependence(depends_info, to) abort
   return sort(map(keys(all), 's:module2file(v:val)') + data_files)
 endfunction
 
-function! s:get_dependence(V, module) abort
-  let M = a:V.import(a:module)
+" @param {vital-object} V
+" @param {module-name} module_name
+" @return [list<{module-name}>, list<{data-file}>]
+function! s:get_dependence(V, module_name) abort
+  let M = a:V._get_module(a:module_name)
   if !has_key(M, '_vital_depends')
     return [[], []]
   endif
@@ -154,10 +157,10 @@ function! s:get_dependence(V, module) abort
     let [dmodules, dfiles] = s:L.partition('v:val[0] !=# "."', depends)
   else
     throw printf('vitalizer: %s has wrong dependence.(%s)',
-    \            a:module, string(depends))
+    \            a:module_name, string(depends))
   endif
   if !empty(dfiles)
-    let module_file = s:module2file(a:module)
+    let module_file = s:module2file(a:module_name)
     let module_base = s:FP.dirname(module_file)
     call map(dfiles, 's:FP.join(module_base, v:val)')
     call map(dfiles, 'simplify(v:val)')
@@ -197,26 +200,37 @@ function! s:is_module_name(str) abort
   return s:L.and(map(split(a:str, '\.'), 's:is_camel_case(v:val)'))
 endfunction
 
+" s:module2file() returns relative path of module to &runtimepath
+" @param {module-name} name
+" @return {rtp-relative-path}
 function! s:module2file(name) abort
   let target = a:name ==# '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
   return printf('autoload/vital/__latest__%s.vim', target)
 endfunction
 
-function! s:file2module(file) abort
+" @param {path} file
+" @return {module-name}
+function! s:file2module_name(file) abort
   let filename = s:FP.unify_separator(a:file)
   let tail = matchstr(filename, 'autoload/vital/_\w\+/\zs.*\ze\.vim$')
   return join(split(tail, '[\\/]\+'), '.')
 endfunction
 
+" @return list<{module-name}>
 function! s:available_module_names() abort
-  return sort(s:L.uniq(filter(map(s:V.vital_files(),
-  \          's:file2module(v:val)'), 's:is_module_name(v:val)')))
+  return sort(s:L.uniq(filter(map(s:_global_vital_files(),
+  \          's:file2module_name(v:val)'), 's:is_module_name(v:val)')))
+endfunction
+
+function! s:_global_vital_files() abort
+  let pattern = 'autoload/vital/__latest__/**/*.vim'
+  return split(globpath(&runtimepath, pattern, 1), "\n")
 endfunction
 
 function! s:builtin_modules(rtp_dir) abort
   let pat = s:FP.join(a:rtp_dir, 'autoload/vital/__latest__/**/*.vim')
   let files = split(glob(pat, 1), "\n")
-  return map(files, 's:file2module(v:val)')
+  return map(files, 's:file2module_name(v:val)')
 endfunction
 
 function! s:get_changes() abort
