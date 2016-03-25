@@ -31,7 +31,10 @@ Describe vital
     End
 
     It inserts import autoload function
-      Assert IsDict(vital#_{g:testplugin_name}#Data#List#import())
+      " Assert IsDict(vital#_{g:testplugin_name}#Data#List#import())
+      for name in vitalize_modules
+        Assert IsDict(vital#_{g:testplugin_name}#{substitute(name, '\.', '#', 'g')}#import())
+      endfor
     End
 
     Describe .new()
