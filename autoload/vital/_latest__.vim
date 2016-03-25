@@ -172,7 +172,7 @@ function! s:_import(name) abort dict
   endif
   return copy(s:loaded[a:name])
 endfunction
-let s:Vital._import = function('s:_import')
+let s:Vital._import = s:_function('s:_import')
 
 " s:_get_module() returns module object wihch has all script local functions.
 function! s:_get_module(name) abort dict
@@ -187,7 +187,7 @@ function! s:_get_module(name) abort dict
   endtry
   return module
 endfunction
-let s:Vital._get_module = function('s:_get_module')
+let s:Vital._get_module = s:_function('s:_get_module')
 
 function! s:_get_latest_module(name) abort
  return s:sid2sfuncs(s:_module_sid(a:name))
@@ -276,7 +276,7 @@ endif
 " copied and modified from Vim.ScriptLocal
 let s:SNR = join(map(range(len("\<SNR>")), '"[\\x" . printf("%0x", char2nr("\<SNR>"[v:val])) . "]"'), '')
 function! s:sid2sfuncs(sid) abort
-  let fs = split(s:_redir(printf(':function /\%%#=2^%s%s_', s:SNR, a:sid)), "\n")
+  let fs = split(s:_redir(printf(':function /^%s%s_', s:SNR, a:sid)), "\n")
   let r = {}
   let pattern = printf('\m^function\s<SNR>%d_\zs\w\{-}\ze(', a:sid)
   for fname in map(fs, 'matchstr(v:val, pattern)')
