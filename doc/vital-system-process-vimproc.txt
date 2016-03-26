@@ -1,4 +1,4 @@
-*vim-system-process-system.txt*	A Process client using vimproc
+*vim-system-process-vimproc.txt*	A Process client using vimproc
 
 Maintainer: lambdalisue		<lambdalisue@hashnote.net>
 
