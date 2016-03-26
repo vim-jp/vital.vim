@@ -141,7 +141,7 @@ function! s:_get_sid_by_script(path) abort
   endif
 
   let path = s:_unify_path(a:path)
-  let p = 'stridx(v:val, s:self_version) > 0 || stridx(v:val, "__latest__") > 0'
+  let p = 'stridx(v:val, s:self_version) > 0 || v:val =~# "__\\w\\+__"'
   for line in filter(split(s:_redir('scriptnames'), "\n"), p)
     let list = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
     if !empty(list) && s:_unify_path(list[2]) ==# path
@@ -184,7 +184,7 @@ function! s:_self_vital_files() abort
 endfunction
 
 function! s:_global_vital_files() abort
-  let pattern = 'autoload/vital/__latest__/**/*.vim'
+  let pattern = 'autoload/vital/__*__/**/*.vim'
   return split(globpath(&runtimepath, pattern, 1), "\n")
 endfunction
 
