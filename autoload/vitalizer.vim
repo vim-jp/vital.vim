@@ -579,7 +579,6 @@ endfunction
 
 function! s:Revitalizer.copy_loader() abort
   let dest = s:FP.join(fnamemodify(self.vital_dir, ':h'), printf('%s.vim', self.vital_data.name))
-  echom dest
   call s:copy(s:LOADER_FILE, dest)
 endfunction
 
