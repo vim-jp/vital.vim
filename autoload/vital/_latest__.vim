@@ -188,11 +188,12 @@ function! s:_get_module(name) abort dict
   endtry
   return module
 endfunction
-let s:Vital._get_module = s:_function('s:_get_module')
 
 function! s:_get_latest_module(name) abort
  return s:sid2sfuncs(s:_module_sid(a:name))
 endfunction
+
+let s:Vital._get_module = s:is_vital_vim ? s:_function('s:_get_latest_module') : s:_function('s:_get_module')
 
 function! s:_module_sid(name) abort
   let module_rel_path = 'autoload/vital/__latest__/' . substitute(a:name, '\.', '/', 'g') . '.vim'
