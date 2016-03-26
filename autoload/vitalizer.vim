@@ -671,7 +671,7 @@ endfunction
 " @param {string} path
 " @return {list<string>}
 function! s:ls_R_vimfiles(path) abort
-  return split(glob(s:FP.join(a:path, '/**/*.vim'), 1), "\n")
+  return split(globpath(a:path, '**/*.vim', 1), "\n")
 endfunction
 
 function! s:_source(path) abort
