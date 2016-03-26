@@ -1,6 +1,7 @@
 scriptencoding utf-8
 
 let s:V = vital#of('vital')
+let s:Prelude = s:V.import('Prelude')
 let s:Path = s:V.import('System.Filepath')
 
 Describe System.Process
@@ -135,19 +136,25 @@ Describe System.Process
 
   Describe .execute({args}, {options})
     " NOTE:
-    " Individual tests are located in 'Process' subdirectory
-    It uses a dictionary item in {options.clients} as a process client
-      let mock = {}
-      let result = Process.execute(['foo', 'bar'], {
-            \ 'clients': [mock],
+    " Tests for actual process call are in System/Process/XXXXX.vimspec
+    It uses a String item in {options.clients} as a process client
+      let args = s:Prelude.is_windows()
+            \ ? ['cmd', '/C', 'exit 0']
+            \ : ['true']
+      let result = Process.execute(args, {
+            \ 'clients': ['System.Process.System'],
             \})
       Assert Equals(result.success, 1)
-      Assert Equals(result.output, 'Output of System.Process.Mock module')
-      Assert Equals(result.content, ['Output of System.Process.Mock module'])
-      Assert Equals(result.args, ['foo', 'bar'])
-      " While 'options' is extended by execute() method
-      Assert NotEquals(result.options, { 'clients': [mock] })
-      Assert Equals(result.options.clients, [mock])
+      Assert Equals(result.output, '')
+    End
+
+    It uses a Dictionary item in {options.clients} as a process client
+      let Mock = s:V.import('System.Process.Mock')
+      let result = Process.execute(['foo', 'bar'], {
+            \ 'clients': [Mock],
+            \})
+      Assert Equals(result.success, 1)
+      Assert Equals(result.output, 'Output of System.Process.Mock')
     End
   End
 End

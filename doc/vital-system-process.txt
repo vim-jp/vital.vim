@@ -17,6 +17,15 @@ INTRODUCTION				*Vital.System.Process-introduction*
 
 |Vital.System.Process| provides a cross-platform functions to execute process.
 
+The following process clients are available:
+
+- |Vital.System.Process.Mock|		For testing
+- |Vital.System.Process.System|		Use |system()| internally (*)
+- |Vital.System.Process.Vimproc|	Use vimproc internally (*)
+
+Clients with (*) will be automatically vitalized when |Vital.System.Process|
+is vitalized. Other modules require explicit |:Vitalize| before use.
+
 
 =============================================================================
 USAGE						*Vital.System.Process-usage*
@@ -87,10 +96,11 @@ execute({args}[, {options}])
 	The following attributes are supported in {options}
 
 		'clients'
-		A |List| of client names registered by register() function.
+		A |List| of client names registered by register() function or
+		an instance of client (|Dictionary|)
 		The order of appearance is equal to the order of trial.
-		When vimproc is available, System.Process.Vimproc will be
-		listed prior to the System.Process.System in default.
+		When vimproc is available, |Vital.System.Process.Vimproc| will
+		be listed prior to the |Vital.System.Process.System| in default.
 
 		'input'
 		A |String| or |Number|. If |String| is specified, the value will be
@@ -162,7 +172,7 @@ execute({args}[, {options}])
 =============================================================================
 DEVELOPERS				*Vital.System.Process-developers*
 
-A process client module requires the following three methods.
+A process client module requires to have the following three methods.
 
 				*Vital.System.Process.Client.is_available()*
 is_available()

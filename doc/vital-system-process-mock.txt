@@ -1,0 +1,63 @@
+*vim-system-process-mock.txt*	A Process client for test
+
+Maintainer: lambdalisue		<lambdalisue@hashnote.net>
+
+=============================================================================
+CONTENTS			*Vital.System.Process.Mock-contents*
+
+Introduction			|Vital.System.Process.Mock-introduction|
+Functions			|Vital.System.Process.Mock-functions|
+
+
+=============================================================================
+INTRODUCTION			*Vital.System.Process.Mock-introduction*
+
+*Vital.System.Process.Mock* is a |Vital.System.Process| client for testing a
+process call.
+
+Note that this module is not automatically vitalized. Developers requires to
+|:Vitalize| this module explicitly before use.
+
+An item of {options.clients} of |Vital.System.Process.execute()| can be an
+instance of process client ( |Dictionary|) so developers easily specify them
+mock process client as like:
+>
+	let Mock = deepcopy(s:V.import('System.Process.Mock'))
+	" define original mock execute
+	function! Mock.execute(args, options) abort
+	  return { 'success': 0, 'output': 'Always fail' }
+	endfunction
+
+	let result = s:Process.execute(['echo', 'Hello'], {
+	      \ 'clients': [Mock],
+	      \})
+	echo result.success
+	" => 0
+	echo result.output
+	" => 'Always fail'
+	echo result.content
+	" => ['Always fail']
+<
+
+=============================================================================
+FUNCTIONS			*Vital.System.Process.Mock-functions*
+
+				*Vital.System.Process.Mock.is_available()*
+is_available()
+	Returns always 1.
+
+				*Vital.System.Process.Mock.is_supported()*
+is_supported({options})
+	Returns always 1.
+
+				*Vital.System.Process.Mock.execute()*
+execute({args}, {options})
+	Returns the following result dictionary:
+>
+	{'success': 1, 'output': 'Output of System.Process.Mock' }
+<
+
+=============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
+
+
