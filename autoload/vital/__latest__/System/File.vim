@@ -136,7 +136,7 @@ function! s:move_vim(src, dest) abort
 endfunction
 
 function! s:copy_dir(src, dest) abort
-  if s:_has_copy_exe()
+  if s:_has_copy_dir_exe()
     return s:copy_dir_exe(a:src, a:dest)
   else
     return s:copy_dir_vim(a:src, a:dest)
@@ -147,13 +147,14 @@ endfunction
 " Implemented by external program.
 if s:is_unix
   function! s:copy_dir_exe(src, dest) abort
-    if !s:_has_copy_exe() | return 0 | endif
+    if !s:_has_copy_dir_exe() | return 0 | endif
     let [src, dest] = [a:src, a:dest]
     call system('cp -R ' . shellescape(src) . ' ' . shellescape(dest))
     return !v:shell_error
   endfunction
 elseif s:is_windows
   function! s:copy_dir_exe(src, dest) abort
+    if !s:_has_copy_dir_exe() | return 0 | endif
     let src  = s:_shellescape_robocopy(a:src)
     let dest = s:_shellescape_robocopy(a:dest)
     call system('robocopy /e ' . src . ' ' . dest)
@@ -188,6 +189,22 @@ function! s:copy_dir_vim(src, dest) abort
     return 0
   endif
 endfunction
+
+if s:is_unix
+  function! s:_has_copy_dir_exe() abort
+    return executable('cp')
+  endfunction
+elseif s:is_windows
+  function! s:_has_copy_dir_exe() abort
+    return executable('robocopy')
+  endfunction
+else
+  function! s:_has_copy_dir_exe() abort
+    throw 'vital: System.File: copy_dir_exe(): '
+    \   . 'your platform is not supported'
+  endfunction
+endif
+
 
 " Copy a file.
 " Dispatch s:copy_exe() or s:copy_vim().
