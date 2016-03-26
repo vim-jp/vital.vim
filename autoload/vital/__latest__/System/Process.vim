@@ -7,6 +7,7 @@ let s:priority = []
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = a:V.import('Prelude')
+  let s:ProcessMock = a:V.import('System.Process.Mock')
   call s:register('System.Process.Vimproc')
   call s:register('System.Process.System')
 endfunction
@@ -14,8 +15,9 @@ endfunction
 function! s:_vital_depends() abort
   return [
         \ 'Prelude',
-        \ 'System.Process.Vimproc',
+        \ 'System.Process.Mock',
         \ 'System.Process.System',
+        \ 'System.Process.Vimproc',
         \]
 endfunction
 
@@ -93,8 +95,10 @@ function! s:split_posix_text(text, ...) abort
 endfunction
 
 function! s:_execute(args, options) abort
-  for name in a:options.clients
-    let client = s:registry[name]
+  for name_or_client in a:options.clients
+    let client = s:Prelude.is_string(name_or_client)
+          \ ? s:registry[name_or_client]
+          \ : extend(copy(s:ProcessMock), name_or_client)
     if !client.is_supported(a:options)
       continue
     endif
