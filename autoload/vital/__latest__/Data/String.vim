@@ -610,7 +610,7 @@ endfunction
 " it does nothing if the text is a correct POSIX text
 function! s:repair_posix_text(text, ...) abort
   let newline = get(a:000, 0, "\n")
-  return a:text =~# '\r\?\n$' ? a:text : a:text . newline
+  return a:text =~# '\n$' ? a:text : a:text . newline
 endfunction
 
 " NOTE:
