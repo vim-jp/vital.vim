@@ -136,8 +136,7 @@ function! s:move_vim(src, dest) abort
 endfunction
 
 function! s:copy_dir(src, dest) abort
-  " TODO: Windows
-  if s:_has_copy_exe() && !s:is_windows
+  if s:_has_copy_exe()
     return s:copy_dir_exe(a:src, a:dest)
   else
     return s:copy_dir_vim(a:src, a:dest)
@@ -154,10 +153,16 @@ if s:is_unix
     return !v:shell_error
   endfunction
 elseif s:is_windows
-  " TODO
   function! s:copy_dir_exe(src, dest) abort
-    throw 'vital: System.File: copy_dir_exe(): '
-    \   . 'your platform (Windows) is not supported'
+    let src  = s:_shellescape_robocopy(a:src)
+    let dest = s:_shellescape_robocopy(a:dest)
+    call system('robocopy ' . src . ' ' . dest)
+    return !v:shell_error
+  endfunction
+  function! s:_shellescape_robocopy(path) abort
+    let path = tr(a:path, '/', '\')
+    let path = escape(path, '"')
+    return '"' . path . '"'
   endfunction
 else
   function! s:copy_dir_exe() abort
