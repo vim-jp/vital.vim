@@ -220,29 +220,20 @@ function! s:_source(path) abort
   execute 'source' fnameescape(a:path)
 endfunction
 
+" @vimlint(EVL102, 1, l:_)
+" @vimlint(EVL102, 1, l:__)
 function! s:_sid(fullpath, filter_pattern) abort
   if has_key(s:cache_sid, a:fullpath)
     return s:cache_sid[a:fullpath]
   endif
-  for [path, sid] in items(filter(s:_scriptnames(), 'v:key =~# a:filter_pattern'))
+  for line in filter(split(s:_redir(':scriptnames'), "\n"), 'v:val =~# a:filter_pattern')
+    let [_, sid, path; __] = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
     if s:_unify_path(path) is# a:fullpath
       let s:cache_sid[a:fullpath] = sid
       return s:cache_sid[a:fullpath]
     endif
   endfor
   return 0
-endfunction
-
-" @vimlint(EVL102, 1, l:_)
-" @vimlint(EVL102, 1, l:__)
-" @return {path: sid}
-function! s:_scriptnames() abort
-  let sdict = {}
-  for line in split(s:_redir(':scriptnames'), "\n")
-    let [_, sid, path; __] = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
-    let sdict[path] = sid
-  endfor
-  return sdict
 endfunction
 
 function! s:_redir(cmd) abort
