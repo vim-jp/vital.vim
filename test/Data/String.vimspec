@@ -57,20 +57,28 @@ Describe Data.String
   Describe .unescape()
     It unescape escaped {chars} in {str}
       Assert Equals(
-            \ String.unescape('\\\^\*\a\b\[\]', '\^*[]'),
-            \ '\^*\a\b[]',
+            \ String.unescape('\^\$\~\.\*\[\]\\', '^$~.*[]\'),
+            \ '^$~.*[]\',
             \)
       Assert Equals(
-            \ String.unescape('\*n\n\\n', '*\'),
-            \ '*n\n\n',
+            \ String.unescape('\a\b\n', '\'),
+            \ '\a\b\n',
             \)
       Assert Equals(
-            \ String.unescape('\\n\\n\\n', '\'),
-            \ '\n\n\n',
+            \ String.unescape('\\a\\b\\n', '\'),
+            \ '\a\b\n',
             \)
       Assert Equals(
             \ String.unescape('\\\\n\\\\n\\\\n', '\'),
             \ '\\n\\n\\n',
+            \)
+      Assert Equals(
+            \ String.unescape('\&\&\&', '&'),
+            \ '&&&',
+            \)
+      Assert Equals(
+            \ String.unescape('\\^', '\^'),
+            \ '\^',
             \)
     End
   End
