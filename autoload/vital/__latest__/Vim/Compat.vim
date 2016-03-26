@@ -12,6 +12,11 @@ set cpo&vim
 " echo s:has_version('7.3')
 if has('patch-7.4.237')
   function! s:has_version(version) abort
+    let versions = split(a:version, '\.')
+    if len(versions) == 2
+      let vim_version = versions[0] * 100 + versions[1]
+      return v:version >= vim_version
+    endif
     return has('patch-' . a:version)
   endfunction
 else
