@@ -152,15 +152,15 @@ It is not necessary but we recommend to add a badge to your project README to ma
 The following is a markdown snippet.
 
 ```
-[![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg)](https://github.com/vim-jp/vital.vim)
+[![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg)](https://github.com/vim-jp/vital.vim)
 ```
 
 The badge uses [Shields.io](http://shields.io/) so you can customize the looks as like:
 
-- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg)](https://github.com/vim-jp/vital.vim) (Default)
-- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg?style=plastic)](https://github.com/vim-jp/vital.vim) by adding `?style=plastic`
-- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg?style=flat)](https://github.com/vim-jp/vital.vim) by adding `?style=flat`
-- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-ff69b4.svg?style=flat-square)](https://github.com/vim-jp/vital.vim) by adding `?style=flat-square`
+- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg)](https://github.com/vim-jp/vital.vim) (Default)
+- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg?style=plastic)](https://github.com/vim-jp/vital.vim) by adding `?style=plastic`
+- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg?style=flat)](https://github.com/vim-jp/vital.vim) by adding `?style=flat`
+- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg?style=flat-square)](https://github.com/vim-jp/vital.vim) by adding `?style=flat-square`
 
 ## If you want to become a vital developer
 
