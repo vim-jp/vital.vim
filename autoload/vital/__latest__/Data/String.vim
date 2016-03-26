@@ -576,12 +576,8 @@ function! s:unescape_pattern(str) abort
 endfunction
 
 function! s:unescape(str, chars) abort
-  let str = a:str
-  for char in split(a:chars, '\zs')
-    let escaped_char = s:escape_pattern(char)
-    let str = substitute(str, '\\' . escaped_char, char, 'g')
-  endfor
-  return str
+  let chars = map(split(a:chars, '\zs'), 'escape(v:val, ''^$~.*[]\'')')
+  return substitute(a:str, '\\\(' . join(chars, '\|') . '\)', '\1', 'g')
 endfunction
 
 function! s:iconv(expr, from, to) abort
