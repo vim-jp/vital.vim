@@ -3,6 +3,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:Prelude = a:V.import('Prelude')
+  let s:Filepath = a:V.import('System.Filepath')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Prelude', 'System.Filepath']
+endfunction
+
 let s:is_unix = has('unix')
 let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 let s:is_cygwin = has('win32unix')
@@ -91,14 +100,18 @@ endif
 " Implemented by external program.
 if s:is_unix
   function! s:move_exe(src, dest) abort
-    if !s:_has_move_exe() | return 0 | endif
+    if !s:_has_move_exe()
+      return 0
+    endif
     let [src, dest] = [a:src, a:dest]
     call system('mv ' . shellescape(src) . ' ' . shellescape(dest))
     return !v:shell_error
   endfunction
 elseif s:is_windows
   function! s:move_exe(src, dest) abort
-    if !s:_has_move_exe() | return 0 | endif
+    if !s:_has_move_exe()
+      return 0
+    endif
     let [src, dest] = [a:src, a:dest]
     " Normalize successive slashes to one slash.
     let src  = substitute(src, '[/\\]\+', '\', 'g')
@@ -125,6 +138,81 @@ endif
 function! s:move_vim(src, dest) abort
   return !rename(a:src, a:dest)
 endfunction
+
+function! s:copy_dir(src, dest) abort
+  if s:_has_copy_dir_exe()
+    return s:copy_dir_exe(a:src, a:dest)
+  else
+    return s:copy_dir_vim(a:src, a:dest)
+  endif
+endfunction
+
+" Copy a directory.
+" Implemented by external program.
+if s:is_unix
+  function! s:copy_dir_exe(src, dest) abort
+    if !s:_has_copy_dir_exe()
+      return 0
+    endif
+    let [src, dest] = [a:src, a:dest]
+    call system('cp -R ' . shellescape(src) . ' ' . shellescape(dest))
+    return !v:shell_error
+  endfunction
+elseif s:is_windows
+  function! s:copy_dir_exe(src, dest) abort
+    if !s:_has_copy_dir_exe()
+      return 0
+    endif
+    let src  = s:_shellescape_robocopy(a:src)
+    let dest = s:_shellescape_robocopy(a:dest)
+    call system('robocopy /e ' . src . ' ' . dest)
+    return v:shell_error <# 8
+  endfunction
+  function! s:_shellescape_robocopy(path) abort
+    let path = tr(a:path, '/', '\')
+    let path = escape(path, '"')
+    return '"' . path . '"'
+  endfunction
+else
+  function! s:copy_dir_exe() abort
+    throw 'vital: System.File: copy_dir_exe(): your platform is not supported'
+  endfunction
+endif
+
+" Copy a file.
+" Implemented by pure Vim script.
+function! s:copy_dir_vim(src, dest) abort
+  if isdirectory(a:src)
+    for src in s:Prelude.glob(s:Filepath.join(a:src, '*'))
+      let basename = s:Filepath.basename(src)
+      let dest = s:Filepath.join(a:dest, basename)
+      if !s:copy_dir_vim(src, dest)
+        return 0
+      endif
+    endfor
+    return 1
+  elseif filereadable(a:src)
+    return s:copy_vim(a:src, a:dest)
+  else " XXX: ???
+    return 0
+  endif
+endfunction
+
+if s:is_unix
+  function! s:_has_copy_dir_exe() abort
+    return executable('cp')
+  endfunction
+elseif s:is_windows
+  function! s:_has_copy_dir_exe() abort
+    return executable('robocopy')
+  endfunction
+else
+  function! s:_has_copy_dir_exe() abort
+    throw 'vital: System.File: copy_dir_exe(): '
+    \   . 'your platform is not supported'
+  endfunction
+endif
+
 
 " Copy a file.
 " Dispatch s:copy_exe() or s:copy_vim().
@@ -154,14 +242,18 @@ endif
 " Implemented by external program.
 if s:is_unix
   function! s:copy_exe(src, dest) abort
-    if !s:_has_copy_exe() | return 0 | endif
+    if !s:_has_copy_exe()
+      return 0
+    endif
     let [src, dest] = [a:src, a:dest]
     call system('cp ' . shellescape(src) . ' ' . shellescape(dest))
     return !v:shell_error
   endfunction
 elseif s:is_windows
   function! s:copy_exe(src, dest) abort
-    if !s:_has_copy_exe() | return 0 | endif
+    if !s:_has_copy_exe()
+      return 0
+    endif
     let [src, dest] = [a:src, a:dest]
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
