@@ -98,6 +98,7 @@ let s:Vital.load = s:_function('s:load')
 
 function! s:unload() abort dict
   let s:loaded = {}
+  let s:cache_sid = {}
   unlet! s:vital_files
 endfunction
 let s:Vital.unload = s:_function('s:unload')
