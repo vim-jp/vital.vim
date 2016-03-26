@@ -2,10 +2,10 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Use a Funcref as a special term _UNDEFINED
-function! s:undefined() abort
+function! s:_undefined() abort
   return 'undefined'
 endfunction
-let s:_UNDEFINED = function('s:undefined')
+let s:_UNDEFINED = function('s:_undefined')
 
 function! s:_vital_loaded(V) abort
   let s:V = a:V

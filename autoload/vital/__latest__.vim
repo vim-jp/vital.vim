@@ -264,10 +264,8 @@ else
     while 0 < i
       if a:list[i] ==# a:list[i - 1]
         call remove(a:list, i)
-        let i -= 2
-      else
-        let i -= 1
       endif
+      let i -= 1
     endwhile
     return a:list
   endfunction
