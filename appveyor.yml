@@ -2,14 +2,14 @@ version: '{build}'
 clone_depth: 1
 environment:
   matrix:
-   - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/latest/win64/
-     PYTHON: 'C:\Python35-x64'
-   - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim73/oldest/win64/
-     PYTHON: 'C:\Python26-x64'
-   # To test with 7.3 final +kaoriya Vim binary, uncomment below line.
-   #- VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim73/final/win64/
-   # To test with latest official Vim binary, uncomment below line.
-   #- VIM_URL: http://vim-jp.org/redirects/vim/vim-win32-installer/latest/x64/
+    - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/latest/win64/
+      PYTHON: 'C:\Python35-x64'
+    - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim73/oldest/win64/
+      PYTHON: 'C:\Python26-x64'
+    # To test with 7.3 final +kaoriya Vim binary, uncomment below line.
+    #- VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim73/final/win64/
+    # To test with latest official Vim binary, uncomment below line.
+    #- VIM_URL: http://vim-jp.org/redirects/vim/vim-win32-installer/latest/x64/
 install:
   - ps: |
       $zip = $Env:APPVEYOR_BUILD_FOLDER + '\vim.zip'
