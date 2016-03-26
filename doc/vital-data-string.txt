@@ -415,7 +415,7 @@ split_posix_text({text}[, {newline}])
 	line. This function automatically remove a trailing {newline} when
 	exists, indicating that if {text} does not have a trailing {newline},
 	it is equal to 'split({text}, {newline}, 1)'.
-	If {newline} is omitted, "\n" will be used.
+	If {newline} is omitted, "\r\?\n" will be used.
 >
 	echo s:S.split_posix_text("A\nB\nC\n")
 	" => ['A', 'B', 'C']
