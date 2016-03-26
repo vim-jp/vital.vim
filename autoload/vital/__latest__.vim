@@ -179,8 +179,10 @@ else
 endif
 
 function! s:_self_vital_files() abort
-  let base = s:base_dir . '/*/**/*.vim'
-  return split(glob(base, 1), "\n")
+  let name = s:plugin_name()
+  let builtin = printf('%s/__%s__/**/*.vim', s:base_dir, name)
+  let installed = printf('%s/_%s/**/*.vim', s:base_dir, name)
+  return split(glob(builtin, 1), "\n") + split(glob(installed, 1), "\n")
 endfunction
 
 function! s:_global_vital_files() abort
