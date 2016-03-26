@@ -156,8 +156,8 @@ elseif s:is_windows
   function! s:copy_dir_exe(src, dest) abort
     let src  = s:_shellescape_robocopy(a:src)
     let dest = s:_shellescape_robocopy(a:dest)
-    call system('robocopy ' . src . ' ' . dest)
-    return !v:shell_error
+    call system('robocopy /e ' . src . ' ' . dest)
+    return v:shell_error <# 8
   endfunction
   function! s:_shellescape_robocopy(path) abort
     let path = tr(a:path, '/', '\')
