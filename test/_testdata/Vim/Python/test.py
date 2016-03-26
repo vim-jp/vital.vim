@@ -2,5 +2,6 @@ import sys, vim
 
 print("%s %d" % (
     vim.eval('prefix'),
-    sys.version_info.major,
+    # .major is not supported by 2.6 and older.
+    sys.version_info[0],
 ))
