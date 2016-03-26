@@ -3,15 +3,15 @@ set cpoptions&vim
 
 function! s:_vital_loaded(V) abort
   let s:Prelude = a:V.import('Prelude')
+  let s:String = a:V.import('Data.String')
   let s:Guard = a:V.import('Vim.Guard')
-  let s:Process = a:V.import('System.Process')
 endfunction
 
 function! s:_vital_depends() abort
   return [
         \ 'Prelude',
+        \ 'Data.String',
         \ 'Vim.Guard',
-        \ 'System.Process',
         \]
 endfunction
 
@@ -92,7 +92,7 @@ function! s:execute(args, options) abort
     if v:version < 704 || (v:version == 704 && !has('patch122'))
       " {cmdline} of system() before Vim 7.4.122 is not converted so convert
       " it manually from &encoding to 'char'
-      let cmdline = s:Process.iconv(cmdline, &encoding, 'char')
+      let cmdline = s:String.iconv(cmdline, &encoding, 'char')
     endif
     let args = [cmdline] + (s:Prelude.is_string(options.input) ? [options.input] : [])
     let output = call('system', args)

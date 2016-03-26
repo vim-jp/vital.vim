@@ -19,7 +19,7 @@ INTRODUCTION				*Vital.System.Process-introduction*
 
 The following process clients are available:
 
-- |Vital.System.Process.Mock|		For testing
+- |Vital.System.Process.Mock|		For mock testing
 - |Vital.System.Process.System|		Use |system()| internally (*)
 - |Vital.System.Process.Vimproc|	Use vimproc internally (*)
 
@@ -41,63 +41,20 @@ USAGE						*Vital.System.Process-usage*
 =============================================================================
 FUNCTIONS				*Vital.System.Process-functions*
 
-				*Vital.System.Process.iconv()*
-iconv({expr}, {from}, {to})
-	An alternate function of builtin |iconv()| which fail silently.
-	It returns {expr} when conversion has failed.
-
-				*Vital.System.Process.repair_posix_text()*
-repair_posix_text({text}[, {newline}])
-	It returns {text} with a trailing {newline} if no trailing {newline}
-	exists. If {newline} is omitted, "\n" will be used.
->
-	echo s:Process.repair_posix_text("A\nB\nC")
-	" => A\nB\nC\n
-	echo s:Process.repair_posix_text("A\nB\nC\n")
-	" => A\nB\nC\n
-	echo s:Process.repair_posix_text("A\nB\nC\n\n")
-	" => A\nB\nC\n\n
-<
-				*Vital.System.Process.join_posix_lines()*
-join_posix_lines({lines}[, {newline}])
-	It returns a {newline} joined |String| of {lines} with a trailing
-	{newline}. If {newline} is omitted, "\n" will be used.
->
-	echo s:Process.join_posix_lines(['A', 'B', 'C'])
-	" => A\nB\nC\n
-	echo s:Process.join_posix_lines(['A', 'B', 'C', ''])
-	" => A\nB\nC\n\n
-<
-				*Vital.System.Process.split_posix_text()*
-split_posix_text({text}[, {newline}])
-	It returns a {newline} separated |List| of {text} without an item for
-	trailing {newline} in {text}.
-	While POSIX text has a trailing {newline}, splitting text directly
-	with |split()| function returns a |List| with an additional empty
-	line. This function automatically remove a trailing {newline} when
-	exists, indicating that if {text} does not have a trailing {newline},
-	it is equal to 'split({text}, {newline}, 1)'.
-	If {newline} is omitted, "\n" will be used.
->
-	echo s:Process.split_posix_text("A\nB\nC\n")
-	" => ['A', 'B', 'C']
-	echo s:Process.split_posix_text("A\nB\nC")
-	" => ['A', 'B', 'C']
-	echo s:Process.split_posix_text("A\nB\nC\n\n")
-	" => ['A', 'B', 'C', '']
-<
 				*Vital.System.Process.execute()*
 execute({args}[, {options}])
-	Execute a process specified by {args} (|List|).
+	Executes a process specified by {args} (|List|).
 	It tries process clients listed in 'clients' attribute of {options}
-	and return a result |Dictionary| when a client supports {options}.
+	and return a result |Dictionary| when one of a client supports a
+	specified {options}.
 	Otherwise it raises an exception 'None of client support options:'.
 
 	The following attributes are supported in {options}
 
 		'clients'
-		A |List| of client names registered by register() function or
-		an instance of client (|Dictionary|)
+		A |List| of client names registered by
+		|Vital.System.Process.register()| function or an instance of
+		a process client (|Dictionary|).
 		The order of appearance is equal to the order of trial.
 		When vimproc is available, |Vital.System.Process.Vimproc| will
 		be listed prior to the |Vital.System.Process.System| in default.
@@ -134,7 +91,7 @@ execute({args}[, {options}])
 		'embed_content'
 		If 1, a POSIX |List| of 'output' value in {result} will be
 		embed into {result} dictionary as 'content'.
-		It uses |Vital.Process.split_posix_text()| internally.
+		It uses |Vital.Data.String.split_posix_text()| internally.
 
 	The following attributes exists in {result} dictionary and the value
 	should be equal among clients and environments:
@@ -153,17 +110,7 @@ execute({args}[, {options}])
 		'options'
 		An option |Dictionary| used for executing a process.
 
-	Additionally, the following attributes may exist. The value depends
-	on the client used (non cross-platform values):
-
-		'status'
-		A exit status of the process.
-
-		'cmdline'
-		An actual cmdline string used to execute the process.
-
-		'errormsg'
-		A human readable error message for the process fail.
+	See individual client documents for extra attributes (e.g. 'status').
 
 	Note that when |&verbose| is grater than 0, it echo which client is
 	used and the actual cmdline, for debugging.
@@ -204,7 +151,7 @@ execute({args}, {options})
 	endif
 <
 When you create a new process client, register that with the following
-function in 's:_vital_loaded()' function of Vital.System.Process module.
+function in 's:_vital_loaded()' function of |Vital.System.Process| module.
 
 				*Vital.System.Process.register()*
 register({name})
