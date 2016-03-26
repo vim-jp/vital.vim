@@ -100,14 +100,18 @@ endif
 " Implemented by external program.
 if s:is_unix
   function! s:move_exe(src, dest) abort
-    if !s:_has_move_exe() | return 0 | endif
+    if !s:_has_move_exe()
+      return 0
+    endif
     let [src, dest] = [a:src, a:dest]
     call system('mv ' . shellescape(src) . ' ' . shellescape(dest))
     return !v:shell_error
   endfunction
 elseif s:is_windows
   function! s:move_exe(src, dest) abort
-    if !s:_has_move_exe() | return 0 | endif
+    if !s:_has_move_exe()
+      return 0
+    endif
     let [src, dest] = [a:src, a:dest]
     " Normalize successive slashes to one slash.
     let src  = substitute(src, '[/\\]\+', '\', 'g')
@@ -147,14 +151,18 @@ endfunction
 " Implemented by external program.
 if s:is_unix
   function! s:copy_dir_exe(src, dest) abort
-    if !s:_has_copy_dir_exe() | return 0 | endif
+    if !s:_has_copy_dir_exe()
+      return 0
+    endif
     let [src, dest] = [a:src, a:dest]
     call system('cp -R ' . shellescape(src) . ' ' . shellescape(dest))
     return !v:shell_error
   endfunction
 elseif s:is_windows
   function! s:copy_dir_exe(src, dest) abort
-    if !s:_has_copy_dir_exe() | return 0 | endif
+    if !s:_has_copy_dir_exe()
+      return 0
+    endif
     let src  = s:_shellescape_robocopy(a:src)
     let dest = s:_shellescape_robocopy(a:dest)
     call system('robocopy /e ' . src . ' ' . dest)
@@ -234,14 +242,18 @@ endif
 " Implemented by external program.
 if s:is_unix
   function! s:copy_exe(src, dest) abort
-    if !s:_has_copy_exe() | return 0 | endif
+    if !s:_has_copy_exe()
+      return 0
+    endif
     let [src, dest] = [a:src, a:dest]
     call system('cp ' . shellescape(src) . ' ' . shellescape(dest))
     return !v:shell_error
   endfunction
 elseif s:is_windows
   function! s:copy_exe(src, dest) abort
-    if !s:_has_copy_exe() | return 0 | endif
+    if !s:_has_copy_exe()
+      return 0
+    endif
     let [src, dest] = [a:src, a:dest]
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
