@@ -30,7 +30,8 @@ interpolate({str} [,{context}])	*Vital.Data.String.Interpolation.interpolate()*
 				*Vital.Data.String.Interpolation-${}*
 	String interpolation[1] allows you to build string with evaluating
 	expressions inside `${}` in the {string}. You can pass a {context}
-	dictionary to evaluate `${expr}`.
+	dictionary to evaluate `${expr}`. NOTE: Invalid key in {context} is
+	skipped like '000' in a:.
 
 	[1]: http://en.wikipedia.org/wiki/String_interpolation
 >
