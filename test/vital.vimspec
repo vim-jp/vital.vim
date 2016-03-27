@@ -55,7 +55,7 @@ Describe vital
           Skip "windows doesn't handle symlink"
         endif
         call File.copy_dir(g:symlinkplugin_root, g:tmpdir)
-        let dest = Filepath.unixpath(g:tmpdir . '/symlink/')
+        let dest = Filepath.unixpath(g:tmpdir . 'symlink/')
         execute 'Vitalize --name=symlink ' . dest . ' ' . join(vitalize_modules, ' ')
         let rtp_save = &rtp
         execute 'set rtp+=' . dest
