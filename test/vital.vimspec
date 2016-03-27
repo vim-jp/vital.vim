@@ -79,6 +79,10 @@ Describe vital
         Assert True(Selfmodule.return1())
       End
 
+      It does not supports invalid self module which is in __latest__ dir
+        Throws /vital: module not found: InvalidSelfmodule/ :call V.import('InvalidSelfmodule')
+      End
+
       It supports cyclic dependencies
         Assert True(V.import('Cyclic1').return1())
       End
@@ -107,6 +111,10 @@ Describe vital
         let V = vital#{g:testplugin_name}#of()
         call V.load('Selfmodule')
         Assert True(V.Selfmodule.return1())
+      End
+
+      It does not supports invalid self module which is in __latest__ dir
+        Throws /vital: module not found: InvalidSelfmodule/ :call V.import('InvalidSelfmodule')
       End
 
       It supports cyclic dependencies
