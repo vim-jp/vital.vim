@@ -202,9 +202,6 @@ function! s:_module_sid(name) abort
     throw 'vital: module not found: ' . a:name
   endif
   let module_full_path = s:_unify_path(path)
-  if module_full_path is# '' ||  !filereadable(module_full_path)
-    throw 'vital: module not found: ' . a:name
-  endif
   let p = substitute('autoload/vital/__\w\+__/' . module_path, '/', '[/\\\\]\\+', 'g')
   let sid = s:_sid(module_full_path, p)
   if !sid
