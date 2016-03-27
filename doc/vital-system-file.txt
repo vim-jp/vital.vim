@@ -46,6 +46,29 @@ copy({src}, {dest})			*Vital.System.File.copy()*
 >
 	call s:F.copy("/tmp/old", "/tmp/new")
 <
+copy_dir({src}, {dest})			*Vital.System.File.copy_dir()*
+	This function invokes |Vital.System.File.copy_dir_exe()|
+	if your environment has a command to copy a directory.
+	Otherwise, this function invokes |Vital.System.File.copy_dir_vim()|.
+	Returns non-zero on success.
+	Returns zero on failure.
+
+copy_dir_exe({src}, {dest})		*Vital.System.File.copy_dir_exe()*
+	Copy a {src} directory to {dest}.
+	This function only works if your environment has a command
+	to copy a directory. See the followings for the required command.
+
+	Unix	Windows ~
+	cp	robocopy
+
+	Returns non-zero on success.
+	Returns zero on failure.
+
+copy_dir_vim({src}, {dest})		*Vital.System.File.copy_dir_vim()*
+	This is pure Vim script implementation of
+	|Vital.System.File.copy_dir_exe()|.
+	Returns non-zero on success.
+	Returns zero on failure.
 
 					*Vital.System.File.mkdir_nothrow()*
 mkdir_nothrow({name} [, {path} [, {prot}]])

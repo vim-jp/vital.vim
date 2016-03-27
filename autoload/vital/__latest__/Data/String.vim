@@ -5,12 +5,11 @@ set cpo&vim
 
 function! s:_vital_loaded(V) abort
   let s:V = a:V
-  let s:P = s:V.import('Prelude')
   let s:L = s:V.import('Data.List')
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Prelude', 'Data.List']
+  return ['Data.List']
 endfunction
 
 " Substitute a:from => a:to by string.
@@ -316,7 +315,7 @@ function! s:levenshtein_distance(str1, str2) abort
   let letters2 = split(a:str2, '\zs')
   let length1 = len(letters1)
   let length2 = len(letters2)
-  let distances = map(range(1, length1 + 1), 'map(range(1, length2 + 1), "0")')
+  let distances = map(range(1, length1 + 1), 'map(range(1, length2 + 1), ''0'')')
 
   for i1 in range(0, length1)
     let distances[i1][0] = i1
@@ -562,7 +561,86 @@ else
   endfunction
 endif
 
+function! s:remove_ansi_sequences(text) abort
+  return substitute(a:text, '\e\[\%(\%(\d;\)\?\d\{1,2}\)\?[mK]', '', 'g')
+endfunction
+
+function! s:escape_pattern(str) abort
+  " escape characters for no-magic
+  return escape(a:str, '^$~.*[]\')
+endfunction
+
+function! s:unescape_pattern(str) abort
+  " unescape characters for no-magic
+  return s:unescape(a:str, '^$~.*[]\')
+endfunction
+
+function! s:unescape(str, chars) abort
+  let chars = map(split(a:chars, '\zs'), 'escape(v:val, ''^$~.*[]\'')')
+  return substitute(a:str, '\\\(' . join(chars, '\|') . '\)', '\1', 'g')
+endfunction
+
+function! s:iconv(expr, from, to) abort
+  if a:from ==# '' || a:to ==# '' || a:from ==? a:to
+    return a:expr
+  endif
+  let result = iconv(a:expr, a:from, a:to)
+  return empty(result) ? a:expr : result
+endfunction
+
+" NOTE:
+" A definition of a TEXT file is "A file that contains characters organized
+" into one or more lines."
+" A definition of a LINE is "A sequence of zero or more non- <newline>s
+" plus a terminating <newline>"
+" That's why {stdin} always ends with <newline> ideally. However, there are
+" some programs which does not follow the POSIX rule and a Vim's way to join
+" List into TEXT; join({text}, "\n"); does not add <newline> to the end of
+" the last line.
+" That's why add a trailing <newline> if it does not exist.
+" REF:
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_392
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_205
+" :help split()
+" NOTE:
+" it does nothing if the text is a correct POSIX text
+function! s:repair_posix_text(text, ...) abort
+  let newline = get(a:000, 0, "\n")
+  return a:text =~# '\n$' ? a:text : a:text . newline
+endfunction
+
+" NOTE:
+" A definition of a TEXT file is "A file that contains characters organized
+" into one or more lines."
+" A definition of a LINE is "A sequence of zero or more non- <newline>s
+" plus a terminating <newline>"
+" REF:
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_392
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_205
+function! s:join_posix_lines(lines, ...) abort
+  let newline = get(a:000, 0, "\n")
+  return join(a:lines, newline) . newline
+endfunction
+
+" NOTE:
+" A definition of a TEXT file is "A file that contains characters organized
+" into one or more lines."
+" A definition of a LINE is "A sequence of zero or more non- <newline>s
+" plus a terminating <newline>"
+" TEXT into List; split({text}, '\r\?\n', 1); add an extra empty line at the
+" end of List because the end of TEXT ends with <newline> and keepempty=1 is
+" specified. (btw. keepempty=0 cannot be used because it will remove
+" emptylines in the head and the tail).
+" That's why removing a trailing <newline> before proceeding to 'split' is required
+" REF:
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_392
+" http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap03.html#tag_03_205
+function! s:split_posix_text(text, ...) abort
+  let newline = get(a:000, 0, '\r\?\n')
+  let text = substitute(a:text, newline . '$', '', '')
+  return split(text, newline, 1)
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
 " vim:set et ts=2 sts=2 sw=2 tw=0:
