@@ -1,7 +1,6 @@
 let s:plugin_name = expand('<sfile>:t:r')
 let s:vital_base_dir = expand('<sfile>:h')
 let s:project_root = expand('<sfile>:h:h:h')
-let s:has_latest_module = isdirectory(expand('<sfile>:h') . '/__latest__')
 let s:is_vital_vim = s:plugin_name is# '_latest__'
 
 let s:loaded = {}
@@ -134,7 +133,7 @@ function! s:_self_vital_files() abort
 endfunction
 
 function! s:_global_vital_files() abort
-  let pattern = 'autoload/vital/__latest__/**/*.vim'
+  let pattern = 'autoload/vital/__*__/**/*.vim'
   return split(globpath(&runtimepath, pattern, 1), "\n")
 endfunction
 
@@ -182,23 +181,22 @@ function! s:_get_module(name) abort dict
   try
     let module = vital#_{self.plugin_name}#{substitute(a:name, '\.', '#', 'g')}#import()
   catch /E117: Unknown function:/
-    if !s:has_latest_module
-      throw 'vital: module not found: ' . a:name
-    endif
     " Retry to support loading self modules.
-    let module = s:_get_latest_module(a:name)
+    let module = s:_get_builtin_module(a:name)
   endtry
   return module
 endfunction
 let s:Vital._get_module = s:_function('s:_get_module')
 
-function! s:_get_latest_module(name) abort
+function! s:_get_builtin_module(name) abort
  return s:sid2sfuncs(s:_module_sid(a:name))
 endfunction
 
+let s:vital_builtin_dir = printf('autoload/vital/__%s__/', s:is_vital_vim ? '*' : s:plugin_name)
+
 function! s:_module_sid(name) abort
   let module_path = substitute(a:name, '\.', '/', 'g') . '.vim'
-  let module_rel_path = 'autoload/vital/__*__/' . module_path
+  let module_rel_path = s:vital_builtin_dir . module_path
   let module_full_path = s:_unify_path(get(split(globpath(s:_module_sid_base_dir(), module_rel_path, 1), "\n"), 0, ''))
   if !filereadable(module_full_path)
     throw 'vital: module not found: ' . a:name
