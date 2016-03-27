@@ -4,6 +4,10 @@ env:
   - HEAD=no
 sudo: false
 
+os:
+  - linux
+  - osx
+
 addons:
   apt:
     packages:
@@ -16,8 +20,11 @@ addons:
       - lua5.1
 
 install:
-  - bash scripts/install-vim.sh
-  - if [ x"$HEAD" = "xyes" ]; then export PATH=$HOME/vim/bin:$PATH; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" != "osx" ]; then bash scripts/install-vim.sh; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" != "osx" ]; then export PATH=$HOME/vim/bin:$PATH; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install lua; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install vim --with-lua; fi
 
 before_script:
   - git clone --depth 1 https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
