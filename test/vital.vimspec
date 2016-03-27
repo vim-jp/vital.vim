@@ -14,13 +14,16 @@ Describe vital
   End
 
   After all
-    call File.rmdir(Filepath.join(g:testplugin_root, printf('autoload/vital/_%s/', g:testplugin_name)), 'r')
-    let delete_files = [
-    \   Filepath.join(g:testplugin_root, 'autoload/vital.vim'),
-    \   Filepath.join(g:testplugin_root, printf('autoload/vital/_%s.vim', g:testplugin_name)),
-    \   Filepath.join(g:testplugin_root, printf('autoload/vital/%s.vim', g:testplugin_name)),
-    \   Filepath.join(g:testplugin_root, printf('autoload/vital/%s.vital', g:testplugin_name))
-    \ ]
+    let delete_files = []
+    for [root, name] in [[g:testplugin_root, g:testplugin_name], [g:symlinkplugin_root, 'symlink']]
+      call File.rmdir(Filepath.join(root, printf('autoload/vital/_%s/', name)), 'r')
+      let delete_files += [
+      \   Filepath.join(root, 'autoload/vital.vim'),
+      \   Filepath.join(root, printf('autoload/vital/_%s.vim', name)),
+      \   Filepath.join(root, printf('autoload/vital/%s.vim', name)),
+      \   Filepath.join(root, printf('autoload/vital/%s.vital', name))
+      \ ]
+    endfor
     for f in delete_files
       call delete(f)
     endfor
@@ -54,9 +57,7 @@ Describe vital
         if Prelude.is_windows()
           Skip "windows doesn't handle symlink"
         endif
-        call File.copy_dir(g:symlinkplugin_root, g:tmpdir)
-        let dest = Filepath.unixpath(g:tmpdir . 'symlink/')
-        execute 'Vitalize --name=symlink ' . dest . ' ' . join(vitalize_modules, ' ')
+        let dest = Filepath.unixpath(g:symlinkplugin_root)
         let rtp_save = &rtp
         execute 'set rtp+=' . dest
         let V = vital#symlink#of()
