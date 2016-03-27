@@ -58,13 +58,11 @@ Describe vital
           Skip "windows doesn't handle symlink"
         endif
         let dest = Filepath.unixpath(g:symlinkplugin_root)
-        let rtp_save = &rtp
-        execute 'set rtp+=' . dest
+        execute 'Vitalize --name=symlink ' . dest . ' ' . join(vitalize_modules, ' ')
         let V = vital#symlink#of()
         Assert True(V.import('Selfmodule').return1())
         let List = V.import('Data.List')
         Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
-        let &rtp = rtp_save
       End
     End
   End
