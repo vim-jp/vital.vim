@@ -201,12 +201,11 @@ function! s:_module_sid(name) abort
   if !filereadable(path)
     throw 'vital: module not found: ' . a:name
   endif
-  let module_full_path = s:_unify_path(path)
   let p = substitute('autoload/vital/__\w\+__/' . module_path, '/', '[/\\\\]\\+', 'g')
-  let sid = s:_sid(module_full_path, p)
+  let sid = s:_sid(path, p)
   if !sid
-    call s:_source(module_full_path)
-    let sid = s:_sid(module_full_path, p)
+    call s:_source(path)
+    let sid = s:_sid(path, p)
     if !sid
       throw 'vital: cannot get <SID> from path'
     endif
@@ -224,15 +223,16 @@ endfunction
 
 " @vimlint(EVL102, 1, l:_)
 " @vimlint(EVL102, 1, l:__)
-function! s:_sid(fullpath, filter_pattern) abort
-  if has_key(s:cache_sid, a:fullpath)
-    return s:cache_sid[a:fullpath]
+function! s:_sid(path, filter_pattern) abort
+  let unified_path = s:_unify_path(a:path)
+  if has_key(s:cache_sid, unified_path)
+    return s:cache_sid[unified_path]
   endif
   for line in filter(split(s:_redir(':scriptnames'), "\n"), 'v:val =~# a:filter_pattern')
     let [_, sid, path; __] = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
-    if s:_unify_path(path) is# a:fullpath
-      let s:cache_sid[a:fullpath] = sid
-      return s:cache_sid[a:fullpath]
+    if s:_unify_path(path) is# unified_path
+      let s:cache_sid[unified_path] = sid
+      return s:cache_sid[unified_path]
     endif
   endfor
   return 0
