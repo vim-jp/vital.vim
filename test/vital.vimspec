@@ -80,6 +80,7 @@ Describe vital
       End
 
       It does not supports invalid self module which is in __latest__ dir
+        " call V.import('InvalidSelfmodule')
         Throws /vital: module not found: InvalidSelfmodule/ :call V.import('InvalidSelfmodule')
       End
 

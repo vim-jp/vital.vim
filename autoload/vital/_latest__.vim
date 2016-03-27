@@ -197,8 +197,12 @@ let s:vital_builtin_dir = printf('autoload/vital/__%s__/', s:is_vital_vim ? '*' 
 function! s:_module_sid(name) abort
   let module_path = substitute(a:name, '\.', '/', 'g') . '.vim'
   let module_rel_path = s:vital_builtin_dir . module_path
-  let module_full_path = s:_unify_path(get(split(globpath(s:_module_sid_base_dir(), module_rel_path, 1), "\n"), 0, ''))
-  if !filereadable(module_full_path)
+  let path = get(split(globpath(s:_module_sid_base_dir(), module_rel_path, 1), "\n"), 0, '')
+  if !filereadable(path)
+    throw 'vital: module not found: ' . a:name
+  endif
+  let module_full_path = s:_unify_path(path)
+  if module_full_path is# '' ||  !filereadable(module_full_path)
     throw 'vital: module not found: ' . a:name
   endif
   let p = substitute('autoload/vital/__\w\+__/' . module_path, '/', '[/\\\\]\\+', 'g')
