@@ -14,4 +14,4 @@ let g:cyclic_module_root = g:root . '/test/_testdata/vital/cyclic/'
 let g:symlinkplugin_root = g:root . '/test/_testdata/vital/symlink_root/symlink/'
 call themis#option('runtimepath', g:testplugin_root)
 call themis#option('runtimepath', g:cyclic_module_root)
-call themis#option('runtimepath', g:symlinkplugin_root)
+" call themis#option('runtimepath', g:symlinkplugin_root)
