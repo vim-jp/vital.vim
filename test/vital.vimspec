@@ -15,8 +15,10 @@ Describe vital
 
   After all
     let delete_files = []
-    for [root, name] in [[g:testplugin_root, g:testplugin_name], [g:symlinkplugin_root, 'symlink']]
-      call File.rmdir(Filepath.join(root, printf('autoload/vital/_%s/', name)), 'r')
+    let root_and_name = [[g:testplugin_root, g:testplugin_name]]
+    let root_and_name += [ Prelude.is_windows() ? [] : [g:symlinkplugin_root, 'symlink']]
+    for [root, name] in filter(root_and_name, '!empty(v:val)')
+      call File.rmdir(Filepath.unixpath(Filepath.join(root, printf('autoload/vital/_%s/', name))), 'r')
       let delete_files += [
       \   Filepath.join(root, 'autoload/vital.vim'),
       \   Filepath.join(root, printf('autoload/vital/_%s.vim', name)),

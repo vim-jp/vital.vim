@@ -248,7 +248,7 @@ function! s:_redir(cmd) abort
   return res
 endfunction
 
-if filereadable(expand('<sfile>:r') . '.VIM')
+if filereadable(expand('<sfile>:r') . '.VIM') " is case-insensitive or not
   let s:_unify_path_cache = {}
   " resolve() is slow, so we cache results.
   " Note: On windows, vim can't expand path names from 8.3 formats.
