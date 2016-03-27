@@ -10,23 +10,30 @@ set cpo&vim
 " e.g.)
 " echo s:has_version('7.3.629')
 " echo s:has_version('7.3')
-"
-" Note:
-" use has('patch-7.4.237') style instead if you need to check a version of Vim
-" equal and grater than 7.4.237
-function! s:has_version(version) abort
-  let versions = split(a:version, '\.')
-  if len(versions) == 2
-    let versions += [0]
-  elseif len(versions) != 3
-    return 0
-  endif
-  let vim_version = versions[0] * 100 + versions[1]
-  let patch_level = versions[2]
-  return v:version > vim_version ||
-  \     (v:version == vim_version &&
-  \       (patch_level == 0 || has('patch' . patch_level)))
-endfunction
+if has('patch-7.4.237')
+  function! s:has_version(version) abort
+    let versions = split(a:version, '\.')
+    if len(versions) == 2
+      let vim_version = versions[0] * 100 + versions[1]
+      return v:version >= vim_version
+    endif
+    return has('patch-' . a:version)
+  endfunction
+else
+  function! s:has_version(version) abort
+    let versions = split(a:version, '\.')
+    if len(versions) == 2
+      let versions += [0]
+    elseif len(versions) != 3
+      return 0
+    endif
+    let vim_version = versions[0] * 100 + versions[1]
+    let patch_level = versions[2]
+    return v:version > vim_version ||
+    \     (v:version == vim_version &&
+    \       (patch_level == 0 || has('patch' . patch_level)))
+  endfunction
+endif
 
 " Patch 7.3.694
 if exists('*shiftwidth')
