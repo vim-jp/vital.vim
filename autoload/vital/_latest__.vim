@@ -180,7 +180,7 @@ let s:Vital._import = s:_function('s:_import')
 function! s:_get_module(name) abort dict
   try
     let module = vital#_{self.plugin_name}#{substitute(a:name, '\.', '#', 'g')}#import()
-  catch /E117: Unknown function:/
+  catch /^Vim\%((\a\+)\)\=:E117/
     " Retry to support loading self modules.
     let module = s:_get_builtin_module(a:name)
   endtry
