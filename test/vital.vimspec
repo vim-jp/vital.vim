@@ -5,6 +5,9 @@ Describe vital
     let File = Vital.import('System.File')
     let Filepath = Vital.import('System.Filepath')
     let ScriptLocal = Vital.import('Vim.ScriptLocal')
+    let Prelude = Vital.import('Prelude')
+
+    call File.mkdir_nothrow(g:tmpdir)
 
     let vitalize_modules  = ['Data.List', 'Data.LazyList', 'Data.String', 'Web.JSON', 'Cyclic1']
     execute 'Vitalize --name=testplugin ' . Filepath.unixpath(g:testplugin_root) . ' ' . join(vitalize_modules, ' ')
@@ -21,6 +24,7 @@ Describe vital
     for f in delete_files
       call delete(f)
     endfor
+    call File.rmdir(g:tmpdir, 'rf')
   End
 
   Describe :Vitalize
@@ -41,6 +45,25 @@ Describe vital
       It fails with invalid path
         let vitalizer = ScriptLocal.sfuncs('autoload/vitalizer.vim')
         Throws /vitalizer: .* not found./ :call vitalizer.revitalize('invalid-path')
+      End
+    End
+
+
+    Context symlink
+      It supports symlink plugin
+        if Prelude.is_windows()
+          Skip "windows doesn't handle symlink"
+        endif
+        call File.copy_dir(g:symlinkplugin_root, g:tmpdir)
+        let dest = Filepath.unixpath(g:tmpdir . '/symlink/')
+        execute 'Vitalize --name=symlink ' . dest . ' ' . join(vitalize_modules, ' ')
+        let rtp_save = &rtp
+        execute 'set rtp+=' . dest
+        let V = vital#symlink#of()
+        Assert True(V.import('Selfmodule').return1())
+        let List = V.import('Data.List')
+        Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+        let &rtp = rtp_save
       End
     End
   End
