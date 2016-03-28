@@ -21,8 +21,11 @@ endfunction
 " NOTE: Old vim doesn't support extending l:
 " call extend(l:, a:context)
 function! s:_context_eval(expr, context) abort
-  for s:key in filter(keys(a:context), "v:val !~# '^\\d*$'")
-      let {s:key} = a:context[s:key]
+  for s:key in filter(keys(a:context), "v:val =~# '^\\h\\w*$'")
+    if type(a:context[s:key]) is# type(function('tr')) && s:key !~# '^\u'
+      continue
+    endif
+    let {s:key} = a:context[s:key]
   endfor
   sandbox return eval(a:expr)
 endfunction

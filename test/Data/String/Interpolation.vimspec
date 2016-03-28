@@ -56,6 +56,15 @@ Describe Data.String.Interpolation
     It doesn't raise Vim(let):E704: Funcref variable name must start with a capital
       Throws /Vim(let):E729:/ g:I.interpolate('${Funcref}', {'Funcref': function('InterpolationFunc')})
     End
+    It doens't throw error with invalid key in {context}
+      let context = {
+      \   'name': 'vital(valid)',
+      \   'f': function('InterpolationFunc'),
+      \   '000': 'digit',
+      \   'v i m': 'space',
+      \ }
+      Assert Equals(g:I.interpolate("${name} is awesome", context), "vital(valid) is awesome")
+    End
     It can accept a:
       Assert Equals(InterpolationFuncA('X', 'Y'), 'x is X. y is Y')
     End
