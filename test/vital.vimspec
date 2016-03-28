@@ -77,6 +77,29 @@ Describe vital
     End
   End
 
+  Describe vital#{plugin-name}#import()
+    It can import modules embedded in {plugin-name}
+      let List = vital#{g:testplugin_name}#import('Data.List')
+      Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+    End
+
+    It cannot import modules which is not embedded in {plugin-name}
+      " assume Data.Optional is not :Vitalized in testplugin
+      Throws /vital: module not found: Data.Optional/ :call vital#{g:testplugin_name}#import('Data.Optional')
+    End
+  End
+
+  Describe vital#import()
+    It can import all modules in &rtp
+      let List = vital#import('Data.List')
+      Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+    End
+
+    It cannot import modules which is not in &rtp
+      Throws /vital: module not found: Hoge.Foo/ :call vital#{g:testplugin_name}#import('Hoge.Foo')
+    End
+  End
+
   Describe revital-Vital-object
     Before all
       let V = vital#{g:testplugin_name}#of()
