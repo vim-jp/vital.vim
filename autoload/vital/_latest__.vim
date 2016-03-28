@@ -25,6 +25,13 @@ function! vital#{s:plugin_name}#of() abort
   return s:new(s:plugin_name)
 endfunction
 
+function! vital#{s:plugin_name}#import(...) abort
+  if !exists('s:V')
+    let s:V = s:new(s:plugin_name)
+  endif
+  return call(s:V.import, a:000, s:V)
+endfunction
+
 let s:Vital = {}
 
 function! s:new(plugin_name) abort
