@@ -297,7 +297,7 @@ else
       if a:list[i] ==# a:list[i - 1]
         call remove(a:list, i)
       endif
-        let i -= 1
+      let i -= 1
     endwhile
     return a:list
   endfunction
