@@ -110,18 +110,14 @@ endfunction
 let s:Vital.unload = s:_function('s:unload')
 
 function! s:exists(name) abort dict
+  if a:name !~# '\v^\u\w*%(\.\u\w*)*$'
+    throw 'vital: Invalid module name: ' . a:name
+  endif
   let b = exists('*' . s:_import_func_name(self.plugin_name, a:name))
   if b
     return b
   endif
-  let name_path = substitute(a:name, '\.', '/', 'g')
-  let path = printf('%s/_%s/%s.vim', s:vital_base_dir, self.plugin_name, name_path)
-  let b = filereadable(path)
-  if b
-    return b
-  endif
-  let path = printf('%s/_%s/%s.vim', s:vital_base_dir, '_latest__', name_path)
-  let b = filereadable(path)
+  return s:_module_path(a:name) isnot# ''
 endfunction
 let s:Vital.exists = s:_function('s:exists')
 
@@ -202,16 +198,12 @@ function! s:_get_builtin_module(name) abort
  return s:sid2sfuncs(s:_module_sid(a:name))
 endfunction
 
-let s:vital_builtin_dir = printf('autoload/vital/__%s__/', s:is_vital_vim ? '*' : s:plugin_name)
-
 function! s:_module_sid(name) abort
-  let module_path = substitute(a:name, '\.', '/', 'g') . '.vim'
-  let module_rel_path = s:vital_builtin_dir . module_path
-  let path = get(split(globpath(s:_module_sid_base_dir(), module_rel_path, 1), "\n"), 0, '')
+  let path = s:_module_path(a:name)
   if !filereadable(path)
     throw 'vital: module not found: ' . a:name
   endif
-  let p = substitute('autoload/vital/__\w\+__/' . module_path, '/', '[/\\\\]\\+', 'g')
+  let p = substitute(a:name, '\.', '[/\\\\]\\+', 'g')
   let sid = s:_sid(path, p)
   if !sid
     call s:_source(path)
@@ -221,6 +213,10 @@ function! s:_module_sid(name) abort
     endif
   endif
   return sid
+endfunction
+
+function! s:_module_path(name) abort
+  return get(s:_extract_files(a:name, s:vital_files()), 0, '')
 endfunction
 
 function! s:_module_sid_base_dir() abort

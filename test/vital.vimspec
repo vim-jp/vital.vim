@@ -199,7 +199,12 @@ Describe vital
 
       It returns 0 for non-existing module
         let V = vital#{g:testplugin_name}#of()
-        Assert False(V.exists('not-exists'))
+        Assert False(V.exists('Not.Exists'))
+      End
+
+      It throws error for invalid module name
+        let V = vital#{g:testplugin_name}#of()
+        Throws /vital: Invalid module name: not-exists/ :call V.exists('not-exists')
       End
     End
 
