@@ -110,7 +110,7 @@ endfunction
 let s:Vital.unload = s:_function('s:unload')
 
 function! s:exists(name) abort dict
-  let b = exists(printf('*vital#_%s#%s#import', self.plugin_name, substitute(a:name, '\.', '#', 'g')))
+  let b = exists('*' . s:_import_func_name(self.plugin_name, a:name))
   if b
     return b
   endif
@@ -185,15 +185,18 @@ let s:Vital._import = s:_function('s:_import')
 
 " s:_get_module() returns module object wihch has all script local functions.
 function! s:_get_module(name) abort dict
-  try
-    let module = vital#_{self.plugin_name}#{substitute(a:name, '\.', '#', 'g')}#import()
-  catch /^Vim\%((\a\+)\)\=:E117/
-    " Retry to support loading self modules.
-    let module = s:_get_builtin_module(a:name)
-  endtry
-  return module
+  let funcname = s:_import_func_name(self.plugin_name, a:name)
+  if s:_exists_autoload_func_with_source(funcname)
+    return call(funcname, [])
+  else
+    return s:_get_builtin_module(a:name)
+  endif
 endfunction
 let s:Vital._get_module = s:_function('s:_get_module')
+
+function! s:_import_func_name(plugin_name, module_name) abort
+  return printf('vital#_%s#%s#import', a:plugin_name, s:_dot_to_sharp(a:module_name))
+endfunction
 
 function! s:_get_builtin_module(name) abort
  return s:sid2sfuncs(s:_module_sid(a:name))
@@ -222,6 +225,26 @@ endfunction
 
 function! s:_module_sid_base_dir() abort
   return s:is_vital_vim ? &rtp : s:project_root
+endfunction
+
+function! s:_dot_to_sharp(name) abort
+  return substitute(a:name, '\.', '#', 'g')
+endfunction
+
+" It will sources autoload file if a given func is not already defined.
+function! s:_exists_autoload_func_with_source(funcname) abort
+  if exists('*' . a:funcname)
+    " Return true if a given func is already defined
+    return 1
+  endif
+  " source a file which may include a given func definition and try again.
+  let path = 'autoload/' . substitute(substitute(a:funcname, '#[^#]*$', '.vim', ''), '#', '/', 'g')
+  call s:_runtime(path)
+  return exists('*' . a:funcname)
+endfunction
+
+function! s:_runtime(path) abort
+  execute 'runtime' fnameescape(a:path)
 endfunction
 
 function! s:_source(path) abort

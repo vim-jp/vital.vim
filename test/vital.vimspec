@@ -87,6 +87,31 @@ Describe vital
       " assume Data.Optional is not :Vitalized in testplugin
       Throws /vital: module not found: Data.Optional/ :call vital#{g:testplugin_name}#import('Data.Optional')
     End
+
+    It can be called in &statusline
+      Skip "themis cannot test statusline "
+
+      let g:vital_statusline_func_called = 0
+      function! VitalStatusLineTest() abort
+        let g:vital_statusline_func_called = 1
+        return string(vital#{g:testplugin_name}#import('Selfmodule'))
+      endfunction
+      let funcname = printf("vital#%s#import('Selfmodule')", g:testplugin_name)
+      let statusline_save = &statusline
+      let laststatus_save = &laststatus
+      set laststatus=2
+
+      set statusline=%!VitalStatusLineTest()
+      let statusline = &statusline
+      redrawstatus
+      Assert Equals(g:vital_statusline_func_called, 1)
+      Assert Equals(&statusline, statusline)
+
+      let &statusline = statusline_save
+      let &laststatus = laststatus_save
+      delfunction VitalStatusLineTest
+      unlet g:vital_statusline_func_called
+    End
   End
 
   Describe revital-Vital-object
