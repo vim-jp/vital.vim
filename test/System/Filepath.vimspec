@@ -4,6 +4,8 @@ let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 Describe System.Filepath
   Before all
     let FP = s:V.import('System.Filepath')
+
+    let is_case_sensitive_file_system = !(isdirectory(tolower(g:root)) && isdirectory(toupper(g:root)))
   End
 
   Describe .abspath()
@@ -191,6 +193,9 @@ Describe System.Filepath
 
       Context in case-sensitive system
         It should not ignore case
+          if !is_case_sensitive_file_system
+            Skip "not in case sensitive system, maybe Mac OS?"
+          endif
           Assert False(FP.contains('/etc/x11/xinit', '/etc/X11'))
         End
       End
