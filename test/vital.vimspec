@@ -112,6 +112,28 @@ Describe vital
       delfunction VitalStatusLineTest
       unlet g:vital_statusline_func_called
     End
+
+    Context wildignore handling
+      Before all
+        set wildignore+=*.vim
+        call vital#{g:testplugin_name}#of().unload()
+      End
+
+      After all
+        set wildignore-=*.vim
+      End
+
+      It can handle wildignore (embedded module)
+        let List = vital#{g:testplugin_name}#import('Data.List')
+        Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+      End
+
+      It can handle wildignore (self module)
+        let Selfmodule = vital#{g:testplugin_name}#import('Selfmodule')
+        Assert True(Selfmodule.return1())
+      End
+    End
+
   End
 
   Describe revital-Vital-object
@@ -148,6 +170,34 @@ Describe vital
       It supports cyclic dependencies
         Assert True(V.import('Cyclic1').return1())
       End
+
+      Context wildignore handling
+        Before all
+          set wildignore+=*.vim
+          call vital#{g:testplugin_name}#of().unload()
+        End
+
+        After all
+          set wildignore-=*.vim
+        End
+
+        It can handle wildignore (embedded module)
+          let List = vital#{g:testplugin_name}#of().import('Data.List')
+          Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+        End
+
+        It can handle wildignore (self module)
+          let Selfmodule = vital#{g:testplugin_name}#of().import('Selfmodule')
+          Assert True(Selfmodule.return1())
+        End
+
+        It can handle wildignore (vital)
+          call Vital.unload()
+          let List = Vital.import('Data.List')
+          Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+        End
+      End
+
     End
 
     Describe .load
@@ -184,6 +234,34 @@ Describe vital
         call V.load('Cyclic1')
         Assert True(V.Cyclic1.return1())
       End
+
+      Context wildignore handling
+        Before all
+          set wildignore+=*.vim
+          call vital#{g:testplugin_name}#of().unload()
+        End
+
+        After all
+          set wildignore-=*.vim
+        End
+
+        It can handle wildignore (embedded module)
+          let V = vital#{g:testplugin_name}#of().load('Data.List')
+          Assert Equals(V.Data.List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+        End
+
+        It can handle wildignore (self module)
+          let V = vital#{g:testplugin_name}#of().load('Selfmodule')
+          Assert True(V.Selfmodule.return1())
+        End
+
+        It can handle wildignore (vital)
+          call Vital.unload()
+          let V = Vital.load('Data.List')
+          Assert Equals(V.Data.List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
+        End
+      End
+
     End
 
     Describe .exists()
@@ -206,6 +284,31 @@ Describe vital
         let V = vital#{g:testplugin_name}#of()
         Throws /vital: Invalid module name: not-exists/ :call V.exists('not-exists')
       End
+
+      Context wildignore handling
+        Before all
+          set wildignore+=*.vim
+          call vital#{g:testplugin_name}#of().unload()
+        End
+
+        After all
+          set wildignore-=*.vim
+        End
+
+        It can handle wildignore (embedded module)
+          Assert True(vital#{g:testplugin_name}#of().exists('Data.List'))
+        End
+
+        It can handle wildignore (self module)
+          Assert True(vital#{g:testplugin_name}#of().exists('Selfmodule'))
+        End
+
+        It can handle wildignore (vital)
+          call Vital.unload()
+          Assert True(Vital.exists('Data.List'))
+        End
+      End
+
     End
 
     Describe .search()
@@ -228,6 +331,30 @@ Describe vital
 
       It supports **
         Assert True(len(V.search('**')) >= len(vitalize_modules), 'Vitalized modules exists at least')
+      End
+
+      Context wildignore handling
+        Before all
+          set wildignore+=*.vim
+          call vital#{g:testplugin_name}#of().unload()
+        End
+
+        After all
+          set wildignore-=*.vim
+        End
+
+        It can handle wildignore (embedded module)
+          Assert NotEmpty(vital#{g:testplugin_name}#of().search('Data.List'))
+        End
+
+        It can handle wildignore (self module)
+          Assert NotEmpty(vital#{g:testplugin_name}#of().search('Selfmodule'))
+        End
+
+        It can handle wildignore (vital)
+          call Vital.unload()
+          Assert NotEmpty(Vital.search('Data.List'))
+        End
       End
     End
 
