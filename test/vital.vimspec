@@ -69,6 +69,30 @@ Describe vital
     End
   End
 
+  Describe vital##of()
+    It creates a vital object
+      let V = vital#of(g:testplugin_name)
+      Assert Equals(type(V), type({}))
+      Assert HasKey(V, 'import')
+    End
+
+    It creates a vital object which can import all available modules with 'vital'
+      let V = vital#of('vital')
+      Assert NotEmpty(V.import('Data.List'))
+      Assert NotEmpty(V.import('Selfmodule'))
+      Assert NotEmpty(V.import('Cyclic1'))
+      Assert Equals(V.load('Data.List'), V)
+      Assert Equals(V.load('Selfmodule'), V)
+      Assert Equals(V.load('Cyclic1'), V)
+      Assert True(V.exists('Data.List'))
+      Assert True(V.exists('Selfmodule'))
+      Assert True(V.exists('Cyclic1'))
+      Assert NotEmpty(V.search('Data.List'))
+      Assert NotEmpty(V.search('Selfmodule'))
+      Assert NotEmpty(V.search('Cyclic1'))
+    End
+  End
+
   Describe vital#{plugin-name}#of()
     It creates a vital object
       let V = vital#{g:testplugin_name}#of()
