@@ -188,14 +188,20 @@ function! s:_get_module(name) abort dict
     return s:_get_builtin_module(a:name)
   endif
 endfunction
-let s:Vital._get_module = s:_function('s:_get_module')
-
-function! s:_import_func_name(plugin_name, module_name) abort
-  return printf('vital#_%s#%s#import', a:plugin_name, s:_dot_to_sharp(a:module_name))
-endfunction
 
 function! s:_get_builtin_module(name) abort
  return s:sid2sfuncs(s:_module_sid(a:name))
+endfunction
+
+if s:is_vital_vim
+  " For vital.vim, we can use s:_get_builtin_module directly
+  let s:Vital._get_module = s:_function('s:_get_builtin_module')
+else
+  let s:Vital._get_module = s:_function('s:_get_module')
+endif
+
+function! s:_import_func_name(plugin_name, module_name) abort
+  return printf('vital#_%s#%s#import', a:plugin_name, s:_dot_to_sharp(a:module_name))
 endfunction
 
 function! s:_module_sid(name) abort
@@ -203,7 +209,9 @@ function! s:_module_sid(name) abort
   if !filereadable(path)
     throw 'vital: module not found: ' . a:name
   endif
-  let p = substitute(a:name, '\.', '[/\\\\]\\+', 'g')
+  let vital_dir = s:is_vital_vim ? '__\w\+__' : printf('_\{1,2}%s\%%(__\)\?', s:plugin_name)
+  let base = join([vital_dir, ''], '[/\\]\+')
+  let p = base . substitute('' . a:name, '\.', '[/\\\\]\\+', 'g')
   let sid = s:_sid(path, p)
   if !sid
     call s:_source(path)
