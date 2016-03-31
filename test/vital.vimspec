@@ -91,6 +91,25 @@ Describe vital
       Assert NotEmpty(V.search('Selfmodule'))
       Assert NotEmpty(V.search('Cyclic1'))
     End
+
+    Context wildignore handling
+      Before all
+        set wildignore+=*.vim,*.vital
+        call vital#{g:testplugin_name}#of().unload()
+      End
+
+      After all
+        set wildignore-=*.vim,*.vital
+      End
+
+      It handles &wildignore
+        Skip 'it is known bug but we cannot modify autoload/vital.vim for all plugins using vital.vim #259'
+        let V = vital#of(g:testplugin_name)
+        Assert Equals(type(V), type({}))
+        Assert HasKey(V, 'import')
+      End
+    End
+
   End
 
   Describe vital#{plugin-name}#of()
