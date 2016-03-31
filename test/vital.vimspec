@@ -227,25 +227,25 @@ Describe vital
     Describe .load
       It imports a basic vital module
         let V = vital#{g:testplugin_name}#of()
-        call V.load('Data.List')
+        Assert Equals(V.load('Data.List'), V)
         Assert Equals(V.Data.List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
       End
 
       It supports s:_vital_loaded(V)
         let V = vital#{g:testplugin_name}#of()
-        call V.load('Web.JSON')
+        Assert Equals(V.load('Web.JSON'), V)
         Assert Equals(V.Web.JSON.decode('[1, "ni"]'), [1, "ni"])
       End
 
       It supports s:_vital_created(V)
         let V = vital#{g:testplugin_name}#of()
-        call V.load('Web.JSON')
+        Assert Equals(V.load('Web.JSON'), V)
         Assert HasKey(V.Web.JSON, 'true')
       End
 
       It supports self module
         let V = vital#{g:testplugin_name}#of()
-        call V.load('Selfmodule')
+        Assert Equals(V.load('Selfmodule'), V)
         Assert True(V.Selfmodule.return1())
       End
 
@@ -255,7 +255,7 @@ Describe vital
 
       It supports cyclic dependencies
         let V = vital#{g:testplugin_name}#of()
-        call V.load('Cyclic1')
+        Assert Equals(V.load('Cyclic1'), V)
         Assert True(V.Cyclic1.return1())
       End
 
