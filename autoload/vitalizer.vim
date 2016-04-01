@@ -5,6 +5,7 @@ set cpo&vim
 
 let s:REQUIRED_FILES = [
 \   'autoload/vital.vim',
+\   'autoload/vital/_latest__.vim',
 \   'autoload/vital/__latest__.vim',
 \ ]
 let s:V = vital#of('vital')
@@ -21,7 +22,6 @@ let s:ScriptLocal = s:V.import('Vim.ScriptLocal')
 let g:vitalizer#vital_dir =
 \     get(g:, 'vitalizer#vital_dir', expand('<sfile>:h:h:p'))
 
-let s:LOADER_FILE = s:FP.join(g:vitalizer#vital_dir, 'autoload', 'vital', '_latest__.vim')
 let s:DATA_DIR = s:FP.join(g:vitalizer#vital_dir, 'data', 'vital')
 " Insert s:AUTOLOADABLIZE_TEMPLATE to each module files:)
 let s:AUTOLOADABLIZE_TEMPLATE = readfile(s:FP.join(s:DATA_DIR, 'autoloadablize.vim'))
@@ -391,7 +391,7 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     " List and check the installing files.
     let install_files = []
     for f in files + s:REQUIRED_FILES
-      let after = substitute(f, '__latest__', '_' . vital_data.name, '')
+      let after = substitute(f, '_latest__', vital_data.name, '')
       let pat = substitute(f, '__latest__', '__*__', '')
       let paths = globpath(g:vitalizer#vital_dir . ',' . &runtimepath, pat, 1)
       let from = get(split(paths, "\n"), 0)
@@ -568,12 +568,6 @@ function! s:Revitalizer.revitalize() abort
   endfor
   " TODO: embed module_data
   " TODO: gather self module data
-  call self.copy_loader()
-endfunction
-
-function! s:Revitalizer.copy_loader() abort
-  let dest = s:FP.join(fnamemodify(self.vital_dir, ':h'), printf('%s.vim', self.vital_data.name))
-  call s:copy(s:LOADER_FILE, dest)
 endfunction
 
 " Use s:ScriptLocal.sid2sfuncs(sid) and s:ScriptLocal.scriptnames() in .new()
