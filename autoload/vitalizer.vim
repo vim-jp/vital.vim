@@ -204,13 +204,7 @@ endfunction
 
 " @return list<{module-name}>
 function! s:available_module_names() abort
-  return sort(s:L.uniq(filter(map(s:_global_vital_files(),
-  \          's:file2module_name(v:val)'), 's:is_module_name(v:val)')))
-endfunction
-
-function! s:_global_vital_files() abort
-  let pattern = 'autoload/vital/__latest__/**/*.vim'
-  return split(globpath(&runtimepath, pattern, 1), "\n")
+  return s:V.search('**')
 endfunction
 
 function! s:builtin_modules(rtp_dir) abort
@@ -418,6 +412,8 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
       let content = [vital_data.name, hash, ''] + installing_modules
       call writefile(content, vital_data.vital_file)
 
+      call s:revitalize(a:to)
+
       return {
       \ 'action': 'install',
       \ 'prev_hash': vital_data.hash,
@@ -508,8 +504,6 @@ function! vitalizer#command(args) abort
         let mes = printf("vitalizer: updated vital of '%s'. (%s)",
         \                to, hash_stat)
       endif
-
-      call s:revitalize(to)
 
       call s:Mes.echomsg('MoreMsg', mes)
     elseif !empty(result) && result.action ==# 'uninstall'

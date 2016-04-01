@@ -69,7 +69,7 @@ Describe vital
     End
   End
 
-  Describe vital##of()
+  Describe vital#of()
     It creates a vital object
       let V = vital#of(g:testplugin_name)
       Assert Equals(type(V), type({}))

@@ -217,7 +217,7 @@ function! s:_module_sid(name) abort
     call s:_source(path)
     let sid = s:_sid(path, p)
     if !sid
-      throw 'vital: cannot get <SID> from path'
+      throw printf('vital: cannot get <SID> from path: %s', path)
     endif
   endif
   return sid
