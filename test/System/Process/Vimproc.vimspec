@@ -82,7 +82,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "hello\n")
-          Assert Equals(result.content, ['hello'])
+          Assert Equals(result.output_lines, ['hello'])
         End
 
         It executes command with spaces
@@ -91,7 +91,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "\"h e l l o\"\n")
-          Assert Equals(result.content, ['"h e l l o"'])
+          Assert Equals(result.output_lines, ['"h e l l o"'])
         End
 
         if s:is_japanese_supported
@@ -101,7 +101,7 @@ Describe System.Process.Vimproc
             Assert Equals(result.success, 1)
             Assert Equals(result.status, 0)
             Assert Equals(result.output, "あいうえお\n")
-            Assert Equals(result.content, ['あいうえお'])
+            Assert Equals(result.output_lines, ['あいうえお'])
           End
 
           It executes command with non ascii characters with spaces
@@ -110,7 +110,7 @@ Describe System.Process.Vimproc
             Assert Equals(result.success, 1)
             Assert Equals(result.status, 0)
             Assert Equals(result.output, "\"あ い う え お\"\n")
-            Assert Equals(result.content, ['"あ い う え お"'])
+            Assert Equals(result.output_lines, ['"あ い う え お"'])
           End
         endif
 
@@ -120,7 +120,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "test\n")
-          Assert Equals(result.content, ['test'])
+          Assert Equals(result.output_lines, ['test'])
         End
 
         It executes command with spaces (filename)
@@ -129,7 +129,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "t e s t\n")
-          Assert Equals(result.content, ['t e s t'])
+          Assert Equals(result.output_lines, ['t e s t'])
         End
 
         if s:is_japanese_supported
@@ -139,7 +139,7 @@ Describe System.Process.Vimproc
             Assert Equals(result.success, 1)
             Assert Equals(result.status, 0)
             Assert Equals(result.output, "test\n")
-            Assert Equals(result.content, ['test'])
+            Assert Equals(result.output_lines, ['test'])
           End
 
           It executes command with non ascii characters with spaces (filename)
@@ -148,7 +148,7 @@ Describe System.Process.Vimproc
             Assert Equals(result.success, 1)
             Assert Equals(result.status, 0)
             Assert Equals(result.output, "t e s t\n")
-            Assert Equals(result.content, ['t e s t'])
+            Assert Equals(result.output_lines, ['t e s t'])
           End
         endif
       End
@@ -207,7 +207,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "hello\n")
-          Assert Equals(result.content, ['hello'])
+          Assert Equals(result.output_lines, ['hello'])
         End
 
         It executes command with spaces
@@ -216,7 +216,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "h e l l o\n")
-          Assert Equals(result.content, ['h e l l o'])
+          Assert Equals(result.output_lines, ['h e l l o'])
         End
 
         It executes command with non ascii characters without spaces
@@ -225,7 +225,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "あいうえお\n")
-          Assert Equals(result.content, ['あいうえお'])
+          Assert Equals(result.output_lines, ['あいうえお'])
         End
 
         It executes command with non ascii characters with spaces
@@ -234,7 +234,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "あ い う え お\n")
-          Assert Equals(result.content, ['あ い う え お'])
+          Assert Equals(result.output_lines, ['あ い う え お'])
         End
 
         It executes command without spaces (filename)
@@ -243,7 +243,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "test\n")
-          Assert Equals(result.content, ['test'])
+          Assert Equals(result.output_lines, ['test'])
         End
 
         It executes command with spaces (filename)
@@ -252,7 +252,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "t e s t\n")
-          Assert Equals(result.content, ['t e s t'])
+          Assert Equals(result.output_lines, ['t e s t'])
         End
 
         It executes command with non ascii characters without spaces (filename)
@@ -261,7 +261,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "test\n")
-          Assert Equals(result.content, ['test'])
+          Assert Equals(result.output_lines, ['test'])
         End
 
         It executes command with non ascii characters with spaces (filename)
@@ -270,7 +270,7 @@ Describe System.Process.Vimproc
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "t e s t\n")
-          Assert Equals(result.content, ['t e s t'])
+          Assert Equals(result.output_lines, ['t e s t'])
         End
       End
     End
