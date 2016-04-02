@@ -58,7 +58,7 @@ function! s:execute(args, ...) abort
         \ 'background': 0,
         \ 'encode_input': 1,
         \ 'encode_output': 1,
-        \ 'embed_content': 1,
+        \ 'split_output': 1,
         \ 'debug': &verbose,
         \}, get(a:000, 0, {}))
   if s:Prelude.is_string(options.input) && !empty(options.encode_input)
@@ -74,7 +74,7 @@ function! s:execute(args, ...) abort
           \ : &encoding
     let result.output = s:String.iconv(result.output, 'char', encoding)
   endif
-  if options.embed_content
+  if options.split_output
     let result.content = s:String.split_posix_text(result.output)
   endif
   let result.success = result.status == 0

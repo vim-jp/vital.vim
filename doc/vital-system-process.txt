@@ -88,7 +88,7 @@ execute({args}[, {options}])
 		If |String| is specified, it will be encoded from "char" to a
 		value of 'encode_output'.
 
-		"embed_content"
+		"split_output"
 		If 1, a POSIX |List| of "output" value in {result} will be
 		embed into {result} dictionary as "content".
 		It uses |Vital.Data.String.split_posix_text()| internally.
