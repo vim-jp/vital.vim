@@ -39,9 +39,6 @@ function! s:shellescape(string) abort
 endfunction
 
 function! s:execute(args, options) abort
-  let options = extend({
-        \ 'input': 0,
-        \}, a:options)
   " NOTE:
   " execute() is a command for executing program WITHOUT using shell.
   " so mimic that behaviour with shell
@@ -80,10 +77,10 @@ function! s:execute(args, options) abort
           \ copy(a:args),
           \ 's:shellescape(v:val)',
           \))
-    if options.background && !s:Prelude.is_windows()
+    if a:options.background && !s:Prelude.is_windows()
       let cmdline = cmdline . ' &'
     endif
-    if &verbose > 0
+    if a:options.debug > 0
       echomsg printf(
             \ 'vital: System.Process.System: %s',
             \ cmdline
@@ -94,7 +91,7 @@ function! s:execute(args, options) abort
       " it manually from &encoding to 'char'
       let cmdline = s:String.iconv(cmdline, &encoding, 'char')
     endif
-    let args = [cmdline] + (s:Prelude.is_string(options.input) ? [options.input] : [])
+    let args = [cmdline] + (s:Prelude.is_string(a:options.input) ? [a:options.input] : [])
     let output = call('system', args)
     if s:Prelude.is_windows()
       " A builtin system() add a trailing space in Windows.
@@ -103,7 +100,7 @@ function! s:execute(args, options) abort
     endif
     " NOTE:
     " Vim 7.4 always return exit_status:0 for background process so mimic
-    let status = options.background ? 0 : v:shell_error
+    let status = a:options.background ? 0 : v:shell_error
     " NOTE:
     " success, output are COMMON information
     " status, cmdline are EXTRA information

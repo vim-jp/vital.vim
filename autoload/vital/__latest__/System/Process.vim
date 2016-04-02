@@ -59,6 +59,7 @@ function! s:execute(args, ...) abort
         \ 'encode_input': 1,
         \ 'encode_output': 1,
         \ 'embed_content': 1,
+        \ 'debug': &verbose,
         \}, get(a:000, 0, {}))
   if s:Prelude.is_string(options.input) && options.encode_input
     let encoding = s:Prelude.is_string(options.encode_input)

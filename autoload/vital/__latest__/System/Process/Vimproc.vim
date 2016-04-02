@@ -35,22 +35,17 @@ function! s:is_supported(options) abort
 endfunction
 
 function! s:execute(args, options) abort
-  let options = extend({
-        \ 'input': 0,
-        \ 'timeout': 0,
-        \ 'background': 0,
-        \}, a:options)
   let cmdline = join(map(
         \ copy(a:args),
         \ 'vimproc#shellescape(v:val)',
         \))
-  if &verbose > 0
+  if a:options.debug > 0
     echomsg printf(
           \ 'vital: System.Process.Vimproc: %s',
           \ cmdline
           \)
   endif
-  if options.background
+  if a:options.background
     let output = vimproc#system_bg(cmdline)
     " NOTE:
     " background process via Builtin always return exit_code:0 so mimic
@@ -58,8 +53,8 @@ function! s:execute(args, options) abort
   else
     let output = vimproc#system(
           \ cmdline,
-          \ s:Prelude.is_string(options.input) ? options.input : '',
-          \ options.timeout,
+          \ s:Prelude.is_string(a:options.input) ? a:options.input : '',
+          \ a:options.timeout,
           \)
     let status = vimproc#get_last_status()
   endif
