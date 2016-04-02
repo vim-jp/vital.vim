@@ -598,10 +598,10 @@ function! s:Revitalizer.autoloadablize_data(vital_file) abort
   \   'autoload_import': autoload_import,
   \   'funcdict': string(funcdict),
   \   'module': {
-  \     module_name: {
+  \     module_name : {
   \       'autoload_import': autoload_import,
   \       'is_self_module': 0,
-  \     }
+  \     },
   \   },
   \ }
 endfunction
