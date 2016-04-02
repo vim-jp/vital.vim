@@ -34,7 +34,7 @@ Describe System.Process.System
         End
 
         It throws an exception when {options.background} is specified
-          let options.timeout = 100
+          let options.background = 1
           Throws /None of client support/
                 \ Process.execute([], options)
         End
