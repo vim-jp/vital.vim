@@ -30,11 +30,8 @@ is_supported({options})
 
 				*Vital.System.Process.System.execute()*
 execute({args}, {options})
-	Returns a result |Dictionary| which contains the following extra
-	attributes.
-
-		"status"
-		A exit status of the process (|v:shell_error|)
+	Returns a result |Dictionary| which contains the following an extra
+	attribute.
 
 		"cmdline"
 		An actual cmdline string used to execute the process.

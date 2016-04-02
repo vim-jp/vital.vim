@@ -102,12 +102,11 @@ function! s:execute(args, options) abort
     " Vim 7.4 always return exit_status:0 for background process so mimic
     let status = a:options.background ? 0 : v:shell_error
     " NOTE:
-    " success, output are COMMON information
-    " status, cmdline are EXTRA information
+    " status, output are COMMON information
+    " cmdline is an EXTRA information
     return {
-          \ 'success': status == 0,
-          \ 'output': output,
           \ 'status': status,
+          \ 'output': output,
           \ 'cmdline': cmdline,
           \}
   finally

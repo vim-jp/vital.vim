@@ -36,9 +36,6 @@ execute({args}, {options})
 	Returns a result |Dictionary| which contains the following extra
 	attributes.
 
-		"status"
-		A exit status of the process by vimproc#get_last_status()
-
 		"cmdline"
 		An actual cmdline string used to execute the process.
 

@@ -59,12 +59,11 @@ function! s:execute(args, options) abort
     let status = vimproc#get_last_status()
   endif
     " NOTE:
-    " success, output are COMMON information
-    " status, errormsg, cmdline are EXTRA information
+    " status, output are COMMON information
+    " errormsg, cmdline are EXTRA information
   return {
-        \ 'success': status == 0,
-        \ 'output': output,
         \ 'status': status,
+        \ 'output': output,
         \ 'errormsg': vimproc#get_last_errmsg(),
         \ 'cmdline': cmdline,
         \}

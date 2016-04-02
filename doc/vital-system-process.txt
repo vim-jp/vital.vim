@@ -98,7 +98,11 @@ execute({args}[, {options}])
 
 		"success"
 		0 or 1 to indicate whether the process exit without
-		exceptions.
+		exceptions, namely if the "status" is 0 or not.
+
+		"status"
+		An exit status of the process. Note that if
+		"options.background" is 1, it is always 0.
 
 		"output"
 		An output |String| of the process. It is encoded if
@@ -142,7 +146,7 @@ is_supported({options})
 				*Vital.System.Process.Client.execute()*
 execute({args}, {options})
 	Execute a process specified by {args}. This method need to return a
-	{result} |Dictionary| which must contains "success" and "output". Any
+	{result} |Dictionary| which must contains "status" and "output". Any
 	other attributes are optional.
 	Note that "input" should be encoded prior to the method (if user
 	want), so should not encode without particular reasons.

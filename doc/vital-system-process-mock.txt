@@ -54,7 +54,7 @@ is_supported({options})
 execute({args}, {options})
 	Returns the following result dictionary:
 >
-	{'success': 1, 'output': 'Output of System.Process.Mock' }
+	{'status': 0, 'output': 'Output of System.Process.Mock' }
 <
 
 =============================================================================

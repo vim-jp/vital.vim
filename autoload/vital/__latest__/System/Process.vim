@@ -77,6 +77,7 @@ function! s:execute(args, ...) abort
   if options.embed_content
     let result.content = s:String.split_posix_text(result.output)
   endif
+  let result.success = result.status == 0
   let result.args = a:args
   let result.options = options
   return result
