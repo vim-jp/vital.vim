@@ -15,16 +15,19 @@ Describe System.Process.Mock
       let args = ['exit 0']
       let result = Process.execute(args, options)
       Assert Equals(result.success, 1)
+      Assert Equals(result.status, 0)
       Assert Equals(result.output, 'Output of System.Process.Mock')
 
       let args = ['exit 1']
       let result = Process.execute(args, options)
       Assert Equals(result.success, 1)
+      Assert Equals(result.status, 0)
       Assert Equals(result.output, 'Output of System.Process.Mock')
 
       let args = ['echo', 'hello']
       let result = Process.execute(args, options)
       Assert Equals(result.success, 1)
+      Assert Equals(result.status, 0)
       Assert Equals(result.output, 'Output of System.Process.Mock')
     End
   End

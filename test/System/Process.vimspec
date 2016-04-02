@@ -19,6 +19,7 @@ Describe System.Process
             \ 'clients': ['System.Process.System'],
             \})
       Assert Equals(result.success, 1)
+      Assert Equals(result.status, 0)
       Assert Equals(result.output, '')
     End
 
@@ -28,6 +29,7 @@ Describe System.Process
             \ 'clients': [Mock],
             \})
       Assert Equals(result.success, 1)
+      Assert Equals(result.status, 0)
       Assert Equals(result.output, 'Output of System.Process.Mock')
     End
   End

@@ -11,10 +11,6 @@ if !s:ProcessVimproc.is_available()
   finish
 endif
 
-function! Format(result) abort
-  return printf('%s | %s', a:result.cmdline, a:result.output)
-endfunction
-
 Describe System.Process.Vimproc
   Before
     let Process = s:V.import('System.Process')
@@ -38,6 +34,7 @@ Describe System.Process.Vimproc
             let result = Process.execute(args, options)
             " While the execution time reachs the timeout, the success is 0.
             Assert Equals(result.success, 0)
+          Assert Equals(result.status, 15)
           End
         endif
 
@@ -47,6 +44,7 @@ Describe System.Process.Vimproc
           let result = Process.execute(args, options)
           " While the process is executed in background, the success is 1.
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
         End
 
         It throws an exception when {options.background} and {options.input}/{options.timeout} are specified
@@ -65,14 +63,16 @@ Describe System.Process.Vimproc
         It returns {result.success: 1} when a command success
           let args = s:cmd + ['exit 0']
           let result = Process.execute(args, options)
-          Assert Equals(result.success, 1, Format(result))
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, '')
         End
 
         It returns {result.success: 0} when a command fail
           let args = s:cmd + ['exit 1']
           let result = Process.execute(args, options)
-          Assert Equals(result.success, 0, Format(result))
+          Assert Equals(result.success, 0)
+          Assert Equals(result.status, 1)
           Assert Equals(result.output, '')
         End
 
@@ -80,16 +80,18 @@ Describe System.Process.Vimproc
           let args = s:cmd + ['echo', 'hello']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
-          Assert Equals(result.output, "hello\n", Format(result))
-          Assert Equals(result.content, ['hello'], Format(result))
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "hello\n")
+          Assert Equals(result.content, ['hello'])
         End
 
         It executes command with spaces
           let args = s:cmd + ['echo', 'h e l l o']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
-          Assert Equals(result.output, "\"h e l l o\"\n", Format(result))
-          Assert Equals(result.content, ['"h e l l o"'], Format(result))
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "\"h e l l o\"\n")
+          Assert Equals(result.content, ['"h e l l o"'])
         End
 
         if s:is_japanese_supported
@@ -97,6 +99,7 @@ Describe System.Process.Vimproc
             let args = s:cmd + ['echo', 'あいうえお']
             let result = Process.execute(args, options)
             Assert Equals(result.success, 1)
+            Assert Equals(result.status, 0)
             Assert Equals(result.output, "あいうえお\n")
             Assert Equals(result.content, ['あいうえお'])
           End
@@ -105,6 +108,7 @@ Describe System.Process.Vimproc
             let args = s:cmd + ['echo', 'あ い う え お']
             let result = Process.execute(args, options)
             Assert Equals(result.success, 1)
+            Assert Equals(result.status, 0)
             Assert Equals(result.output, "\"あ い う え お\"\n")
             Assert Equals(result.content, ['"あ い う え お"'])
           End
@@ -114,6 +118,7 @@ Describe System.Process.Vimproc
           let args = s:cmd + ['type', s:Path.realpath(s:testdata . 'test.txt')]
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "test\n")
           Assert Equals(result.content, ['test'])
         End
@@ -122,6 +127,7 @@ Describe System.Process.Vimproc
           let args = ['type', s:Path.realpath(s:testdata . 't e s t.txt')]
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "t e s t\n")
           Assert Equals(result.content, ['t e s t'])
         End
@@ -131,6 +137,7 @@ Describe System.Process.Vimproc
             let args = ['type', s:Path.realpath(s:testdata . 'テスト.txt')]
             let result = Process.execute(args, options)
             Assert Equals(result.success, 1)
+            Assert Equals(result.status, 0)
             Assert Equals(result.output, "test\n")
             Assert Equals(result.content, ['test'])
           End
@@ -139,6 +146,7 @@ Describe System.Process.Vimproc
             let args = ['type', s:Path.realpath(s:testdata . 'テ ス ト.txt')]
             let result = Process.execute(args, options)
             Assert Equals(result.success, 1)
+            Assert Equals(result.status, 0)
             Assert Equals(result.output, "t e s t\n")
             Assert Equals(result.content, ['t e s t'])
           End
@@ -154,6 +162,7 @@ Describe System.Process.Vimproc
           let result = Process.execute(args, options)
           " While the execution time reachs the timeout, the success is 0.
           Assert Equals(result.success, 0)
+          Assert Equals(result.status, 15)
         End
 
         It DOES NOT throws an exception when {options.background} is specified
@@ -162,6 +171,7 @@ Describe System.Process.Vimproc
           let result = Process.execute(args, options)
           " While the process is executed in background, the success is 1.
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
         End
 
         It throws an exception when {options.background} and {options.input}/{options.timeout} are specified
@@ -181,18 +191,21 @@ Describe System.Process.Vimproc
           let args = ['true']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
         End
 
         It returns {result.success: 0} when a command fail
           let args = ['false']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 0)
+          Assert Equals(result.status, 1)
         End
 
         It executes command without spaces
           let args = ['echo', 'hello']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "hello\n")
           Assert Equals(result.content, ['hello'])
         End
@@ -201,6 +214,7 @@ Describe System.Process.Vimproc
           let args = ['echo', 'h e l l o']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "h e l l o\n")
           Assert Equals(result.content, ['h e l l o'])
         End
@@ -209,6 +223,7 @@ Describe System.Process.Vimproc
           let args = ['echo', 'あいうえお']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "あいうえお\n")
           Assert Equals(result.content, ['あいうえお'])
         End
@@ -217,6 +232,7 @@ Describe System.Process.Vimproc
           let args = ['echo', 'あ い う え お']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "あ い う え お\n")
           Assert Equals(result.content, ['あ い う え お'])
         End
@@ -225,6 +241,7 @@ Describe System.Process.Vimproc
           let args = ['cat', s:Path.realpath(s:testdata . 'test.txt')]
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "test\n")
           Assert Equals(result.content, ['test'])
         End
@@ -233,6 +250,7 @@ Describe System.Process.Vimproc
           let args = ['cat', s:Path.realpath(s:testdata . 't e s t.txt')]
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "t e s t\n")
           Assert Equals(result.content, ['t e s t'])
         End
@@ -241,6 +259,7 @@ Describe System.Process.Vimproc
           let args = ['cat', s:Path.realpath(s:testdata . 'テスト.txt')]
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "test\n")
           Assert Equals(result.content, ['test'])
         End
@@ -249,6 +268,7 @@ Describe System.Process.Vimproc
           let args = ['cat', s:Path.realpath(s:testdata . 'テ ス ト.txt')]
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
           Assert Equals(result.output, "t e s t\n")
           Assert Equals(result.content, ['t e s t'])
         End
