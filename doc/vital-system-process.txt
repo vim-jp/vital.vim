@@ -58,40 +58,59 @@ execute({args}[, {options}])
 		The order of appearance is equal to the order of trial.
 		When vimproc is available, |Vital.System.Process.Vimproc| will
 		be listed prior to the |Vital.System.Process.System| in default.
+		Default:
+		['System.Process.Vimproc', 'System.Process.System']
+		or
+		['System.Process.System']
 
 		"input"
 		A |String| or |Number|. If |String| is specified, the value will be
 		passed to the process through the stdin. If |Number| is
 		specified, no value will be passed to the process.
+		Default: 0
 
 		"timeout"
 		A process timeout in seconds (|Number|). A system process
 		client does not support this option, mean that vimproc is
 		required to be available.
+		Default: 0
 
 		"background"
 		If 1, the process will be executed in background. A system
 		process client does not support this option in Windows, mean
 		that vimproc is required to be available to use in Windows.
-		When the process is executed in background, the"success" in
+		When the process is executed in background, the "success" in
 		{result} be always 1.
+		Note that there is no way to get PID or status of the process
+		if this option is used.
+		Default: 0
 
 		"encode_input"
 		A |String| or |Number|. If 1 is specified, "input" value will be
 		encoded by |iconv()| from |&encoding| to "char". If |String| is
 		specified, it will be encoded from a value of 'encode_input'
 		to "char".
+		Default: 1
 
 		"encode_output"
 		A |String| or |Number|. If 1 is specified, "output" value in
 		{result} will be encoded by |iconv()| from "char" to |&encoding|.
 		If |String| is specified, it will be encoded from "char" to a
 		value of 'encode_output'.
+		Default: 1
 
 		"split_output"
 		If 1, a POSIX |List| of "output" value in {result} will be
 		embed into {result} dictionary as "output_lines".
 		It uses |Vital.Data.String.split_posix_text()| internally.
+		Default: 1
+
+		"debug"
+		If 1, let a process client to echo a debug information about
+		process execution. The default value is taken from 'verbose'
+		option so that users can show debug information with
+		|:verbose| command.
+		Default: &verbose
 
 	The following attributes exists in {result} dictionary and the value
 	should be equal among clients and environments:
@@ -118,10 +137,10 @@ execute({args}[, {options}])
 		"options"
 		An option |Dictionary| used for executing a process.
 
-	See individual client documents for extra attributes (e.g. "status").
+	See individual client documents for extra attributes (e.g. "cmdline").
 
-	Note that when |&verbose| is grater than 0, it echo which client is
-	used and the actual cmdline, for debugging.
+	Note that when "options.debug" is grater than 0, it echos which client
+	is used and the actual cmdline, for debugging.
 
 				*Vital.System.Process.register()*
 register({name})
@@ -169,7 +188,6 @@ execute({args}, {options})
 When you create a new process client, register that with
 |Vital.System.Process.register()| function in "s:_vital_loaded()" function of
 |Vital.System.Process| module.
-
 
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
