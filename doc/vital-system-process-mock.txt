@@ -35,8 +35,6 @@ mock process client as like:
 	" => 0
 	echo result.output
 	" => 'Always fail'
-	echo result.content
-	" => ['Always fail']
 <
 
 =============================================================================
