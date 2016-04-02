@@ -36,13 +36,13 @@ execute({args}, {options})
 	Returns a result |Dictionary| which contains the following extra
 	attributes.
 
-		'status'
+		"status"
 		A exit status of the process by vimproc#get_last_status()
 
-		'cmdline'
+		"cmdline"
 		An actual cmdline string used to execute the process.
 
-		'errormsg'
+		"errormsg"
 		A human readable error message by vimproc#get_last_errmsg()
 
 	See |Vital.System.Process.Client.execute()| for common attributes.

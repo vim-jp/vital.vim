@@ -44,14 +44,14 @@ FUNCTIONS				*Vital.System.Process-functions*
 				*Vital.System.Process.execute()*
 execute({args}[, {options}])
 	Executes a process specified by {args} (|List|).
-	It tries process clients listed in 'clients' attribute of {options}
+	It tries process clients listed in "clients" attribute of {options}
 	and return a result |Dictionary| when one of a client supports a
 	specified {options}.
 	Otherwise it raises an exception 'None of client support options:'.
 
 	The following attributes are supported in {options}
 
-		'clients'
+		"clients"
 		A |List| of client names registered by
 		|Vital.System.Process.register()| function or an instance of
 		a process client (|Dictionary|).
@@ -59,58 +59,58 @@ execute({args}[, {options}])
 		When vimproc is available, |Vital.System.Process.Vimproc| will
 		be listed prior to the |Vital.System.Process.System| in default.
 
-		'input'
+		"input"
 		A |String| or |Number|. If |String| is specified, the value will be
 		passed to the process through the stdin. If |Number| is
 		specified, no value will be passed to the process.
 
-		'timeout'
+		"timeout"
 		A process timeout in seconds (|Number|). A system process
 		client does not support this option, mean that vimproc is
 		required to be available.
 
-		'background'
+		"background"
 		If 1, the process will be executed in background. A system
 		process client does not support this option in Windows, mean
 		that vimproc is required to be available to use in Windows.
-		When the process is executed in background, the 'success' in
+		When the process is executed in background, the"success" in
 		{result} be always 1.
 
-		'encode_input'
-		A |String| or |Number|. If 1 is specified, 'input' value will be
-		encoded by |iconv()| from |&encoding| to 'char'. If |String| is
+		"encode_input"
+		A |String| or |Number|. If 1 is specified, "input" value will be
+		encoded by |iconv()| from |&encoding| to "char". If |String| is
 		specified, it will be encoded from a value of 'encode_input'
-		to 'char'.
+		to "char".
 
-		'encode_output'
-		A |String| or |Number|. If 1 is specified, 'output' value in
-		{result} will be encoded by |iconv()| from 'char' to |&encoding|.
-		If |String| is specified, it will be encoded from 'char' to a
+		"encode_output"
+		A |String| or |Number|. If 1 is specified, "output" value in
+		{result} will be encoded by |iconv()| from "char" to |&encoding|.
+		If |String| is specified, it will be encoded from "char" to a
 		value of 'encode_output'.
 
-		'embed_content'
-		If 1, a POSIX |List| of 'output' value in {result} will be
-		embed into {result} dictionary as 'content'.
+		"embed_content"
+		If 1, a POSIX |List| of "output" value in {result} will be
+		embed into {result} dictionary as "content".
 		It uses |Vital.Data.String.split_posix_text()| internally.
 
 	The following attributes exists in {result} dictionary and the value
 	should be equal among clients and environments:
 
-		'success'
+		"success"
 		0 or 1 to indicate whether the process exit without
 		exceptions.
 
-		'output'
+		"output"
 		An output |String| of the process. It is encoded if
 		'encode_output' is specified in {options}.
 
-		'args'
+		"args"
 		An argument |List| used for executing a process.
 
-		'options'
+		"options"
 		An option |Dictionary| used for executing a process.
 
-	See individual client documents for extra attributes (e.g. 'status').
+	See individual client documents for extra attributes (e.g. "status").
 
 	Note that when |&verbose| is grater than 0, it echo which client is
 	used and the actual cmdline, for debugging.
@@ -134,11 +134,11 @@ is_supported({options})
 				*Vital.System.Process.Client.execute()*
 execute({args}, {options})
 	Execute a process specified by {args}. This method need to return a
-	{result} |Dictionary| which must contains 'success' and 'output'. Any
+	{result} |Dictionary| which must contains "success" and "output". Any
 	other attributes are optional.
-	Note that 'input' should be encoded prior to the method (if user
+	Note that "input" should be encoded prior to the method (if user
 	want), so should not encode without particular reasons.
-	Note that 'output' will be encoded posterior to the method (if user
+	Note that "output" will be encoded posterior to the method (if user
 	want), so should not encode without particular reasons.
 	Note that the method should echo actual command and module name when
 	|&verbose| is grater than 0, for example:
@@ -151,12 +151,12 @@ execute({args}, {options})
 	endif
 <
 When you create a new process client, register that with the following
-function in 's:_vital_loaded()' function of |Vital.System.Process| module.
+function in "s:_vital_loaded()" function of |Vital.System.Process| module.
 
 				*Vital.System.Process.register()*
 register({name})
 	Register a {name} Vital module as a process client.
-	It only register when 'is_available()' method of the module returns
+	It only register when "is_available()" method of the module returns
 	truth value.
 	The order of the registration effect the default priority of the
 	clients.
