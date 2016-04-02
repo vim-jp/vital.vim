@@ -543,16 +543,9 @@ function! s:Revitalizer.__init__(project_root_dir) abort
   let self.vital_dir_rel = s:FP.join('autoload', 'vital', '_' . self.vital_data.name)
   let self.vital_dir = s:FP.join([self.project_root_dir, self.vital_dir_rel])
   let self.vital_files = sort(self.get_vital_files())
-  " Load all vital files before calling s:ScriptLocal.scriptnames()
-  " We cannot source files which aren't in runtimepath with `:runtime!`, so
-  " `:source` the file later if the file is not found in self.path2sid
-  let in_runtime_path = globpath(&rtp, self.vital_dir_rel) !=# ''
-  if in_runtime_path
-    execute 'runtime!' s:FP.join(self.vital_dir_rel, '**/*.vim')
-  else
-    call self.source_modules()
-  endif
-  let self.path2sid = s:Dict.swap(s:ScriptLocal.scriptnames())
+  " In vitalize#vitalize(), target dir is in &runtimepath
+  let self.V = vital#{self.vital_data.name}#of()
+  call self.V.unload() " .unload() to refresh for revitalizer
 endfunction
 
 function! s:Revitalizer.source_modules() abort
@@ -562,12 +555,9 @@ function! s:Revitalizer.source_modules() abort
 endfunction
 
 function! s:Revitalizer.revitalize() abort
-  let module_data = {}
   for f in self.vital_files
-    call extend(module_data, self.autoloadablize(f), 'error')
+    call self.autoloadablize(f)
   endfor
-  " TODO: embed module_data
-  " TODO: gather self module data
 endfunction
 
 " Use s:ScriptLocal.sid2sfuncs(sid) and s:ScriptLocal.scriptnames() in .new()
@@ -589,8 +579,8 @@ function! s:Revitalizer.is_autoloadablized(vital_file) abort
 endfunction
 
 function! s:Revitalizer.autoloadablize_data(vital_file) abort
-  let sid = self.sid(a:vital_file)
-  let sfuncs = s:ScriptLocal.sid2sfuncs(sid)
+  let module_name = s:file2module_name(a:vital_file)
+  let sfuncs = self.V._get_module(module_name)
   " It doesn't need to filter functions here because Vital.import() will
   " filter them after calling module._vital_loaded() and module._vital_created().
   " However, this line collects functions here including module._vital_*() to
@@ -608,7 +598,7 @@ function! s:Revitalizer.autoloadablize_data(vital_file) abort
   \   'autoload_import': autoload_import,
   \   'funcdict': string(funcdict),
   \   'module': {
-  \     self.module_name(a:vital_file): {
+  \     module_name: {
   \       'autoload_import': autoload_import,
   \       'is_self_module': 0,
   \     }
@@ -616,29 +606,10 @@ function! s:Revitalizer.autoloadablize_data(vital_file) abort
   \ }
 endfunction
 
-function! s:Revitalizer.sid(path) abort
-  let sid = get(self.path2sid, a:path, -1)
-  if sid is# -1
-    " NOTE: s:ScriptLocal.sid() calls :scriptnames each times, so make sure
-    " that almost all of vital_files is in :scriptnames
-    let sid = s:ScriptLocal.sid(a:path)
-    if sid is# -1
-      call s:Revitalizer.throw(printf('Unexpected error: %s cannot be sourced', a:path))
-    endif
-  endif
-  return sid
-endfunction
-
 function! s:Revitalizer.autoload_path(vital_file) abort
   let vital_file = s:FP.unixpath(a:vital_file)
   let prd = s:FP.unixpath(self.project_root_dir)
   return substitute(vital_file[len(s:FP.join(prd, 'autoload/')):], '/', '#', 'g')[:- (len('.vim') + 1)]
-endfunction
-
-function! s:Revitalizer.module_name(vital_file) abort
-  let prd = s:FP.unixpath(self.project_root_dir)
-  let tokens = s:FP.split(a:vital_file[len(prd):])[len(['autoload', 'vital', '_pluginname']):]
-  return join(tokens, '.')[:- (len('.vim') + 1)]
 endfunction
 
 " s:Revitalizer.get_vital_files() lists all embedded vital viles of a project.
