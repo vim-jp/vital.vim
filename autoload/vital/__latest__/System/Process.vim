@@ -61,14 +61,14 @@ function! s:execute(args, ...) abort
         \ 'embed_content': 1,
         \ 'debug': &verbose,
         \}, get(a:000, 0, {}))
-  if s:Prelude.is_string(options.input) && options.encode_input
+  if s:Prelude.is_string(options.input) && !empty(options.encode_input)
     let encoding = s:Prelude.is_string(options.encode_input)
           \ ? options.encode_input
           \ : &encoding
     let options.input = s:String.iconv(options.input, encoding, 'char')
   endif
   let result = s:_execute(a:args, options)
-  if s:Prelude.is_string(result.output) && options.encode_output
+  if s:Prelude.is_string(result.output) && !empty(options.encode_output)
     let encoding = s:Prelude.is_string(options.encode_output)
           \ ? options.encode_output
           \ : &encoding
