@@ -149,9 +149,9 @@ execute({args}, {options})
 	Note that "output" will be encoded posterior to the method (if user
 	want), so should not encode without particular reasons.
 	Note that the method should echo actual command and module name when
-	|&verbose| is grater than 0, for example:
+	"options.debug" is grater than 0, for example:
 >
-	if &verbose > 0
+	if a:options.debug > 0
 	  echomsg printf(
 	    \ 'vital: System.Process.XXXXX: %s',
 	    \ cmdline,
