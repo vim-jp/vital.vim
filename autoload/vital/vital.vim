@@ -1,7 +1,7 @@
 let s:plugin_name = expand('<sfile>:t:r')
 let s:vital_base_dir = expand('<sfile>:h')
 let s:project_root = expand('<sfile>:h:h:h')
-let s:is_vital_vim = s:plugin_name is# '_latest__'
+let s:is_vital_vim = s:plugin_name is# 'vital'
 
 let s:loaded = {}
 let s:cache_sid = {}

@@ -203,7 +203,7 @@ function! s:sid2svars(sid) abort
 endfunction
 
 
-" This is copied from autoload/vital/__latest__.vim
+" This is copied from autoload/vital/_vital.vim
 " FIXME: Avoid duplication.
 function! s:_unify_path(path) abort
   return resolve(fnamemodify(a:path, ':p:gs?[\\/]?/?'))

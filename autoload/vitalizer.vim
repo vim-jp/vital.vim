@@ -5,8 +5,8 @@ set cpo&vim
 
 let s:REQUIRED_FILES = [
 \   'autoload/vital.vim',
-\   'autoload/vital/_latest__.vim',
-\   'autoload/vital/__latest__.vim',
+\   'autoload/vital/vital.vim',
+\   'autoload/vital/_vital.vim',
 \ ]
 let s:V = vital#of('vital')
 let s:P = s:V.import('Prelude')
@@ -186,12 +186,13 @@ function! s:is_module_name(str) abort
   return s:L.and(map(split(a:str, '\.'), 's:is_camel_case(v:val)'))
 endfunction
 
-" s:module2file() returns relative path of module to &runtimepath
+" s:module2file() returns relative path of module to &runtimepath.
+" Note that {plugin-name} in returned path will be `vital`.
 " @param {module-name} name
 " @return {rtp-relative-path}
 function! s:module2file(name) abort
   let target = a:name ==# '' ? '' : '/' . substitute(a:name, '\W\+', '/', 'g')
-  return printf('autoload/vital/__latest__%s.vim', target)
+  return printf('autoload/vital/__vital__%s.vim', target)
 endfunction
 
 " @param {path} file
@@ -238,7 +239,7 @@ endfunction
 
 function! s:show_changes(current, installing_modules) abort
   let confirm_required = 0
-  if a:current !=# '_latest__'
+  if a:current !=# 'vital'
     let keys = split(s:git(printf('log --format=format:%%H %s..HEAD', a:current)), "\n")
     let changes = s:get_changes()
     for key in keys
@@ -391,8 +392,9 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     " List and check the installing files.
     let install_files = []
     for f in files + s:REQUIRED_FILES
-      let after = substitute(f, '_latest__', vital_data.name, '')
-      let pat = substitute(f, '__latest__', '__*__', '')
+      let after = substitute(f, '_\?_vital\(__\)\?', '_' . vital_data.name, '')
+      let after = substitute(after, 'vital/\zsvital\ze\.vim$', vital_data.name, '')
+      let pat = substitute(f, '__vital__', '__*__', '')
       let paths = globpath(g:vitalizer#vital_dir . ',' . &runtimepath, pat, 1)
       let from = get(split(paths, "\n"), 0)
       if !filereadable(from)

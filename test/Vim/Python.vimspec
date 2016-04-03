@@ -11,7 +11,7 @@ Describe Vim.Python
     let Python = V.import('Vim.Python')
   End
   Before each
-    let sv = S.svars(P.realpath('autoload/vital/__latest__/Vim/Python.vim'))
+    let sv = S.svars(P.realpath('autoload/vital/_vital/Vim/Python.vim'))
     if s:is_python2_enabled && s:is_python3_enabled
       " Make sure s:current_major_version is not set
       let sv.current_major_version = 0
