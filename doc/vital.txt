@@ -8,7 +8,6 @@ USAGE				|Vital-usage|
 INTERFACE			|Vital-interface|
   FUNCTIONS			  |Vital-functions|
   Vital object			  |Vital-Vital-object|
-  VARIABLES			  |Vital-variables|
 LINKS				|Vital-links|
 
 
@@ -115,24 +114,6 @@ Vital.search({pattern})			*Vital-Vital.search()*
 	echo s:V.search('Data.*')
 	echo s:V.search('Data.*List')
 	echo s:V.search('**')  " returns all available module names
-
-
-
-------------------------------------------------------------------------------
-VARIABLES 				*Vital-variables*
-
-g:vital_debug				*g:vital_debug*
-	Default: 0
-
-	Vital.import and Vital.load ignore functions which name begins with
-	underscore, but this option enables importing/loading such functions.
->
-	let g:vital_debug = 1
-<
-	Note that this option is only for Vital plugin developers; not for
-	Vital users.
-
-
 
 ==============================================================================
 LINKS					*Vital-links*
