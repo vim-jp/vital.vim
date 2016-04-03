@@ -75,7 +75,7 @@ function! s:execute(args, ...) abort
     let result.output = s:String.iconv(result.output, 'char', encoding)
   endif
   if options.split_output
-    let result.output_lines = s:String.split_posix_text(result.output)
+    let result.content = s:String.split_posix_text(result.output)
   endif
   let result.success = result.status == 0
   let result.args = a:args

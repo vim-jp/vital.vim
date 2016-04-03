@@ -101,7 +101,7 @@ execute({args}[, {options}])
 
 		"split_output"
 		If 1, a POSIX |List| of "output" value in {result} will be
-		embed into {result} dictionary as "output_lines".
+		embed into {result} dictionary as "content".
 		It uses |Vital.Data.String.split_posix_text()| internally.
 		Default: 1
 
@@ -127,7 +127,7 @@ execute({args}[, {options}])
 		An output |String| of the process. It is encoded if
 		'encode_output' is specified in {options}.
 
-		"output_lines"
+		"content"
 		An output of the process as a |List| when "options.split_output"
 		is specified. Otherwise the attribute is missing.
 
