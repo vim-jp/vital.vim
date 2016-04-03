@@ -139,6 +139,9 @@ Vital.search({pattern})			*Vital-Vital.search()*
 	echo s:V.search('Data.*List')
 	echo s:V.search('**')  " returns all available module names
 
+Vital.plugin_name()			*Vital-Vital.plugin_name()*
+	Returns {plugin-name} of the Vital object.
+
 ==============================================================================
 LINKS					*Vital-links*
 

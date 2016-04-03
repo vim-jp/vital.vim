@@ -36,7 +36,7 @@ let s:Vital = {}
 
 function! s:new(plugin_name) abort
   let base = deepcopy(s:Vital)
-  let base.plugin_name = a:plugin_name
+  let base._plugin_name = a:plugin_name
   return base
 endfunction
 
@@ -113,7 +113,7 @@ function! s:exists(name) abort dict
   if a:name !~# '\v^\u\w*%(\.\u\w*)*$'
     throw 'vital: Invalid module name: ' . a:name
   endif
-  let b = exists('*' . s:_import_func_name(self.plugin_name, a:name))
+  let b = exists('*' . s:_import_func_name(self.plugin_name(), a:name))
   if b
     return b
   endif
@@ -127,6 +127,11 @@ function! s:search(pattern) abort dict
   return s:_uniq(modules)
 endfunction
 let s:Vital.search = s:_function('s:search')
+
+function! s:plugin_name() abort dict
+  return self._plugin_name
+endfunction
+let s:Vital.plugin_name = s:_function('s:plugin_name')
 
 function! s:_self_vital_files() abort
   let builtin = printf('%s/__%s__/', s:vital_base_dir, s:plugin_name)
@@ -181,7 +186,7 @@ let s:Vital._import = s:_function('s:_import')
 
 " s:_get_module() returns module object wihch has all script local functions.
 function! s:_get_module(name) abort dict
-  let funcname = s:_import_func_name(self.plugin_name, a:name)
+  let funcname = s:_import_func_name(self.plugin_name(), a:name)
   if s:_exists_autoload_func_with_source(funcname)
     return call(funcname, [])
   else

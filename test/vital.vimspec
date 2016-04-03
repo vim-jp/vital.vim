@@ -401,5 +401,20 @@ Describe vital
       End
     End
 
+    Describe .plugin_name()
+      Before all
+        let V = vital#{g:testplugin_name}#of()
+      End
+
+      It returns plugin name
+        Assert Equals(V.plugin_name(), g:testplugin_name)
+      End
+
+      It returns vital for "vital"
+        let V = vital#of('vital')
+        Assert Equals(V.plugin_name(), 'vital')
+      End
+    End
+
   End
 End
