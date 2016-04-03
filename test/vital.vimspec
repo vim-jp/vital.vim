@@ -1,7 +1,7 @@
 Describe vital
 
   Before all
-    let Vital = vital#of('vital')
+    let Vital = vital#vital#of()
     let File = Vital.import('System.File')
     let Filepath = Vital.import('System.Filepath')
     let ScriptLocal = Vital.import('Vim.ScriptLocal')
@@ -76,20 +76,25 @@ Describe vital
       Assert HasKey(V, 'import')
     End
 
-    It creates a vital object which can import all available modules with 'vital'
-      let V = vital#of('vital')
-      Assert NotEmpty(V.import('Data.List'))
-      Assert NotEmpty(V.import('Selfmodule'))
-      Assert NotEmpty(V.import('Cyclic1'))
-      Assert Equals(V.load('Data.List'), V)
-      Assert Equals(V.load('Selfmodule'), V)
-      Assert Equals(V.load('Cyclic1'), V)
-      Assert True(V.exists('Data.List'))
-      Assert True(V.exists('Selfmodule'))
-      Assert True(V.exists('Cyclic1'))
-      Assert NotEmpty(V.search('Data.List'))
-      Assert NotEmpty(V.search('Selfmodule'))
-      Assert NotEmpty(V.search('Cyclic1'))
+    Context {plugin-name} is vital
+      Before all
+        let V = vital#of('vital')
+      End
+
+      It creates a vital object which supports available modules
+        Assert NotEmpty(V.import('Data.List'))
+        Assert NotEmpty(V.import('Selfmodule'))
+        Assert NotEmpty(V.import('Cyclic1'))
+        Assert Equals(V.load('Data.List'), V)
+        Assert Equals(V.load('Selfmodule'), V)
+        Assert Equals(V.load('Cyclic1'), V)
+        Assert True(V.exists('Data.List'))
+        Assert True(V.exists('Selfmodule'))
+        Assert True(V.exists('Cyclic1'))
+        Assert NotEmpty(V.search('Data.List'))
+        Assert NotEmpty(V.search('Selfmodule'))
+        Assert NotEmpty(V.search('Cyclic1'))
+      End
     End
 
     Context wildignore handling
@@ -118,6 +123,19 @@ Describe vital
       Assert Equals(type(V), type({}))
       Assert HasKey(V, 'import')
     End
+
+    Context {plugin-name} is vital
+      Before all
+        let V = vital#vital#of()
+      End
+
+      It creates a vital object
+        let V = vital#vital#of()
+        Assert Equals(type(V), type({}))
+        Assert HasKey(V, 'import')
+      End
+    End
+
   End
 
   Describe vital#{plugin-name}#import()
@@ -156,6 +174,14 @@ Describe vital
       unlet g:vital_statusline_func_called
     End
 
+    Context {plugin-name} is vital
+      It supports all available modules in &runtimepath
+        Assert NotEmpty(vital#vital#import('Data.List'))
+        Assert NotEmpty(vital#vital#import('Selfmodule'))
+        Assert NotEmpty(vital#vital#import('Cyclic1'))
+      End
+    End
+
     Context wildignore handling
       Before all
         set wildignore+=*.vim
@@ -179,7 +205,7 @@ Describe vital
 
   End
 
-  Describe revital-Vital-object
+  Describe vital-Vital-object
     Before all
       let V = vital#{g:testplugin_name}#of()
     End
@@ -241,6 +267,17 @@ Describe vital
         End
       End
 
+      Context {plugin-name} is vital
+        Before all
+          let V = vital#vital#of()
+        End
+
+        It supports all available modules in &runtimepath
+          Assert NotEmpty(V.import('Data.List'))
+          Assert NotEmpty(V.import('Selfmodule'))
+          Assert NotEmpty(V.import('Cyclic1'))
+        End
+      End
     End
 
     Describe .load
@@ -305,6 +342,17 @@ Describe vital
         End
       End
 
+      Context {plugin-name} is vital
+        Before all
+          let V = vital#vital#of()
+        End
+
+        It supports all available modules in &runtimepath
+          Assert NotEmpty(V.load('Data.List'), V)
+          Assert NotEmpty(V.load('Selfmodule'), V)
+          Assert NotEmpty(V.load('Cyclic1'), V)
+        End
+      End
     End
 
     Describe .exists()
@@ -352,6 +400,17 @@ Describe vital
         End
       End
 
+      Context {plugin-name} is vital
+        Before all
+          let V = vital#vital#of()
+        End
+
+        It supports all available modules in &runtimepath
+          Assert True(V.exists('Data.List'))
+          Assert True(V.exists('Selfmodule'))
+          Assert True(V.exists('Cyclic1'))
+        End
+      End
     End
 
     Describe .search()
@@ -399,6 +458,18 @@ Describe vital
           Assert NotEmpty(Vital.search('Data.List'))
         End
       End
+
+      Context {plugin-name} is vital
+        Before all
+          let V = vital#vital#of()
+        End
+
+        It supports available modules in &runtimepath
+          Assert NotEmpty(V.search('Data.List'))
+          Assert NotEmpty(V.search('Selfmodule'))
+          Assert NotEmpty(V.search('Cyclic1'))
+        End
+      End
     End
 
     Describe .plugin_name()
@@ -410,9 +481,14 @@ Describe vital
         Assert Equals(V.plugin_name(), g:testplugin_name)
       End
 
-      It returns vital for "vital"
-        let V = vital#of('vital')
-        Assert Equals(V.plugin_name(), 'vital')
+      Context {plugin-name} is vital
+        Before all
+          let V = vital#of('vital')
+        End
+
+        It returns vital for "vital"
+          Assert Equals(V.plugin_name(), 'vital')
+        End
       End
     End
 
