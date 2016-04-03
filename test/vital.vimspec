@@ -136,6 +136,21 @@ Describe vital
       End
     End
 
+    Context wildignore handling
+      Before all
+        set wildignore+=*.vim,*.vital
+      End
+
+      After all
+        set wildignore-=*.vim,*.vital
+      End
+
+      It handles &wildignore
+        let V = vital#{g:testplugin_name}#of()
+        Assert Equals(type(V), type({}))
+        Assert HasKey(V, 'import')
+      End
+    End
   End
 
   Describe vital#{plugin-name}#import()
