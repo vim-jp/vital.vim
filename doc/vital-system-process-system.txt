@@ -1,0 +1,43 @@
+*vim-system-process-system.txt*	A Process client using system() function
+
+Maintainer: lambdalisue		<lambdalisue@hashnote.net>
+
+=============================================================================
+CONTENTS			*Vital.System.Process.System-contents*
+
+Introduction			|Vital.System.Process.System-introduction|
+Functions			|Vital.System.Process.System-functions|
+
+
+=============================================================================
+INTRODUCTION			*Vital.System.Process.System-introduction*
+
+*Vital.System.Process.System* is a |Vital.System.Process| client which uses
+builtin |system()| function internally.
+
+
+=============================================================================
+FUNCTIONS			*Vital.System.Process.System-functions*
+
+				*Vital.System.Process.System.is_available()*
+is_available()
+	Always returns 1.
+
+				*Vital.System.Process.System.is_supported()*
+is_supported({options})
+	Returns 0 if {options.timeout} is specified or {options.background}
+	is specified in Windows.
+
+				*Vital.System.Process.System.execute()*
+execute({args}, {options})
+	Returns a result |Dictionary| which contains the following an extra
+	attribute.
+
+		"cmdline"
+		An actual cmdline string used to execute the process.
+
+	See |Vital.System.Process.Client.execute()| for common attributes.
+
+
+=============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

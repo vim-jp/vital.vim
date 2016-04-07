@@ -190,6 +190,7 @@ LINKS					*Vital-links*
   |vital-random-mt19937ar.txt|	  random number generator using mt19937ar
   |vital-random-xor128.txt|	  random number generator using xor128
   |vital-random.txt|		  Random utility frontend library
+  |vital-system-process.txt|        A cross-platform process utilities
   |vital-system-cache.txt|	  An unified cache system
   |vital-system-file.txt|	  filesystem utilities library
   |vital-system-filepath.txt|	  path string utilities library
