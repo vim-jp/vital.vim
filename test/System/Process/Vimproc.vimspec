@@ -1,0 +1,278 @@
+scriptencoding utf-8
+
+let s:V = vital#of('vital')
+let s:Prelude = s:V.import('Prelude')
+let s:Path = s:V.import('System.Filepath')
+let s:ProcessVimproc = s:V.import('System.Process.Vimproc')
+let s:testdata = './test/_testdata/System/Process/'
+let s:cmd = ['cmd', '/C']
+
+if !s:ProcessVimproc.is_available()
+  finish
+endif
+
+Describe System.Process.Vimproc
+  Before
+    let Process = s:V.import('System.Process')
+    let options = {
+          \ 'clients': ['System.Process.Vimproc'],
+          \}
+  End
+
+  if s:Prelude.is_windows()
+    let s:is_japanese_supported = system('chcp') =~# 'cp932\|cp65001'
+
+    Context [Windows]
+      Describe .execute({args}[, {options}])
+        if empty($APPVEYOR)
+          " NOTE:
+          " Not sure but 'sleep' doesn't properly works in AppVeyor?
+          " The code below worked on Windows 10 + PowerShell
+          It DOES NOT throws an exception when {options.timeout} is specified
+            let options.timeout = 100
+            let args = s:cmd + ['sleep', '10']
+            let result = Process.execute(args, options)
+            " While the execution time reachs the timeout, the success is 0.
+            Assert Equals(result.success, 0)
+          Assert Equals(result.status, 15)
+          End
+        endif
+
+        It DOES NOT throws an exception when {options.background} is specified
+          let options.background = 1
+          let args = s:cmd + ['exit 1']
+          let result = Process.execute(args, options)
+          " While the process is executed in background, the success is 1.
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+        End
+
+        It throws an exception when {options.background} and {options.input}/{options.timeout} are specified
+          let options.background = 1
+          let options.input = 'foo'
+          Throws /None of client support/
+                \ Process.execute([], options)
+
+          let options.background = 1
+          let options.input = 0
+          let options.timeout = 100
+          Throws /None of client support/
+                \ Process.execute([], options)
+        End
+
+        It returns {result.success: 1} when a command success
+          let args = s:cmd + ['exit 0']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, '')
+        End
+
+        It returns {result.success: 0} when a command fail
+          let args = s:cmd + ['exit 1']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 0)
+          Assert Equals(result.status, 1)
+          Assert Equals(result.output, '')
+        End
+
+        It executes command without spaces
+          let args = s:cmd + ['echo', 'hello']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "hello\n")
+          Assert Equals(result.content, ['hello'])
+        End
+
+        It executes command with spaces
+          let args = s:cmd + ['echo', 'h e l l o']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "\"h e l l o\"\n")
+          Assert Equals(result.content, ['"h e l l o"'])
+        End
+
+        if s:is_japanese_supported
+          It executes command with non ascii characters without spaces
+            let args = s:cmd + ['echo', 'あいうえお']
+            let result = Process.execute(args, options)
+            Assert Equals(result.success, 1)
+            Assert Equals(result.status, 0)
+            Assert Equals(result.output, "あいうえお\n")
+            Assert Equals(result.content, ['あいうえお'])
+          End
+
+          It executes command with non ascii characters with spaces
+            let args = s:cmd + ['echo', 'あ い う え お']
+            let result = Process.execute(args, options)
+            Assert Equals(result.success, 1)
+            Assert Equals(result.status, 0)
+            Assert Equals(result.output, "\"あ い う え お\"\n")
+            Assert Equals(result.content, ['"あ い う え お"'])
+          End
+        endif
+
+        It executes command without spaces (filename)
+          let args = s:cmd + ['type', s:Path.realpath(s:testdata . 'test.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "test\n")
+          Assert Equals(result.content, ['test'])
+        End
+
+        It executes command with spaces (filename)
+          let args = ['type', s:Path.realpath(s:testdata . 't e s t.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "t e s t\n")
+          Assert Equals(result.content, ['t e s t'])
+        End
+
+        if s:is_japanese_supported
+          It executes command with non ascii characters without spaces (filename)
+            let args = ['type', s:Path.realpath(s:testdata . 'テスト.txt')]
+            let result = Process.execute(args, options)
+            Assert Equals(result.success, 1)
+            Assert Equals(result.status, 0)
+            Assert Equals(result.output, "test\n")
+            Assert Equals(result.content, ['test'])
+          End
+
+          It executes command with non ascii characters with spaces (filename)
+            let args = ['type', s:Path.realpath(s:testdata . 'テ ス ト.txt')]
+            let result = Process.execute(args, options)
+            Assert Equals(result.success, 1)
+            Assert Equals(result.status, 0)
+            Assert Equals(result.output, "t e s t\n")
+            Assert Equals(result.content, ['t e s t'])
+          End
+        endif
+      End
+    End
+  else
+    Context [Unix]
+      Describe .execute({args}[, {options}])
+        It DOES NOT throws an exception when {options.timeout} is specified
+          let options.timeout = 100
+          let args = ['sleep', '10']
+          let result = Process.execute(args, options)
+          " While the execution time reachs the timeout, the success is 0.
+          Assert Equals(result.success, 0)
+          Assert Equals(result.status, 15)
+        End
+
+        It DOES NOT throws an exception when {options.background} is specified
+          let options.background = 1
+          let args = ['false']
+          let result = Process.execute(args, options)
+          " While the process is executed in background, the success is 1.
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+        End
+
+        It throws an exception when {options.background} and {options.input}/{options.timeout} are specified
+          let options.background = 1
+          let options.input = 'foo'
+          Throws /None of client support/
+                \ Process.execute([], options)
+
+          let options.background = 1
+          let options.input = 0
+          let options.timeout = 100
+          Throws /None of client support/
+                \ Process.execute([], options)
+        End
+
+        It returns {result.success: 1} when a command success
+          let args = ['true']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+        End
+
+        It returns {result.success: 0} when a command fail
+          let args = ['false']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 0)
+          Assert Equals(result.status, 1)
+        End
+
+        It executes command without spaces
+          let args = ['echo', 'hello']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "hello\n")
+          Assert Equals(result.content, ['hello'])
+        End
+
+        It executes command with spaces
+          let args = ['echo', 'h e l l o']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "h e l l o\n")
+          Assert Equals(result.content, ['h e l l o'])
+        End
+
+        It executes command with non ascii characters without spaces
+          let args = ['echo', 'あいうえお']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "あいうえお\n")
+          Assert Equals(result.content, ['あいうえお'])
+        End
+
+        It executes command with non ascii characters with spaces
+          let args = ['echo', 'あ い う え お']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "あ い う え お\n")
+          Assert Equals(result.content, ['あ い う え お'])
+        End
+
+        It executes command without spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 'test.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "test\n")
+          Assert Equals(result.content, ['test'])
+        End
+
+        It executes command with spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 't e s t.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "t e s t\n")
+          Assert Equals(result.content, ['t e s t'])
+        End
+
+        It executes command with non ascii characters without spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 'テスト.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "test\n")
+          Assert Equals(result.content, ['test'])
+        End
+
+        It executes command with non ascii characters with spaces (filename)
+          let args = ['cat', s:Path.realpath(s:testdata . 'テ ス ト.txt')]
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, "t e s t\n")
+          Assert Equals(result.content, ['t e s t'])
+        End
+      End
+    End
+  endif
+End

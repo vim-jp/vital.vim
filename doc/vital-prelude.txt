@@ -133,7 +133,9 @@ escape_file_searching({str})		*Vital.Prelude.escape_file_searching()*
 	TODO
 
 escape_pattern({str})			*Vital.Prelude.escape_pattern()*
-	TODO
+	Use |Vital.Data.String.escape_pattern()| instead.
+	Note that |Vital.Data.String.escape_pattern()| does not escape a
+	double quotation mark (") while it is not a part of regex pattern.
 
 getchar(...)					*Vital.Prelude.getchar()*
 	This is like builtin |getchar()| but always returns string.

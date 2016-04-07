@@ -48,6 +48,7 @@ Module						 | Description
 [Random.Mt19937ar](doc/vital-random-mt19937ar.txt)| random number generator using mt19937ar
 [Random.Xor128](doc/vital-random-xor128.txt)	 | random number generator using xor128
 [Random](doc/vital-random.txt)			 | Random utility frontend library
+[System.Process](doc/vital-system-process.txt)	 | A cross-platform process utilities
 [System.Cache](doc/vital-system-cache.txt)	 | An unified cache system
 [System.File](doc/vital-system-file.txt)	 | filesystem utilities library
 [System.Filepath](doc/vital-system-filepath.txt) | path string utilities library
@@ -145,6 +146,22 @@ We recommend you to use a capital letter for a Vital module dictionary to assign
 A lot of vim plugins are using vital.vim
   - [wiki](https://github.com/vim-jp/vital.vim/wiki#plugins-that-use-vitalvim)
   - [google search](https://www.google.co.jp/search?q=filetype%3Avital%20site%3Ahttps%3A%2F%2Fgithub.com)
+
+### Badges
+
+It is not necessary but we recommend to add a badge to your project README to make the vital.vim developers happy ;-)
+The following is a markdown snippet.
+
+```
+[![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg)](https://github.com/vim-jp/vital.vim)
+```
+
+The badge uses [Shields.io](http://shields.io/) so you can customize the looks as like:
+
+- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg)](https://github.com/vim-jp/vital.vim) (Default)
+- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg?style=plastic)](https://github.com/vim-jp/vital.vim) by adding `?style=plastic`
+- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg?style=flat)](https://github.com/vim-jp/vital.vim) by adding `?style=flat`
+- [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg?style=flat-square)](https://github.com/vim-jp/vital.vim) by adding `?style=flat-square`
 
 ## If you want to become a vital developer
 

@@ -309,7 +309,7 @@ truncate_skipping({str}, {max}, {footer-width}, {separator})
 	echo s:S.truncate_skipping('あいうえおかきくけこ', 10, 2, ' .. ')
 	" 'あい .. こ'
 <
-strwidthpart({str}, {width})			*Vital.Data.String.strwidthpart()*
+strwidthpart({str}, {width})		*Vital.Data.String.strwidthpart()*
 	This function returns the part of the string {str} the displayed width
 	of which is narrower than the given {width}. This function does not
 	append spaces as opposed to |Vital.Data.String.truncate()|.
@@ -323,7 +323,8 @@ strwidthpart({str}, {width})			*Vital.Data.String.strwidthpart()*
 	echo s:S.strwidthpart('あいうえお', 20)
 	" 'あいうえお'
 <
-strwidthpart_reverse({str}, {width})	*Vital.Data.String.strwidthpart_reverse()*
+				*Vital.Data.String.strwidthpart_reverse()*
+strwidthpart_reverse({str}, {width})
 	This function returns the part of the string {str} like the function
 	|Vital.Data.String.strwidthpart()|, but this function takes the part of
 	the string from the right.
@@ -344,6 +345,84 @@ wcswidth({str})					*Vital.Data.String.wcswidth()*
 	" 13
 	echo s:S.wcswidth('あいうえお')
 	" 10
+<
+remove_ansi_sequences({text})	*Vital.Data.String.remove_ansi_sequences()*
+	Remove ANSI sequences from {text}
+>
+	echo s:S.remove_ansi_sequences('\033[47m\033[32mGreen\033[0m')
+	" 'Green'
+<
+escape_pattern({str})		*Vital.Data.String.escape_pattern()*
+	Escape pattern involved characters ("^$~.*[]\) in {str}.
+	Note that it over escape characters when {str} contains escaped
+	characters.
+>
+	echo s:S.escape_pattern('^\a\b.*$')
+	" '\^\\a\\b\.\*\$'
+	echo s:S.escape_pattern(s:S.escape_pattern('^\a\b.*$'))
+        " '\\\^\\\\a\\\\b\\\.\\\*\\\$'
+<
+unescape_pattern({str})		*Vital.Data.String.unescape_pattern()*
+	Unescape pattern involved characters, namely characters escaped by
+	|Vital.Data.String.escape_pattern()| function.
+>
+	echo s:S.unescape_pattern('\\\^\\\\a\\\\b\\\.\\\*\\\$')
+	" '\^\\a\\b\.\*\$'
+	echo s:S.unescape_pattern('\^\\a\\b\.\*\$')
+	" '^\a\b.*$'
+	echo s:S.unescape_pattern('^\a\b.*$')
+	" '^\a\b.*$'
+<
+unescape({str}, {chars})	*Vital.Data.String.unescape()*
+	Unescape {chars} in {str}.
+>
+	echo s:S.unescape('\*n\n\\n', '*\')
+	" '*n\n\n'
+<
+				*Vital.Data.String.iconv()*
+iconv({expr}, {from}, {to})
+	An alternate function of builtin |iconv()| which fail silently.
+	It returns {expr} when conversion has failed.
+
+				*Vital.Data.String.repair_posix_text()*
+repair_posix_text({text}[, {newline}])
+	It returns {text} with a trailing {newline} if no trailing {newline}
+	exists. If {newline} is omitted, "\n" will be used.
+>
+	echo s:S.repair_posix_text("A\nB\nC")
+	" => A\nB\nC\n
+	echo s:S.repair_posix_text("A\nB\nC\n")
+	" => A\nB\nC\n
+	echo s:S.repair_posix_text("A\nB\nC\n\n")
+	" => A\nB\nC\n\n
+<
+				*Vital.Data.String.join_posix_lines()*
+join_posix_lines({lines}[, {newline}])
+	It returns a {newline} joined |String| of {lines} with a trailing
+	{newline}. If {newline} is omitted, "\n" will be used.
+>
+	echo s:S.join_posix_lines(['A', 'B', 'C'])
+	" => A\nB\nC\n
+	echo s:S.join_posix_lines(['A', 'B', 'C', ''])
+	" => A\nB\nC\n\n
+<
+				*Vital.Data.String.split_posix_text()*
+split_posix_text({text}[, {newline}])
+	It returns a {newline} separated |List| of {text} without an item for
+	trailing {newline} in {text}.
+	While POSIX text has a trailing {newline}, splitting text directly
+	with |split()| function returns a |List| with an additional empty
+	line. This function automatically remove a trailing {newline} when
+	exists, indicating that if {text} does not have a trailing {newline},
+	it is equal to 'split({text}, {newline}, 1)'.
+	If {newline} is omitted, "\r\?\n" will be used.
+>
+	echo s:S.split_posix_text("A\nB\nC\n")
+	" => ['A', 'B', 'C']
+	echo s:S.split_posix_text("A\nB\nC")
+	" => ['A', 'B', 'C']
+	echo s:S.split_posix_text("A\nB\nC\n\n")
+	" => ['A', 'B', 'C', '']
 <
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

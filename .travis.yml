@@ -4,6 +4,10 @@ env:
   - HEAD=no
 sudo: false
 
+os:
+  - linux
+  - osx
+
 addons:
   apt:
     packages:
@@ -16,21 +20,25 @@ addons:
       - lua5.1
 
 install:
-  - bash scripts/install-vim.sh
-  - if [ x"$HEAD" = "xyes" ]; then export PATH=$HOME/vim/bin:$PATH; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" != "osx" ]; then bash scripts/install-vim.sh; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" != "osx" ]; then export PATH=$HOME/vim/bin:$PATH; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install lua; fi
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install vim --with-lua; fi
 
 before_script:
-  - git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
-  - git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
-  - git clone https://github.com/thinca/vim-themis --branch v1.5 --single-branch --depth 1 /tmp/vim-themis
-  - git clone https://github.com/Shougo/vimproc.vim /tmp/vimproc
+  - git clone --depth 1 https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
+  - git clone --depth 1 https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
+  - git clone --depth 1 --branch v1.5.1 --single-branch https://github.com/thinca/vim-themis /tmp/vim-themis
+  - git clone --depth 1 https://github.com/Shougo/vimproc.vim /tmp/vimproc
   - (cd /tmp/vimproc && make)
 
 script:
+  - uname -a
   - which -a vim
   - vim --cmd version --cmd quit
   - vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
-  - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 -c func_abort=1 autoload
+  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" != "osx" ]; then sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 -c func_abort=1 autoload; fi
   # - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
   - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
   - ruby scripts/check-changelog.rb

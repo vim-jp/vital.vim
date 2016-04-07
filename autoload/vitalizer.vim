@@ -91,10 +91,7 @@ function! s:search_dependence(depends_info, to) abort
     let vital_debug = g:vital_debug
   endif
   let g:vital_debug = 1
-  let save_rtp = &runtimepath
-  let &runtimepath = a:to . ',' . &runtimepath
 
-  call s:V.unload()
   let all = {}
   let data_files = []
   let entries = copy(a:depends_info)
@@ -124,7 +121,6 @@ function! s:search_dependence(depends_info, to) abort
   if exists('vital_debug')
     let g:vital_debug = vital_debug
   endif
-  let &runtimepath = save_rtp
 
   for module in builtin_modules
     call remove(all, module)
@@ -206,7 +202,7 @@ function! s:available_module_names() abort
 endfunction
 
 function! s:builtin_modules(rtp_dir) abort
-  let pat = s:FP.join(a:rtp_dir, 'autoload/vital/__latest__/**/*.vim')
+  let pat = s:FP.join(a:rtp_dir, 'autoload/vital/__*__/**/*.vim')
   let files = split(glob(pat, 1), "\n")
   return map(files, 's:file2module(v:val)')
 endfunction
@@ -332,6 +328,10 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
   endif
 
   try
+    let save_rtp = &runtimepath
+    let &runtimepath = a:to . ',' . &runtimepath
+    call s:V.unload()
+
     let vital_data = s:build_vital_data(a:to, a:name)
 
     if empty(vital_data.name)
@@ -386,7 +386,8 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     let install_files = []
     for f in files + s:REQUIRED_FILES
       let after = substitute(f, '__latest__', '_' . vital_data.name, '')
-      let paths = globpath(g:vitalizer#vital_dir . ',' . &runtimepath, f, 1)
+      let pat = substitute(f, '__latest__', '__*__', '')
+      let paths = globpath(g:vitalizer#vital_dir . ',' . &runtimepath, pat, 1)
       let from = get(split(paths, "\n"), 0)
       if !filereadable(from)
         throw 'vitalizer: Can not read the installing file: ' . from
@@ -423,6 +424,7 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     endif
 
   finally
+    let &runtimepath = save_rtp
     " Restore the HEAD
     if need_checkout
       call s:git_checkout('-')
