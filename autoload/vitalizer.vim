@@ -110,7 +110,7 @@ function! s:get_all_modules(module_names, to) abort
     let module = s:get_module(module_name)
     let all_modules[module_name] = module
     " Ignore dfiles because it is builtin
-    let dmodules = s:get_dependence(module)[0]
+    let dmodules = s:get_dependence(module_name, module)[0]
     let all_files[module_name] = 1
     let entries += dmodules
   endfor
@@ -125,7 +125,7 @@ function! s:get_all_modules(module_names, to) abort
     for module_name in modules
       let module = s:get_module(module_name)
       let all_modules[module_name] = module
-      let [dmodules, dfiles] = s:get_dependence(module)
+      let [dmodules, dfiles] = s:get_dependence(module_name, module)
       let entries += dmodules
       let data_files += dfiles
     endfor
@@ -147,12 +147,13 @@ endfunction
 
 " @param {vital-object} V
 " @param {module-name} module_name
+" @param {module} module object
 " @return [list<{module-name}>, list<{data-file}>]
-function! s:get_dependence(Module) abort
-  if !has_key(a:Module, '_vital_depends')
+function! s:get_dependence(module_name, module) abort
+  if !has_key(a:module, '_vital_depends')
     return [[], []]
   endif
-  let depends = a:Module._vital_depends()
+  let depends = a:module._vital_depends()
   if s:P.is_dict(depends)
     let dmodules = get(depends, 'modules', [])
     let dfiles = get(depends, 'files', [])
@@ -441,8 +442,8 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     " Check if all of specified modules exist.
     let missing = copy(a:modules)
     call map(missing, 'substitute(v:val, "^[+-]", "", "")')
-    let all_modules = s:available_module_names()
-    call filter(missing, 'index(all_modules, v:val) is -1')
+    let all_module_names = s:available_module_names()
+    call filter(missing, 'index(all_module_names, v:val) is -1')
     if !empty(missing)
       throw "vitalizer: Some modules don't exist: " . join(missing, ', ')
     endif
