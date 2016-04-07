@@ -3,7 +3,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:REQUIRED_FILES = [
+let s:LOADER_FILES = [
 \   'autoload/vital.vim',
 \   'autoload/vital/vital.vim',
 \   'autoload/vital/_vital.vim',
@@ -93,16 +93,25 @@ function! s:rmfile(file) abort
   endif
 endfunction
 
-function! s:search_dependence(depends_info, to) abort
-  let all = {}
+
+" s:get_all_modules() returns all modules(<raw-module>) and files.
+" It gathers all dependencies of each module of given module_names.
+" <raw-module> has all script local function of the module.
+" a:to is for get builtin modules.
+" @return { 'modules': list<raw-module>, 'files': list<module-path> }
+function! s:get_all_modules(module_names, to) abort
+  let all_modules = {}
+  let all_files = {}
   let data_files = []
-  let entries = copy(a:depends_info)
+  let entries = copy(a:module_names)
 
   let builtin_modules = s:builtin_modules(a:to)
-  for module in builtin_modules
+  for module_name in builtin_modules
+    let module = s:get_module(module_name)
+    let all_modules[module_name] = module
     " Ignore dfiles because it is builtin
-    let dmodules = s:get_dependence(s:V, module)[0]
-    let all[module] = 1
+    let dmodules = s:get_dependence(module)[0]
+    let all_files[module_name] = 1
     let entries += dmodules
   endfor
 
@@ -111,31 +120,39 @@ function! s:search_dependence(depends_info, to) abort
     unlet! entry
     let entry = remove(entries, 0)
 
-    let modules = s:expand_modules(s:V, entry, all)
+    let modules = s:expand_modules(s:V, entry, all_files)
 
-    for module in modules
-      let [dmodules, dfiles] = s:get_dependence(s:V, module)
+    for module_name in modules
+      let module = s:get_module(module_name)
+      let all_modules[module_name] = module
+      let [dmodules, dfiles] = s:get_dependence(module)
       let entries += dmodules
       let data_files += dfiles
     endfor
   endwhile
 
-  for module in builtin_modules
-    call remove(all, module)
+  for module_name in builtin_modules
+    call remove(all_files, module_name)
   endfor
 
-  return sort(map(keys(all), 's:module2file(v:val)') + data_files)
+  return {
+  \   'modules': all_modules,
+  \   'files': sort(map(keys(all_files), 's:module2file(v:val)') + data_files),
+  \ }
+endfunction
+
+function! s:get_module(module_name) abort
+  return s:V._get_module(a:module_name)
 endfunction
 
 " @param {vital-object} V
 " @param {module-name} module_name
 " @return [list<{module-name}>, list<{data-file}>]
-function! s:get_dependence(V, module_name) abort
-  let M = a:V._get_module(a:module_name)
-  if !has_key(M, '_vital_depends')
+function! s:get_dependence(Module) abort
+  if !has_key(a:Module, '_vital_depends')
     return [[], []]
   endif
-  let depends = M._vital_depends()
+  let depends = a:Module._vital_depends()
   if s:P.is_dict(depends)
     let dmodules = get(depends, 'modules', [])
     let dfiles = get(depends, 'files', [])
@@ -314,6 +331,79 @@ function! s:build_vital_data(to, name) abort
   \ }
 endfunction
 
+" @return {list<[from, to]>}
+function! s:install_module_files(module_files, plugin_name, to) abort
+  " List and check the installing module_files.
+  let install_files = []
+  " for f in files + s:LOADER_FILES
+  for f in a:module_files
+    let after = substitute(f, '_\?_vital\(__\)\?', '_' . a:plugin_name, '')
+    let after = substitute(after, 'vital/\zsvital\ze\.vim$', a:plugin_name, '')
+    let pat = substitute(f, '__vital__', '__*__', '')
+    let paths = globpath(g:vitalizer#vital_dir . ',' . &runtimepath, pat, 1)
+    let from = get(split(paths, "\n"), 0)
+    if !filereadable(from)
+      throw 'vitalizer: Can not read the installing file: ' . from
+    endif
+    call add(install_files, [from, s:FP.join(a:to, after)])
+  endfor
+  return install_files
+endfunction
+
+" @return {list<[from, to]>}
+function! s:loader_files(plugin_name, to) abort
+  let loader_files = []
+  for f in s:LOADER_FILES
+    let from = s:FP.join(g:vitalizer#vital_dir, f)
+    if !filereadable(from)
+      throw 'vitalizer: Can not read a loader file: ' . from
+    endif
+    let after = substitute(f, 'vital/_\?\zsvital\ze\.vim$', a:plugin_name, '')
+    call add(loader_files, [from, s:FP.join(a:to, after)])
+  endfor
+  return loader_files
+endfunction
+
+" s:autoloadablize() makes a module to be called by autoload function.
+function! s:autoloadablize(module_file, plugin_name, raw_module) abort
+  let module_name = s:file2module_name(a:module_file)
+  let data = s:autoloadablize_data(module_name, a:raw_module, a:plugin_name)
+  let save_module_lines = readfile(a:module_file)
+  let lines = split(s:I.interpolate(join(s:AUTOLOADABLIZE_TEMPLATE, "\n"), data), "\n") + save_module_lines
+  call writefile(lines, a:module_file)
+endfunction
+
+function! s:autoloadablize_data(module_name, raw_module, plugin_name) abort
+  " It doesn't need to filter functions here because Vital.import() will
+  " filter them after calling module._vital_loaded() and module._vital_created().
+  " However, this line collects functions here including module._vital_*() to
+  " reduce the size of autoloadablize code.
+  " sort() functions not to generate unneeded diff.
+  let functions = s:filter_module_funcs(a:raw_module)
+  " Create funcdict which key is function name and value is empty string.
+  " map() values to create Funcref in template file.
+  let funcdict = {}
+  for funcname in functions
+    let funcdict[funcname] = ''
+  endfor
+  return {
+  \   'autoload_import': s:autoload_import(a:plugin_name, a:module_name),
+  \   'funcdict': string(funcdict)
+  \ }
+endfunction
+
+function! s:autoload_import(plugin_name, module_name) abort
+  return printf('vital#_%s#%s#import', a:plugin_name, substitute(a:module_name, '\.', '#', 'g'))
+endfunction
+
+function! s:filter_module_funcs(raw_module) abort
+  return sort(keys(filter(a:raw_module, 'v:key =~# "^\\a" || v:key =~# "^_vital_"')))
+endfunction
+
+let &cpo = s:save_cpo
+
+" vim:set et ts=2 sts=2 sw=2 tw=0:
+
 function! vitalizer#vitalize(name, to, modules, hash) abort
   " FIXME: Should check if a working tree is dirty.
 
@@ -375,7 +465,9 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
     endif
     let action = 'install'  " TODO: We need --uninstall option
     let installing_modules = s:L.uniq(installing_modules)
-    let files = s:search_dependence(installing_modules, a:to)
+    let all_modules_data = s:get_all_modules(installing_modules, a:to)
+    let module_files = all_modules_data.files
+    let all_modules = all_modules_data.modules
 
     " Show critical changes.
     " (like 'apt-listchanges' in Debian, or 'eselect news' in Gentoo)
@@ -389,32 +481,23 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
       endif
     endif
 
-    " List and check the installing files.
-    let install_files = []
-    for f in files + s:REQUIRED_FILES
-      let after = substitute(f, '_\?_vital\(__\)\?', '_' . vital_data.name, '')
-      let after = substitute(after, 'vital/\zsvital\ze\.vim$', vital_data.name, '')
-      let pat = substitute(f, '__vital__', '__*__', '')
-      let paths = globpath(g:vitalizer#vital_dir . ',' . &runtimepath, pat, 1)
-      let from = get(split(paths, "\n"), 0)
-      if !filereadable(from)
-        throw 'vitalizer: Can not read the installing file: ' . from
-      endif
-      call add(install_files, [from, s:FP.join(a:to, after)])
-    endfor
-
     " Remove previous vital.
     call s:uninstall(a:to, vital_data.name)
 
     if action ==# 'install'
-      " Install vital.
-      for [from, to] in install_files
+      " Install loader
+      for [from, to] in s:loader_files(vital_data.name, a:to)
         call s:copy(from, to)
+      endfor
+
+      " Install modules.
+      for [from, to] in s:install_module_files(module_files, vital_data.name, a:to)
+        call s:copy(from, to)
+        let raw_module = all_modules[s:file2module_name(to)]
+        call s:autoloadablize(to, vital_data.name, raw_module)
       endfor
       let content = [vital_data.name, hash, ''] + installing_modules
       call writefile(content, vital_data.vital_file)
-
-      call s:revitalize(a:to)
 
       return {
       \ 'action': 'install',
@@ -513,133 +596,6 @@ function! vitalizer#command(args) abort
     endif
   catch /^vitalizer:/
     call s:Mes.error(v:exception)
-  endtry
-endfunction
-
-function! s:revitalize(...) abort
-  return call(s:Revitalizer.new, a:000, s:Revitalizer).revitalize()
-endfunction
-
-" s:Revitalizer re-:Vitalize vital modules to call them via autoload function.
-" 1. replace vital#of({vital-name}) with vital#_{vital-name}#of()
-" 2. mock vital object's methods. NOTE: .import() and .load() have to call
-"    module._vital_created(V) and module._vital_loaded(V).
-"   - :h Vital-Vital.import()
-"   - :h Vital-Vital.load()
-"   - :h Vital-Vital.exists()
-"   - :h Vital-Vital.search()
-let s:Revitalizer = {}
-
-function! s:Revitalizer.new(...) abort
-  let base = deepcopy(self)
-  call call(base.__init__, a:000, base)
-  return base
-endfunction
-
-function! s:Revitalizer.__init__(project_root_dir) abort
-  let self.project_root_dir = fnamemodify(a:project_root_dir, ':p')
-  let self.vital_data = s:build_vital_data(self.project_root_dir, '')
-  if !filereadable(self.vital_data.vital_file)
-    call self.throw(printf('%s not found.', self.vital_data.vital_file))
-  endif
-  let self.vital_dir_rel = s:FP.join('autoload', 'vital', '_' . self.vital_data.name)
-  let self.vital_dir = s:FP.join([self.project_root_dir, self.vital_dir_rel])
-  let self.vital_files = sort(self.get_vital_files())
-  " In vitalize#vitalize(), target dir is in &runtimepath
-  let self.V = vital#{self.vital_data.name}#of()
-  call self.V.unload() " .unload() to refresh for revitalizer
-endfunction
-
-function! s:Revitalizer.source_modules() abort
-  for f in self.vital_files
-    call s:_source(f)
-  endfor
-endfunction
-
-function! s:Revitalizer.revitalize() abort
-  for f in self.vital_files
-    call self.autoloadablize(f)
-  endfor
-endfunction
-
-" Use s:ScriptLocal.sid2sfuncs(sid) and s:ScriptLocal.scriptnames() in .new()
-" instead of s:ScriptLocal.sfuncs(path) not to execute `:scriptnames` for each
-" time.
-" @param {string} vital_file vital_file is a fullpath of vital modules
-function! s:Revitalizer.autoloadablize(vital_file) abort
-  let data = self.autoloadablize_data(a:vital_file)
-  if !self.is_autoloadablized(a:vital_file)
-    let save_module_lines = readfile(a:vital_file)
-    let lines = split(s:I.interpolate(join(s:AUTOLOADABLIZE_TEMPLATE, "\n"), data), "\n") + save_module_lines
-    call writefile(lines, a:vital_file)
-  endif
-  return data.module
-endfunction
-
-function! s:Revitalizer.is_autoloadablized(vital_file) abort
-  return get(readfile(a:vital_file, '', 1), 0, '') ==# s:AUTOLOADABLIZE_TEMPLATE[0]
-endfunction
-
-function! s:Revitalizer.autoloadablize_data(vital_file) abort
-  let module_name = s:file2module_name(a:vital_file)
-  let sfuncs = self.V._get_module(module_name)
-  " It doesn't need to filter functions here because Vital.import() will
-  " filter them after calling module._vital_loaded() and module._vital_created().
-  " However, this line collects functions here including module._vital_*() to
-  " reduce the size of autoloadablize code.
-  " sort() functions not to generate unneeded diff.
-  let functions = sort(keys(filter(sfuncs, 'v:key =~# "^\\a" || v:key =~# "^_vital_"')))
-  " Create funcdict which key is function name and value is empty string.
-  " map() values to create Funcref in template file.
-  let funcdict = {}
-  for funcname in functions
-    let funcdict[funcname] = ''
-  endfor
-  let autoload_import = self.autoload_path(a:vital_file) . '#import'
-  return {
-  \   'autoload_import': autoload_import,
-  \   'funcdict': string(funcdict),
-  \   'module': {
-  \     module_name : {
-  \       'autoload_import': autoload_import,
-  \       'is_self_module': 0,
-  \     },
-  \   },
-  \ }
-endfunction
-
-function! s:Revitalizer.autoload_path(vital_file) abort
-  let vital_file = s:FP.unixpath(a:vital_file)
-  let prd = s:FP.unixpath(self.project_root_dir)
-  return substitute(vital_file[len(s:FP.join(prd, 'autoload/')):], '/', '#', 'g')[:- (len('.vim') + 1)]
-endfunction
-
-" s:Revitalizer.get_vital_files() lists all embedded vital viles of a project.
-" a:project_root_dir is same as {target-dir} in :h :Vitalize
-" @return {list<string>}
-function! s:Revitalizer.get_vital_files() abort
-  return s:ls_R_vimfiles(self.vital_dir)
-endfunctio
-
-function! s:Revitalizer.throw(message) abort
-  throw printf('vitalizer: Revitalizer: %s', a:message)
-endfunction
-
-" -- helper
-
-" s:ls_R_vimfiles() returns list of vim files under given a:path recursively.
-" @param {string} path
-" @return {list<string>}
-function! s:ls_R_vimfiles(path) abort
-  return split(globpath(a:path, '**/*.vim', 1), "\n")
-endfunction
-
-function! s:_source(path) abort
-  try
-    execute ':source' fnameescape(a:path)
-  catch /^Vim\%((\a\+)\)\=:E121/
-    " NOTE: workaround for `E121: Undefined variable: s:save_cpo`
-    execute ':source' fnameescape(a:path)
   endtry
 endfunction
 

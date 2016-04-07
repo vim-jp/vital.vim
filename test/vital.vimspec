@@ -4,7 +4,6 @@ Describe vital
     let Vital = vital#vital#of()
     let File = Vital.import('System.File')
     let Filepath = Vital.import('System.Filepath')
-    let ScriptLocal = Vital.import('Vim.ScriptLocal')
     let Prelude = Vital.import('Prelude')
 
     call File.mkdir_nothrow(g:tmpdir)
@@ -45,14 +44,6 @@ Describe vital
         Assert IsDict(vital#_{g:testplugin_name}#{substitute(name, '\.', '#', 'g')}#import())
       endfor
     End
-
-    Describe .new()
-      It fails with invalid path
-        let vitalizer = ScriptLocal.sfuncs('autoload/vitalizer.vim')
-        Throws /vitalizer: .* not found./ :call vitalizer.revitalize('invalid-path')
-      End
-    End
-
 
     Context symlink
       It supports symlink plugin
