@@ -9,7 +9,7 @@ Describe vital
     call File.mkdir_nothrow(g:tmpdir)
 
     let vitalize_modules  = ['Data.List', 'Data.LazyList', 'Data.String', 'Web.JSON', 'Cyclic1']
-    execute 'Vitalize --name=testplugin ' . Filepath.unixpath(g:testplugin_root) . ' ' . join(vitalize_modules, ' ')
+    call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, vitalize_modules, '')
   End
 
   After all
@@ -31,15 +31,14 @@ Describe vital
     call File.rmdir(g:tmpdir, 'rf')
   End
 
-  Describe :Vitalize
-    It succeeded in :Vitalize
+  Describe vitalizer#vitalize()
+    It succeeded in vitalizer#vitalize() in Before all
       let vital_data = Filepath.realpath(Filepath.join(
       \   g:testplugin_root, 'autoload', 'vital', g:testplugin_name . '.vital'))
       Assert True(filereadable(vital_data))
     End
 
     It inserts import autoload function
-      " Assert IsDict(vital#_{g:testplugin_name}#Data#List#import())
       for name in vitalize_modules
         Assert IsDict(vital#_{g:testplugin_name}#{substitute(name, '\.', '#', 'g')}#import())
       endfor
@@ -50,13 +49,57 @@ Describe vital
         if Prelude.is_windows()
           Skip "windows doesn't handle symlink"
         endif
-        let dest = Filepath.unixpath(g:symlinkplugin_root)
-        execute 'Vitalize --name=symlink ' . dest . ' ' . join(vitalize_modules, ' ')
+        call vitalizer#vitalize('symlink', g:symlinkplugin_root, vitalize_modules, '')
         let V = vital#symlink#of()
         Assert True(V.import('Selfmodule').return1())
         let List = V.import('Data.List')
         Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
       End
+    End
+
+    It updates vital modules
+      call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, [], '')
+      for name in vitalize_modules
+        Assert IsDict(vital#_{g:testplugin_name}#{substitute(name, '\.', '#', 'g')}#import())
+      endfor
+    End
+
+    It remove and add vital modules
+      let V = vital#of(g:testplugin_name)
+      Assert True(V.exists('Web.JSON'))
+      call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, ['-Web.JSON'], '')
+      let V.unload()
+      Assert False(V.exists('Web.JSON'))
+      call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, ['+Web.JSON'], '')
+      let V.unload()
+      Assert True(V.exists('Web.JSON'))
+    End
+
+    It cannot remove dependencies modules
+      let V = vital#of(g:testplugin_name)
+      Assert True(V.exists('Cyclic2'))
+      call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, ['-Cyclic2'], '')
+      let V.unload()
+      Assert True(V.exists('Cyclic2'))
+    End
+
+    It cannot remove modules which required from other installing modules
+      " Data.LazyList depends Data.List
+      let V = vital#of(g:testplugin_name)
+      Assert True(V.exists('Data.List'))
+      call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, ['-Data.List'], '')
+      let V.unload()
+      Assert True(V.exists('Data.List'))
+    End
+
+    It can remove modules which required from other dependencies modules
+      " Cyclic2 depends Cyclic1, but Cyclic2 is not specified by :Vitalize
+      let V = vital#of(g:testplugin_name)
+      Assert True(V.exists('Cyclic1'))
+      call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, ['-Cyclic1'], '')
+      let V.unload()
+      Assert False(V.exists('Cyclic1'))
+      call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, ['+Cyclic1'], '')
     End
   End
 
