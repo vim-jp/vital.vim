@@ -113,10 +113,6 @@ function! s:exists(name) abort dict
   if a:name !~# '\v^\u\w*%(\.\u\w*)*$'
     throw 'vital: Invalid module name: ' . a:name
   endif
-  let b = exists('*' . s:_import_func_name(self.plugin_name(), a:name))
-  if b
-    return b
-  endif
   return s:_module_path(a:name) isnot# ''
 endfunction
 let s:Vital.exists = s:_function('s:exists')
