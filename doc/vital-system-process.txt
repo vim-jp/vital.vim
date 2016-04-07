@@ -1,0 +1,193 @@
+*vim-system-process.txt*	Cross platform process executor
+
+Maintainer: lambdalisue		<lambdalisue@hashnote.net>
+
+=============================================================================
+CONTENTS				*Vital.System.Process-contents*
+
+Introduction			|Vital.System.Process-introduction|
+Install				|Vital.System.Process-install|
+Usage				|Vital.System.Process-usage|
+Functions			|Vital.System.Process-functions|
+Developers			|Vital.System.Process-developers|
+
+
+=============================================================================
+INTRODUCTION				*Vital.System.Process-introduction*
+
+|Vital.System.Process| provides a cross-platform functions to execute process.
+
+The following process clients are available:
+
+- |Vital.System.Process.Mock|		For mock testing
+- |Vital.System.Process.System|		Use |system()| internally (*)
+- |Vital.System.Process.Vimproc|	Use vimproc internally (*)
+
+Clients with (*) will be automatically vitalized when |Vital.System.Process|
+is vitalized. Other modules require explicit |:Vitalize| before use.
+
+
+=============================================================================
+USAGE						*Vital.System.Process-usage*
+>
+	let s:Process = s:V.import('System.Process')
+	let result = s:Process.execute([
+	    \ 'git', 'rev-parse', '--is-inside-work-tree',
+	    \])
+	echo result.output
+	" => true
+<
+
+=============================================================================
+FUNCTIONS				*Vital.System.Process-functions*
+
+				*Vital.System.Process.execute()*
+execute({args}[, {options}])
+	Executes a process specified by {args} (|List|).
+	It tries process clients listed in "clients" attribute of {options}
+	and return a result |Dictionary| when one of a client supports a
+	specified {options}.
+	Otherwise it raises an exception 'None of client support options:'.
+
+	The following attributes are supported in {options}
+
+		"clients"
+		A |List| of client names registered by
+		|Vital.System.Process.register()| function or an instance of
+		a process client (|Dictionary|).
+		The order of appearance is equal to the order of trial.
+		When vimproc is available, |Vital.System.Process.Vimproc| will
+		be listed prior to the |Vital.System.Process.System| in default.
+		Default:
+		['System.Process.Vimproc', 'System.Process.System']
+		or
+		['System.Process.System']
+
+		"input"
+		A |String| or |Number|. If |String| is specified, the value will be
+		passed to the process through the stdin. If |Number| is
+		specified, no value will be passed to the process.
+		Default: 0
+
+		"timeout"
+		A process timeout in seconds (|Number|). A system process
+		client does not support this option, mean that vimproc is
+		required to be available.
+		Default: 0
+
+		"background"
+		If 1, the process will be executed in background. A system
+		process client does not support this option in Windows, mean
+		that vimproc is required to be available to use in Windows.
+		When the process is executed in background, the "success" in
+		{result} be always 1.
+		Note that there is no way to get PID or status of the process
+		if this option is used.
+		Default: 0
+
+		"encode_input"
+		A |String| or |Number|. If 1 is specified, "input" value will be
+		encoded by |iconv()| from |&encoding| to "char". If |String| is
+		specified, it will be encoded from a value of 'encode_input'
+		to "char".
+		Default: 1
+
+		"encode_output"
+		A |String| or |Number|. If 1 is specified, "output" value in
+		{result} will be encoded by |iconv()| from "char" to |&encoding|.
+		If |String| is specified, it will be encoded from "char" to a
+		value of 'encode_output'.
+		Default: 1
+
+		"split_output"
+		If 1, a POSIX |List| of "output" value in {result} will be
+		embed into {result} dictionary as "content".
+		It uses |Vital.Data.String.split_posix_text()| internally.
+		Default: 1
+
+		"debug"
+		If 1, let a process client to echo a debug information about
+		process execution. The default value is taken from 'verbose'
+		option so that users can show debug information with
+		|:verbose| command.
+		Default: &verbose
+
+	The following attributes exists in {result} dictionary and the value
+	should be equal among clients and environments:
+
+		"success"
+		0 or 1 to indicate whether the process exit without
+		exceptions, namely if the "status" is 0 or not.
+
+		"status"
+		An exit status of the process. Note that if
+		"options.background" is 1, it is always 0.
+
+		"output"
+		An output |String| of the process. It is encoded if
+		'encode_output' is specified in {options}.
+
+		"content"
+		An output of the process as a |List| when "options.split_output"
+		is specified. Otherwise the attribute is missing.
+
+		"args"
+		An argument |List| used for executing a process.
+
+		"options"
+		An option |Dictionary| used for executing a process.
+
+	See individual client documents for extra attributes (e.g. "cmdline").
+
+	Note that when "options.debug" is grater than 0, it echos which client
+	is used and the actual cmdline, for debugging.
+
+				*Vital.System.Process.register()*
+register({name})
+	Register a {name} Vital module as a process client.
+	It only register when "is_available()" method of the module returns
+	truth value.
+	The order of the registration effect the default priority of the
+	clients.
+	For a process client developer.
+
+=============================================================================
+DEVELOPERS				*Vital.System.Process-developers*
+
+A process client module requires to have the following three methods.
+
+				*Vital.System.Process.Client.is_available()*
+is_available()
+	Return 0 or 1 to indicate if the module is available in a Vim.
+	Modules which return 0 in this function will never be registered.
+
+				*Vital.System.Process.Client.is_supported()*
+is_supported({options})
+	Return 0 or 1 to indicate if the module support a specified {options}.
+	Modules which return 0 in this function will be skipped.
+
+				*Vital.System.Process.Client.execute()*
+execute({args}, {options})
+	Execute a process specified by {args}. This method need to return a
+	{result} |Dictionary| which must contains "status" and "output". Any
+	other attributes are optional.
+	Note that "input" should be encoded prior to the method (if user
+	want), so should not encode without particular reasons.
+	Note that "output" will be encoded posterior to the method (if user
+	want), so should not encode without particular reasons.
+	Note that the method should echo actual command and module name when
+	"options.debug" is grater than 0, for example:
+>
+	if a:options.debug > 0
+	  echomsg printf(
+	    \ 'vital: System.Process.XXXXX: %s',
+	    \ cmdline,
+	    \)
+	endif
+<
+When you create a new process client, register that with
+|Vital.System.Process.register()| function in "s:_vital_loaded()" function of
+|Vital.System.Process| module.
+
+=============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

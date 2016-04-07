@@ -1,0 +1,122 @@
+scriptencoding utf-8
+
+let s:V = vital#of('vital')
+let s:Prelude = s:V.import('Prelude')
+let s:Path = s:V.import('System.Filepath')
+let s:Guard = s:V.import('Vim.Guard')
+let s:ScriptLocal = s:V.import('Vim.ScriptLocal')
+let s:scriptfile = s:Path.realpath(
+      \ 'autoload/vital/__latest__/System/Process.vim'
+      \)
+
+Describe System.Process
+  Before
+    let Process = s:V.import('System.Process')
+    let sv = s:ScriptLocal.svars(s:scriptfile)
+    let guard = s:Guard.store(['iconv', sv.String])
+  End
+
+  After
+    call guard.restore()
+  End
+
+  Describe .execute({args}, {options})
+    " NOTE:
+    " Tests for actual process call are in System/Process/XXXXX.vimspec
+    It uses a String item in {options.clients} as a process client
+      let args = s:Prelude.is_windows()
+            \ ? ['cmd', '/C', 'exit 0']
+            \ : ['true']
+      let result = Process.execute(args, {
+            \ 'clients': ['System.Process.System'],
+            \})
+      Assert Equals(result.success, 1)
+      Assert Equals(result.status, 0)
+      Assert Equals(result.output, '')
+    End
+
+    It uses a Dictionary item in {options.clients} as a process client
+      let Mock = s:V.import('System.Process.Mock')
+      let result = Process.execute(['foo', 'bar'], {
+            \ 'clients': [Mock],
+            \})
+      Assert Equals(result.success, 1)
+      Assert Equals(result.status, 0)
+      Assert Equals(result.output, 'Output of System.Process.Mock')
+    End
+
+    It does not encode {options.input}/{result.output} if {options.encode_input}/{option.encode_output} are not specified
+      function! sv.String.iconv(...) abort
+        let self._iconv_args = a:000
+      endfunction
+      let Mock = s:V.import('System.Process.Mock')
+      let result = Process.execute(['foo', 'bar'], {
+            \ 'clients': [Mock],
+            \ 'input': 'foobar',
+            \ 'encode_input': 0,
+            \ 'encode_output': 0,
+            \})
+      Assert KeyNotExists(sv.String, '_iconv_args')
+    End
+
+    It encodes {options.input} from &encoding to 'char' if {options.encode_input} is specified
+      function! sv.String.iconv(...) abort
+        let self._iconv_args = a:000
+      endfunction
+      let Mock = s:V.import('System.Process.Mock')
+      let result = Process.execute(['foo', 'bar'], {
+            \ 'clients': [Mock],
+            \ 'input': 'foobar',
+            \ 'encode_input': 1,
+            \ 'encode_output': 0,
+            \})
+      Assert Equals(sv.String._iconv_args, ['foobar', &encoding, 'char'])
+    End
+
+    It encodes {options.input} from {options.encode_input} to 'char' if {options.encode_input} is specified
+      function! sv.String.iconv(...) abort
+        let self._iconv_args = a:000
+      endfunction
+      let Mock = s:V.import('System.Process.Mock')
+      let result = Process.execute(['foo', 'bar'], {
+            \ 'clients': [Mock],
+            \ 'input': 'foobar',
+            \ 'encode_input': 'some_encoding',
+            \ 'encode_output': 0,
+            \})
+      Assert Equals(sv.String._iconv_args, ['foobar', 'some_encoding', 'char'])
+    End
+
+    It encode {result.output} from 'char' to &encoding if {options.encode_output} is specified
+      function! sv.String.iconv(...) abort
+        let self._iconv_args = a:000
+      endfunction
+      let Mock = s:V.import('System.Process.Mock')
+      let result = Process.execute(['foo', 'bar'], {
+            \ 'clients': [Mock],
+            \ 'input': 'foobar',
+            \ 'encode_input': 0,
+            \ 'encode_output': 1,
+            \})
+      Assert Equals(sv.String._iconv_args,
+            \ ['Output of System.Process.Mock', 'char', &encoding]
+            \)
+    End
+
+    It encode {result.output} from 'char' to {options.encode_output} if {options.encode_output} is specified
+      function! sv.String.iconv(...) abort
+        let self._iconv_args = a:000
+      endfunction
+      let Mock = s:V.import('System.Process.Mock')
+      let result = Process.execute(['foo', 'bar'], {
+            \ 'clients': [Mock],
+            \ 'input': 'foobar',
+            \ 'encode_input': 0,
+            \ 'encode_output': 'some_encoding',
+            \})
+      Assert Equals(sv.String._iconv_args,
+            \ ['Output of System.Process.Mock', 'char', 'some_encoding']
+            \)
+    End
+  End
+End
