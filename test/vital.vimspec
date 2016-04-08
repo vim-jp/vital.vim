@@ -6,8 +6,6 @@ Describe vital
     let Filepath = Vital.import('System.Filepath')
     let Prelude = Vital.import('Prelude')
 
-    call File.mkdir_nothrow(g:tmpdir)
-
     let vitalize_modules  = ['Data.List', 'Data.LazyList', 'Data.String', 'Web.JSON', 'Cyclic1']
     call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, vitalize_modules, '')
   End
@@ -28,7 +26,6 @@ Describe vital
     for f in delete_files
       call delete(f)
     endfor
-    call File.rmdir(g:tmpdir, 'rf')
   End
 
   Describe vitalizer#vitalize()
