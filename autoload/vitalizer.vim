@@ -17,7 +17,6 @@ let s:FP = s:V.import('System.Filepath')
 let s:Mes = s:V.import('Vim.Message')
 let s:Dict = s:V.import('Data.Dict')
 let s:I = s:V.import('Data.String.Interpolation')
-let s:ScriptLocal = s:V.import('Vim.ScriptLocal')
 
 let g:vitalizer#vital_dir =
 \     get(g:, 'vitalizer#vital_dir', expand('<sfile>:h:h:p'))
