@@ -8,7 +8,7 @@ let s:LOADER_FILES = [
 \   'autoload/vital/vital.vim',
 \   'autoload/vital/_vital.vim',
 \ ]
-let s:V = vital#of('vital')
+let s:V = vital#vital#of()
 let s:P = s:V.import('Prelude')
 let s:L = s:V.import('Data.List')
 let s:S = s:V.import('Data.String')
