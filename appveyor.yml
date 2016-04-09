@@ -19,7 +19,7 @@ install:
 build: off
 test_script:
   - '%THEMIS_VIM% --version'
-  - '%TEMP%\vim-themis\bin\themis.bat --runtimepath %TEMP%\vimproc --exclude ConcurrentProcess --exclude System.Process --reporter dot'
+  - '%TEMP%\vim-themis\bin\themis.bat --runtimepath %TEMP%\vimproc --exclude ConcurrentProcess --exclude System.Process.Vimproc --reporter dot'
 deploy: off
 notifications:
   - provider: Webhook
