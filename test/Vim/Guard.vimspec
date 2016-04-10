@@ -491,7 +491,7 @@ Describe Vim.Guard
     End
   End
 
-  Describe .store({option_or_variable}...)
+  Describe .store({targets})
     Before
       let previous_backup = &backup
       let previous_g_backupcopy = &g:backupcopy
@@ -528,64 +528,64 @@ Describe Vim.Guard
     End
     It throws an exception when unknown {option_or_variable} is specified
       Throws /Unknown value "backup" was specified/
-            \ Guard.store('backup')
+            \ Guard.store(['backup'])
     End
     It returns a guard instance for options
-      let guard = Guard.store(
+      let guard = Guard.store([
             \ '&backup',
             \ '&backupcopy',
             \ '&binary',
             \ '&list',
-            \)
+            \])
       Assert KeyExists(guard, 'restore')
     End
     It returns a guard instance for register
-      let guard = Guard.store(
+      let guard = Guard.store([
             \ '@@',
             \ '@a',
             \ '@b',
             \ '@=',
-            \)
+            \])
       Assert KeyExists(guard, 'restore')
     End
     It returns a guard instance for environment variable
-      let guard = Guard.store(
+      let guard = Guard.store([
             \ '$PATH',
             \ '$_VITAL_VIM_GUARD_A',
-            \)
+            \])
       Assert KeyExists(guard, 'restore')
     End
     It returns a guard instance for variables
       let namespace = { 'VitalVimGuardTest': 1 }
-      let guard = Guard.store(
+      let guard = Guard.store([
             \ ['VitalVimGuardTest', b:],
             \ ['VitalVimGuardTest', w:],
             \ ['VitalVimGuardTest', t:],
             \ ['VitalVimGuardTest', g:],
             \ ['VitalVimGuardTest', s:],
             \ ['VitalVimGuardTest', namespace],
-            \)
+            \])
       Assert KeyExists(guard, 'restore')
       " NOTE: namespace variables of b:, w:, t:, g: are omittable
-      let guard = Guard.store(
+      let guard = Guard.store([
             \ 'b:VitalVimGuardTest',
             \ 'w:VitalVimGuardTest',
             \ 't:VitalVimGuardTest',
             \ 'g:VitalVimGuardTest',
             \ ['VitalVimGuardTest', s:],
             \ ['VitalVimGuardTest', namespace],
-            \)
+            \])
       Assert KeyExists(guard, 'restore')
     End
     It returns a guard instance for instance
-      let guard = Guard.store(
+      let guard = Guard.store([
             \ [[]],
             \ [{}],
             \ [[], 0],
             \ [{}, 0],
             \ [[], 1],
             \ [{}, 1],
-            \)
+            \])
       Assert KeyExists(guard, 'restore')
     End
     Describe A guard instance
@@ -593,7 +593,7 @@ Describe Vim.Guard
         let namespace = { 'VitalVimGuardTest': 1 }
         let l:list = ['foo', 'bar', 'hoge']
         let l:dict = {'foo': 'bar', 'hoge': 'hoge'}
-        let guard = Guard.store(
+        let guard = Guard.store([
               \ '&backup',
               \ '&backupcopy',
               \ '&binary',
@@ -608,7 +608,7 @@ Describe Vim.Guard
               \ ['VitalVimGuardTest', namespace],
               \ [l:list],
               \ [l:dict],
-              \)
+              \])
         set nobackup
         set backupcopy=no
         set nobinary

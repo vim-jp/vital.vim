@@ -42,7 +42,7 @@ function! s:execute(args, options) abort
   " NOTE:
   " execute() is a command for executing program WITHOUT using shell.
   " so mimic that behaviour with shell
-  let guard = call(s:Guard.store, filter([
+  let guard = s:Guard.store(filter([
         \ '&shell',
         \ '&shellcmdflag',
         \ '&shellquote',
@@ -52,7 +52,8 @@ function! s:execute(args, options) abort
         \ (exists('+shellxescape') ? '&shellxescape' : ''),
         \ (exists('+shellxquote') ? '&shellxquote' : ''),
         \ (exists('+shellslash') ? '&shellslash' : ''),
-        \], '!empty(v:val)'), s:Guard)
+        \], '!empty(v:val)')
+        \)
   try
     " Reset shell related options
     if s:Prelude.is_windows()

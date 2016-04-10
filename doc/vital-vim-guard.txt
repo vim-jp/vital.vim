@@ -59,7 +59,7 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	  let l:dict2 = {'foo': ['bar']}
 
 	  " Guard options/variables
-	  let guard = s:G.store(
+	  let guard = s:G.store([
 	    \ '&backup',
 	    \ '@a',
 	    \ '$EDITOR',
@@ -69,7 +69,7 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	    \ [l:dict1],
 	    \ [l:list2, 1],
 	    \ [l:dict2, 1],
-	    \)
+	    \])
 
 	  " Assign temporary values
 	  set nobackup
@@ -127,12 +127,13 @@ is_local_variable_supported
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Vim.Guard-functions*
 
-store([{name}, ...])	*Vital.Vim.Guard.store()*
-	Create a new guard instance. Values of {name} options/variables will
-	be stored in the instance and can be restored by calling .restore()
-	method of the instance.
+store({targets})	*Vital.Vim.Guard.store()*
+	Create a new guard instance. Values of options/variables listed in
+	{targets} |List| will be stored in the instance and can be restored by
+	calling .restore() method of the instance.
 
-	The following type of value is allowed for {name}
+	The following type of value is allowed for items ({name}) of the
+	{target}:
 
 	|List|
 	If the {name} contains:
