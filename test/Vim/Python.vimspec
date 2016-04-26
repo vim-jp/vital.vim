@@ -265,7 +265,7 @@ Describe Vim.Python
             \ 'import sys, vim',
             \ 'print("%s %d" % (',
             \ '  vim.eval("prefix"),',
-            \ '  sys.version_info.major,',
+            \ '  sys.version_info[0],',
             \ '))',
             \]
     End
@@ -365,7 +365,7 @@ Describe Vim.Python
       Before
         let expr = [
               \ 'max(',
-              \ '  sys.version_info.major,',
+              \ '  sys.version_info[0],',
               \ '  0',
               \ ')',
               \]
