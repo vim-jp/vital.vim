@@ -127,6 +127,10 @@ eval_expr({expr}[, {version}])		*Vital.Vim.Python.eval_expr()*
 
 	This function requires a Vim 7.3.601 or later.
 
+add_pythonpath({path}[, {version}])	*Vital.Vim.Python.add_pythonpath()*
+
+	Add {path} into sys.path of {version} python if the {path} is not
+	found in sys.path.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
