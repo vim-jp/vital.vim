@@ -149,7 +149,6 @@ Describe vital
       End
 
       It handles &wildignore
-        Skip 'it is known bug but we cannot modify autoload/vital.vim for all plugins using vital.vim #259'
         let V = vital#of(g:testplugin_name)
         Assert Equals(type(V), type({}))
         Assert HasKey(V, 'import')
