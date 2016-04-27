@@ -335,7 +335,6 @@ endfunction
 function! s:install_module_files(module_files, plugin_name, to) abort
   " List and check the installing module_files.
   let install_files = []
-  " for f in files + s:LOADER_FILES
   for f in a:module_files
     let after = substitute(f, '_\?_vital\(__\)\?', '_' . a:plugin_name, '')
     let after = substitute(after, 'vital/\zsvital\ze\.vim$', a:plugin_name, '')
@@ -374,11 +373,6 @@ function! s:autoloadablize(module_file, plugin_name, raw_module) abort
 endfunction
 
 function! s:autoloadablize_data(module_name, raw_module, plugin_name) abort
-  " It doesn't need to filter functions here because Vital.import() will
-  " filter them after calling module._vital_loaded() and module._vital_created().
-  " However, this line collects functions here including module._vital_*() to
-  " reduce the size of autoloadablize code.
-  " sort() functions not to generate unneeded diff.
   let functions = s:filter_module_funcs(a:raw_module)
   " Create funcdict which key is function name and value is empty string.
   " map() values to create Funcref in template file.
@@ -396,13 +390,14 @@ function! s:autoload_import(plugin_name, module_name) abort
   return printf('vital#_%s#%s#import', a:plugin_name, substitute(a:module_name, '\.', '#', 'g'))
 endfunction
 
+" It doesn't need to filter functions here because Vital.import() will
+" filter them after calling module._vital_loaded() and module._vital_created().
+" However, this line collects functions here including module._vital_*() to
+" reduce the size of autoloadablize code.
+" sort(functions) not to generate unneeded diff.
 function! s:filter_module_funcs(raw_module) abort
   return sort(keys(filter(a:raw_module, 'v:key =~# "^\\a" || v:key =~# "^_vital_"')))
 endfunction
-
-let &cpo = s:save_cpo
-
-" vim:set et ts=2 sts=2 sw=2 tw=0:
 
 function! vitalizer#vitalize(name, to, modules, hash) abort
   " FIXME: Should check if a working tree is dirty.
@@ -589,7 +584,6 @@ function! vitalizer#command(args) abort
         let mes = printf("vitalizer: updated vital of '%s'. (%s)",
         \                to, hash_stat)
       endif
-
       call s:Mes.echomsg('MoreMsg', mes)
     elseif !empty(result) && result.action ==# 'uninstall'
       call s:Mes.echomsg('MoreMsg', 'vitalizer: uninstalled vital. You can specify the name on next time.')
