@@ -1,5 +1,5 @@
 version: '{build}'
-clone_depth: 1
+clone_depth: 10
 environment:
   matrix:
     - VIM_URL: http://files.kaoriya.net/vim/vim74-kaoriya-win64.zip
