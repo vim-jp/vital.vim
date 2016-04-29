@@ -7,7 +7,7 @@ Describe Vim.Guard
   Before
     let Guard = s:V.import('Vim.Guard')
     let sfile = s:P.realpath(
-          \ 'autoload/vital/__latest__/Vim/Guard.vim'
+          \ 'autoload/vital/__vital__/Vim/Guard.vim'
           \)
     let sf = s:S.sfuncs(sfile)
   End
