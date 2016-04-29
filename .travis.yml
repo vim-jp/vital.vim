@@ -29,7 +29,7 @@ install:
 before_script:
   - git clone --depth 1 https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
   - git clone --depth 1 https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
-  - git clone --depth 1 --branch v1.5.1 --single-branch https://github.com/thinca/vim-themis /tmp/vim-themis
+  - git clone --depth 1 --branch v1.5.2.1 --single-branch https://github.com/thinca/vim-themis /tmp/vim-themis
   - git clone --depth 1 https://github.com/Shougo/vimproc.vim /tmp/vimproc
   - (cd /tmp/vimproc && make)
 

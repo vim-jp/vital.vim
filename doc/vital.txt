@@ -5,10 +5,10 @@ CONTENTS				*Vital-contents*
 
 INTRODUCTION			|Vital-introduction|
 USAGE				|Vital-usage|
+TERM				|Vital-term|
 INTERFACE			|Vital-interface|
   FUNCTIONS			  |Vital-functions|
   Vital object			  |Vital-Vital-object|
-  VARIABLES			  |Vital-variables|
 LINKS				|Vital-links|
 
 
@@ -67,13 +67,47 @@ have to embed vital. See |vitalizer.txt| about the details how to embed and
 keep it updated.
 
 ==============================================================================
+TERMS					*Vital-terms*
+
+{plugin-name}				*Vital-term-plugin-name*
+	It's same as the {name} in |:Vitalize| and this name is used in
+	|Vital-functions|.
+
+	Reserved name: "vital" ~
+	You can use "vital" as a {plugin-name} by default. When {plugin-name}
+	is "vital", you can use all available vital modules in 'runtimepath'.
+	Just use "vital" for development only and use unique {plugin-name} to
+	embed modules by |:Vitalize| and use them in your plugin.
+
+{module-name}				*Vital-term-module-name*
+	A name of vital module. {module-name} is capitalized words separated
+	with dot. Please see each |Vital-modules| help for detail.
+	Example:
+		"Prelude" (|vital-prelude.txt|)
+		"Data.String" (|vital-data-string.txt|)
+
+==============================================================================
 INTERFACE				*Vital-interface*
 
 ------------------------------------------------------------------------------
 FUNCTIONS 				*Vital-functions*
 
-vital#of({plugin-name})			*vital#of()*
+vital#of({plugin-name})				*vital#of()*
 	Creates a new Vital object(|Vital-Vital-object|).
+	This function is deprecated. Please use |vital#{plugin-name}#of()|
+	instead. vital#{plugin-name}#of() is faster than vital#of.
+
+vital#{plugin-name}#of()			*vital#{plugin-name}#of()*
+	Creates a new Vital object(|Vital-Vital-object|).
+	If you just want to use |Vital-Vital.import()|, You can use
+	|vital#{plugin-name}#import()| instead without any peformance
+	degradation.
+
+vital#{plugin-name}#import({module-name})	*vital#{plugin-name}#import()*
+	Imports a single module specified by {module-name}.
+>
+	let s:List = vital#vital#import('Data.List')
+	echo s:List.uniq([1,1,2])
 
 ------------------------------------------------------------------------------
 Vital object 				*Vital-Vital-object*
@@ -105,23 +139,8 @@ Vital.search({pattern})			*Vital-Vital.search()*
 	echo s:V.search('Data.*List')
 	echo s:V.search('**')  " returns all available module names
 
-
-
-------------------------------------------------------------------------------
-VARIABLES 				*Vital-variables*
-
-g:vital_debug				*g:vital_debug*
-	Default: 0
-
-	Vital.import and Vital.load ignore functions which name begins with
-	underscore, but this option enables importing/loading such functions.
->
-	let g:vital_debug = 1
-<
-	Note that this option is only for Vital plugin developers; not for
-	Vital users.
-
-
+Vital.plugin_name()			*Vital-Vital.plugin_name()*
+	Returns {plugin-name} of the Vital object.
 
 ==============================================================================
 LINKS					*Vital-links*
