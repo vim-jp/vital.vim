@@ -126,7 +126,7 @@ Describe Vim.Buffer
 
   Describe read_content()
     Before
-      let guard = s:G.store('&fileencodings', '&fileencoding')
+      let guard = s:G.store(['&fileencodings', '&fileencoding'])
       " Note:
       " 'read_content' uses 'read' command thus fileencodings requires to be
       " correctly configured.
@@ -183,7 +183,7 @@ Describe Vim.Buffer
 
   Describe edit_content()
     Before
-      let guard = s:G.store('&fileencodings', '&fileencoding')
+      let guard = s:G.store(['&fileencodings', '&fileencoding'])
       " Note:
       " 'edit_content' uses 'read' command thus fileencodings requires to be
       " correctly configured.

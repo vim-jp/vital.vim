@@ -59,7 +59,7 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	  let l:dict2 = {'foo': ['bar']}
 
 	  " Guard options/variables
-	  let guard = s:G.store(
+	  let guard = s:G.store([
 	    \ '&backup',
 	    \ '@a',
 	    \ '$EDITOR',
@@ -69,7 +69,7 @@ values with |Vital.Vim.Guard-instance.restore()| like:
 	    \ [l:dict1],
 	    \ [l:list2, 1],
 	    \ [l:dict2, 1],
-	    \)
+	    \])
 
 	  " Assign temporary values
 	  set nobackup
@@ -127,15 +127,16 @@ is_local_variable_supported
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Vim.Guard-functions*
 
-store([{name}, ...])	*Vital.Vim.Guard.store()*
-	Create a new guard instance. Values of {name} options/variables will
-	be stored in the instance and can be restored by calling .restore()
-	method of the instance.
+store({targets})	*Vital.Vim.Guard.store()*
+	Create a new guard instance. Values of options/variables listed in
+	{targets} |List| will be stored in the instance and can be restored by
+	calling .restore() method of the instance.
 
-	The following type of value is allowed for {name}
+	The following type of value is allowed for items ({target}) of the
+	{targets}:
 
 	|List|
-	If the {name} contains:
+	If the {target} contains:
 	- One item, the item is assumed as an instance of |List| or |Dictionary|
 	  and the instance will be guarded. Note that if you assign a
 	  different instance after store, it won't restore the values.
@@ -157,11 +158,11 @@ store([{name}, ...])	*Vital.Vim.Guard.store()*
 	  could not be restored when user changes the contents inside the
 	  contents of the instance. Use {shallow} when the reference of the
 	  each contents are prior to the content itself.
-	It will raise an exception when {name} contains less or more number
+	It will raise an exception when {target} contains less or more number
 	of items than expect.
 
 	|String|
-	If the {name} starts from:
+	If the {target} starts from:
 	- &, &g:, or &l:, the named option would be guarded. Note that
 	  individual assignment of option does not work on Vim 7.3.
 	- @, the named register would be guarded. Note that unnamed register

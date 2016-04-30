@@ -1,3 +1,8 @@
+982d3cb87ef788f4607fc61f1fd20ec2e3975479
+	Modules: Vim.Guard
+	Guard.store() API has changed to take a single List instance instead of arguments, due to the
+	limitation of arguments (See E740).
+	e.g. Guard.store(A, B, C) -> Guard.store([A, B, C])
 6703d4694c3bc0f23d7eb01b1bf79f85902a5edf
 	Modules: Web.URI
 	URI.path() behavior is changed to not prepend '/' for empty path.
