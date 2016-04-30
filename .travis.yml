@@ -3,6 +3,8 @@ env:
   - HEAD=yes
   - HEAD=no
 sudo: false
+git:
+  depth: 10
 
 os:
   - linux
