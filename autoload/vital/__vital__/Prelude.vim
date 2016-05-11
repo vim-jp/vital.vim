@@ -1,15 +1,14 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-if v:version ># 703 ||
-\  (v:version is 703 && has('patch465'))
+if v:version > 703 ||
+\  (v:version == 703 && has('patch465'))
   function! s:glob(expr) abort
     return glob(a:expr, 1, 1)
   endfunction
 else
   function! s:glob(expr) abort
-    let R = glob(a:expr, 1)
-    return split(R, '\n')
+    return split(glob(a:expr, 1), '\n')
   endfunction
 endif
 
