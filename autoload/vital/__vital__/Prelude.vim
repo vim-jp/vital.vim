@@ -12,10 +12,16 @@ else
   endfunction
 endif
 
-function! s:globpath(path, expr) abort
-  let R = globpath(a:path, a:expr, 1)
-  return split(R, '\n')
-endfunction
+if v:version > 704 ||
+\  (v:version == 704 && has('patch279'))
+  function! s:globpath(path, expr) abort
+    return globpath(a:path, a:expr, 1, 1)
+  endfunction
+else
+  function! s:globpath(path, expr) abort
+    return split(globpath(a:path, a:expr, 1), '\n')
+  endfunction
+endif
 
 " Wrapper functions for type().
 let [
