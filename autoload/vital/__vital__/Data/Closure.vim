@@ -241,7 +241,7 @@ function! s:is_closure(expr) abort
   return type(a:expr) == type({}) &&
   \      has_key(a:expr, 'call') &&
   \      type(a:expr.call) == type(function('call')) &&
-  \      a:expr.call == s:Closure.call
+  \      get(a:expr, 'call') == get(s:Closure, 'call')
 endfunction
 
 function! s:is_callable(expr) abort
