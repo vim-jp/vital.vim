@@ -2,9 +2,9 @@ scriptencoding utf-8
 
 Describe Web.HTTP.CookieJar
   Before all
-    let Cookie = vital#of('vital').import('Web.HTTP.Cookie')
-    let Jar = vital#of('vital').import('Web.HTTP.CookieJar')
-    let DateTime = vital#of('vital').import('DateTime')
+    let Cookie = vital#vital#new().import('Web.HTTP.Cookie')
+    let Jar = vital#vital#new().import('Web.HTTP.CookieJar')
+    let DateTime = vital#vital#new().import('DateTime')
   End
 
   Describe .new()

@@ -1,6 +1,6 @@
 Describe Data.LazyList
   Before all
-    let LazyList = vital#of('vital').import('Data.LazyList')
+    let LazyList = vital#vital#new().import('Data.LazyList')
   End
 
   Describe .from_list()

@@ -2,8 +2,8 @@ scriptencoding utf-8
 
 Describe Web.HTTP.Cookie
   Before all
-    let Cookie = vital#of('vital').import('Web.HTTP.Cookie')
-    let DateTime = vital#of('vital').import('DateTime')
+    let Cookie = vital#vital#new().import('Web.HTTP.Cookie')
+    let DateTime = vital#vital#new().import('DateTime')
   End
 
   Describe .new()

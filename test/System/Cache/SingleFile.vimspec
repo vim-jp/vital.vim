@@ -1,5 +1,5 @@
 " Use vim-themis to execute this test
-let s:V = vital#of('vital')
+let s:V = vital#vital#new()
 let s:F = s:V.import('System.File')
 let s:P = s:V.import('System.Filepath')
 

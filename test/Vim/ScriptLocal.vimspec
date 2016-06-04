@@ -1,7 +1,7 @@
 Describe Vim.ScriptLocal
 
   Before all
-    let V = vital#of('vital')
+    let V = vital#vital#new()
     let P = V.import('Prelude')
     let S = V.import('Vim.ScriptLocal')
   End

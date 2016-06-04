@@ -28,7 +28,7 @@ endfunction
 Describe OptionParser
 
   Before all
-    let O = vital#of('vital').import('OptionParser')
+    let O = vital#vital#new().import('OptionParser')
   End
 
   Describe .new()

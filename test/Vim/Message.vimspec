@@ -2,7 +2,7 @@ scriptencoding utf-8
 
 Describe Vim.Message
   Before all
-    let Message = vital#of('vital').import('Vim.Message')
+    let Message = vital#vital#new().import('Vim.Message')
   End
 
   Describe .error()

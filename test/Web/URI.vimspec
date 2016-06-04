@@ -2,7 +2,7 @@ scriptencoding utf-8
 
 Describe Web.URI
   Before all
-    let URI = vital#of('vital').import('Web.URI')
+    let URI = vital#vital#new().import('Web.URI')
   End
 
   Describe .new()

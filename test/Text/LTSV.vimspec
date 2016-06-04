@@ -1,6 +1,6 @@
 Describe Text.LTSV
   Before all
-    let LTSV = vital#of('vital').import('Text.LTSV')
+    let LTSV = vital#vital#new().import('Text.LTSV')
     let sample_file = g:root . '/test/_testdata/Text/LTSV/sample.ltsv'
     let expect_data = [
     \   {'name': 'Web.HTTP', 'maintainer': 'mattn'},

@@ -11,7 +11,7 @@ endif
 Describe vital
 
   Before all
-    let Vital = vital#vital#of()
+    let Vital = vital#vital#new()
     let File = Vital.import('System.File')
     let Filepath = Vital.import('System.Filepath')
     let Prelude = Vital.import('Prelude')
@@ -57,7 +57,7 @@ Describe vital
           Skip "windows doesn't handle symlink"
         endif
         call vitalizer#vitalize('symlink', g:symlinkplugin_root, vitalize_modules, '')
-        let V = vital#symlink#of()
+        let V = vital#symlink#new()
         Assert True(V.import('Selfmodule').return1())
         let List = V.import('Data.List')
         Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
@@ -119,7 +119,7 @@ Describe vital
 
     Context {plugin-name} is vital
       Before all
-        let V = vital#of('vital')
+        let V = vital#vital#new()
       End
 
       It creates a vital object which supports available modules
@@ -141,7 +141,7 @@ Describe vital
     Context wildignore handling
       Before all
         set wildignore+=*.vim,*.vital
-        call vital#{g:testplugin_name}#of().unload()
+        call vital#{g:testplugin_name}#new().unload()
       End
 
       After all
@@ -157,20 +157,20 @@ Describe vital
 
   End
 
-  Describe vital#{plugin-name}#of()
+  Describe vital#{plugin-name}#new()
     It creates a vital object
-      let V = vital#{g:testplugin_name}#of()
+      let V = vital#{g:testplugin_name}#new()
       Assert Equals(type(V), type({}))
       Assert HasKey(V, 'import')
     End
 
     Context {plugin-name} is vital
       Before all
-        let V = vital#vital#of()
+        let V = vital#vital#new()
       End
 
       It creates a vital object
-        let V = vital#vital#of()
+        let V = vital#vital#new()
         Assert Equals(type(V), type({}))
         Assert HasKey(V, 'import')
       End
@@ -186,7 +186,7 @@ Describe vital
       End
 
       It handles &wildignore
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Assert Equals(type(V), type({}))
         Assert HasKey(V, 'import')
       End
@@ -240,7 +240,7 @@ Describe vital
     Context wildignore handling
       Before all
         set wildignore+=*.vim
-        call vital#{g:testplugin_name}#of().unload()
+        call vital#{g:testplugin_name}#new().unload()
       End
 
       After all
@@ -262,7 +262,7 @@ Describe vital
 
   Describe vital-Vital-object
     Before all
-      let V = vital#{g:testplugin_name}#of()
+      let V = vital#{g:testplugin_name}#new()
     End
 
     Describe .import
@@ -298,7 +298,7 @@ Describe vital
       Context wildignore handling
         Before all
           set wildignore+=*.vim
-          call vital#{g:testplugin_name}#of().unload()
+          call vital#{g:testplugin_name}#new().unload()
         End
 
         After all
@@ -306,12 +306,12 @@ Describe vital
         End
 
         It can handle wildignore (embedded module)
-          let List = vital#{g:testplugin_name}#of().import('Data.List')
+          let List = vital#{g:testplugin_name}#new().import('Data.List')
           Assert Equals(List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
         End
 
         It can handle wildignore (self module)
-          let Selfmodule = vital#{g:testplugin_name}#of().import('Selfmodule')
+          let Selfmodule = vital#{g:testplugin_name}#new().import('Selfmodule')
           Assert True(Selfmodule.return1())
         End
 
@@ -324,7 +324,7 @@ Describe vital
 
       Context {plugin-name} is vital
         Before all
-          let V = vital#vital#of()
+          let V = vital#vital#new()
         End
 
         It supports all available modules in &runtimepath
@@ -337,25 +337,25 @@ Describe vital
 
     Describe .load
       It imports a basic vital module
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Assert Equals(V.load('Data.List'), V)
         Assert Equals(V.Data.List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
       End
 
       It supports s:_vital_loaded(V)
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Assert Equals(V.load('Web.JSON'), V)
         Assert Equals(V.Web.JSON.decode('[1, "ni"]'), [1, "ni"])
       End
 
       It supports s:_vital_created(V)
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Assert Equals(V.load('Web.JSON'), V)
         Assert HasKey(V.Web.JSON, 'true')
       End
 
       It supports self module
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Assert Equals(V.load('Selfmodule'), V)
         Assert True(V.Selfmodule.return1())
       End
@@ -365,7 +365,7 @@ Describe vital
       End
 
       It supports cyclic dependencies
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Assert Equals(V.load('Cyclic1'), V)
         Assert True(V.Cyclic1.return1())
       End
@@ -373,7 +373,7 @@ Describe vital
       Context wildignore handling
         Before all
           set wildignore+=*.vim
-          call vital#{g:testplugin_name}#of().unload()
+          call vital#{g:testplugin_name}#new().unload()
         End
 
         After all
@@ -381,12 +381,12 @@ Describe vital
         End
 
         It can handle wildignore (embedded module)
-          let V = vital#{g:testplugin_name}#of().load('Data.List')
+          let V = vital#{g:testplugin_name}#new().load('Data.List')
           Assert Equals(V.Data.List.uniq([1, 1, 2, 3, 1]), [1, 2, 3])
         End
 
         It can handle wildignore (self module)
-          let V = vital#{g:testplugin_name}#of().load('Selfmodule')
+          let V = vital#{g:testplugin_name}#new().load('Selfmodule')
           Assert True(V.Selfmodule.return1())
         End
 
@@ -399,7 +399,7 @@ Describe vital
 
       Context {plugin-name} is vital
         Before all
-          let V = vital#vital#of()
+          let V = vital#vital#new()
         End
 
         It supports all available modules in &runtimepath
@@ -412,29 +412,29 @@ Describe vital
 
     Describe .exists()
       It returns 1 for existing module
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Assert True(V.exists('Data.List'))
       End
 
       It returns 1 for existing which didn't be sorced yet
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Assert True(V.exists('Data.LazyList'))
       End
 
       It returns 0 for non-existing module
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Assert False(V.exists('Not.Exists'))
       End
 
       It throws error for invalid module name
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
         Throws /vital: Invalid module name: not-exists/ :call V.exists('not-exists')
       End
 
       Context wildignore handling
         Before all
           set wildignore+=*.vim
-          call vital#{g:testplugin_name}#of().unload()
+          call vital#{g:testplugin_name}#new().unload()
         End
 
         After all
@@ -442,11 +442,11 @@ Describe vital
         End
 
         It can handle wildignore (embedded module)
-          Assert True(vital#{g:testplugin_name}#of().exists('Data.List'))
+          Assert True(vital#{g:testplugin_name}#new().exists('Data.List'))
         End
 
         It can handle wildignore (self module)
-          Assert True(vital#{g:testplugin_name}#of().exists('Selfmodule'))
+          Assert True(vital#{g:testplugin_name}#new().exists('Selfmodule'))
         End
 
         It can handle wildignore (vital)
@@ -457,7 +457,7 @@ Describe vital
 
       Context {plugin-name} is vital
         Before all
-          let V = vital#vital#of()
+          let V = vital#vital#new()
         End
 
         It supports all available modules in &runtimepath
@@ -470,7 +470,7 @@ Describe vital
 
     Describe .search()
       Before all
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
       End
 
       It searches existing module
@@ -493,7 +493,7 @@ Describe vital
       Context wildignore handling
         Before all
           set wildignore+=*.vim
-          call vital#{g:testplugin_name}#of().unload()
+          call vital#{g:testplugin_name}#new().unload()
         End
 
         After all
@@ -501,11 +501,11 @@ Describe vital
         End
 
         It can handle wildignore (embedded module)
-          Assert NotEmpty(vital#{g:testplugin_name}#of().search('Data.List'))
+          Assert NotEmpty(vital#{g:testplugin_name}#new().search('Data.List'))
         End
 
         It can handle wildignore (self module)
-          Assert NotEmpty(vital#{g:testplugin_name}#of().search('Selfmodule'))
+          Assert NotEmpty(vital#{g:testplugin_name}#new().search('Selfmodule'))
         End
 
         It can handle wildignore (vital)
@@ -516,7 +516,7 @@ Describe vital
 
       Context {plugin-name} is vital
         Before all
-          let V = vital#vital#of()
+          let V = vital#vital#new()
         End
 
         It supports available modules in &runtimepath
@@ -529,7 +529,7 @@ Describe vital
 
     Describe .plugin_name()
       Before all
-        let V = vital#{g:testplugin_name}#of()
+        let V = vital#{g:testplugin_name}#new()
       End
 
       It returns plugin name
@@ -538,7 +538,7 @@ Describe vital
 
       Context {plugin-name} is vital
         Before all
-          let V = vital#of('vital')
+          let V = vital#vital#new()
         End
 
         It returns vital for "vital"

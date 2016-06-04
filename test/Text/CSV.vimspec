@@ -1,7 +1,7 @@
 
 Describe Text.CSV
   Before all
-    let CSV = vital#of('vital').import('Text.CSV')
+    let CSV = vital#vital#new().import('Text.CSV')
     let testdata_dir = expand('<sfile>:p:h') . '/test/_testdata/Text/CSV'
     let sample_file_in = testdata_dir . '/csv-sample-in.txt'
     let sample_file_out = testdata_dir . '/csv-sample-out.txt'

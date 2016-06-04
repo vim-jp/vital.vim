@@ -1,6 +1,6 @@
 Describe Web.JSON
   Before all
-    let JSON = vital#of('vital').import('Web.JSON')
+    let JSON = vital#vital#new().import('Web.JSON')
   End
 
   Describe .constants()

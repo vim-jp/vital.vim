@@ -1,6 +1,6 @@
 Describe Data.Dict
   Before all
-    let D = vital#of('vital').import('Data.Dict')
+    let D = vital#vital#new().import('Data.Dict')
   End
 
   Describe .make()
