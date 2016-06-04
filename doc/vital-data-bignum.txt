@@ -16,7 +16,7 @@ INTRODUCTION				*Vital.Data.BigNum-introduction*
 It provides some functions to manipulate multi precision integer.
 
 >
-	let s:V = vital#of("vital")
+	let s:V = vital#{plugin-name}#new()
 	let s:BigNum = s:V.import("Data.BigNum")
 
 	let x = s:BigNum.from_num(42)

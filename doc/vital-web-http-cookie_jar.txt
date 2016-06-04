@@ -20,7 +20,7 @@ INTRODUCTION		*Vital.Web.HTTP.CookieJar-introduction*
 Cookie(|Vital.Web.HTTP.Cookie|).
 
 >
-	let s:V = vital#of('vital')
+	let s:V = vital#{plugin-name}#new()
 	let HTTP = s:V.import('Web.HTTP')
 	let Jar = s:V.import('Web.HTTP.CookieJar')
 

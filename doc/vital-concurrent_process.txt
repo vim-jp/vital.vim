@@ -60,7 +60,7 @@ Note that this usage gives you little benefit to you comparing just to use
 system(), vimproc#system(), or Vital.Process.system(). Keep reading other
 examples before you try to use this for your own plugin ;)
 >
-	let s:CP = vital#of('vital').import('ConcurrentProcess')
+	let s:CP = vital#{plugin-name}#new().import('ConcurrentProcess')
 
 	function! s:list_files(path) abort
 	  let label = s:CP.of(['ls', a:path], '', [
@@ -92,7 +92,7 @@ Things to learn from this example:
 
 You can give text to stdin as well.
 >
-	let s:CP = vital#of('vital').import('ConcurrentProcess')
+	let s:CP = vital#{plugin-name}#new().import('ConcurrentProcess')
 
 	function! s:with_linenum(text) abort
 	  let label = s:CP.of('cat -n', '', [

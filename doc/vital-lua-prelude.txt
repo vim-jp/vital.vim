@@ -31,7 +31,7 @@ can write bridge function below:
 
 sample.vim
 >
-	let s:V = vital#of('sample')
+	let s:V = vital#sample#new()
 	let s:P = s:V.import('Lua.Prelude')
         " s:LuaP is namespace of Vital.Lua.Prelude
 	let s:LuaP = s:P.lua_namespace()

@@ -33,7 +33,7 @@ define({assert_command_name}, ...)                  *Vital.Assertion.define()*
 
        1) Succeeded
 >
-           let s:V = vital#of('vital')
+           let s:V = vital#{plugin-name}#new()
            let s:A = s:V.import('Assertion')
 
            call s:A.define('Assert', 1)
@@ -45,7 +45,7 @@ define({assert_command_name}, ...)                  *Vital.Assertion.define()*
 
        2) Failed
 >
-           let s:V = vital#of('vital')
+           let s:V = vital#{plugin-name}#new()
            let s:A = s:V.import('Assertion')
 
            call s:A.define('Assert', 1)
@@ -66,7 +66,7 @@ define({assert_command_name}, ...)                  *Vital.Assertion.define()*
 
        1) Succeeded
 >
-           let s:V = vital#of('vital')
+           let s:V = vital#{plugin-name}#new()
            let s:A = s:V.import('Assertion')
 
            call s:A.define('Assert', 1)
@@ -78,7 +78,7 @@ define({assert_command_name}, ...)                  *Vital.Assertion.define()*
 
        2) Failed
 >
-           let s:V = vital#of('vital')
+           let s:V = vital#{plugin-name}#new()
            let s:A = s:V.import('Assertion')
 
            call s:A.define('Assert', 1)

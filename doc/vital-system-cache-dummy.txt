@@ -24,7 +24,7 @@ USAGE					*Vital.System.Cache.Dummy-usage*
 |Vital.Syste.Cache.Dummy| have all required API of unified cache system but
 nothing would be cached. The following code works without caching values.
 >
-	let s:V = vital#of('vital')
+	let s:V = vital#{plugin-name}#new()
 	let s:C = s:V.import('System.Cache.Dummy')
 
 	let s:factorial_cache = s:C.new()

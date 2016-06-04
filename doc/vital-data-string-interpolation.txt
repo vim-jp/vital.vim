@@ -14,7 +14,7 @@ INTRODUCTION			*Vital.Data.String.Interpolation-introduction*
 
 	*Vital.Data.String.Interpolation* is String interpolation library.
 >
-	let s:V = vital#of("vital")
+	let s:V = vital#{plugin-name}#new()
 	let s:I = s:V.import("Data.String.Interpolation")
 >
 	echo s:I.interpolate('Hi, ${name}!', {'name': 'haya14busa'})

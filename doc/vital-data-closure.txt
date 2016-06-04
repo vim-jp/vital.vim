@@ -18,7 +18,7 @@ INTRODUCTION				*Vital.Data.Closure-introduction*
 
 *Vital.Data.Closure* provides Closure object.
 >
-	let C = vital#of('vital').import('Data.Closure')
+	let C = vital#{plugin-name}#new().import('Data.Closure')
 <
 
 

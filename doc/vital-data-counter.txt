@@ -18,7 +18,7 @@ INTRODUCTION				*Vital.Data.Counter-introduction*
 *Vital.Data.Counter* is a counter library to support convenient tallies.
 
 >
-	let s:V = vital#of('vital')
+	let s:V = vital#{plugin-name}#new()
 	let s:Counter = s:V.import('Data.Counter')
 	let s:Math = s:V.import('Math')
 

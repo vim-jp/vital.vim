@@ -20,7 +20,7 @@ difficult to find the same window or tab-page.
 This module traces them.
 
 >
-	let V = vital#of("vital")
+	let V = vital#{plugin-name}#new()
 	let T = V.import("Vim.ViewTracer")
 
 	" Trace the current window by handle

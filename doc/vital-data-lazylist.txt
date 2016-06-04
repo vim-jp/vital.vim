@@ -20,7 +20,7 @@ INTRODUCTION			*Vital.Data.LazyList-introduction*
 ==============================================================================
 USAGE				*Vital.Data.LazyList-usage*
 >
-	let s:L = vital#of('vital').import('Data.LazyList')
+	let s:L = vital#{plugin-name}#new().import('Data.LazyList')
 	let xs = s:L.file_readlines('/tmp/a.txt')
 	let xs = s:L.map(xs, 'split(v:val, ":")')
 	let xs = s:L.filter(xs, 'v:val[1] < 3')

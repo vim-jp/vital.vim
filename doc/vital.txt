@@ -31,7 +31,7 @@ USAGE					*Vital-usage*
 Assuming your Vim plugin name is "ujihisa", you can define your utility
 function set 'ujihisa#util' just by
 >
-    let s:P = vital#of('ujihisa').import('Process')
+    let s:P = vital#ujihisa#new().import('Process')
     function! ujihisa#util#system(...)
       return call(s:P.system, a:000, s:P)
     endfunction
@@ -42,19 +42,19 @@ care of |vital.vim| itself. It's all hidden.
 |Vital| has module system. The below is an example to import/load a module
 "data/ordered_set" and to call a function "f()" of the module.
 >
-    let s:V = vital#of('ujihisa')
+    let s:V = vital#ujihisa#new()
     let s:O = s:V.import('Data.OrderedSet')
     call s:O.f()
 <
 or
 >
-    let s:V = vital#of('ujihisa')
+    let s:V = vital#ujihisa#new()
     call s:V.load('Data.OrderedSet')
     call s:V.Data.OrderedSet.f()
 <
 or
 >
-    let s:V = vital#of('ujihisa')
+    let s:V = vital#ujihisa#new()
     call s:V.import('Data.OrderedSet', s:)
     call s:f()
 <
@@ -94,10 +94,10 @@ FUNCTIONS 				*Vital-functions*
 
 vital#of({plugin-name})				*vital#of()*
 	Creates a new Vital object(|Vital-Vital-object|).
-	This function is deprecated. Please use |vital#{plugin-name}#of()|
-	instead. vital#{plugin-name}#of() is faster than vital#of.
+	This function is deprecated. Please use |vital#{plugin-name}#new()|
+	instead. vital#{plugin-name}#new() is faster than vital#of.
 
-vital#{plugin-name}#of()			*vital#{plugin-name}#of()*
+vital#{plugin-name}#new()			*vital#{plugin-name}#new()*
 	Creates a new Vital object(|Vital-Vital-object|).
 	If you just want to use |Vital-Vital.import()|, You can use
 	|vital#{plugin-name}#import()| instead without any peformance

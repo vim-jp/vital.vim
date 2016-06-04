@@ -16,7 +16,7 @@ INTRODUCTION				*Vital.Data.List-introduction*
 manipulate |List|.
 
 >
-	let s:V = vital#of("vital")
+	let s:V = vital#{plugin-name}#new()
 	let s:L = s:V.import("Data.List")
 
 	let s = []

@@ -21,7 +21,7 @@ INTRODUCTION			*Vital.Web.HTTP.Cookie-introduction*
 If you want to manage Cookie collection, you can use |Vital.Web.HTTP.CookieJar|.
 
 >
-	let s:Cookie = vital#of('vital').import('Web.HTTP.Cookie')
+	let s:Cookie = vital#{plugin-name}#new().import('Web.HTTP.Cookie')
 	let cookie = s:Cookie.new('name=value', 'http://example.com')
 	echo cookie.name()
 	" => 'name'

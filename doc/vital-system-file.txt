@@ -17,7 +17,7 @@ INTRODUCTION				*Vital.System.File-introduction*
 It provides some functions for file system.
 
 >
-	let s:V = vital#of("vital")
+	let s:V = vital#{plugin-name}#new()
 	let s:F = s:V.import("System.File")
 <
 

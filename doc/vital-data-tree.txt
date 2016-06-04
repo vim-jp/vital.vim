@@ -46,7 +46,7 @@ Tree.renderer                           *Vital.Data.Tree.renderer*
 EXAMPLES   				*Vital.Data.Tree-examples*
 
 >
-    let s:V = vital#of('vital')
+    let s:V = vital#{plugin-name}#new()
     let s:T = s:V.import('Data.Tree')
 
     let tree_obj = s:T.new('+',1,s:T.new('-',2,3))

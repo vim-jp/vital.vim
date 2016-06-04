@@ -20,7 +20,7 @@ is fast and has less internal states.
 The paper about xorshift is http://www.jstatsoft.org/v08/i14/paper .
 
 >
-	let s:V = vital#of("vital")
+	let s:V = vital#{plugin-name}#new()
 	let s:X = s:V.import("Random.Xor128")
 
 	call s:X.srand(1)
