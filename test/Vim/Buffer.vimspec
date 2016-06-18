@@ -179,6 +179,11 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'utf-8')
       End
     End
+    It wipes out tempfile buffer
+      let fname = tempname()
+      call Buffer.read_content([''], {'tempfile': fname})
+      Assert Equals(bufnr(fname), -1)
+    End
   End
 
   Describe edit_content()
