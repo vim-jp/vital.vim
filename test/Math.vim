@@ -19,7 +19,12 @@ function! s:suite.fib()
   call s:assert.equals(0, s:M.fib(0))
   call s:assert.equals(1, s:M.fib(1))
   call s:assert.equals(55, s:M.fib(10))
-  call s:assert.equals(512559680, s:M.fib(48))
+  call s:assert.equals(2971215073, s:M.fib(47))
+  if has('num64')
+    call s:assert.equals(4807526976, s:M.fib(48))
+  else
+    call s:assert.equals(512559680, s:M.fib(48))
+  endif
 endfunction
 
 function! s:suite.lcm()
