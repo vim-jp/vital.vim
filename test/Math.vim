@@ -16,14 +16,14 @@ endfunction
 
 function! s:suite.fib()
   " It returns fib if it's less than or equal to 48
-  call s:assert.equals(0, s:M.fib(0))
-  call s:assert.equals(1, s:M.fib(1))
-  call s:assert.equals(55, s:M.fib(10))
-  call s:assert.equals(2971215073, s:M.fib(47))
+  call s:assert.equals(s:M.fib(0), 0)
+  call s:assert.equals(s:M.fib(1), 1)
+  call s:assert.equals(s:M.fib(10), 55)
+  call s:assert.equals(s:M.fib(47), 2971215073)
   if has('num64')
-    call s:assert.equals(4807526976, s:M.fib(48))
+    call s:assert.equals(s:M.fib(48), 4807526976)
   else
-    call s:assert.equals(512559680, s:M.fib(48))
+    call s:assert.equals(s:M.fib(48), 512559680)
   endif
 endfunction
 
