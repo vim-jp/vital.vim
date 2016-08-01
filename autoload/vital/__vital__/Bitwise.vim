@@ -6,6 +6,7 @@ set cpo&vim
 
 let s:bits = has('num64') ? 64 : 32
 let s:mask = s:bits - 1
+let s:mask32 = 32 - 1
 
 let s:pow2 = [1]
 for s:i in range(s:mask)
@@ -43,19 +44,34 @@ if has('num64')
       return s:and(a:n, 0xFFFFFFFF)
     endif
   endfunction
+  function! s:lshift32(a, n) abort
+    return s:and(s:lshift(a:a, s:and(a:n, s:mask32)), 0xFFFFFFFF)
+  endfunction
+  function! s:rshift32(a, n) abort
+    return s:rshift(s:and(a:a, 0xFFFFFFFF), s:and(a:n, s:mask32))
+  endfunction
 else
   function! s:sign_extension(n) abort
     return a:n
   endfunction
 endif
 
-if exists('*and')
-  function! s:_vital_created(module) abort
+
+let s:builtin_functions_exist = exists('*and')
+function! s:_vital_created(module) abort
+  if s:builtin_functions_exist
     for op in ['and', 'or', 'xor', 'invert']
       let a:module[op] = function(op)
       let s:[op] = a:module[op]
     endfor
-  endfunction
+  endif
+  if !has('num64')
+    let a:module.lshift32 = a:module.lshift
+    let a:module.rshift32 = a:module.rshift
+  endif
+endfunction
+
+if s:builtin_functions_exist
   finish
 endif
 

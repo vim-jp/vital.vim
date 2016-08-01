@@ -249,4 +249,59 @@ Describe Bitwise
       End
     endif
   End
+
+  Describe .lshift32()
+    if has('num64')
+      Context with 64bit number
+        It shifts bits to left with the 32bit range
+          Assert Equals(B.lshift32(0xFFFF0000, 8), 0xFF000000)
+          Assert Equals(B.lshift32(0xFFFF0000, 32), 0xFFFF0000)
+        End
+      End
+    else
+      Context with 32bit number
+        It is save as lshift()
+          Assert Equals(B.lshift(0, 0), 0)
+          Assert Equals(B.lshift(0, 1), 0)
+          Assert Equals(B.lshift(0, 31), 0)
+          Assert Equals(B.lshift(0, 32), 0)
+          Assert Equals(B.lshift(1, 0), 0x1)
+          Assert Equals(B.lshift(1, 1), 0x2)
+          Assert Equals(B.lshift(1, 31), 0x80000000)
+          Assert Equals(B.lshift(0x80000000, 0), 0x80000000)
+
+          Assert Equals(B.lshift(1, 32), 1)
+          Assert Equals(B.lshift(0x80000000, 1), 0)
+        End
+      End
+    endif
+  End
+
+  Describe .rshift32()
+    if has('num64')
+      Context with 64bit number
+        It shifts bits to right with the 32bit range
+          Assert Equals(B.rshift32(0xFFFF000000, 8), 0x00FF0000)
+          Assert Equals(B.rshift32(0xFFFF0000, 32), 0xFFFF0000)
+        End
+      End
+    else
+      Context with 32bit number
+        It is save as rshift()
+          Assert Equals(B.rshift(0, 0), 0)
+          Assert Equals(B.rshift(0, 1), 0)
+          Assert Equals(B.rshift(0, 31), 0)
+          Assert Equals(B.rshift(0, 32), 0)
+          Assert Equals(B.rshift(0x80000000, 0), 0x80000000)
+          Assert Equals(B.rshift(0x80000000, 1), 0x40000000)
+          Assert Equals(B.rshift(0x80000000, 31), 0x1)
+          Assert Equals(B.rshift(1, 0), 0x1)
+          Assert Equals(B.rshift(1, 1), 0)
+
+          Assert Equals(B.rshift(0x80000000, 32), 0x80000000)
+          Assert Equals(B.rshift(-1024, 1), 0x7ffffe00)
+        End
+      End
+    endif
+  End
 End

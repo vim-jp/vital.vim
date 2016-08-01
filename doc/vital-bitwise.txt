@@ -59,6 +59,13 @@ sign_extension({expr})			*Vital.Bitwise.sign_extension()*
 	" 4294967295 == 0xFFFFFFFF
 	" -1 == 0xFFFFFFFFFFFFFFFF
 
+lshift32({expr}, {bits})			*Vital.Bitwise.lshift32()*
+	Similar to |Vital.Bitwise.lshift()|, but always treats 32bit number.
+	With |+num64|, upper 32bits of results are always 0.
+
+rshift32({expr}, {bits})			*Vital.Bitwise.rshift32()*
+	Similar to |Vital.Bitwise.rshift()|, but always treats 32bit number.
+	With |+num64|, upper 32bits of {expr} is ignored.
 
 
 ==============================================================================
