@@ -35,6 +35,20 @@ function! s:rshift(a, n) abort
   \          : a:a / s:pow2[n]
 endfunction
 
+if has('num64')
+  function! s:sign_extension(n) abort
+    if s:and(a:n, 0x80000000)
+      return s:or(a:n, 0xFFFFFFFF00000000)
+    else
+      return s:and(a:n, 0xFFFFFFFF)
+    endif
+  endfunction
+else
+  function! s:sign_extension(n) abort
+    return a:n
+  endfunction
+endif
+
 if exists('*and')
   function! s:_vital_created(module) abort
     for op in ['and', 'or', 'xor', 'invert']

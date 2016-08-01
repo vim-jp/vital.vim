@@ -47,6 +47,18 @@ rshift({expr}, {bits})				*Vital.Bitwise.rshift()*
 compare({expr}, {expr})				*Vital.Bitwise.compare()*
 	Compares as unsigned integer.  Returns -1, 0, or 1.
 
+sign_extension({expr})			*Vital.Bitwise.sign_extension()*
+	Apply sign extension to {expr}.
+	This reappears 32bit number in |+num64| environment.
+	With |+num64|, when the 32nd bit is 0, upper 32bits are filled by 0.
+	Otherwise, it is filled by 1.
+	Without |+num64|, returns {expr}.
+	Example(with |+num64|): >
+	echo B.sign_extension(4294967295)
+	" => -1
+	" 4294967295 == 0xFFFFFFFF
+	" -1 == 0xFFFFFFFFFFFFFFFF
+
 
 
 ==============================================================================

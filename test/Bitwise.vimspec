@@ -222,4 +222,31 @@ Describe Bitwise
       Assert Equals(B.xor(838539477, 1024734483), 217001414)
     End
   End
+
+  Describe .sign_extension()
+    if has('num64')
+      Context with 64bit number
+        It applies sign extension
+          Assert Equals(B.sign_extension(0), 0)
+          Assert Equals(B.sign_extension(-1), -1)
+          Assert Equals(B.sign_extension(1), 1)
+          Assert Equals(B.sign_extension(0x7FFFFFFF), 0x7FFFFFFF)
+          Assert Equals(B.sign_extension(0xFFFFFFFF7FFFFFFF), 0x7FFFFFFF)
+          Assert Equals(B.sign_extension(0x80000000), 0xFFFFFFFF80000000)
+          Assert Equals(B.sign_extension(0xFFFFFFFF80000000), 0xFFFFFFFF80000000)
+          Assert Equals(B.sign_extension(0xFFFFFFFF), 0xFFFFFFFFFFFFFFFF)
+        End
+      End
+    else
+      Context with 32bit number
+        It returns the argument directly
+          Assert Equals(B.sign_extension(0), 0)
+          Assert Equals(B.sign_extension(-1), -1)
+          Assert Equals(B.sign_extension(1), 1)
+          Assert Equals(B.sign_extension(0x7FFFFFFF), 0x7FFFFFFF)
+          Assert Equals(B.sign_extension(0x80000000), 0x80000000)
+        End
+      End
+    endif
+  End
 End
