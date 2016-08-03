@@ -534,7 +534,7 @@ else
 endif
 
 function! s:remove_ansi_sequences(text) abort
-  return substitute(a:text, '\e\[\%(\%(\d;\)\?\d\{1,2}\)\?[mK]', '', 'g')
+  return substitute(a:text, '\e\[\%(\%(\d\+;\)*\d\+\)\?[mK]', '', 'g')
 endfunction
 
 function! s:escape_pattern(str) abort
