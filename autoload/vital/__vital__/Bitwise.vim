@@ -38,17 +38,17 @@ endfunction
 
 if has('num64')
   function! s:sign_extension(n) abort
-    if s:and(a:n, 0x80000000)
-      return s:or(a:n, 0xFFFFFFFF00000000)
+    if and(a:n, 0x80000000)
+      return or(a:n, 0xFFFFFFFF00000000)
     else
-      return s:and(a:n, 0xFFFFFFFF)
+      return and(a:n, 0xFFFFFFFF)
     endif
   endfunction
   function! s:lshift32(a, n) abort
-    return s:and(s:lshift(a:a, s:and(a:n, s:mask32)), 0xFFFFFFFF)
+    return and(s:lshift(a:a, and(a:n, s:mask32)), 0xFFFFFFFF)
   endfunction
   function! s:rshift32(a, n) abort
-    return s:rshift(s:and(a:a, 0xFFFFFFFF), s:and(a:n, s:mask32))
+    return s:rshift(and(a:a, 0xFFFFFFFF), and(a:n, s:mask32))
   endfunction
 else
   function! s:sign_extension(n) abort
