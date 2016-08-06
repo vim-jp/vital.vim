@@ -398,8 +398,6 @@ function! s:_DEFAULT_PARSER.complete_greedily(arglead, cmdline, cursorpos) abort
   endif
 endfunction
 
-lockvar! s:_DEFAULT_PARSER
-
 function! s:new() abort
   return deepcopy(s:_DEFAULT_PARSER)
 endfunction
