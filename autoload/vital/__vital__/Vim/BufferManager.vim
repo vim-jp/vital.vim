@@ -159,21 +159,6 @@ function! s:new(...) abort
   \.user_config(2 <= a:0 ? a:2 : {})
 endfunction
 
-function! s:open(buffer, opener) abort
-  call s:_deprecated('open')
-  return s:B.open(a:buffer, a:opener)
-endfunction
-
-function! s:_deprecated(fname) abort
-  echomsg printf('Vital.Vim.BufferManager.%s is deprecated! Please use Vital.Vim.Buffer.%s instead.',
-        \ a:fname, a:fname)
-endfunction
-
-function! s:is_cmdwin() abort
-  call s:_deprecated('is_cmdwin')
-  return s:B.is_cmdwin()
-endfunction
-
 function! s:_make_config(manager, configs) abort
   let configs = [a:manager._config]
   let user = a:manager._user_config
