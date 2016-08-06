@@ -4,6 +4,18 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:bits = has('num64') ? 64 : 32
+let s:mask = s:bits - 1
+let s:mask32 = 32 - 1
+
+let s:pow2 = [1]
+for s:i in range(s:mask)
+  call add(s:pow2, s:pow2[-1] * 2)
+endfor
+unlet s:i
+
+let s:min = s:pow2[-1]
+
 " compare as unsigned int
 function! s:compare(a, b) abort
   if (a:a >= 0 && a:b >= 0) || (a:a < 0 && a:b < 0)
@@ -14,34 +26,52 @@ function! s:compare(a, b) abort
 endfunction
 
 function! s:lshift(a, n) abort
-  return  a:a * s:pow2[s:and(a:n, 0x1F)]
+  return  a:a * s:pow2[s:and(a:n, s:mask)]
 endfunction
 
 function! s:rshift(a, n) abort
-  let n = s:and(a:n, 0x1F)
+  let n = s:and(a:n, s:mask)
   return n == 0 ? a:a :
-  \  a:a < 0 ? (a:a - 0x80000000) / s:pow2[n] + 0x40000000 / s:pow2[n - 1]
+  \  a:a < 0 ? (a:a - s:min) / s:pow2[n] + s:pow2[-2] / s:pow2[n - 1]
   \          : a:a / s:pow2[n]
 endfunction
 
-let s:pow2 = [
-      \ 0x1,        0x2,        0x4,        0x8,
-      \ 0x10,       0x20,       0x40,       0x80,
-      \ 0x100,      0x200,      0x400,      0x800,
-      \ 0x1000,     0x2000,     0x4000,     0x8000,
-      \ 0x10000,    0x20000,    0x40000,    0x80000,
-      \ 0x100000,   0x200000,   0x400000,   0x800000,
-      \ 0x1000000,  0x2000000,  0x4000000,  0x8000000,
-      \ 0x10000000, 0x20000000, 0x40000000, 0x80000000,
-      \ ]
+if has('num64')
+  function! s:sign_extension(n) abort
+    if and(a:n, 0x80000000)
+      return or(a:n, 0xFFFFFFFF00000000)
+    else
+      return and(a:n, 0xFFFFFFFF)
+    endif
+  endfunction
+  function! s:lshift32(a, n) abort
+    return and(s:lshift(a:a, and(a:n, s:mask32)), 0xFFFFFFFF)
+  endfunction
+  function! s:rshift32(a, n) abort
+    return s:rshift(and(a:a, 0xFFFFFFFF), and(a:n, s:mask32))
+  endfunction
+else
+  function! s:sign_extension(n) abort
+    return a:n
+  endfunction
+endif
 
-if exists('*and')
-  function! s:_vital_created(module) abort
+
+let s:builtin_functions_exist = exists('*and')
+function! s:_vital_created(module) abort
+  if s:builtin_functions_exist
     for op in ['and', 'or', 'xor', 'invert']
       let a:module[op] = function(op)
       let s:[op] = a:module[op]
     endfor
-  endfunction
+  endif
+  if !has('num64')
+    let a:module.lshift32 = a:module.lshift
+    let a:module.rshift32 = a:module.rshift
+  endif
+endfunction
+
+if s:builtin_functions_exist
   finish
 endif
 
@@ -51,8 +81,8 @@ function! s:invert(a) abort
 endfunction
 
 function! s:and(a, b) abort
-  let a = a:a < 0 ? a:a - 0x80000000 : a:a
-  let b = a:b < 0 ? a:b - 0x80000000 : a:b
+  let a = a:a < 0 ? a:a - s:min : a:a
+  let b = a:b < 0 ? a:b - s:min : a:b
   let r = 0
   let n = 1
   while a && b
@@ -62,14 +92,14 @@ function! s:and(a, b) abort
     let n = n * 0x10
   endwhile
   if (a:a < 0) && (a:b < 0)
-    let r += 0x80000000
+    let r += s:min
   endif
   return r
 endfunction
 
 function! s:or(a, b) abort
-  let a = a:a < 0 ? a:a - 0x80000000 : a:a
-  let b = a:b < 0 ? a:b - 0x80000000 : a:b
+  let a = a:a < 0 ? a:a - s:min : a:a
+  let b = a:b < 0 ? a:b - s:min : a:b
   let r = 0
   let n = 1
   while a || b
@@ -79,14 +109,14 @@ function! s:or(a, b) abort
     let n = n * 0x10
   endwhile
   if (a:a < 0) || (a:b < 0)
-    let r += 0x80000000
+    let r += s:min
   endif
   return r
 endfunction
 
 function! s:xor(a, b) abort
-  let a = a:a < 0 ? a:a - 0x80000000 : a:a
-  let b = a:b < 0 ? a:b - 0x80000000 : a:b
+  let a = a:a < 0 ? a:a - s:min : a:a
+  let b = a:b < 0 ? a:b - s:min : a:b
   let r = 0
   let n = 1
   while a || b
@@ -96,7 +126,7 @@ function! s:xor(a, b) abort
     let n = n * 0x10
   endwhile
   if (a:a < 0) != (a:b < 0)
-    let r += 0x80000000
+    let r += s:min
   endif
   return r
 endfunction
