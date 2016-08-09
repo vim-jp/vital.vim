@@ -18,6 +18,8 @@ INTRODUCTION				*Vital.Random.Xor128-introduction*
 xorshift algorithm.  Although xorshift has a reasonable period (2^128-1), it
 is fast and has less internal states.
 The paper about xorshift is http://www.jstatsoft.org/v08/i14/paper .
+This implementation always generates 32bit number [-2147483648, 2147483647],
+even when you use Vim with |+num64|.
 
 >
 	let s:V = vital#{plugin-name}#new()

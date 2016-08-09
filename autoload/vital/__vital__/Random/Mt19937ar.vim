@@ -75,19 +75,21 @@ function! s:Generator.seed(seeds) abort
   call s:_init_by_array(self, a:seeds)
 endfunction
 
+" 0x80000000 in 32bit and 0xFFFFFFFF80000000 in 64bit
 function! s:Generator.min() abort
-  return 0x80000000
+  return -2147483648
 endfunction
 
+" 0x7FFFFFFF in 32bit/64bit
 function! s:Generator.max() abort
-  return 0x7FFFFFFF
+  return 2147483647
 endfunction
 
 function! s:_init_genrand(g, s) abort
   let a:g._mt[0] = a:s
   let a:g._mti = 1
   while a:g._mti < a:g._N
-    let a:g._mt[a:g._mti] = 1812433253 * s:B.xor(a:g._mt[a:g._mti-1], s:B.rshift(a:g._mt[a:g._mti-1], 30)) + a:g._mti
+    let a:g._mt[a:g._mti] = 1812433253 * s:B.xor(a:g._mt[a:g._mti-1], s:B.rshift32(a:g._mt[a:g._mti-1], 30)) + a:g._mti
     let a:g._mti += 1
   endwhile
 endfunction
@@ -99,7 +101,7 @@ function! s:_init_by_array(g, init_key) abort
   let j = 0
   let k = a:g._N > key_length ? a:g._N : key_length
   while k
-    let a:g._mt[i] = s:B.xor(a:g._mt[i], s:B.xor(a:g._mt[i-1], s:B.rshift(a:g._mt[i-1], 30)) * 1664525) + a:init_key[j] + j
+    let a:g._mt[i] = s:B.xor(a:g._mt[i], s:B.xor(a:g._mt[i-1], s:B.rshift32(a:g._mt[i-1], 30)) * 1664525) + a:init_key[j] + j
     let i += 1
     let j += 1
     if i >= a:g._N
@@ -113,7 +115,7 @@ function! s:_init_by_array(g, init_key) abort
   endwhile
   let k = a:g._N - 1
   while k
-    let a:g._mt[i] = s:B.xor(a:g._mt[i], s:B.xor(a:g._mt[i-1], s:B.rshift(a:g._mt[i-1], 30)) * 1566083941) - i
+    let a:g._mt[i] = s:B.xor(a:g._mt[i], s:B.xor(a:g._mt[i-1], s:B.rshift32(a:g._mt[i-1], 30)) * 1566083941) - i
     let i += 1
     if i >= a:g._N
       let a:g._mt[0] = a:g._mt[a:g._N-1]
@@ -136,16 +138,16 @@ function! s:Generator.next() abort
     let kk = 0
     while kk < self._N - self._M
       let y = s:B.or(s:B.and(self._mt[kk], self._UPPER_MASK), s:B.and(self._mt[kk+1], self._LOWER_MASK))
-      let self._mt[kk] = s:B.xor(s:B.xor(self._mt[kk+self._M], s:B.rshift(y, 1)), mag01[y % 2])
+      let self._mt[kk] = s:B.xor(s:B.xor(self._mt[kk+self._M], s:B.rshift32(y, 1)), mag01[y % 2])
       let kk += 1
     endwhile
     while kk < self._N - 1
       let y = s:B.or(s:B.and(self._mt[kk], self._UPPER_MASK), s:B.and(self._mt[kk+1], self._LOWER_MASK))
-      let self._mt[kk] = s:B.xor(s:B.xor(self._mt[kk+(self._M-self._N)], s:B.rshift(y, 1)), mag01[y % 2])
+      let self._mt[kk] = s:B.xor(s:B.xor(self._mt[kk+(self._M-self._N)], s:B.rshift32(y, 1)), mag01[y % 2])
       let kk += 1
     endwhile
     let y = s:B.or(s:B.and(self._mt[self._N-1], self._UPPER_MASK), s:B.and(self._mt[0], self._LOWER_MASK))
-    let self._mt[self._N-1] = s:B.xor(s:B.xor(self._mt[self._M-1], s:B.rshift(y, 1)), mag01[y % 2])
+    let self._mt[self._N-1] = s:B.xor(s:B.xor(self._mt[self._M-1], s:B.rshift32(y, 1)), mag01[y % 2])
 
     let self._mti = 0
   endif
@@ -153,12 +155,12 @@ function! s:Generator.next() abort
   let y = self._mt[self._mti]
   let self._mti += 1
 
-  let y = s:B.xor(y, s:B.rshift(y, 11))
+  let y = s:B.xor(y, s:B.rshift32(y, 11))
   let y = s:B.xor(y, s:B.and(s:B.lshift(y, 7), 0x9d2c5680))
   let y = s:B.xor(y, s:B.and(s:B.lshift(y, 15), 0xefc60000))
-  let y = s:B.xor(y, s:B.rshift(y, 18))
+  let y = s:B.xor(y, s:B.rshift32(y, 18))
 
-  return y
+  return s:B.sign_extension(y)
 endfunction
 
 function! s:new_generator() abort

@@ -22,16 +22,18 @@ function! s:Generator.next() abort
   let self._x = self._y
   let self._y = self._z
   let self._z = self._w
-  let self._w = s:B.xor(s:B.xor(w, s:B.rshift(w, 19)), s:B.xor(t, s:B.rshift(t, 8)))
-  return self._w
+  let self._w = s:B.xor(s:B.xor(w, s:B.rshift32(w, 19)), s:B.xor(t, s:B.rshift32(t, 8)))
+  return s:B.sign_extension(self._w)
 endfunction
 
+" 0x80000000 in 32bit and 0xFFFFFFFF80000000 in 64bit
 function! s:Generator.min() abort
-  return 0x80000000
+  return -2147483648
 endfunction
 
+" 0x7FFFFFFF in 32bit/64bit
 function! s:Generator.max() abort
-  return 0x7FFFFFFF
+  return 2147483647
 endfunction
 
 function! s:Generator.seed(seeds) abort

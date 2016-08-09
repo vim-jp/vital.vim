@@ -1,3 +1,9 @@
+71aba2ebe0ad1cbfb888d8349ec95e7b79b1e88c
+	Modules: Vim.BufferManager
+	The following deprecated functions were removed.
+	- open()
+	- is_cmdwin()
+	Use Vim.Buffer's one instead.
 aabb291268c0977e1444b0901e816db4467d6806
 	Modules: *
 	'vital#{plugin-name}#of()' was renamed to 'vital#{plugin-name}#new()'.

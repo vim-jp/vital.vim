@@ -4,57 +4,116 @@ Describe Bitwise
   End
 
   Describe .lshift()
-    It shifts bits to left
-      Assert Equals(B.lshift(0, 0), 0)
-      Assert Equals(B.lshift(0, 1), 0)
-      Assert Equals(B.lshift(0, 31), 0)
-      Assert Equals(B.lshift(0, 32), 0)
-      Assert Equals(B.lshift(1, 0), 0x1)
-      Assert Equals(B.lshift(1, 1), 0x2)
-      Assert Equals(B.lshift(1, 31), 0x80000000)
-      Assert Equals(B.lshift(1, 32), 1)
-      Assert Equals(B.lshift(0x80000000, 0), 0x80000000)
-      Assert Equals(B.lshift(0x80000000, 1), 0)
+    Context with small numbers
+      It shifts bits to left
+        Assert Equals(B.lshift(0, 0), 0)
+        Assert Equals(B.lshift(0, 1), 0)
+        Assert Equals(B.lshift(0, 31), 0)
+        Assert Equals(B.lshift(0, 32), 0)
+        Assert Equals(B.lshift(1, 0), 0x1)
+        Assert Equals(B.lshift(1, 1), 0x2)
+        Assert Equals(B.lshift(1, 31), 0x80000000)
+        Assert Equals(B.lshift(0x80000000, 0), 0x80000000)
+      End
     End
-    It shifts bits to left (random)
-      Assert Equals(B.lshift(1483929134, 14), -1114931200)
-      Assert Equals(B.lshift(152442939, 25), 1979711488)
-      Assert Equals(B.lshift(505850863, -32), 505850863)
-      Assert Equals(B.lshift(1997594360, 18), 2078277632)
-      Assert Equals(B.lshift(2121708807, -5), 939524096)
-      Assert Equals(B.lshift(344493590, -27), -1861107008)
-      Assert Equals(B.lshift(630127521, 14), -1092075520)
-      Assert Equals(B.lshift(-601661263, 0), -601661263)
-      Assert Equals(B.lshift(661012213, -26), -644891328)
-      Assert Equals(B.lshift(828605241, -14), 216268800)
-    End
+    if has('num64')
+      Context with 64bit number
+        It shifts bits to left
+          Assert Equals(B.lshift(1, 32), 0x100000000)
+          Assert Equals(B.lshift(0x80000000, 1), 0x100000000)
+          Assert Equals(B.lshift(1, 63), 0x8000000000000000)
+          Assert Equals(B.lshift(1, 64), 1)
+        End
+        It shifts bits to left (random)
+          Assert Equals(B.lshift(-6547820378035905891, -9), 5656521131977342976)
+          Assert Equals(B.lshift(-3338945565435194024, -25), -1203960834368208896)
+          Assert Equals(B.lshift(5765087922765281421, 52), -8588364489395535872)
+          Assert Equals(B.lshift(8920998653320978603, 11), 7928609028908079104)
+          Assert Equals(B.lshift(8442026461925972002, 38), -2096979230645551104)
+          Assert Equals(B.lshift(3547367712430972932, 54), 72057594037927936)
+          Assert Equals(B.lshift(8382076105951341210, 4), 4986009179254598048)
+          Assert Equals(B.lshift(4785275337718270894, -6), -5188146770730811392)
+          Assert Equals(B.lshift(-6707534047010871283, -13), 4640959416005296128)
+          Assert Equals(B.lshift(5188294801009928667, -20), 4511955915741593600)
+        End
+      End
+    else
+      Context with 32bit number
+        It shifts bits to left
+          Assert Equals(B.lshift(1, 32), 1)
+          Assert Equals(B.lshift(0x80000000, 1), 0)
+        End
+        It shifts bits to left (random)
+          Assert Equals(B.lshift(1483929134, 14), -1114931200)
+          Assert Equals(B.lshift(152442939, 25), 1979711488)
+          Assert Equals(B.lshift(505850863, -32), 505850863)
+          Assert Equals(B.lshift(1997594360, 18), 2078277632)
+          Assert Equals(B.lshift(2121708807, -5), 939524096)
+          Assert Equals(B.lshift(344493590, -27), -1861107008)
+          Assert Equals(B.lshift(630127521, 14), -1092075520)
+          Assert Equals(B.lshift(-601661263, 0), -601661263)
+          Assert Equals(B.lshift(661012213, -26), -644891328)
+          Assert Equals(B.lshift(828605241, -14), 216268800)
+        End
+      End
+    endif
   End
 
   Describe .rshift()
-    It shifts bits to right
-      Assert Equals(B.rshift(0, 0), 0)
-      Assert Equals(B.rshift(0, 1), 0)
-      Assert Equals(B.rshift(0, 31), 0)
-      Assert Equals(B.rshift(0, 32), 0)
-      Assert Equals(B.rshift(0x80000000, 0), 0x80000000)
-      Assert Equals(B.rshift(0x80000000, 1), 0x40000000)
-      Assert Equals(B.rshift(0x80000000, 31), 0x1)
-      Assert Equals(B.rshift(0x80000000, 32), 0x80000000)
-      Assert Equals(B.rshift(1, 0), 0x1)
-      Assert Equals(B.rshift(1, 1), 0)
+    Context with small numbers
+      It shifts bits to right
+        Assert Equals(B.rshift(0, 0), 0)
+        Assert Equals(B.rshift(0, 1), 0)
+        Assert Equals(B.rshift(0, 31), 0)
+        Assert Equals(B.rshift(0, 32), 0)
+        Assert Equals(B.rshift(0x80000000, 0), 0x80000000)
+        Assert Equals(B.rshift(0x80000000, 1), 0x40000000)
+        Assert Equals(B.rshift(0x80000000, 31), 0x1)
+        Assert Equals(B.rshift(1, 0), 0x1)
+        Assert Equals(B.rshift(1, 1), 0)
+      End
     End
-    It shifts bits to right (random)
-      Assert Equals(B.rshift(-488472937, -18), 232329)
-      Assert Equals(B.rshift(2077835096, 9), 4058271)
-      Assert Equals(B.rshift(-944346085, -27), 104706912)
-      Assert Equals(B.rshift(-410125501, -23), 7587581)
-      Assert Equals(B.rshift(-976767239, 10), 3240429)
-      Assert Equals(B.rshift(999071336, 20), 952)
-      Assert Equals(B.rshift(1103884747, -13), 2105)
-      Assert Equals(B.rshift(1971440513, -1), 0)
-      Assert Equals(B.rshift(-440231805, -25), 30115121)
-      Assert Equals(B.rshift(1872776440, 23), 223)
-    End
+    if has('num64')
+      Context with 64bit number
+        It shifts bits to right
+          Assert Equals(B.rshift(0x80000000, 32), 0)
+          Assert Equals(B.rshift(0x8000000000000000, 32), 0x80000000)
+          Assert Equals(B.rshift(0x8000000000000000, 63), 1)
+          Assert Equals(B.rshift(-1024, 1), 0x7ffffffffffffe00)
+        End
+        It shifts bits to right (random)
+          Assert Equals(B.rshift(-268801553147510890, -39), 541744903342)
+          Assert Equals(B.rshift(-8658667913393403549, 60), 8)
+          Assert Equals(B.rshift(8684623827924321670, -54), 8481077956957345)
+          Assert Equals(B.rshift(-2848134570708700373, 24), 929749578416)
+          Assert Equals(B.rshift(-9109203526092417183, 23), 1113121574833)
+          Assert Equals(B.rshift(1597408012962228558, 31), 743851071)
+          Assert Equals(B.rshift(8548771603265437164, -19), 242970)
+          Assert Equals(B.rshift(2784858960009211313, -9), 77)
+          Assert Equals(B.rshift(5980153482236010223, -56), 23359974539984414)
+          Assert Equals(B.rshift(5014075726800027940, -58), 78344933231250436)
+        End
+      End
+    else
+      Context with 32bit number
+        It shifts bits to right
+          Assert Equals(B.rshift(0x80000000, 32), 0x80000000)
+          Assert Equals(B.rshift(-1024, 1), 0x7ffffe00)
+        End
+        It shifts bits to right (random)
+          Assert Equals(B.rshift(-488472937, -18), 232329)
+          Assert Equals(B.rshift(2077835096, 9), 4058271)
+          Assert Equals(B.rshift(-944346085, -27), 104706912)
+          Assert Equals(B.rshift(-410125501, -23), 7587581)
+          Assert Equals(B.rshift(-976767239, 10), 3240429)
+          Assert Equals(B.rshift(999071336, 20), 952)
+          Assert Equals(B.rshift(1103884747, -13), 2105)
+          Assert Equals(B.rshift(1971440513, -1), 0)
+          Assert Equals(B.rshift(-440231805, -25), 30115121)
+          Assert Equals(B.rshift(1872776440, 23), 223)
+        End
+      End
+    endif
   End
 
   Describe .compare()
@@ -162,5 +221,87 @@ Describe Bitwise
       Assert Equals(B.xor(1544212087, -476653766), -1080288947)
       Assert Equals(B.xor(838539477, 1024734483), 217001414)
     End
+  End
+
+  Describe .sign_extension()
+    if has('num64')
+      Context with 64bit number
+        It applies sign extension
+          Assert Equals(B.sign_extension(0), 0)
+          Assert Equals(B.sign_extension(-1), -1)
+          Assert Equals(B.sign_extension(1), 1)
+          Assert Equals(B.sign_extension(0x7FFFFFFF), 0x7FFFFFFF)
+          Assert Equals(B.sign_extension(0xFFFFFFFF7FFFFFFF), 0x7FFFFFFF)
+          Assert Equals(B.sign_extension(0x80000000), 0xFFFFFFFF80000000)
+          Assert Equals(B.sign_extension(0xFFFFFFFF80000000), 0xFFFFFFFF80000000)
+          Assert Equals(B.sign_extension(0xFFFFFFFF), 0xFFFFFFFFFFFFFFFF)
+        End
+      End
+    else
+      Context with 32bit number
+        It returns the argument directly
+          Assert Equals(B.sign_extension(0), 0)
+          Assert Equals(B.sign_extension(-1), -1)
+          Assert Equals(B.sign_extension(1), 1)
+          Assert Equals(B.sign_extension(0x7FFFFFFF), 0x7FFFFFFF)
+          Assert Equals(B.sign_extension(0x80000000), 0x80000000)
+        End
+      End
+    endif
+  End
+
+  Describe .lshift32()
+    if has('num64')
+      Context with 64bit number
+        It shifts bits to left with the 32bit range
+          Assert Equals(B.lshift32(0xFFFF0000, 8), 0xFF000000)
+          Assert Equals(B.lshift32(0xFFFF0000, 32), 0xFFFF0000)
+        End
+      End
+    else
+      Context with 32bit number
+        It is save as lshift()
+          Assert Equals(B.lshift(0, 0), 0)
+          Assert Equals(B.lshift(0, 1), 0)
+          Assert Equals(B.lshift(0, 31), 0)
+          Assert Equals(B.lshift(0, 32), 0)
+          Assert Equals(B.lshift(1, 0), 0x1)
+          Assert Equals(B.lshift(1, 1), 0x2)
+          Assert Equals(B.lshift(1, 31), 0x80000000)
+          Assert Equals(B.lshift(0x80000000, 0), 0x80000000)
+
+          Assert Equals(B.lshift(1, 32), 1)
+          Assert Equals(B.lshift(0x80000000, 1), 0)
+        End
+      End
+    endif
+  End
+
+  Describe .rshift32()
+    if has('num64')
+      Context with 64bit number
+        It shifts bits to right with the 32bit range
+          Assert Equals(B.rshift32(0xFFFF000000, 8), 0x00FF0000)
+          Assert Equals(B.rshift32(0xFFFF0000, 32), 0xFFFF0000)
+        End
+      End
+    else
+      Context with 32bit number
+        It is save as rshift()
+          Assert Equals(B.rshift(0, 0), 0)
+          Assert Equals(B.rshift(0, 1), 0)
+          Assert Equals(B.rshift(0, 31), 0)
+          Assert Equals(B.rshift(0, 32), 0)
+          Assert Equals(B.rshift(0x80000000, 0), 0x80000000)
+          Assert Equals(B.rshift(0x80000000, 1), 0x40000000)
+          Assert Equals(B.rshift(0x80000000, 31), 0x1)
+          Assert Equals(B.rshift(1, 0), 0x1)
+          Assert Equals(B.rshift(1, 1), 0)
+
+          Assert Equals(B.rshift(0x80000000, 32), 0x80000000)
+          Assert Equals(B.rshift(-1024, 1), 0x7ffffe00)
+        End
+      End
+    endif
   End
 End
