@@ -6,7 +6,7 @@ endfunction
 Describe Vim.ViewTracer
 
   Before all
-    let T = vital#of('vital').import('Vim.ViewTracer')
+    let T = vital#vital#new().import('Vim.ViewTracer')
   End
 
   Before

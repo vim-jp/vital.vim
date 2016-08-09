@@ -1,6 +1,6 @@
 Describe Random.Xor128
   Before all
-    let X = vital#of('vital').import('Random.Xor128')
+    let X = vital#vital#new().import('Random.Xor128')
   End
 
   Describe .rand()

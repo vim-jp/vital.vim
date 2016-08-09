@@ -31,7 +31,7 @@ store cache in a filesystem.
 In the following example, |Vital.System.Cache.File| is used for memorize the
 calculated values.
 >
-	let s:V = vital#of('vital')
+	let s:V = vital#{plugin-name}#new()
 	let s:C = s:V.import('System.Cache.File')
 
 	let s:factorial_cache = s:C.new({'cache_dir': '.cache'})

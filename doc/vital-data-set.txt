@@ -20,7 +20,7 @@ It provides set and frozenset data structure ported from python.
   https://docs.python.org/3.4/library/stdtypes.html#set-types-set-frozenset
 
 >
-	let s:V = vital#of("vital")
+	let s:V = vital#{plugin-name}#new()
 	let s:Set = s:V.import("Data.Set")
 
 	let set = s:Set.set([1,1,2,3,4,4,5])

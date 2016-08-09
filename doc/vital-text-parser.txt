@@ -62,7 +62,7 @@ Parser.config({dict})                      *Vital.Text.Parser-Parser.config()*
 EXAMPLES				          *Vital.Text.Parser-examples*
 
 >
-        let s:V = vital#of('vital')
+        let s:V = vital#{plugin-name}#new()
         let s:L = s:V.import('Text.Lexer')
         let s:P = s:V.import('Text.Parser')
 

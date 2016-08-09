@@ -5,7 +5,7 @@ let s:suite = themis#suite('Data.String')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
-  let s:String = vital#of('vital').import('Data.String')
+  let s:String = vital#vital#new().import('Data.String')
 endfunction
 
 function! s:suite.after()

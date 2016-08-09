@@ -4,7 +4,7 @@ let s:suite = themis#suite('Text.Table')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before() abort
-    let s:T = vital#of('vital').import('Text.Table')
+    let s:T = vital#vital#new().import('Text.Table')
 endfunction
 
 function! s:suite.after() abort

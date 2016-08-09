@@ -3,7 +3,7 @@ scriptencoding utf-8
 
 Describe Process
   Before all
-    let Process = vital#of('vital').import('Process')
+    let Process = vital#vital#new().import('Process')
   End
 
   Describe .system()

@@ -17,7 +17,7 @@ INTRODUCTION				*Vital.Vim.Python-introduction*
 *Vital.Vim.Python* provides compatible functions of |python|, |pyfile|, and |pyeval|.
 It automatically uses a correct function/command to execute a Python code/file.
 >
-	let s:V = vital#of('vital')
+	let s:V = vital#{plugin-name}#new()
 	let s:P = s:V.import('Vim.Python')
 
 	" Check if Python is enabled

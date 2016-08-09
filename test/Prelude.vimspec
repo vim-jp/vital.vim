@@ -2,7 +2,7 @@ scriptencoding utf-8
 
 Describe Prelude
   Before all
-    let P = vital#of('vital').import('Prelude')
+    let P = vital#vital#new().import('Prelude')
   End
 
   Describe .is_numeric()

@@ -1,11 +1,11 @@
-let s:V = vital#of('vital')
+let s:V = vital#vital#new()
 let s:P = s:V.import('Vim.Python')
 let s:is_python2_enabled = s:P.is_python2_enabled()
 let s:is_python3_enabled = s:P.is_python3_enabled()
 
 Describe Vim.Python
   Before all
-    let V = vital#of('vital')
+    let V = vital#vital#new()
     let S = V.import('Vim.ScriptLocal')
     let P = V.import('System.Filepath')
     let Python = V.import('Vim.Python')

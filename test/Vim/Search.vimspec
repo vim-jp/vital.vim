@@ -1,7 +1,7 @@
 
 Describe Vim.Search
   Before all
-    let Search = vital#of('vital').import('Vim.Search')
+    let Search = vital#vital#new().import('Vim.Search')
   End
 
   Context .finddef()

@@ -1,6 +1,6 @@
 Describe Bitwise
   Before all
-    let B = vital#of('vital').import('Bitwise')
+    let B = vital#vital#new().import('Bitwise')
   End
 
   Describe .lshift()

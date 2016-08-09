@@ -26,7 +26,7 @@ values are stored in a |Dictionary| instance.
 In the following example, |Vital.System.Cache.Memory| is used for memorize the
 calculated values.
 >
-	let s:V = vital#of('vital')
+	let s:V = vital#{plugin-name}#new()
 	let s:C = s:V.import('System.Cache.Memory')
 
 	let s:factorial_cache = s:C.new()

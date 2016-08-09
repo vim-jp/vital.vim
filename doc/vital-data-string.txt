@@ -15,7 +15,7 @@ INTRODUCTION				*Vital.Data.String-introduction*
 *Vital.Data.String* is String Utilities Library.
 It provides some functions to manipulate |String|.
 >
-	let s:V = vital#of("vital")
+	let s:V = vital#{plugin-name}#new()
 	let s:S = s:V.import("Data.String")
 <
 

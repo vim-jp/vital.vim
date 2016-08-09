@@ -1,6 +1,6 @@
 Describe Data.Counter
   Before all
-    let Counter = vital#of('vital').import('Data.Counter')
+    let Counter = vital#vital#new().import('Data.Counter')
   End
 
   Describe .new()

@@ -22,7 +22,7 @@ INTRODUCTION				*Vital.Locale.Message-introduction*
 ==============================================================================
 USAGE					*Vital.Locale.Message-usage*
 >
-	let s:V = vital#of('my-plugin')
+	let s:V = vital#my_plugin#new()
 	let s:message = s:V.import('Locale.Message').new('my-plugin')
 	function! s:_(text)
 	  return s:message._(a:text)

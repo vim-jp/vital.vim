@@ -1,6 +1,6 @@
 Describe Data.List
   Before all
-    let List = vital#of('vital').import('Data.List')
+    let List = vital#vital#new().import('Data.List')
   End
 
   Describe .pop()

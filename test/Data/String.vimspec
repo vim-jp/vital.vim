@@ -1,7 +1,7 @@
 
 Describe Data.String
   Before all
-    let Vital = vital#of('vital')
+    let Vital = vital#vital#new()
     let Path = Vital.import('System.Filepath')
     let String = Vital.import('Data.String')
   End

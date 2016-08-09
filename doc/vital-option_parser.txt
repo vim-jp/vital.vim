@@ -38,7 +38,7 @@ define a command with |Vital.OptionParser-Parser.parse()|.
 This library's interface is inspired by OptionParser in Ruby.
 >
   " make option parser instance
-  let s:V = vital#of('vital')
+  let s:V = vital#{plugin-name}#new()
   let s:O = s:V.import('OptionParser')
   let s:parser = s:O.new()
 
@@ -280,7 +280,7 @@ Below is an output example.
 <
 If you don't want to use "--help", set OptionParser.disable_auto_help to 1.
 >
-  let s:V = vital#of('vital')
+  let s:V = vital#{plugin-name}#new()
   let s:O = s:V.import('OptionParser')
   let s:parser = s:O.new()
   let s:parser.disable_auto_help = 1

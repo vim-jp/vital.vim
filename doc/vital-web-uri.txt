@@ -54,7 +54,7 @@ is_uri({str})				*Vital.Web.URI.is_uri()*
 	Returns non-zero value if {str} is URI.
 	Returns zero value otherwise.
 >
-	let URI = vital#of('Web.URI')
+	let URI = vital#{plugin-name}#new().import('Web.URI')
 	let ERROR = []
 	let like_uri = (URI.is_uri(a:str, ERROR) isnot ERROR)
 <
@@ -151,7 +151,7 @@ is_fragment({str})
 clone()
 
     This method clones a URI object itself. >
-    let s:URI = vital#of('vital').import('Web.URI')
+    let s:URI = vital#{plugin-name}#new().import('Web.URI')
     let uri = s:URI.new('http://example.com/')
     let copyuri = uri.clone().relative('/a/b/c')
     echo uri.to_string()
@@ -170,7 +170,7 @@ relative({reluri})
     * Calls |Vital.Web.URI-URI.relative()| implicitly.
 
     Example: >
-    let s:URI = vital#of('vital').import('Web.URI')
+    let s:URI = vital#{plugin-name}#new().import('Web.URI')
     let BASE_URI = 'http://example.com/foo/bar'
     let RELATIVE_URI = '../baz'
     echo s:URI.new(BASE_URI).relative(RELATIVE_URI).to_string()
@@ -193,7 +193,7 @@ canonicalize()
     * http://example.com:80/
 
     Example: >
-    let s:URI = vital#of('vital').import('Web.URI')
+    let s:URI = vital#{plugin-name}#new().import('Web.URI')
     echo s:URI.new('http://example.com:80/').to_string()
     " => 'http://example.com/'
 <

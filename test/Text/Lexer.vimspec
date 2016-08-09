@@ -1,7 +1,7 @@
 
 Describe Text.Lexer
   Before all
-    let Lexer = vital#of('vital').import('Text.Lexer')
+    let Lexer = vital#vital#new().import('Text.Lexer')
     let patterns = [
     \ ['WHITE_SPACES','\s\+'],
     \ ['WORD','[a-zA-Z]\+'],

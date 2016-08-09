@@ -49,7 +49,7 @@ table such as below:
 |Vital.Text.Table| is easy to use. You can make a character table such above
 by:
 >
-    let s:T = vital#of('vital').import('Text.Table')
+    let s:T = vital#{plugin-name}#new().import('Text.Table')
     let s:table = s:T.new({
     \   'columns': [{}, {}, {}],
     \   'header':  ['header1', 'header2', 'header3'],

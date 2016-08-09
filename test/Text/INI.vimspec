@@ -1,4 +1,4 @@
-let s:V = vital#of('vital')
+let s:V = vital#vital#new()
 call s:V.unload()
 let s:I = s:V.import('Text.INI')
 let s:P = s:V.import('System.Filepath')

@@ -46,7 +46,7 @@ EXAMPLES					*Vital.Text.Lexer-examples*
 
 lexer example                    		*Vital.Text.Lexer-lexer-example*
 >
-	let s:V = vital#of('vital')
+	let s:V = vital#{plugin-name}#new()
 	let s:L = s:V.import('Text.Lexer')
 	try
 	  echo s:L.lexer([['digit','\d\+'],['whitespace','\s\+']]).exec('53  4')

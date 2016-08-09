@@ -1,7 +1,7 @@
 Describe Data.String.Interpolation
 
   Before all
-    let g:I = vital#of('vital').import('Data.String.Interpolation')
+    let g:I = vital#vital#new().import('Data.String.Interpolation')
 
     function! InterpolationFunc() abort
       let year = 2015

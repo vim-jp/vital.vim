@@ -1,6 +1,6 @@
 Describe Data.Closure
   Before all
-    let C = vital#of('vital').import('Data.Closure')
+    let C = vital#vital#new().import('Data.Closure')
   End
 
   Describe .build()

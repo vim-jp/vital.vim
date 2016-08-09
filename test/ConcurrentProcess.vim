@@ -4,7 +4,7 @@ let s:suite = themis#suite('ConcurrentProcess')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
-  let s:CP = vital#of('vital').import('ConcurrentProcess')
+  let s:CP = vital#vital#new().import('ConcurrentProcess')
 endfunction
 
 function! s:suite.before_each() abort

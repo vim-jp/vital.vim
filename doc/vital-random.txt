@@ -21,7 +21,7 @@ INTRODUCTION				*Vital.Random-introduction*
 
 					*Vital.Random-synopsis*
 >
-	let s:V = vital#of('vital')
+	let s:V = vital#{plugin-name}#new()
 	let s:Random = s:V.import('Random')
 
 	" Generate a random number.

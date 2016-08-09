@@ -2,7 +2,7 @@ let s:suite = themis#suite('Data.Set')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
-  let s:S = vital#of('vital').import('Data.Set')
+  let s:S = vital#vital#new().import('Data.Set')
   let s:xs = s:S.set([1,2,3,4,5])
   let s:ys = s:S.set([3,4,5,6,7])
   call themis#func_alias({'set': s:S.set()})

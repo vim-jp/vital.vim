@@ -1,6 +1,6 @@
 Describe Data.Optional
   Before all
-    let O = vital#of('vital').import('Data.Optional')
+    let O = vital#vital#new().import('Data.Optional')
   End
 
   Describe .none()
@@ -169,7 +169,7 @@ Describe Data.Optional
         " Note:
         " This is workaround because 'O' is defined in outer 'Before all'
         " and it can't be refered here.
-        let O = vital#of('vital').import('Data.Optional')
+        let O = vital#vital#new().import('Data.Optional')
 
         if a:b == 0
           return O.none()

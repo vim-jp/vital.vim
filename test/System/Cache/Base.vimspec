@@ -1,5 +1,5 @@
 " Use vim-themis to execute this test
-let s:V = vital#of('vital')
+let s:V = vital#vital#new()
 
 Describe System.Cache.Base
   let s:C = s:V.import('System.Cache.Base')

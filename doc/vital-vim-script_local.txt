@@ -14,7 +14,7 @@ INTRODUCTION				*Vital.Vim.ScriptLocal-introduction*
 
 *Vital.Vim.ScriptLocal* provides a way to get script local things.
 >
-	let s:V = vital#of('vital')
+	let s:V = vital#{plugin-name}#new()
 	let s:S = s:V.import('Vim.ScriptLocal')
 >
 	"" Get <SID> with relative path to &runtimepath

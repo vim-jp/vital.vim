@@ -2,7 +2,7 @@ let s:suite = themis#suite('Data.BigNum')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
-  let s:BigNum = vital#of('vital').import('Data.BigNum')
+  let s:BigNum = vital#vital#new().import('Data.BigNum')
 endfunction
 
 function! s:suite.after()
