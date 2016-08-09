@@ -4,7 +4,7 @@ let s:suite = themis#suite('Math')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
-  let s:M = vital#of('vital').import('Math')
+  let s:M = vital#vital#new().import('Math')
 endfunction
 
 function! s:suite.modulo()

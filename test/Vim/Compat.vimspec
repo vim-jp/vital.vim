@@ -1,7 +1,7 @@
 
 Describe Vim.Compat
   Before all
-    let Compat = vital#of('vital').import('Vim.Compat')
+    let Compat = vital#vital#new().import('Vim.Compat')
   End
 
   Describe .has_version()

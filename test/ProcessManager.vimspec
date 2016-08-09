@@ -1,11 +1,11 @@
 Describe ProcessManager
   Before all
-    let PM = vital#of('vital').import('ProcessManager')
+    let PM = vital#vital#new().import('ProcessManager')
   End
 
   Describe .is_available()
     It behaves the same as has_vimproc()
-      let P = vital#of('vital').import('Process')
+      let P = vital#vital#new().import('Process')
       Assert Equals(P.has_vimproc(), PM.is_available())
     End
   End

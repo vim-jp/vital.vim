@@ -1,6 +1,6 @@
 Describe Data.OrderedSet
   Before all
-    let OrderedSet = vital#of('vital').import('Data.OrderedSet')
+    let OrderedSet = vital#vital#new().import('Data.OrderedSet')
   End
 
   Describe .push()

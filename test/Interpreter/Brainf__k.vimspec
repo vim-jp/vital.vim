@@ -2,7 +2,7 @@ scriptencoding utf-8
 
 Describe Interpreter.Brainf__k
   Before all
-    let BF = vital#of('vital').import('Interpreter.Brainf__k')
+    let BF = vital#vital#new().import('Interpreter.Brainf__k')
   End
 
   Describe .run_vim_parse_execute()

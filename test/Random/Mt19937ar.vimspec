@@ -1,6 +1,6 @@
 Describe Random.Mt19937ar
   Before all
-    let M = vital#of('vital').import('Random.Mt19937ar')
+    let M = vital#vital#new().import('Random.Mt19937ar')
   End
 
   After all

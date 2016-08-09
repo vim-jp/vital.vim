@@ -2,7 +2,7 @@ let s:suite = themis#suite('Text.TOML')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
-  let s:TOML = vital#of('vital').import('Text.TOML')
+  let s:TOML = vital#vital#new().import('Text.TOML')
 endfunction
 
 function! s:suite.after()

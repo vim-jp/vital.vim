@@ -1,3 +1,6 @@
+aabb291268c0977e1444b0901e816db4467d6806
+	Modules: *
+	'vital#{plugin-name}#of()' was renamed to 'vital#{plugin-name}#new()'.
 982d3cb87ef788f4607fc61f1fd20ec2e3975479
 	Modules: Vim.Guard
 	Guard.store() API has changed to take a single List instance instead of arguments, due to the

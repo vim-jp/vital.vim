@@ -1,6 +1,6 @@
 Describe Random
   Before all
-    let R = vital#of('vital').import('Random')
+    let R = vital#vital#new().import('Random')
   End
 
   Describe .next()

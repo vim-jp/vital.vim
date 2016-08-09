@@ -4,7 +4,7 @@ let s:suite = themis#suite('Text.Sexp')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
-  let s:S = vital#of('vital').import('Text.Sexp')
+  let s:S = vital#vital#new().import('Text.Sexp')
 endfunction
 
 function! s:suite.after()

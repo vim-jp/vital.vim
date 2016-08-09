@@ -1,6 +1,6 @@
 Describe DateTime
   Before all
-    let DT = vital#of('vital').import('DateTime')
+    let DT = vital#vital#new().import('DateTime')
     " TODO set timezone for test here
   End
 

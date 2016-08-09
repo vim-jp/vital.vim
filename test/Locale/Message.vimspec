@@ -4,7 +4,7 @@ let s:text_path = 'test/Locale/MessageText/%s.txt'
 
 Describe Locale.Message
   Before all
-    let M = vital#of('vital').import('Locale.Message')
+    let M = vital#vital#new().import('Locale.Message')
   End
 
   Before each
