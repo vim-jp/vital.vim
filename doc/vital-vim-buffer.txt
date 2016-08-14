@@ -105,5 +105,12 @@ edit_content({content}[, {options}])	*Vital.Vim.Bufer.edit_content()*
 	so developers can change the behavior of internal |:read| command as
 	|Vital.Vim.Buffer.read_content()|.
 
+parse_cmdarg([{cmdarg}])		*Vital.Vim.Buffer.parse_cmdarg*
+	Parse {cmdarg} which is used as [++opt] in |:read| or |:edit| command
+	and return a {options} dictionary which can directly be used in
+	|Vital.Vim.Buffer.read_content()| or
+	|Vital.Vim.Buffer.edit_content()|.
+	If {cmdarg} is not specified, |v:cmdarg| is used instead.
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
