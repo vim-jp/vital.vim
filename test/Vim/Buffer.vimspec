@@ -184,6 +184,39 @@ Describe Vim.Buffer
       call Buffer.read_content([''], {'tempfile': fname})
       Assert Equals(bufnr(fname), -1)
     End
+
+    It append content after cursor
+        call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
+        let cursor = getpos('.')
+        call setpos('.', [0, 2, 1, 0])
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.read_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'aaaaa',
+              \ 'bbbbb',
+              \ 'あいうえお',
+              \ 'ccccc',
+              \])
+        call setpos('.', cursor)
+    End
+
+    It append content after {options.line}
+        call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.read_content(contents, {
+              \ 'line': 2,
+              \})
+        Assert Equals(getline(1, '$'), [
+              \ 'aaaaa',
+              \ 'bbbbb',
+              \ 'あいうえお',
+              \ 'ccccc',
+              \])
+    End
   End
 
   Describe edit_content()

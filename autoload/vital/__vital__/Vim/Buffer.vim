@@ -99,6 +99,7 @@ function! s:read_content(content, ...) abort
         \ 'nobinary': 0,
         \ 'bad': '',
         \ 'edit': 0,
+        \ 'line': 0,
         \}, get(a:000, 0, {}))
   let tempfile = empty(options.tempfile) ? tempname() : options.tempfile
   let optnames = [
@@ -112,7 +113,8 @@ function! s:read_content(content, ...) abort
   let optname = join(filter(optnames, '!empty(v:val)'))
   try
     call writefile(a:content, tempfile)
-    execute printf('keepalt keepjumps read %s%s',
+    execute printf('keepalt keepjumps %sread %s%s',
+          \ empty(options.line) ? '' : options.line,
           \ empty(optname) ? '' : optname . ' ',
           \ fnameescape(tempfile),
           \)
