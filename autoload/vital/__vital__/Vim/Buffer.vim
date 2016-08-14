@@ -49,6 +49,18 @@ function! s:open(buffer, opener) abort
   return loaded
 endfunction
 
+function! s:is_preview_opener(opener) abort
+  if a:opener =~# '\%(^\|\W\)ptag\?!\?\%(\W\|$\)'
+    return 1
+  elseif a:opener =~# '\%(^\|\W\)ped\%[it]!\?\%(\W\|$\)'
+    return 1
+  elseif a:opener =~# '\%(^\|\W\)ps\%[earch]!\?\%(\W\|$\)'
+    return 1
+  endif
+  return 0
+endfunction
+
+
 function! s:get_selected_text(...) abort
   echohl WarningMsg
   echom "[WARN] s:get_selected_text() is deprecated. Use 's:get_last_selected()'."
