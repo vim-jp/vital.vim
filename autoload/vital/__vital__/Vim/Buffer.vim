@@ -50,11 +50,11 @@ function! s:open(buffer, opener) abort
 endfunction
 
 function! s:is_preview_opener(opener) abort
-  if a:opener =~# '\%(^\|\W\)ptag\?!\?\%(\W\|$\)'
+  if a:opener =~# '\<ptag\?!\?\>'
     return 1
-  elseif a:opener =~# '\%(^\|\W\)ped\%[it]!\?\%(\W\|$\)'
+  elseif a:opener =~# '\<ped\%[it]!\?\>'
     return 1
-  elseif a:opener =~# '\%(^\|\W\)ps\%[earch]!\?\%(\W\|$\)'
+  elseif a:opener =~# '\<ps\%[earch]!\?\>'
     return 1
   endif
   return 0
