@@ -99,6 +99,13 @@ execute({args}[, {options}])
 		value of 'encode_output'.
 		Default: 1
 
+		"encode_error"
+		A |String| or |Number|. If 1 is specified, "error" value in
+		{result} will be encoded by |iconv()| from "char" to |&encoding|.
+		If |String| is specified, it will be encoded from "char" to a
+		value of 'encode_error'.
+		Default: 1
+
 		"split_output"
 		If 1, a POSIX |List| of "output" value in {result} will be
 		embed into {result} dictionary as "content".
@@ -126,6 +133,10 @@ execute({args}[, {options}])
 		"output"
 		An output |String| of the process. It is encoded if
 		'encode_output' is specified in {options}.
+
+		"error"
+		An stderr |String| of the process. It is encoded if
+		'encode_error' is specified in {options}.
 
 		"content"
 		An output of the process as a |List| when "options.split_output"

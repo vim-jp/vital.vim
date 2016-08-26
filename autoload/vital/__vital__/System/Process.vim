@@ -58,6 +58,7 @@ function! s:execute(args, ...) abort
         \ 'background': 0,
         \ 'encode_input': 1,
         \ 'encode_output': 1,
+        \ 'encode_error': 1,
         \ 'split_output': 1,
         \ 'debug': &verbose,
         \}, get(a:000, 0, {}))
@@ -73,6 +74,12 @@ function! s:execute(args, ...) abort
           \ ? options.encode_output
           \ : &encoding
     let result.output = s:String.iconv(result.output, 'char', encoding)
+  endif
+  if s:Prelude.is_string(result.error) && !empty(options.encode_error)
+    let encoding = s:Prelude.is_string(options.encode_error)
+          \ ? options.encode_error
+          \ : &encoding
+    let result.error = s:String.iconv(result.error, 'char', encoding)
   endif
   if options.split_output
     let result.content = s:String.split_posix_text(result.output)
