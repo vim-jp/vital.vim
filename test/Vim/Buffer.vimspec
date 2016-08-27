@@ -15,41 +15,6 @@ Describe Vim.Buffer
     windo bwipeout!
   End
 
-  Describe .is_preview_opener()
-    It returns 0 for 'edit'
-      Assert False(Buffer.is_preview_opener('e'))
-      Assert False(Buffer.is_preview_opener('edit'))
-    End
-
-    It returns 0 for 'new/vnew'
-      Assert False(Buffer.is_preview_opener('new'))
-      Assert False(Buffer.is_preview_opener('vnew'))
-    End
-
-    It returns 0 for 'split/vsplit'
-      Assert False(Buffer.is_preview_opener('split'))
-      Assert False(Buffer.is_preview_opener('vsplit'))
-    End
-
-    It returns 1 for 'ptag'
-      Assert True(Buffer.is_preview_opener('pta'))
-      Assert True(Buffer.is_preview_opener('ptag'))
-      Assert True(Buffer.is_preview_opener('botright ptag'))
-    End
-
-    It returns 1 for 'pedit'
-      Assert True(Buffer.is_preview_opener('ped'))
-      Assert True(Buffer.is_preview_opener('pedit'))
-      Assert True(Buffer.is_preview_opener('botright pedit'))
-    End
-
-    It returns 1 for 'psearch'
-      Assert True(Buffer.is_preview_opener('ps'))
-      Assert True(Buffer.is_preview_opener('psearch'))
-      Assert True(Buffer.is_preview_opener('botright psearch'))
-    End
-  End
-
   Describe .is_cmdwin()
     It detects if current window is cmdwin.
       " FIXME: CmdWin can not open from test environment

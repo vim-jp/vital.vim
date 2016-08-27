@@ -42,10 +42,6 @@ is_cmdwin()				*Vital.Vim.Buffer.is_cmdwin()*
 	|command-line-window| or not. Note that most of buffer manipulation
 	does not work in the window.
 
-is_preview_opener({opener})		*Vital.Vim.Buffer.is_preview_opener()*
-	Return a boolean (0/1) which indicate whether opening a new buffer
-	with a {opener} opens |preview-window| or not.
-
 get_last_selected()			*Vital.Vim.Buffer.get_last_selected()*
 	Get the last selected text in visual mode.
 	This is almost the same as
