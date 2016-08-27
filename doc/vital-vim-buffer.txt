@@ -99,7 +99,7 @@ read_content({content}[, {options}])	*Vital.Vim.Buffer.read_content()*
 	A default value is 0.
 	'line'
 	To append content after the specified linenum.
-	A default value is 0 which append content after the cursor line.
+	A default value is '' which append content after the cursor line.
 
 edit_content({content}[, {options}])	*Vital.Vim.Bufer.edit_content()*
 	Replace content of the current buffer to {content}. It is similar to

@@ -252,6 +252,22 @@ Describe Vim.Buffer
               \ 'ccccc',
               \])
     End
+
+    It insert content before the first line when {options.line} is 0
+        call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.read_content(contents, {
+              \ 'line': 0,
+              \})
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \ 'aaaaa',
+              \ 'bbbbb',
+              \ 'ccccc',
+              \])
+    End
   End
 
   Describe edit_content()
