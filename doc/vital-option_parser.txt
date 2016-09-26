@@ -146,9 +146,6 @@ Parser.on({name}, {description} [, {extra}])
 		  prefix.  When it is used like "--no-foo", value of "foo"
 		  will be 0.
 
-	- {short-name} (optional)
-	  |String| value.  Alias of {name}.
-
 	- {description} (required)
 	  |String| value.  Description of option.  This is used for "--help"
 	  argument.
