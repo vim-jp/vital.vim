@@ -10,7 +10,7 @@ USAGE				|Vital.OptionParser-usage|
 INTERFACE			|Vital.OptionParser-interface|
   FUNCTIONS			|Vital.OptionParser-functions|
 OBJECTS				|Vital.OptionParser-objects|
-  PARSER OBJECT				|Vital.OptionParser-Parser|
+  PARSER OBJECT			|Vital.OptionParser-Parser|
 SPECIAL OPTIONS			|Vital.OptionParser-special-options|
 BUILT-IN COMPLETERS		|Vital.OptionParser-built-in-completer|
 REAL WORLD EXAMPLES		|Vital.OptionParser-real-world-examples|
@@ -273,10 +273,10 @@ Below is an output example.
 >
   Options:
     --foo=VALUE : description of foo, must have value
-    --foo        : description of foo
-    --[no-]bar   : description of bar, deniable
-    --baz, -b    : description of baz, has short option
-    --qux        : description of qux, defaults to "aaa" (DEFAULT: 'aaa')
+    --foo       : description of foo
+    --[no-]bar  : description of bar, deniable
+    --baz, -b   : description of baz, has short option
+    --qux       : description of qux, defaults to "aaa" (DEFAULT: 'aaa')
 <
 If you don't want to use "--help", set OptionParser.disable_auto_help to 1.
 >
