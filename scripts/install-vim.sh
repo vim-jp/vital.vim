@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/bash
+
 set -e
-if [ x"$HEAD" = "xyes" ]; then
+
+if [[ "$HEAD" = "yes" ]]; then
   git clone --depth 1 https://github.com/vim/vim /tmp/vim
   cd /tmp/vim
   ./configure --prefix="$HOME/vim" --with-features=huge \
