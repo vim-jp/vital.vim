@@ -8,6 +8,30 @@ Describe System.Filepath
     let is_case_sensitive_file_system = !(isdirectory(tolower(g:root)) && isdirectory(toupper(g:root)))
   End
 
+  Describe .is_absolute()
+    if !s:is_windows
+      It returns TRUE if {path} is an absolute path
+        Assert True(FP.is_absolute('/'))
+        Assert True(FP.is_absolute('/home/user'))
+
+        Assert False(FP.is_absolute('./a.out'))
+        Assert False(FP.is_absolute('foo/'))
+      End
+    else
+      It returns TRUE if {path} is an absolute path
+        Assert True(FP.is_absolute('C:/'))
+        Assert True(FP.is_absolute('C:/hoge/huga.txt'))
+        Assert True(FP.is_absolute('C:\'))
+        Assert True(FP.is_absolute('C:\hoge\huga.txt'))
+
+        Assert False(FP.is_absolute('./a.out'))
+        Assert False(FP.is_absolute('foo/'))
+        Assert False(FP.is_absolute('.\a.out'))
+        Assert False(FP.is_absolute('foo\'))
+      End
+    endif
+  End
+
   Describe .abspath()
     It should return {path} if {path} is already an absolute path
       let abspath = FP.join(getcwd(), 'foo.txt')
