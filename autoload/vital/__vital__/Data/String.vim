@@ -12,6 +12,16 @@ function! s:_vital_depends() abort
   return ['Data.List']
 endfunction
 
+function! s:_vital_created(module) abort
+  " Expose script-local funcref
+  if exists('s:strchars')
+    let a:module.strchars = s:strchars
+  endif
+  if exists('s:wcswidth')
+    let a:module.wcswidth = s:wcswidth
+  endif
+endfunction
+
 " Substitute a:from => a:to by string.
 " To substitute by pattern, use substitute() instead.
 function! s:replace(str, from, to) abort
@@ -127,9 +137,7 @@ endfunction
 " even if a:str contains multibyte character(s).
 " s:strchars(str) {{{
 if exists('*strchars')
-  function! s:strchars(str) abort
-    return strchars(a:str)
-  endfunction
+  let s:strchars = function('strchars')
 else
   function! s:strchars(str) abort
     return strlen(substitute(copy(a:str), '.', 'x', 'g'))
@@ -516,9 +524,7 @@ endfunction
 
 if v:version >= 703
   " Use builtin function.
-  function! s:wcswidth(str) abort
-    return strwidth(a:str)
-  endfunction
+  let s:wcswidth = function('strwidth')
 else
   function! s:wcswidth(str) abort
     if a:str =~# '^[\x00-\x7f]*$'
