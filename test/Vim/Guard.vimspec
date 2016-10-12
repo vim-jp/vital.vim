@@ -174,9 +174,12 @@ Describe Vim.Guard
         Assert Equals(getreg('b'), 'hogehoge')
       End
       It restore a RAW value of the expression register when assigned
-        call setreg('=', '100 + 100 + 100')
+        " NOTE: 
+        " '=' could not be used in setreg() before Vim 7.4.243
+        " https://github.com/vim/vim/commit/5a50c2255c447838d08d3b4895a3be3a41cd8eda
+        let @= = '100 + 100 + 100'
         let register = sf._new_register('@=')
-        call setreg('=', '100 * 5')
+        let @= = '100 * 5'
         call register.restore()
         Assert Equals(getreg('='), '300')
         Assert Equals(getreg('=', 1), '100 + 100 + 100')
