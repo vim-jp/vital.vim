@@ -65,7 +65,7 @@ Describe Vim.Guard
         setl backupcopy=no
         call option.restore()
         Assert Equals(&g:backupcopy, 'yes')
-        Assert Equals(&l:backupcopy, v:version >= 704 ? '' : 'yes')
+        Assert Equals(&l:backupcopy, has('patch-7.4.456') ? '' : 'yes')
       End
       It restore a value of the option when assigned [global-local with &g:]
         let option = sf._new_option('&g:backupcopy')
@@ -73,14 +73,14 @@ Describe Vim.Guard
         setl backupcopy=no
         call option.restore()
         Assert Equals(&g:backupcopy, 'yes')
-        Assert Equals(&l:backupcopy, v:version >= 704 ? 'no' : 'yes')
+        Assert Equals(&l:backupcopy, has('patch-7.4.456') ? 'no' : 'yes')
       End
       It restore a value of the option when assigned [global-local with &l:]
         let option = sf._new_option('&l:backupcopy')
         setg backupcopy=no
         setl backupcopy=no
         call option.restore()
-        Assert Equals(&g:backupcopy, v:version >= 704 ? 'no' : 'yes')
+        Assert Equals(&g:backupcopy, has('patch-7.4.456') ? 'no' : 'yes')
         Assert Equals(&l:backupcopy, 'yes')
       End
       It restore a value of the option when assigned [local to buffer]
