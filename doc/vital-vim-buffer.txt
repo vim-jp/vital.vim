@@ -93,6 +93,9 @@ read_content({content}[, {options}])	*Vital.Vim.Buffer.read_content()*
 	'edit'
 	To keep option values as if editing a file. See |++edit|.
 	A default value is 0.
+	'line'
+	To append content after the specified linenum.
+	A default value is '' which append content after the cursor line.
 
 edit_content({content}[, {options}])	*Vital.Vim.Bufer.edit_content()*
 	Replace content of the current buffer to {content}. It is similar to
@@ -101,6 +104,13 @@ edit_content({content}[, {options}])	*Vital.Vim.Bufer.edit_content()*
 	It calls |Vital.Vim.Buffer.read_content()| with options.edit=1 in default
 	so developers can change the behavior of internal |:read| command as
 	|Vital.Vim.Buffer.read_content()|.
+
+parse_cmdarg([{cmdarg}])		*Vital.Vim.Buffer.parse_cmdarg*
+	Parse {cmdarg} which is used as [++opt] in |:read| or |:edit| command
+	and return a {options} dictionary which can directly be used in
+	|Vital.Vim.Buffer.read_content()| or
+	|Vital.Vim.Buffer.edit_content()|.
+	If {cmdarg} is not specified, |v:cmdarg| is used instead.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

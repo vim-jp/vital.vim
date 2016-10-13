@@ -184,6 +184,53 @@ Describe Vim.Buffer
       call Buffer.read_content([''], {'tempfile': fname})
       Assert Equals(bufnr(fname), -1)
     End
+
+    It append content after cursor
+        call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
+        call setpos('.', [0, 2, 1, 0])
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.read_content(contents)
+        Assert Equals(getline(1, '$'), [
+              \ 'aaaaa',
+              \ 'bbbbb',
+              \ 'あいうえお',
+              \ 'ccccc',
+              \])
+    End
+
+    It append content after {options.line}
+        call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.read_content(contents, {
+              \ 'line': 2,
+              \})
+        Assert Equals(getline(1, '$'), [
+              \ 'aaaaa',
+              \ 'bbbbb',
+              \ 'あいうえお',
+              \ 'ccccc',
+              \])
+    End
+
+    It insert content before the first line when {options.line} is 0
+        call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
+        let contents = readfile(
+              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \)
+        call Buffer.read_content(contents, {
+              \ 'line': 0,
+              \})
+        Assert Equals(getline(1, '$'), [
+              \ 'あいうえお',
+              \ 'aaaaa',
+              \ 'bbbbb',
+              \ 'ccccc',
+              \])
+    End
   End
 
   Describe edit_content()
@@ -237,6 +284,56 @@ Describe Vim.Buffer
               \])
         Assert Equals(&fileencoding, 'euc-jp')
       End
+    End
+  End
+
+  Describe parse_cmdarg()
+    It returns an empty dictionary for non cmdarg
+      let ret = Buffer.parse_cmdarg('')
+      Assert Equals(ret, {})
+    End
+    It parses "++enc=XXX" and return "encoding: XXX" dictionary
+      let ret = Buffer.parse_cmdarg('++enc=utf-8')
+      Assert Equals(ret, { 'encoding': 'utf-8' })
+    End
+
+    It parses "++ff=XXX" and return "fileformat: XXX" dictionary
+      let ret = Buffer.parse_cmdarg('++ff=dos')
+      Assert Equals(ret, { 'fileformat': 'dos' })
+    End
+
+    It parses "++bad=XXX" and return "bad: XXX" dictionary
+      let ret = Buffer.parse_cmdarg('++bad=keep')
+      Assert Equals(ret, { 'bad': 'keep' })
+    End
+
+    It parses "++bin" and return "binary: 1" dictionary
+      let ret = Buffer.parse_cmdarg('++binary')
+      Assert Equals(ret, { 'binary': 1 })
+    End
+
+    It parses "++nobin" and return "nobinary: 1" dictionary
+      let ret = Buffer.parse_cmdarg('++nobin')
+      Assert Equals(ret, { 'nobinary': 1 })
+    End
+
+    It parses "++edit" and return "edit: 1" dictionary
+      let ret = Buffer.parse_cmdarg('++edit')
+      Assert Equals(ret, { 'edit': 1 })
+    End
+
+    It parses multiple opts specification and return a correct dictionary
+      let ret = Buffer.parse_cmdarg(
+            \ '++enc=utf-8 ++ff=dos ++bad=keep ++binary ++nobinary ++edit'
+            \)
+      Assert Equals(ret, {
+            \ 'encoding': 'utf-8',
+            \ 'fileformat': 'dos',
+            \ 'bad': 'keep',
+            \ 'binary': 1,
+            \ 'nobinary': 1,
+            \ 'edit': 1,
+            \})
     End
   End
 End
