@@ -12,6 +12,16 @@ function! s:_vital_depends() abort
   return ['Data.List']
 endfunction
 
+function! s:_vital_created(module) abort
+  " Expose script-local funcref
+  if exists('s:strchars')
+    let a:module.strchars = s:strchars
+  endif
+  if exists('s:wcswidth')
+    let a:module.wcswidth = s:wcswidth
+  endif
+endfunction
+
 " Substitute a:from => a:to by string.
 " To substitute by pattern, use substitute() instead.
 function! s:replace(str, from, to) abort
@@ -127,9 +137,7 @@ endfunction
 " even if a:str contains multibyte character(s).
 " s:strchars(str) {{{
 if exists('*strchars')
-  function! s:strchars(str) abort
-    return strchars(a:str)
-  endfunction
+  let s:strchars = function('strchars')
 else
   function! s:strchars(str) abort
     return strlen(substitute(copy(a:str), '.', 'x', 'g'))
@@ -437,8 +445,9 @@ function! s:truncate(str, width) abort
   " http://github.com/mattn/googlereader-vim/tree/master
 
   if a:str =~# '^[\x00-\x7f]*$'
-    return len(a:str) < a:width ?
-          \ printf('%-'.a:width.'s', a:str) : strpart(a:str, 0, a:width)
+    return len(a:str) < a:width
+          \ ? printf('%-' . a:width . 's', a:str)
+          \ : strpart(a:str, 0, a:width)
   endif
 
   let ret = a:str
@@ -468,57 +477,20 @@ function! s:truncate_skipping(str, max, footer_width, separator) abort
 endfunction
 
 function! s:strwidthpart(str, width) abort
-  if a:width <= 0
-    return ''
-  endif
-  let strarr = split(a:str, '\zs')
-  let width = s:wcswidth(a:str)
-  let index = len(strarr)
-  let diff = (index + 1) / 2
-  let rightindex = index - 1
-  while width > a:width
-    let index = max([rightindex - diff + 1, 0])
-    let partwidth = s:wcswidth(join(strarr[(index):(rightindex)], ''))
-    if width - partwidth >= a:width || diff <= 1
-      let width -= partwidth
-      let rightindex = index - 1
-    endif
-    if diff > 1
-      let diff = diff / 2
-    endif
-  endwhile
-  return index ? join(strarr[:index - 1], '') : ''
+  let str = tr(a:str, "\t", ' ')
+  let vcol = a:width + 2
+  return matchstr(str, '.*\%<' . (vcol < 0 ? 0 : vcol) . 'v')
 endfunction
 
 function! s:strwidthpart_reverse(str, width) abort
-  if a:width <= 0
-    return ''
-  endif
-  let strarr = split(a:str, '\zs')
-  let width = s:wcswidth(a:str)
-  let strlen = len(strarr)
-  let diff = (strlen + 1) / 2
-  let leftindex = 0
-  let index = -1
-  while width > a:width
-    let index = min([leftindex + diff, strlen]) - 1
-    let partwidth = s:wcswidth(join(strarr[(leftindex):(index)], ''))
-    if width - partwidth >= a:width || diff <= 1
-      let width -= partwidth
-      let leftindex = index + 1
-    endif
-    if diff > 1
-      let diff = diff / 2
-    endif
-  endwhile
-  return index < strlen ? join(strarr[(index + 1):], '') : ''
+  let str = tr(a:str, "\t", ' ')
+  let vcol = s:wcswidth(str) - a:width
+  return matchstr(str, '\%>' . (vcol < 0 ? 0 : vcol) . 'v.*')
 endfunction
 
 if v:version >= 703
   " Use builtin function.
-  function! s:wcswidth(str) abort
-    return strwidth(a:str)
-  endfunction
+  let s:wcswidth = function('strwidth')
 else
   function! s:wcswidth(str) abort
     if a:str =~# '^[\x00-\x7f]*$'
