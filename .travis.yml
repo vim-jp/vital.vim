@@ -1,14 +1,17 @@
 language: generic
-env:
-  - HEAD=yes
-  - HEAD=no
 sudo: false
 git:
   depth: 10
 
-os:
-  - linux
-  - osx
+matrix:
+  include:
+    - os: linux
+      env: VIM_VERSION=v7.4
+    - os: linux
+      env: VIM_VERSION=v8.0.0000
+    - os: linux
+      env: VIM_VERSION=master
+    - os: osx
 
 addons:
   apt:
@@ -22,11 +25,8 @@ addons:
       - lua5.1
 
 install:
-  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" != "osx" ]; then bash scripts/install-vim.sh; fi
-  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" != "osx" ]; then export PATH=$HOME/vim/bin:$PATH; fi
-  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
-  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install lua; fi
-  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install vim --with-lua; fi
+  - bash scripts/install-vim.sh
+  - export PATH=$HOME/vim/bin:$PATH
 
 before_script:
   - git clone --depth 1 https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
@@ -40,7 +40,7 @@ script:
   - which -a vim
   - vim --cmd version --cmd quit
   - vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
-  - if [ x"$HEAD" = "xyes" ] && [ "$TRAVIS_OS_NAME" != "osx" ]; then sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 -c func_abort=1 autoload; fi
+  - if [[ "${VIM_VERSION}" = "master" ]]; then sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 -c func_abort=1 autoload; fi
   # - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
   - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
   - ruby scripts/check-changelog.rb
