@@ -11,6 +11,11 @@ Describe Data.String
       let val = "\033[47m\033[32mGreen\033[0m"
       Assert Equals(String.remove_ansi_sequences(val), 'Green')
     End
+
+    It shoud NOT remove any characters in {val}
+      let val = "Green"
+      Assert Equals(String.remove_ansi_sequences(val), 'Green')
+    End
   End
 
   Describe .escape_pattern()
