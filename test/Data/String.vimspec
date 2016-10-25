@@ -8,13 +8,12 @@ Describe Data.String
 
   Context .remove_ansi_sequences()
     It should remove ANSI sequences in {val}
-      let val = "\033[47m\033[32mGreen\033[0m"
-      Assert Equals(String.remove_ansi_sequences(val), 'Green')
+      Assert Equals(String.remove_ansi_sequences("\033[47m\033[32mGreen\033[0m"), 'Green')
+      Assert Equals(String.remove_ansi_sequences(" \033[38;5;226m   \\  /\033[0m       Partly Cloudy"), '    \  /       Partly Cloudy')
     End
 
     It shoud NOT remove any characters in {val}
-      let val = "Green"
-      Assert Equals(String.remove_ansi_sequences(val), 'Green')
+      Assert Equals(String.remove_ansi_sequences("Green"), 'Green')
     End
   End
 
