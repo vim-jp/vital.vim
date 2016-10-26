@@ -349,7 +349,7 @@ wcswidth({str})					*Vital.Data.String.wcswidth()*
 remove_ansi_sequences({text})	*Vital.Data.String.remove_ansi_sequences()*
 	Remove ANSI sequences from {text}
 >
-	echo s:S.remove_ansi_sequences('\033[47m\033[32mGreen\033[0m')
+	echo s:S.remove_ansi_sequences("\033[47m\033[32mGreen\033[0m")
 	" 'Green'
 <
 escape_pattern({str})		*Vital.Data.String.escape_pattern()*
