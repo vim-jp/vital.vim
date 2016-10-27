@@ -18,62 +18,62 @@ If you are a Vim plugin author, please check this out.
 
 Module						 | Description
 ------------------------------------------------ | ------------------------------
-[Assertion](doc/vital-assertion.txt)		 | assertion library
-[Bitwise](doc/vital-bitwise.txt)		 | bitwise operators
-[ConcurrentProcess](doc/vital-concurrent_process.txt)	 | manages processes concurrently with vimproc
-[Data.Base64](doc/vital-data-base64.txt)	 | base64 utilities library
-[Data.BigNum](doc/vital-data-bignum.txt)	 | multi precision integer library
-[Data.Closure](doc/vital-data-closure.txt)	 | Provide Closure object
-[Data.Collection](doc/vital-data-collection.txt) | Utilities both for list and dict
-[Data.Counter](doc/vital-data-counter.txt) | Counter library to support convenient tallies
-[Data.Dict](doc/vital-data-dict.txt)		 | dictionary utilities library
-[Data.LazyList](doc/vital-data-lazylist.txt)	 | lazy list including file io
-[Data.List](doc/vital-data-list.txt)		 | list utilities library
-[Data.Optional](doc/vital-data-optional.txt)	 | optional value library
-[Data.OrderedSet](doc/vital-data-ordered_set.txt)| ordered collection library
-[Data.String](doc/vital-data-string.txt)	 | string utilities library
-[Data.Tree](doc/vital-data-tree.txt)		 | tree utilities library
-[Database.SQLite](doc/vital-database-sqlite.txt) | sqlite utilities library
-[DateTime](doc/vital-date_time.txt)		 | date and time library
-[Experimental.Functor](doc/vital-experimental-functor.txt) | Utilities for functor
-[Interpreter.Brainf__k](doc/vital-interpreter-brainf__k.txt) | Brainf\*\*k interpreter
-[Locale.Message](doc/vital-locale-message.txt)	 | very simple message localization library
-[Lua.Prelude](doc/vital-lua-prelude.txt)	 | crucial functions for lua integration
-[Mapping](doc/vital-mapping.txt)		 | Utilities for mapping
-[Math](doc/vital-math.txt)			 | Mathematical functions
-[OptionParser](doc/vital-option_parser.txt)	 | Option parser library for Vim
-[Prelude](doc/vital-prelude.txt)		 | crucial functions
-[Process](doc/vital-process.txt)		 | Utilities for process
-[ProcessManager](doc/vital-process_manager.txt)  | process manager with vimproc
-[Random.Mt19937ar](doc/vital-random-mt19937ar.txt)| random number generator using mt19937ar
-[Random.Xor128](doc/vital-random-xor128.txt)	 | random number generator using xor128
-[Random](doc/vital-random.txt)			 | Random utility frontend library
-[System.Process](doc/vital-system-process.txt)	 | A cross-platform process utilities
-[System.Cache](doc/vital-system-cache.txt)	 | An unified cache system
-[System.File](doc/vital-system-file.txt)	 | filesystem utilities library
-[System.Filepath](doc/vital-system-filepath.txt) | path string utilities library
-[Text.CSV](doc/vital-text-csv.txt)		 | CSV library
-[Text.INI](doc/vital-text-ini.txt)		 | INI file library
-[Text.LTSV](doc/vital-text-ltsv.txt)		 | LTSV library
-[Text.Lexer](doc/vital-text-lexer.txt)		 | lexer library
-[Text.Parser](doc/vital-text-parser.txt)	 | parser library
-[Text.Sexp](doc/vital-text-sexp.txt)	         | S-Expression parser
-[Text.TOML](doc/vital-text-toml.txt)		 | TOML library
-[Text.Table](doc/vital-text-table.txt)		 | Character table library
-[Vim.Buffer](doc/vital-vim-buffer.txt)		 | Vim's buffer related stuff in general
-[Vim.BufferManager](doc/vital-vim-buffer_manager.txt)  | buffer manager
-[Vim.Compat](doc/vital-vim-compat.txt)		 | Vim compatibility wrapper functions
-[Vim.Python](doc/vital-vim-python.txt)		 | +python/+python3 compatibility functions
-[Vim.Message](doc/vital-vim-message.txt)	 | Vim message functions
-[Vim.Search](doc/vital-vim-search.txt)		 | Vim's [I like function
-[Vim.ScriptLocal](doc/vital-vim-script_local.txt) | Get script-local things
-[Vim.ViewTracer](doc/vital-vim-view_tracer.txt) | Trace window and tabpage
-[Vim.Guard](doc/vital-vim-guard.txt)		 | Guard options/variables
-[Web.HTML](doc/vital-web-html.txt)		 | HTML parser written in pure Vim script
-[Web.HTTP](doc/vital-web-http.txt)		 | simple HTTP client library
-[Web.JSON](doc/vital-web-json.txt)		 | JSON parser written in pure Vim script
-[Web.URI](doc/vital-web-uri.txt)		 | URI manipulation library
-[Web.XML](doc/vital-web-xml.txt)		 | XML parser written in pure Vim script
+[Assertion](doc/vital/Assertion.txt)		 | assertion library
+[Bitwise](doc/vital/Bitwise.txt)		 | bitwise operators
+[ConcurrentProcess](doc/vital/ConcurrentProcess.txt)	 | manages processes concurrently with vimproc
+[Data.Base64](doc/vital/Data/Base64.txt)	 | base64 utilities library
+[Data.BigNum](doc/vital/Data/BigNum.txt)	 | multi precision integer library
+[Data.Closure](doc/vital/Data/Closure.txt)	 | Provide Closure object
+[Data.Collection](doc/vital/Data/Collection.txt) | Utilities both for list and dict
+[Data.Counter](doc/vital/Data/Counter.txt) | Counter library to support convenient tallies
+[Data.Dict](doc/vital/Data/Dict.txt)		 | dictionary utilities library
+[Data.LazyList](doc/vital/Data/LazyList.txt)	 | lazy list including file io
+[Data.List](doc/vital/Data/List.txt)		 | list utilities library
+[Data.Optional](doc/vital/Data/Optional.txt)	 | optional value library
+[Data.OrderedSet](doc/vital/Data/OrderedSet.txt)| ordered collection library
+[Data.String](doc/vital/Data/String.txt)	 | string utilities library
+[Data.Tree](doc/vital/Data/Tree.txt)		 | tree utilities library
+[Database.SQLite](doc/vital/Database/SQLite.txt) | sqlite utilities library
+[DateTime](doc/vital/DateTime.txt)		 | date and time library
+[Experimental.Functor](doc/vital/Experimental/Functor.txt) | Utilities for functor
+[Interpreter.Brainf__k](doc/vital/Interpreter/Brainf__k.txt) | Brainf\*\*k interpreter
+[Locale.Message](doc/vital/Locale/Message.txt)	 | very simple message localization library
+[Lua.Prelude](doc/vital/Lua/Prelude.txt)	 | crucial functions for lua integration
+[Mapping](doc/vital/Mapping.txt)		 | Utilities for mapping
+[Math](doc/vital/Math.txt)			 | Mathematical functions
+[OptionParser](doc/vital/OptionParser.txt)	 | Option parser library for Vim
+[Prelude](doc/vital/Prelude.txt)		 | crucial functions
+[Process](doc/vital/Process.txt)		 | Utilities for process
+[ProcessManager](doc/vital/ProcessManager.txt)  | process manager with vimproc
+[Random.Mt19937ar](doc/vital/Random/Mt19937ar.txt)| random number generator using mt19937ar
+[Random.Xor128](doc/vital/Random/Xor128.txt)	 | random number generator using xor128
+[Random](doc/vital/Random.txt)			 | Random utility frontend library
+[System.Process](doc/vital/System/Process.txt)	 | A cross-platform process utilities
+[System.Cache](doc/vital/System/Cache.txt)	 | An unified cache system
+[System.File](doc/vital/System/File.txt)	 | filesystem utilities library
+[System.Filepath](doc/vital/System/Filepath.txt) | path string utilities library
+[Text.CSV](doc/vital/Text/CSV.txt)		 | CSV library
+[Text.INI](doc/vital/Text/INI.txt)		 | INI file library
+[Text.LTSV](doc/vital/Text/LTSV.txt)		 | LTSV library
+[Text.Lexer](doc/vital/Text/Lexer.txt)		 | lexer library
+[Text.Parser](doc/vital/Text/Parser.txt)	 | parser library
+[Text.Sexp](doc/vital/Text/Sexp.txt)	         | S-Expression parser
+[Text.TOML](doc/vital/Text/TOML.txt)		 | TOML library
+[Text.Table](doc/vital/Text/Table.txt)		 | Character table library
+[Vim.Buffer](doc/vital/Vim/Buffer.txt)		 | Vim's buffer related stuff in general
+[Vim.BufferManager](doc/vital/Vim/BufferManager.txt)  | buffer manager
+[Vim.Compat](doc/vital/Vim/Compat.txt)		 | Vim compatibility wrapper functions
+[Vim.Python](doc/vital/Vim/Python.txt)		 | +python/+python3 compatibility functions
+[Vim.Message](doc/vital/Vim/Message.txt)	 | Vim message functions
+[Vim.Search](doc/vital/Vim/Search.txt)		 | Vim's [I like function
+[Vim.ScriptLocal](doc/vital/Vim/ScriptLocal.txt) | Get script-local things
+[Vim.ViewTracer](doc/vital/Vim/ViewTracer.txt) | Trace window and tabpage
+[Vim.Guard](doc/vital/Vim/Guard.txt)		 | Guard options/variables
+[Web.HTML](doc/vital/Web/HTML.txt)		 | HTML parser written in pure Vim script
+[Web.HTTP](doc/vital/Web/HTTP.txt)		 | simple HTTP client library
+[Web.JSON](doc/vital/Web/JSON.txt)		 | JSON parser written in pure Vim script
+[Web.URI](doc/vital/Web/URI.txt)		 | URI manipulation library
+[Web.XML](doc/vital/Web/XML.txt)		 | XML parser written in pure Vim script
 
 ... and more ...
 
