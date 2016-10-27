@@ -1,4 +1,4 @@
-*vital-text-ini.txt*	INI file library.
+*vital/Text/INI.txt*	INI file library.
 
 Maintainer: Alisue <lambdalisue@hashnote.net>
 

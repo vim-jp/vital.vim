@@ -1,4 +1,4 @@
-*vital-experimental-functor.txt*		Utilities for functor.
+*vital/Experimental/Functor.txt*		Utilities for functor.
 
 Maintainer: tyru    <tyru.exe@gmail.com>
 

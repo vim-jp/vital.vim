@@ -1,4 +1,4 @@
-*vital-option_parser.txt*	Option parser library for Vim.
+*vital/OptionParser.txt*	Option parser library for Vim.
 
 Maintainer: rhysd <lin90162@yahoo.co.jp>
 

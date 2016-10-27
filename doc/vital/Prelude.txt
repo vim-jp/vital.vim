@@ -1,4 +1,4 @@
-*vital-prelude.txt*		crucial functions
+*vital/Prelude.txt*		crucial functions
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

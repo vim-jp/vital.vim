@@ -1,4 +1,4 @@
-*vital-lua-prelude.txt*		crucial functions for lua integration
+*vital/Lua/Prelude.txt*		crucial functions for lua integration
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

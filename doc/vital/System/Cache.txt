@@ -1,4 +1,4 @@
-*vital-system-cache.txt*	An unified cache system
+*vital/System/Cache.txt*	An unified cache system
 
 Maintainer: Alisue <lambdalisue@hashnote.net>
 

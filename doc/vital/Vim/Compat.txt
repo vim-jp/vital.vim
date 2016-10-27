@@ -1,4 +1,4 @@
-*vital-vim-compat.txt*	Vim compatibility wrapper functions.
+*vital/Vim/Compat.txt*	Vim compatibility wrapper functions.
 
 Maintainer: thinca	<thinca+vim@gmail.com>
             tyru	<tyru.exe@gmail.com>

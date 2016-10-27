@@ -1,4 +1,4 @@
-*vital-random-mt19937ar.txt*	random number generator using mt19937ar
+*vital/Random/Mt19937ar.txt*	random number generator using mt19937ar
 
 Maintainer: Linda_pp  <lin90162@gmail.com>
 

@@ -1,4 +1,4 @@
-*vital-data-string.txt*		string utilities library.
+*vital/Data/String.txt*		string utilities library.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

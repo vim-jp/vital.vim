@@ -1,4 +1,4 @@
-*vital-interpreter-brainf__k.txt*	Brainf**k interpreter
+*vital/Interpreter/Brainf__k.txt*	Brainf**k interpreter
 
 Maintainer: ujihisa  <ujihisa at gmail com>
 

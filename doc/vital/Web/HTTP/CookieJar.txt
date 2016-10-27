@@ -1,4 +1,4 @@
-*vital-web-http-cookie_jar.txt*	Manage collection of HTTP Cookie.
+*vital/Web/HTTP/CookieJar.txt*	Manage collection of HTTP Cookie.
 
 Maintainer: thinca <thinca+vim@gmail.com>
 

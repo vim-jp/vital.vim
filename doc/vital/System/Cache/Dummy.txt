@@ -1,4 +1,4 @@
-*vital-system-cache-dummy.txt*	A dummy class of unified cache system
+*vital/System/Cache/Dummy.txt*	A dummy class of unified cache system
 
 Maintainer: Alisue <lambdalisue@hashnote.net>
 

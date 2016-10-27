@@ -1,4 +1,4 @@
-*vital-web-uri.txt*			URI manipulation library
+*vital/Web/URI.txt*			URI manipulation library
 
 Maintainer: tyru <tyru.exe@gmail.com>
 

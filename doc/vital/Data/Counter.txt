@@ -1,4 +1,4 @@
-*vital-data-counter.txt*	Counter library to support convenient tallies.
+*vital/Data/Counter.txt*	Counter library to support convenient tallies.
 
 Maintainer: haya14busa <hayabusa1419@gmail.com>
 

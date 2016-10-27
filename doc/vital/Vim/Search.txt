@@ -1,4 +1,4 @@
-*vital-vim-search.txt*	Vim's [I like function
+*vital/Vim/Search.txt*	Vim's [I like function
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

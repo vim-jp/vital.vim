@@ -1,4 +1,4 @@
-*vital-vim-message.txt*	Vim message functions
+*vital/Vim/Message.txt*	Vim message functions
 
 Maintainer: tyru  <tyru.exe@gmail.com>
 

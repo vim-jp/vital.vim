@@ -1,4 +1,4 @@
-*vital-vim-view_tracer.txt*	Trace |window| and |tabpage|.
+*vital/Vim/ViewTracer.txt*	Trace |window| and |tabpage|.
 
 Maintainer: thinca  <thinca+vim@gmail.com>
 

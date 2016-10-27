@@ -1,4 +1,4 @@
-*vim-system-process.txt*	Cross platform process executor
+*vital/System/Process.txt*	Cross platform process executor
 
 Maintainer: lambdalisue		<lambdalisue@hashnote.net>
 

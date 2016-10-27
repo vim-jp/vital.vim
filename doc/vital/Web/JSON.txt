@@ -1,4 +1,4 @@
-*vital-web-json.txt*			JSON parser written in pure Vim script.
+*vital/Web/JSON.txt*			JSON parser written in pure Vim script.
 
 Maintainer: mattn <mattn.jp@gmail.com>
             lambdalisue <lambdalisue@hashnote.net>

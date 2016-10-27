@@ -1,4 +1,4 @@
-*vital-process_manager.txt*	process manager with vimproc.
+*vital/ProcessManager.txt*	process manager with vimproc.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

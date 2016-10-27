@@ -1,4 +1,4 @@
-*vital-bitwise.txt*	bitwise operators.
+*vital/Bitwise.txt*	bitwise operators.
 
 Maintainer: thinca  <thinca+vim@gmail.com>
 

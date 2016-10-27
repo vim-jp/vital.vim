@@ -1,4 +1,4 @@
-*vital-text-csv.txt*	CSV library.
+*vital/Text/CSV.txt*	CSV library.
 
 Maintainer: tyru <tyru@gmail.com>
 

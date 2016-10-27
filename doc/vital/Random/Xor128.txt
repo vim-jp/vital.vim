@@ -1,4 +1,4 @@
-*vital-random-xor128.txt*	random number generator using xor128
+*vital/Random/Xor128.txt*	random number generator using xor128
 
 Maintainer: Linda_pp  <lin90162@gmail.com>
 

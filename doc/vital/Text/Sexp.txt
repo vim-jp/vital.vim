@@ -1,4 +1,4 @@
-*vital-text-sexp.txt*		S-Expression parser.
+*vital/Text/Sexp.txt*		S-Expression parser.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

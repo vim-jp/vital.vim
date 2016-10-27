@@ -1,4 +1,4 @@
-*vital-vim-script_local.txt*	Get script-local things
+*vital/Vim/ScriptLocal.txt*	Get script-local things
 
 Maintainer: haya14busa <hayabusa1419@gmail.com>
 

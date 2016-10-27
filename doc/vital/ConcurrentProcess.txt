@@ -1,4 +1,4 @@
-*vital-concurrent_process.txt*	Manages processes concurrently with vimproc.
+*vital/ConcurrentProcess.txt*	Manages processes concurrently with vimproc.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

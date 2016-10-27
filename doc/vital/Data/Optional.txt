@@ -1,4 +1,4 @@
-*vital-data-optional.txt*	Provide optional value
+*vital/Data/Optional.txt*	Provide optional value
 
 Maintainer: rhysd <lin90162@yahoo.co.jp>
 

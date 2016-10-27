@@ -160,62 +160,75 @@ LINKS					*Vital-links*
   |vitalizer.txt|
 
  Vital modules				*Vital-modules*
-  |vital-assertion.txt|		  assertion library
-  |vital-bitwise.txt|		  bitwise operators
-  |vital-concurrent_process.txt|  manages processes concurrently with vimproc
-  |vital-data-base64.txt|	  base64 utilities library
-  |vital-data-bignum.txt|	  multi precision integer library
-  |vital-data-closure.txt|	  Provide Closure object
-  |vital-data-collection.txt|	  Utilities both for list and dict
-  |vital-data-counter.txt|      Counter library to support convenient tallies
-  |vital-data-dict.txt|		  dictionary utilities library
-  |vital-data-lazylist.txt|	  lazy list including file io
-  |vital-data-list.txt|		  list utilities library
-  |vital-data-optional.txt|	  optional value library
-  |vital-data-ordered_set.txt|	  ordered collection library
-  |vital-data-string.txt|	  string utilities library
-  |vital-data-tree.txt|		  tree utilities library
-  |vital-database-sqlite.txt|	  sqlite utilities library
-  |vital-date-time.txt|		  date and time library
-  |vital-experimental-functor.txt|  Utilities for functor
-  |vital-interpreter-brainf__k.txt| Brainf**k interpreter
-  |vital-locale-message.txt|	  very simple message localization library
-  |vital-lua-prelude.txt|	  crucial functions for lua integration
-  |vital-mapping.txt|		  Utilities for mapping
-  |vital-math.txt|		  Mathematical functions
-  |vital-option_parser.txt|	  Option parser library for Vim
-  |vital-prelude.txt|		  crucial functions
-  |vital-process.txt|		  Utilities for process
-  |vital-process_manager.txt|	  process manager with vimproc
-  |vital-random-mt19937ar.txt|	  random number generator using mt19937ar
-  |vital-random-xor128.txt|	  random number generator using xor128
-  |vital-random.txt|		  Random utility frontend library
-  |vital-system-process.txt|        A cross-platform process utilities
-  |vital-system-cache.txt|	  An unified cache system
-  |vital-system-file.txt|	  filesystem utilities library
-  |vital-system-filepath.txt|	  path string utilities library
-  |vital-text-csv.txt|		  CSV library
-  |vital-text-ini.txt|		  INI file library
-  |vital-text-lexer.txt|	  lexer library
-  |vital-text-ltsv.txt|		  LTSV library
-  |vital-text-parser.txt|	  parser library
-  |vital-text-sexp.txt|		  S-Expression parser
-  |vital-text-table.txt|	  Character table library
-  |vital-text-toml.txt|		  TOML library
-  |vital-vim-buffer.txt|	  Vim's buffer related stuff in general
-  |vital-vim-buffer_manager.txt|    buffer manager
-  |vital-vim-compat.txt|	  Vim compatibility wrapper functions
-  |vital-vim-python.txt|	  +python/+python3 compatibility functions
-  |vital-vim-message.txt|	  Vim message functions
-  |vital-vim-search.txt|	  Vim's [I like function
-  |vital-vim-script_local.txt|	  Get script-local things
-  |vital-vim-view_tracer.txt|	  Trace |window| and |tabpage|
-  |vital-vim-guard.txt|		  Guard options/variables
-  |vital-web-html.txt|		  HTML parser written in pure Vim script
-  |vital-web-http.txt|		  simple HTTP client library
-  |vital-web-json.txt|		  JSON parser written in pure Vim script
-  |vital-web-uri.txt|		  URI manipulation library
-  |vital-web-xml.txt|		  XML parser written in pure Vim script
+  |vital/Assertion.txt|		assertion library.
+  |vital/Bitwise.txt|		bitwise operators.
+  |vital/ConcurrentProcess.txt|	Manages processes concurrently with vimproc.
+  |vital/Data/Base64.txt|	base64 utilities library.
+  |vital/Data/Bignum.txt|	Multi precision integer library.
+  |vital/Data/Closure.txt|	Provide Closure object.
+  |vital/Data/Collection.txt|	Utilities both for list and dict.
+  |vital/Data/Counter.txt|	Counter library to support convenient tallies.
+  |vital/Data/Dict.txt|		dictionary utilities library.
+  |vital/Data/Lazylist.txt|	lazy list including file io.
+  |vital/Data/List.txt|		list utilities library.
+  |vital/Data/Optional.txt|	Provide optional value
+  |vital/Data/OrderedSet.txt|	ordered collection library.
+  |vital/Data/Set.txt|		set library.
+  |vital/Data/String.txt|	string utilities library.
+  |vital/Data/String/Interpolation.txt|	String interpolation in Vim
+  |vital/Data/Tree.txt|		tree utilities library.
+  |vital/Database/SQLite.txt|	sqlite utilities library.
+  |vital/DateTime.txt|		date and time library.
+  |vital/Experimental/Functor.txt|	Utilities for functor.
+  |vital/Interpreter/Brainf__k.txt|	Brainf**k interpreter
+  |vital/Locale/Message.txt|	very simple message localization library.
+  |vital/Lua/Prelude.txt|	crucial functions for lua integration
+  |vital/Mapping.txt|		Utilities for mapping.
+  |vital/Math.txt|		Mathematical functions
+  |vital/OptionParser.txt|	Option parser library for Vim.
+  |vital/Prelude.txt|		crucial functions
+  |vital/Process.txt|		Utilities for process.
+  |vital/ProcessManager.txt|	process manager with vimproc.
+  |vital/Random.txt|		Random utility frontend library
+  |vital/Random/Mt19937ar.txt|	random number generator using mt19937ar
+  |vital/Random/Xor128.txt|	random number generator using xor128
+  |vital/System/Cache.txt|	An unified cache system
+  |vital/System/Cache/Base.txt|	An abstract class of unified cache system
+  |vital/System/Cache/Deprecated.txt|	store/restore cache into/from file
+  |vital/System/Cache/Dummy.txt|	A dummy class of unified cache system
+  |vital/System/Cache/File.txt|	A file based cache system
+  |vital/System/Cache/Memory.txt|	A dictionary instance based cache system
+  |vital/System/Cache/SingleFile.txt|	A single file based cache system
+  |vital/System/File.txt|	filesystem utilities library.
+  |vital/System/Filepath.txt|	path string utilities library.
+  |vital/System/Process.txt|	Cross platform process executor
+  |vital/System/Process/Mock.txt|	A Process client for test
+  |vital/System/Process/System.txt|	A Process client using system() function
+  |vital/System/Process/Vimproc.txt|	A Process client using vimproc
+  |vital/Text/CSV.txt|		CSV library.
+  |vital/Text/INI.txt|		INI file library.
+  |vital/Text/LTSV.txt|		LTSV library.
+  |vital/Text/Lexer.txt|	lexer library.
+  |vital/Text/Parser.txt|	parser library.
+  |vital/Text/Sexp.txt|		S-Expression parser.
+  |vital/Text/TOML.txt|		TOML library.
+  |vital/Text/Table.txt|	Character table library.
+  |vital/Vim/Buffer.txt|	Vim's buffer related stuff in general.
+  |vital/Vim/BufferManager.txt|	buffer manager.
+  |vital/Vim/Compat.txt|	Vim compatibility wrapper functions.
+  |vital/Vim/Guard.txt|		Vim options/variables guard utility
+  |vital/Vim/Message.txt|	Vim message functions
+  |vital/Vim/Python.txt|	Vim python/python3 compatible function
+  |vital/Vim/ScriptLocal.txt|	Get script-local things
+  |vital/Vim/Search.txt|	Vim's [I like function
+  |vital/Vim/ViewTracer.txt|	Trace |window| and |tabpage|.
+  |vital/Web/HTML.txt|		HTML parser written in pure Vim script.
+  |vital/Web/HTTP.txt|		simple HTTP client library.
+  |vital/Web/HTTP/Cookie.txt|	An HTTP Cookie utility.
+  |vital/Web/HTTP/CookieJar.txt|	Manage collection of HTTP Cookie.
+  |vital/Web/JSON.txt|		JSON parser written in pure Vim script.
+  |vital/Web/URI.txt|		URI manipulation library
+  |vital/Web/XML.txt|		XML parser written in pure Vim script.
 
  External vital modules:
   https://github.com/vim-jp/vital.vim/wiki/External-vital-modules

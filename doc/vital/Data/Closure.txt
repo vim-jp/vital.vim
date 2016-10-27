@@ -1,4 +1,4 @@
-*vital-data-closure.txt*	Provide Closure object.
+*vital/Data/Closure.txt*	Provide Closure object.
 
 Maintainer: thinca <thinca+vim@gmail.com>
 

@@ -1,4 +1,4 @@
-*vital-vim-python.txt*	Vim python/python3 compatible function
+*vital/Vim/Python.txt*	Vim python/python3 compatible function
 
 Maintainer: lambdalisue <lambdalisue@hashnote.net>
 

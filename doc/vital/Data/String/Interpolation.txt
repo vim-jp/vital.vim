@@ -1,4 +1,4 @@
-*vital-data-string-interpolation.txt*	String interpolation in Vim
+*vital/Data/String/Interpolation.txt*	String interpolation in Vim
 
 Maintainer: haya14busa <hayabusa1419@gmail.com>
 

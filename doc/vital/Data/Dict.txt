@@ -1,4 +1,4 @@
-*vital-data-dict.txt*		dictionary utilities library.
+*vital/Data/Dict.txt*		dictionary utilities library.
 
 Maintainer: thinca  <thinca+vim@gmail.com>
 

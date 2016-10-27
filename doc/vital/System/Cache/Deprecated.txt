@@ -1,4 +1,4 @@
-*vital-system-cache-deprecated.txt*	store/restore cache into/from file
+*vital/System/Cache/Deprecated.txt*	store/restore cache into/from file
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

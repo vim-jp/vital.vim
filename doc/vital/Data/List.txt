@@ -1,4 +1,4 @@
-*vital-data-list.txt*		list utilities library.
+*vital/Data/List.txt*		list utilities library.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

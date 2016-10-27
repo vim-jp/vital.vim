@@ -1,4 +1,4 @@
-*vital-process.txt*		Utilities for process.
+*vital/Process.txt*		Utilities for process.
 
 Maintainer: tyru    <tyru.exe@gmail.com>
 

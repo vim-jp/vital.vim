@@ -1,4 +1,4 @@
-*vital-text-toml.txt*		TOML library.
+*vital/Text/TOML.txt*		TOML library.
 
 Maintainer: kamichidu <c.kamunagi at gmail.com>
 

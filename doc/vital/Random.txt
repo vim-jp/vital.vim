@@ -1,4 +1,4 @@
-*vital-random.txt*	Random utility frontend library
+*vital/Random.txt*	Random utility frontend library
 
 Maintainer: thinca <thinca+vim@gmail.com>
 

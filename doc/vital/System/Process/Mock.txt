@@ -1,4 +1,4 @@
-*vim-system-process-mock.txt*	A Process client for test
+*vital/System/Process/Mock.txt*	A Process client for test
 
 Maintainer: lambdalisue		<lambdalisue@hashnote.net>
 

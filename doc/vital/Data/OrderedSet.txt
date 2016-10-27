@@ -1,4 +1,4 @@
-*vital-data-ordered_set.txt*		ordered collection library.
+*vital/Data/OrderedSet.txt*		ordered collection library.
 
 Maintainer: tyru <tyru.exe@gmail.com>
 

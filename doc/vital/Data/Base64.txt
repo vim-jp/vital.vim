@@ -1,4 +1,4 @@
-*vital-data-base64.txt*		base64 utilities library.
+*vital/Data/Base64.txt*		base64 utilities library.
 
 Maintainer: mattn   <mattn.jp@gmail.com>
 

@@ -1,4 +1,4 @@
-*vital-text-table.txt*		Character table library.
+*vital/Text/Table.txt*		Character table library.
 
 Maintainer: kamichidu <c.kamunagi at gmail.com>
 

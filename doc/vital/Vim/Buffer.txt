@@ -1,4 +1,4 @@
-*vital-vim-buffer.txt*	Vim's buffer related stuff in general.
+*vital/Vim/Buffer.txt*	Vim's buffer related stuff in general.
 
 Maintainers: thinca <thinca+vim@gmail.com>
              ujihisa <ujihisa at gmail com>

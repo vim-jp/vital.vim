@@ -1,4 +1,4 @@
-*vital-web-http.txt*	simple HTTP client library.
+*vital/Web/HTTP.txt*	simple HTTP client library.
 
 Maintainer: mattn <mattn.jp@gmail.com>
             thinca <thinca+vim@gmail.com>

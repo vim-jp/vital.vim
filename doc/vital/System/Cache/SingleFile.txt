@@ -1,4 +1,4 @@
-*vital-system-cache-singlefile.txt*	A single file based cache system
+*vital/System/Cache/SingleFile.txt*	A single file based cache system
 
 Maintainer: Alisue <lambdalisue@hashnote.net>
 

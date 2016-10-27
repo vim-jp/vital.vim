@@ -1,4 +1,4 @@
-*vital-text-parser.txt*		parser library.
+*vital/Text/Parser.txt*		parser library.
 
 Maintainer: rbtnn <naru123456789@gmail.com>
 

@@ -1,4 +1,4 @@
-*vital-locale-message.txt*	very simple message localization library.
+*vital/Locale/Message.txt*	very simple message localization library.
 
 Maintainer: thinca <thinca+vim@gmail.com>
 

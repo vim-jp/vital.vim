@@ -1,4 +1,4 @@
-*vital-data-collection.txt*		Utilities both for list and dict.
+*vital/Data/Collection.txt*		Utilities both for list and dict.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

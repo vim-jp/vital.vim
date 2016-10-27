@@ -1,4 +1,4 @@
-*vital-data-tree.txt*		tree utilities library.
+*vital/Data/Tree.txt*		tree utilities library.
 
 Maintainer: rbtnn   <naru123456789@gmail.com>
 

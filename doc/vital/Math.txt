@@ -1,4 +1,4 @@
-*vital-math.txt*	Mathematical functions
+*vital/Math.txt*	Mathematical functions
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

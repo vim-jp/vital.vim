@@ -1,4 +1,4 @@
-*vital-text-ltsv.txt*	LTSV library.
+*vital/Text/LTSV.txt*	LTSV library.
 
 Maintainer: thinca <thinca+vim@gmail.com>
 

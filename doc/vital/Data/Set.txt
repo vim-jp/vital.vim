@@ -1,4 +1,4 @@
-*vital-data-set.txt*	set library.
+*vital/Data/Set.txt*	set library.
 
 Maintainer: haya14busa <hayabusa1419@gmail.com>
 

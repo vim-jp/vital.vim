@@ -1,4 +1,4 @@
-*vital-database-sqlite.txt*		sqlite utilities library.
+*vital/Database/SQLite.txt*		sqlite utilities library.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

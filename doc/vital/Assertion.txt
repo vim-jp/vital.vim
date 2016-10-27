@@ -1,4 +1,4 @@
-*vital-assertion.txt*	assertion library.
+*vital/Assertion.txt*	assertion library.
 
 Maintainer: rbtnn <naru123456789@gmail.com>
 

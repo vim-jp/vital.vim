@@ -1,4 +1,4 @@
-*vital-web-cookie.txt*	An HTTP Cookie utility.
+*vital/Web/HTTP/Cookie.txt*	An HTTP Cookie utility.
 
 Maintainer: thinca <thinca+vim@gmail.com>
 

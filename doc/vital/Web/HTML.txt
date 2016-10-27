@@ -1,4 +1,4 @@
-*vital-web-html.txt*			HTML parser written in pure Vim script.
+*vital/Web/HTML.txt*			HTML parser written in pure Vim script.
 
 Maintainer: mattn <mattn.jp@gmail.com>
 

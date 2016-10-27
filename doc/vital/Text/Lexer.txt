@@ -1,4 +1,4 @@
-*vital-text-lexer.txt*	lexer library.
+*vital/Text/Lexer.txt*	lexer library.
 
 Maintainer: rbtnn <naru123456789@gmail.com>
 

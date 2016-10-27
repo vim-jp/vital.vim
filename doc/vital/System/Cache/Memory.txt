@@ -1,4 +1,4 @@
-*vital-system-cache-memory.txt*	A dictionary instance based cache system
+*vital/System/Cache/Memory.txt*	A dictionary instance based cache system
 
 Maintainer: Alisue <lambdalisue@hashnote.net>
 

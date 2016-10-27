@@ -1,4 +1,4 @@
-*vital-system-cache-file.txt*	A file based cache system
+*vital/System/Cache/File.txt*	A file based cache system
 
 Maintainer: Alisue <lambdalisue@hashnote.net>
 

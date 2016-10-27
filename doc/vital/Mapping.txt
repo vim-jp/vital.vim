@@ -1,4 +1,4 @@
-*vital-mapping.txt*		Utilities for mapping.
+*vital/Mapping.txt*		Utilities for mapping.
 
 Maintainer: tyru    <tyru.exe@gmail.com>
 

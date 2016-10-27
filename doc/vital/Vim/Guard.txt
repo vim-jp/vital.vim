@@ -1,4 +1,4 @@
-*vital-vim-guard.txt*		Vim options/variables guard utility
+*vital/Vim/Guard.txt*		Vim options/variables guard utility
 
 Maintainer: lambdalisue <lambdalisue@hashnote.net>
 

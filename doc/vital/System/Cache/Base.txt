@@ -1,4 +1,4 @@
-*vital-system-cache-base.txt*	An abstract class of unified cache system
+*vital/System/Cache/Base.txt*	An abstract class of unified cache system
 
 Maintainer: Alisue <lambdalisue@hashnote.net>
 

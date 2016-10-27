@@ -1,4 +1,4 @@
-*vim-system-process-system.txt*	A Process client using system() function
+*vital/System/Process/System.txt*	A Process client using system() function
 
 Maintainer: lambdalisue		<lambdalisue@hashnote.net>
 

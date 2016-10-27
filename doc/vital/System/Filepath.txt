@@ -1,4 +1,4 @@
-*vital-system-filepath.txt*		path string utilities library.
+*vital/System/Filepath.txt*		path string utilities library.
 
 Maintainer: thinca  <thinca+vim@gmail.com>
             tyru    <tyru.exe@gmail.com>
