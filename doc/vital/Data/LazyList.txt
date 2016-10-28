@@ -1,4 +1,4 @@
-*vital/Data/Lazylist.txt*	lazy list including file io.
+*vital/Data/LazyList.txt*	lazy list including file io.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 

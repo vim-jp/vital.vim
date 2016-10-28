@@ -1,4 +1,4 @@
-*vital/Data/Bignum.txt*		Multi precision integer library.
+*vital/Data/BigNum.txt*		Multi precision integer library.
 
 Maintainer: aomoriringo <sel0433 at gmail com>
 
