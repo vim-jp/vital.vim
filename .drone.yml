@@ -1,0 +1,15 @@
+# Run the below command when you edit .drone.yml
+#   drone secure --repo vim-jp/vital.vim --in .drone.sec.yaml
+#
+build:
+  lint:
+    image: haya14busa/test-vital-lint
+    environment:
+      - REVIEWDOG_GITHUB_API_TOKEN=$$REVIEWDOG_GITHUB_API_TOKEN
+      - REVIEWDOG_VERSION=0.9.0
+      - REVIEWDOG_URL=https://github.com/haya14busa/reviewdog/releases/download/$REVIEWDOG_VERSION/reviewdog_linux_amd64
+    commands:
+      - |
+        vint . | reviewdog -efm="%f:%l:%c: %m" -ci=droneio
+    when:
+      event: pull_request
