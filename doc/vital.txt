@@ -164,12 +164,12 @@ LINKS					*Vital-links*
   |vital/Bitwise.txt|		bitwise operators.
   |vital/ConcurrentProcess.txt|	Manages processes concurrently with vimproc.
   |vital/Data/Base64.txt|	base64 utilities library.
-  |vital/Data/Bignum.txt|	Multi precision integer library.
+  |vital/Data/BigNum.txt|	Multi precision integer library.
   |vital/Data/Closure.txt|	Provide Closure object.
   |vital/Data/Collection.txt|	Utilities both for list and dict.
   |vital/Data/Counter.txt|	Counter library to support convenient tallies.
   |vital/Data/Dict.txt|		dictionary utilities library.
-  |vital/Data/Lazylist.txt|	lazy list including file io.
+  |vital/Data/LazyList.txt|	lazy list including file io.
   |vital/Data/List.txt|		list utilities library.
   |vital/Data/Optional.txt|	Provide optional value
   |vital/Data/OrderedSet.txt|	ordered collection library.
