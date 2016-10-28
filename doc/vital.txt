@@ -83,8 +83,8 @@ TERMS					*Vital-terms*
 	A name of vital module. {module-name} is capitalized words separated
 	with dot. Please see each |Vital-modules| help for detail.
 	Example:
-		"Prelude" (|vital-prelude.txt|)
-		"Data.String" (|vital-data-string.txt|)
+		"Prelude" (|vital/Prelude.txt|)
+		"Data.String" (|vital/Data/String.txt|)
 
 ==============================================================================
 INTERFACE				*Vital-interface*
