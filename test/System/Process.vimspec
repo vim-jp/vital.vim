@@ -45,7 +45,7 @@ Describe System.Process
       Assert Equals(result.output, 'Output of System.Process.Mock')
     End
 
-    It does not encode {options.input}/{result.output} if {options.encode_input}/{option.encode_output} are not specified
+    It does not encode {options.input}/{result.output}/{result.error} if {options.encode_input}/{option.encode_output}.{options.encode_error} are not specified
       function! sv.String.iconv(...) abort
         let self._iconv_args = a:000
       endfunction
@@ -55,6 +55,7 @@ Describe System.Process
             \ 'input': 'foobar',
             \ 'encode_input': 0,
             \ 'encode_output': 0,
+            \ 'encode_error': 0,
             \})
       Assert KeyNotExists(sv.String, '_iconv_args')
     End
@@ -69,6 +70,7 @@ Describe System.Process
             \ 'input': 'foobar',
             \ 'encode_input': 1,
             \ 'encode_output': 0,
+            \ 'encode_error': 0,
             \})
       Assert Equals(sv.String._iconv_args, ['foobar', &encoding, 'char'])
     End
@@ -83,6 +85,7 @@ Describe System.Process
             \ 'input': 'foobar',
             \ 'encode_input': 'some_encoding',
             \ 'encode_output': 0,
+            \ 'encode_error': 0,
             \})
       Assert Equals(sv.String._iconv_args, ['foobar', 'some_encoding', 'char'])
     End
@@ -97,6 +100,7 @@ Describe System.Process
             \ 'input': 'foobar',
             \ 'encode_input': 0,
             \ 'encode_output': 1,
+            \ 'encode_error': 0,
             \})
       Assert Equals(sv.String._iconv_args,
             \ ['Output of System.Process.Mock', 'char', &encoding]
@@ -113,9 +117,44 @@ Describe System.Process
             \ 'input': 'foobar',
             \ 'encode_input': 0,
             \ 'encode_output': 'some_encoding',
+            \ 'encode_error': 0,
             \})
       Assert Equals(sv.String._iconv_args,
             \ ['Output of System.Process.Mock', 'char', 'some_encoding']
+            \)
+    End
+
+    It encode {result.error} from 'char' to &encoding if {options.encode_error} is specified
+      function! sv.String.iconv(...) abort
+        let self._iconv_args = a:000
+      endfunction
+      let Mock = s:V.import('System.Process.Mock')
+      let result = Process.execute(['foo', 'bar'], {
+            \ 'clients': [Mock],
+            \ 'input': 'foobar',
+            \ 'encode_input': 0,
+            \ 'encode_output': 0,
+            \ 'encode_error': 1,
+            \})
+      Assert Equals(sv.String._iconv_args,
+            \ ['', 'char', &encoding]
+            \)
+    End
+
+    It encode {result.error} from 'char' to {options.encode_error} if {options.encode_error} is specified
+      function! sv.String.iconv(...) abort
+        let self._iconv_args = a:000
+      endfunction
+      let Mock = s:V.import('System.Process.Mock')
+      let result = Process.execute(['foo', 'bar'], {
+            \ 'clients': [Mock],
+            \ 'input': 'foobar',
+            \ 'encode_input': 0,
+            \ 'encode_output': 0,
+            \ 'encode_error': 'some_encoding',
+            \})
+      Assert Equals(sv.String._iconv_args,
+            \ ['', 'char', 'some_encoding']
             \)
     End
   End

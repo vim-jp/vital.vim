@@ -126,6 +126,16 @@ Describe System.Process.System
             Assert Equals(result.content, ['t e s t'])
           End
         endif
+
+        It returns stderr content in {result.stderr}
+          let args = s:cmd + ['echo Hello >&2']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, '')
+          Assert Equals(result.error, "Hello\n")
+          Assert Equals(result.content, [''])
+        End
       End
     End
   else
@@ -232,6 +242,16 @@ Describe System.Process.System
           Assert Equals(result.status, 0)
           Assert Equals(result.output, "t e s t\n")
           Assert Equals(result.content, ['t e s t'])
+        End
+
+        It returns stderr content in {result.stderr}
+          let args = ['bash', '-c', 'echo Hello >&2']
+          let result = Process.execute(args, options)
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
+          Assert Equals(result.output, '')
+          Assert Equals(result.error, "Hello\n")
+          Assert Equals(result.content, [''])
         End
       End
     End

@@ -3,11 +3,13 @@ set cpoptions&vim
 
 function! s:_vital_loaded(V) abort
   let s:Prelude = a:V.import('Prelude')
+  let s:String = a:V.import('Data.String')
 endfunction
 
 function! s:_vital_depends() abort
   return [
         \ 'Prelude',
+        \ 'Data.String',
         \]
 endfunction
 
@@ -35,10 +37,12 @@ function! s:is_supported(options) abort
 endfunction
 
 function! s:execute(args, options) abort
+  let stderr = tempname()
   let cmdline = join(map(
         \ copy(a:args),
         \ 'vimproc#shellescape(v:val)',
         \))
+  let cmdline .= printf(' 2>%s', fnameescape(stderr))
   if a:options.debug > 0
     echomsg printf(
           \ 'vital: System.Process.Vimproc: %s',
@@ -64,6 +68,7 @@ function! s:execute(args, options) abort
   return {
         \ 'status': status,
         \ 'output': output,
+        \ 'error': s:String.join_posix_lines(readfile(stderr)),
         \ 'errormsg': vimproc#get_last_errmsg(),
         \ 'cmdline': cmdline,
         \}

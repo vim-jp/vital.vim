@@ -54,6 +54,7 @@ function! s:execute(args, options) abort
         \ (exists('+shellslash') ? '&shellslash' : ''),
         \], '!empty(v:val)')
         \)
+  let stderr = tempname()
   try
     " Reset shell related options
     if s:Prelude.is_windows()
@@ -81,6 +82,7 @@ function! s:execute(args, options) abort
     if a:options.background && !s:Prelude.is_windows()
       let cmdline = cmdline . ' &'
     endif
+    let cmdline .= printf(' 2>%s', fnameescape(stderr))
     if a:options.debug > 0
       echomsg printf(
             \ 'vital: System.Process.System: %s',
@@ -108,6 +110,7 @@ function! s:execute(args, options) abort
     return {
           \ 'status': status,
           \ 'output': output,
+          \ 'error': s:String.join_posix_lines(readfile(stderr)),
           \ 'cmdline': cmdline,
           \}
   finally

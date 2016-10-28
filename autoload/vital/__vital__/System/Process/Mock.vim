@@ -19,6 +19,7 @@ function! s:execute(args, options) abort
   return {
         \ 'status': 0,
         \ 'output': 'Output of System.Process.Mock',
+        \ 'error': '',
         \}
 endfunction
 
