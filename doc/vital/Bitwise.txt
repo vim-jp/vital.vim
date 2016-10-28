@@ -1,0 +1,72 @@
+*vital/Bitwise.txt*	bitwise operators.
+
+Maintainer: thinca  <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS					*Vital.Bitwise-contents*
+
+INTRODUCTION			|Vital.Bitwise-introduction|
+INTERFACE			|Vital.Bitwise-interface|
+  FUNCTIONS			  |Vital.Bitwise-functions|
+
+
+
+==============================================================================
+INTRODUCTION					*Vital.Bitwise-introduction*
+
+*Vital.Bitwise* provides some bitwise operators.
+If vim provides builtin functions, uses these directly.
+
+
+
+==============================================================================
+INTERFACE					*Vital.Bitwise-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS					*Vital.Bitwise-functions*
+
+and({expr}, {expr})				*Vital.Bitwise.and()*
+	Bitwise AND on the two arguments.
+
+or({expr}, {expr})				*Vital.Bitwise.or()*
+	Bitwise OR on the two arguments.
+
+xor({expr}, {expr})				*Vital.Bitwise.xor()*
+	Bitwise XOR on the two arguments.
+
+invert({expr})					*Vital.Bitwise.invert()*
+	Bitwise invert.
+
+lshift({expr}, {bits})				*Vital.Bitwise.lshift()*
+	Bitwise shifts to left.  {bits} is masked by 0x1F or 0x3F(|+num64|).
+
+rshift({expr}, {bits})				*Vital.Bitwise.rshift()*
+	Bitwise logical shifts to right.  {bits} is masked by 0x1F or
+	0x3F(|+num64|).
+
+compare({expr}, {expr})				*Vital.Bitwise.compare()*
+	Compares as unsigned integer.  Returns -1, 0, or 1.
+
+sign_extension({expr})			*Vital.Bitwise.sign_extension()*
+	Apply sign extension to {expr}.
+	This reappears 32bit number in |+num64| environment.
+	With |+num64|, when the 32nd bit is 0, upper 32bits are filled by 0.
+	Otherwise, it is filled by 1.
+	Without |+num64|, returns {expr}.
+	Example(with |+num64|): >
+	echo B.sign_extension(4294967295)
+	" => -1
+	" 4294967295 == 0xFFFFFFFF
+	" -1 == 0xFFFFFFFFFFFFFFFF
+
+lshift32({expr}, {bits})			*Vital.Bitwise.lshift32()*
+	Similar to |Vital.Bitwise.lshift()|, but always treats 32bit number.
+	With |+num64|, upper 32bits of results are always 0.
+
+rshift32({expr}, {bits})			*Vital.Bitwise.rshift32()*
+	Similar to |Vital.Bitwise.rshift()|, but always treats 32bit number.
+	With |+num64|, upper 32bits of {expr} is ignored.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

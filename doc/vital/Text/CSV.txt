@@ -1,0 +1,49 @@
+*vital/Text/CSV.txt*	CSV library.
+
+Maintainer: tyru <tyru@gmail.com>
+
+==============================================================================
+CONTENTS			*Vital.Text.CSV-contents*
+
+INTRODUCTION			|Vital.Text.CSV-introduction|
+INTERFACE			|Vital.Text.CSV-interface|
+  FUNCTIONS			  |Vital.Text.CSV-functions|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.Text.CSV-introduction*
+
+*Vital.Text.CSV* is a CSV parser and dumper.
+
+
+
+==============================================================================
+INTERFACE			*Vital.Text.CSV-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.Text.CSV-functions*
+
+parse({csvstring})			*Vital.Text.CSV.parse()*
+	Parses records of CSV.  Returns a list of objects.
+
+parse_record({csvline})		*Vital.Text.CSV.parse_record()*
+	Parses a record of CSV.  Returns an object.
+
+parse_file({file})		*Vital.Text.CSV.parse_file()*
+	Parses a CSV file.
+
+dump({listofdata})			*Vital.Text.CSV.dump()*
+	Converts a list of records to a CSV string.
+
+dump_record({data})			*Vital.Text.CSV.dump_record()*
+	Converts a record (|List|) to a CSV string.
+
+				*Vital.Text.CSV.dump_file()*
+dump_file({data}, {file} [, {append}])
+	Dumps {data} to {file}.  If {append} is true, the data is appended.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

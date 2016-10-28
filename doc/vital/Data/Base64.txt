@@ -1,0 +1,34 @@
+*vital/Data/Base64.txt*		base64 utilities library.
+
+Maintainer: mattn   <mattn.jp@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Base64-contents*
+
+INTRODUCTION			|Vital.Data.Base64-introduction|
+INTERFACE			|Vital.Data.Base64-interface|
+  Functions			  |Vital.Data.Base64-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Base64-introduction*
+
+*Vital.Data.Base64* is Base64 Utilities Library.
+It provides base64 converter.
+
+==============================================================================
+INTERFACE				*Vital.Data.Base64-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Base64-functions*
+
+encode({str})				*Vital.Data.Base64.encode()*
+	Return base64 encoded string from {str}.
+
+encodebin({str})			*Vital.Data.Base64.encodebin()*
+	Return base64 encoded string from {str}. {str} is hex encoded string
+	figured as bytes.
+
+decode({str})				*Vital.Data.Base64.decode()*
+	Return decoded string from {str} that's base64 encoded.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

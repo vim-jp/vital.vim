@@ -1,0 +1,49 @@
+*vital/Vim/Message.txt*	Vim message functions
+
+Maintainer: tyru  <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Vim.Message-contents*
+
+INTRODUCTION			|Vital.Vim.Message-introduction|
+INTERFACE			|Vital.Vim.Message-interface|
+  FUNCTIONS			  |Vital.Vim.Message-functions|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Vim.Message-introduction*
+
+*Vital.Vim.Message* provides some utility functions about message.
+
+
+==============================================================================
+INTERFACE				*Vital.Vim.Message-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Vim.Message-functions*
+
+echo({hl}, {msg})			*Vital.Vim.Message.echo()*
+	Execute |:echo| with {hl} (|highlight-groups|).
+
+echomsg({hl}, {msg})			*Vital.Vim.Message.echomsg()*
+	Execute |:echomsg| with {hl} (|highlight-groups|).
+
+warn({msg})				*Vital.Vim.Message.warn()*
+	Execute |:echomsg| with |hl-WarningMsg|
+
+error({msg})				*Vital.Vim.Message.error()*
+	Execute |:echomsg| with |hl-ErrorMsg|
+
+capture({command})			*Vital.Vim.Message.capture()*
+	Run shell command and return the output string.
+	NOTE: This function uses |:redir|.
+
+get_hit_enter_max_length()		*Vital.Vim.Message.get_hit_enter_max_length()*
+	Get max length of |hit-enter|.
+	If a string length of a message is greater than the max length,
+	Vim waits for user input according to |hit-enter|.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

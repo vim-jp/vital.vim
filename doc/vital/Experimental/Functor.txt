@@ -1,0 +1,25 @@
+*vital/Experimental/Functor.txt*		Utilities for functor.
+
+Maintainer: tyru    <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Experimental.Functor-contents*
+
+INTRODUCTION			|Vital.Experimental.Functor-introduction|
+INTERFACE			|Vital.Experimental.Functor-interface|
+  Functions			  |Vital.Experimental.Functor-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Experimental.Functor-introduction*
+
+*Vital.Experimental.Functor* is TODO
+
+==============================================================================
+INTERFACE				*Vital.Experimental.Functor-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Experimental.Functor-functions*
+
+TODO
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

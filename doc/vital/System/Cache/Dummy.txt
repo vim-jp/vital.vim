@@ -1,0 +1,112 @@
+*vital/System/Cache/Dummy.txt*	A dummy class of unified cache system
+
+Maintainer: Alisue <lambdalisue@hashnote.net>
+
+
+==============================================================================
+CONTENTS			*Vital.System.Cache.Dummy-contents*
+
+Introductions		|Vital.System.Cache.Dummy-intro|
+Usage			|Vital.System.Cache.Dummy-usage|
+Functions		|Vital.System.Cache.Dummy-functions|
+Methods			|Vital.System.Cache.Dummy-methods|
+
+
+==============================================================================
+INTRODUCTIONS				*Vital.System.Cache.Dummy-intro*
+
+*Vital.System.Cache.Dummy* is a dummy class of unified cache system.
+
+
+==============================================================================
+USAGE					*Vital.System.Cache.Dummy-usage*
+
+|Vital.Syste.Cache.Dummy| have all required API of unified cache system but
+nothing would be cached. The following code works without caching values.
+>
+	let s:V = vital#{plugin-name}#new()
+	let s:C = s:V.import('System.Cache.Dummy')
+
+	let s:factorial_cache = s:C.new()
+
+	function! s:factorial(n)
+	  if a:n == 0
+	    return 1
+	  elseif s:factorial_cache.has(a:n)
+	    return s:factorial_cache.get(a:n)
+	  else
+	    let x = s:factorial(a:n - 1) * a:n
+	    call s:factorial_cache.set(a:n, x)
+	    return x
+	  endif
+	endfunction
+
+	echo s:factorial(10)
+<
+
+==============================================================================
+FUNCTIONS				*Vital.System.Cache.Dummy-functions*
+
+new([{options}])			*Vital.System.Cache.Dummy.new()*
+
+	Create a new instance of System.Cache.Dummy.
+	No {options} is used.
+
+==============================================================================
+METHODS					*Vital.System.Cache.Dummy-methods*
+
+cache_key({obj})	*Vital.System.Cache.Dummy-instance.cache_key()*
+
+	See |Vital.System.Cache.Base-instance.cache_key()|.
+
+has({name})		*Vital.System.Cache.Dummy-instance.has()*
+
+	Always return 0.
+	
+	{name} (required)
+	Dummy.
+
+                        *Vital.System.Cache.Dummy-instance.get()*
+get({name}[, {default}])
+
+	Always return a value of {default}. If no {default} is specified, an
+	empty string will be returned.
+
+	{name} (required)
+	Dummy
+
+	{default} (optional)
+	A return value.
+
+set({name}, {value})	*Vital.System.Cache.Dummy-instance.set()*
+
+	Do nothing.
+
+	{name} (required)
+	Dummy
+
+	{value} (required)
+	Dummy
+
+keys()			*Vital.System.Cache.Dummy-instance.keys()*
+
+	Always return an empty list.
+
+remove({name})		*Vital.System.Cache.Dummy-instance.remove()*
+
+	Do nothing.
+
+	{name} (required)
+	Dummy
+
+clear()			*Vital.System.Cache.Dummy-instance.clear()*
+
+	Do nothing.
+
+on_changed()		*Vital.System.Cache.Dummy-instance.on_changed()*
+
+	Never called.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

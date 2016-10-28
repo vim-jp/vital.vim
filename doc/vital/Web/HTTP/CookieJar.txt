@@ -1,0 +1,133 @@
+*vital/Web/HTTP/CookieJar.txt*	Manage collection of HTTP Cookie.
+
+Maintainer: thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS		*Vital.Web.HTTP.CookieJar-contents*
+
+INTRODUCTION			|Vital.Web.HTTP.CookieJar-introduction|
+INTERFACE			|Vital.Web.HTTP.CookieJar-interface|
+  FUNCTIONS			  |Vital.Web.HTTP.CookieJar-functions|
+OBJECTS				|Vital.Web.HTTP.CookieJar-objects|
+  Jar				  |Vital.Web.HTTP.CookieJar-Jar|
+
+
+
+==============================================================================
+INTRODUCTION		*Vital.Web.HTTP.CookieJar-introduction*
+
+*Vital.Web.HTTP.CookieJar* manages collection of
+Cookie(|Vital.Web.HTTP.Cookie|).
+
+>
+	let s:V = vital#{plugin-name}#new()
+	let HTTP = s:V.import('Web.HTTP')
+	let Jar = s:V.import('Web.HTTP.CookieJar')
+
+	let url = 'http://httpbin.org/cookies/set?k2=v2&k1=v1'
+	let response = HTTP.get(url)
+	let jar = Jar.new()
+	call jar.add_from_headers(response.allHeaders, url)
+	echo sort(map(jar.get_all(), 'v:val.name() . "=" . v:val.value()'))
+	" => ['k1=v1', 'k2=v2']
+<
+
+This library does not treat "public suffix"(https://publicsuffix.org/).
+
+
+==============================================================================
+INTERFACE		*Vital.Web.HTTP.CookieJar-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS		*Vital.Web.HTTP.CookieJar-functions*
+
+new([{data}])		*Vital.Web.HTTP.CookieJar.new()*
+	Creates a new |Vital.Web.HTTP.CookieJar-Jar| object.
+	When {data} is supplied, Jar object is restored from {data}.
+	{data} is created by |Vital.Web.HTTP.CookieJar-Jar.export()|.
+
+			*Vital.Web.HTTP.CookieJar.build_http_header()*
+build_http_header({cookies})
+	Build cookie string for "Cookie:" HTTP header from {cookies}.
+	{cookies} is a List of Cookie object.
+
+
+==============================================================================
+OBJECTS			*Vital.Web.HTTP.CookieJar-objects*
+
+------------------------------------------------------------------------------
+Jar			*Vital.Web.HTTP.CookieJar-Jar*
+
+	Jar object has a collection of Cookie objects.
+
+Jar.add({cookie})	*Vital.Web.HTTP.CookieJar-Jar.add()*
+	Adds a {cookie} to this jar.
+
+Jar.add_all({cookies})	*Vital.Web.HTTP.CookieJar-Jar.add_all()*
+	Adds all {cookies} to this jar.
+	{cookies} is a List.
+
+			*Vital.Web.HTTP.CookieJar-Jar.add_from_headers()*
+Jar.add_from_headers({headers}, {request-uri})
+	Adds cookies from {headers}.
+	{headers} is a |List| of HTTP response headers.
+	This ignores all except for "Set-Cookie:" header.
+
+Jar.get([{condition}])	*Vital.Web.HTTP.CookieJar-Jar.get()*
+	Returns a cookie which agrees with {condition}.
+	Returns the first one when more than 2 being found.
+	Returns empty Dictionary when not found.
+	See |Vital.Web.HTTP.CookieJar-Jar.get_all()| about {condition}.
+
+			*Vital.Web.HTTP.CookieJar-Jar.get_all()*
+Jar.get_all([{condition}])
+	Returns cookies which agrees with {condition}.
+	{condition} is a |Dictionary| which contains the following items.
+	All items can omit.  A omitted condition is not used.
+
+	"url"
+		Matches to the URL.
+
+	"name"
+		Name of Cookie.
+
+	"name_pattern"
+		Name of Cookie by |pattern|.
+
+	"expired"
+		The target Cookie is expired or not.
+
+	"valid"
+		The target Cookie is valid or not.
+
+			*Vital.Web.HTTP.CookieJar-Jar.build_http_header()*
+Jar.build_http_header({url} [, {dry-run}])
+	Build cookie string for "Cookie:" HTTP header for {url}.
+	This updates "last_access_time" of all selected cookies.
+	When {dry-run} is non-zero, this does not update.
+
+			*Vital.Web.HTTP.CookieJar-Jar.sweep_expired()*
+Jar.sweep_expired([{now}])
+	Removes all expired cookies.
+	You can change current time to check by {now}.
+	{now} is a |Vital.DateTime-DateTime| object.
+
+Jar.clear()		*Vital.Web.HTTP.CookieJar-Jar.clear()*
+	Removes all cookies.
+
+Jar.export([{all}])	*Vital.Web.HTTP.CookieJar-Jar.export()*
+	Exports this Jar to a Dictionary.
+	This dictionary contains data only.  You can save to file.
+	Normally, this does not contain non-persistent cookies.
+	When {all} is non-zero, this contains non-persistent cookies.
+	You can restore this Jar object by |Vital.Web.HTTP.CookieJar.new()|.
+
+Jar.import({data})	*Vital.Web.HTTP.CookieJar-Jar.import()*
+	Imports Jar data from {data}.
+	Cookies in existence aren't removed.
+	{data} is created by |Vital.Web.HTTP.CookieJar-Jar.export()|.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

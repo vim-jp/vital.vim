@@ -1,0 +1,50 @@
+*vital/System/Process/Vimproc.txt*	A Process client using vimproc
+
+Maintainer: lambdalisue		<lambdalisue@hashnote.net>
+
+=============================================================================
+CONTENTS			*Vital.System.Process.Vimproc-contents*
+
+Introduction			|Vital.System.Process.Vimproc-introduction|
+Functions			|Vital.System.Process.Vimproc-functions|
+
+
+=============================================================================
+INTRODUCTION			*Vital.System.Process.Vimproc-introduction*
+
+*Vital.System.Process.Vimproc* is a |Vital.System.Process| client which uses
+Shougo/vimproc.vim internally.
+
+Ref: https://github.com/Shougo/vimproc.vim
+
+
+=============================================================================
+FUNCTIONS			*Vital.System.Process.Vimproc-functions*
+
+				*Vital.System.Process.Vimproc.is_available()*
+is_available()
+	Returns 1 when a function call of vimproc#version() is not failed.
+	Note that the result is cached internally.
+
+				*Vital.System.Process.Vimproc.is_supported()*
+is_supported({options})
+	Returns 0 if {options.background} is specified with {options.input}
+	or {options.timeout}.
+
+				*Vital.System.Process.Vimproc.execute()*
+execute({args}, {options})
+	Returns a result |Dictionary| which contains the following extra
+	attributes.
+
+		"cmdline"
+		An actual cmdline string used to execute the process.
+
+		"errormsg"
+		A human readable error message by vimproc#get_last_errmsg()
+
+	See |Vital.System.Process.Client.execute()| for common attributes.
+
+
+=============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
+

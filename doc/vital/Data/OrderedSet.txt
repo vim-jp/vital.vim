@@ -1,0 +1,71 @@
+*vital/Data/OrderedSet.txt*		ordered collection library.
+
+Maintainer: tyru <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.OrderedSet-contents*
+
+INTRODUCTION			|Vital.Data.OrderedSet-introduction|
+INTERFACE			|Vital.Data.OrderedSet-interface|
+  FUNCTIONS			  |Vital.Data.OrderedSet-functions|
+  OrderedSet Object		  |Vital.Data.OrderedSet-OrderedSet|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Data.OrderedSet-introduction*
+
+*Vital.Data.OrderedSet* is Collection Utilities Library.
+It provides some data structure (e.g., ordered dictionary/set).
+
+
+
+==============================================================================
+INTERFACE				*Vital.Data.OrderedSet-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.OrderedSet-functions*
+
+new()					*Vital.Data.OrderedSet.new()*
+	Returns a new 'OrderedSet' object.
+
+------------------------------------------------------------------------------
+OrderedSet Object		*Vital.Data.OrderedSet-OrderedSet*
+
+OrderedSet.push({elem})		*Vital.Data.OrderedSet-OrderedSet.push()*
+	Pushes an element to OrderedSet.
+	This adds the element to set.
+	But if the element exists in the set,
+	it does not add the element.
+
+OrderedSet.unshift({elem})	*Vital.Data.OrderedSet-OrderedSet.unshift()*
+	Unshifts an element to OrderedSet.
+	This adds the element to set.
+	But if the element exists in the set,
+	it does not add the element.
+
+OrderedSet.size({elem})		*Vital.Data.OrderedSet-OrderedSet.size()*
+	Gets the number of elements in OrderedSet.
+
+OrderedSet.to_list({elem})	*Vital.Data.OrderedSet-OrderedSet.to_list()*
+	Converts to |List|.
+
+OrderedSet.has({elem})		*Vital.Data.OrderedSet-OrderedSet.has()*
+	Checks if there is the element in OrderedSet.
+	This returns boolean value.
+
+OrderedSet.has_id({id})		*Vital.Data.OrderedSet-OrderedSet.has_id()*
+	Checks if there is the element which has {id} in OrderedSet.
+	This returns boolean value.
+
+OrderedSet.clear()		*Vital.Data.OrderedSet-OrderedSet.clear()*
+	Initializes OrderedSet.
+	After calling this, OrderedSet has no elements.
+
+OrderedSet.remove({elem})	*Vital.Data.OrderedSet-OrderedSet.remove()*
+	Remove {elem} from OrderedSet if it exists.
+	If it does not exist, this does not do anything.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

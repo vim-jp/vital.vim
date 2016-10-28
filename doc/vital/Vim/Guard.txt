@@ -1,0 +1,189 @@
+*vital/Vim/Guard.txt*		Vim options/variables guard utility
+
+Maintainer: lambdalisue <lambdalisue@hashnote.net>
+
+==============================================================================
+CONTENTS				*Vital.Vim.Guard-contents*
+
+INTRODUCTION			|Vital.Vim.Guard-introduction|
+USAGE				|Vital.Vim.Guard-usage|
+INTERFACE			|Vital.Vim.Guard-interface|
+  FUNCTIONS			  |Vital.Vim.Guard-functions|
+
+
+==============================================================================
+INTRODUCTION				*Vital.Vim.Guard-introduction*
+
+*Vital.Vim.Guard* is used to restore previous values of options/variables.
+The followings are supported
+
+- Restoring values of options
+  - |options|
+  - |global-local|
+  - |local-options|
+- Restoring values of existing environmental variables
+  - |let-environment|
+- Restoring values of registers
+  - |let-register|
+- Restoring values of variables
+  - |buffer-variable| (b:)
+  - |window-variable| (w:)
+  - |tabpage-variable| (t:)
+  - |global-variable| (g:)
+- Restoring values in a dictionary
+  - |local-variable| (l:), in Vim 7.3.560 or later
+  - |script-variable| (s:)
+  - |dict|
+- Restoring instance
+  - |List|
+  - |Dictionary|
+
+
+==============================================================================
+USAGE					*Vital.Vim.Guard-usage*
+
+Specify options/variables to |Vital.Vim.Guard.store()| and restore previous
+values with |Vital.Vim.Guard-instance.restore()| like:
+
+>
+	let s:G = s:V.import('Vim.Guard')
+	let g:foo = 'foo'
+
+	function! s:foobar() abort
+	  call setreg('a', 'foo')
+	  let $EDITOR = 'vim'
+	  let foo = 'foo'
+	  let l:list1 = ['foo']
+	  let l:dict1 = {'foo': 'bar'}
+	  let l:list2 = [['foo']]
+	  let l:dict2 = {'foo': ['bar']}
+
+	  " Guard options/variables
+	  let guard = s:G.store([
+	    \ '&backup',
+	    \ '@a',
+	    \ '$EDITOR',
+	    \ 'g:foo',
+	    \ ['foo', l:],
+	    \ [l:list1],
+	    \ [l:dict1],
+	    \ [l:list2, 1],
+	    \ [l:dict2, 1],
+	    \])
+
+	  " Assign temporary values
+	  set nobackup
+	  call setreg('a', 'bar')
+	  let $EDITOR = 'nvim'
+	  unlet g:foo
+	  let g:foo = 1
+	  unlet foo
+	  let foo = []
+	  call remove(l:list1, 0)
+	  unlet l:dict1['foo']
+	  call remove(l:list2, 0)
+	  unlet l:dict2['foo']
+
+	  " restore previous values
+	  call guard.restore()
+
+	  " Check if the value is restored
+	  echo &backup
+	  " => 1
+	  echo getreg('a')
+	  " => foo
+	  echo $EDITOR
+	  " => vim
+	  echo g:foo
+	  " => 'foo'
+	  echo foo
+	  " => foo
+	  echo l:list1
+	  " => ['foo']
+	  echo l:dict1
+	  " => {'foo': 'bar'}
+	  echo l:list2
+	  " => [['foo']]
+	  echo l:dict2
+	  " => {'foo': ['bar']}
+	endfunction
+<
+
+==============================================================================
+INTERFACE				*Vital.Vim.Guard-interface*
+
+------------------------------------------------------------------------------
+CONSTANTS				*Vital.Vim.Guard-constants*
+
+			*Vital.Vim.Guard.is_local_variable_supported*
+is_local_variable_supported
+	1 or 0 to indicate whether the |local-variable| is supported.
+	A |lockvar| flag of |local-variable| in Vim 7.3.559 or earlier is not
+	initialized and the value of the flag is undetermined. That mean the
+	method |Vital.Vim.Guard-instance.restore()| may fail due to |E741|.
+	Developers should not use this module to store/restore |local-variable|
+	when this constant is 0.
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Vim.Guard-functions*
+
+store({targets})	*Vital.Vim.Guard.store()*
+	Create a new guard instance. Values of options/variables listed in
+	{targets} |List| will be stored in the instance and can be restored by
+	calling .restore() method of the instance.
+
+	The following type of value is allowed for items ({target}) of the
+	{targets}:
+
+	|List|
+	If the {target} contains:
+	- One item, the item is assumed as an instance of |List| or |Dictionary|
+	  and the instance will be guarded. Note that if you assign a
+	  different instance after store, it won't restore the values.
+	  It works equal to [{instance}, 0] explained below.
+	- Two items, the list is assumed as 1.) [{attr}, {namespace}] or 2.)
+	  [{instance}, {shallow}] described individually below:
+	  1.) Where {attr} is a name of attribute in {namespace} |Dictionary|.
+	  If {attr} does not exist in {namespace}, The {attr} in {namespace}
+	  will be removed from {namespace} if exists when
+	  .restore() method of the guard instance is called.
+	  Use this type to guard |local-variable| (|l:|), |script-variable| (|s:|),
+	  or attributes in |dict|.
+	  See |Vital.Vim.Guard.is_local_variable_supported| if you would like
+	  to store/restore |local-variable| in Vim 7.3.559 or earlier.
+	  2.) Where {instance} is an instance of |List| or |Dictionary| and
+	  {shallow} is a flag to use |copy| instead of |deepcopy| to store
+	  contents of the instance. When {shallow} is 1, the content of the
+	  instance is copied rather than deepcopied, indicating that values
+	  could not be restored when user changes the contents inside the
+	  contents of the instance. Use {shallow} when the reference of the
+	  each contents are prior to the content itself.
+	It will raise an exception when {target} contains less or more number
+	of items than expect.
+
+	|String|
+	If the {target} starts from:
+	- &, &g:, or &l:, the named option would be guarded. Note that
+	  individual assignment of option does not work on Vim 7.3.
+	- @, the named register would be guarded. Note that unnamed register
+	  should use @@ instead of @, which is explained in |let-register|.
+	- $, the named environment variable would be guarded. Note that Vim
+	  does not allow to unlet environment variables so Vim.Guard cannot
+	  guard non existing environment variable and will throw an exception
+	  when the variable is going to be guarded.
+	- b:, w:, t:, or g:, a named |buffer-variable|, |window-variable|,
+	  |tabpage-variable|, or |global-variable| would be guarded
+	Note that the guard instance is insensible of the change of the
+	current buffer, mean that |buffer-variable|, |window-variable|, or
+	|tabpage-variable| would not be correctly re-stored when users move the
+	buffer to the other before |Vital.Vim.Guard-instance.restore()|.
+
+------------------------------------------------------------------------------
+INSTANCE				*Vital.Vim.Guard-instance*
+
+restore()		*Vital.Vim.Guard-instance.restore()*
+	Restore guarded values.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

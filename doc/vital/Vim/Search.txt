@@ -1,0 +1,41 @@
+*vital/Vim/Search.txt*	Vim's [I like function
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS			*Vital.Vim.Search-contents*
+
+INTRODUCTION			|Vital.Vim.Search-introduction|
+USAGE				|Vital.Vim.Search-usage|
+INTERFACE			|Vital.Vim.Search-interface|
+  FUNCTIONS			  |Vital.Vim.Search-functions|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.Vim.Search-introduction*
+
+*Vital.Vim.Search* provides Vim's [I like function.
+
+
+==============================================================================
+USAGE				*Vital.Vim.Search-usage*
+>
+	let S = V.import('Vim.Search')
+	echo S.finddef('hello') " lists up all defs of hello, as if you typed
+	                        " [I on a keyword "hello"
+<
+
+
+==============================================================================
+INTERFACE			*Vital.Vim.Search-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.Vim.Search-functions*
+
+finddef({str})			*Vital.Vim.Search.finddef()*
+	lists up all defs of {str}, as if you typed [I on a given keyword
+	{str}.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

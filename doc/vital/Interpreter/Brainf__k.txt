@@ -1,0 +1,57 @@
+*vital/Interpreter/Brainf__k.txt*	Brainf**k interpreter
+
+Maintainer: ujihisa  <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Interpreter.Brainf__k-contents*
+
+INTRODUCTION			|Vital.Interpreter.Brainf__k-introduction|
+INTERFACE			|Vital.Interpreter.Brainf__k-interface|
+  FUNCTIONS			  |Vital.Interpreter.Brainf__k-functions|
+
+
+
+==============================================================================
+INTRODUCTION			    *Vital.Interpreter.Brainf__k-introduction*
+
+*Vital.Interpreter.Brainf__k* provides 2 implementations of Brainf**k
+interpreter in pure Vim script and in lua with using |if_lua|.
+
+Brainf**k is a programming language http://en.wikipedia.org/wiki/Brainf**k
+
+>
+	let s:B = s:V.import('Interpreter.Brainf__k')
+	let s:hello_world =
+	\ "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
+	echo s:B.run(s:hello_world)
+<
+This will print out "Hello World!". If you have |+lua|, you can also use
+run_lua_parse_execute() instead of run(). Note that run() is just an alias of
+run_vim_parse_execute().
+
+>
+	" Only if you have if_lua
+	" This is much faster than the previous example.
+	let s:B = s:V.import('Interpreter.Brainf__k')
+	let s:hello_world =
+	\ "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
+	echo s:B.run_lua_parse_execute(s:hello_world)
+<
+==============================================================================
+INTERFACE				*Vital.Interpreter.Brainf__k-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Interpreter.Brainf__k-functions*
+
+run({string})				*Vital.Interpreter.Brainf__k.run()*
+	Parse and execute the given brainf**k source code with using pure Vim
+	script implementation.
+>
+	run('+[]') " infinite loop
+<
+
+TODO
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

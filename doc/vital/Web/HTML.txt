@@ -1,0 +1,47 @@
+*vital/Web/HTML.txt*			HTML parser written in pure Vim script.
+
+Maintainer: mattn <mattn.jp@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Web.HTML-contents*
+
+INTRODUCTION				|Vital.Web.HTML-introduction|
+INTERFACE				|Vital.Web.HTML-interface|
+  Functions				|Vital.Web.HTML-functions|
+  Structures				|Vital.Web.HTML-structures|
+
+==============================================================================
+INTRODUCTION				*Vital.Web.HTML-introduction*
+
+*Vital.Web.HTML* is HTML parser Library. This is based on |Vital.Web.XML|.
+
+==============================================================================
+INTERFACE				*Vital.Web.HTML-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Web.HTML-functions*
+
+parse({content})			*Vital.Web.HTML.parse()*
+	Parse content into DOM object.
+
+parseFile({file})			*Vital.Web.HTML.parseFile()*
+	Parse html file into DOM object.
+
+parseURL({url})				*Vital.Web.HTML.parseURL()*
+	Get and parse html into DOM object.
+
+------------------------------------------------------------------------------
+STRUCTURES				*Vital.Web.HTML-structures*
+
+DOM object is structured as |Directory| like following.
+>
+	{
+	  "name": "a",
+	  "attr": {
+	    "href": "http://example.com",
+	    "title": "example",
+	  },
+	  "child": [...]
+	}
+<
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

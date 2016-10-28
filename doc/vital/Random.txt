@@ -1,0 +1,204 @@
+*vital/Random.txt*	Random utility frontend library
+
+Maintainer: thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Random-contents*
+
+INTRODUCTION			|Vital.Random-introduction|
+INTERFACE			|Vital.Random-interface|
+  FUNCTIONS			  |Vital.Random-functions|
+OBJECTS				|Vital.Random-objects|
+  Random Object			  |Vital.Random-Random|
+  Generator Object		  |Vital.Random-Generator|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Random-introduction*
+
+*Vital.Random* is a Random utility frontend library.
+
+					*Vital.Random-synopsis*
+>
+	let s:V = vital#{plugin-name}#new()
+	let s:Random = s:V.import('Random')
+
+	" Generate a random number.
+	echo s:Random.next()
+	" => 854122453
+
+	" Generate 1 or more and 6 or less random number.
+	echo s:Random.range(1, 7)
+	" => 1
+
+	" Get a sample value from a list.
+	echo s:Random.sample(range(10))
+	" => 8
+
+	" Shuffle a list.
+	echo s:Random.shuffle(range(10))
+	" => [2, 3, 0, 9, 1, 6, 7, 5, 8, 4]
+
+	" Make a new Random Object.
+	let s:R = s:Random.new()
+
+	" Make a new Random Object with Generator.
+	let s:R = s:Random.new('Xor128')
+
+	" Make a new Random Object with seed.
+	let s:seed = s:Random.next()
+	let s:R = s:Random.new('', s:seed)
+	echo s:R.next(3)
+	" => [-962538367, 815574453, 655578969]
+
+	" Reset the seed.
+	call s:R.seed(s:seed)
+	echo s:R.next(3)
+	" => [-962538367, 815574453, 655578969]
+
+
+
+==============================================================================
+INTERFACE				*Vital.Random-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Random-functions*
+
+new([{generator} [, {seed}]])	*Vital.Random.new()*
+	Create a new Random Object(|Vital.Random-Random|).
+	{generator} is a generator name or a generator object.
+	A name of a generator is a portion of the last of a module name like
+	"Random.*".  For example, "Xor128".
+	See |Vital.Random-Generator| about a generator object.
+	If {seed} is omitted, this is created from |Vital.Random.next()|.
+
+make_seed()			*Vital.Random.make_seed()*
+	Make a seed from current time and so on.
+	This does not assume being used continuously.
+	This is used to initialize the internal common random generator.
+	You can use |Vital.Random.next()| to initialize your Random Object.
+
+next()				*Vital.Random.next()*
+next({n})
+	Shortcut to |Vital.Random-Random.next()|.
+
+seed({seeds})			*Vital.Random.seed()*
+	Shortcut to |Vital.Random-Random.seed()|.
+
+generate_canonical()		*Vital.Random.generate_canonical()*
+	Shortcut to |Vital.Random-Random.generate_canonical()|.
+
+range({to})			*Vital.Random.range()*
+range({from}, {to})
+	Shortcut to |Vital.Random-Random.range()|.
+
+bool()				*Vital.Random.bool()*
+	Shortcut to |Vital.Random-Random.bool()|.
+
+sample({list})			*Vital.Random.sample()*
+sample({list}, {n})
+	Shortcut to |Vital.Random-Random.sample()|.
+
+shuffle({list})			*Vital.Random.shuffle()*
+	Shortcut to |Vital.Random-Random.shuffle()|.
+
+
+
+==============================================================================
+OBJECTS					*Vital.Random-objects*
+
+------------------------------------------------------------------------------
+Random Object			*Vital.Random-Random*
+
+A Random Object generates some useful random numbers from a generator.
+You can choose the generator to be used freely.
+
+Random.next()			*Vital.Random-Random.next()*
+Random.next({n})
+	Get a next random number or {n} next random numbers in the sequence.
+
+Random.seed({seeds})		*Vital.Random-Random.seed()*
+	Set seeds by a |Number| or a |List| of numbers.
+>
+	" Create two objects which generate the same random number sequence.
+	let s:player1 = s:Random.new()
+	let s:player2 = s:Random.new()
+	let s:seed = s:Random.next()
+	call s:player1.seed(s:seed)
+	call s:player2.seed(s:seed)
+
+Random.generate_canonical()	*Vital.Random-Random.generate_canonical()*
+	Get a random float number in [0.0, 1.0).
+>
+	echo s:R.generate_canonical()
+	" 0.618474
+	echo s:R.generate_canonical()
+	" 0.350191
+
+Random.range({to})		*Vital.Random-Random.range()*
+	Get a random number in [0, {to}).
+	If {to} is a |Number|, returns a |Number|.
+	If {to} is a |Float|, returns a |Float|.
+>
+	echo s:R.range(5)
+	" 4
+	echo s:R.range(5)
+	" 0
+
+Random.range({from}, {to})
+	Get a random number in [{from}, {to}).
+	If {from} and {to} is a |Number|, returns a |Number|.
+	If {from} or {to} is a |Float|, returns a |Float|.
+>
+	echo s:R.range(1, 6)
+	" 1
+	echo s:R.range(1, 6)
+	" 3
+
+Random.bool()			*Vital.Random-Random.bool()*
+	Get a random number in 0 or 1.
+>
+	echo s:R.bool()
+	" 1
+	echo s:R.bool()
+	" 0
+
+Random.sample({list})		*Vital.Random-Random.sample()*
+Random.sample({list}, {n})
+	Choose a random element or {n} random elements from the {list}.
+>
+	echo s:R.sample(range(5))
+	" 1
+	echo s:R.sample(range(5), 3)
+	" [3, 1, 4]
+
+Random.shuffle({list})		*Vital.Random-Random.shuffle()*
+	Shuffle the {list}.
+>
+	let s:list = range(5)
+	echo s:R.shuffle(s:list)
+	" [3, 1, 0, 2, 4]
+	echo s:list
+	" [3, 1, 0, 2, 4]
+
+------------------------------------------------------------------------------
+Generator Object		*Vital.Random-Generator*
+
+A Generator Object generates random number sequence.
+
+Generator.next()		*Vital.Random-Generator.next()*
+	Get the next random number in the sequence.
+
+Generator.min()			*Vital.Random-Generator.min()*
+	Get the smallest value in the output range.
+
+Generator.max()			*Vital.Random-Generator.max()*
+	Get the largest value in the output range.
+
+Generator.seed({seeds})		*Vital.Random-Generator.seed()*
+	Set seeds by a |List| of numbers which initializes the generator.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

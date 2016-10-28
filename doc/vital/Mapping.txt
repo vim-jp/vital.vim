@@ -1,0 +1,25 @@
+*vital/Mapping.txt*		Utilities for mapping.
+
+Maintainer: tyru    <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Mapping-contents*
+
+INTRODUCTION			|Vital.Mapping-introduction|
+INTERFACE			|Vital.Mapping-interface|
+  Functions			  |Vital.Mapping-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Mapping-introduction*
+
+*Vital.Mapping* is TODO
+
+==============================================================================
+INTERFACE				*Vital.Mapping-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Mapping-functions*
+
+TODO
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

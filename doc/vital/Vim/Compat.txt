@@ -1,0 +1,64 @@
+*vital/Vim/Compat.txt*	Vim compatibility wrapper functions.
+
+Maintainer: thinca	<thinca+vim@gmail.com>
+            tyru	<tyru.exe@gmail.com>
+            lambdalisue	<lambdalisue@hashnote.net>
+
+==============================================================================
+CONTENTS				*Vital.Vim.Compat-contents*
+
+INTRODUCTION			|Vital.Vim.Compat-introduction|
+INTERFACE			|Vital.Vim.Compat-interface|
+  FUNCTIONS			  |Vital.Vim.Compat-functions|
+
+
+==============================================================================
+INTRODUCTION				*Vital.Vim.Compat-introduction*
+
+*Vital.Vim.Compat* provides vim compatibility wrapper functions for different
+versions/patchlevels of Vim.
+
+This module is not for multiple OS compatibilities or workarounds for known
+bugs but for versions of Vim itself.
+
+
+==============================================================================
+INTERFACE				*Vital.Vim.Compat-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Vim.Compat-functions*
+
+has_version({version})			*Vital.Vim.Compat.has_version()*
+	Returns true if the version of Vim is same or larger than {version}.
+	{version} is a string like "7.3.123" or "7.3".
+
+shiftwidth()				*Vital.Vim.Compat.shiftwidth()*
+	Compatibility function of |shiftwidth()| available from Vim 7.3.694.
+
+writefile({list}, {fname}[, {flags}])	*Vital.Vim.Compat.writefile()*
+	Compatibility function of |writefile()| which supports 'a' flag from
+	Vim 7.4.503.
+
+doautocmd({expr}[, {nomodeline}])	*Vital.Vim.Compat.doautocmd()*
+	Compatibility function of |doautocmd| which supports '<nomodeline>'
+	from Vim 7.3.438.
+	If {nomodeline} is 1, it calls {expr} with '<nomodeline>' option,
+	otherwise it calls {expr}.
+>
+	" Call 'vital_compat_doautocmd_test' without <nomodeline>
+	call s:Compat.doautocmd('User vital_compat_doautocmd_test')
+	" Call 'vital_compat_doautocmd_test' with <nomodeline> if available
+	call s:Compat.doautocmd('User vital_compat_doautocmd_test', 1)
+<
+getbufvar({expr}, {varname}[, {def}])	*Vital.Vim.Compat.getbufvar()*
+	Compatibility function of |getbufvar()| which supports a default value
+	{def} from Vim 7.3.831.
+
+getwinvar({winnr}, {varname}[, {def}])	*Vital.Vim.Compat.getwinvar()*
+	Compatibility function of |getwinvar()| which supports a default value
+	{def} from Vim 7.3.831.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

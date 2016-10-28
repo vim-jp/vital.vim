@@ -1,0 +1,428 @@
+*vital/Data/String.txt*		string utilities library.
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Data.String-contents*
+
+INTRODUCTION			|Vital.Data.String-introduction|
+INTERFACE			|Vital.Data.String-interface|
+  Functions			  |Vital.Data.String-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.String-introduction*
+
+*Vital.Data.String* is String Utilities Library.
+It provides some functions to manipulate |String|.
+>
+	let s:V = vital#{plugin-name}#new()
+	let s:S = s:V.import("Data.String")
+<
+
+==============================================================================
+INTERFACE				*Vital.Data.String-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.String-functions*
+
+replace({str}, {from}, {to})		*Vital.Data.String.replace()*
+	Returns string replaced {from} to {to} from {str}.
+>
+	echo s:S.replace("fooba.bazbar", "ba.", "zzz")
+	" foozzzbazbar
+<
+replace_first({str}, {from}, {to})	*Vital.Data.String.replace_first()*
+	Returns string replaced {from} to {to} from {str} only about the
+	first-match.
+>
+	echo s:S.replace("foobarbazbar", "bar", "zzz")
+	" foozzzbazzzz
+	echo s:S.replace_first("foobarbazbar", "bar", "zzz")
+	" foozzzbazbar
+<
+scan({str}, {pattern})			*Vital.Data.String.scan()*
+	Returns |List| which matched {pattern} in {str}.
+
+reverse({str})				*Vital.Data.String.reverse()*
+	Returns a reversed string.  This works on character base.
+>
+	echo s:S.reverse("string")
+	" gnirts
+<
+starts_with({str}, {prefix})		*Vital.Data.String.starts_with()*
+	Returns true when {str} starts with {prefix}.
+>
+	echo s:S.starts_with('vital.vim', 'vi')
+	" 1
+	echo s:S.starts_with('vital.vim', 'vim')
+	" 0
+<
+ends_with({str}, {suffix})		*Vital.Data.String.ends_with()*
+	Returns true when {str} ends with {suffix}.
+>
+	echo s:S.starts_with('vital.vim', 'vim')
+	" 1
+	echo s:S.starts_with('vital.vim', 'vi')
+	" 0
+<
+common_head({strs})			*Vital.Data.String.common_head()*
+	Returns a common part of head of strings.
+>
+	echo s:S.common_head(['neocomplcache', 'neosnippet', 'neobundle'])
+	" 'neo'
+<
+split_leftright({expr}, {pattern})	*Vital.Data.String.split_leftright()*
+	Returns |List| that contains two |String| split by {pattern}.
+>
+	echo s:S.split_leftright('neocomplcache', 'neo\zs.....')
+	" ['neo', 'cache']
+<
+split3({expr}, {pattern})		*Vital.Data.String.split3()*
+	Like |Vital.Data.String.split_leftright()|, but this function returns
+	[left, middle, right] not only [left, right].
+>
+	echo s:S.split3('neocomplcache', 'neo\zs.....')
+	" ['neo', 'compl', 'cache']
+<
+					*Vital.Data.String.nsplit()*
+nsplit({expr}, {n} [, {pattern} [, {keepempty}]])
+	Behaves like |split()|.  Returns a list which is limited as {n}'th
+	elements.
+
+chop({str}) 				*Vital.Data.String.chop()*
+	Removes last character from {str}.
+
+chomp({str}) 				*Vital.Data.String.chomp()*
+	Removes last \r,\n,\r\n from {str}.
+
+trim({str})	                	*Vital.Data.String.trim()*
+	Returns |String| removed spaces from the beginning and end of a {str}.
+
+trim_start({str})			*Vital.Data.String.trim_start()*
+	Returns |String| removed spaces from the beginning of a {str}.
+
+trim_end({str})				*Vital.Data.String.trim_end()*
+	Returns |String| removed spaces from the end of a {str}.
+
+wrap({str} [, {columns}])		*Vital.Data.String.wrap()*
+	Returns |String| wrapped to fit to |columns| width.
+        Default: {columns} = &columns
+
+nr2byte({nr})				*Vital.Data.String.nr2byte()*
+	Returns utf-8 bytes which has the number value {nr}.
+
+nr2enc_char({charcode})			*Vital.Data.String.nr2enc_char()*
+	Returns a string which has the number value {nr}.  This function
+	depends on |encoding| option.
+
+nr2hex({nr})				*Vital.Data.String.nr2hex()*
+	Returns a hex string which has the number value {nr}.
+
+diffidx({str1}, {str2})			*Vital.Data.String.diffidx()*
+	Returns first index of different character if two strings are not
+	equal, otherwise returns number -1 if the strings are equal.
+
+substitute_last({expr}, {pat}, {sub})	*Vital.Data.String.substitute_last()*
+	Behaves like |substitute()|, but it only replaces the last matched
+	string.
+
+dstring({expr})				*Vital.Data.String.dstring()*
+	Behaves like |string()|, but this wraps the result string not with
+	single-quotes but with double-quotes.
+>
+	echo s:S.dstring(123)
+	" 123
+	echo s:S.dstring('abc')
+	" '"abc"'
+	echo s:S.dstring("abc")
+	" '"abc"'
+<
+lines({str})				*Vital.Data.String.lines()*
+	Splits into list of strings of each lines of {str}.
+
+contains_multibyte({str})	*Vital.Data.String.contains_multibyte()*
+	Return Number 1 if String {str} contains a multi-byte character,
+	otherwise zero.
+
+pad_left({str}, {width} [, {char}])	*Vital.Data.String.pad_left()*
+	It returns a string padded {str}'s left side until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo s:S.pad_left('test', 11)
+	" '       test'
+<
+
+pad_right({str}, {width} [, {char}])	*Vital.Data.String.pad_right()*
+	It returns a string padded {str}'s right side until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo s:S.pad_right('test', 11)
+	" 'test       '
+<
+
+					*Vital.Data.String.pad_both_sides()*
+pad_both_sides({str}, {width} [, {char}])
+	It returns a string padded {str}'s left and right side until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo s:S.pad_both_sides('test', 11)
+	" '   test    '
+<
+
+				*Vital.Data.String.pad_between_letters()*
+pad_between_letters({str}, {width} [, {char}])
+	It returns a string padded between {str}'s letters until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo s:S.pad_between_letters('test', 11)
+	" '  t e s t  '
+<
+
+				*Vital.Data.String.justify_equal_spacing()*
+justify_equal_spacing({str}, {width} [, {char}])
+	It returns a string justified equal spacing until given
+	{width} with the given half-width {char} or white-space,
+	considering non-half-width characters.
+	Default: {char} = ' '
+>
+	echo s:S.justify_equal_spacing('test', 11)
+	" 't   e  s  t'
+<
+
+				*Vital.Data.String.levenshtein_distance()*
+levenshtein_distance({str1}, {str2})
+        It returns a minimum edit distance of two given strings {str1} and
+        {str2}.
+>
+	echo s:S.levenshtein_distance('kitten', 'sitting')
+	" 3
+<
+
+				*Vital.Data.String.padding_by_displaywidth()*
+padding_by_displaywidth({expr}, {width}, {float})
+        It returns a string padding {expr} with spaces of {width}.
+        {float}:
+          left padding: `-1`
+          center padding: `0`
+          right padding: `1`
+>
+        echo s:S.padding_by_displaywidth('abc', 5, -1)
+        " 'abc  '
+        echo s:S.padding_by_displaywidth('abc', 5, 0)
+        " ' abc '
+        echo s:S.padding_by_displaywidth('abc', 5, 1)
+        " '  abc'
+<
+
+				*Vital.Data.String.split_by_displaywidth()*
+split_by_displaywidth({expr}, {width}, {float}, {is_wrap})
+        It returns a list of string that split {expr} by line feed(LF)
+        and apply `padding_by_displaywidth(v:val,{width},{float})` to these.
+        {float}:
+          left padding: `-1`
+          center padding: `0`
+          right padding: `1`
+>
+        echo s:S.split_by_displaywidth('あaいbうcえdおe', 5, -1, 1)
+        " ['あaい', 'bうc ', 'えdお', 'e    ']
+        echo s:S.split_by_displaywidth('あaいbうcえdおe', 5, -1, 0)
+        " ['あaい']
+        echo s:S.split_by_displaywidth('1234567890', 5, -1, 1)
+        " ['12345', '67890']
+        echo s:S.split_by_displaywidth("123\n4567890", 5, 1, 1)
+        " ['  123', '45678', '   90']
+<
+
+        {is_wrap}:
+          `1`: Considers line feed(LF) and does not consider wrap.
+>
+               " expr: "abcde\nfghijk"
+               " width: 4
+               " is_wrap: 1
+               +----+
+               |abcd|
+               |e   |
+               |fghi|
+               |jk  |
+               +----+
+<
+          `0`: Considers line feed(LF) and considers wrap.
+>
+               " expr: "abcde\nfghijk"
+               " width: 4
+               " is_wrap: 0
+               +----+
+               |abcd|
+               |fghi|
+               +----+
+
+
+						*Vital.Data.String.hash()*
+hash({str})
+	This maps from arbitrary length string {str} to another string.
+>
+	echo s:S.hash('All your base are belong to us')
+	" 'c46ec1b18ce8a878725a37e780dfb7351f68ed2e194c79fbc6aebee1a667975d'
+<
+	If the vim that evaluates this function has |sha256()| function, this
+	uses it, otherwise it uses the algorithm to hash the string.
+>
+	let sum = 0
+	for i in range(len(a:str))
+	  let sum += char2nr(a:str[i]) * (i + 1)
+	endfor
+	
+	return printf('%x', sum)
+<
+truncate({str}, {width})			*Vital.Data.String.truncate()*
+	This function truncates the string {str} to the specified {width}.
+	The width of the string is calculated as it is displayed.
+>
+	echo s:S.truncate('this is a pen', 2)
+	" 'th'
+	echo s:S.truncate('あいうえお', 2)
+	" 'あ'
+<
+	If {width} is larger than the width {str} is displayed, spaces are
+	appended.
+>
+	echo s:S.truncate('this is a pen', 20)
+	" 'this is a pen       '
+<
+					*Vital.Data.String.truncate_skipping()*
+truncate_skipping({str}, {max}, {footer-width}, {separator})
+	This function splits the string {str} into two parts and joins with
+	the given {separator}. The second argument {max} specifies the
+	displayed width of the result string and the third argument
+	{footer-width} specifies the displayed width of the string after the
+	separator.
+>
+	echo s:S.truncate_skipping('this is a pen', 10, 3, '...')
+	" 'this...pen'
+	echo s:S.truncate_skipping('あいうえおかきくけこ', 10, 2, ' .. ')
+	" 'あい .. こ'
+<
+strwidthpart({str}, {width})		*Vital.Data.String.strwidthpart()*
+	This function returns the part of the string {str} the displayed width
+	of which is narrower than the given {width}. This function does not
+	append spaces as opposed to |Vital.Data.String.truncate()|.
+>
+	echo s:S.strwidthpart('this is a pen', 5)
+	" 'this '
+	echo s:S.strwidthpart('this is a pen', 20)
+	" 'this is a pen'
+	echo s:S.strwidthpart('あいうえお', 5)
+	" 'あい'
+	echo s:S.strwidthpart('あいうえお', 20)
+	" 'あいうえお'
+<
+				*Vital.Data.String.strwidthpart_reverse()*
+strwidthpart_reverse({str}, {width})
+	This function returns the part of the string {str} like the function
+	|Vital.Data.String.strwidthpart()|, but this function takes the part of
+	the string from the right.
+>
+	echo s:S.strwidthpart_reverse('this is a pen', 5)
+	" 'a pen'
+	echo s:S.strwidthpart_reverse('this is a pen', 20)
+	" 'this is a pen'
+	echo s:S.strwidthpart_reverse('あいうえお', 5)
+	" 'えお'
+	echo s:S.strwidthpart_reverse('あいうえお', 20)
+	" 'あいうえお'
+<
+wcswidth({str})					*Vital.Data.String.wcswidth()*
+	This function returns the displayed width of the string {str}.
+>
+	echo s:S.wcswidth('this is a pen')
+	" 13
+	echo s:S.wcswidth('あいうえお')
+	" 10
+<
+remove_ansi_sequences({text})	*Vital.Data.String.remove_ansi_sequences()*
+	Remove ANSI sequences from {text}
+>
+	echo s:S.remove_ansi_sequences("\033[47m\033[32mGreen\033[0m")
+	" 'Green'
+<
+escape_pattern({str})		*Vital.Data.String.escape_pattern()*
+	Escape pattern involved characters ("^$~.*[]\) in {str}.
+	Note that it over escape characters when {str} contains escaped
+	characters.
+>
+	echo s:S.escape_pattern('^\a\b.*$')
+	" '\^\\a\\b\.\*\$'
+	echo s:S.escape_pattern(s:S.escape_pattern('^\a\b.*$'))
+        " '\\\^\\\\a\\\\b\\\.\\\*\\\$'
+<
+unescape_pattern({str})		*Vital.Data.String.unescape_pattern()*
+	Unescape pattern involved characters, namely characters escaped by
+	|Vital.Data.String.escape_pattern()| function.
+>
+	echo s:S.unescape_pattern('\\\^\\\\a\\\\b\\\.\\\*\\\$')
+	" '\^\\a\\b\.\*\$'
+	echo s:S.unescape_pattern('\^\\a\\b\.\*\$')
+	" '^\a\b.*$'
+	echo s:S.unescape_pattern('^\a\b.*$')
+	" '^\a\b.*$'
+<
+unescape({str}, {chars})	*Vital.Data.String.unescape()*
+	Unescape {chars} in {str}.
+>
+	echo s:S.unescape('\*n\n\\n', '*\')
+	" '*n\n\n'
+<
+				*Vital.Data.String.iconv()*
+iconv({expr}, {from}, {to})
+	An alternate function of builtin |iconv()| which fail silently.
+	It returns {expr} when conversion has failed.
+
+				*Vital.Data.String.repair_posix_text()*
+repair_posix_text({text}[, {newline}])
+	It returns {text} with a trailing {newline} if no trailing {newline}
+	exists. If {newline} is omitted, "\n" will be used.
+>
+	echo s:S.repair_posix_text("A\nB\nC")
+	" => A\nB\nC\n
+	echo s:S.repair_posix_text("A\nB\nC\n")
+	" => A\nB\nC\n
+	echo s:S.repair_posix_text("A\nB\nC\n\n")
+	" => A\nB\nC\n\n
+<
+				*Vital.Data.String.join_posix_lines()*
+join_posix_lines({lines}[, {newline}])
+	It returns a {newline} joined |String| of {lines} with a trailing
+	{newline}. If {newline} is omitted, "\n" will be used.
+>
+	echo s:S.join_posix_lines(['A', 'B', 'C'])
+	" => A\nB\nC\n
+	echo s:S.join_posix_lines(['A', 'B', 'C', ''])
+	" => A\nB\nC\n\n
+<
+				*Vital.Data.String.split_posix_text()*
+split_posix_text({text}[, {newline}])
+	It returns a {newline} separated |List| of {text} without an item for
+	trailing {newline} in {text}.
+	While POSIX text has a trailing {newline}, splitting text directly
+	with |split()| function returns a |List| with an additional empty
+	line. This function automatically remove a trailing {newline} when
+	exists, indicating that if {text} does not have a trailing {newline},
+	it is equal to 'split({text}, {newline}, 1)'.
+	If {newline} is omitted, "\r\?\n" will be used.
+>
+	echo s:S.split_posix_text("A\nB\nC\n")
+	" => ['A', 'B', 'C']
+	echo s:S.split_posix_text("A\nB\nC")
+	" => ['A', 'B', 'C']
+	echo s:S.split_posix_text("A\nB\nC\n\n")
+	" => ['A', 'B', 'C', '']
+<
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

@@ -1,0 +1,178 @@
+*vital/Data/Set.txt*	set library.
+
+Maintainer: haya14busa <hayabusa1419@gmail.com>
+
+==============================================================================
+CONTENTS					    *Vital.Data.Set-contents*
+
+INTRODUCTION		|Vital.Data.Set-introduction|
+INTERFACE		|Vital.Data.Set-interface|
+  FUNCTIONS		  |Vital.Data.Set-functions|
+  Set Object		  |Vital.Data.Set-Set|
+
+
+
+==============================================================================
+INTRODUCTION					*Vital.Data.Set-introduction*
+
+*Vital.Data.Set* is Collection Utilities Library.
+It provides set and frozenset data structure ported from python.
+  https://docs.python.org/3.4/library/stdtypes.html#set-types-set-frozenset
+
+>
+	let s:V = vital#{plugin-name}#new()
+	let s:Set = s:V.import("Data.Set")
+
+	let set = s:Set.set([1,1,2,3,4,4,5])
+	echo set.to_list()              | " => [1,2,3,4,5]
+	call set.add(4)
+	echo set.to_list()              | " => [1,2,3,4,5]
+	call set.add(6)
+	echo set.to_list()              | " => [1,2,3,4,5,6]
+	echo set.sub([1,2,3]).to_list() | " => [4,5,6]
+
+	let frozenset = s:Set.frozenset([1,1,2,3,4,4,5])
+	echo frozenset.to_list() | " => [1,2,3,4,5]
+	" frozenset does not have mutable methods
+	call frozenset.add(6)
+	" => E716: Key not present in Dictionary: add
+<
+
+==============================================================================
+INTERFACE					*Vital.Data.Set-interface*
+------------------------------------------------------------------------------
+FUNCTIONS					*Vital.Data.Set-functions*
+
+set([{list}], [{hashfunc}])			*Vital.Data.Set.set()*
+	Returns a new 'Set' object.
+
+frozenset([{list}], [{hashfunc}])		*Vital.Data.Set.frozen()*
+	Returns a new 'Frozen' object which has not mutable methods
+	(|Vital.Data.Set-Set-mutable|).
+
+	{hashfunc} is used to hash the value for identifying each elements.
+
+	Example: >
+	  function! s:my_hash_func(x) abort
+	    return tolower(a:x)
+	  endfunction
+
+	  echo s:Set.set(['a', 'ab', 'A']).to_list()
+	  " => ['A', 'ab', 'a']
+	  echo s:Set.set(['a', 'ab', 'A'], function('s:my_hash_func')).to_list()
+	  " => ['ab', 'a']
+<
+
+------------------------------------------------------------------------------
+Set Object					*Vital.Data.Set-Set*
+
+Set.to_list()				*Vital.Data.Set-Set.to_list()*
+	Converts to |List|.
+
+Set.in({elem})			        *Vital.Data.Set-Set.in()*
+	Checks if there is {elem} in the set.  This returns boolean value.
+
+Set.union({other})			*Vital.Data.Set-Set.union()*
+Set.or({other})				*Vital.Data.Set-Set.or()*
+	Return a new set with elements from the set and {other}.
+
+Set.intersection({other})		*Vital.Data.Set-Set.intersection()*
+Set.and({other})			*Vital.Data.Set-Set.and()*
+	Return a new set with elements common to the set and {other}.
+
+Set.symmetric_difference({other}) *Vital.Data.Set-Set.symmetric_difference()*
+Set.xor({other})			*Vital.Data.Set-Set.xor()*
+	Return a new set with elements in either the set or {other} but not
+	both.
+
+Set.difference({other})			*Vital.Data.Set-Set.difference()*
+Set.sub({other})			*Vital.Data.Set-Set.sub()*
+	Return a new set with elements in the set that are not in {other}.
+
+Set.issubset({other})			*Vital.Data.Set-Set.issubset()*
+Set.le({other})				*Vital.Data.Set-Set.le()*
+	Test whether every element in the set is in {other}.
+
+Set.lt({other})				*Vital.Data.Set-Set.lt()*
+	Test whether the set is a proper subset of {other}, that is, >
+	    set.le(other) && set != other
+
+Set.issuperset({other})			*Vital.Data.Set-Set.issuperset()*
+Set.ge({other})				*Vital.Data.Set-Set.ge()*
+	Test whether every element in {other} is in the set.
+
+Set.gt({other})				*Vital.Data.Set-Set.gt()*
+	Test whether the set is a proper superset of {other}, that is, >
+	    set.ge(other) && set != other
+
+Set.len()				*Vital.Data.Set-Set.len()*
+	Return the length of Set.
+
+------------------------------------------------------------------------------
+Mutable Set Object				 *Vital.Data.Set-Set-mutable*
+
+	The following methods for set do not apply to immutable instances of
+	|Vital.Data.Set.frozen()|
+
+Set.update({other})			*Vital.Data.Set-Set.update()*
+Set.ior({other})			*Vital.Data.Set-Set.ior()*
+	Update the set, adding elements from {other}.
+
+Set.intersection_update({other})  *Vital.Data.Set-Set.intersection_update()*
+Set.iand({other})		  *Vital.Data.Set-Set.iand()*
+	Update the set, keeping only elements found in it and {other}.
+
+Set.difference_update({other})	  *Vital.Data.Set-Set.difference_update()*
+Set.isub({other})		  *Vital.Data.Set-Set.isub()*
+	Update the set, removing elements found in {other}.
+
+Set.symmetric_difference_update({other})
+			    *Vital.Data.Set-Set.symmetric_difference_update()*
+Set.ixor({other})	    *Vital.Data.Set-Set.ixor()*
+	Update the set, keeping only elements found in either set, but not in
+	both.
+
+Set.add({elem})					*Vital.Data.Set-Set.add()*
+	Add {elem} to the set.
+
+Set.remove({elem})				*Vital.Data.Set-Set.remove()*
+	Remove {elem} from the set. Throw >
+	  vital: Data.Set: the element is not a member
+<	if {elem} is not contained in the set.
+
+
+Set.discard({elem})				*Vital.Data.Set-Set.discard()*
+	Remove {elem} from the set if it is present.
+
+Set.pop()					*Vital.Data.Set-Set.pop()*
+	Remove and return an arbitrary element from the set. Throw >
+	  vital: Data.Set: set is empty
+<	if the set is empty.
+
+Set.clear()					*Vital.Data.Set-Set.clear()*
+	Remove all elements from the set.
+
+	Note: {other} will accept 'Set' object or |List| as an argument.
+	ior(), iand(), isub(), ixor() return Set object. 'i' is short for
+	"in-place", they are mutable version of or(), and(), sub(), xor()
+	respectively.
+
+	Note: If return value is 'Set' object, the type of returned 'Set'
+	object is same as type of the instance. Example:
+>
+	  let set = s:Set.set(['a', 'ab', 'A'], function('s:my_hash_func'))
+	  echo set.to_list() | " => ['ab', 'a']
+	  " {comparefunc} will be same as `set`
+	  let set2 = set.or(['aB', 'c'])
+	  echo set2.to_list() | " => ['ab', 'a', 'c']
+
+	  let frozenset = s:Set.frozenset([1,2,3])
+	  " returned 'Set' object is frozenset
+	  let frozenset2 = frozenset.and(s:Set.set([2,3,4]))
+	  echo frozenset2.to_list() | " => [2,3]
+	  call frozenset.add(6)
+	  " => E716: Key not present in Dictionary: add
+<
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

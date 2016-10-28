@@ -1,0 +1,49 @@
+*vital/Text/LTSV.txt*	LTSV library.
+
+Maintainer: thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS			*Vital.Text.LTSV-contents*
+
+INTRODUCTION			|Vital.Text.LTSV-introduction|
+INTERFACE			|Vital.Text.LTSV-interface|
+  FUNCTIONS			  |Vital.Text.LTSV-functions|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.Text.LTSV-introduction*
+
+*Vital.Text.LTSV* is a parser and dumper for Labelled Tab-separated
+Values(LTSV).
+
+http://ltsv.org/
+
+
+
+==============================================================================
+INTERFACE			*Vital.Text.LTSV-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.Text.LTSV-functions*
+
+parse({ltsv})			*Vital.Text.LTSV.parse()*
+	Parses records of LTSV.  Returns a list of objects.
+
+parse_record({record})		*Vital.Text.LTSV.parse_record()*
+	Parses a record of LTSV.  Returns an object.
+
+parse_file({file})		*Vital.Text.LTSV.parse_file()*
+	Parses a LTSV file.
+
+dump({data})			*Vital.Text.LTSV.dump()*
+	Converts a list of objects or an object to a LTSV string.
+
+				*Vital.Text.LTSV.dump_file()*
+dump_file({data}, {file} [, {append}])
+	Dumps {data} to {file}.  If {append} is true, the data is appended.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

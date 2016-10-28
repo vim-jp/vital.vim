@@ -1,0 +1,110 @@
+*vital/Database/SQLite.txt*		sqlite utilities library.
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Database.SQLite-contents*
+
+INTRODUCTION			|Vital.Database.SQLite-introduction|
+PRINCIPLE			|Vital.Database.SQLite-principle|
+EXAMPLES			|Vital.Database.SQLite-examples|
+FUNCTIONS			|Vital.Database.SQLite-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Database.SQLite-introduction*
+
+*Vital.Database.SQLite* is SQLite Utilities Library.
+It provides some functions to manipulate |SQLite|.
+
+==============================================================================
+PRINCIPLE				*Vital.Database.SQLite-principle*
+
+|Vital.Database.SQLite| won't provide ORM but provides safe query and result
+parser. ORM is a wrong way of abstracting relational database.
+
+|Vital.Database.SQLite| is
+* not an object that wraps something fancy.
+* not sqlite itself but a bridge to use a sqlite implementation.
+* encouraging you to write a good SQL query.
+* helping you to investigate what's going on by debug functions.
+
+==============================================================================
+EXAMPLES				*Vital.Database.SQLite-examples*
+
+>
+	let s:S = s:V.import('Database.SQLite')
+	if !s:S.is_available()
+	  return 'failed'
+	endif
+	echo s:S.query_rawdata(
+	      \ 'a.db',
+	      \ 'CREATE TABLE cities (name varchar(80), country_name text);')
+	echo s:S.query_rawdata(
+	      \ 'a.db',
+	      \ 'INSERT INTO cities VALUES (?, ?);',
+	      \ ['Vancouver', 'Canada'])
+	echo s:S.query(
+	      \ 'a.db',
+	      \ 'SELECT * FROM cities WHERE name = ?;',
+	      \ ['Vancouver'])
+<
+
+==============================================================================
+FUNCTIONS				*Vital.Database.SQLite-functions*
+
+is_available()		*Vital.Database.SQLite.is_available()*
+	1 if you can use this sqlite integration feature by checking if you
+	have sqlite3 command.
+>
+	:echo S.is_available()
+	1
+<
+
+query({dbfile}, {query/placeholders}, {list})	*Vital.Database.SQLite.query()*
+	Sends an SQL query to sqlite with specifying the db file to store is
+	{dbfile}, and returns its result in list. If {query/placeholders}
+	(query with placeholders) contains placeholders "?", {list} has to
+	have same amount of string elements.  e.g.
+>
+	query(d, 'A', [])
+	query(d, 'A ?', [x])
+	query(d, 'A ? ?', [x, y])
+<
+	You don't have to give {list} if {query/placeholders} has no
+	placeholders. e.g.
+>
+	query(d, 'A', []) == query(d, 'A')
+<
+
+	This function returns a list which has multiple dictionaries. e.g.
+>
+	query('a.db', 'SELECT * FROM cities WHERE name = Vancouver;')
+	is
+	[{'country': 'Canada', 'name': 'Vancouver'},
+	 {'country': 'US', 'name': 'Vancouver'}]
+<
+
+build_line_from_query_with_placeholders({query/placeholders}, {list})
+	*Vital.Database.SQLite.build_line_from_query_with_placeholders()*
+	Returns internal value that |Vital.Database.SQLite.query()| uses. This
+	function doesn't have side effects.
+
+	This function name is long on purpose to discourage people to use that
+	frequently. Use this only for your understanding and for debugging
+	this library itself.
+
+	Examples
+>
+	build_line_from_query_with_placeholders(
+	      \ 'SELECT * FROM cities WHERE name = ?;',
+	      \ ['Vancouver'])
+	"=> 'SELECT * FROM cities WHERE name = "Vancouver";'
+
+	echo s:S.build_line_from_query_with_placeholders(
+	      \ 'SELECT * FROM cities WHERE name = ?;',
+	      \ ["Vancouver\"; ujihisa\""])
+	"=> 'SELECT * FROM cities WHERE name = "Vancouver\"; ujihisa\"";'
+<
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

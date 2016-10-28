@@ -1,0 +1,132 @@
+*vital/Text/Parser.txt*		parser library.
+
+Maintainer: rbtnn <naru123456789@gmail.com>
+
+==============================================================================
+CONTENTS			                  *Vital.Text.Parser-contents*
+
+INTRODUCTION		                 |Vital.Text.Parser-introduction|
+INTERFACE		                 |Vital.Text.Parser-interface|
+  FUNCTIONS			         |Vital.Text.Parser-functions|
+OBJECTS			                 |Vital.Text.Parser-objects|
+  Parser Object   	                 |Vital.Text.Parser-Parser|
+EXAMPLES	                 	 |Vital.Text.Parser-examples|
+
+==============================================================================
+INTRODUCTION			              *Vital.Text.Parser-introduction*
+
+*Vital.Text.Parser* is parser library.
+
+==============================================================================
+INTERFACE			                 *Vital.Text.Parser-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			                 *Vital.Text.Parser-functions*
+
+parser()         	                          *Vital.Text.Parser.parser()*
+	Creates a new Parser object.
+	A Parser object has exec({expr}).
+
+==============================================================================
+OBJECTS				                   *Vital.Text.Parser-objects*
+
+------------------------------------------------------------------------------
+Parser Object		                            *Vital.Text.Parser-Parser*
+
+Parser.exec({expr})		             *Vital.Text.Parser-Parser.exec()*
+        Begins parsing {expr}.
+
+Parser.end()    		              *Vital.Text.Parser-Parser.end()*
+	Returns 1 if next() is the end of {lexed_tokens}, otherwise zero.
+
+Parser.next()    		             *Vital.Text.Parser-Parser.next()*
+	Returns the next token.  This function does not consume.
+
+Parser.next_is({labels})    		  *Vital.Text.Parser-Parser.next_is()*
+	Returns 1 if next().label is contained {labels}, otherwise zero.
+
+Parser.consume()    		          *Vital.Text.Parser-Parser.consume()*
+	Consumes the next token from {lexed_tokens}.  Return this token.
+
+Parser.ignore()                            *Vital.Text.Parser-Parser.ignore()*
+	Consumes it while the next token is contained 'ignore_labels'.
+
+Parser.config({dict})                      *Vital.Text.Parser-Parser.config()*
+        {dict} is options of this Parser object.
+        {dict} can have following keys.
+
+                'ignore_labels' : It is used Parser.ignore().
+
+
+==============================================================================
+EXAMPLES				          *Vital.Text.Parser-examples*
+
+>
+        let s:V = vital#{plugin-name}#new()
+        let s:L = s:V.import('Text.Lexer')
+        let s:P = s:V.import('Text.Parser')
+
+
+        let s:rules = [
+              \ [ 'NUMBER', '[0-9]\+' ],
+              \ [ 'PLUS', '+' ],
+              \ [ 'MUL', '*' ],
+              \ [ 'MINUS', '-' ],
+              \ [ 'DIV', '/' ],
+              \ [ 'WS', '\s\+' ],
+              \ ]
+
+        let s:lexed_obj = s:L.lexer(s:rules).exec('12 + 2 - 9 * 3 - 18 / 3 * 2')
+        let s:parser_obj = s:P.parser().exec(s:lexed_obj)
+
+        call s:parser_obj.config({ 'ignore_labels' : ['WS'] })
+
+        function! s:parser_obj.number() dict
+          call self.ignore()
+          if self.next_is('NUMBER')
+            return eval(self.consume().matched_text)
+          else
+            throw 'syntax error'
+          endif
+        endfunction
+
+        function! s:parser_obj.term() dict
+          let lhs = self.number()
+          while ! self.end()
+            call self.ignore()
+            if self.next_is(['MUL'])
+              call self.consume()
+              let lhs = lhs * self.number()
+            elseif self.next_is(['DIV'])
+              call self.consume()
+              let lhs = lhs / self.number()
+            else
+              break
+            endif
+          endwhile
+          return lhs
+        endfunction
+
+        function! s:parser_obj.expression() dict
+          let lhs = self.term()
+          while ! self.end()
+            call self.ignore()
+            if self.next_is(['PLUS'])
+              call self.consume()
+              let lhs = lhs + self.term()
+            elseif self.next_is(['MINUS'])
+              call self.consume()
+              let lhs = lhs - self.term()
+            else
+              break
+            endif
+          endwhile
+          return lhs
+        endfunction
+
+        echo s:parser_obj.expression()
+        " -25
+<
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
