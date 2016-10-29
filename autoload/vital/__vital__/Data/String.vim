@@ -4,8 +4,6 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! s:_vital_loaded(V) abort
-  let unused = 1
-  let dq = "double quote"
   let s:V = a:V
   let s:L = s:V.import('Data.List')
 endfunction
