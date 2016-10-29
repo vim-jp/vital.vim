@@ -3,13 +3,13 @@
 #
 build:
   lint:
-    image: haya14busa/test-vital-lint
+    image: haya14busa/lint-vital.vim
     environment:
       - REVIEWDOG_GITHUB_API_TOKEN=$$REVIEWDOG_GITHUB_API_TOKEN
-      - REVIEWDOG_VERSION=0.9.0
-      - REVIEWDOG_URL=https://github.com/haya14busa/reviewdog/releases/download/$REVIEWDOG_VERSION/reviewdog_linux_amd64
     commands:
       - |
-        vint . | reviewdog -efm="%f:%l:%c: %m" -ci=droneio
+        vint . | reviewdog -name="vint" -efm="%f:%l:%c: %m" -ci=droneio
+      - |
+        vimlint -e EVL102.l:_=1 -c func_abort=1 autoload | reviewdog -name="vimlint" -efm="%f:%l:%c:%trror: %m" -efm="%f:%l:%c:%tarning: %m" -efm="%f:%l:%c:%m" -ci="droneio"
     when:
       event: pull_request
