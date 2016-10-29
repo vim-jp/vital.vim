@@ -1,0 +1,106 @@
+*vital/ProcessManager.txt*	process manager with vimproc.
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS			*Vital.ProcessManager-contents*
+
+INTRODUCTION			|Vital.ProcessManager-introduction|
+  USAGE				|Vital.ProcessManager-usage|
+  PRINCIPLE			|Vital.ProcessManager-principle|
+INTERFACE			|Vital.ProcessManager-interface|
+  FUNCTIONS			  |Vital.ProcessManager-functions|
+CONFIG				|Vital.ProcessManager-config|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.ProcessManager-introduction*
+
+Note this module is going to be deprecated. Use |Vital.ConcurrentProcess|
+instead.
+
+*Vital.ProcessManager* is a Vim's process manager library, powered by
+|vimproc|.  This manager stores external processes ran by this library, and
+provide higher layer synchronous non-blocking read/write interface.
+
+Note that this library doesn't work on Vim without vimproc; vimproc is
+required.
+
+
+==============================================================================
+USAGE				*Vital.ProcessManager-usage*
+>
+	let P = V.import('ProcessManager')
+	if !P.is_available() " please always check if it's available.
+	  throw "omg"
+	endif
+	call P.touch('i', 'clojure-1.5') " creates a process that runs clojure
+	" read the stdout/stderr and wait until the process's output stays
+	" same for 2.0 sec.
+	echo P.read_wait('i', 2.0, [])
+	call P.writeln('i', '(+ 2 3)')
+	" read the stdout/stderr and wait until the process's output stays
+	" same for 0.05 sec.
+	echo P.read('i', []) " ["5\nuser=>", '', 'timedout']
+	" kills the process, and let ProcessManager forget it.
+	echo P.term('i') " gracefully stop the process
+	echo P.status('i') " 'inactive'
+<
+
+>
+	" An alternative way with label
+	function! s:f(x)
+	  let t = P.touch('my-scala', 'scala')
+	  if t ==# 'new'
+	    " wait for longer time to make sure scala runs, since scala is
+	    " really slow to be ready.
+	    let [out, err, type] = P.read_wait('my-scala', 2.0, ['scala> '])
+	    if type ==# 'timedout'
+	      throw 'omg it took too much time'
+	    endif
+	  endif
+	  call P.writeln('my-scala', a:x)
+	  let [out, err, type] = P.read('my-scala', ['scala> '])
+	  if type ==# 'timedout'
+	    throw 'something easy to do please'
+	  elseif type ==# 'inactive'
+	    throw 'scala had died...!'
+	  endif
+	  return out
+	endfunction
+
+	echo s:f('1 + 2') "=> '3' but slow
+	echo s:f('2 + 3') "=> '5' and fast!
+<
+
+MEMO
+* touch is almost idempotent
+* read's out split needs \r as well for windows
+
+==============================================================================
+PRINCIPLE			*Vital.ProcessManager-principle*
+
+* Nonblocking
+  * blocking APIs should have verbose name to discourage developers to use
+* Synchronous (asynchronous in Vim always makes trouble)
+* Don't show lower layer too much easily, but don't hide completely. No
+  perfect abstraction exists in the world.
+* Avoid tricky specification. Function name and behaviour itself should
+  explain what it does.
+>
+==============================================================================
+INTERFACE			*Vital.ProcessManager-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.ProcessManager-functions*
+
+touch({label}, {cmd})		*Vital.ProcessManager.touch()*
+	Returns a string which is either "existing" or "new".
+	TODO
+
+state({label})			*Vital.ProcessManager.state()*
+	Returns either "undefined", "inactive", "reading", or "idle".
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

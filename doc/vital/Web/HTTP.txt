@@ -1,0 +1,194 @@
+*vital/Web/HTTP.txt*	simple HTTP client library.
+
+Maintainer: mattn <mattn.jp@gmail.com>
+            thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Web.HTTP-contents*
+
+INTRODUCTION				|Vital.Web.HTTP-introduction|
+INTERFACE				|Vital.Web.HTTP-interface|
+  Functions				|Vital.Web.HTTP-functions|
+  Response				|Vital.Web.HTTP-response|
+
+==============================================================================
+INTRODUCTION				*Vital.Web.HTTP-introduction*
+
+*Vital.Web.HTTP* is an HTTP Utilities Library.  It provides a simple HTTP
+client.
+
+==============================================================================
+INTERFACE				*Vital.Web.HTTP-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Web.HTTP-functions*
+
+get({url} [, {param} [, {header}]])	*Vital.Web.HTTP.get()*
+	Send a GET request to the server.
+	This is just a wrapper of |Vital.Web.HTTP.request()|.
+
+post({url} [, {param} [, {header}]])	*Vital.Web.HTTP.post()*
+	Send a POST request to the server.
+	This is just a wrapper of |Vital.Web.HTTP.request()|.
+
+request({settings})			*Vital.Web.HTTP.request()*
+request({url} [, {settings}])
+request({method}, {url} [, {settings}])
+	Send a request to the server.
+	This function requires one of the clients, "curl" or "wget".
+	{settings} is a |Dictionary| which contains the following items:
+
+	"url"		Required
+		URL of a server.
+
+	"method"	Default: "GET"
+		HTTP Method.
+
+	"param"		Default: (None)
+		GET parameters.  This is a string or a dictionary.
+		If dictionary, it is converted to a string by
+		|Vital.Web.HTTP.encodeURI()|.
+		This is appended to url.
+
+	"data"		Default: (None)
+		POST data.  This is a string, a list, or a dictionary.
+		If it is a dictionary, it is converted to a string by
+		|Vital.Web.HTTP.encodeURI()|.
+
+	"headers"	Default: (None)
+		Request headers.  This is a dictionary.
+
+	"contentType"	Default: (None)
+		Content-Type for "data".
+		This is one of "headers".  This is used preferentially.
+
+	"outputFile"	Default: (None)
+		Output the result to this file.
+		"content" of the result become empty when this is specified.
+
+	"timeout"	Default: (None)
+		Network timeout by seconds.
+
+	"username"	Default: (None)
+		User name for an HTTP authentication.
+
+	"password"	Default: (None)
+		Password for an HTTP authentication.
+
+	"maxRedirect"	Default: 20
+		Maximum number of redirections.
+		The default is 20, which is usually far more than necessary.
+
+	"retry"		Default: 1
+		Maximum number of retries.
+
+	"client"	Default: ["python", "curl", "wget"]
+		Candidate list of HTTP client to use for a request.
+		The first available one is used.
+		A string as an HTTP client is also possible.
+		See also |Vital.Web.HTTP-client|.
+
+	"command"
+		Command name for a client.  You should use with "client".
+		This is a |Dictionary| that has client name as key and has the
+		command as value.
+		This maybe becomes like the following. >
+		{
+		  "curl": "/usr/bin/curl",
+		  "wget": "/usr/local/bin/wget",
+		}
+<
+	"authMethod"	Default: (None)
+		(This is only valid for "curl" interface.)
+		Specify the authorization method.
+		The value must be in ['basic', 'digest', 'ntlm', 'negotiate']
+		The default value is None, and then use "anyauth".
+
+	"gzipDecompress"	Default: 0
+		Attempt to decompress response data as if it was gzipped
+
+parseHeader({headers})			*Vital.Web.HTTP.parseHeader()*
+	Parse {headers} list to a dictionary.
+	Duplicated fields are overwritten.
+
+encodeURI({param})			*Vital.Web.HTTP.encodeURI()*
+	Encode params as URI query.
+
+decodeURI({str})			*Vital.Web.HTTP.decodeURI()*
+	Decode string as URI params.
+
+encodeURIComponent({str})		*Vital.Web.HTTP.encodeURIComponent()*
+	Encode param as URI components.
+
+------------------------------------------------------------------------------
+RESPONSE				*Vital.Web.HTTP-response*
+
+|Vital.Web.HTTP.request()|, |Vital.Web.HTTP.get()|, and |Vital.Web.HTTP.post()|
+return data structure as |Directory| like following.
+>
+	{
+	  "header": [
+	    "Content-Type: text/html",
+	    "Content-Length: 310"
+	  ],
+	  "allHeaders": [
+	    "Set-Cookie: k1=v1; Path=/",
+	    "Content-Type: text/html",
+	    "Content-Length: 310"
+	  ],
+	  "content": "<html> .....",
+	  "status": 200,
+	  "statusText": "OK",
+	  "success": 1,
+	  "redirectInfo": [],
+	}
+<
+"header"
+		The header lines of a response.  This can convert to
+		|Dictionary| by |Vital.Web.HTTP.parseHeader()|.
+
+"allHeaders"
+		All of header lines that includes redirectInfo.
+
+"content"
+		The content of a response.
+
+"status"
+		The http status code of a response.
+		If the code couldn't take, this is 0.
+
+"statusText"
+		The http status code text of a response.
+		If the code couldn't take, this is the empty string.
+
+"success"
+		This is 1 if the "status" is 2xx.
+
+"redirectInfo"
+		When the request was redirected, the redirected responses are
+		stored.  Form of these are the same as a response.
+
+
+
+------------------------------------------------------------------------------
+CLIENT					*Vital.Web.HTTP-client*
+
+The following can be used.
+(TODO: More document.  Especially about limitation.)
+
+python					*Vital.Web.HTTP-client-python*
+	Use Python's urllib2 library via |if_python|.
+
+curl					*Vital.Web.HTTP-client-curl*
+	Use curl command.
+
+	http://curl.haxx.se/
+
+wget					*Vital.Web.HTTP-client-wget*
+	Use wget command.
+
+	http://www.gnu.org/software/wget/
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

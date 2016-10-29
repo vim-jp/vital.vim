@@ -1,0 +1,83 @@
+*vital/Text/INI.txt*	INI file library.
+
+Maintainer: Alisue <lambdalisue@hashnote.net>
+
+==============================================================================
+CONTENTS			*Vital.Text.INI-contents*
+
+INTRODUCTIONS		|Vital.Text.INI-introduction|
+INTERFACE		|Vital.Text.INI-interface|
+	FUNCTIONS		|Vital.Text.INI-functions|
+	RECORD			|Vital.Text.INI-record|
+
+
+==============================================================================
+INTRODUCTIONS				*Vital.Text.INI-introduction*
+
+*Vital.Text.INI* is a parser library for INI file.
+
+
+==============================================================================
+INTERFACE				*Vital.Text.INI-interface*
+
+-------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Text.INI-functions*
+
+parse_record({line})			*Vital.Text.INI.parse_record()*
+
+	Parse a line string of INI formatted text and return
+	|Vital.Text.INI-record| object.
+
+	{line} (required)
+	|String| value. A line string. A comment part (any strings after '#')
+	will be removed before parse.
+
+parse({ini} [, {fail-silently})		*Vital.Text.INI.parse()*
+
+	Parse an INI formatted text and return a dictionary.
+
+	{ini} (required)
+	|String| value. An INI formatted text.
+
+	{fail-silently} (optional)
+	0 or 1. If it is 0, the function will throw an exception when it found
+	unknown formatted line. Otherwise it will ignore the line.
+
+parse_file({file} [, {fail-silently})	*Vital.Text.INI.parse_file()*
+
+	Parse an INI formatted file and return a dictionary.
+
+	{file} (required)
+	|String| value. A path string of an INI formatted file.
+
+	{fail-silently} (optional)
+	0 or 1. If it is 0, the function will throw an exception when it found
+	unknown formatted line. Otherwise it will ignore the line.
+
+-------------------------------------------------------------------------------
+RECORD					*Vital.Text.INI-record*
+
+|Vital.Text.INI-record| object is a dictionary which has 'type' attribute.
+The 'type' attribute indicate the type of record and followings are used.
+
+	'emptyline'
+	This record indicate an emptyline. Note that comment lines will be
+	detected as 'emptyline' while any comment strings are removed before
+	parsing.
+
+	'section'
+	This record indicate a section line such as '[default]'. This type of
+	record also has 'name' attribute which indicate a name of the section.
+
+	'parameter'
+	This record indicate a parameter line such as 'key = value'. This type
+	of record also has 'key' and 'value' attributes which indicate a key
+	and value of the parameter respectively.
+
+	'unknown'
+	This record indicate an unknown line. This type of record also has
+	'value' attribute which contain a value of the line.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

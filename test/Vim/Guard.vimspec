@@ -65,7 +65,7 @@ Describe Vim.Guard
         setl backupcopy=no
         call option.restore()
         Assert Equals(&g:backupcopy, 'yes')
-        Assert Equals(&l:backupcopy, v:version >= 704 ? '' : 'yes')
+        Assert Equals(&l:backupcopy, has('patch-7.4.456') ? '' : 'yes')
       End
       It restore a value of the option when assigned [global-local with &g:]
         let option = sf._new_option('&g:backupcopy')
@@ -73,14 +73,14 @@ Describe Vim.Guard
         setl backupcopy=no
         call option.restore()
         Assert Equals(&g:backupcopy, 'yes')
-        Assert Equals(&l:backupcopy, v:version >= 704 ? 'no' : 'yes')
+        Assert Equals(&l:backupcopy, has('patch-7.4.456') ? 'no' : 'yes')
       End
       It restore a value of the option when assigned [global-local with &l:]
         let option = sf._new_option('&l:backupcopy')
         setg backupcopy=no
         setl backupcopy=no
         call option.restore()
-        Assert Equals(&g:backupcopy, v:version >= 704 ? 'no' : 'yes')
+        Assert Equals(&g:backupcopy, has('patch-7.4.456') ? 'no' : 'yes')
         Assert Equals(&l:backupcopy, 'yes')
       End
       It restore a value of the option when assigned [local to buffer]
@@ -173,19 +173,17 @@ Describe Vim.Guard
         Assert Equals(getreg('a'), 'foobar')
         Assert Equals(getreg('b'), 'hogehoge')
       End
-      if v:version >= 704
-        " NOTE:
-        " It seems expression register does not work in Vim 7.3 ?
-        " https://travis-ci.org/vim-jp/vital.vim/jobs/109619393
-        It restore a RAW value of the expression register when assigned
-          call setreg('=', '100 + 100 + 100')
-          let register = sf._new_register('@=')
-          call setreg('=', '100 * 5')
-          call register.restore()
-          Assert Equals(getreg('='), '300')
-          Assert Equals(getreg('=', 1), '100 + 100 + 100')
-        End
-      endif
+      It restore a RAW value of the expression register when assigned
+        " NOTE: 
+        " '=' could not be used in setreg() before Vim 7.4.243
+        " https://github.com/vim/vim/commit/5a50c2255c447838d08d3b4895a3be3a41cd8eda
+        let @= = '100 + 100 + 100'
+        let register = sf._new_register('@=')
+        let @= = '100 * 5'
+        call register.restore()
+        Assert Equals(getreg('='), '300')
+        Assert Equals(getreg('=', 1), '100 + 100 + 100')
+      End
     End
   End
   Describe [PRIVATE] s:_new_environment({name})

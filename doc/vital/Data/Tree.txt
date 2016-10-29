@@ -1,0 +1,103 @@
+*vital/Data/Tree.txt*		tree utilities library.
+
+Maintainer: rbtnn   <naru123456789@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Tree-contents*
+
+INTRODUCTION			|Vital.Data.Tree-introduction|
+INTERFACE			|Vital.Data.Tree-interface|
+  Functions			  |Vital.Data.Tree-functions|
+  Examples			  |Vital.Data.Tree-examples|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Tree-introduction*
+
+*Vital.Data.Tree* is Tree Utilities Library.
+
+==============================================================================
+INTERFACE				*Vital.Data.Tree-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Tree-functions*
+
+new({token},...)			*Vital.Data.Tree.new()*
+	Create a new Tree object. There are 2 ways to create a new Tree
+	object.
+	(1) Give a dict that contains token and children in its key as
+	{token}
+	(2) Give a string as token in {token}, and multiple of children nodes
+	in later arguments.
+
+	Note that if you choose the (1) way, all the rest of arguments will be
+	silently ignored.
+
+------------------------------------------------------------------------------
+
+Tree.token                              *Vital.Data.Tree.token*
+Tree.children                           *Vital.Data.Tree.children*
+Tree.addchild                           *Vital.Data.Tree.addchild*
+Tree.todict                             *Vital.Data.Tree.todict*
+Tree.preorder_traversal                 *Vital.Data.Tree.preorder_traversal*
+Tree.inorder_traversal                  *Vital.Data.Tree.inorder_traversal*
+Tree.postorder_traversal                *Vital.Data.Tree.postorder_traversal*
+Tree.renderer                           *Vital.Data.Tree.renderer*
+
+==============================================================================
+EXAMPLES   				*Vital.Data.Tree-examples*
+
+>
+    let s:V = vital#{plugin-name}#new()
+    let s:T = s:V.import('Data.Tree')
+
+    let tree_obj = s:T.new('+',1,s:T.new('-',2,3))
+    " or
+    let tree_obj = s:T.new('+', [1,s:T.new('-',2,3)] )
+    "
+    "    +
+    "   / \
+    "  1   -
+    "     / \
+    "    2   3
+    "
+
+    echo tree_obj.token
+    " +
+
+    echo tree_obj.children
+    " [1,s:T.new('-',2,3)]
+
+    echo tree_obj.todict()
+    " {'+': ['1', {'-': ['2', '3']}]}
+
+    echo tree_obj.preorder_traversal()
+    " ['+', 1, '-', 2, 3]
+
+    echo tree_obj.inorder_traversal()
+    " [1, '+', 2, '-', 3]
+
+    echo tree_obj.postorder_traversal()
+    " [1, '-', 2, 3, '+']
+
+    echo tree_obj.addchild(4).todict()
+    " {'+': ['1', {'-': ['2', '3']}, '4']}
+    "
+    "     +
+    "   / | \
+    "  1  -  4
+    "    / \
+    "   2   3
+    "
+
+    echo join(tree_obj.renderer(), "\n")
+    " * 3
+    " |
+    " | * 2
+    " | /
+    " * '-'
+    " |
+    " | * 1
+    " | /
+    " * '+'
+<
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

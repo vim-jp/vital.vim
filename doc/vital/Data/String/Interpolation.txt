@@ -1,0 +1,60 @@
+*vital/Data/String/Interpolation.txt*	String interpolation in Vim
+
+Maintainer: haya14busa <hayabusa1419@gmail.com>
+
+==============================================================================
+CONTENTS			*Vital.Data.String.Interpolation-contents*
+
+INTRODUCTION		|Vital.Data.String.Interpolation-introduction|
+INTERFACE		|Vital.Data.String.Interpolation-interface|
+  Functions		  |Vital.Data.String.Interpolation-functions|
+
+==============================================================================
+INTRODUCTION			*Vital.Data.String.Interpolation-introduction*
+
+	*Vital.Data.String.Interpolation* is String interpolation library.
+>
+	let s:V = vital#{plugin-name}#new()
+	let s:I = s:V.import("Data.String.Interpolation")
+>
+	echo s:I.interpolate('Hi, ${name}!', {'name': 'haya14busa'})
+	" => Hi, haya14busa!
+	let s:name = 'haya14busa'
+
+==============================================================================
+INTERFACE			*Vital.Data.String.Interpolation-interface*
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.Data.String.Interpolation-functions*
+
+interpolate({str} [,{context}])	*Vital.Data.String.Interpolation.interpolate()*
+				*Vital.Data.String.Interpolation-${}*
+	String interpolation[1] allows you to build string with evaluating
+	expressions inside `${}` in the {string}. You can pass a {context}
+	dictionary to evaluate `${expr}`. NOTE: Invalid key in {context} is
+	skipped like '000' in a:.
+
+	[1]: http://en.wikipedia.org/wiki/String_interpolation
+>
+	echo s:I.interpolate('Hi, ${name}!', {'name': 'haya14busa'})
+	" => Hi, haya14busa!
+
+	let scores = [
+	\   {'name': 'haya14busa', 'score': 14},
+	\   {'name': 'tom', 'score': 32}
+	\ ]
+	for score in scores
+	  echo s:I.interpolate('Hi, ${name}. Your SCORE is ${score}!', score)
+	endfor
+	" => Hi, haya14busa. Your SCORE is 14!
+	" => Hi, tom. Your SCORE is 32!
+
+	" You can just pass :h internal-variables as a context.
+	function! s:IIFE() abort
+	  let name = 'haya14busa'
+	  return s:I.interpolate('Hi, ${name}!', l:)
+	endfunction
+	echo s:IIFE()
+	" => Hi, haya14busa!
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:fdm=marker:

@@ -1,0 +1,81 @@
+*vital/Data/BigNum.txt*		Multi precision integer library.
+
+Maintainer: aomoriringo <sel0433 at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Data.BigNum-contents*
+
+INTRODUCTION			|Vital.Data.BigNum-introduction|
+INTERFACE			|Vital.Data.BigNum-interface|
+  Functions			|Vital.Data.BigNum-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.BigNum-introduction*
+
+*Vital.Data.BigNum* is a multi precision integer library.
+It provides some functions to manipulate multi precision integer.
+
+>
+	let s:V = vital#{plugin-name}#new()
+	let s:BigNum = s:V.import("Data.BigNum")
+
+	let x = s:BigNum.from_num(42)
+	let y = s:BigNum.from_string("12345678901")
+	let z = s:BigNum.add(x, y)
+	echo s:BigNum.to_string(z)
+	" 12345678943
+	let z = s:BigNum.mul(y, 9753)
+	echo s:BigNum.to_string(z)
+	" 120407406321453
+
+	let [div, mod] = s:BigNum.div_mod(y, "112233")
+	echo s:BigNum.to_string(div)
+	" 110000
+	echo s:BigNum.to_string(mod)
+	" 48901
+<
+
+==============================================================================
+INTERFACE				*Vital.Data.BigNum-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.BigNum-functions*
+
+from_num({number})			*Vital.Data.BigNum.from_num()*
+	Return a new 'BigNum' object from {number}.
+
+from_string({str})			*Vital.Data.BigNum.from_string()*
+	Return a new 'BigNum' object from {str}.
+
+to_string({bignum})			*Vital.Data.BigNum.to_string()*
+	Return a string from {bignum}.
+
+compare({elem1}, {elem2})		*Vital.Data.BigNum.compare()*
+	Compares as signed integer.  Returns -1, 0, or 1.
+
+add({elem1}, {elem2})			*Vital.Data.BigNum.add()*
+	Return {elem1} + {elem2}, for {elem1} and {elem2} Number, String or
+	BigNum.
+
+sub({elem1}, {elem2})			*Vital.Data.BigNum.sub()*
+	Return {elem1} - {elem2}.
+
+mul({elem1}, {elem2})			*Vital.Data.BigNum.mul()*
+	Return {elem1} * {elem2}.
+
+div({elem1}, {elem2})			*Vital.Data.BigNum.div()*
+	Return {elem1} / {elem2}.
+
+mod({elem1}, {elem2})			*Vital.Data.BigNum.mod()*
+	Return {elem1} % {elem2}.
+
+div_mod({elem1}, {elem2})		*Vital.Data.BigNum.divmod()*
+	Return [Div(), Mod()].
+
+sign({elem})				*Vital.Data.BigNum.sign()*
+	Return sign of {elem} as -1, 0, or 1.
+
+neg({elem})				*Vital.Data.BigNum.neg()*
+	Return {elem} negated (-{elem}).
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

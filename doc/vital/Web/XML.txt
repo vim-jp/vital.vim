@@ -1,0 +1,47 @@
+*vital/Web/XML.txt*			XML parser written in pure Vim script.
+
+Maintainer: mattn <mattn.jp@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Web.XML-contents*
+
+INTRODUCTION				|Vital.Web.XML-introduction|
+INTERFACE				|Vital.Web.XML-interface|
+  Functions				|Vital.Web.XML-functions|
+  Structures				|Vital.Web.XML-structures|
+
+==============================================================================
+INTRODUCTION				*Vital.Web.XML-introduction*
+
+*Vital.Web.XML* is an XML parser library.
+
+==============================================================================
+INTERFACE				*Vital.Web.XML-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Web.XML-functions*
+
+parse({content})			*Vital.Web.XML.parse()*
+	Parse content into DOM object.
+
+parseFile({file})			*Vital.Web.XML.parseFile()*
+	Parse html file into DOM object.
+
+parseURL({url})				*Vital.Web.XML.parseURL()*
+	Get and parse html into DOM object.
+
+------------------------------------------------------------------------------
+STRUCTURES				*Vital.Web.XML-structures*
+
+DOM object is structured as |Directory| like following.
+>
+	{
+	  "name": "a",
+	  "attr": {
+	    "href": "http://example.com",
+	    "title": "example",
+	  },
+	  "child": [...]
+	}
+<
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

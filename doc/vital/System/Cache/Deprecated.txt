@@ -1,0 +1,41 @@
+*vital/System/Cache/Deprecated.txt*	store/restore cache into/from file
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS			*Vital.System.Cache.Deprecated-contents*
+
+INTRODUCTION			|Vital.System.Cache-introduction|
+  USAGE				|Vital.System.Cache-usage|
+  PRINCIPLE			|Vital.System.Cache-principle|
+INTERFACE			|Vital.System.Cache-interface|
+  FUNCTIONS			  |Vital.System.Cache-functions|
+CONFIG				|Vital.System.Cache-config|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.System.Cache.Deprecated-introduction*
+
+Note this module is deprecated. Use |Vital.System.Cache| instead.
+
+*Vital.System.Cache.Deprecated* is a TODO
+
+
+==============================================================================
+USAGE				*Vital.System.Cache.Deprecated-usage*
+>
+	let C = V.import('System.Cache')
+	TODO
+<
+
+==============================================================================
+INTERFACE			*Vital.System.Cache.Deprecated-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.System.Cache.Deprecated-functions*
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
+

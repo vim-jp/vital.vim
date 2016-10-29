@@ -1,0 +1,227 @@
+*vital/Prelude.txt*		crucial functions
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Prelude-contents*
+
+INTRODUCTION			|Vital.Prelude-introduction|
+INTERFACE			|Vital.Prelude-interface|
+  Functions			  |Vital.Prelude-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Prelude-introduction*
+
+*Vital.Prelude* is a module for basic functions in Vim script.
+
+NOTE: Some Vital modules implicitly depend on Prelude, because this was used
+to be a special module that you could use anywhere without having to
+explicitly import.
+
+functions:
+See #140 for the details (Japanese).
+https://github.com/vim-jp/vital.vim/issues/140
+
+==============================================================================
+INTERFACE				*Vital.Prelude-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Prelude-functions*
+
+glob({expr})					*Vital.Prelude.glob()*
+	A |glob()| wrapper which returns List and 'wildignore' does not affect
+	this function's return value.
+
+globpath({path}, {expr})			*Vital.Prelude.globpath()*
+	globpath() wrapper which returns List and 'suffixes' and 'wildignore'
+	does not affect this function's return value.
+
+is_numeric({value})				*Vital.Prelude.is_numeric()*
+	Returns non-zero if {value} is a |Number| or a |Float|, zero otherwise.
+		Examples: >
+		:let s:V = vital#{plugin-name}#new()
+		:let s:P = s:V.import('Prelude')
+		:echo s:P.is_numeric(123)
+<		1 >
+		:echo s:P.is_numeric(1.23)
+<		1 >
+		:echo s:P.is_numeric("hoge")
+<		0
+
+is_number({value})				*Vital.Prelude.is_number()*
+	Returns non-zero if {value} is a |Number|, zero otherwise.
+		Examples: >
+		:let s:V = vital#{plugin-name}#new()
+		:let s:P = s:V.import('Prelude')
+		:echo s:P.is_number(123)
+<		1 >
+		:echo s:P.is_number(1.23)
+<		0 >
+		:echo s:P.is_number("hoge")
+<		0
+
+is_float({value})				*Vital.Prelude.is_float()*
+	Returns non-zero if {value} is a |Float|, zero otherwise.
+		Examples: >
+		:let s:V = vital#{plugin-name}#new()
+		:let s:P = s:V.import('Prelude')
+		:echo s:P.is_float(123)
+<		0 >
+		:echo s:P.is_float(1.23)
+<		1 >
+		:echo s:P.is_float("hoge")
+<		0
+
+is_string({value})				*Vital.Prelude.is_string()*
+	Returns non-zero if {value} is a String (|expr-string|), zero otherwise.
+
+is_funcref({value})				*Vital.Prelude.is_funcref()*
+	Returns non-zero if {value} is a |Funcref|, zero otherwise.
+
+is_list({value})				*Vital.Prelude.is_list()*
+	Returns non-zero if {value} is a |List|, zero otherwise.
+
+is_dict({value})				*Vital.Prelude.is_dict()*
+	Returns non-zero if {value} is a |Dictionary|, zero otherwise.
+
+					*Vital.Prelude.truncate_skipping()*
+truncate_skipping({str}, {max}, {footer-width}, {separator})
+	This function is deprecated. Please use
+	|Vital.Data.String.truncate_skipping()| instead.
+
+truncate({str}, {width})			*Vital.Prelude.truncate()*
+	This function is deprecated. Please use |Vital.Data.String.truncate()|
+	instead.
+
+strwidthpart({str}, {width})			*Vital.Prelude.strwidthpart()*
+	This function is deprecated. Please use
+	|Vital.Data.String.strwidthpart()| instead.
+
+strwidthpart_reverse({str}, {width})	*Vital.Prelude.strwidthpart_reverse()*
+	This function is deprecated. Please use
+	|Vital.Data.String.strwidthpart_reverse()| instead.
+
+wcswidth({str})					*Vital.Prelude.wcswidth()*
+	This function is deprecated. Please use |Vital.Data.String.wcswidth()|
+	instead.
+
+is_windows()					*Vital.Prelude.is_windows()*
+	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
+	Note that this returns zero if Vim is a Cygwin version.
+
+is_cygwin()					*Vital.Prelude.is_cygwin()*
+	Returns non-zero if Vim is a Cygwin version, zero otherwise.
+
+is_mac()					*Vital.Prelude.is_mac()*
+	Returns non-zero if Vim is a Macintosh version, zero otherwise.
+
+is_unix()					*Vital.Prelude.is_unix()*
+	Returns non-zero if Vim is a MS-Windows version, zero otherwise.
+	Note that this returns non-zero if Vim is a Cygwin version.
+
+smart_execute_command({action}, {word})	*Vital.Prelude.smart_execute_command()*
+	Like a combination of |printf()| and |:execute|.
+>
+	let x = 123
+	call smart_execute_command('echo', x)
+<
+	becomes
+>
+	execute 'echo' 123
+<
+
+escape_file_searching({str})		*Vital.Prelude.escape_file_searching()*
+	TODO
+
+escape_pattern({str})			*Vital.Prelude.escape_pattern()*
+	Use |Vital.Data.String.escape_pattern()| instead.
+	Note that |Vital.Data.String.escape_pattern()| does not escape a
+	double quotation mark (") while it is not a part of regex pattern.
+
+getchar(...)					*Vital.Prelude.getchar()*
+	This is like builtin |getchar()| but always returns string.
+
+getchar_safe(...)				*Vital.Prelude.getchar_safe()*
+	This is like builtin |getchar()| but always returns string,
+	and also does |inputsave()|/|inputrestore()| before/after |getchar()|.
+
+input_safe(...)					*Vital.Prelude.input_safe()*
+	Like builtin getchar() but do |inputsave()|/|inputrestore()|
+	before/after |input()|.
+
+input_helper({funcname}, {args})		*Vital.Prelude.input_helper()*
+	Do |inputsave()|/|inputrestore()| before/after calling |a:funcname|.
+
+set_default({var}, {val})			*Vital.Prelude.set_default()*
+	Assign a {val} to a variable which name is {var} if the {var} is
+	undefined. Even if the {var} is already defined, if the type of {val}
+	is different to the value of {var}, it'll assign anyways.
+
+	For example,
+>
+	" not exactly same!
+	call set_default('g:aaa', 'bbb')
+<
+	Is similar to
+>
+	" not exactly same!
+	let g:aaa = get(g:, 'aaa', 'bbb')
+<
+	But not exactly same when the type of aaa is not |expr-string|.
+
+				*Vital.Prelude.substitute_path_separator()*
+substitute_path_separator({path})
+	TODO
+>
+	echo V.substitute_path_separator('a/b/c')
+<
+	is same to
+>
+	echo 'a/b/c'
+<
+	in most cases but only on Windows it is same to the following.
+>
+	echo 'a\\b\\c'
+<
+
+path2directory({path})			*Vital.Prelude.path2directory()*
+	TODO
+>
+	P.path2directory('a/b/c.txt')
+<
+	is equivalent to
+>
+	P.substitute_path_separator(fnamemodify('a/b/c.txt', ':p:h'))
+<
+	and
+>
+	P.path2directory('a/b/d') " d is a directory
+<
+	is equivalent to
+>
+	P.substitute_path_separator('a/b/d')
+<
+
+				*Vital.Prelude.path2project_directory()*
+path2project_directory({path}[, {is_allow_empty}])
+	Look up project root path and return it.
+
+	Project root = <VCS directory> or <Project directory>
+	VCS directory = The directory which has
+			".git" or ".bzr" or ".hg" or ".svn"
+	Project directory = The directory which has
+			"build.xml" or "prj.el" or ".project"
+			or "pom.xml" or "package.json" or "Makefile"
+			or "configure" or "Rakefile" or "NAnt.build"
+			or "P4CONFIG" or "tags" or "gtags"
+
+	After failing looking up directory,
+	And if {is_allow_empty} was given and non-zero,
+	returns {path} which is:
+		1. Full Path
+		2. On MS Windows, all path separator
+		   is replaced by '/'
+	Otherwise, empty string was returned.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

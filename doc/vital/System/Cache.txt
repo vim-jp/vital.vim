@@ -1,0 +1,203 @@
+*vital/System/Cache.txt*	An unified cache system
+
+Maintainer: Alisue <lambdalisue@hashnote.net>
+
+
+==============================================================================
+CONTENTS			*Vital.System.Cache-contents*
+
+Introductions		|Vital.System.Cache-intro|
+Usage			|Vital.System.Cache-usage|
+Interface		|Vital.System.Cache-interface|
+  Functions		|Vital.System.Cache-functions|
+  Methods		|Vital.System.Cache-methods|
+
+
+==============================================================================
+INTRODUCTIONS				*Vital.System.Cache-intro*
+
+*Vital.System.Cache* is an unified cache system. All variants (backends) share
+the application interface so users can easily switch to a different cache
+variant. Currently the following variants are available.
+
+- |Vital.System.Cache.Dummy|      : A dummy cache system which cache nothing
+- |Vital.System.Cache.Memory|     : A dictionary instance based cache system
+- |Vital.System.Cache.File|       : A file based cache system
+- |Vital.System.Cache.SingleFile| : A single file based cache system
+
+Note |Vital.System.Cache| is replaced with a new unified cache system. An old
+version have been moved into |Vital.System.Cache.Deprecated|.
+
+
+==============================================================================
+USAGE					*Vital.System.Cache-usage*
+
+First of all, create a new cache instance via |Vital.System.Cache.new()|
+function. The following assume that you want to use a file based cache system.
+>
+	let s:Cache = s:V.import('System.Cache')
+	let s:cache = s:Cache.new('file', { 'cache_dir': '~/.cache/foo' })
+<
+The |Vital.System.Cache.new()| function take one or two arguments. The first
+argument is a name of a variant and currently the followings are available:
+
+- "dummy"      : For |Vital.System.Cache.Dummy|
+- "memory"     : For |Vital.System.Cache.Memory|
+- "file"       : For |Vital.System.Cache.File|
+- "singlefile" : For |Vital.System.Cache.SingleFile|
+
+The second argument is a variant specified option dictionary. For example,
+|Vital.System.Cache.File| require 'cache_dir' option so the example code above
+specify 'cache_dir' option in the second argument. See a document of each
+variant for available options.
+
+Note that variants listed above will automatically vitalized when you vitalize
+|Vital.System.Cache| to enable switching variants.
+If you just want to use a particular variant and want to reduce the size of
+your vital directory, you can directly import the variant without using
+|Vital.System.Cache| module like:
+>
+	" You don't need a first argument for new() while you are direcly
+	" importing a particular variant
+	let s:Cache = s:V.import('System.Cache.File')
+	let s:cache = s:Cache.new({ 'cache_dir': '~/.cache/foo' })
+<
+After you get an instance of cache system, you can manipulate your cache with
+the following interface:
+
+- has({name})			Check if a {name} cache exists
+- get({name}[, {default}])	Get a value from a {name} cache
+- set({name}, {value})		Set a value to a {name} cache
+- keys()			Get a list of available cache names
+- remove({name})		Remove a {name} cache
+- clear()			Remove all caches
+
+The following example code simply calculate a factorial number by using a
+cache system.
+>
+	function! s:factorial(n)
+	  if a:n == 0
+	    return 1
+	  elseif s:cache.has(a:n)
+	    return s:cache.get(a:n)
+	  else
+	    let x = s:factorial(a:n - 1) * a:n
+	    call s:cache.set(a:n, x)
+	    return x
+	  endif
+	endfunction
+
+	echo s:factorial(10)
+<
+If you want to create your own variants, follow an instruction written in
+|Vital.System.Cache.Base|.
+
+
+==============================================================================
+INTERFACE				*Vital.System.Cache-interface*
+
+See a document of each variant for detail. The following explain general
+meaning of each API.
+
+-------------------------------------------------------------------------------
+FUNCTIONS				*Vital.System.Cache-functions*
+
+new({name}[, {options}])		*Vital.System.Cache.new()*
+
+	Create a new instance of System.Cache. The following variant {name}s
+	are currently available:
+
+	"dummy"
+	A dummy cache system (|Vital.System.Cache.Dummy|)
+
+	"memory"
+	A dictionary instance based cache system (|Vital.System.Cache.Memory|)
+
+	"file"
+	A filesystem based cache system (|Vital.System.Cache.File|)
+
+	"singlefile"
+	A single file based cache system (|Vital.System.Cache.SingleFile|)
+
+	The second argument {options} will be passed to a new method of a
+	specified variant. See a document of new function in each variant to
+	find available options.
+
+register({name}, {class})		*Vital.System.Cache.register()*
+
+	Register a new variant {class} as {name}.
+
+unregister({name})			*Vital.System.Cache.unregister()*
+
+	Remove a registration of {name} variant.
+
+-------------------------------------------------------------------------------
+METHODS					*Vital.System.Cache-methods*
+
+cache_key({obj})		*Vital.System.Cache-instance.cache_key()*
+
+	Return a |String| which will be used as a cache key of {obj}.
+
+has({name})			*Vital.System.Cache-instance.has()*
+
+	Whether the cache instance has a {name} cache or not.
+
+	{name} (required)
+	A name of the cache. An actual cache key should have been created via
+	cache_key() method of each variant thus {name} is not required to be
+	|String|.
+
+get({name}[, {default}])	*Vital.System.Cache-instance.get()*
+
+	Return a value from a {name} cache. It no {name} cache is found, it
+	return {default} or an empty |String|.
+
+	{name} (required)
+	A name of the cache. An actual cache key should have been created via
+	cache_key() method of each variant thus {name} is not required to be
+	|String|.
+
+	{default} (optional)
+	A default value. If no {default} is specified, an empty |String|
+	should be used.
+
+set({name}, {value})		*Vital.System.Cache-instance.set()*
+
+	Save {value} to a {name} cache.
+
+	{name} (required)
+	A name of the cache. An actual cache key should have been created via
+	cache_key() method of each variant thus {name} is not required to be
+	|String|.
+
+	{value} (required)
+	A value of the cache.
+
+keys()				*Vital.System.Cache-instance.keys()*
+
+	Return a list of cache keys
+
+remove({name})			*Vital.System.Cache-instance.remove()*
+
+	Remove a {name} cache. If no {name} cache is found, it should do
+	nothing.
+
+	{name} (required)
+	A name of the cache. An actual cache key should have been created via
+	cache_key() method of each variant thus {name} is not required to be
+	|String|.
+
+clear()				*Vital.System.Cache-instance.clear()*
+
+	Clear all caches
+
+on_changed()			*Vital.System.Cache-instance.on_changed()*
+
+	A user defined hook method. This method is called when the content of
+	the cache is changed, namely after the following methods:
+	- |Vital.System.Cache-instance.set()|
+	- |Vital.System.Cache-instance.remove()|
+	- |Vital.System.Cache-instance.clear()|
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

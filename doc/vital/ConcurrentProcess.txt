@@ -1,0 +1,345 @@
+*vital/ConcurrentProcess.txt*	Manages processes concurrently with vimproc.
+
+Maintainer: ujihisa <ujihisa at gmail com>
+
+==============================================================================
+CONTENTS			*Vital.ConcurrentProcess-contents*
+
+INTRODUCTION			|Vital.ConcurrentProcess-introduction|
+  USAGE				|Vital.ConcurrentProcess-usage|
+  PRINCIPLE			|Vital.ConcurrentProcess-principle|
+INTERFACE			|Vital.ConcurrentProcess-interface|
+  FUNCTIONS			  |Vital.ConcurrentProcess-functions|
+TERMS				|Vital.ConcurrentProcess-terms|
+
+
+
+==============================================================================
+INTRODUCTION			*Vital.ConcurrentProcess-introduction*
+
+*Vital.ConcurrentProcess* (or if it's too long you can all it as concproc) is
+to communicate with external process concurrently with using |vimproc|.  This
+library stores external processes information spawned by this library, and
+provides higher layer concurrent synchronous non-blocking read/write
+interface. This library doesn't use thread nor fork, so by nature this library
+can't crash Vim by them.
+
+This module is most likely used for following types of Vim plugins:
+* Language support (code completion, execution, or inspection) with using the
+  language runtime process.
+  (e.g. neoclojure.vim provides clojure code completion and execution with
+  using leiningen as a persistent external process)
+  https://github.com/ujihisa/neoclojure.vim
+* Networking with using external process.
+  (e.g. create a zeromq connection via external ruby process, and use it from
+  Vim concurrently)
+
+ConcurrentProcess is particularly powerful if the external process takes long
+time to start, comparing to do without using ConcurrentProcess, because it's
+managed by ConcurrentProcess.
+(e.g. JVM, or any scripting languages with lots of libraries)
+
+Note that this library doesn't work on Vim without vimproc; vimproc is
+required.
+
+
+==============================================================================
+USAGE				*Vital.ConcurrentProcess-usage*
+
+Here I will introduce 3 different usage depending on your purpose.
+
+1. like system(cmd) -- run external command and wait until the end.
+
+This is the simplest example; the following sample code runs "ls" command as
+an external process, wait for the termination of the process synchronously,
+and returns the output. This also takes care of exceptional cases such as (1)
+taking longer time than you have expected, (2) unexpected stderr output, or (3)
+failure of invoking the external command itself (as an exception thornw.)
+
+Note that this usage gives you little benefit to you comparing just to use
+system(), vimproc#system(), or Vital.Process.system(). Keep reading other
+examples before you try to use this for your own plugin ;)
+>
+	let s:CP = vital#{plugin-name}#new().import('ConcurrentProcess')
+
+	function! s:list_files(path) abort
+	  let label = s:CP.of(['ls', a:path], '', [
+		\ ['*read-all*', 'x']])
+	  let [out, err, timeout_p] = s:CP.consume_all_blocking(label, 'x', 1.0)
+
+	  if timeout_p
+	    throw 'Timed out'
+	  elseif err !=# ''
+	    throw printf("[STDERR] %s", err)
+	  endif
+	  return split(out, '\r\?\n')
+	endfunction
+
+	echo s:list_files('/') " == ['bin', 'boot', 'dev', 'etc', ...]
+<
+
+Things to learn from this example:
+* |Vital.ConcurrentProcess.of()| with '*read-all*' query
+    * This creates an external process, and reserve ConcurrentProcess to read
+      all the stdout/stderr until the process terminates by itself.
+* |Vital.ConcurrentProcess.consume_all_blocking()|
+    * This starts the reserved queries above, in this case this start reading
+      stdout/stderr, and return them once process terminates.
+* The ls process will be created in the beginning of list_files(), and will be
+  terminated during the function.
+
+2. like `system(cmd, input)`
+
+You can give text to stdin as well.
+>
+	let s:CP = vital#{plugin-name}#new().import('ConcurrentProcess')
+
+	function! s:with_linenum(text) abort
+	  let label = s:CP.of('cat -n', '', [
+		\ ['*writeln*', a:text],
+		\ ['*read-all*', 'x']])
+	  let [out, err, timeout_p] = s:CP.consume_all_blocking(label, 'x', 1.0)
+
+	  if timeout_p
+	    throw 'Timed out'
+	  elseif err !=# ''
+	    throw printf("[STDERR] %s", err)
+	  endif
+	  return out
+	endfunction
+
+	echo s:with_linenum("Hello\nWorld")
+<
+
+Note that you can separate of() with different queue() call, like this. They
+are different, but in this example they behave exactly samely.
+>
+	  " Before
+	  let label = s:CP.of('cat -n', '', [
+		\ ['*writeln*', a:text],
+		\ ['*read-all*', 'x']])
+
+	  " After
+	  let label = s:CP.of('cat -n', '', [])
+	  call s:CP.queue(label, [
+		\ ['*writeln*', a:text],
+		\ ['*read-all*', 'x']])
+<
+
+3. like `system(cmd, input)`, but reuse the process
+
+>
+	function! s:calc_ruby_sync(expr) abort
+	  " This spawns `irb` process only if
+	  " it does not exist.
+	  let label = s:CP.of('irb', '', [])
+	  " Let the irb calculate the given `expr`
+	  call s:CP.queue(label, [
+		\ ['*writeln*', a:expr],
+		\ ['*read*', '> ']])
+	  let [out, err] = s:CP.consume(label, 'x')
+	  return out " Usually you also handle stderr based on `err`
+	endfunction
+<
+
+==============================================================================
+PRINCIPLE			*Vital.ConcurrentProcess-principle*
+
+* Nonblocking by default
+  * blocking APIs should have verbose name to discourage developers to use
+* Timeout is required if it's blocking
+  * Remember that: not to specify timeout is same to specify timeout as
+    forever. Having 30 year timeout explicitly is better than to specify
+    forever implicitly.
+* Synchronous (asynchronous in Vim always makes trouble)
+* Don't show lower layer too much easily, but don't hide completely. No
+  perfect abstraction exists in the world.
+* Avoid tricky specification. Function name and behaviour itself should
+  explain what it does.
+>
+==============================================================================
+INTERFACE			*Vital.ConcurrentProcess-interface*
+
+The following function is to start a process, or to refer existing process.
+	|Vital.ConcurrentProcess.of()|
+The following function is to terminate a process.
+	|Vital.ConcurrentProcess.shutdown()|
+The following function is to add queries in queue.
+	|Vital.ConcurrentProcess.queue()|
+The following function is to obtain information without side effect, based on
+queries in the queue and etc.
+	|Vital.ConcurrentProcess.is_done()|
+The following functions are to obtain information with side effect, based on
+queries in the queue and etc.
+	|Vital.ConcurrentProcess.consume()|
+	|Vital.ConcurrentProcess.consume_all_blocking()|
+	|Vital.ConcurrentProcess.is_busy()|
+The following functions are for debugging.
+	|Vital.ConcurrentProcess.log_clear()|
+	|Vital.ConcurrentProcess.log_dump()|
+Etc
+	|Vital.ConcurrentProcess.tick()|
+	|Vital.ConcurrentProcess.is_available()|
+
+------------------------------------------------------------------------------
+FUNCTIONS			*Vital.ConcurrentProcess-functions*
+
+of({command}, {dir}, {list})			*Vital.ConcurrentProcess.of()*
+	Spawns an external process based on the arguments, and returns a
+	string which is used as |Vital.ConcurrentProcess-term.label| later.
+
+	Besides the side-effect, the return value is idempotent; if you give
+	exactly same arguments, this function always returns exactly same
+	string.
+
+	Check |Vital.ConcurrentProcess-usage| how to use this with other
+	functions.
+
+	{command} can be a single string that contains both command name and
+	command line options such as "ls /tmp", or it can also be a list such
+	as ["ls", "/tmp"]
+
+	Idempotent? Yes -- but side-effect can be different.
+
+is_available()			*Vital.ConcurrentProcess.is_available()*
+	Returns 1 if the running Vim can use ConcurrentProcess, otherwise 0.
+
+	Idempotent? Yes
+
+tick({label})				*Vital.ConcurrentProcess.tick()*
+	This is an action |Vital.ConcurrentProcess-term.action|, and does
+	nothing besides action.
+
+queue({label}, {list})			*Vital.ConcurrentProcess.queue()*
+	Pushes the given {list} of queries into the queue for the process.
+	The query has to be either one of them.
+	['*writeln*', string]
+	['*read*', string, string]
+	['*read-all*', string]
+
+>
+	call s:CP.queue(label, [
+	      \ ['*writeln*', '1 + 2'],
+	      \ ['*read*', 'x', '> ']])
+	let [out, err] = s:CP.consume(label, 'x')
+	" out may contain "3"
+<
+
+	Notes:
+	* '*write*' without newline does not exist yet. Please ask me if you
+	  actually need it.
+	* '*read-all*' must be always at the very end.
+	* '*read-all*' automatically closes stdin pipe beforehand.
+
+consume({label}, {varname})		*Vital.ConcurrentProcess.consume()*
+	This is an action |Vital.ConcurrentProcess-term.action|, and returns
+	accumulated value for {varname} immediately, and remove it from
+	internal buffer.
+
+	similar to consume() described above, but this doesn't immediately
+	return the current output but blocks until the end of the read of the
+	given {varname}, at most {timeout-sec} seconds. This also returns a
+	0/1 value as the 3rd element of the list to tell if it has timed out
+	or not.
+
+	Idempotent? No -- this removes the internal buffer.
+
+consume_all_blocking({label}, {varname}, {timeout-sec})
+			*Vital.ConcurrentProcess.consume_all_blocking()*
+	This is an action |Vital.ConcurrentProcess-term.action|, and does
+	similar to consume() described above, but this doesn't immediately
+	return the current output but blocks until the end of the read of the
+	given {varname}, at most {timeout-sec} seconds. This also returns a
+	0/1 value as the 3rd element of the list to tell if it has timed out
+	or not.
+>
+	" get stdout/stderr for the var x, with blocking at worst 10 seconds.
+	let [out, err, timeout_p] =
+	      \ s:CP.consume_all_blocking(label, 'x', 10)
+	if timeout_p
+	  " omg it timed out!
+	else
+	  " yes it completed without 10 seconds. Do normal stuff here
+	endif
+<
+	For your info this function is internally using is_done() described
+	below.
+
+	Idempotent? No -- this removes the internal buffer.
+
+is_done({label}, {varname})		*Vital.ConcurrentProcess.is_done()*
+	This is an action |Vital.ConcurrentProcess-term.action|, and checks
+	if the read operation of given {varname} has completed. You are
+	particularly expected to use this function when you use consume().
+
+	e.g.
+	is_done(label, 'x') == 1 if you didn't read/read-all with 'x' yet
+	is_done(label, 'x') == 1 if you did read/read-all with 'x' and it
+	completed.
+	is_done(label, 'x') == 1 if you did read/read-all with 'x' and it
+	didn't complete, but the process crashed and after auto restart you
+	didn't read/read-all yet.
+	is_done(label, 'x') == 0 only if you did read/read-all with 'x' and it
+	didn't complete nor crash yet.
+
+	Idempotent? No -- return value depends on internal state.
+
+is_busy({label})			*Vital.ConcurrentProcess.is_busy()*
+	This is an action |Vital.ConcurrentProcess-term.action|, and checks
+	if the queries are currently empty.
+
+	This function is possibly used for checking if you can querying
+	something light and get the response immedicately, with using
+	consume_all_blocking(), like for code completion.
+
+>
+	if s:CP.is_busy(label, 'code-completion')
+	  return 'Busy for something else. Try later please.'
+	else
+	  call s:CP.queue([
+		\ ['*writeln*', something],
+		\ ['*read*', 'code-completion', another_something]])
+	  return s:CP.consume_all_blocking(label, 'code-completion', 0.5)
+	endif
+<
+
+	Idempotent? No -- return value depends on internal state.
+
+shutdown({label})			*Vital.ConcurrentProcess.shutdown()*
+	Terminates the underlying process for the given label immediately, no
+	matter how many queries are in the queue. This also removes all
+	internal buffers for the process, including queries and logs.
+
+log_clear({label})			*Vital.ConcurrentProcess.log_clear()*
+	Just to wipe out accumulated logs for the process.
+
+log_dump({label})			*Vital.ConcurrentProcess.log_dump()*
+	Print out the accumulated logs for the process, and wipe out it.
+
+	Idempotent? No -- output depends on the internal buffer and every time
+	you call this ConcurrentProcess removes buffer.
+
+------------------------------------------------------------------------------
+TERMS				*Vital.ConcurrentProcess-terms*
+
+label					*Vital.ConcurrentProcess-term.label*
+	A string that represents a running/dead process managed by
+	ConcurrentProcess.
+
+action
+	The external process runs in parallel independent to Vim, but the
+	communication between Vim and the process is always done
+	synchronously. A function which is an action, such as consume(), will
+	trigger the communication; reads from stdout/stderr, or writes to stdin
+	if there's corresponding queue.
+
+	The following functions are actions.
+	* |Vital.ConcurrentProcess.tick()|
+	* |Vital.ConcurrentProcess.consume()|
+	* |Vital.ConcurrentProcess.consume_all_blocking()|
+	* |Vital.ConcurrentProcess.is_done()|
+	* |Vital.ConcurrentProcess.queue()|
+	* |Vital.ConcurrentProcess.is_busy()|
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

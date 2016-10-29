@@ -1,0 +1,89 @@
+*vital/System/File.txt*		filesystem utilities library.
+
+Maintainer: Shougo  <Shougo.Matsu@gmail.com>
+            tyru    <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.System.File-contents*
+
+INTRODUCTION			|Vital.System.File-introduction|
+INTERFACE			|Vital.System.File-interface|
+  Functions			  |Vital.System.File-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.System.File-introduction*
+
+*Vital.System.File* is Filesystem Utilities Library.
+It provides some functions for file system.
+
+>
+	let s:V = vital#{plugin-name}#new()
+	let s:F = s:V.import("System.File")
+<
+
+==============================================================================
+INTERFACE				*Vital.System.File-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.System.File-functions*
+
+open({filename})			*Vital.System.File.open()*
+	Opens a file specified as {filename}.  {filename} is a file or a
+	directory.
+>
+	call s:F.open("/tmp/file")
+<
+
+move({src}, {dest})			*Vital.System.File.move()*
+	Renames a file {src} to {dest}. Returns non-zero if successful,
+	otherwise 0.
+>
+	call s:F.move("/tmp/old", "/tmp/new")
+<
+
+copy({src}, {dest})			*Vital.System.File.copy()*
+	Copies a file {src} to {dest}. Returns non-zero if successful,
+	otherwise 0.
+>
+	call s:F.copy("/tmp/old", "/tmp/new")
+<
+copy_dir({src}, {dest})			*Vital.System.File.copy_dir()*
+	This function invokes |Vital.System.File.copy_dir_exe()|
+	if your environment has a command to copy a directory.
+	Otherwise, this function invokes |Vital.System.File.copy_dir_vim()|.
+	Returns non-zero on success.
+	Returns zero on failure.
+
+copy_dir_exe({src}, {dest})		*Vital.System.File.copy_dir_exe()*
+	Copy a {src} directory to {dest}.
+	This function only works if your environment has a command
+	to copy a directory. See the followings for the required command.
+
+	Unix	Windows ~
+	cp	robocopy
+
+	Returns non-zero on success.
+	Returns zero on failure.
+
+copy_dir_vim({src}, {dest})		*Vital.System.File.copy_dir_vim()*
+	This is pure Vim script implementation of
+	|Vital.System.File.copy_dir_exe()|.
+	Returns non-zero on success.
+	Returns zero on failure.
+
+					*Vital.System.File.mkdir_nothrow()*
+mkdir_nothrow({name} [, {path} [, {prot}]])
+	Creates a directory {name} without throwing any exception.  The
+	arguments are used like with |mkdir()|.  Returns a non-zero Number
+	if successful, otherwise 0.
+>
+	echo s:F.mkdir_nothrow("/tmp/exists_file")
+	" 0
+<
+
+rmdir({path} [, {flags}])		*Vital.System.File.rmdir()*
+	Removes a directory {path}.
+	If {flags} contains "r", this removes the directory and its contents
+	recursively.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

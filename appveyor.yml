@@ -2,10 +2,9 @@ version: '{build}'
 clone_depth: 10
 environment:
   matrix:
+    - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim74/oldest/win64/
+    - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim80/oldest/win64/
     - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/latest/win64/
-    - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim73/oldest/win64/
-    # To test with 7.3 final +kaoriya Vim binary, uncomment below line.
-    #- VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim73/final/win64/
     # To test with latest official Vim binary, uncomment below line.
     #- VIM_URL: http://vim-jp.org/redirects/vim/vim-win32-installer/latest/x64/
 install:

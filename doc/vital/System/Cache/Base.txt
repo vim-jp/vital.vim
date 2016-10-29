@@ -1,0 +1,240 @@
+*vital/System/Cache/Base.txt*	An abstract class of unified cache system
+
+Maintainer: Alisue <lambdalisue@hashnote.net>
+
+
+==============================================================================
+CONTENTS			*Vital.System.Cache.Base-contents*
+
+Introductions		|Vital.System.Cache.Base-intro|
+Tutorial		|Vital.System.Cache.Base-tutorial|
+Interface		|Vital.System.Cache.Base-interface|
+  Functions		|Vital.System.Cache.Base-functions|
+  Methods		|Vital.System.Cache.Base-methods|
+
+
+==============================================================================
+INTRODUCTIONS				*Vital.System.Cache.Base-intro*
+
+*Vital.System.Cache.Base* is an abstract class of unified cache system.
+The following variants are currently available.
+
+- |Vital.System.Cache.Dummy|      : A dummy cache system
+- |Vital.System.Cache.Memory|     : A dictionary instance based cache system
+- |Vital.System.Cache.File|       : A file based cache system
+- |Vital.System.Cache.SingleFile| : A single file based cache system
+
+This document is for creating your own variants. See |Vital.System.Cache| for
+the cache system usage.
+
+
+==============================================================================
+Tutorial				*Vital.System.Cache.Base-tutorial*
+
+First of all, create s:new(...) function to return an instance of your variant
+like:
+>
+	function! s:_vital_loaded(V) abort " {{{
+	  let s:Base = a:V.import('System.Cache.Base')
+	endfunction " }}}
+	function! s:_vital_depends() abort " {{{
+	  return ['System.Cache.Base']
+	endfunction " }}}
+
+	let s:cache = {
+	      \ '_cached': {},
+	      \ '__name__': 'your_variant_name',
+	      \}
+	function! s:new(...)
+	  return extend(
+	        \ call(s:Base.new, a:000, s:Base),
+	        \ deepcopy(s:cache)
+	        \)
+	endfunction
+<
+Then add "has", "get", "set", "keys", "remove", and "clear" methods into your
+cache instance like:
+>
+	function! s:cache.has(name) abort
+	  let cache_key = self.cache_key(a:name)
+	  return has_key(self._cached, cache_key)
+	endfunction
+
+	function! s:cache.get(name, ...) abort
+	  let default = get(a:000, 0, '')
+	  let cache_key = self.cache_key(a:name)
+	  if has_key(self._cached, cache_key)
+	    return self._cached[cache_key]
+	  else
+	    return default
+	  endif
+	endfunction
+
+	function! s:cache.set(name, value) abort
+	  let cache_key = self.cache_key(a:name)
+	  let self._cached[cache_key] = a:value
+	endfunction
+
+	function! s:cache.keys() abort
+	  return keys(self._cached)
+	endfunction
+
+	function! s:cache.remove(name) abort
+	  let cache_key = self.cache_key(a:name)
+	  if has_key(self._cached, cache_key)
+	    unlet self._cached[cache_key]
+	  endif
+	endfunction
+
+	function! s:cache.clear() abort
+	  let self._cached = {}
+	endfunction
+<
+
+==============================================================================
+INTERFACE				*Vital.System.Cache.Base-interface*
+
+To provide unified interface. The following functions and method are required
+to be implemented.
+
+-------------------------------------------------------------------------------
+FUNCTIONS				*Vital.System.Cache.Base-functions*
+
+new([{options}])			*Vital.System.Cache.Base.new()*
+
+	Create a new instance of System.Cache.Base.
+	If your variant require any extra information, use a dictionary to
+	specify values like:
+>
+	let s:cache = { '__name__': 'your_variant_name' }
+	function! s:new(...) abort
+	    let options = extend({
+	        \ 'foo': 'bar',
+	        \}, get(a:000, 0, {}))
+	    return extend(
+	        \ call(s:Base.new, a:000, s:Base),
+	        \ extend(options, deepcopy(s:cache))
+	        \)
+	endfunction
+<
+-------------------------------------------------------------------------------
+METHODS					*Vital.System.Cache.Base-methods*
+
+cache_key({obj})	*Vital.System.Cache.Base-instance.cache_key()*
+
+	Return a |String| which will be used as a cache key.
+	Variants can override this method to create a cache key from {obj}.
+	In default, it return {obj} if the {obj} is |String|. Otherwise it
+	return a string representation (See |string()| for details) of the
+	{obj}.
+
+has({name})		*Vital.System.Cache.Base-instance.has()*
+
+	Whether the cache instance has a {name} cache or not.
+	
+	VARIANTS MUST OVERRIDE THIS METHOD
+
+	{name} (required)
+	A name of the cache. An actual cache key SHOULD be created via
+	|Vital.System.Cache.Base-instance.cache_key()| method thus {name} is not
+	required to be |String|.
+
+	See the following example:
+>
+	function! s:cache.has(name) abort
+	    let cache_key = self.cache_key(a:name)
+	    return has_key(self._cached, cache_key)
+	endfunction
+<
+			*Vital.System.Cache.Base-instance.get()* 
+get({name}[, {default}])
+
+	Return a {name} cache. It no {name} cache is found, it return
+	{default} or an empty |String|.
+
+	VARIANTS MUST OVERRIDE THIS METHOD
+
+	{name} (required)
+	A name of the cache. An actual cache key SHOULD be created via
+	|Vital.System.Cache.Base-instance.cache_key()| method thus {name} is not
+	required to be |String|.
+
+	{default} (optional)
+	A default value. If no {default} is specified, an empty |String|
+	should be used.
+
+	See the following example:
+>
+	function! s:cache.get(name, ...) abort
+	    let default = get(a:000, 0, '')
+	    let cache_key = self.cache_key(a:name)
+	    if has_key(self._cached, cache_key)
+	        return self._cached[cache_key]
+	    endif
+	    return default
+	endfunction
+<
+set({name}, {value})	*Vital.System.Cache.Base-instance.set()*
+
+	Save {value} as a {name} cache.
+
+	VARIANTS MUST OVERRIDE THIS METHOD
+
+	{name} (required)
+	A name of the cache. An actual cache key SHOULD be created via
+	|Vital.System.Cache.Base-instance.cache_key()| method thus {name} is not
+	required to be |String|.
+
+	{value} (required)
+	A value of the cache.
+
+	See the following example:
+>
+	function! s:cache.set(name, value) abort
+	  let cache_key = self.cache_key(a:name)
+	  let self._cached[cache_key] = a:value
+	endfunction
+<
+keys()			*Vital.System.Cache.Base-instance.keys()*
+
+	Return a list of cache keys
+
+	VARIANTS MUST OVERRIDE THIS METHOD
+
+remove({name})		*Vital.System.Cache.Base-instance.remove()*
+
+	Remove a {name} cache. If no {name} cache is found, it should do
+	nothing.
+
+	VARIANTS MUST OVERRIDE THIS METHOD
+
+	{name} (required)
+	A name of the cache. An actual cache key will be created via
+	|Vital.System.Cache.Base-instance.cache_key()| method thus {name} is not
+	required to be |String|.
+
+	See the following example:
+>
+	function! s:cache.remove(name) abort
+	  let cache_key = self.cache_key(a:name)
+	  if has_key(self._cached, cache_key)
+	    unlet self._cached[cache_key]
+	  endif
+	endfunction
+<
+clear()			*Vital.System.Cache.Base-instance.clear()*
+
+	Clear all caches
+
+	VARIANTS MUST OVERRIDE THIS METHOD
+
+on_changed()		*Vital.System.Cache.Base-instance.on_changed()*
+
+	A user defined hook method. This method is called when the content of
+	the cache is changed, namely after the follwing methods:
+	- |Vital.System.Cache.Base-instance.set()|
+	- |Vital.System.Cache.Base-instance.remove()|
+	- |Vital.System.Cache.Base-instance.clear()|
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

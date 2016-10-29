@@ -99,6 +99,7 @@ function! s:read_content(content, ...) abort
         \ 'nobinary': 0,
         \ 'bad': '',
         \ 'edit': 0,
+        \ 'line': '',
         \}, get(a:000, 0, {}))
   let tempfile = empty(options.tempfile) ? tempname() : options.tempfile
   let optnames = [
@@ -112,7 +113,8 @@ function! s:read_content(content, ...) abort
   let optname = join(filter(optnames, '!empty(v:val)'))
   try
     call writefile(a:content, tempfile)
-    execute printf('keepalt keepjumps read %s%s',
+    execute printf('keepalt keepjumps %sread %s%s',
+          \ options.line,
           \ empty(optname) ? '' : optname . ' ',
           \ fnameescape(tempfile),
           \)
@@ -138,6 +140,30 @@ function! s:edit_content(content, ...) abort
     call guard.restore()
   endtry
   setlocal nomodified
+endfunction
+
+function! s:parse_cmdarg(...) abort
+  let cmdarg = get(a:000, 0, v:cmdarg)
+  let options = {}
+  if cmdarg =~# '++enc='
+    let options.encoding = matchstr(cmdarg, '++enc=\zs[^ ]\+\ze')
+  endif
+  if cmdarg =~# '++ff='
+    let options.fileformat = matchstr(cmdarg, '++ff=\zs[^ ]\+\ze')
+  endif
+  if cmdarg =~# '++bad='
+    let options.bad = matchstr(cmdarg, '++bad=\zs[^ ]\+\ze')
+  endif
+  if cmdarg =~# '++bin'
+    let options.binary = 1
+  endif
+  if cmdarg =~# '++nobin'
+    let options.nobinary = 1
+  endif
+  if cmdarg =~# '++edit'
+    let options.edit = 1
+  endif
+  return options
 endfunction
 
 let &cpo = s:save_cpo

@@ -1,0 +1,122 @@
+*vital/Vim/ScriptLocal.txt*	Get script-local things
+
+Maintainer: haya14busa <hayabusa1419@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Vim.ScriptLocal-contents*
+
+INTRODUCTION			|Vital.Vim.ScriptLocal-introduction|
+INTERFACE			|Vital.Vim.ScriptLocal-interface|
+  Functions			  |Vital.Vim.ScriptLocal-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Vim.ScriptLocal-introduction*
+
+*Vital.Vim.ScriptLocal* provides a way to get script local things.
+>
+	let s:V = vital#{plugin-name}#new()
+	let s:S = s:V.import('Vim.ScriptLocal')
+>
+	"" Get <SID> with relative path to &runtimepath
+	" e.g. starts with autoload/, plugin/, etc...
+	" (autoload/**/*.vim, plugin/**/*.vim)
+
+	echo s:S.sid('test/_testdata/Vim/ScriptLocal/test.vim')
+	" => <SID>
+
+	"" Get the dict which contains script local functions with absolute
+	" path
+	let bundle = '~/.vim/bundle/'
+	let p = 'vital.vim/test/_testdata/Vim/ScriptLocal/test.vim'
+	let absolute_path = bundle . p
+	let sf = s:S.sfuncs(absolute_path)
+	echo sf
+	" =>
+	"  {
+	"   'double': function('<SNR>439_double'),
+	"   '_square': function('<SNR>439__square')
+	"  }
+	echo sf.double(3)  | " => 6
+	echo sf._square(3) | " => 9
+
+==============================================================================
+INTERFACE				*Vital.Vim.ScriptLocal-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Vim.ScriptLocal-functions*
+
+sid({path})				*Vital.Vim.ScriptLocal.sid()*
+	Returns <SID> with given path. {path} could be relative to
+	'runtimepath' or absolute path.
+
+					*Vital.Vim.ScriptLocal-path*
+	{path} example
+	1. /home/haya14busa/.vim/bundle/incsearch.vim/autoload/incsearch.vim
+	2. ~/.vim/bundle/incsearch.vim/autoload/incsearch.vim
+	3. autoload/incsearch.vim
+	4. plugin/incsearch.vim
+
+	You can pass paths which start with autoload/, plugin/, etc... as a
+	relative path (relative to 'runtimepath').
+	NOTE: _relative_ doesn't mean relative to current file, but relative
+	to 'runtimepath'.
+>
+	"" Get <SID> with relative path to &runtimepath
+	" e.g. starts with autoload/, plugin/, etc...
+	" (autoload/**/.vim, plugin/**/.vim)
+	echo s:S.sid('test/_testdata/Vim/ScriptLocal/test.vim')
+	" => <SID>
+
+sid2path(<SID>)				*Vital.Vim.ScriptLocal.sid2path()*
+	Returns the sourced script path which has the given <SID>. >
+	echo s:S.sid2path(1) | " => '~/.vimrc'
+
+sfuncs({path})				*Vital.Vim.ScriptLocal.sfuncs()*
+	Returns a dict which contains |script-local| functions with {path}
+	(See |Vital.Vim.ScriptLocal-path|).
+>
+	"" Get the dict which contains script local functions
+	let sf = s:S.sfuncs('test/_testdata/Vim/ScriptLocal/test.vim')
+	echo sf
+	" =>
+	"  {
+	"   'double': function('<SNR>439_double'),
+	"   '_square': function('<SNR>439__square')
+	"  }
+	echo sf.double(3)  | " => 6
+	echo sf._square(3) | " => 9
+
+sid2sfuncs(<SID>)			*Vital.Vim.ScriptLocal.sid2sfuncs()*
+	Returns a dict which contains |script-local| functions with <SID>.
+>
+	echo s:S.sid2sfuncs(1)
+	" => { 'fname1': funcref1, 'fname2': funcref2, ...}
+	" The file whose SID is 1 may be your vimrc
+
+svars({path})				*Vital.Vim.ScriptLocal.svars()*
+	Returns a dict which contains |script-variable| with {path}.
+	(See |Vital.Vim.ScriptLocal-path|). >
+
+	let s = s:S.svars('test/_testdata/Vim/ScriptLocal/test.vim')
+	echo s | " => { 'i': 1 }
+<
+	CAUTION: svars() will temporarily overwrite the target file and
+	restore the file, so please be careful if you want to use it.
+
+sid2svars(<SID>)			*Vital.Vim.ScriptLocal.sid2svars()*
+	Returns a dict which contains |script-variable| with <SID>. >
+
+	let s = s:S.sid2svars(1)
+	echo s | " => { ... } (Maybe this is s:var in your vimrc)
+<
+	CAUTION: sid2svars() will temporarily overwrite the target file and
+	restore the file, so please be careful if you want to use it.
+
+scriptnames()				*Vital.Vim.ScriptLocal.scriptnames()*
+	Returns a dict of |:scriptnames|. The keys are <SID> and the values
+	are paths. >
+	" { <SID>: path/to/the/file }
+	  {'1': path1, '2': path2, '3': path3, ... }
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:fdm=marker:

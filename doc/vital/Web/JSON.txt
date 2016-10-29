@@ -1,0 +1,86 @@
+*vital/Web/JSON.txt*			JSON parser written in pure Vim script.
+
+Maintainer: mattn <mattn.jp@gmail.com>
+            lambdalisue <lambdalisue@hashnote.net>
+
+==============================================================================
+CONTENTS				*Vital.Web.JSON-contents*
+
+INTRODUCTION				|Vital.Web.JSON-introduction|
+INTERFACE				|Vital.Web.JSON-interface|
+  Consts				|Vital.Web.JSON-consts|
+  Functions				|Vital.Web.JSON-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Web.JSON-introduction*
+
+*Vital.Web.JSON* is JSON parser Library.
+
+==============================================================================
+INTERFACE				*Vital.Web.JSON-interface*
+
+------------------------------------------------------------------------------
+CONSTS					*Vital.Web.JSON-consts*
+
+true					*Vital.Web.JSON.true*
+	It is used to indicate 'true' in JSON string. It is represented as a
+	|Funcref| thus if you assign the value to a variable which name does not
+	start with a capital, "s:", "w:", "t:" or "b:" will raise an exception.
+	This returns 1 when you use it as a function.
+
+false					*Vital.Web.JSON.false*
+	It is used to indicate 'false' in JSON string. It is represented as a
+	|Funcref| thus if you assign the value to a variable which name does not
+	start with a capital, "s:", "w:", "t:" or "b:" will raise an exception.
+	This returns 0 when you use it as a function.
+
+null					*Vital.Web.JSON.null*
+	It is used to indicate 'null' in JSON string. It is represented as a
+	|Funcref| thus if you assign the value to a variable which name does not
+	start with a capital, "s:", "w:", "t:" or "b:" will raise an exception.
+	This returns 0 when you use it as a function.
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Web.JSON-functions*
+
+encode({object}[, {settings}])		*Vital.Web.JSON.encode()*
+	Encode an object into a JSON string. Special tokens
+	(e.g. |Vital.Web.JSON.true|) are encoded into corresponding javascript
+	tokens (e.g. 'true').
+>
+	echo s:JSON.encode([s:JSON.true, s:JSON.false, s:JSON.null])
+	" => '[true, false, null]'
+<
+	{settings} is a |Dictionary| which allows the following:
+
+	'indent'
+	The number of spaces used as an indentation. When the value is greater
+	than 0, the encoded JSON will be formatted with the specified indent
+	level. The default value is 0.
+>
+	echo s:JSON.encode({'a': 0, 'b': 1})
+	" => '{"a":0,"b":1}'
+	echo s:JSON.encode({'a': 0, 'b': 1}, {'indent': 2})
+	" => '{
+	"   "a": 0,
+	"   "b": 1
+	" }'
+<
+decode({json}[, {settings}])		*Vital.Web.JSON.decode()*
+	Decode a JSON string into an object that vim can treat.
+	{settings} is a |Dictionary| which allows the following:
+
+	'use_token'
+	Use special tokens (e.g. |Vital.Web.JSON.true|) to represent
+	corresponding javascript tokens (e.g. 'true').
+	Otherwise 1 or 0 are used to represent these.
+	The default value is 0.
+>
+	echo s:JSON.decode('[true, false, null]')
+	" => [1, 0, 0]
+	echo s:JSON.decode('[true, false, null]', {'use_token': 1})
+	" => [s:JSON.true, s:JSON.false, s:JSON.null]
+<
+
+=============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
