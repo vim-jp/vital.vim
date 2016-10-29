@@ -439,7 +439,7 @@ function! s:_parse_relative_ref(relstr, pattern_set) abort
     let fragment = ''
   endif
   " no trailing string allowed.
-  if rest != ''
+  if rest !=# ''
     throw 'uri parse error(relative-ref): unnecessary string at the end.'
   endif
 
