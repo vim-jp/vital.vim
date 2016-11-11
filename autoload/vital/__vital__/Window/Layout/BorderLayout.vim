@@ -1,13 +1,6 @@
 let s:save_cpo= &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
-endfunction
-
-function! s:_vital_depends()
-  return []
-endfunction
-
 "
 " Border Layout
 "
@@ -26,19 +19,19 @@ let s:border_layout= {
 \ '__size_list': [],
 \}
 
-function! s:new()
+function! s:new() abort
   return deepcopy(s:border_layout)
 endfunction
 
-function! s:border_layout.validate_layout_data(wl, data, workbuf)
-  for region in ['north', 'south', 'west', 'center', 'east']
-    if has_key(a:data, region)
-      call a:wl.validate_layout_data(a:data[region], a:workbuf)
-    endif
-  endfor
-endfunction
+" function! s:border_layout.validate_layout_data(wl, data, workbuf) abort
+"   for region in ['north', 'south', 'west', 'center', 'east']
+"     if has_key(a:data, region)
+"       call a:wl.validate_layout_data(a:data[region], a:workbuf)
+"     endif
+"   endfor
+" endfunction
 
-function! s:border_layout.do_layout(wl, data)
+function! s:_border_layout_apply(wl, data) dict abort
   " adjust
   if !has_key(a:data, 'center')
     if has_key(a:data, 'west')
@@ -59,21 +52,21 @@ function! s:border_layout.do_layout(wl, data)
   " split vertical
   let openers= []
   if has_key(a:data, 'north')
-    let openers+= [self.make_opener('aboveleft split', a:data.north)]
+    let openers+= [s:_make_opener(self, 'aboveleft split', a:data.north)]
   endif
   if has_key(a:data, 'south')
-    let openers+= [self.make_opener('belowright split', a:data.south)]
+    let openers+= [s:_make_opener(self, 'belowright split', a:data.south)]
   endif
 
   " split horizontal
   if has_key(a:data, 'east')
-    let openers+= [self.make_opener('belowright vsplit', a:data.east)]
+    let openers+= [s:_make_opener(self, 'belowright vsplit', a:data.east)]
   endif
   if has_key(a:data, 'west')
-    let openers+= [self.make_opener('aboveleft vsplit', a:data.west)]
+    let openers+= [s:_make_opener(self, 'aboveleft vsplit', a:data.west)]
   endif
   if has_key(a:data, 'center')
-    let openers+= [self.make_opener('', a:data.center)]
+    let openers+= [s:_make_opener(self, '', a:data.center)]
   endif
 
   let prev_winvar= getwinvar('.', '')
@@ -97,8 +90,9 @@ function! s:border_layout.do_layout(wl, data)
     endif
   endfor
 endfunction
+let s:border_layout.apply= function('s:_border_layout_apply')
 
-function! s:border_layout.adjust_size(wl, data)
+function! s:_border_layout_adjust_size(wl, data) dict abort
   " adjust size
   let winvar= getwinvar('.', '')
   for size in self.__size_list
@@ -123,28 +117,26 @@ function! s:border_layout.adjust_size(wl, data)
     endif
   endfor
 endfunction
+let s:border_layout.adjust_size= function('s:_border_layout_adjust_size')
 
-function! s:border_layout.make_opener(opener, data)
+function! s:_make_opener(engine, opener, data) abort
   let opener= {
-  \ 'engine': self,
+  \ 'engine': a:engine,
   \ 'opener': a:opener,
   \ 'data':   a:data,
   \}
 
-  function! opener.apply(wl, winsize)
+  function! opener.apply(wl, winsize) abort
     if !empty(self.opener)
       execute self.opener
     endif
     if has_key(self.data, 'bufref')
-      let bufid= self.data.bufref
-      let bufnr= a:wl.__buffers[bufid].bufnr
-
-      execute 'buffer' bufnr
+      call a:wl.bufopen(self.data.bufref)
     endif
 
     " make alias for window
     if has_key(self.data, 'walias')
-      let a:wl.__windows[self.data.walias]= getwinvar('.', '')
+      call a:wl.walias('.', self.data.walias)
     endif
 
     " reserve resize
@@ -161,14 +153,14 @@ function! s:border_layout.make_opener(opener, data)
     endif
 
     if has_key(self.data, 'layout')
-      call a:wl.do_layout(self.data)
+      call self.data.layout.apply()
     endif
   endfunction
 
   return opener
 endfunction
 
-function! s:_column_width(pwinwidth, n)
+function! s:_column_width(pwinwidth, n) abort
   if type(a:n) == type(0)
     return a:n
   elseif type(a:n) == type(0.0)
@@ -178,7 +170,7 @@ function! s:_column_width(pwinwidth, n)
   endif
 endfunction
 
-function! s:_line_height(pwinheight, n)
+function! s:_line_height(pwinheight, n) abort
   if type(a:n) == type(0)
     return a:n
   elseif type(a:n) == type(0.0)
