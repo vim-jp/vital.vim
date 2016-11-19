@@ -68,26 +68,31 @@ function! s:is_number(Value) abort
   return type(a:Value) ==# s:__TYPE_NUMBER
 endfunction
 
-" Float
-function! s:is_float(Value) abort
-  return type(a:Value) ==# s:__TYPE_FLOAT
-endfunction
 " String
 function! s:is_string(Value) abort
   return type(a:Value) ==# s:__TYPE_STRING
 endfunction
+
 " Funcref
 function! s:is_funcref(Value) abort
   return type(a:Value) ==# s:__TYPE_FUNCREF
 endfunction
+
 " List
 function! s:is_list(Value) abort
   return type(a:Value) ==# s:__TYPE_LIST
 endfunction
+
 " Dictionary
 function! s:is_dict(Value) abort
   return type(a:Value) ==# s:__TYPE_DICT
 endfunction
+
+" Float
+function! s:is_float(Value) abort
+  return type(a:Value) ==# s:__TYPE_FLOAT
+endfunction
+
 
 function! s:truncate_skipping(str, max, footer_width, separator) abort
   call s:_warn_deprecated('truncate_skipping', 'Data.String.truncate_skipping')
