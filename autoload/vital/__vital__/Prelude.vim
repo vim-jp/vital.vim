@@ -24,21 +24,37 @@ else
 endif
 
 " Wrapper functions for type().
-let [
-\   s:__TYPE_NUMBER,
-\   s:__TYPE_STRING,
-\   s:__TYPE_FUNCREF,
-\   s:__TYPE_LIST,
-\   s:__TYPE_DICT,
-\   s:__TYPE_FLOAT] = [
-      \   type(3),
-      \   type(''),
-      \   type(function('tr')),
-      \   type([]),
-      \   type({}),
-      \   has('float') ? type(str2float('0')) : -1]
-" __TYPE_FLOAT = -1 when -float
-" This doesn't match to anything.
+" NOTE: __TYPE_FLOAT = -1 when -float.
+" this doesn't match to anything.
+if v:version >=# 800
+  let [
+  \   s:__TYPE_NUMBER,
+  \   s:__TYPE_STRING,
+  \   s:__TYPE_FUNCREF,
+  \   s:__TYPE_LIST,
+  \   s:__TYPE_DICT,
+  \   s:__TYPE_FLOAT] = [
+        \   v:t_number,
+        \   v:t_string,
+        \   v:t_func,
+        \   v:t_list,
+        \   v:t_dict,
+        \   has('float') ? v:t_float : -1]
+else
+  let [
+  \   s:__TYPE_NUMBER,
+  \   s:__TYPE_STRING,
+  \   s:__TYPE_FUNCREF,
+  \   s:__TYPE_LIST,
+  \   s:__TYPE_DICT,
+  \   s:__TYPE_FLOAT] = [
+        \   type(3),
+        \   type(''),
+        \   type(function('tr')),
+        \   type([]),
+        \   type({}),
+        \   has('float') ? type(str2float('0')) : -1]
+endif
 
 " Number or Float
 function! s:is_numeric(Value) abort
