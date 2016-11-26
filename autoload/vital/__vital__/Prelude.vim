@@ -26,7 +26,7 @@ endif
 " Wrapper functions for type().
 " NOTE: __TYPE_FLOAT = -1 when -float.
 " this doesn't match to anything.
-if v:version >=# 800
+if has('patch-7.4.2071')
   let [
   \   s:__TYPE_NUMBER,
   \   s:__TYPE_STRING,
