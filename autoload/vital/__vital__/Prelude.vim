@@ -39,7 +39,7 @@ if has('patch-7.4.2071')
         \   v:t_func,
         \   v:t_list,
         \   v:t_dict,
-        \   has('float') ? v:t_float : -1]
+        \   v:t_float]
 else
   let [
   \   s:__TYPE_NUMBER,
