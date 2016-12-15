@@ -122,7 +122,7 @@ nr2str({expr} [, {base}])		*Vital.Math.nr2str()*
 	 When {base} is omitted base 10 is used.
 >
 	nr2str(10) == "10"
-	nr2str(10, 2) == "2"
+	nr2str(10, 2) == "1010"
 	nr2str(255, 16) == "FF"
 	nr2str(1295, 36) == "ZZ"
 <
