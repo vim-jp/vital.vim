@@ -10,6 +10,7 @@ function! s:new() abort
   return deepcopy(s:grid_layout)
 endfunction
 
+" @vimlint(EVL103, 1, a:wl)
 function! s:_grid_layout_apply(wl, data) dict abort
   let nrows= float2nr(ceil(len(a:data.cells) / (1.0 * a:data.column)))
   " already exists a row window
@@ -30,11 +31,16 @@ function! s:_grid_layout_apply(wl, data) dict abort
     endif
   endwhile
 endfunction
+" @vimlint(EVL103, 0, a:wl)
 let s:grid_layout.apply= function('s:_grid_layout_apply')
 
+" @vimlint(EVL103, 1, a:wl)
+" @vimlint(EVL103, 1, a:data)
 function! s:_grid_layout_adjust_size(wl, data) dict abort
   " do nothing
 endfunction
+" @vimlint(EVL103, 0, a:wl)
+" @vimlint(EVL103, 0, a:data)
 let s:grid_layout.adjust_size= function('s:_grid_layout_adjust_size')
 
 let &cpo= s:save_cpo

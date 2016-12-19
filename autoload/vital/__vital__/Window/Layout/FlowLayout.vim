@@ -15,7 +15,7 @@ function! s:_flow_layout_apply(wl, data) dict abort
   let items= copy(a:data.items)
   let skip= 1
 
-  for item in a:data.items
+  for item in items
     if !skip
       botright vsplit
     endif
@@ -30,9 +30,13 @@ function! s:_flow_layout_apply(wl, data) dict abort
 endfunction
 let s:flow_layout.apply= function('s:_flow_layout_apply')
 
+" @vimlint(EVL103, 1, a:wl)
+" @vimlint(EVL103, 1, a:data)
 function! s:_flow_layout_adjust_size(wl, data) dict abort
   " do nothing
 endfunction
+" @vimlint(EVL103, 0, a:wl)
+" @vimlint(EVL103, 0, a:data)
 let s:flow_layout.adjust_size= function('s:_flow_layout_adjust_size')
 
 let &cpo= s:save_cpo

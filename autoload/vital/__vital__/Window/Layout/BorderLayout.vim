@@ -92,6 +92,8 @@ function! s:_border_layout_apply(wl, data) dict abort
 endfunction
 let s:border_layout.apply= function('s:_border_layout_apply')
 
+" @vimlint(EVL103, 1, a:wl)
+" @vimlint(EVL103, 1, a:data)
 function! s:_border_layout_adjust_size(wl, data) dict abort
   " adjust size
   let winvar= getwinvar('.', '')
@@ -117,6 +119,8 @@ function! s:_border_layout_adjust_size(wl, data) dict abort
     endif
   endfor
 endfunction
+" @vimlint(EVL103, 0, a:wl)
+" @vimlint(EVL103, 0, a:data)
 let s:border_layout.adjust_size= function('s:_border_layout_adjust_size')
 
 function! s:_make_opener(engine, opener, data) abort
