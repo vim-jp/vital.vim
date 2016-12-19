@@ -137,6 +137,7 @@ function! s:_layout_prepare(layout_data) dict abort
 
   for [key, value] in items(a:layout_data)
     if key ==# 'layout'
+      unlet value
       continue
     endif
 
@@ -147,6 +148,7 @@ function! s:_layout_prepare(layout_data) dict abort
     elseif type(value) == type({})
       call self.prepare(value)
     endif
+    unlet value
   endfor
 
   return a:layout_data
