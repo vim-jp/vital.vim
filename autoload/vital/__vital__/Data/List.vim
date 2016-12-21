@@ -173,6 +173,11 @@ function! s:take_while(f, xs) abort
   return s:span(a:f, a:xs)[0]
 endfunction
 
+" similar to Haskell's Data.List.dropWhile
+function! s:drop_while(f, xs) abort
+  return s:span(a:f, a:xs)[1]
+endfunction
+
 " similar to Haskell's Data.List.partition
 function! s:partition(f, xs) abort
   return [filter(copy(a:xs), a:f), filter(copy(a:xs), '!(' . a:f . ')')]

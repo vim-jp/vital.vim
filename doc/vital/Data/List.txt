@@ -243,6 +243,22 @@ take_while({expr}, {list})		*Vital.Data.List.take_while()*
 	If you know Haskell, this take_while() is like Haskell's
 	Data.List.takeWhile just for your info.
 
+drop_while({expr}, {list})		*Vital.Data.List.drop_while()*
+	Returns the suffix remaining after |Vital.Data.List.take_while()|.
+	Inside {expr} |v:val| has the value of the current item.
+>
+	echo s:L.drop_while("v:val==1", [1, 2])
+	" [2]
+	echo s:L.drop_while('v:val < 5', [1, 3, 5, 2])
+	" [5, 2]
+	echo s:L.drop_while('v:val > 3', [1, 2, 3, 4, 5])
+	" [1, 2, 3, 4, 5]
+	echo s:L.drop_while('v:val < 3', [1, 2, 3, 4, 5])
+	" [3, 4, 5]
+<
+	If you know Haskell, this drop_while() is like Haskell's
+	Data.List.dropWhile just for your info.
+
 all({expr}, {list})			*Vital.Data.List.all()*
 	Returns Number 1 if all the items in |List| {list} fulfill the
 	condition {expr}, zero otherwise.
