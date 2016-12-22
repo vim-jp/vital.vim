@@ -1,4 +1,4 @@
-*vital-window-layout-border_layout.txt*		a one of layout manager.
+*vital-window-layout-border_layout.txt*		a one of layout engine.
 
 Maintainer: kamichidu <c.kamunagi at gmail com>
 
@@ -11,7 +11,7 @@ LAYOUT ATTRIBUTE	|Vital.Window.Layout.BorderLayout-attribute|
 ==============================================================================
 INTRODUCTION		*Vital.Window.Layout.BorderLayout-introduction*
 
-*Vital.Window.Layout.BorderLayout* is a layout manager for
+*Vital.Window.Layout.BorderLayout* is a layout engine for
 |Vital.Window.Layout|. It split window to some regions.
 
 	+---------------------------------------------------------+

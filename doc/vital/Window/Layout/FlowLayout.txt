@@ -1,0 +1,30 @@
+*vital-window-layout-flow_layout.txt*		a one of layout engine.
+
+Maintainer: kamichidu <c.kamunagi at gmail com>
+
+==============================================================================
+CONTENTS		*Vital.Window.Layout.FlowLayout-contents*
+
+INTRODUCTION		|Vital.Window.Layout.FlowLayout-introduction|
+LAYOUT ATTRIBUTE	|Vital.Window.Layout.FlowLayout-attribute|
+
+==============================================================================
+INTRODUCTION		*Vital.Window.Layout.FlowLayout-introduction*
+
+*Vital.Window.Layout.FlowLayout* is a layout engine for
+|Vital.Window.Layout|. It places all windows just horizontal.
+
+	+--------+--------+--------+--------+--------+--------+
+	|        |        |        |        |        |        |
+	| item0  | item1  | item2  | item3  | item4  | item5  |
+	|        |        |        |        |        |        |
+	+--------+--------+--------+--------+--------+--------+
+
+==============================================================================
+LAYOUT ATTRIBUTE	*Vital.Window.Layout.FlowLayout-attribute*
+
+items
+	A |List| of layout data.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
