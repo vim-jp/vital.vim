@@ -1,10 +1,10 @@
-let s:save_cpo= &cpo
+let s:save_cpo = &cpo
 set cpo&vim
 
 "
 " Flow Layout
 "
-let s:flow_layout= {}
+let s:flow_layout = {}
 
 function! s:new() abort
   return deepcopy(s:flow_layout)
@@ -12,8 +12,8 @@ endfunction
 
 function! s:_flow_layout_apply(wl, data) dict abort
   " already exists a window
-  let items= copy(a:data.items)
-  let skip= 1
+  let items = copy(a:data.items)
+  let skip = 1
 
   for item in items
     if !skip
@@ -21,14 +21,14 @@ function! s:_flow_layout_apply(wl, data) dict abort
     endif
 
     if has_key(item, 'bufref')
-      let buf= a:wl.buffer(item.bufref)
+      let buf = a:wl.buffer(item.bufref)
       execute 'buffer' buf.bufnr
     endif
 
-    let skip= 0
+    let skip = 0
   endfor
 endfunction
-let s:flow_layout.apply= function('s:_flow_layout_apply')
+let s:flow_layout.apply = function('s:_flow_layout_apply')
 
 " @vimlint(EVL103, 1, a:wl)
 " @vimlint(EVL103, 1, a:data)
@@ -37,8 +37,8 @@ function! s:_flow_layout_adjust_size(wl, data) dict abort
 endfunction
 " @vimlint(EVL103, 0, a:wl)
 " @vimlint(EVL103, 0, a:data)
-let s:flow_layout.adjust_size= function('s:_flow_layout_adjust_size')
+let s:flow_layout.adjust_size = function('s:_flow_layout_adjust_size')
 
-let &cpo= s:save_cpo
+let &cpo = s:save_cpo
 unlet s:save_cpo
 " vim: tabstop=2 shiftwidth=2 expandtab
