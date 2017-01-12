@@ -122,7 +122,8 @@ function! s:read_content(content, ...) abort
           \)
   finally
     call delete(tempfile)
-    execute 'bwipeout!' tempfile
+    " To remove 'tempfile' from unlisted-buffer #439
+    silent execute 'bwipeout!' fnameescape(tempfile)
   endtry
 endfunction
 
