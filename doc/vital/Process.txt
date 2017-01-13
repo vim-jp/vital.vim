@@ -63,6 +63,8 @@ system({command} [, {dict}])
 	If {timeout} is specified, the command will be killed after {timeout}
 	milliseconds.  Note that {timeout} is available only when
 	|has_vimproc()| returns non-zero.
+	Note NeoVim cannot use system() with '&',
+	Please See :h system() on NeoVim.
 
 	When the 2nd argument is Dictionary, you can specify more options.
 	{dict} structure is:
