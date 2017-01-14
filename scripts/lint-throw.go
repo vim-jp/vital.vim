@@ -12,7 +12,23 @@ import (
 	"github.com/haya14busa/go-vimlparser/token"
 )
 
+const usageMessage = "" +
+	`Usage:	go run ./scripts/lint-throw.go [flags] files...
+	# Files must be vital module files under autoload/vital/__vital__/
+	# Working directory must be the root of vital.vim repository.
+
+	lint-throw.go checks throw error message format. The messages must be start
+	with "vital: {module-name}:"
+`
+
+func usage() {
+	fmt.Fprintln(os.Stderr, usageMessage)
+	fmt.Fprintln(os.Stderr, "Flags:")
+	flag.PrintDefaults()
+}
+
 func main() {
+	flag.Usage = usage
 	flag.Parse()
 	if err := run(os.Stdout, flag.Args()); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -21,6 +37,10 @@ func main() {
 }
 
 func run(w io.Writer, files []string) error {
+	if len(files) == 0 {
+		usage()
+	}
+
 	for _, file := range files {
 		if err := lintFile(w, file); err != nil {
 			return err
