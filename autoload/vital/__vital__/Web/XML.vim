@@ -282,7 +282,7 @@ function! s:parse(xml) abort
     let &maxmempattern = oldmaxmempattern
     let &maxfuncdepth = oldmaxfuncdepth
   endtry
-  throw 'Parse Error'
+  throw 'vital: Web.XML: Parse Error'
 endfunction
 
 function! s:parseFile(fname) abort
