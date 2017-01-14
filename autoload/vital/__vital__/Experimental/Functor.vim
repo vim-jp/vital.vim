@@ -42,7 +42,7 @@ function! s:wrap(callable) abort
       \}, 'force')
     endif
   endif
-  throw 'vital: Functor: wrap(): '
+  throw 'vital: Experimental.Functor: wrap(): '
   \   . 'a:callable is not callable!'
 endfunction
 
