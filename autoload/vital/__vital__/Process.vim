@@ -38,7 +38,7 @@ function! s:spawn(expr, ...) abort
         let cmdline = substitute(cmdline, '\([!%#]\|<[^<>]\+>\)', '\\\1', 'g')
       endif
     else
-      throw 'Process.spawn(): invalid argument (value type:'.type(a:expr).')'
+      throw 'Process.spawn(): invalid argument (value type:' . type(a:expr) . ')'
     endif
     if s:is_windows
       silent execute '!start' cmdline
@@ -111,7 +111,7 @@ function! s:system(str, ...) abort
     elseif type(a:1) is s:TYPE_STRING
       let args += [s:iconv(a:1, &encoding, 'char')]
     else
-      throw 'Process.system(): invalid argument (value type:'.type(a:1).')'
+      throw 'Process.system(): invalid argument (value type:' . type(a:1) . ')'
     endif
   elseif a:0 >= 2
     " {command} [, {input} [, {timeout}]]
@@ -128,16 +128,15 @@ function! s:system(str, ...) abort
   elseif type(a:str) is s:TYPE_STRING
     let command = a:str
   else
-    throw 'Process.system(): invalid argument (value type:'.type(a:str).')'
+    throw 'Process.system(): invalid argument (value type:' . type(a:str) . ')'
   endif
   if s:need_trans
     let command = s:iconv(command, &encoding, 'char')
   endif
   let args = [command] + args
   if background && (use_vimproc || !s:is_windows)
-    "NOTE: neovim cannot use '&' in system() at 2017-01-13, see :h system() on neovim
     if has('nvim')
-      throw "Process.system(): neovim's system() doesn't support background(&) process (cmdline:".a:expr.')'
+      throw "Process.system(): neovim's system() doesn't support background(&) process (cmdline:" . a:str . ')'
     endif
     let args[0] = args[0] . ' &'
   endif
