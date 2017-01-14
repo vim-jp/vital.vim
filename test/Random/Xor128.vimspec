@@ -5,6 +5,7 @@ Describe Random.Xor128
 
   Describe .rand()
     It returns -425612625 at 10000th with the seed 0
+      " This test ensures the implementation is identical to one in xor128.c
       call X.srand(0)
       for i in range(9999)
         call X.rand()

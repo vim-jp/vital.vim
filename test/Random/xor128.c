@@ -1,3 +1,5 @@
+/* xor128.c - Reference implementation of Random.Xor128 */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <inttypes.h>
