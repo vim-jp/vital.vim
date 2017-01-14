@@ -3,7 +3,7 @@ set cpo&vim
 
 
 function! s:_exception(msg) abort
-  throw printf('[Text.Parser] %s', a:msg)
+  throw printf('vital: Text.Parser: %s', a:msg)
 endfunction
 
 

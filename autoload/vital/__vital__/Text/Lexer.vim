@@ -24,7 +24,7 @@ function! s:_list2dict(list) abort
 endfunction
 
 function! s:_exception(msg) abort
-  throw printf('[Text.Lexer] %s', a:msg)
+  throw printf('vital: Text.Lexer: %s', a:msg)
 endfunction
 
 let s:obj = { 'tokens' : [] }
@@ -68,7 +68,7 @@ function! s:token(label,matched_text,col) abort
 endfunction
 
 function! s:simple_parser(expr) abort
-  echoerr 'Text.Lexer.simple_parser(expr) is obsolete. Use Text.Parser.parser() instead.'
+  echoerr 'vital: Text.Lexer: simple_parser(expr) is obsolete. Use Text.Parser.parser() instead.'
   let obj = { 'expr' : a:expr, 'idx' : 0, 'tokens' : [] }
   function! obj.end() dict abort
     return len(self.expr) <= self.idx
