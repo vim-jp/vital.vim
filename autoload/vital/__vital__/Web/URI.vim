@@ -102,7 +102,7 @@ function! s:_uri_new_sandbox(uri, ignore_rest, pattern_set, retall, NothrowValue
 endfunction
 
 function! s:_is_own_exception(str) abort
-  return a:str =~# '^uri parse error\%(([^)]\+)\)\?:'
+  return a:str =~# '^vital: Web.URI: uri parse error\%(([^)]\+)\)\?:'
 endfunction
 
 
