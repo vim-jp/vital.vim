@@ -45,7 +45,7 @@ function! s:query_rawdata(db, q, ...) abort
   let xs = get(a:000, 0, [])
   " hmm...
   " if !filewritable(a:db)
-  "   throw printf("Database.SQLite.query() given db (%s) isn't writable.", a:db)
+  "   throw printf("vital: Database.SQLite: given db (%s) isn't writable.", a:db)
   " endif
   let built = s:build_line_from_query_with_placeholders(a:q, xs)
   let cmd = printf(

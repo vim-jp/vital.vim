@@ -30,7 +30,7 @@ endfunction
 function! s:run_vim_parse_execute(bfcode) abort
   let [asts, rest] = s:_vim_parse(a:bfcode)
   if rest !=# ''
-    throw 'Vital.Interpreter.Brainf__k.run_vim_parse_execute(): parser failed to consume'
+    throw 'vital: Interpreter.Brainf__k: run_vim_parse_execute(): parser failed to consume'
   endif
   call s:_vim_execute(asts, 0, {})
 endfunction
@@ -38,7 +38,7 @@ endfunction
 function! s:run_lua_parse_execute(bfcode) abort
   let [asts, rest] =  s:_lua_parse(a:bfcode)
   if rest !=# ''
-    throw 'Vital.Interpreter.Brainf__k.run_vim_parse_execute(): parser failed to consume'
+    throw 'vital: Interpreter.Brainf__k: run_vim_parse_execute(): parser failed to consume'
   endif
   call s:_lua_execute(asts, 0, {})
 endfunction
