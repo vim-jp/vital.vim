@@ -4,12 +4,12 @@ Describe Random.Xor128
   End
 
   Describe .rand()
-    It returns the same random number as the C implementations
-      let expected = readfile(getcwd() . '/test/Random/xor128_random_numbers_table.txt')
-      " call X.srand(123456789)
-      for e in expected
-        Assert Equals(X.rand(), e)
+    It returns -425612625 at 10000th with the seed 0
+      call X.srand(0)
+      for i in range(9999)
+        call X.rand()
       endfor
+      Assert Equals(X.rand(), -425612625)
     End
   End
 
