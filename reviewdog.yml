@@ -13,3 +13,8 @@ runner:
       - "%f:%l:%c:%trror: %m"
       - "%f:%l:%c:%tarning: %m"
       - "%f:%l:%c:%m"
+
+  vital-throw-message:
+    cmd: go run ./scripts/lint-throw.go $(find autoload/vital/__vital__/ | grep -e '\.vim$')
+    errorformat:
+      - "%f:%l:%c: %m"
