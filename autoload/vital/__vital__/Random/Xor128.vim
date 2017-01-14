@@ -58,7 +58,7 @@ function! s:srand(...) abort
   elseif a:0 == 1
     let x = a:1
   else
-    throw 'vital: Random.Xor128.srand(): too many arguments'
+    throw 'vital: Random.Xor128: srand(): too many arguments'
   endif
   call s:common_generator.seed([x])
 endfunction
