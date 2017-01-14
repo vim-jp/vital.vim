@@ -134,8 +134,11 @@ function! s:system(str, ...) abort
     let command = s:iconv(command, &encoding, 'char')
   endif
   let args = [command] + args
-  "NOTE: neovim cannot use '&' in system() at 2017-01-13, see :h system()
-  if background && (use_vimproc || !s:is_windows) && !has('nvim')
+  if background && (use_vimproc || !s:is_windows)
+    "NOTE: neovim cannot use '&' in system() at 2017-01-13, see :h system() on neovim
+    if has('nvim')
+      throw "Process.system(): neovim's system() doesn't support background(&) process (cmdline:".a:expr.')'
+    endif
     let args[0] = args[0] . ' &'
   endif
 
