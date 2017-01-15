@@ -1,4 +1,8 @@
-/* xor128.c - Reference implementation of Random.Xor128 */
+/**
+ * xor128.c - Reference implementation of Random.Xor128
+ * Written in 2017 by Kaito Udagawa
+ * Released under CC0 <http://creativecommons.org/publicdomain/zero/1.0/>
+ */
 
 #include <stdio.h>
 #include <stdint.h>
