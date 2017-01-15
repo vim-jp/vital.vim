@@ -36,18 +36,23 @@ function! s:Generator.max() abort
   return 2147483647
 endfunction
 
+function! s:_fmix32(x) abort
+  let x = s:B.and(0xFFFFFFFF, a:x)
+  let x = s:B.and(0xFFFFFFFF, 0x85EBCA6B * s:B.xor(x, s:B.rshift(x, 16)))
+  let x = s:B.and(0xFFFFFFFF, 0xC2B2AE35 * s:B.xor(x, s:B.rshift(x, 13)))
+  return s:B.xor(x, s:B.rshift(x, 16))
+endfunction
+
 function! s:Generator.seed(seeds) abort
-  let x = 0
+  let x = 123456789
   for seed in a:seeds
-    let x += seed
+    let x = s:_fmix32(x + seed)
   endfor
 
   let s = [0, 0, 0, 0]
   for i in range(4)
-    let x = s:B.and(0xFFFFFFFF, 0x9E3779B9 + x)
-    let z = s:B.and(0xFFFFFFFF, 0x85EBCA6B * s:B.xor(x, s:B.rshift(x, 16)))
-    let z = s:B.and(0xFFFFFFFF, 0xC2B2AE35 * s:B.xor(z, s:B.rshift(z, 13)))
-    let s[i] = s:B.xor(z, s:B.rshift(z, 16))
+    let x += 0x9E3779B9
+    let s[i] = s:_fmix32(x)
   endfor
   let [self._x, self._y, self._z, self._w] = s
 endfunction

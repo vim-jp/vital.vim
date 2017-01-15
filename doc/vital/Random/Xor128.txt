@@ -27,12 +27,12 @@ even when you use Vim with |+num64|.
 
 	call s:X.srand(1)
 	echo s:X.rand()
-	" -396951016
+	" -232950721
 	echo s:X.rand()
-	" 503430273
+	" 739248423
 	call s:X.srand(1)
 	echo s:X.rand()
-	" -396951016
+	" -232950721
 <
 
 
