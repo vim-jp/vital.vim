@@ -19,6 +19,6 @@ case "${TRAVIS_OS_NAME}" in
 		;;
 	*)
 		echo "Unknown value of \${TRAVIS_OS_NAME}: ${TRAVIS_OS_NAME}"
-		return 65
+		exit 65
 		;;
 esac
