@@ -6,7 +6,6 @@ Maintainer: lambdalisue		<lambdalisue@hashnote.net>
 CONTENTS				*Vital.System.Process-contents*
 
 Introduction			|Vital.System.Process-introduction|
-Install				|Vital.System.Process-install|
 Usage				|Vital.System.Process-usage|
 Functions			|Vital.System.Process-functions|
 Developers			|Vital.System.Process-developers|
