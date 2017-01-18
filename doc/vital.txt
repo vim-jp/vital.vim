@@ -205,6 +205,7 @@ LINKS					*Vital-links*
   |vital/System/Process/Mock.txt|	A Process client for test
   |vital/System/Process/System.txt|	A Process client using system() function
   |vital/System/Process/Vimproc.txt|	A Process client using vimproc
+  |vital/System/Process/Job.txt|	A Process client using job
   |vital/Text/CSV.txt|		CSV library.
   |vital/Text/INI.txt|		INI file library.
   |vital/Text/LTSV.txt|		LTSV library.
