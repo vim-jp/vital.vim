@@ -75,8 +75,7 @@ Module						 | Description
 [Web.URI](doc/vital/Web/URI.txt)		 | URI manipulation library
 [Web.XML](doc/vital/Web/XML.txt)		 | XML parser written in pure Vim script
 
-... and more ...
-
+... and you can also create your own vital modules. Please see [External vital modules](https://github.com/vim-jp/vital.vim/wiki/External-vital-modules) for more information.
 
 ## Let's get started
 
