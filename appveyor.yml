@@ -1,6 +1,9 @@
 version: '{build}'
 clone_depth: 10
 environment:
+  global:
+    VIMPROC_VERSION: ver.9.2
+    VIM_THEMIS_VERSION: v1.5.2.1
   matrix:
     - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim74/oldest/win64/
     - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim80/oldest/win64/
@@ -16,16 +19,16 @@ install:
       [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') > $null
       [System.IO.Compression.ZipFile]::ExtractToDirectory($zip, $vim)
       $Env:THEMIS_VIM = $vim + (Get-ChildItem $vim).Name + '\vim.exe'
-  - 'pushd %TEMP% && curl -fsSL https://github.com/Shougo/vimproc.vim/archive/ver.9.2.tar.gz | tar -xz && popd'
-  - 'appveyor DownloadFile https://github.com/Shougo/vimproc.vim/releases/download/ver.9.2/vimproc_win64.dll -FileName %TEMP%\vimproc.vim-ver.9.2\lib\vimproc_win64.dll'
+  - 'mkdir %TEMP%\vimproc && pushd %TEMP%\vimproc && curl -fsSL https://github.com/Shougo/vimproc.vim/archive/%VIMPROC_VERSION%.tar.gz | tar -xz --strip-components 1 && popd'
+  - 'appveyor DownloadFile https://github.com/Shougo/vimproc.vim/releases/download/%VIMPROC_VERSION%/vimproc_win64.dll -FileName %TEMP%\vimproc\lib\vimproc_win64.dll'
 
-  - 'pushd %TEMP% && curl -fsSL https://github.com/thinca/vim-themis/archive/v1.5.2.1.tar.gz | tar -xz && popd'
+  - 'mkdir %TEMP%\vim-themis && pushd %TEMP%\vim-themis && curl -fsSL https://github.com/thinca/vim-themis/archive/%VIM_THEMIS_VERSION%.tar.gz | tar -xz --strip-components 1 && popd'
   - 'reg copy HKLM\SOFTWARE\Python\PythonCore\2.7 HKLM\SOFTWARE\Python\PythonCore\2.7-32 /s /reg:32'
   - 'reg copy HKLM\SOFTWARE\Python\PythonCore\2.7 HKLM\SOFTWARE\Python\PythonCore\2.7-32 /s /reg:64'
 build: off
 test_script:
   - '%THEMIS_VIM% --version'
-  - '%TEMP%\vim-themis-1.5.2.1\bin\themis.bat --runtimepath %TEMP%\vimproc.vim-ver.9.2 --exclude ConcurrentProcess --reporter dot'
+  - '%TEMP%\vim-themis\bin\themis.bat --runtimepath %TEMP%\vimproc --exclude ConcurrentProcess --reporter dot'
 deploy: off
 notifications:
   - provider: Webhook

@@ -3,6 +3,11 @@ sudo: false
 git:
   depth: 10
 
+env:
+  global:
+    - VIMPROC_VERSION=master
+    - VIM_THEMIS_VERSION=v1.5.2.1
+
 matrix:
   include:
     - os: linux
@@ -29,17 +34,17 @@ install:
   - export PATH=$HOME/vim/bin:$PATH
 
 before_script:
-  - curl -fsSL https://github.com/thinca/vim-themis/archive/v1.5.2.1.tar.gz | tar -xz -C /tmp
-  - curl -fsSL https://github.com/Shougo/vimproc.vim/archive/master.tar.gz | tar -xz -C /tmp
-  - make -C /tmp/vimproc.vim-master
+  - mkdir /tmp/vim-themis && curl -fsSL https://github.com/thinca/vim-themis/archive/$VIM_THEMIS_VERSION.tar.gz | tar -xz --strip-components 1 -C /tmp/vim-themis
+  - mkdir /tmp/vimproc && curl -fsSL https://github.com/Shougo/vimproc.vim/archive/$VIMPROC_VERSION.tar.gz | tar -xz --strip-components 1 -C /tmp/vimproc
+  - make -C /tmp/vimproc
 
 script:
   - uname -a
   - which -a vim
   - vim --cmd version --cmd quit
   - vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
-  # - /tmp/vim-themis-1.5.2.1/bin/themis --runtimepath /tmp/vimproc.vim-master --reporter dot
-  - /tmp/vim-themis-1.5.2.1/bin/themis --runtimepath /tmp/vimproc.vim-master --exclude ConcurrentProcess --reporter dot
+  # - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
+  - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
   - ruby scripts/check-changelog.rb
 notifications:
   webhooks:
