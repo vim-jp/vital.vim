@@ -19,10 +19,10 @@ install:
       [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') > $null
       [System.IO.Compression.ZipFile]::ExtractToDirectory($zip, $vim)
       $Env:THEMIS_VIM = $vim + (Get-ChildItem $vim).Name + '\vim.exe'
-  - 'mkdir %TEMP%\vimproc && pushd %TEMP%\vimproc && curl -fsSL https://github.com/Shougo/vimproc.vim/archive/%VIMPROC_VERSION%.tar.gz | tar -xz --strip-components 1 && popd'
+  - 'mkdir %TEMP%\vimproc && pushd %TEMP%\vimproc && curl -fsSL --retry 3 https://github.com/Shougo/vimproc.vim/archive/%VIMPROC_VERSION%.tar.gz | tar -xz --strip-components 1 && popd'
   - 'appveyor DownloadFile https://github.com/Shougo/vimproc.vim/releases/download/%VIMPROC_VERSION%/vimproc_win64.dll -FileName %TEMP%\vimproc\lib\vimproc_win64.dll'
 
-  - 'mkdir %TEMP%\vim-themis && pushd %TEMP%\vim-themis && curl -fsSL https://github.com/thinca/vim-themis/archive/%VIM_THEMIS_VERSION%.tar.gz | tar -xz --strip-components 1 && popd'
+  - 'mkdir %TEMP%\vim-themis && pushd %TEMP%\vim-themis && curl -fsSL --retry 3 https://github.com/thinca/vim-themis/archive/%VIM_THEMIS_VERSION%.tar.gz | tar -xz --strip-components 1 && popd'
   - 'reg copy HKLM\SOFTWARE\Python\PythonCore\2.7 HKLM\SOFTWARE\Python\PythonCore\2.7-32 /s /reg:32'
   - 'reg copy HKLM\SOFTWARE\Python\PythonCore\2.7 HKLM\SOFTWARE\Python\PythonCore\2.7-32 /s /reg:64'
 build: off

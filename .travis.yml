@@ -34,8 +34,8 @@ install:
   - export PATH=$HOME/vim/bin:$PATH
 
 before_script:
-  - mkdir /tmp/vim-themis && curl -fsSL https://github.com/thinca/vim-themis/archive/$VIM_THEMIS_VERSION.tar.gz | tar -xz --strip-components 1 -C /tmp/vim-themis
-  - mkdir /tmp/vimproc && curl -fsSL https://github.com/Shougo/vimproc.vim/archive/$VIMPROC_VERSION.tar.gz | tar -xz --strip-components 1 -C /tmp/vimproc
+  - mkdir /tmp/vim-themis && curl -fsSL --retry 3 https://github.com/thinca/vim-themis/archive/$VIM_THEMIS_VERSION.tar.gz | tar -xz --strip-components 1 -C /tmp/vim-themis
+  - mkdir /tmp/vimproc && curl -fsSL --retry 3 https://github.com/Shougo/vimproc.vim/archive/$VIMPROC_VERSION.tar.gz | tar -xz --strip-components 1 -C /tmp/vimproc
   - make -C /tmp/vimproc
 
 script:
