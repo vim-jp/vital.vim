@@ -4,12 +4,35 @@ Describe Random.Xor128
   End
 
   Describe .rand()
-    It returns the same random number as the C implementations
-      let expected = readfile(getcwd() . '/test/Random/xor128_random_numbers_table.txt')
-      " call X.srand(123456789)
-      for e in expected
-        Assert Equals(X.rand(), e)
+    It returns 1169077414 at 10000th with the seed 0
+      " This test ensures the implementation is identical to one in xor128.c
+      call X.srand(0)
+      for i in range(9999)
+        call X.rand()
       endfor
+      Assert Equals(X.rand(), 1169077414)
+    End
+  End
+
+  Describe Generator.next()
+    It returns -1077784574 at 10000th with the seeds []
+      " This test ensures the implementation is identical to one in xor128.c
+      let rng = X.new_generator()
+      call rng.seed([])
+      for i in range(9999)
+        call rng.next()
+      endfor
+      Assert Equals(rng.next(), -1077784574)
+    End
+
+    It returns 1287149848 at 10000th with the seeds [0 0 0 0]
+      " This test ensures the implementation is identical to one in xor128.c
+      let rng = X.new_generator()
+      call rng.seed([0, 0, 0, 0])
+      for i in range(9999)
+        call rng.next()
+      endfor
+      Assert Equals(rng.next(), 1287149848)
     End
   End
 

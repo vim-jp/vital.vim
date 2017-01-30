@@ -1,3 +1,13 @@
+b2e60b8ac7907f716950455efdb51ceff4e637a8
+	Modules: Random.Xor128
+	The algorithm of the initializer was changed to improve the randomness.
+	Now 'seed([0, 1])' and 'seed([1, 0])' generate distinct sequences.
+	Note that the output differs from the previous, even with the same seed.
+0b1b82a4087c470d04e8676f305d317728a83e60
+	Modules: Random.Xor128
+	The algorithm of the initializer was changed to improve the randomness.
+	Now 'srand(0)' and 'srand(1)' generate completely different sequences.
+	Note that the output differs from the previous, even with the same seed.
 71aba2ebe0ad1cbfb888d8349ec95e7b79b1e88c
 	Modules: Vim.BufferManager
 	The following deprecated functions were removed.
