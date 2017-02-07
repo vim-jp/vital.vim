@@ -22,9 +22,9 @@ else
 endif
 
 function! s:open(buffer, opener) abort
-  let save_wildignore = &wildignore
-  let &wildignore = ''
+  let guard = s:G.store(['&wildignore'])
   try
+    let &wildignore = ''
     if s:P.is_funcref(a:opener)
       let loaded = !bufloaded(a:buffer)
       call a:opener(a:buffer)
@@ -44,7 +44,7 @@ function! s:open(buffer, opener) abort
       endif
     endif
   finally
-    let &wildignore = save_wildignore
+    call guard.restore()
   endtry
   return loaded
 endfunction
