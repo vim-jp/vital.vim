@@ -33,6 +33,7 @@ function! s:open(buffer, ...) abort
   endif
   let options = extend({
         \ 'mods': '',
+        \ 'cmdarg': '',
         \ 'opener': empty(a:buffer) ? 'enew' : 'edit',
         \}, options
         \)
@@ -50,7 +51,7 @@ function! s:open(buffer, ...) abort
     else
       let loaded = !bufloaded(a:buffer)
       if type(a:buffer) == s:t_string
-        execute options.mods options.opener '`=a:buffer`'
+        execute options.mods options.opener options.cmdarg '`=a:buffer`'
       elseif type(a:buffer) == s:t_number
         silent execute options.mods options.opener
         execute a:buffer 'buffer'
