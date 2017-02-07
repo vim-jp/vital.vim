@@ -1,3 +1,7 @@
+f357fe99366e99cf0ae953303b7e3ea54b408df4
+	Modules: Vim.BufferManager
+	A value of 'newwin' returned 1 when a buffer was opened in an exiting window.
+	This commit reverse the value of 'newwin' to follow the document.
 b2e60b8ac7907f716950455efdb51ceff4e637a8
 	Modules: Random.Xor128
 	The algorithm of the initializer was changed to improve the randomness.
