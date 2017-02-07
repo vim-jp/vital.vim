@@ -54,7 +54,7 @@ endfunction
 
 function! s:get_selected_text(...) abort
   echohl WarningMsg
-  echom "[WARN] s:get_selected_text() is deprecated. Use 's:get_last_selected()'."
+  echom "vital: Vim.Buffer: Warning: s:get_selected_text() is deprecated. Use 's:get_last_selected()'."
   echohl None
   return call('s:get_last_selected', a:000)
 endfunction
