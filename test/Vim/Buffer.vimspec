@@ -83,11 +83,96 @@ Describe Vim.Buffer
         Assert Equals(bufname(winbufnr(3)), 'foo1')
         Assert Equals(result, 0)
       End
+
+      It opens a new unnamed buffer with a {options.mods} as a command modifiers
+        edit foo
+        let result = Buffer.open(0, {
+              \ 'opener': 'split'
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), '')
+        Assert Equals(bufname(winbufnr(2)), 'foo')
+        Assert Equals(result, 1)
+
+        let result = Buffer.open(0, {
+              \ 'mods': 'botright',
+              \ 'opener': 'split'
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), '')
+        Assert Equals(bufname(winbufnr(2)), 'foo')
+        Assert Equals(bufname(winbufnr(3)), '')
+        Assert Equals(result, 1)
+        Assert NotEquals(winbufnr(1), winbufnr(3))
+      End
+
+      It opens a new {buffer} with a {options.mods} as a command modifiers
+        edit foo1
+        let result = Buffer.open('foo2', {
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(result, 1)
+
+        let result = Buffer.open('foo3', {
+              \ 'mods': 'botright',
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(bufname(winbufnr(3)), 'foo3')
+        Assert Equals(result, 1)
+      End
+
+      It opens an existing {buffer} with a {options.mods} as a command modifiers
+        edit foo1
+        new foo2
+        let result = Buffer.open('foo1', {
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(result, 0)
+
+        let result = Buffer.open('foo2', {
+              \ 'mods': 'botright',
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 4)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(bufname(winbufnr(4)), 'foo2')
+        Assert Equals(result, 0)
+      End
+
+      It opens an existing {buffer} with a {options.mods} as a command modifiers (when {buffer} is number)
+        edit foo1
+        new foo2
+        let result = Buffer.open(bufnr('foo1'), {
+              \ 'mods': 'botright',
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(result, 0)
+      End
     End
 
     Context with a funcref {options.opener}
       function! VitalVimBufferOpener(bufname) abort
         execute 'split' a:bufname
+      endfunction
+
+      function! VitalVimBufferOpener2(bufname) abort dict
+        execute self.mods 'split' a:bufname
       endfunction
 
       It opens a {buffer} with a funcref {options.opener} and returns if {buffer} was loaded
@@ -107,6 +192,27 @@ Describe Vim.Buffer
         Assert Equals(bufname(winbufnr(1)), 'foo2')
         Assert Equals(bufname(winbufnr(2)), 'foo2')
         Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(result, 0)
+      End
+
+      It calls a funcref {options.opener} as a dictionary function of {options}
+        edit foo1
+        let result = Buffer.open('foo2', {
+              \ 'opener': function('VitalVimBufferOpener2'),
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(result, 1)
+
+        let result = Buffer.open('foo2', {
+              \ 'mods': 'botright',
+              \ 'opener': function('VitalVimBufferOpener2'),
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(bufname(winbufnr(3)), 'foo2')
         Assert Equals(result, 0)
       End
     End

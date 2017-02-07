@@ -32,6 +32,7 @@ function! s:open(buffer, ...) abort
     let options = get(a:000, 0, {})
   endif
   let options = extend({
+        \ 'mods': '',
         \ 'opener': empty(a:buffer) ? 'enew' : 'edit',
         \}, options
         \)
@@ -44,14 +45,14 @@ function! s:open(buffer, ...) abort
       call options.opener(a:buffer)
     elseif a:buffer is 0 || a:buffer is# ''
       let loaded = 1
-      silent execute options.opener
+      silent execute options.mods options.opener
       enew
     else
       let loaded = !bufloaded(a:buffer)
       if type(a:buffer) == s:t_string
-        execute options.opener '`=a:buffer`'
+        execute options.mods options.opener '`=a:buffer`'
       elseif type(a:buffer) == s:t_number
-        silent execute options.opener
+        silent execute options.mods options.opener
         execute a:buffer 'buffer'
       else
         throw 'vital: Vim.Buffer: Unknown {buffer} type.'
