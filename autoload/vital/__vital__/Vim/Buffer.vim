@@ -24,23 +24,34 @@ else
   endfunction
 endif
 
-function! s:open(buffer, opener) abort
+function! s:open(buffer, ...) abort
+  if a:0 == 1 && (type(a:1) == s:t_string || type(a:1) == s:t_funcref)
+    " For backward compatibility
+    let options = {'opener': a:1}
+  else
+    let options = get(a:000, 0, {})
+  endif
+  let options = extend({
+        \ 'opener': empty(a:buffer) ? 'enew' : 'edit',
+        \}, options
+        \)
+
   let guard = s:Guard.store(['&wildignore'])
   try
     let &wildignore = ''
-    if type(a:opener) == s:t_funcref
+    if type(options.opener) == s:t_funcref
       let loaded = !bufloaded(a:buffer)
-      call a:opener(a:buffer)
+      call options.opener(a:buffer)
     elseif a:buffer is 0 || a:buffer is# ''
       let loaded = 1
-      silent execute a:opener
+      silent execute options.opener
       enew
     else
       let loaded = !bufloaded(a:buffer)
       if type(a:buffer) == s:t_string
-        execute a:opener '`=a:buffer`'
+        execute options.opener '`=a:buffer`'
       elseif type(a:buffer) == s:t_number
-        silent execute a:opener
+        silent execute options.opener
         execute a:buffer 'buffer'
       else
         throw 'vital: Vim.Buffer: Unknown {buffer} type.'

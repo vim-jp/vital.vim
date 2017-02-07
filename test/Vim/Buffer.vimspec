@@ -27,14 +27,14 @@ Describe Vim.Buffer
       Throws /Unknown {buffer} type/ Buffer.open([], 'edit')
     End
 
-    Context with a string {opener}
-      It opens a new unnamed buffer with a {opener} and returns 1
-        let result = Buffer.open(0, 'enew')
+    Context with a string {options.opener}
+      It opens a new unnamed buffer with a {options.opener} and returns 1
+        let result = Buffer.open(0)
         Assert Equals(winnr('$'), 1)
         Assert Equals(bufname(winbufnr(1)), '')
         Assert Equals(result, 1)
 
-        let result = Buffer.open('', 'split')
+        let result = Buffer.open('', {'opener': 'split'})
         Assert Equals(winnr('$'), 2)
         Assert Equals(bufname(winbufnr(1)), '')
         Assert Equals(bufname(winbufnr(2)), '')
@@ -42,30 +42,30 @@ Describe Vim.Buffer
         Assert NotEquals(winbufnr(1), winbufnr(2))
       End
 
-      It opens a new {buffer} with a {opener} and returns 1
+      It opens a new {buffer} with a {options.opener} and returns 1
         edit foo1
-        let result = Buffer.open('foo2', 'edit')
+        let result = Buffer.open('foo2')
         Assert Equals(winnr('$'), 1)
         Assert Equals(bufname(winbufnr(1)), 'foo2')
         Assert Equals(result, 1)
 
-        let result = Buffer.open('foo3', 'split')
+        let result = Buffer.open('foo3', {'opener': 'split'})
         Assert Equals(winnr('$'), 2)
         Assert Equals(bufname(winbufnr(1)), 'foo3')
         Assert Equals(bufname(winbufnr(2)), 'foo2')
         Assert Equals(result, 1)
       End
 
-      It opens an existing {buffer} with a {opener} and returns 0
+      It opens an existing {buffer} with a {options.opener} and returns 0
         edit foo1
         new foo2 | setlocal bufhidden=hide
-        let result = Buffer.open('foo1', 'edit')
+        let result = Buffer.open('foo1')
         Assert Equals(winnr('$'), 2)
         Assert Equals(bufname(winbufnr(1)), 'foo1')
         Assert Equals(bufname(winbufnr(2)), 'foo1')
         Assert Equals(result, 0)
 
-        let result = Buffer.open('foo2', 'split')
+        let result = Buffer.open('foo2', {'opener': 'split'})
         Assert Equals(winnr('$'), 3)
         Assert Equals(bufname(winbufnr(1)), 'foo2')
         Assert Equals(bufname(winbufnr(2)), 'foo1')
@@ -73,10 +73,10 @@ Describe Vim.Buffer
         Assert Equals(result, 0)
       End
 
-      It opens an existing {buffer} with a {opener} and returns 0 (when {buffer} is number)
+      It opens an existing {buffer} with a {options.opener} and returns 0 (when {buffer} is number)
         edit foo1
         new foo2
-        let result = Buffer.open(bufnr('foo1'), 'split')
+        let result = Buffer.open(bufnr('foo1'), {'opener': 'split'})
         Assert Equals(winnr('$'), 3)
         Assert Equals(bufname(winbufnr(1)), 'foo1')
         Assert Equals(bufname(winbufnr(2)), 'foo2')
@@ -85,25 +85,111 @@ Describe Vim.Buffer
       End
     End
 
-    Context with a funcref {opener}
+    Context with a funcref {options.opener}
       function! VitalVimBufferOpener(bufname) abort
         execute 'split' a:bufname
       endfunction
 
-      It opens a {buffer} with a funcref {opener} and returns if {buffer} was loaded
+      It opens a {buffer} with a funcref {options.opener} and returns if {buffer} was loaded
         edit foo1
-        let result = Buffer.open('foo2', function('VitalVimBufferOpener'))
+        let result = Buffer.open('foo2', {
+              \ 'opener': function('VitalVimBufferOpener'),
+              \})
         Assert Equals(winnr('$'), 2)
         Assert Equals(bufname(winbufnr(1)), 'foo2')
         Assert Equals(bufname(winbufnr(2)), 'foo1')
         Assert Equals(result, 1)
 
-        let result = Buffer.open('foo2', function('VitalVimBufferOpener'))
+        let result = Buffer.open('foo2', {
+              \ 'opener': function('VitalVimBufferOpener'),
+              \})
         Assert Equals(winnr('$'), 3)
         Assert Equals(bufname(winbufnr(1)), 'foo2')
         Assert Equals(bufname(winbufnr(2)), 'foo2')
         Assert Equals(bufname(winbufnr(3)), 'foo1')
         Assert Equals(result, 0)
+      End
+    End
+
+    Context Backward compatibility
+      Context with a string {opener}
+        It opens a new unnamed buffer with a {opener} and returns 1
+          let result = Buffer.open(0, 'enew')
+          Assert Equals(winnr('$'), 1)
+          Assert Equals(bufname(winbufnr(1)), '')
+          Assert Equals(result, 1)
+
+          let result = Buffer.open('', 'split')
+          Assert Equals(winnr('$'), 2)
+          Assert Equals(bufname(winbufnr(1)), '')
+          Assert Equals(bufname(winbufnr(2)), '')
+          Assert Equals(result, 1)
+          Assert NotEquals(winbufnr(1), winbufnr(2))
+        End
+
+        It opens a new {buffer} with a {opener} and returns 1
+          edit foo1
+          let result = Buffer.open('foo2', 'edit')
+          Assert Equals(winnr('$'), 1)
+          Assert Equals(bufname(winbufnr(1)), 'foo2')
+          Assert Equals(result, 1)
+
+          let result = Buffer.open('foo3', 'split')
+          Assert Equals(winnr('$'), 2)
+          Assert Equals(bufname(winbufnr(1)), 'foo3')
+          Assert Equals(bufname(winbufnr(2)), 'foo2')
+          Assert Equals(result, 1)
+        End
+
+        It opens an existing {buffer} with a {opener} and returns 0
+          edit foo1
+          new foo2 | setlocal bufhidden=hide
+          let result = Buffer.open('foo1', 'edit')
+          Assert Equals(winnr('$'), 2)
+          Assert Equals(bufname(winbufnr(1)), 'foo1')
+          Assert Equals(bufname(winbufnr(2)), 'foo1')
+          Assert Equals(result, 0)
+
+          let result = Buffer.open('foo2', 'split')
+          Assert Equals(winnr('$'), 3)
+          Assert Equals(bufname(winbufnr(1)), 'foo2')
+          Assert Equals(bufname(winbufnr(2)), 'foo1')
+          Assert Equals(bufname(winbufnr(2)), 'foo1')
+          Assert Equals(result, 0)
+        End
+
+        It opens an existing {buffer} with a {opener} and returns 0 (when {buffer} is number)
+          edit foo1
+          new foo2
+          let result = Buffer.open(bufnr('foo1'), 'split')
+          Assert Equals(winnr('$'), 3)
+          Assert Equals(bufname(winbufnr(1)), 'foo1')
+          Assert Equals(bufname(winbufnr(2)), 'foo2')
+          Assert Equals(bufname(winbufnr(3)), 'foo1')
+          Assert Equals(result, 0)
+        End
+      End
+
+      Context with a funcref {opener}
+        function! VitalVimBufferOpener(bufname) abort
+          execute 'split' a:bufname
+        endfunction
+
+        It opens a {buffer} with a funcref {opener} and returns if {buffer} was loaded
+          edit foo1
+          let result = Buffer.open('foo2', function('VitalVimBufferOpener'))
+          Assert Equals(winnr('$'), 2)
+          Assert Equals(bufname(winbufnr(1)), 'foo2')
+          Assert Equals(bufname(winbufnr(2)), 'foo1')
+          Assert Equals(result, 1)
+
+          let result = Buffer.open('foo2', function('VitalVimBufferOpener'))
+          Assert Equals(winnr('$'), 3)
+          Assert Equals(bufname(winbufnr(1)), 'foo2')
+          Assert Equals(bufname(winbufnr(2)), 'foo2')
+          Assert Equals(bufname(winbufnr(3)), 'foo1')
+          Assert Equals(result, 0)
+        End
       End
     End
   End
