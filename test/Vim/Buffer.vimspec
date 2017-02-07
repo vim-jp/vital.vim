@@ -1,16 +1,16 @@
 scriptencoding utf-8
 
-let s:V = vital#vital#new()
-let s:P = s:V.import('System.Filepath')
-let s:G = s:V.import('Vim.Guard')
-
 Describe Vim.Buffer
   Before all
-    let Buffer = s:V.import('Vim.Buffer')
+    let Path = vital#vital#import('System.Filepath')
+    let Guard = vital#vital#import('Vim.Guard')
+    let Buffer = vital#vital#import('Vim.Buffer')
   End
+
   After all
     windo bwipeout!
   End
+
   Before
     windo bwipeout!
   End
@@ -26,7 +26,7 @@ Describe Vim.Buffer
     Context for single byte characters
       Before
         execute printf('edit %s',
-              \ s:P.realpath('test/_testdata/Vim/Buffer/single.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/single.txt')
               \)
       End
 
@@ -69,7 +69,7 @@ Describe Vim.Buffer
     Context for wide characters
       Before
         execute printf('edit %s',
-              \ s:P.realpath('test/_testdata/Vim/Buffer/wide.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/wide.txt')
               \)
       End
 
@@ -87,10 +87,11 @@ Describe Vim.Buffer
         Assert Equals("あい\nかき", text)
       End
     End
+
     Context for mixed characters
       Before
         execute printf('edit %s',
-              \ s:P.realpath('test/_testdata/Vim/Buffer/mixed.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/mixed.txt')
               \)
       End
 
@@ -126,13 +127,14 @@ Describe Vim.Buffer
 
   Describe read_content()
     Before
-      let guard = s:G.store(['&fileencodings', '&fileencoding'])
+      let guard = Guard.store(['&fileencodings', '&fileencoding'])
       " Note:
       " 'read_content' uses 'read' command thus fileencodings requires to be
       " correctly configured.
       set fileencodings=utf-8,euc-jp,sjis
       set fileencoding=utf-8
     End
+
     After
       call guard.restore()
     End
@@ -141,7 +143,7 @@ Describe Vim.Buffer
       It appends contents to the current buffer
         call setline(1, 'あいうえお')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.read_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -151,11 +153,12 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'utf-8')
       End
     End
+
     Context for sjis contents
       It appends contents to the current buffer
         call setline(1, 'あいうえお')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/sjis.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/sjis.txt')
               \)
         call Buffer.read_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -165,11 +168,12 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'utf-8')
       End
     End
+
     Context for euc-jp contents
       It appends contents to the current buffer
         call setline(1, 'あいうえお')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
               \)
         call Buffer.read_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -179,6 +183,7 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'utf-8')
       End
     End
+
     It wipes out tempfile buffer
       let fname = tempname()
       call Buffer.read_content([''], {'tempfile': fname})
@@ -189,7 +194,7 @@ Describe Vim.Buffer
         call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
         call setpos('.', [0, 2, 1, 0])
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.read_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -203,7 +208,7 @@ Describe Vim.Buffer
     It append content after {options.line}
         call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.read_content(contents, {
               \ 'line': 2,
@@ -219,7 +224,7 @@ Describe Vim.Buffer
     It insert content before the first line when {options.line} is 0
         call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.read_content(contents, {
               \ 'line': 0,
@@ -235,13 +240,14 @@ Describe Vim.Buffer
 
   Describe edit_content()
     Before
-      let guard = s:G.store(['&fileencodings', '&fileencoding'])
+      let guard = Guard.store(['&fileencodings', '&fileencoding'])
       " Note:
       " 'edit_content' uses 'read' command thus fileencodings requires to be
       " correctly configured.
       set fileencodings=utf-8,euc-jp,sjis
       set fileencoding=utf-8
     End
+
     After
       call guard.restore()
     End
@@ -250,7 +256,7 @@ Describe Vim.Buffer
       It replaces contents to the current buffer
         call setline(1, 'かきくけこ')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.edit_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -259,11 +265,12 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'utf-8')
       End
     End
+
     Context for sjis contents
       It replaces contents to the current buffer
         call setline(1, 'かきくけこ')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/sjis.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/sjis.txt')
               \)
         call Buffer.edit_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -272,11 +279,12 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'sjis')
       End
     End
+
     Context for euc-jp contents
       It replaces contents to the current buffer
         call setline(1, 'かきくけこ')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
               \)
         call Buffer.edit_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -292,6 +300,7 @@ Describe Vim.Buffer
       let ret = Buffer.parse_cmdarg('')
       Assert Equals(ret, {})
     End
+
     It parses "++enc=XXX" and return "encoding: XXX" dictionary
       let ret = Buffer.parse_cmdarg('++enc=utf-8')
       Assert Equals(ret, { 'encoding': 'utf-8' })
