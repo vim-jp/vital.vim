@@ -131,7 +131,7 @@ endfunction
 function! s:Manager.move(...) abort
   let range = s:_make_config(self, map(copy(a:000), '{''range'': v:val}')).range
   if range !=# 'all' && range !=# 'tabpage'
-    return 0
+    return self.is_managed(bufnr('%'))
   endif
   let near = self.nearest(range)
   if empty(near)
