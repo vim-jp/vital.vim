@@ -42,7 +42,9 @@ function! s:Manager.open(bufname, ...) abort
     let Opener = eval(Opener[1 :])
   endwhile
 
-  let loaded = s:B.open(a:bufname, Opener)
+  let loaded = s:B.open(a:bufname, {
+        \ 'opener': Opener,
+        \})
   let new_bufnr = bufnr('%')
   let self._bufnrs[new_bufnr] = a:bufname
 
