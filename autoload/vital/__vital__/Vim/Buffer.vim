@@ -1,14 +1,17 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:t_funcref = type(function('tr'))
+let s:t_string = type('')
+let s:t_number = type(0)
+
 function! s:_vital_loaded(V) abort
   let s:V = a:V
-  let s:P = s:V.import('Prelude')
-  let s:G = s:V.import('Vim.Guard')
+  let s:Guard = s:V.import('Vim.Guard')
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Prelude', 'Vim.Guard']
+  return ['Vim.Guard']
 endfunction
 
 if exists('*getcmdwintype')
@@ -22,10 +25,10 @@ else
 endif
 
 function! s:open(buffer, opener) abort
-  let guard = s:G.store(['&wildignore'])
+  let guard = s:Guard.store(['&wildignore'])
   try
     let &wildignore = ''
-    if s:P.is_funcref(a:opener)
+    if type(a:opener) == s:t_funcref
       let loaded = !bufloaded(a:buffer)
       call a:opener(a:buffer)
     elseif a:buffer is 0 || a:buffer is# ''
@@ -34,9 +37,9 @@ function! s:open(buffer, opener) abort
       enew
     else
       let loaded = !bufloaded(a:buffer)
-      if s:P.is_string(a:buffer)
+      if type(a:buffer) == s:t_string
         execute a:opener '`=a:buffer`'
-      elseif s:P.is_number(a:buffer)
+      elseif type(a:buffer) == s:t_number
         silent execute a:opener
         execute a:buffer 'buffer'
       else
@@ -132,7 +135,7 @@ function! s:edit_content(content, ...) abort
         \ 'edit': 1,
         \ 'lockmarks': 0,
         \}, get(a:000, 0, {}))
-  let guard = s:G.store(['&l:modifiable'])
+  let guard = s:Guard.store(['&l:modifiable'])
   let saved_view = winsaveview()
   try
     let &l:modifiable=1
