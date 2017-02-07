@@ -23,6 +23,10 @@ Describe Vim.Buffer
   End
 
   Describe .open()
+    It throws an exception when {buffer} is not string nor number
+      Throws /Unknown {buffer} type/ Buffer.open([], 'edit')
+    End
+
     Context with a string {opener}
       It opens a new unnamed buffer with a {opener} and returns 1
         let result = Buffer.open(0, 'enew')

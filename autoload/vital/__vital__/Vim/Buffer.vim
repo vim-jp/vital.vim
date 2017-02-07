@@ -43,7 +43,7 @@ function! s:open(buffer, opener) abort
         silent execute a:opener
         execute a:buffer 'buffer'
       else
-        throw 'vital: Vim.Buffer: Unknown opener type.'
+        throw 'vital: Vim.Buffer: Unknown {buffer} type.'
       endif
     endif
   finally
