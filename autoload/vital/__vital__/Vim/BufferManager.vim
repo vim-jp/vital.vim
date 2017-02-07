@@ -14,6 +14,8 @@ endfunction
 let s:default_config = {
 \   'range': 'tabpage',
 \   'opener': 'split',
+\   'mods': '',
+\   'cmdarg': '',
 \ }
 let s:Manager = {
 \   '_config': s:default_config,
@@ -44,6 +46,8 @@ function! s:Manager.open(bufname, ...) abort
 
   let loaded = s:B.open(a:bufname, {
         \ 'opener': Opener,
+        \ 'mods': config.mods,
+        \ 'cmdarg': config.cmdarg,
         \})
   let new_bufnr = bufnr('%')
   let self._bufnrs[new_bufnr] = a:bufname

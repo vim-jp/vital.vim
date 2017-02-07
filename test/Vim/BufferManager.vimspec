@@ -115,6 +115,28 @@ Describe Vim.BufferManager
         Assert Equals(winnr('$'), 3)
         Assert Equals(tabpagenr(), 1)
       End
+
+      It opens a new buffer with a specified mods
+        edit foo1
+        call manager.open('foo2', {
+              \ 'mods': 'botright',
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+      End
+
+      It opens a new buffer with a specified cmdarg
+        edit foo1
+        call manager.open('foo2', {
+              \ 'cmdarg': '++enc=sjis ++ff=mac',
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(&fileencoding, 'sjis')
+        Assert Equals(&fileformat, 'mac')
+      End
     End
   End
 End

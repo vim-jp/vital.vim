@@ -164,7 +164,13 @@ range				*Vital.Vim.BufferManager-config-range*
 	"all"
 		Windows of all tabpages.
 
+mods				*Vital.Vim.BufferManager-config-mods*
+	A command modifiers used when opening a buffer.
+	See |Vital.Vim.Buffer.open()| for more detail.
 
+cmdarg				*Vital.Vim.BufferManager-config-cmdarg*
+	A command attribute used when opening a buffer.
+	See |Vital.Vim.Buffer.open()| for more detail.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
