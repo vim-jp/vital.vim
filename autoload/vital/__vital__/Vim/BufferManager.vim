@@ -1,5 +1,3 @@
-" buffer manager.
-
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -109,7 +107,7 @@ function! s:Manager.list() abort
 endfunction
 
 function! s:Manager.nearest(...) abort
-  let range = s:_make_config(self, map(copy(a:000), '{"range": v:val}')).range
+  let range = s:_make_config(self, map(copy(a:000), '{''range'': v:val}')).range
 
   if range ==# 'tabpage'
     let tabpages = [tabpagenr()]
@@ -131,7 +129,7 @@ function! s:Manager.nearest(...) abort
 endfunction
 
 function! s:Manager.move(...) abort
-  let range = s:_make_config(self, map(copy(a:000), '{"range": v:val}')).range
+  let range = s:_make_config(self, map(copy(a:000), '{''range'': v:val}')).range
   if range !=# 'all' && range !=# 'tabpage'
     return 0
   endif
