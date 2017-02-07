@@ -48,7 +48,7 @@ function! s:Manager.open(bufname, ...) abort
 
   let info = {
   \   'loaded': loaded,
-  \   'newwin': moved,
+  \   'newwin': !moved,
   \   'newbuf': lastbuf < bufnr('%'),
   \   'bufnr': new_bufnr,
   \   'bufname': a:bufname,
