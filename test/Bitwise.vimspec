@@ -1,6 +1,11 @@
 Describe Bitwise
   Before all
     let B = vital#vital#new().import('Bitwise')
+    " NOTE:
+    " A int literal larger than or equal to 0x8000000000000000 will be rounded
+    " to 0x7FFFFFFFFFFFFFFF after Vim 8.0.0219 so create it without literal
+    let x8000000000000000 = 0/0
+    let xFFFFFFFF00000000 = B.lshift(0xFFFFFFFF, 32)
   End
 
   Describe .lshift()
@@ -21,7 +26,7 @@ Describe Bitwise
         It shifts bits to left
           Assert Equals(B.lshift(1, 32), 0x100000000)
           Assert Equals(B.lshift(0x80000000, 1), 0x100000000)
-          Assert Equals(B.lshift(1, 63), 0x8000000000000000)
+          Assert Equals(B.lshift(1, 63), x8000000000000000)
           Assert Equals(B.lshift(1, 64), 1)
         End
         It shifts bits to left (random)
@@ -77,8 +82,8 @@ Describe Bitwise
       Context with 64bit number
         It shifts bits to right
           Assert Equals(B.rshift(0x80000000, 32), 0)
-          Assert Equals(B.rshift(0x8000000000000000, 32), 0x80000000)
-          Assert Equals(B.rshift(0x8000000000000000, 63), 1)
+          Assert Equals(B.rshift(x8000000000000000, 32), 0x80000000)
+          Assert Equals(B.rshift(x8000000000000000, 63), 1)
           Assert Equals(B.rshift(-1024, 1), 0x7ffffffffffffe00)
         End
         It shifts bits to right (random)
@@ -227,14 +232,20 @@ Describe Bitwise
     if has('num64')
       Context with 64bit number
         It applies sign extension
+          " NOTE:
+          " A int literal larger than or equal to 0x8000000000000000 will be rounded
+          " to 0x7FFFFFFFFFFFFFFF after Vim 8.0.0219 so create it without literal
+          let xFFFFFFFF7FFFFFFF = or(0x7FFFFFFF, xFFFFFFFF00000000)
+          let xFFFFFFFF80000000 = or(0x80000000, xFFFFFFFF00000000)
+          let xFFFFFFFFFFFFFFFF = or(0xFFFFFFFF, xFFFFFFFF00000000)
           Assert Equals(B.sign_extension(0), 0)
           Assert Equals(B.sign_extension(-1), -1)
           Assert Equals(B.sign_extension(1), 1)
           Assert Equals(B.sign_extension(0x7FFFFFFF), 0x7FFFFFFF)
-          Assert Equals(B.sign_extension(0xFFFFFFFF7FFFFFFF), 0x7FFFFFFF)
-          Assert Equals(B.sign_extension(0x80000000), 0xFFFFFFFF80000000)
-          Assert Equals(B.sign_extension(0xFFFFFFFF80000000), 0xFFFFFFFF80000000)
-          Assert Equals(B.sign_extension(0xFFFFFFFF), 0xFFFFFFFFFFFFFFFF)
+          Assert Equals(B.sign_extension(xFFFFFFFF7FFFFFFF), 0x7FFFFFFF)
+          Assert Equals(B.sign_extension(0x80000000), xFFFFFFFF80000000)
+          Assert Equals(B.sign_extension(xFFFFFFFF80000000), xFFFFFFFF80000000)
+          Assert Equals(B.sign_extension(0xFFFFFFFF), xFFFFFFFFFFFFFFFF)
         End
       End
     else
