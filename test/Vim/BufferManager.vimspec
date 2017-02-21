@@ -58,7 +58,7 @@ Describe Vim.BufferManager
         Assert Equals(bufname(winbufnr(2)), 'foo2')
       End
 
-      It search a managed window in a current window when range=current
+      It searches a managed window in a current window when range=current
         call manager.open('foo1', {'range': 'current'})
         Assert Equals(winnr('$'), 2)
 
@@ -72,7 +72,7 @@ Describe Vim.BufferManager
         Assert Equals(winnr('$'), 4)
       End
 
-      It search a managed window in a current tabpage when range=tabpage (Default)
+      It searches a managed window in a current tabpage when range=tabpage (Default)
         call manager.open('foo1', {'range': 'tabpage'})
         Assert Equals(winnr('$'), 2)
 
@@ -94,7 +94,7 @@ Describe Vim.BufferManager
         Assert Equals(tabpagenr(), 2)
       End
 
-      It search a managed window in all tabpages when range=all
+      It searches a managed window in all tabpages when range=all
         call manager.open('foo1', {'range': 'all'})
         Assert Equals(winnr('$'), 2)
 
