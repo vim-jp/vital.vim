@@ -52,8 +52,8 @@ get_last_selected()			*Vital.Vim.Buffer.get_last_selected()*
 	But this function can work even in |textlock|.
 
 open({buffer} [, {options}])		*Vital.Vim.Buffer.open()*
-	Open a {buffer} and return a boolean which indicate whether the buffer
-	has newly loaded or not.
+	Open a {buffer} and return a boolean which indicates whether the buffer
+	has been newly loaded or not.
 
 	If 0 or an empty string has specified to {buffer}, the function open a
 	new unnamed buffer. In this case, the return value is always 1.
