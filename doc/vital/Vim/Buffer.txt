@@ -55,15 +55,15 @@ open({buffer} [, {options}])		*Vital.Vim.Buffer.open()*
 	Open a {buffer} and return a boolean which indicates whether the buffer
 	has been newly loaded or not.
 
-	If 0 or an empty string has specified to {buffer}, the function open a
-	new unnamed buffer. In this case, the return value is always 1.
+	If 0 or an empty string has been specified to {buffer}, the function
+	opens a new unnamed buffer. In this case, the return value is always 1.
 
-	If a number has specified to {buffer}, the {buffer} is assumed as a
+	If a number has been specified to {buffer}, the {buffer} is assumed as a
 	buffer number and an existing buffer will be opened.
 
-	If a string has specified to {buffer}, the {buffer} is assumed as a
+	If a string has been specified to {buffer}, the {buffer} is assumed as a
 	buffer name and an existing buffer which is identified by the name or
-	new buffer will be opened.
+	a new buffer will be opened.
 
 	In {options}, the following attributes are allowed
 
@@ -74,7 +74,7 @@ open({buffer} [, {options}])		*Vital.Vim.Buffer.open()*
 			with {buffer} as a dictionary function of {options}
 			and the funcref will have a responsibility to open a
 			buffer.
-			The defaulte value is "enew" or "edit", depends on a
+			The default value is "enew" or "edit", depends on a
 			value of {buffer}.
 	
 	"mods"		A command modifiers like |vertical| or |botright|.
@@ -86,7 +86,7 @@ open({buffer} [, {options}])		*Vital.Vim.Buffer.open()*
 			existing buffer or unnamed buffer due to the
 			limitation of Vim's builtin command.
 
-	For backward compatibility, an "opener" is allowed to directly
+	For backward compatibility, an "opener" is allowed to directly be
 	assigned to the {options} attribute.
 >
 	" Open 'foo' with a default opener
