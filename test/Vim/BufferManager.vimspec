@@ -1,0 +1,142 @@
+Describe Vim.BufferManager
+  Before all
+    let Manager = vital#vital#import('Vim.BufferManager')
+  End
+
+  After all
+    windo bwipeout!
+  End
+
+  Before
+    tabdo windo bwipeout!
+  End
+
+  Context A manager instance
+    Before
+      let manager = Manager.new()
+    End
+
+    Describe .open()
+      It opens a new buffer in a new window when no managed window exists
+        let result = manager.open('foo')
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname('%'), 'foo')
+        Assert Equals(result.loaded, 1)
+        Assert Equals(result.newwin, 1)
+        Assert Equals(result.newbuf, 1)
+        Assert Equals(result.bufnr, bufnr('%'))
+        Assert Equals(result.bufname, 'foo')
+      End
+
+      It opens a new buffer in an existing window which contains a managed buffer
+        call manager.open('foo')
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname('%'), 'foo')
+
+        let result = manager.open('bar')
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname('%'), 'bar')
+        Assert Equals(result.loaded, 1)
+        Assert Equals(result.newwin, 0)
+        Assert Equals(result.newbuf, 1)
+        Assert Equals(result.bufnr, bufnr('%'))
+        Assert Equals(result.bufname, 'bar')
+      End
+
+      It opens a new window with a specified opener
+        edit foo1
+        call manager.open('foo2')
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        windo bwipeout!
+
+        edit foo1
+        call manager.open('foo2', {'opener': 'botright split'})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+      End
+
+      It searches a managed window in a current window when range=current
+        call manager.open('foo1', {'range': 'current'})
+        Assert Equals(winnr('$'), 2)
+
+        call manager.open('foo2', {'range': 'current'})
+        Assert Equals(winnr('$'), 2)
+
+        new foo3
+        Assert Equals(winnr('$'), 3)
+
+        call manager.open('foo4', {'range': 'current'})
+        Assert Equals(winnr('$'), 4)
+      End
+
+      It searches a managed window in a current tabpage when range=tabpage (Default)
+        call manager.open('foo1', {'range': 'tabpage'})
+        Assert Equals(winnr('$'), 2)
+
+        call manager.open('foo2', {'range': 'tabpage'})
+        Assert Equals(winnr('$'), 2)
+
+        new foo3
+        Assert Equals(winnr('$'), 3)
+
+        call manager.open('foo4', {'range': 'tabpage'})
+        Assert Equals(winnr('$'), 3)
+
+        tabnew foo5
+        Assert Equals(winnr('$'), 1)
+        Assert Equals(tabpagenr(), 2)
+
+        call manager.open('foo6', {'range': 'tabpage'})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(tabpagenr(), 2)
+      End
+
+      It searches a managed window in all tabpages when range=all
+        call manager.open('foo1', {'range': 'all'})
+        Assert Equals(winnr('$'), 2)
+
+        call manager.open('foo2', {'range': 'all'})
+        Assert Equals(winnr('$'), 2)
+
+        new foo3
+        Assert Equals(winnr('$'), 3)
+
+        call manager.open('foo4', {'range': 'all'})
+        Assert Equals(winnr('$'), 3)
+
+        tabnew foo5
+        Assert Equals(winnr('$'), 1)
+        Assert Equals(tabpagenr(), 2)
+
+        call manager.open('foo6', {'range': 'all'})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(tabpagenr(), 1)
+      End
+
+      It opens a new buffer with a specified mods
+        edit foo1
+        call manager.open('foo2', {
+              \ 'mods': 'botright',
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+      End
+
+      It opens a new buffer with a specified cmdarg
+        edit foo1
+        call manager.open('foo2', {
+              \ 'cmdarg': '++enc=sjis ++ff=mac',
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(&fileencoding, 'sjis')
+        Assert Equals(&fileformat, 'mac')
+      End
+    End
+  End
+End

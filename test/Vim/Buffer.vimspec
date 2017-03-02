@@ -1,16 +1,16 @@
 scriptencoding utf-8
 
-let s:V = vital#vital#new()
-let s:P = s:V.import('System.Filepath')
-let s:G = s:V.import('Vim.Guard')
-
 Describe Vim.Buffer
   Before all
-    let Buffer = s:V.import('Vim.Buffer')
+    let Path = vital#vital#import('System.Filepath')
+    let Guard = vital#vital#import('Vim.Guard')
+    let Buffer = vital#vital#import('Vim.Buffer')
   End
+
   After all
     windo bwipeout!
   End
+
   Before
     windo bwipeout!
   End
@@ -22,11 +22,349 @@ Describe Vim.Buffer
     End
   End
 
+  Describe .open()
+    It throws an exception when {buffer} is not string nor number
+      Throws /Unknown {buffer} type/ Buffer.open([], 'edit')
+    End
+
+    Context with a string {options.opener}
+      It opens a new unnamed buffer with a {options.opener} and returns 1
+        let result = Buffer.open(0)
+        Assert Equals(winnr('$'), 1)
+        Assert Equals(bufname(winbufnr(1)), '')
+        Assert Equals(result, 1)
+
+        let result = Buffer.open('', {'opener': 'split'})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), '')
+        Assert Equals(bufname(winbufnr(2)), '')
+        Assert Equals(result, 1)
+        Assert NotEquals(winbufnr(1), winbufnr(2))
+      End
+
+      It opens a new {buffer} with a {options.opener} and returns 1
+        edit foo1
+        let result = Buffer.open('foo2')
+        Assert Equals(winnr('$'), 1)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(result, 1)
+
+        let result = Buffer.open('foo3', {'opener': 'split'})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo3')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+        Assert Equals(result, 1)
+      End
+
+      It opens an existing {buffer} with a {options.opener} and returns 0
+        edit foo1
+        new foo2 | setlocal bufhidden=hide
+        let result = Buffer.open('foo1')
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(result, 0)
+
+        let result = Buffer.open('foo2', {'opener': 'split'})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(result, 0)
+      End
+
+      It opens an existing {buffer} with a {options.opener} and returns 0 (when {buffer} is number)
+        edit foo1
+        new foo2
+        let result = Buffer.open(bufnr('foo1'), {'opener': 'split'})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(result, 0)
+      End
+
+      It opens a new unnamed buffer with a {options.mods} as a command modifiers
+        edit foo
+        let result = Buffer.open(0, {
+              \ 'opener': 'split'
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), '')
+        Assert Equals(bufname(winbufnr(2)), 'foo')
+        Assert Equals(result, 1)
+
+        let result = Buffer.open(0, {
+              \ 'mods': 'botright',
+              \ 'opener': 'split'
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), '')
+        Assert Equals(bufname(winbufnr(2)), 'foo')
+        Assert Equals(bufname(winbufnr(3)), '')
+        Assert Equals(result, 1)
+        Assert NotEquals(winbufnr(1), winbufnr(3))
+      End
+
+      It opens a new {buffer} with a {options.mods} as a command modifiers
+        edit foo1
+        let result = Buffer.open('foo2', {
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(result, 1)
+
+        let result = Buffer.open('foo3', {
+              \ 'mods': 'botright',
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(bufname(winbufnr(3)), 'foo3')
+        Assert Equals(result, 1)
+      End
+
+      It opens an existing {buffer} with a {options.mods} as a command modifiers
+        edit foo1
+        new foo2
+        let result = Buffer.open('foo1', {
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(result, 0)
+
+        let result = Buffer.open('foo2', {
+              \ 'mods': 'botright',
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 4)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(bufname(winbufnr(4)), 'foo2')
+        Assert Equals(result, 0)
+      End
+
+      It opens an existing {buffer} with a {options.mods} as a command modifiers (when {buffer} is number)
+        edit foo1
+        new foo2
+        let result = Buffer.open(bufnr('foo1'), {
+              \ 'mods': 'botright',
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(result, 0)
+      End
+
+      It opens a new unnamed buffer with a {options.cmdarg} as a command argument but it should not work
+        edit foo
+        let result = Buffer.open(0, {
+              \ 'cmdarg': '++enc=sjis ++ff=mac',
+              \ 'opener': 'split'
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), '')
+        Assert Equals(bufname(winbufnr(2)), 'foo')
+        Assert Equals(result, 1)
+        Assert Equals(&fileencoding, '', 'cmdarg should not work on an unnamed buffer')
+        Assert NotEquals(&fileformat, 'mac', 'cmdarg should not work on an unnamed buffer')
+      End
+
+      It opens a new {buffer} with a {options.cmdarg} as a command argument
+        edit foo1
+        let result = Buffer.open('foo2', {
+              \ 'cmdarg': '++enc=sjis ++ff=mac',
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(result, 1)
+        Assert Equals(&fileencoding, 'sjis')
+        Assert Equals(&fileformat, 'mac')
+      End
+
+      It opens an existing {buffer} with a {options.cmdarg} as a command argument but it should not work
+        edit foo1
+        new foo2
+        let result = Buffer.open('foo1', {
+              \ 'cmdarg': '++enc=sjis ++ff=mac',
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(result, 0)
+        Assert Equals(&fileencoding, '', 'cmdarg should not work on an existing buffer')
+        Assert NotEquals(&fileformat, 'mac', 'cmdarg should not work on an existing buffer')
+      End
+
+      It opens an existing {buffer} with a {options.cmdarg} as a command argument but it should ot work (when {buffer} is number)
+        edit foo1
+        new foo2
+        let result = Buffer.open(bufnr('foo1'), {
+              \ 'cmdarg': '++enc=sjis ++ff=mac',
+              \ 'opener': 'split',
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo1')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(result, 0)
+        Assert Equals(&fileencoding, '', 'cmdarg should not work on an existing buffer')
+        Assert NotEquals(&fileformat, 'mac', 'cmdarg should not work on an existing buffer')
+      End
+    End
+
+    Context with a funcref {options.opener}
+      function! VitalVimBufferOpener(bufname) abort
+        execute 'split' a:bufname
+      endfunction
+
+      function! VitalVimBufferOpener2(bufname) abort dict
+        execute self.mods 'split' a:bufname
+      endfunction
+
+      It opens a {buffer} with a funcref {options.opener} and returns if {buffer} was loaded
+        edit foo1
+        let result = Buffer.open('foo2', {
+              \ 'opener': function('VitalVimBufferOpener'),
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(result, 1)
+
+        let result = Buffer.open('foo2', {
+              \ 'opener': function('VitalVimBufferOpener'),
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo2')
+        Assert Equals(bufname(winbufnr(3)), 'foo1')
+        Assert Equals(result, 0)
+      End
+
+      It calls a funcref {options.opener} as a dictionary function of {options}
+        edit foo1
+        let result = Buffer.open('foo2', {
+              \ 'opener': function('VitalVimBufferOpener2'),
+              \})
+        Assert Equals(winnr('$'), 2)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(result, 1)
+
+        let result = Buffer.open('foo2', {
+              \ 'mods': 'botright',
+              \ 'opener': function('VitalVimBufferOpener2'),
+              \})
+        Assert Equals(winnr('$'), 3)
+        Assert Equals(bufname(winbufnr(1)), 'foo2')
+        Assert Equals(bufname(winbufnr(2)), 'foo1')
+        Assert Equals(bufname(winbufnr(3)), 'foo2')
+        Assert Equals(result, 0)
+      End
+    End
+
+    Context Backward compatibility
+      Context with a string {opener}
+        It opens a new unnamed buffer with a {opener} and returns 1
+          let result = Buffer.open(0, 'enew')
+          Assert Equals(winnr('$'), 1)
+          Assert Equals(bufname(winbufnr(1)), '')
+          Assert Equals(result, 1)
+
+          let result = Buffer.open('', 'split')
+          Assert Equals(winnr('$'), 2)
+          Assert Equals(bufname(winbufnr(1)), '')
+          Assert Equals(bufname(winbufnr(2)), '')
+          Assert Equals(result, 1)
+          Assert NotEquals(winbufnr(1), winbufnr(2))
+        End
+
+        It opens a new {buffer} with a {opener} and returns 1
+          edit foo1
+          let result = Buffer.open('foo2', 'edit')
+          Assert Equals(winnr('$'), 1)
+          Assert Equals(bufname(winbufnr(1)), 'foo2')
+          Assert Equals(result, 1)
+
+          let result = Buffer.open('foo3', 'split')
+          Assert Equals(winnr('$'), 2)
+          Assert Equals(bufname(winbufnr(1)), 'foo3')
+          Assert Equals(bufname(winbufnr(2)), 'foo2')
+          Assert Equals(result, 1)
+        End
+
+        It opens an existing {buffer} with a {opener} and returns 0
+          edit foo1
+          new foo2 | setlocal bufhidden=hide
+          let result = Buffer.open('foo1', 'edit')
+          Assert Equals(winnr('$'), 2)
+          Assert Equals(bufname(winbufnr(1)), 'foo1')
+          Assert Equals(bufname(winbufnr(2)), 'foo1')
+          Assert Equals(result, 0)
+
+          let result = Buffer.open('foo2', 'split')
+          Assert Equals(winnr('$'), 3)
+          Assert Equals(bufname(winbufnr(1)), 'foo2')
+          Assert Equals(bufname(winbufnr(2)), 'foo1')
+          Assert Equals(bufname(winbufnr(2)), 'foo1')
+          Assert Equals(result, 0)
+        End
+
+        It opens an existing {buffer} with a {opener} and returns 0 (when {buffer} is number)
+          edit foo1
+          new foo2
+          let result = Buffer.open(bufnr('foo1'), 'split')
+          Assert Equals(winnr('$'), 3)
+          Assert Equals(bufname(winbufnr(1)), 'foo1')
+          Assert Equals(bufname(winbufnr(2)), 'foo2')
+          Assert Equals(bufname(winbufnr(3)), 'foo1')
+          Assert Equals(result, 0)
+        End
+      End
+
+      Context with a funcref {opener}
+        function! VitalVimBufferOpener(bufname) abort
+          execute 'split' a:bufname
+        endfunction
+
+        It opens a {buffer} with a funcref {opener} and returns if {buffer} was loaded
+          edit foo1
+          let result = Buffer.open('foo2', function('VitalVimBufferOpener'))
+          Assert Equals(winnr('$'), 2)
+          Assert Equals(bufname(winbufnr(1)), 'foo2')
+          Assert Equals(bufname(winbufnr(2)), 'foo1')
+          Assert Equals(result, 1)
+
+          let result = Buffer.open('foo2', function('VitalVimBufferOpener'))
+          Assert Equals(winnr('$'), 3)
+          Assert Equals(bufname(winbufnr(1)), 'foo2')
+          Assert Equals(bufname(winbufnr(2)), 'foo2')
+          Assert Equals(bufname(winbufnr(3)), 'foo1')
+          Assert Equals(result, 0)
+        End
+      End
+    End
+  End
+
   Describe .get_last_selected()
     Context for single byte characters
       Before
         execute printf('edit %s',
-              \ s:P.realpath('test/_testdata/Vim/Buffer/single.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/single.txt')
               \)
       End
 
@@ -69,7 +407,7 @@ Describe Vim.Buffer
     Context for wide characters
       Before
         execute printf('edit %s',
-              \ s:P.realpath('test/_testdata/Vim/Buffer/wide.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/wide.txt')
               \)
       End
 
@@ -87,10 +425,11 @@ Describe Vim.Buffer
         Assert Equals("あい\nかき", text)
       End
     End
+
     Context for mixed characters
       Before
         execute printf('edit %s',
-              \ s:P.realpath('test/_testdata/Vim/Buffer/mixed.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/mixed.txt')
               \)
       End
 
@@ -126,13 +465,14 @@ Describe Vim.Buffer
 
   Describe read_content()
     Before
-      let guard = s:G.store(['&fileencodings', '&fileencoding'])
+      let guard = Guard.store(['&fileencodings', '&fileencoding'])
       " Note:
       " 'read_content' uses 'read' command thus fileencodings requires to be
       " correctly configured.
       set fileencodings=utf-8,euc-jp,sjis
       set fileencoding=utf-8
     End
+
     After
       call guard.restore()
     End
@@ -141,7 +481,7 @@ Describe Vim.Buffer
       It appends contents to the current buffer
         call setline(1, 'あいうえお')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.read_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -151,11 +491,12 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'utf-8')
       End
     End
+
     Context for sjis contents
       It appends contents to the current buffer
         call setline(1, 'あいうえお')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/sjis.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/sjis.txt')
               \)
         call Buffer.read_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -165,11 +506,12 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'utf-8')
       End
     End
+
     Context for euc-jp contents
       It appends contents to the current buffer
         call setline(1, 'あいうえお')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
               \)
         call Buffer.read_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -179,6 +521,7 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'utf-8')
       End
     End
+
     It wipes out tempfile buffer
       let fname = tempname()
       call Buffer.read_content([''], {'tempfile': fname})
@@ -189,7 +532,7 @@ Describe Vim.Buffer
         call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
         call setpos('.', [0, 2, 1, 0])
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.read_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -203,7 +546,7 @@ Describe Vim.Buffer
     It append content after {options.line}
         call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.read_content(contents, {
               \ 'line': 2,
@@ -219,7 +562,7 @@ Describe Vim.Buffer
     It insert content before the first line when {options.line} is 0
         call setline(1, ['aaaaa', 'bbbbb', 'ccccc'])
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.read_content(contents, {
               \ 'line': 0,
@@ -235,13 +578,14 @@ Describe Vim.Buffer
 
   Describe edit_content()
     Before
-      let guard = s:G.store(['&fileencodings', '&fileencoding'])
+      let guard = Guard.store(['&fileencodings', '&fileencoding'])
       " Note:
       " 'edit_content' uses 'read' command thus fileencodings requires to be
       " correctly configured.
       set fileencodings=utf-8,euc-jp,sjis
       set fileencoding=utf-8
     End
+
     After
       call guard.restore()
     End
@@ -250,7 +594,7 @@ Describe Vim.Buffer
       It replaces contents to the current buffer
         call setline(1, 'かきくけこ')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/utf-8.txt')
               \)
         call Buffer.edit_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -259,11 +603,12 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'utf-8')
       End
     End
+
     Context for sjis contents
       It replaces contents to the current buffer
         call setline(1, 'かきくけこ')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/sjis.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/sjis.txt')
               \)
         call Buffer.edit_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -272,11 +617,12 @@ Describe Vim.Buffer
         Assert Equals(&fileencoding, 'sjis')
       End
     End
+
     Context for euc-jp contents
       It replaces contents to the current buffer
         call setline(1, 'かきくけこ')
         let contents = readfile(
-              \ s:P.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
+              \ Path.realpath('test/_testdata/Vim/Buffer/euc-jp.txt')
               \)
         call Buffer.edit_content(contents)
         Assert Equals(getline(1, '$'), [
@@ -292,6 +638,7 @@ Describe Vim.Buffer
       let ret = Buffer.parse_cmdarg('')
       Assert Equals(ret, {})
     End
+
     It parses "++enc=XXX" and return "encoding: XXX" dictionary
       let ret = Buffer.parse_cmdarg('++enc=utf-8')
       Assert Equals(ret, { 'encoding': 'utf-8' })

@@ -26,8 +26,8 @@ USAGE				*Vital.Vim.Buffer-usage*
 	let B = V.import('Vim.Buffer')
 	echo B.is_cmdwin() " 1 if you are in command-line-window.
 	
-	echo B.open('A.txt', 'split')	" Open A.txt via split. show 1 if
-					" the A.txt is newly loaded
+	" Open A.txt via split. show 1 if the A.txt is newly loaded
+	echo B.open('A.txt', {'opener': 'split'})
 <
 
 
@@ -51,19 +51,70 @@ get_last_selected()			*Vital.Vim.Buffer.get_last_selected()*
 	without changing unnamed register.
 	But this function can work even in |textlock|.
 
-open({buffer}, {opener})		*Vital.Vim.Buffer.open()*
-	Open a {buffer} with a specified {opener}. Return value is a boolean
-	(0/1) which indicate whether the buffer is newly loaded or not.
-	If 0 or an empty string is specified to {buffer}, the function open a
-	new empty buffer with a specified {opener}. In this case, the return
-	value is always 1.
-	The {opener} can be a |Number|, |String| or |Funcref|. If |Number| is
-	specified, the function will open a exiting buffer which is identified
-	by a buffer number (See |bufnr()|). If |String| is specified, it will open
-	a existing buffer which is identified by a buffer name, otherwise it
-	will open a new buffer and give {buffer} to the buffer as a buffer name
-	(See |bufname()|). If a |Funcref| is specified, the function will be called
-	with the {buffer} as a first argument.
+open({buffer} [, {options}])		*Vital.Vim.Buffer.open()*
+	Open a {buffer} and return a boolean which indicates whether the buffer
+	has been newly loaded or not.
+
+	If 0 or an empty string has been specified to {buffer}, the function
+	opens a new unnamed buffer. In this case, the return value is always 1.
+
+	If a number has been specified to {buffer}, the {buffer} is assumed as a
+	buffer number and an existing buffer will be opened.
+
+	If a string has been specified to {buffer}, the {buffer} is assumed as a
+	buffer name and an existing buffer which is identified by the name or
+	a new buffer will be opened.
+
+	In {options}, the following attributes are allowed
+
+	"opener"	A string or funcref used to open a buffer.
+			When a string has specified, the string is used in a
+			|execute| command to open a buffer.
+			When a funcref has specified, the funcref is called
+			with {buffer} as a dictionary function of {options}
+			and the funcref will have a responsibility to open a
+			buffer.
+			The default value is "enew" or "edit", depends on a
+			value of {buffer}.
+	
+	"mods"		A command modifiers like |vertical| or |botright|.
+			It is used as a prefix of "opener" when opening a
+			buffer.
+
+	"cmdarg"	A command argument (|++opt|) used to open a new named
+			buffer. Note that it may not affect properties of an
+			existing buffer or unnamed buffer due to the
+			limitation of Vim's builtin command.
+
+	For backward compatibility, an "opener" is allowed to directly be
+	assigned to the {options} attribute.
+>
+	" Open 'foo' with a default opener
+	call s:Buffer.open('foo')
+
+	" Open 'foo' with 'split'
+	call s:Buffer.open('foo', {'opener': 'split'})
+
+	" Open 'foo' with 'split' (deprecated)
+	call s:Buffer.open('foo', 'split')
+
+	" Open 'foo' with 'botright split ++enc=utf8 ++ff=dos'
+	call s:Buffer.open('foo', {
+	      \ 'opener': 'split',
+	      \ 'mods': 'botright',
+	      \ 'cmdarg': '++enc=utf8 ++ff=dos',
+	      \})
+
+	" Open 'foo' with 'botright split ++enc=utf8 ++ff=dos'
+	function! s:opener(buffer) abort dict
+	  execute self.mods 'split' self.cmdarg a:buffer
+	endfunction
+	call s:Buffer.open('foo', {
+	      \ 'opener': function('s:opener'),
+	      \ 'mods': 'botright',
+	      \ 'cmdarg': '++enc=utf8 ++ff=dos',
+	      \})
+<
 
 read_content({content}[, {options}])	*Vital.Vim.Buffer.read_content()*
 	Insert {content} (|List|) below the cursor of the current buffer.
