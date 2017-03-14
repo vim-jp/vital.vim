@@ -13,8 +13,12 @@ Describe Locale.Message
 
   Describe .get_lang()
     It returns current language of message
-      language message ja_JP.UTF-8
-      Assert Equals(M.get_lang(), 'ja')
+      try
+        language message ja_JP.UTF-8
+        Assert Equals(M.get_lang(), 'ja')
+      catch /^Vim\%((\a\+)\)\=:E197/
+        Skip Need ja_JP.UTF-8 in your system locale
+      endtry
     End
     It returns 'en' if current language is 'C'
       language message C
@@ -32,8 +36,12 @@ Describe Locale.Message
 
   Describe .get()
     Before each
-      language message ja_JP.UTF-8
-      let self.m = M.new(s:text_path)
+      try
+        language message ja_JP.UTF-8
+        let self.m = M.new(s:text_path)
+      catch /^Vim\%((\a\+)\)\=:E197/
+        Skip Need ja_JP.UTF-8 in your system locale
+      endtry
     End
     It returns translated text if it exists
       Assert Equals(self.m.get('hello'), 'こんにちは')
@@ -45,8 +53,12 @@ Describe Locale.Message
 
   Describe ._()
     Before each
-      language message ja_JP.UTF-8
-      let self.m = M.new(s:text_path)
+      try
+        language message ja_JP.UTF-8
+        let self.m = M.new(s:text_path)
+      catch /^Vim\%((\a\+)\)\=:E197/
+        Skip Need ja_JP.UTF-8 in your system locale
+      endtry
     End
     It can use like `get()`
       Assert Equals(self.m._('hello'), 'こんにちは')
