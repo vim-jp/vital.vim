@@ -14,6 +14,7 @@ case "${TRAVIS_OS_NAME}" in
 		;;
 	osx)
 		brew update
+		brew upgrade
 		brew install lua
 		brew install vim --with-lua
 		;;
