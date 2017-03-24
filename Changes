@@ -1,3 +1,6 @@
+73c929cdec441673d6df6ffa3cb450346dd5f0c4
+	Modules: ProcessManager, Deprecated.ProcessManager
+	Rename ProcessManager to Deprecated.ProcessManager which is going to be removed
 f357fe99366e99cf0ae953303b7e3ea54b408df4
 	Modules: Vim.BufferManager
 	A value of 'newwin' returned 1 when a buffer was opened in an existing window.

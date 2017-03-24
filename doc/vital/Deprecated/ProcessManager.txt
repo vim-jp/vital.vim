@@ -1,26 +1,26 @@
-*vital/ProcessManager.txt*	process manager with vimproc.
+*vital/Deprecated.ProcessManager.txt*	process manager with vimproc.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 
 ==============================================================================
-CONTENTS			*Vital.ProcessManager-contents*
+CONTENTS			*Vital.Deprecated.ProcessManager-contents*
 
-INTRODUCTION			|Vital.ProcessManager-introduction|
-  USAGE				|Vital.ProcessManager-usage|
-  PRINCIPLE			|Vital.ProcessManager-principle|
-INTERFACE			|Vital.ProcessManager-interface|
-  FUNCTIONS			  |Vital.ProcessManager-functions|
-CONFIG				|Vital.ProcessManager-config|
+INTRODUCTION			|Vital.Deprecated.ProcessManager-introduction|
+  USAGE				|Vital.Deprecated.ProcessManager-usage|
+  PRINCIPLE			|Vital.Deprecated.ProcessManager-principle|
+INTERFACE			|Vital.Deprecated.ProcessManager-interface|
+  FUNCTIONS			  |Vital.Deprecated.ProcessManager-functions|
+CONFIG				|Vital.Deprecated.ProcessManager-config|
 
 
 
 ==============================================================================
-INTRODUCTION			*Vital.ProcessManager-introduction*
+INTRODUCTION			*Vital.Deprecated.ProcessManager-introduction*
 
 Note this module is going to be deprecated. Use |Vital.ConcurrentProcess|
 instead.
 
-*Vital.ProcessManager* is a Vim's process manager library, powered by
+*Vital.Deprecated.ProcessManager* is a Vim's process manager library, powered by
 |vimproc|.  This manager stores external processes ran by this library, and
 provide higher layer synchronous non-blocking read/write interface.
 
@@ -29,9 +29,9 @@ required.
 
 
 ==============================================================================
-USAGE				*Vital.ProcessManager-usage*
+USAGE				*Vital.Deprecated.ProcessManager-usage*
 >
-	let P = V.import('ProcessManager')
+	let P = V.import('Deprecated.ProcessManager')
 	if !P.is_available() " please always check if it's available.
 	  throw "omg"
 	endif
@@ -43,7 +43,7 @@ USAGE				*Vital.ProcessManager-usage*
 	" read the stdout/stderr and wait until the process's output stays
 	" same for 0.05 sec.
 	echo P.read('i', []) " ["5\nuser=>", '', 'timedout']
-	" kills the process, and let ProcessManager forget it.
+	" kills the process, and let Deprecated.ProcessManager forget it.
 	echo P.term('i') " gracefully stop the process
 	echo P.status('i') " 'inactive'
 <
@@ -79,7 +79,7 @@ MEMO
 * read's out split needs \r as well for windows
 
 ==============================================================================
-PRINCIPLE			*Vital.ProcessManager-principle*
+PRINCIPLE			*Vital.Deprecated.ProcessManager-principle*
 
 * Nonblocking
   * blocking APIs should have verbose name to discourage developers to use
@@ -90,16 +90,16 @@ PRINCIPLE			*Vital.ProcessManager-principle*
   explain what it does.
 >
 ==============================================================================
-INTERFACE			*Vital.ProcessManager-interface*
+INTERFACE			*Vital.Deprecated.ProcessManager-interface*
 
 ------------------------------------------------------------------------------
-FUNCTIONS			*Vital.ProcessManager-functions*
+FUNCTIONS			*Vital.Deprecated.ProcessManager-functions*
 
-touch({label}, {cmd})		*Vital.ProcessManager.touch()*
+touch({label}, {cmd})		*Vital.Deprecated.ProcessManager.touch()*
 	Returns a string which is either "existing" or "new".
 	TODO
 
-state({label})			*Vital.ProcessManager.state()*
+state({label})			*Vital.Deprecated.ProcessManager.state()*
 	Returns either "undefined", "inactive", "reading", or "idle".
 
 ==============================================================================
