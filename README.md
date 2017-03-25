@@ -44,7 +44,6 @@ Module						 | Description
 [OptionParser](doc/vital/OptionParser.txt)	 | Option parser library for Vim
 [Prelude](doc/vital/Prelude.txt)		 | crucial functions
 [Process](doc/vital/Process.txt)		 | Utilities for process
-[ProcessManager](doc/vital/ProcessManager.txt)  | process manager with vimproc
 [Random.Mt19937ar](doc/vital/Random/Mt19937ar.txt)| random number generator using mt19937ar
 [Random.Xor128](doc/vital/Random/Xor128.txt)	 | random number generator using xor128
 [Random](doc/vital/Random.txt)			 | Random utility frontend library

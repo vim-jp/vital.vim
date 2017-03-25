@@ -188,7 +188,6 @@ LINKS					*Vital-links*
   |vital/OptionParser.txt|	Option parser library for Vim.
   |vital/Prelude.txt|		crucial functions
   |vital/Process.txt|		Utilities for process.
-  |vital/ProcessManager.txt|	process manager with vimproc.
   |vital/Random.txt|		Random utility frontend library
   |vital/Random/Mt19937ar.txt|	random number generator using mt19937ar
   |vital/Random/Xor128.txt|	random number generator using xor128
