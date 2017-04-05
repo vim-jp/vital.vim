@@ -118,7 +118,8 @@ Layout.apply({buffers}, {layoutdata})	*Vital.Window.Layout.apply()*
 Layout.winnr({walias})			*Vital.Window.Layout.winnr()*
 	Gets a window number by given {walias}. It returns a window number if
 	found it, otherwise returns -1.
-	You want to use this function, you have to specify || attribute.
+	You want to use this function, you have to specify walias attribute
+	for |Vital.Window.Layout.apply()| function.
 
 ==============================================================================
 ENGINES					*Vital.Window.Layout-engines*
