@@ -13,7 +13,7 @@ function! s:_vital_loaded(V) abort
 endfunction
 
 function! s:_vital_depends() abort
-  return [['Window.Layout.*'], 'Vim.BufferManager', 'Data.List']
+  return ['Window.Layout.*', 'Vim.BufferManager', 'Data.List']
 endfunction
 
 " buffer:
