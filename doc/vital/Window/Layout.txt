@@ -26,22 +26,22 @@ lay out your plugin's layout.
 
 	" lays out a current tabpage
 	call s:layout.apply(
-	\   [
-	\	{'id': 'hoge', 'bufname': 'HOGE'},
-	\	{'id': 'fuga', 'bufname': 'FUGA'},
-	\	{'id': 'piyo', 'bufname': 'PIYO'},
-	\   ],
-	\   {
-	\	'layout': 'border',
-	\	'north':  {'bufref': 'hoge', 'height': 0.5, 'walias': 'one'},
-	\	'center': {'bufref': 'fuga', 'width':  100, 'walias': 'two'},
-	\	'east':   {
-	\	    'layout': 'border',
-	\	    'north':  {'bufref': 'piyo', 'height': 0.333, 'walias': 'three'},
-	\	    'center': {'bufref': 'piyo', 'height': 0.333, 'walias': 'four'},
-	\	    'south':  {'bufref': 'piyo', 'height': 0.333, 'walias': 'five'},
-	\	},
-	\   }
+	\ [
+	\   {'id': 'hoge', 'bufname': 'HOGE'},
+	\   {'id': 'fuga', 'bufname': 'FUGA'},
+	\   {'id': 'piyo', 'bufname': 'PIYO'},
+	\ ],
+	\ {
+	\   'layout': 'border',
+	\   'north':  {'bufref': 'hoge', 'height': 0.5, 'walias': 'one'},
+	\   'center': {'bufref': 'fuga', 'width':  100, 'walias': 'two'},
+	\   'east':   {
+	\     'layout': 'border',
+	\     'north':  {'bufref': 'piyo', 'height': 0.333, 'walias': 'three'},
+	\     'center': {'bufref': 'piyo', 'height': 0.333, 'walias': 'four'},
+	\     'south':  {'bufref': 'piyo', 'height': 0.333, 'walias': 'five'},
+	\   },
+	\ }
 	\)
 	" to be shown layouted tabpage like below
 	"
