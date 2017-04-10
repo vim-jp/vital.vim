@@ -21,8 +21,10 @@ function! s:_flow_layout_apply(wl, data) dict abort
     endif
 
     if has_key(item, 'bufref')
-      let buf = a:wl.buffer(item.bufref)
-      execute 'buffer' buf.bufnr
+      call a:wl.bufopen(item.bufref)
+    endif
+    if has_key(item, 'walias')
+      call a:wl.walias('.', item.walias)
     endif
 
     let skip = 0
