@@ -11,11 +11,7 @@ Describe Vim.Message
       silent call Message.error('hi')
       redir END
       " TODO: how to check `echohl ErrorMsg`?
-      if has('patch-8.0.0467')
-        Assert Equals(output, "\n\nhi")
-      else
-        Assert Equals(output, "\nhi")
-      endif
+      Assert Equals(output, "\nhi")
     End
   End
 
