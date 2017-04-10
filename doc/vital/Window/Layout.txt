@@ -78,6 +78,8 @@ A Layout object has following members:
 
 Layout.apply({buffers}, {layoutdata})	*Vital.Window.Layout.apply()*
 	Lays out the current tabpage using {buffers} and {layoutdata}.
+	{buffers} argument is for specifying buffers that are managed this
+	module. {layoutdata} argument is for specifying layout options.
 	{buffers} is a |List| of |Dictionary| (buffer definition). It has
 	several attributes below:
 
