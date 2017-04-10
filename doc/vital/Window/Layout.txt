@@ -113,6 +113,10 @@ Layout.apply({buffers}, {layoutdata})	*Vital.Window.Layout.apply()*
 		Indicates a layout engine.
 		See |Vital.Window.Layout-engines| for more details.
 
+	bufref
+		Specify buffer id (see {buffers} id attribute). It will open
+		specified buffer on its window.
+
 	walias
 		An alias of its window. It is for
 		|Vital.Window.Layout.winnr()|.
