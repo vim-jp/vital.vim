@@ -10,7 +10,6 @@ function! s:new() abort
   return deepcopy(s:grid_layout)
 endfunction
 
-" @vimlint(EVL103, 1, a:wl)
 function! s:_grid_layout_apply(wl, data) dict abort
   let nrows = float2nr(ceil(len(a:data.cells) / (1.0 * a:data.column)))
   " already exists a row window
@@ -18,21 +17,35 @@ function! s:_grid_layout_apply(wl, data) dict abort
     aboveleft split
   endfor
 
-  " already exists a column window
+  " col starts with 1, since already exists a column window
   let [col, row] = [1, 0]
   while row <= nrows && (col + a:data.column * row) < len(a:data.cells)
+    call s:_apply_common_options(a:wl, get(a:data.cells, col + a:data.column * row - 1, {}))
+
     belowright vsplit
     let col += 1
 
     if col >= a:data.column
+      call s:_apply_common_options(a:wl, get(a:data.cells, col + a:data.column * row - 1, {}))
+
       execute 'wincmd j'
       let col = 1
       let row += 1
     endif
   endwhile
 endfunction
-" @vimlint(EVL103, 0, a:wl)
 let s:grid_layout.apply = function('s:_grid_layout_apply')
+
+function! s:_apply_common_options(wl, layoutdata) abort
+  " open buffer
+  if has_key(a:layoutdata, 'bufref')
+    call a:wl.bufopen(a:layoutdata.bufref)
+  endif
+  " make walias
+  if has_key(a:layoutdata, 'walias')
+    call a:wl.walias('.', a:layoutdata.walias)
+  endif
+endfunction
 
 " @vimlint(EVL103, 1, a:wl)
 " @vimlint(EVL103, 1, a:data)
