@@ -59,7 +59,7 @@ endfunction
 "
 " function! s:layout.apply(buffers, layout_data, ...) abort
 function! s:_layout_apply(buffers, layout_data, ...) dict abort
-  " XXX: force is a internal option
+  " XXX: force is an internal option
   let force = get(a:000, 0, 1)
 
   if !has_key(a:layout_data, 'layout')
