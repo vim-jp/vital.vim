@@ -1,0 +1,41 @@
+*vital-window-layout-grid_layout.txt*		a one of layout engine.
+
+Maintainer: kamichidu <c.kamunagi at gmail com>
+
+==============================================================================
+CONTENTS		*Vital.Window.Layout.GridLayout-contents*
+
+INTRODUCTION		|Vital.Window.Layout.GridLayout-introduction|
+LAYOUT ATTRIBUTE	|Vital.Window.Layout.GridLayout-attribute|
+
+==============================================================================
+INTRODUCTION		*Vital.Window.Layout.GridLayout-introduction*
+
+*Vital.Window.Layout.GridLayout* is a layout engine for
+|Vital.Window.Layout|. It places all windows horizontal and vertical.
+
+	+--------+--------+--------+--------+--------+--------+
+	|        |        |        |        |        |        |
+	| item00 | item10 | item20 | item30 | item40 | item50 |
+	|        |        |        |        |        |        |
+	+--------+--------+--------+--------+--------+--------+
+	|        |        |        |        |        |        |
+	| item01 | item11 | item21 | item31 | item41 | item51 |
+	|        |        |        |        |        |        |
+	+--------+--------+--------+--------+--------+--------+
+	|        |        |        |        |        |        |
+	| item02 | item12 | item22 | item32 | item42 | item52 |
+	|        |        |        |        |        |        |
+	+--------+--------+--------+--------+--------+--------+
+
+==============================================================================
+LAYOUT ATTRIBUTE	*Vital.Window.Layout.GridLayout-attribute*
+
+cells
+	A |List| of layout data.
+
+column
+	Number of horizontal windows.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

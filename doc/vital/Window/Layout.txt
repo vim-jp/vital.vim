@@ -1,0 +1,147 @@
+*vital-window-layout.txt*		window layout library.
+
+Maintainer: kamichidu <c.kamunagi at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Window.Layout-contents*
+
+INTRODUCTION			|Vital.Window.Layout-introduction|
+INTERFACE			|Vital.Window.Layout-interface|
+  Functions			  |Vital.Window.Layout-functions|
+  Objects			  |Vital.Window.Layout-objects|
+ENGINES				|Vital.Window.Layout-engines|
+
+==============================================================================
+INTRODUCTION				*Vital.Window.Layout-introduction*
+
+*Vital.Window.Layout* is a window layout library. It provides useful way to
+lay out your plugin's layout.
+
+>
+	let s:V = vital#{plugin-name}#new()
+	let s:WL = s:V.import("Window.Layout")
+
+	" Create a new layout object
+	let s:layout = s:WL.new()
+
+	" lays out a current tabpage
+	call s:layout.apply(
+	\ [
+	\   {'id': 'hoge', 'bufname': 'HOGE'},
+	\   {'id': 'fuga', 'bufname': 'FUGA'},
+	\   {'id': 'piyo', 'bufname': 'PIYO'},
+	\ ],
+	\ {
+	\   'layout': 'border',
+	\   'north':  {'bufref': 'hoge', 'height': 0.5, 'walias': 'one'},
+	\   'center': {'bufref': 'fuga', 'width':  100, 'walias': 'two'},
+	\   'east':   {
+	\     'layout': 'border',
+	\     'north':  {'bufref': 'piyo', 'height': 0.333, 'walias': 'three'},
+	\     'center': {'bufref': 'piyo', 'height': 0.333, 'walias': 'four'},
+	\     'south':  {'bufref': 'piyo', 'height': 0.333, 'walias': 'five'},
+	\   },
+	\ }
+	\)
+	" to be shown layouted tabpage like below
+	"
+	" +--------------------------+
+	" |			     |
+	" |			     |
+	" |			     |
+	" |			     |
+	" |			     |
+	" +------------+-------------+
+	" |	       |	     |
+	" |	       +-------------+
+	" |	       |	     |
+	" |	       +-------------+
+	" |	       |	     |
+	" +------------+-------------+
+<
+
+==============================================================================
+INTERFACE				*Vital.Window.Layout-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Window.Layout-functions*
+
+new()					*Vital.Window.Layout.new()*
+	Creates a Layout object. (|Vital.Window.Layout-Layout|)
+
+==============================================================================
+OBJECTS					*Vital.Window.Layout-objects*
+
+------------------------------------------------------------------------------
+Layout Object				*Vital.Window.Layout-Layout*
+
+A Layout object has following members:
+
+Layout.apply({buffers}, {layoutdata})	*Vital.Window.Layout.apply()*
+	Lays out the current tabpage using {buffers} and {layoutdata}.
+	{buffers} argument is for specifying buffers that are managed this
+	module. {layoutdata} argument is for specifying layout options.
+
+	{buffers} is a |List| of |Dictionary| (buffer definition). It has
+	several attributes below:
+
+	id (required)
+		A buffer id will be referenced in {layoutdata}.
+
+	bufname
+		A new buffer name.
+		(Default: '')
+
+	range
+		Same to |Vital.Vim.BufferManager-config-range|.
+
+	bufnr
+		A buffer number will be placed.
+		If you give this attribute, |Vital.Window.Layout| will not
+		create new buffer.
+
+	initializer
+		It's |Funcref| or |List|.
+		It will be used for buffer initialization when a buffer
+		created.
+		|Vital.Window.Layout| calls given |Funcref| with no argument.
+		When initializer is a |List|, |Vital.Window.Layout| calls
+		first element (|Funcref|) with second argument (|Dictionary|).
+
+	{layoutdata} is a |Dictionary| (layout definition). It has several
+	attributes is used by |Vital.Window.Layout-engines| for layout window
+	and opening its buffer. see below:
+
+	layout (required)
+		Indicates a layout engine.
+		See |Vital.Window.Layout-engines| for more details.
+
+	bufref
+		Specify buffer id (see {buffers} id attribute). It will open
+		specified buffer on its window.
+
+	walias
+		An alias of its window. It is for
+		|Vital.Window.Layout.winnr()|.
+
+Layout.winnr({walias})			*Vital.Window.Layout.winnr()*
+	Gets a window number by given {walias}. It returns a window number if
+	found it, otherwise returns -1.
+	You want to use this function, you have to specify walias attribute
+	for |Vital.Window.Layout.apply()| function.
+
+==============================================================================
+ENGINES					*Vital.Window.Layout-engines*
+
+Currently supported some engines, listed below:
+
+BorderLayout	`border'
+	See |Vital.Window.Layout.BorderLayout|.
+
+FlowLayout	`flow'
+	See |Vital.Window.Layout.FlowLayout|.
+
+GridLayout	`grid'
+	See |Vital.Window.Layout.GridLayout|.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

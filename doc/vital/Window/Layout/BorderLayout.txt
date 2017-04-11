@@ -1,0 +1,63 @@
+*vital-window-layout-border_layout.txt*		a one of layout engine.
+
+Maintainer: kamichidu <c.kamunagi at gmail com>
+
+==============================================================================
+CONTENTS		*Vital.Window.Layout.BorderLayout-contents*
+
+INTRODUCTION		|Vital.Window.Layout.BorderLayout-introduction|
+LAYOUT ATTRIBUTE	|Vital.Window.Layout.BorderLayout-attribute|
+
+==============================================================================
+INTRODUCTION		*Vital.Window.Layout.BorderLayout-introduction*
+
+*Vital.Window.Layout.BorderLayout* is a layout engine for
+|Vital.Window.Layout|. It split window to some regions.
+
+	+---------------------------------------------------------+
+	|                                                         |
+	|                          NORTH                          |
+	|                                                         |
+	+------------------+-------------------+------------------+
+	|                  |                   |                  |
+	|       WEST       |       CENTER      |       EAST       |
+	|                  |                   |                  |
+	+------------------+-------------------+------------------+
+	|                                                         |
+	|                          SOUTH                          |
+	|                                                         |
+	+---------------------------------------------------------+
+
+==============================================================================
+LAYOUT ATTRIBUTE	*Vital.Window.Layout.BorderLayout-attribute*
+
+north
+	A north region layout data. It is same to
+	|Vital.Window.Layout.apply()|'s {layoutdata}.
+
+south
+	A south region layout data. It is same to
+	|Vital.Window.Layout.apply()|'s {layoutdata}.
+
+west
+	A west region layout data. It is same to
+	|Vital.Window.Layout.apply()|'s {layoutdata}.
+
+center
+	A center region layout data. It is same to
+	|Vital.Window.Layout.apply()|'s {layoutdata}.
+
+east
+	A east region layout data. It is same to
+	|Vital.Window.Layout.apply()|'s {layoutdata}.
+
+width
+	A window width. It can takes |Number| or |Float|. A |Number| value is
+	a absolute columns width. A |Float| value is a relative columns width
+	of parent window.
+
+height
+	A window height. It is similar to width attribute.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
