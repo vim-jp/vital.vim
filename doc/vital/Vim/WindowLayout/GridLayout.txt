@@ -3,16 +3,16 @@
 Maintainer: kamichidu <c.kamunagi at gmail com>
 
 ==============================================================================
-CONTENTS		*Vital.Window.Layout.GridLayout-contents*
+CONTENTS		*Vital.Vim.WindowLayout.GridLayout-contents*
 
-INTRODUCTION		|Vital.Window.Layout.GridLayout-introduction|
-LAYOUT ATTRIBUTE	|Vital.Window.Layout.GridLayout-attribute|
+INTRODUCTION		|Vital.Vim.WindowLayout.GridLayout-introduction|
+LAYOUT ATTRIBUTE	|Vital.Vim.WindowLayout.GridLayout-attribute|
 
 ==============================================================================
-INTRODUCTION		*Vital.Window.Layout.GridLayout-introduction*
+INTRODUCTION		*Vital.Vim.WindowLayout.GridLayout-introduction*
 
-*Vital.Window.Layout.GridLayout* is a layout engine for
-|Vital.Window.Layout|. It places all windows horizontal and vertical.
+*Vital.Vim.WindowLayout.GridLayout* is a layout engine for
+|Vital.Vim.WindowLayout|. It places all windows horizontal and vertical.
 
 	+--------+--------+--------+--------+--------+--------+
 	|        |        |        |        |        |        |
@@ -29,7 +29,7 @@ INTRODUCTION		*Vital.Window.Layout.GridLayout-introduction*
 	+--------+--------+--------+--------+--------+--------+
 
 ==============================================================================
-LAYOUT ATTRIBUTE	*Vital.Window.Layout.GridLayout-attribute*
+LAYOUT ATTRIBUTE	*Vital.Vim.WindowLayout.GridLayout-attribute*
 
 cells
 	A |List| of layout data.

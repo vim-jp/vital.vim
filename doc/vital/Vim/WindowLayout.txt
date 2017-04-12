@@ -3,23 +3,23 @@
 Maintainer: kamichidu <c.kamunagi at gmail com>
 
 ==============================================================================
-CONTENTS				*Vital.Window.Layout-contents*
+CONTENTS				*Vital.Vim.WindowLayout-contents*
 
-INTRODUCTION			|Vital.Window.Layout-introduction|
-INTERFACE			|Vital.Window.Layout-interface|
-  Functions			  |Vital.Window.Layout-functions|
-  Objects			  |Vital.Window.Layout-objects|
-ENGINES				|Vital.Window.Layout-engines|
+INTRODUCTION			|Vital.Vim.WindowLayout-introduction|
+INTERFACE			|Vital.Vim.WindowLayout-interface|
+  Functions			  |Vital.Vim.WindowLayout-functions|
+  Objects			  |Vital.Vim.WindowLayout-objects|
+ENGINES				|Vital.Vim.WindowLayout-engines|
 
 ==============================================================================
-INTRODUCTION				*Vital.Window.Layout-introduction*
+INTRODUCTION				*Vital.Vim.WindowLayout-introduction*
 
-*Vital.Window.Layout* is a window layout library. It provides useful way to
+*Vital.Vim.WindowLayout* is a window layout library. It provides useful way to
 lay out your plugin's layout.
 
 >
 	let s:V = vital#{plugin-name}#new()
-	let s:WL = s:V.import("Window.Layout")
+	let s:WL = s:V.import("Vim.WindowLayout")
 
 	" Create a new layout object
 	let s:layout = s:WL.new()
@@ -61,22 +61,22 @@ lay out your plugin's layout.
 <
 
 ==============================================================================
-INTERFACE				*Vital.Window.Layout-interface*
+INTERFACE				*Vital.Vim.WindowLayout-interface*
 ------------------------------------------------------------------------------
-FUNCTIONS				*Vital.Window.Layout-functions*
+FUNCTIONS				*Vital.Vim.WindowLayout-functions*
 
-new()					*Vital.Window.Layout.new()*
-	Creates a Layout object. (|Vital.Window.Layout-Layout|)
+new()					*Vital.Vim.WindowLayout.new()*
+	Creates a Layout object. (|Vital.Vim.WindowLayout-Layout|)
 
 ==============================================================================
-OBJECTS					*Vital.Window.Layout-objects*
+OBJECTS					*Vital.Vim.WindowLayout-objects*
 
 ------------------------------------------------------------------------------
-Layout Object				*Vital.Window.Layout-Layout*
+Layout Object				*Vital.Vim.WindowLayout-Layout*
 
 A Layout object has following members:
 
-Layout.apply({buffers}, {layoutdata})	*Vital.Window.Layout.apply()*
+Layout.apply({buffers}, {layoutdata})	*Vital.Vim.WindowLayout.apply()*
 	Lays out the current tabpage using {buffers} and {layoutdata}.
 	{buffers} argument is for specifying buffers that are managed this
 	module. {layoutdata} argument is for specifying layout options.
@@ -96,24 +96,24 @@ Layout.apply({buffers}, {layoutdata})	*Vital.Window.Layout.apply()*
 
 	bufnr
 		A buffer number will be placed.
-		If you give this attribute, |Vital.Window.Layout| will not
+		If you give this attribute, |Vital.Vim.WindowLayout| will not
 		create new buffer.
 
 	initializer
 		It's |Funcref| or |List|.
 		It will be used for buffer initialization when a buffer
 		created.
-		|Vital.Window.Layout| calls given |Funcref| with no argument.
-		When initializer is a |List|, |Vital.Window.Layout| calls
+		|Vital.Vim.WindowLayout| calls given |Funcref| with no argument.
+		When initializer is a |List|, |Vital.Vim.WindowLayout| calls
 		first element (|Funcref|) with second argument (|Dictionary|).
 
 	{layoutdata} is a |Dictionary| (layout definition). It has several
-	attributes is used by |Vital.Window.Layout-engines| for layout window
-	and opening its buffer. see below:
+	attributes is used by |Vital.Vim.WindowLayout-engines| for layout
+	window and opening its buffer. see below:
 
 	layout (required)
 		Indicates a layout engine.
-		See |Vital.Window.Layout-engines| for more details.
+		See |Vital.Vim.WindowLayout-engines| for more details.
 
 	bufref
 		Specify buffer id (see {buffers} id attribute). It will open
@@ -121,27 +121,27 @@ Layout.apply({buffers}, {layoutdata})	*Vital.Window.Layout.apply()*
 
 	walias
 		An alias of its window. It is for
-		|Vital.Window.Layout.winnr()|.
+		|Vital.Vim.WindowLayout.winnr()|.
 
-Layout.winnr({walias})			*Vital.Window.Layout.winnr()*
+Layout.winnr({walias})			*Vital.Vim.WindowLayout.winnr()*
 	Gets a window number by given {walias}. It returns a window number if
 	found it, otherwise returns -1.
 	You want to use this function, you have to specify walias attribute
-	for |Vital.Window.Layout.apply()| function.
+	for |Vital.Vim.WindowLayout.apply()| function.
 
 ==============================================================================
-ENGINES					*Vital.Window.Layout-engines*
+ENGINES					*Vital.Vim.WindowLayout-engines*
 
 Currently supported some engines, listed below:
 
 BorderLayout	`border'
-	See |Vital.Window.Layout.BorderLayout|.
+	See |Vital.Vim.WindowLayout.BorderLayout|.
 
 FlowLayout	`flow'
-	See |Vital.Window.Layout.FlowLayout|.
+	See |Vital.Vim.WindowLayout.FlowLayout|.
 
 GridLayout	`grid'
-	See |Vital.Window.Layout.GridLayout|.
+	See |Vital.Vim.WindowLayout.GridLayout|.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
