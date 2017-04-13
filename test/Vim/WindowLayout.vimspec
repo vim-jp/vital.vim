@@ -1,6 +1,6 @@
-Describe Window.Layout
+Describe Vim.WindowLayout
   Before all
-    let WL = vital#vital#new().import('Window.Layout')
+    let WL = vital#vital#new().import('Vim.WindowLayout')
   End
 
   Context basic concept

@@ -3,16 +3,16 @@
 Maintainer: kamichidu <c.kamunagi at gmail com>
 
 ==============================================================================
-CONTENTS		*Vital.Window.Layout.FlowLayout-contents*
+CONTENTS		*Vital.Vim.WindowLayout.FlowLayout-contents*
 
-INTRODUCTION		|Vital.Window.Layout.FlowLayout-introduction|
-LAYOUT ATTRIBUTE	|Vital.Window.Layout.FlowLayout-attribute|
+INTRODUCTION		|Vital.Vim.WindowLayout.FlowLayout-introduction|
+LAYOUT ATTRIBUTE	|Vital.Vim.WindowLayout.FlowLayout-attribute|
 
 ==============================================================================
-INTRODUCTION		*Vital.Window.Layout.FlowLayout-introduction*
+INTRODUCTION		*Vital.Vim.WindowLayout.FlowLayout-introduction*
 
-*Vital.Window.Layout.FlowLayout* is a layout engine for
-|Vital.Window.Layout|. It places all windows just horizontal.
+*Vital.Vim.WindowLayout.FlowLayout* is a layout engine for
+|Vital.Vim.WindowLayout|. It places all windows just horizontal.
 
 	+--------+--------+--------+--------+--------+--------+
 	|        |        |        |        |        |        |
@@ -21,7 +21,7 @@ INTRODUCTION		*Vital.Window.Layout.FlowLayout-introduction*
 	+--------+--------+--------+--------+--------+--------+
 
 ==============================================================================
-LAYOUT ATTRIBUTE	*Vital.Window.Layout.FlowLayout-attribute*
+LAYOUT ATTRIBUTE	*Vital.Vim.WindowLayout.FlowLayout-attribute*
 
 items
 	A |List| of layout data.

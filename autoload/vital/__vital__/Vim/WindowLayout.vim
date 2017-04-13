@@ -5,15 +5,15 @@ function! s:_vital_loaded(V) abort
   let s:BM = a:V.import('Vim.BufferManager')
   let s:L =  a:V.import('Data.List')
 
-  for layout_manager in a:V.search('Window.Layout.*')
-    " gather some kind of layout engines, located under Window.Layout namespace
-    let name = matchstr(layout_manager, '\C^Window\.Layout\.\zs\w\+\zeLayout$')
+  for layout_manager in a:V.search('Vim.WindowLayout.*')
+    " gather some kind of layout engines, located under Vim.WindowLayout namespace
+    let name = matchstr(layout_manager, '\C^Vim\.WindowLayout\.\zs\w\+\zeLayout$')
     let s:layout.__layouts[tolower(name)] = a:V.import(layout_manager).new()
   endfor
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Window.Layout.*', 'Vim.BufferManager', 'Data.List']
+  return ['Vim.WindowLayout.*', 'Vim.BufferManager', 'Data.List']
 endfunction
 
 " buffer:
@@ -63,9 +63,9 @@ function! s:_layout_apply(buffers, layout_data, ...) dict abort
   let force = get(a:000, 0, 1)
 
   if !has_key(a:layout_data, 'layout')
-    throw "vital: Window.Layout: You must specify `layout'."
+    throw "vital: Vim.WindowLayout: You must specify `layout'."
   elseif !has_key(self.__layouts, a:layout_data.layout)
-    throw printf("vital: Window.Layout: No such layout manager `%s'.", a:layout_data.layout)
+    throw printf("vital: Vim.WindowLayout: No such layout manager `%s'.", a:layout_data.layout)
   endif
 
   " " validate
@@ -195,7 +195,7 @@ let s:layout.buffers = function('s:_layout_buffers')
 
 " function! s:layout.validate_layout_data(data, ...) abort
 "   if has_key(a:data, 'layout') && !has_key(self.__layouts, a:data.layout)
-"     throw printf("vital: Window.Layout: No such layout manager `%s'.", a:data.layout)
+"     throw printf("vital: Vim.WindowLayout: No such layout manager `%s'.", a:data.layout)
 "   endif
 " 
 "   let workbuf = get(a:000, 0, {'waliases': []})
@@ -203,7 +203,7 @@ let s:layout.buffers = function('s:_layout_buffers')
 "   " check meta options
 "   if has_key(a:data, 'walias')
 "     if s:L.has(workbuf.waliases, a:data.walias)
-"       throw printf("vital: Window.Layout: Duplicated walias `%s' is not valid.", a:data.walias)
+"       throw printf("vital: Vim.WindowLayout: Duplicated walias `%s' is not valid.", a:data.walias)
 "     endif
 "     let workbuf.waliases += [a:data.walias]
 "   endif

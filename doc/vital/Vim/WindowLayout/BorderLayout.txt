@@ -3,16 +3,16 @@
 Maintainer: kamichidu <c.kamunagi at gmail com>
 
 ==============================================================================
-CONTENTS		*Vital.Window.Layout.BorderLayout-contents*
+CONTENTS		*Vital.Vim.WindowLayout.BorderLayout-contents*
 
-INTRODUCTION		|Vital.Window.Layout.BorderLayout-introduction|
-LAYOUT ATTRIBUTE	|Vital.Window.Layout.BorderLayout-attribute|
+INTRODUCTION		|Vital.Vim.WindowLayout.BorderLayout-introduction|
+LAYOUT ATTRIBUTE	|Vital.Vim.WindowLayout.BorderLayout-attribute|
 
 ==============================================================================
-INTRODUCTION		*Vital.Window.Layout.BorderLayout-introduction*
+INTRODUCTION		*Vital.Vim.WindowLayout.BorderLayout-introduction*
 
-*Vital.Window.Layout.BorderLayout* is a layout engine for
-|Vital.Window.Layout|. It split window to some regions.
+*Vital.Vim.WindowLayout.BorderLayout* is a layout engine for
+|Vital.Vim.WindowLayout|. It split window to some regions.
 
 	+---------------------------------------------------------+
 	|                                                         |
@@ -29,27 +29,27 @@ INTRODUCTION		*Vital.Window.Layout.BorderLayout-introduction*
 	+---------------------------------------------------------+
 
 ==============================================================================
-LAYOUT ATTRIBUTE	*Vital.Window.Layout.BorderLayout-attribute*
+LAYOUT ATTRIBUTE	*Vital.Vim.WindowLayout.BorderLayout-attribute*
 
 north
 	A north region layout data. It is same to
-	|Vital.Window.Layout.apply()|'s {layoutdata}.
+	|Vital.Vim.WindowLayout.apply()|'s {layoutdata}.
 
 south
 	A south region layout data. It is same to
-	|Vital.Window.Layout.apply()|'s {layoutdata}.
+	|Vital.Vim.WindowLayout.apply()|'s {layoutdata}.
 
 west
 	A west region layout data. It is same to
-	|Vital.Window.Layout.apply()|'s {layoutdata}.
+	|Vital.Vim.WindowLayout.apply()|'s {layoutdata}.
 
 center
 	A center region layout data. It is same to
-	|Vital.Window.Layout.apply()|'s {layoutdata}.
+	|Vital.Vim.WindowLayout.apply()|'s {layoutdata}.
 
 east
 	A east region layout data. It is same to
-	|Vital.Window.Layout.apply()|'s {layoutdata}.
+	|Vital.Vim.WindowLayout.apply()|'s {layoutdata}.
 
 width
 	A window width. It can takes |Number| or |Float|. A |Number| value is
