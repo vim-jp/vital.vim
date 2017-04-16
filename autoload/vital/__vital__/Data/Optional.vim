@@ -86,7 +86,7 @@ function! s:apply(f, ...) abort
   return s:some(call(a:f, map(copy(a:000), 'v:val[0]')))
 endfunction
 
-function! s:map(f, x) abort
+function! s:map(x, f) abort
 	return s:apply(a:f, a:x)
 endfunction
 
