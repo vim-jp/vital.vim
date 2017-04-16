@@ -113,5 +113,17 @@ foldr({f}, {init}, {dict})		*Vital.Data.Dict.foldr()*
 	TODO
 	Behaves like Haskell's Data.Map.Lazy.foldrWithKey().
 
+
+lookup({key}, {dict})			*Vital.Data.Dict.lookup()*
+	If the dict has the key, returns Optional.some({dict}[{key}]).
+	If the dict hasn't the key, returns Optional.none().
+	Please see |Vital.Data.Optional| about Optional.
+>
+	:echo Dict.lookup('ahoge', {'ahoge': 10, 'bako': 20})
+	[10]
+	:echo Dict.lookup('gavu', {'ahoge': 10, 'bako': 20})
+	[]
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
