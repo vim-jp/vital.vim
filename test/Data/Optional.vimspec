@@ -163,6 +163,13 @@ Describe Data.Optional
     End
   End
 
+  Describe .map()
+    It can take only an argument
+      Assert Equal(O.map({x -> x + 1}, O.some(1)), O.some(2))
+      Throws /^Vim(return):E118:/ O.map({x -> x + 1}, O.some(1), O.some(2))
+    End
+  End
+
   Describe .bind()
     Before all
       function! Div(a, b)
