@@ -171,10 +171,10 @@ Describe Data.Dict
 
   Describe .lookup()
     It returns a just value if the dict has the key
-      Assert Equals(D.lookup('ahoge', {'ahoge': 10, 'bako': 20}), O.some(10))
+      Assert Equals(D.lookup({'ahoge': 10, 'bako': 20}, 'ahoge'), O.some(10))
     End
     It returns nothing if the dict hasn't the key
-      Assert Equals(D.lookup('gavu', {'ahoge': 10, 'bako': 20}), O.none())
+      Assert Equals(D.lookup({'ahoge': 10, 'bako': 20}, 'gavriil'), O.none())
     End
   End
 End
