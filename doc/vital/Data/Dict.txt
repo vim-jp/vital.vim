@@ -116,7 +116,7 @@ foldr({f}, {init}, {dict})		*Vital.Data.Dict.foldr()*
 
 lookup({key}, {dict})			*Vital.Data.Dict.lookup()*
 	If the dict has the key, returns Optional.some({dict}[{key}]).
-	If the dict hasn't the key, returns Optional.none().
+	If the dict doesn't have the key, returns Optional.none().
 	Please see |Vital.Data.Optional| about Optional.
 >
 	:echo Dict.lookup('ahoge', {'ahoge': 10, 'bako': 20})
