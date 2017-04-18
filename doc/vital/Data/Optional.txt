@@ -130,8 +130,17 @@ apply({func}, {args}...)		*Vital.Data.Optional.apply()*
 	call O.apply(function('Update'), s:cache, O.some(new_value))
 <
 map({optional}, {func})			*Vital.Data.Optional.map()*
-	A swap case of |Vital.Data.Optional.apply()| but this function takes
-	only an argument.
+	Maps content of {optional} by predicate {func}. If content of
+	{optional} is none, then {func} won't be invoked and none will be
+	returned.
+>
+	function! Succ(x)
+	  return a:x + 1
+	endfunction
+
+	echo O.map(O.some(1), function('Succ')) " returns O.some(2)
+	echo O.map(O.none(), function('Succ'))  " returns O.none()
+>
 
 bind({func}, {args}...)			*Vital.Data.Optional.bind()*
 	Applies {args} to {func} if all of {args} are valid optional value.
