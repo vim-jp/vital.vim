@@ -87,7 +87,7 @@ function! s:apply(f, ...) abort
 endfunction
 
 function! s:map(x, f) abort
-	return s:apply(a:f, a:x)
+  return s:apply(a:f, a:x)
 endfunction
 
 function! s:bind(f, ...) abort
