@@ -104,7 +104,7 @@ function! s:foldr(f, init, dict) abort
   return s:_foldl(a:f, a:init, reverse(items(a:dict)))
 endfunction
 
-function! s:lookup(key, dict) abort
+function! s:lookup(dict, key) abort
 	return has_key(a:dict, a:key)
 	\        ? s:Option.some(a:dict[a:key])
 	\        : s:Option.none()
