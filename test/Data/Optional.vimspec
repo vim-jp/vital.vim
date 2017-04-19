@@ -163,6 +163,40 @@ Describe Data.Optional
     End
   End
 
+  Describe .map()
+    Before all
+      function! Succ(x)
+        return a:x + 1
+      endfunction
+
+      function! Append(x)
+        return 'It is ' . a:x 
+      endfunction
+
+      function! SayPoi(x)
+        return {'say': a:x.say . 'poi'}
+      endfunction
+    End
+
+    It maps content of Optional if Optional has an element
+      Assert Equal(O.map(O.some(1), function('Succ')), O.some(2))
+      Assert Equal(O.map(O.some('me'), function('Append')), O.some('It is me'))
+      Assert Equal(O.map(O.some({'say': 'hi'}), function('SayPoi')), O.some({'say': 'hipoi'}))
+    End
+
+    It does nothing if Optional doesn't have element
+      Assert Equal(O.map(O.none(), function('Succ')), O.none())
+      Assert Equal(O.map(O.none(), function('Append')), O.none())
+      Assert Equal(O.map(O.none(), function('SayPoi')), O.none())
+    End
+
+    After all
+      delfunction Succ
+      delfunction Append
+      delfunction SayPoi
+    End
+  End
+
   Describe .bind()
     Before all
       function! Div(a, b)
