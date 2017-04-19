@@ -189,6 +189,12 @@ Describe Data.Optional
       Assert Equal(O.map(O.none(), function('Append')), O.none())
       Assert Equal(O.map(O.none(), function('SayPoi')), O.none())
     End
+
+    After all
+      delfunction Succ
+      delfunction Append
+      delfunction SayPoi
+    End
   End
 
   Describe .bind()
