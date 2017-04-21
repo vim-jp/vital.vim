@@ -358,12 +358,14 @@ Describe Data.List
     End
 
     It returns the value if found by funcref
-      Assert Equals(List.find([1, 2, 3], '*not-found*', {x -> x % 2 == 0}), 2)
-      Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', {x -> x % 2 == 0}), 2)
-      Assert Equals(List.find([1, 2, 3], '*not-found*', {x -> x % 10 == 0}), '*not-found*')
-      Assert Equals(List.find([], '*not-found*', {x -> x % 2 == 0}), '*not-found*')
+      if has('lambda')
+        Assert Equals(List.find([1, 2, 3], '*not-found*', {x -> x % 2 == 0}), 2)
+        Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', {x -> x % 2 == 0}), 2)
+        Assert Equals(List.find([1, 2, 3], '*not-found*', {x -> x % 10 == 0}), '*not-found*')
+        Assert Equals(List.find([], '*not-found*', {x -> x % 2 == 0}), '*not-found*')
 
-      Assert Equals(List.find(['hi', 'yo'], -1, {x -> x =~ 'y'}), 'yo')
+        Assert Equals(List.find(['hi', 'yo'], -1, {x -> x =~ 'y'}), 'yo')
+      endif
     End
   End
 
