@@ -115,6 +115,7 @@ concat({list})				*Vital.Data.List.concat()*
 	echo s:L.concat([[1], [2, 3]])
 	" [1, 2, 3]
 <
+flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
 
