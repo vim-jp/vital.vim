@@ -274,6 +274,25 @@ endfunction
 
 " similar to Ruby's detect or Haskell's find.
 function! s:find(list, default, f) abort
+  if type(a:f) is type(function('function'))
+    return s:find_impl_for_funcref_expr(a:list, a:default, a:f)
+  else
+    return s:find_impl_for_string_expr(a:list, a:default, a:f)
+  endif
+endfunction
+
+" s:find() implementation for function representation of funcref
+function! s:find_impl_for_funcref_expr(list, default, f) abort
+  for x in a:list
+    if a:f(x)
+      return x
+    endif
+  endfor
+  return a:default
+endfunction
+
+" s:find() implementation for function representation of string
+function! s:find_impl_for_string_expr(list, default, f) abort
   for x in a:list
     if eval(substitute(a:f, 'v:val', string(x), 'g'))
       return x

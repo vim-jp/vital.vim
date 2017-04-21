@@ -118,7 +118,6 @@ concat({list})				*Vital.Data.List.concat()*
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
 
-flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 	Take each {list} elements in |List| {list} into a new {list}
 	recursively.  When the {limit} argument is given, the function keeps
 	nested items by the {limit} is maximum size.
@@ -435,6 +434,11 @@ find({list}, {default}, {f})			 *Vital.Data.List.find()*
 	" 2
 	echo s:L.find([1, 2, 3], '*not-found*', 'v:val % 10 == 0')
 	" '*not-found*'
+<
+	If you have +lambda, you can use lambda expression as {f}.
+>
+	echo s:L.find([1, 2, 3, 1, 2, 3], '*not-found*', {x -> x % 2 == 0})
+	" 2
 <
 	If you know Haskell, this find() is like Haskell's Data.List.find
 	just for your info.
