@@ -286,7 +286,7 @@ function! s:find(list, default, f) abort
   return a:default
 endfunction
 
-function! s:_call_string_expr(expr, args)
+function! s:_call_string_expr(expr, args) abort
   return eval(substitute(a:expr, 'v:val', string(a:args[0]), 'g'))
 endfunction
 
