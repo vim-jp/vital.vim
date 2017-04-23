@@ -348,6 +348,19 @@ Describe Data.List
   End
 
   Describe .find()
+    Before all
+      function! MyPredicate(x) abort
+        return a:x % 2 == 0
+      endfunction
+
+      function! MyPredicate2(x) abort
+        return a:x % 10 == 0
+      endfunction
+
+      function! MyPredicate3(x) abort
+        return a:x =~ 'y'
+      endfunction
+    End
     It returns the value if found by string expression
       Assert Equals(List.find([1, 2, 3], '*not-found*', 'v:val % 2 == 0'), 2)
       Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', 'v:val % 2 == 0'), 2)
@@ -356,16 +369,18 @@ Describe Data.List
 
       Assert Equals(List.find(['hi', 'yo'], -1, 'v:val =~ "y"'), 'yo')
     End
-
     It returns the value if found by funcref
-      if has('lambda')
-        Assert Equals(List.find([1, 2, 3], '*not-found*', {x -> x % 2 == 0}), 2)
-        Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', {x -> x % 2 == 0}), 2)
-        Assert Equals(List.find([1, 2, 3], '*not-found*', {x -> x % 10 == 0}), '*not-found*')
-        Assert Equals(List.find([], '*not-found*', {x -> x % 2 == 0}), '*not-found*')
+      Assert Equals(List.find([1, 2, 3], '*not-found*', function('MyPredicate')), 2)
+      Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', function('MyPredicate')), 2)
+      Assert Equals(List.find([1, 2, 3], '*not-found*', function('MyPredicate2')), '*not-found*')
+      Assert Equals(List.find([], '*not-found*', function('MyPredicate')), '*not-found*')
 
-        Assert Equals(List.find(['hi', 'yo'], -1, {x -> x =~ 'y'}), 'yo')
-      endif
+      Assert Equals(List.find(['hi', 'yo'], -1, function('MyPredicate3')), 'yo')
+    End
+    After all
+      delfunction MyPredicate
+      delfunction MyPredicate2
+      delfunction MyPredicate3
     End
   End
 
