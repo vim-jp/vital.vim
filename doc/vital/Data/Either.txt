@@ -21,157 +21,158 @@ Either in Haskell. The "left value" means invalid value in most case. The
 "either" has either "left value" or "right value". The "either" has neither
 "left value" or "right value".
 
-The "either" follow "monad" behavior. For example,
-|Vital.Data.Either.join()|doesn't extract the either value to mere value.
+The "either" follows "monad", "applicative" and "functor" behavior. For
+example, |Vital.Data.Either.join()| doesn't extract the either value to mere
+value.
 >
 	let x = E.right(E.right(10))
-	echo E.join(x) " Right(10)
+	echo E.join(x)  " Right(10)
 
 	let y = E.right(10)
-	echo E.join(y) " An exception is thrown
+	echo E.join(y)  " An exception is thrown
 >
 
 
 ==============================================================================
-TERM					*Vital.Data.Optional-term*
+TERM					*Vital.Data.Either-term*
 
-{optional}				*Vital.Data.Optional-term-optional*
-	{optional} is a optional value.  It is a |List| of 0 or 1 element
-	actually.
+{either}				*Vital.Data.Either-term-either*
+	{either} is a left value or right value.
+
+{left}					*Vital.Data.Either-term-left*
+	{left} is an item of {either}.
+
+{right}					*Vital.Data.Either-term-right*
+	{right} is an item of {either}.
 
 
 
 ==============================================================================
-INTERFACE				*Vital.Data.Optional-interface*
+INTERFACE				*Vital.Data.Either-interface*
 
 ------------------------------------------------------------------------------
-FUNCTIONS				*Vital.Data.Optional-functions*
+FUNCTIONS				*Vital.Data.Either-functions*
 
-none()					*Vital.Data.Optional.none()*
-	Returns an optional value as invalid value.
+left({value})				*Vital.Data.Either.left()*
+	Create a {left} value.
 
-some({value})				*Vital.Data.Optional.some()*
-	Returns an optional value which contains {value} as valid value.
 
-is_optional({value})			*Vital.Data.Optional.is_optional()*
-	Returns {value} is an optional value.  It actually checks that {value}
-	is a |List| of 0 or 1 element.
+right({value})				*Vital.Data.Either.right()*
+	Create a {right} value.
 
-empty({optional})			*Vital.Data.Optional.empty()*
-	Returns whether {optional} has an invalid value or not.  If {optional}
-	has an invalid value, it returns 1.
 
-exists({optional})			*Vital.Data.Optional.exists()*
-	Returns whether {optional} has a valid value or not.  If {optional}
-	has a valid value, it returns 1.
+is_left({either})			*Vital.Data.Either.is_left()*
+	If {either} is {left}, return 1. If {either} is {right}, Return 0.
+	Otherwise, the behavior is undefined.
 
-set({optional}, {value})		*Vital.Data.Optional.set()*
-	Updates {optional} with {value}.  The result is a valid optional value
-	which contains {value}.
 
-unset({optional}, {value})		*Vital.Data.Optional.unset()*
-	Removes value which {optional} contains and makes {optional} invalid
-	value.  If {optional} is already invalid, it does nothing.
+is_right({either})			*Vital.Data.Either.is_right()*
+	If {either} is {left}, return 1. If {either} is {right}, Return 0.
+	Otherwise, the behavior is undefined.
 
-get({optional})				*Vital.Data.Optional.get()*
-	Returns a contained value in {optional}.  If {optional} is an invalid
-	value, it throws an exception.  You can catch it by the prefix
-	"vital: Data.Optional: "
 
-get_or({optional}, {alternative})	*Vital.Data.Optional.get_or()*
-	Returns a contained value in {optional}.  If {optional} is an invalid
-	value, it returns {alternative} instead.
+from_left({default}, {either})		*Vital.Data.Either.from_left()*
+	If {either} is {left}, return the internal value of {either}. If
+	{either} is {right}, return {default}.
 
-get_unsafe({optional})			*Vital.Data.Optional.get_unsafe()*
-	Returns a contained value in {optional}.  If {optional} is an invalid
-	value, the behavior is undefined.
 
-has({optional}, {type})			*Vital.Data.Optional.has()*
-	Returns a type of {optional} is {type}.  It is expected that {type} is
-	a result of |type()|.  If {optional} is an invalid value, it always
-	returns 0.
+from_right({default}, {either})		*Vital.Data.Either.from_right()*
+	If {either} is {right}, return the internal value of {either}. If
+	{either} is {left}, return {default}.
 
-apply({func}, {args}...)		*Vital.Data.Optional.apply()*
-	Applies {args} to {func} if all of {args} are valid optional value.
-	Then it returns the result wrapped as valid optional value.
-	If any of {args} is an invalid optional value, it doesn't call
-	{func} and returns an invalid optional value.
-	This is like Applicative in Haskell.
-	When any of {args} is not an optional value, it throws an exception.
 
-	For example, below is an example to update data in cache.
+unsafe_from_left({either})		*Vital.Data.Either.unsafe_from_left()*
+	If {either} is {left}, return the internal value of {left}. If {either}
+	is {right}, throw an exception with "vital: Data.Either:" prefix.
 
+
+unsafe_from_right({either})		*Vital.Data.Either.unsafe_from_right()*
+	If {either} is {right}, return the internal value of {right}. If
+	{either} is {left}, throw an exception with "vital: Data.Either:"
+	prefix.
+
+
+map({either}, {f})			*Vital.Data.Either.map()*
+	Map {f} to internal value of {either} if {either} is {right}. Return
+	{either} simply if {either} is {left}.
+
+	|Funcref| and |String| expression can be used as {f}.
 >
-	let s:cache = O.none()
+	let either = E.right(10)
+	echo E.map(either, 'v:val + 1')  " Right(11)
 
-	...
-
-	function! Update(data, new_value)
-	  " Update a:data with a:new_value
-	  " This function doesn't consider the case when a:data is invalid
-	endfunction
-
-	...
-
-	" Update cache only if s:cache has a valid value.
-	" Below invokes Update(O.get(cache), O.get(new_value)) if s:cache has
-	" a valid value.
-	call O.apply(function('Update'), s:cache, O.some(new_value))
+	let either = E.left(something)
+	echo E.map(either, 'v:val + 1')  " Left(something)
 <
-map({optional}, {func})			*Vital.Data.Optional.map()*
-	Maps content of {optional} by predicate {func}. If content of
-	{optional} is none, then {func} won't be invoked and none will be
-	returned.
+
+apply({either_func}, {either_value})		*Vital.Data.Either.apply()*
+	{either_func} is a function that is wraped by
+	|Vital.Data.Either.right()| or some {left} value. {either_func} is a
+	value that is wraped by |Vital.Data.Either.right()| or some {left}
+	value. If either {either_func} or {either_value} is {left}, return it
+	simply. If both {either_func} and {either_value} is {right}, extract
+	the function from {either_func}, extract the value from {either_value},
+	apply the value to the function, and wrap the result by
+	|Vital.Data.Either.right()|. And return it.
 >
-	function! Succ(x)
-	  return a:x + 1
-	endfunction
+	let either_func = E.right('v:val + 1')
+	let either_value = E.right(10)
+	echo E.apply(either_func, either_value)  " Right(11)
 
-	echo O.map(O.some(1), function('Succ')) " returns O.some(2)
-	echo O.map(O.none(), function('Succ'))  " returns O.none()
+	let either_func = E.left(something)
+	let either_value = E.right(10)
+	echo E.apply(either_func, either_value)  " Left(something)
+
+	let either_func = E.right({x -> x + 1})
+	let either_value = E.left(something)
+	echo E.apply(either_func, either_value)  " Left(something)
+
+	let either_func = E.left(something_x)
+	let either_value = E.left(something_y)
+	echo E.apply(either_func, either_value)  " Left(something_x)
+
+<
+join({either})				*Vital.Data.Either.join()*
+	Remove one if {either} is nested {either} value. But single {either}
+	value (not nested {either} value) cannot be applied to this. This
+	behavior depends "monad" behavior.
 >
+	let nested_either = E.right(E.right(10))
+	echo E.join(nested_either)  " Right(10)
 
-bind({func}, {args}...)			*Vital.Data.Optional.bind()*
-	Applies {args} to {func} if all of {args} are valid optional value.
-	Then it returns the result directly.  This assumes that {func}'s
-	arguments doesn't care about an optional value and {func} returns an
-	optional value.
-	When any of {args} is not an optional value, it throws an exception.
+	let single_either = E.right(10)
+	echo E.join(single_either)  " an exception is thrown with prefix of 'vital: Data.Either:'
+<
+	If you extract {either} to mere value, I recommend to use
+	|Vital.Data.Either.from_left()| or |Vital.Data.Either.from_left()|
+	instead.
 
-	For example, division with safe way is like below:
 
+bind({either}, {kallow})		*Vital.Data.Either.bind()*
+	Apply {kallow} to {either} if {either} is {right}. {kallow} is a "lift
+	function". "lift function" lift up a mere value to a {either} value.
+
+	Example for "list function":
 >
-	function! Div(a, b)
-	  if a:b == 0
-	    return O.none()
+	function! Devide10(x)
+	  if x is 0
+	    return E.left('a:x must not be 0')
+	  else
+	    return E.right(10 / a:x)
 	  endif
-	  return O.some(a:a / a:b)
 	endfunction
-
-	function! Sub(a, b)
-	    return O.some(a:a - a:b)
-	endfunction
-
-	let f = function('Div')
-	let f2 = function('Sub')
-
-	" Below invokes 10 / (2 - 2)
-	let result = O.bind(f, O.some(10), O.bind(f2, O.some(2), O.some(2)))
-
-	echo O.empty(result) " returns 1 because 10 / 0 occurs an error
 <
+	It is important to a:x is mere value but the result is {either} value.
+	("kallow" means "kleisli allow")
 
-flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
-	Flattens a nested optional value.  For example, it flattens
-	some(some(some(42))) to some(42), some(some(none)) to none.  {limit}
-	is a depth of nest which it flattens.
+	Example for .bind()
+>
+	let either = E.right(2)
+	echo E.bind(either, function('Devide10'))  " Right(5)
 
-echo({optional}, [{highlight-group}])	*Vital.Data.Optional.echo()*
-	Displays an optional value like |:echo|. The format is "Some(...)" or
-	"None".  If {highlight-group} is specified, it displays a value
-	with the highlight group.  When {optional} is not an optional value,
-	it throws an exception.
-
+	let either = E.left(something)
+	echo E.bind(either, function('Devide10'))  " Left(something)
+<
 
 
 ==============================================================================
