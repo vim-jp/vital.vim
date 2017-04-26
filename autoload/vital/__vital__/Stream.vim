@@ -25,7 +25,7 @@ function! s:_new_from_list(list) abort
   let stream.__index = 0
   let stream.__end = 0
   let stream._list = a:list
-  function! stream.__take_possible__(n)
+  function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed'
     endif
@@ -44,7 +44,7 @@ function! s:_localfunc(name) abort
   return function(s:SNR . a:name)
 endfunction
 
-function! s:_SID()
+function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
 let s:SNR = '<SNR>' . s:_SID() . '_'
@@ -70,7 +70,7 @@ function! s:iterate(init, f) abort
   let stream._characteristics = s:_make_characteristics([s:CH_ORDERED, s:CH_IMMUTABLE])
   let stream.__value = a:init
   let stream._f = a:f
-  function! stream.__take_possible__(n)
+  function! stream.__take_possible__(n) abort
     let list = []
     let i = 0
     while i < a:n
@@ -95,7 +95,7 @@ function! s:Stream.map(f) abort
   let stream._upstream = self
   let stream.__end = 0
   let stream._f = a:f
-  function! stream.__take_possible__(n)
+  function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed'
     endif
@@ -115,7 +115,7 @@ function! s:Stream.filter(f) abort
   let stream._upstream = self
   let stream.__end = 0
   let stream._f = a:f
-  function! stream.__take_possible__(n)
+  function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed'
     endif
@@ -142,7 +142,7 @@ function! s:Stream.limit(n) abort
   let stream._upstream = self
   let stream.__end = 0
   let stream._n = a:n
-  function! stream.__take_possible__(...)
+  function! stream.__take_possible__(...) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed'
     endif
