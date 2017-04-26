@@ -287,7 +287,7 @@ function! s:find(list, default, f) abort
 endfunction
 
 function! s:_call_string_expr(expr, args) abort
-  return eval(substitute(a:expr, 'v:val', string(a:args[0]), 'g'))
+  return map([a:args[0]], a:expr)[0]
 endfunction
 
 " Returns the index of the first element which satisfies the given expr.
