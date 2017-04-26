@@ -82,6 +82,32 @@ Describe Data.LazyList
     End
   End
 
+  Describe .filter()
+    It filters stream
+      let s = Stream.iterate(0, 'v:val + 1')
+      Assert Equals(s.filter('v:val % 2 == 0').limit(3).to_list(), [0,2,4])
+
+      " Must not reuse stream
+      try
+        let s = Stream.of([1,2,3,4,5])
+        call s.to_list()
+        call s.filter('v:val % 2 == 0')
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of([1,2,3,4,5])
+        call s.to_list()
+        call s.filter('v:val % 2 == 0').to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
+    End
+  End
+
   Describe .to_list()
     It mappings stream
       let s = Stream.of([1,2,3])

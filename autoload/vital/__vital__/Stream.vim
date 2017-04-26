@@ -22,9 +22,20 @@ endfunction
 function! s:_new_from_list(list) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = s:_make_characteristics([s:CH_ORDERED, s:CH_SIZED, s:CH_IMMUTABLE])
+  let stream.__index = 0
+  let stream.__end = 0
   let stream._list = a:list
-  function! stream.__take__(n)
-    return a:n >= 0 ? self._list[: a:n - 1] : self._list[:]
+  function! stream.__take_possible__(n)
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed'
+    endif
+    let list = self._list[self.__index : self.__index + a:n - 1]
+    let self.__index += a:n
+    let self.__end = (self.__estimate_size__() == 0)
+    return [list, !self.__end]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return max([len(self._list) - self.__index, 0])
   endfunction
   return stream
 endfunction
@@ -37,10 +48,6 @@ function! s:_SID()
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
 let s:SNR = '<SNR>' . s:_SID() . '_'
-
-function! s:_illegal_take(...) dict abort
-  throw 'vital: Stream: stream has already been operated upon or closed'
-endfunction
 
 let s:CH_ORDERED = 0
 let s:CH_DISTINCT = 1
@@ -63,13 +70,18 @@ function! s:iterate(init, f) abort
   let stream._characteristics = s:_make_characteristics([s:CH_ORDERED, s:CH_IMMUTABLE])
   let stream.__value = a:init
   let stream._f = a:f
-  function! stream.__take__(n)
+  function! stream.__take_possible__(n)
     let list = []
-    for _ in range(max([a:n, 0]))
+    let i = 0
+    while i < a:n
       let list += [self.__value]
       let self.__value = map([self.__value], self._f)[0]
-    endfor
-    return list
+      let i += 1
+    endwhile
+    return [list, 1]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return 1/0
   endfunction
   return stream
 endfunction
@@ -81,9 +93,45 @@ function! s:Stream.map(f) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = self._characteristics
   let stream._upstream = self
+  let stream.__end = 0
   let stream._f = a:f
-  function! stream.__take__(n)
-    return map(self._upstream.take(a:n), self._f)
+  function! stream.__take_possible__(n)
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed'
+    endif
+    let list = map(self._upstream.__take_possible__(a:n)[0], self._f)
+    let self.__end = (self.__estimate_size__() == 0)
+    return [list, !self.__end]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return self._upstream.__estimate_size__()
+  endfunction
+  return stream
+endfunction
+
+function! s:Stream.filter(f) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = self._characteristics
+  let stream._upstream = self
+  let stream.__end = 0
+  let stream._f = a:f
+  function! stream.__take_possible__(n)
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed'
+    endif
+    let [r, open] = self._upstream.__take_possible__(a:n)
+    let list = filter(r, self._f)
+    while open && len(list) < a:n
+      let [r, open] = self._upstream.__take_possible__(a:n - len(list))
+      let list += filter(r, self._f)
+    endwhile
+    if !open
+      let self.__end = 1
+    endif
+    return [list, open]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return self._upstream.__estimate_size__()
   endfunction
   return stream
 endfunction
@@ -92,28 +140,31 @@ function! s:Stream.limit(n) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = s:_make_characteristics([s:CH_ORDERED, s:CH_SIZED, s:CH_IMMUTABLE])
   let stream._upstream = self
+  let stream.__end = 0
   let stream._n = a:n
-  function! stream.__take__(...)
-    return self._upstream.take(self._n)
+  function! stream.__take_possible__(...)
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed'
+    endif
+    let list = self._upstream.__take_possible__(self._n)[0]
+    let self.__end = (self.__estimate_size__() == 0)
+    return [list, !self.__end]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return min([self._n, self._upstream.__estimate_size__()])
   endfunction
   return stream
 endfunction
 
 function! s:Stream.count() abort
   if self._characteristics[s:CH_SIZED]
-    return len(self.take(-1))
+    return len(self.__take_possible__(self.__estimate_size__())[0])
   endif
   return 1/0
 endfunction
 
 function! s:Stream.to_list() abort
-  return self.take(-1)
-endfunction
-
-function! s:Stream.take(n) dict abort
-  let R = self.__take__(a:n)
-  let self.take = s:_localfunc('_illegal_take')
-  return R
+  return self.__take_possible__(self.__estimate_size__())[0]
 endfunction
 
 
