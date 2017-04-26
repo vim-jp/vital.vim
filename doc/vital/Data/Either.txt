@@ -1,0 +1,178 @@
+*vital/Data/Either.txt*	Provide left/right value
+
+Maintainer: 
+
+==============================================================================
+CONTENTS				*Vital.Data.Optional-contents*
+
+INTRODUCTION			|Vital.Data.Either-introduction|
+TERM				|Vital.Data.Either-term|
+INTERFACE			|Vital.Data.Either-interface|
+  FUNCTIONS			  |Vital.Data.Either-functions|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Optional-introduction*
+
+*Vital.Data.Either* is representation of left/right value. This is like a
+Either in Haskell. The "left value" means invalid value in most case. The
+"right value" means valid value in most case. But it can be used evenly. The
+"either" has either "left value" or "right value". The "either" has neither
+"left value" or "right value".
+
+The "either" follow "monad" behavior. For example,
+|Vital.Data.Either.join()|doesn't extract the either value to mere value.
+>
+	let x = E.right(E.right(10))
+	echo E.join(x) " Right(10)
+
+	let y = E.right(10)
+	echo E.join(y) " An exception is thrown
+>
+
+
+==============================================================================
+TERM					*Vital.Data.Optional-term*
+
+{optional}				*Vital.Data.Optional-term-optional*
+	{optional} is a optional value.  It is a |List| of 0 or 1 element
+	actually.
+
+
+
+==============================================================================
+INTERFACE				*Vital.Data.Optional-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Optional-functions*
+
+none()					*Vital.Data.Optional.none()*
+	Returns an optional value as invalid value.
+
+some({value})				*Vital.Data.Optional.some()*
+	Returns an optional value which contains {value} as valid value.
+
+is_optional({value})			*Vital.Data.Optional.is_optional()*
+	Returns {value} is an optional value.  It actually checks that {value}
+	is a |List| of 0 or 1 element.
+
+empty({optional})			*Vital.Data.Optional.empty()*
+	Returns whether {optional} has an invalid value or not.  If {optional}
+	has an invalid value, it returns 1.
+
+exists({optional})			*Vital.Data.Optional.exists()*
+	Returns whether {optional} has a valid value or not.  If {optional}
+	has a valid value, it returns 1.
+
+set({optional}, {value})		*Vital.Data.Optional.set()*
+	Updates {optional} with {value}.  The result is a valid optional value
+	which contains {value}.
+
+unset({optional}, {value})		*Vital.Data.Optional.unset()*
+	Removes value which {optional} contains and makes {optional} invalid
+	value.  If {optional} is already invalid, it does nothing.
+
+get({optional})				*Vital.Data.Optional.get()*
+	Returns a contained value in {optional}.  If {optional} is an invalid
+	value, it throws an exception.  You can catch it by the prefix
+	"vital: Data.Optional: "
+
+get_or({optional}, {alternative})	*Vital.Data.Optional.get_or()*
+	Returns a contained value in {optional}.  If {optional} is an invalid
+	value, it returns {alternative} instead.
+
+get_unsafe({optional})			*Vital.Data.Optional.get_unsafe()*
+	Returns a contained value in {optional}.  If {optional} is an invalid
+	value, the behavior is undefined.
+
+has({optional}, {type})			*Vital.Data.Optional.has()*
+	Returns a type of {optional} is {type}.  It is expected that {type} is
+	a result of |type()|.  If {optional} is an invalid value, it always
+	returns 0.
+
+apply({func}, {args}...)		*Vital.Data.Optional.apply()*
+	Applies {args} to {func} if all of {args} are valid optional value.
+	Then it returns the result wrapped as valid optional value.
+	If any of {args} is an invalid optional value, it doesn't call
+	{func} and returns an invalid optional value.
+	This is like Applicative in Haskell.
+	When any of {args} is not an optional value, it throws an exception.
+
+	For example, below is an example to update data in cache.
+
+>
+	let s:cache = O.none()
+
+	...
+
+	function! Update(data, new_value)
+	  " Update a:data with a:new_value
+	  " This function doesn't consider the case when a:data is invalid
+	endfunction
+
+	...
+
+	" Update cache only if s:cache has a valid value.
+	" Below invokes Update(O.get(cache), O.get(new_value)) if s:cache has
+	" a valid value.
+	call O.apply(function('Update'), s:cache, O.some(new_value))
+<
+map({optional}, {func})			*Vital.Data.Optional.map()*
+	Maps content of {optional} by predicate {func}. If content of
+	{optional} is none, then {func} won't be invoked and none will be
+	returned.
+>
+	function! Succ(x)
+	  return a:x + 1
+	endfunction
+
+	echo O.map(O.some(1), function('Succ')) " returns O.some(2)
+	echo O.map(O.none(), function('Succ'))  " returns O.none()
+>
+
+bind({func}, {args}...)			*Vital.Data.Optional.bind()*
+	Applies {args} to {func} if all of {args} are valid optional value.
+	Then it returns the result directly.  This assumes that {func}'s
+	arguments doesn't care about an optional value and {func} returns an
+	optional value.
+	When any of {args} is not an optional value, it throws an exception.
+
+	For example, division with safe way is like below:
+
+>
+	function! Div(a, b)
+	  if a:b == 0
+	    return O.none()
+	  endif
+	  return O.some(a:a / a:b)
+	endfunction
+
+	function! Sub(a, b)
+	    return O.some(a:a - a:b)
+	endfunction
+
+	let f = function('Div')
+	let f2 = function('Sub')
+
+	" Below invokes 10 / (2 - 2)
+	let result = O.bind(f, O.some(10), O.bind(f2, O.some(2), O.some(2)))
+
+	echo O.empty(result) " returns 1 because 10 / 0 occurs an error
+<
+
+flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
+	Flattens a nested optional value.  For example, it flattens
+	some(some(some(42))) to some(42), some(some(none)) to none.  {limit}
+	is a depth of nest which it flattens.
+
+echo({optional}, [{highlight-group}])	*Vital.Data.Optional.echo()*
+	Displays an optional value like |:echo|. The format is "Some(...)" or
+	"None".  If {highlight-group} is specified, it displays a value
+	with the highlight group.  When {optional} is not an optional value,
+	it throws an exception.
+
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
