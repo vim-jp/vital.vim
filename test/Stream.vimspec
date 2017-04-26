@@ -1,0 +1,103 @@
+Describe Data.LazyList
+  Before all
+    let Stream = vital#vital#new().import('Stream')
+  End
+
+  Describe .of()
+    It constructs stream from arguments
+      Assert Equals(Stream.of([]).count(), 0)
+      Assert Equals(Stream.of([]).to_list(), [])
+      Assert Equals(Stream.of([1]).count(), 1)
+      Assert Equals(Stream.of([1]).to_list(), [1])
+    End
+  End
+
+  Describe .empty()
+    It constructs empty stream
+      Assert Equals(Stream.empty().count(), Stream.of([]).count())
+      Assert Equals(Stream.empty().to_list(), Stream.of([]).to_list())
+    End
+  End
+
+  Describe .iterate()
+    It constructs infinite stream
+      for n in range(0, 10)
+        Assert Equals(
+        \   Stream.iterate(1, 'v:val + 1').limit(n).to_list(),
+        \   range(1, n))
+      endfor
+      unlet n
+    End
+  End
+
+  Describe .limit()
+    It limits stream
+      let s = Stream.of([1,2,3,4,5])
+      Assert Equals(s.limit(3).to_list(), [1,2,3])
+
+      " Must not reuse stream
+      try
+        let s = Stream.of([1,2,3,4,5])
+        call s.to_list()
+        call s.limit(3)
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of([1,2,3,4,5])
+        call s.to_list()
+        call s.limit(3).to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
+    End
+  End
+
+  Describe .map()
+    It maps stream
+      let s = Stream.iterate(1, 'v:val + 1')
+      Assert Equals(s.map('v:val + 1').limit(3).to_list(), [2,3,4])
+
+      " Must not reuse stream
+      try
+        let s = Stream.of([1,2,3,4,5])
+        call s.to_list()
+        call s.map('v:val')
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of([1,2,3,4,5])
+        call s.to_list()
+        call s.map('v:val').to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
+    End
+  End
+
+  Describe .to_list()
+    It mappings stream
+      let s = Stream.of([1,2,3])
+      Assert Equals(s.to_list(), [1,2,3])
+
+      " Must not reuse stream
+      try
+        let s = Stream.of([1,2,3,4,5])
+        call s.to_list()
+        call s.to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
+    End
+  End
+
+End
