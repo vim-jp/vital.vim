@@ -1,16 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V) abort
-  let s:V = a:V
-  let s:L = s:V.import('Data.List')
-  let s:P = s:V.import('Process')
-endfunction
-
-function! s:_vital_depends() abort
-  return ['Data.List', 'Process']
-endfunction
-
 function! s:of(list) abort
   return s:_new_from_list(a:list)
 endfunction
