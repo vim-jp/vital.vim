@@ -1,0 +1,306 @@
+Describe Data.Either
+  Before all
+    let Either = vital#vital#new().import('Data.Either')
+  End
+
+  Describe .left()
+    It can wrap any value
+      let a = Either.left(10)
+      let b = Either.left([10, 20])
+      let c = Either.left({})
+      let d = Either.left('either is great')
+      let e = Either.left(Either.left(10))
+    End
+  End
+
+  Describe .right()
+    It can wrap any value
+      let a = Either.right(10)
+      let b = Either.right([10, 20])
+      let c = Either.right({})
+      let d = Either.right('either is great')
+      let e = Either.right(Either.right(10))
+    End
+  End
+
+  Describe .is_left()
+    It checks the argument is an left value
+      let left  = Either.left(10)
+      let right = Either.right(10)
+
+      Assert True(Either.is_left(left))
+      Assert False(Either.is_left(right))
+    End
+  End
+
+  Describe .is_right()
+    It checks the argument is an right value
+      let right = Either.right(10)
+      let left  = Either.left(10)
+
+      Assert True(Either.is_right(right))
+      Assert False(Either.is_right(left))
+    End
+  End
+
+  Describe .unsafe_from_left()
+    It extracts a left value to a mere value
+      let left = Either.left(10)
+      Assert Equals(Either.unsafe_from_left(left), 10)
+    End
+
+    It throws an exception if a right value is given
+      let right = Either.right(10)
+      Throws /^vital: Data.Either:/ Either.unsafe_from_left(right)
+    End
+  End
+
+  Describe .unsafe_from_right()
+    It extracts a right value to a mere value
+      let right = Either.right(10)
+      Assert Equals(Either.unsafe_from_right(right), 10)
+    End
+
+    It throws an exception if a left value is given
+      let left = Either.left(10)
+      Throws /^vital: Data.Either:/ Either.unsafe_from_right(left)
+    End
+  End
+
+  Describe .from_left()
+    It extracts a left value to a mere value
+      Assert Equals(Either.from_left(-10, Either.left(10)), 10)
+    End
+
+    It returns a default value if a right value is given
+      Assert Equals(Either.from_left(-10, Either.right(10)), -10)
+    End
+  End
+
+  Describe .from_right()
+    It extracts a right value to a mere value
+      Assert Equals(Either.from_right(-10, Either.right(10)), 10)
+    End
+
+    It returns a default value if a left value is given
+      Assert Equals(Either.from_right(-10, Either.left(10)), -10)
+    End
+  End
+
+  Describe .map()
+    Before all
+      function! Succ(x) abort
+        return a:x + 1
+      endfunction
+    End
+
+    It maps content to a right value
+      Assert Equals(Either.map(Either.right(10), function('Succ')), Either.right(11))
+      Assert Equals(Either.map(Either.right(10), 'v:val + 1'), Either.right(11))
+    End
+
+    It doesn't map content to a left value
+      Assert Equals(Either.map(Either.left(0), function('Succ')), Either.left(0))
+      Assert Equals(Either.map(Either.left(0), 'v:val + 1'), Either.left(0))
+    End
+
+    After all
+      delfunction Succ
+    End
+  End
+
+  Describe .apply()
+    Before all
+      function! Succ(x) abort
+        return a:x + 1
+      endfunction
+
+      function! Plus(x, y) abort
+        return a:x + a:y
+      endfunction
+    End
+
+    It applies a right function to right values
+      let right_func_x = Either.right(function('Succ'))
+      let right_func_y = Either.right('v:val + 1')
+      let right_func_z = Either.right(function('Plus'))
+
+      Assert Equals(Either.apply(right_func_x, Either.right(10)), Either.right(11))
+      Assert Equals(Either.apply(right_func_y, Either.right(10)), Either.right(11))
+      Assert Equals(Either.apply(right_func_z, Either.right(10), Either.right(20)), Either.right(30))
+    End
+
+    It doesn't apply a right function to left values
+      let right_func_x = Either.right(function('Succ'))
+      let right_func_y = Either.right('v:val + 1')
+      let right_func_z = Either.right(function('Plus'))
+      let left_value  = Either.left(10)
+      let right_value = Either.right(30)
+
+      Assert Equals(Either.apply(right_func_x, left_value), left_value)
+      Assert Equals(Either.apply(right_func_y, left_value), left_value)
+      Assert Equals(Either.apply(right_func_z, left_value, right_value), left_value)
+      Assert Equals(Either.apply(right_func_z, right_value, left_value), left_value)
+    End
+
+    It doesn't apply a left function to right values and left values
+      let left_func_x = Either.left(function('Succ'))
+      let left_func_y = Either.left('v:val + 1')
+      let left_func_z = Either.left(function('Plus'))
+
+      Assert Equals(Either.apply(left_func_x, Either.right(10)), left_func_x)
+      Assert Equals(Either.apply(left_func_y, Either.right(10)), left_func_y)
+      Assert Equals(Either.apply(left_func_x, Either.left(10)), left_func_x)
+      Assert Equals(Either.apply(left_func_y, Either.left(10)), left_func_y)
+      Assert Equals(Either.apply(left_func_z, Either.right(10), Either.right(20)), left_func_z)
+      Assert Equals(Either.apply(left_func_z, Either.left(10),  Either.right(20)), left_func_z)
+      Assert Equals(Either.apply(left_func_z, Either.right(10), Either.left(20)),  left_func_z)
+      Assert Equals(Either.apply(left_func_z, Either.left(10),  Either.left(20)),  left_func_z)
+    End
+
+    After all
+      delfunction Succ
+      delfunction Plus
+    End
+  End
+
+  Describe .join()
+    It can remove one right if it is nested
+      let right       = Either.right(10)
+      let right_right = Either.right(right)
+      Assert Equals(Either.join(right_right), right)
+    End
+
+    It throws an exception if unnested either is given
+      let right = Either.right(10)
+      let left  = Either.left(20)
+
+      Throws /^vital: Data.Either:/ Either.join(right)
+      Throws /^vital: Data.Either:/ Either.join(left)
+    End
+
+    It doesn't remove left
+      let left_left  = Either.left(Either.left(10))
+      let left_right = Either.left(Either.right(20))
+
+      Assert Equals(Either.join(left_left), left_left)
+      Assert Equals(Either.join(left_right), left_right)
+    End
+  End
+
+  Describe .bind()
+    Before all
+      function! LiftSucc(x) abort
+        return Either.return(a:x + 1)
+      endfunction
+    End
+
+    It applies a lift function to a right value
+      let right = Either.right(10)
+      Assert Equals(Either.bind(right, function('LiftSucc')), Either.right(11))
+    End
+
+    It doesn't apply a lift function to a left value
+      let left = Either.left(10)
+      Assert Equals(Either.bind(left, function('LiftSucc')), left)
+    End
+
+    After all
+      delfunction LiftSucc
+    End
+  End
+
+  Describe .flatmap()
+    Before all
+      function! LiftSucc(x) abort
+        return Either.return(a:x + 1)
+      endfunction
+    End
+
+    It is same as .bind()
+      let right 
+      Either.bind(function('LiftSucc'))
+    End
+
+    After all
+      delfunction LiftSucc
+    End
+  End
+
+  Describe .return()
+    It is same as .right()
+      let right          = Either.right(10)
+      let mval_of_either = Either.return(10)
+
+      Assert Equals(right, mval_of_either)
+    End
+  End
+
+  Describe as monad
+    Before all
+      "TODO: Use quickcheck after quickcheck library is created
+
+      function! LiftSuccOfEither(x) abort
+        return Either.return(a:x + 1)
+      endfunction
+
+      function! LiftToStringOfEither(x) abort
+        return Either.return(string(a:x))
+      endfunction
+
+      function! TestLeftIdLaw(mmodule) abort
+        let result_left  = a:mmodule.bind(a:mmodule.return(10), function('LiftSuccOfEither'))
+        let result_right = LiftSuccOfEither(10)
+        return result_left ==# result_right
+      endfunction
+
+      function! TestRightIdLaw(mmodule) abort
+        "NOTE: Can I refactor this dirty closure ?
+        " Workaround of the closure for vim7.4 test
+        let s:mmodule = a:mmodule
+        function! s:return(x) abort
+          return s:mmodule.return(a:x)
+        endfunction
+
+        let mval = a:mmodule.return(10)
+        return a:mmodule.bind(mval, function('s:return')) ==# mval
+      endfunction
+
+      function! TestAssocLaw(mmodule) abort
+        let s:mmodule = a:mmodule
+        function! s:fg(x) abort
+          return LiftToStringOfEither(LiftSuccOfEither(a:x))
+        endfunction
+
+        let mval = a:mmodule.return(10)
+        let result_left  = a:mmodule.bind( a:mmodule.bind(mval, function('LiftSuccOfEither')), function('LiftToStringOfEither'))
+        let result_right = a:mmodule.bind(mval, function('s:fg'))
+
+        return result_left ==# result_right
+      endfunction
+    End
+
+    It satisfies left identity law
+      Assert True(TestLeftIdLaw(Either))
+    End
+
+    It satisfies right identity law
+      Assert True(TestRightIdLaw(Either))
+    End
+
+    It satisfies associative law
+      Assert True(TestAssocLaw(Either))
+    End
+
+    After all
+      delfunction LiftSuccOfEither
+      delfunction LiftToStringOfEither
+      delfunction TestLeftIdLaw
+      delfunction TestRightIdLaw
+      delfunction TestAssocLaw
+      unlet s:mmodule
+      delfunction s:return
+      delfunction s:fg
+    End
+  End
+End
