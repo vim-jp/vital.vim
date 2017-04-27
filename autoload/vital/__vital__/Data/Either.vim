@@ -107,8 +107,8 @@ function! s:join(either) abort
 endfunction
 
 
-function! s:bind(either, kallow) abort
-  return s:map(s:map(a:either, a:kallow), s:join)
+function! s:bind(either, karrow) abort
+  return s:map(s:map(a:either, a:karrow), s:join)
 endfunction
 
 

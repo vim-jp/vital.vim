@@ -152,11 +152,11 @@ join({either})				*Vital.Data.Either.join()*
 	instead.
 
 
-bind({either}, {kallow})		*Vital.Data.Either.bind()*
-	Apply {kallow} to {either} if {either} is {right}. {kallow} is a "lift
+bind({either}, {karrow})		*Vital.Data.Either.bind()*
+	Apply {karrow} to {either} if {either} is {right}. {karrow} is a "lift
 	function". "lift function" lift up a mere value to a {either} value.
 
-	Example for "list function":
+	Example for "lift function":
 >
 	function! Devide10(x)
 	  if x is 0
@@ -168,7 +168,7 @@ bind({either}, {kallow})		*Vital.Data.Either.bind()*
 <
 	The point is the argument value is a mere value meanwhile the return
 	value is {either} value.
-	("kallow" means "kleisli allow")
+	("karrow" means "kleisli arrow")
 
 	Example for .bind()
 >
