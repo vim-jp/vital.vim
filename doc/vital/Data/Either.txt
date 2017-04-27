@@ -162,7 +162,8 @@ bind({either}, {kallow})		*Vital.Data.Either.bind()*
 	  endif
 	endfunction
 <
-	It is important to a:x is mere value but the result is {either} value.
+	The point is the argument value is a mere value meanwhile the return
+	value is {either} value.
 	("kallow" means "kleisli allow")
 
 	Example for .bind()
