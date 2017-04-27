@@ -112,5 +112,10 @@ function! s:bind(either, kallow) abort
 endfunction
 
 
+function! s:flatmap(either, f) abort
+	return s:bind(a:either, a:f)
+endfunction
+
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
