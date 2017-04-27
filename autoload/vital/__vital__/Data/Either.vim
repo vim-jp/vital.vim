@@ -117,5 +117,10 @@ function! s:flatmap(either, f) abort
 endfunction
 
 
+function! s:return(x) abort
+	return s:right(a:x)
+endfunction
+
+
 let &cpo = s:save_cpo
 unlet s:save_cpo

@@ -61,6 +61,10 @@ right({value})				*Vital.Data.Either.right()*
 	Create a {right} value.
 
 
+return({value})				*Vital.Data.Either.return()*
+	This is the alias of |Vital.Data.Either.right()| for "monad" behavior.
+
+
 is_left({either})			*Vital.Data.Either.is_left()*
 	If {either} is {left}, return 1. If {either} is {right}, Return 0.
 	Otherwise, the behavior is undefined.
