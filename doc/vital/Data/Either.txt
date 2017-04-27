@@ -1,6 +1,6 @@
 *vital/Data/Either.txt*	Provide left/right value
 
-Maintainer: 
+Maintainer: aiya000 <aiya000.develop@gmail.com>
 
 ==============================================================================
 CONTENTS				*Vital.Data.Optional-contents*
