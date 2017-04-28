@@ -66,8 +66,8 @@ endfunction
 
 
 function! s:from_right(default, either) abort
-  return s:right(a:either) ? s:unsafe_from_right(a:either)
-  \                        : a:default
+  return s:is_right(a:either) ? s:unsafe_from_right(a:either)
+  \                           : a:default
 endfunction
 
 
