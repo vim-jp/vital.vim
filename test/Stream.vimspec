@@ -23,6 +23,21 @@ Describe Data.LazyList
       Assert Equals(Stream.from_list([1,2,3]).count(), 3)
       Assert Equals(Stream.from_list([1,2,3]).to_list(), [1,2,3])
     End
+    It constructs stream from List with characteristics
+      let s = Stream.from_list([1,2,3], 0)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 0)
+      let s = Stream.from_list([1,2,3], Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
   End
 
   Describe .from_dict()
@@ -37,6 +52,21 @@ Describe Data.LazyList
       Assert Equals(
       \ sort(Stream.from_dict({"foo": 1, "bar": 3, "baz": 2}).to_list()),
       \ [["bar", 3], ["baz", 2], ["foo", 1]])
+    End
+    It constructs stream from Dictionary with characteristics
+      let s = Stream.from_list({"foo": 1}, 0)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 0)
+      let s = Stream.from_list({"foo": 1}, Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
     End
   End
 

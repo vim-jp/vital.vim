@@ -41,12 +41,14 @@ function! s:of(...) abort
   return s:_new_from_list(a:000, s:ORDERED + s:SIZED + s:IMMUTABLE)
 endfunction
 
-function! s:from_list(list) abort
-  return s:_new_from_list(a:list, s:ORDERED + s:SIZED + s:IMMUTABLE)
+function! s:from_list(list, ...) abort
+  let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
+  return s:_new_from_list(a:list, characteristics)
 endfunction
 
-function! s:from_dict(dict) abort
-  return s:_new_from_list(items(a:dict), s:DISTINCT + s:SIZED + s:IMMUTABLE)
+function! s:from_dict(dict, ...) abort
+  let characteristics = get(a:000, 0, s:DISTINCT + s:SIZED + s:IMMUTABLE)
+  return s:_new_from_list(items(a:dict), characteristics)
 endfunction
 
 function! s:empty() abort
