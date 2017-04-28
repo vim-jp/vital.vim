@@ -11,7 +11,7 @@ endfunction
 
 function! s:_new_from_list(list) abort
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = s:_make_characteristics([s:CH_ORDERED, s:CH_SIZED, s:CH_IMMUTABLE])
+  let stream._characteristics = s:CH_ORDERED + s:CH_SIZED + s:CH_IMMUTABLE
   let stream.__index = 0
   let stream.__end = 0
   let stream._list = a:list
@@ -39,25 +39,17 @@ function! s:_SID() abort
 endfunction
 let s:SNR = '<SNR>' . s:_SID() . '_'
 
-let s:CH_ORDERED = 0
-let s:CH_DISTINCT = 1
-let s:CH_SORTED = 2
-let s:CH_SIZED = 3
-" let s:CH_NONNULL = 4
-let s:CH_IMMUTABLE = 5
-" let s:CH_CONCURRENT = 6
-
-function! s:_make_characteristics(chlist) abort
-  let characteristics = repeat([0], 7)
-  for i in a:chlist
-    let characteristics[i] = 1
-  endfor
-  return characteristics
-endfunction
+let s:CH_ORDERED = 0x01
+let s:CH_DISTINCT = 0x02
+let s:CH_SORTED = 0x04
+let s:CH_SIZED = 0x08
+" let s:CH_NONNULL = 0x10
+let s:CH_IMMUTABLE = 0x20
+" let s:CH_CONCURRENT = 0x40
 
 function! s:iterate(init, f) abort
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = s:_make_characteristics([s:CH_ORDERED, s:CH_IMMUTABLE])
+  let stream._characteristics = s:CH_ORDERED + s:CH_IMMUTABLE
   let stream.__value = a:init
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
@@ -128,7 +120,7 @@ endfunction
 
 function! s:Stream.limit(n) abort
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = s:_make_characteristics([s:CH_ORDERED, s:CH_SIZED, s:CH_IMMUTABLE])
+  let stream._characteristics = s:CH_ORDERED + s:CH_SIZED + s:CH_IMMUTABLE
   let stream._upstream = self
   let stream.__end = 0
   let stream._n = a:n
@@ -147,7 +139,7 @@ function! s:Stream.limit(n) abort
 endfunction
 
 function! s:Stream.count() abort
-  if self._characteristics[s:CH_SIZED]
+  if and(self._characteristics, s:CH_SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])
   endif
   return 1/0
