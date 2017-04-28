@@ -163,7 +163,7 @@ function! s:Stream.limit(n) abort
   let stream._characteristics = s:ORDERED + s:SIZED + s:IMMUTABLE
   let stream._upstream = self
   let stream.__end = 0
-  let stream._n = a:n
+  let stream._n = max([a:n, 0])
   function! stream.__take_possible__(...) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed'
