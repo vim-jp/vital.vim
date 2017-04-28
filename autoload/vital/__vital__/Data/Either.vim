@@ -4,7 +4,7 @@ set cpo&vim
 
 " --- private objects --- "
 
-let s:_NOTHING = [] | lockvar s:_NOTHING
+let s:_NOTHING = tempname() | lockvar s:_NOTHING
 
 " Return call of Funcref or String expression
 function! s:_get_caller(f) abort
