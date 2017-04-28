@@ -25,6 +25,21 @@ Describe Data.LazyList
     End
   End
 
+  Describe .from_dict()
+    It constructs stream from Dictionary
+      Assert Equals(Stream.from_dict({}).count(), 0)
+      Assert Equals(Stream.from_dict({}).to_list(), [])
+      Assert Equals(Stream.from_dict({"foo": 1}).count(), 1)
+      Assert Equals(Stream.from_dict({"foo": 1}).to_list(), [["foo", 1]])
+      Assert Equals(Stream.from_dict(
+      \ {"foo": 1, "bar": 3, "baz": 2}).count(),
+      \ 3)
+      Assert Equals(
+      \ sort(Stream.from_dict({"foo": 1, "bar": 3, "baz": 2}).to_list()),
+      \ [["bar", 3], ["baz", 2], ["foo", 1]])
+    End
+  End
+
   Describe .empty()
     It constructs empty stream
       Assert Equals(Stream.empty().count(), Stream.of().count())

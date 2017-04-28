@@ -38,20 +38,24 @@ endfunction
 " endfunction
 
 function! s:of(...) abort
-  return s:_new_from_list(a:000)
+  return s:_new_from_list(a:000, s:ORDERED + s:SIZED + s:IMMUTABLE)
 endfunction
 
 function! s:from_list(list) abort
-  return s:_new_from_list(a:list)
+  return s:_new_from_list(a:list, s:ORDERED + s:SIZED + s:IMMUTABLE)
+endfunction
+
+function! s:from_dict(dict) abort
+  return s:_new_from_list(items(a:dict), s:DISTINCT + s:SIZED + s:IMMUTABLE)
 endfunction
 
 function! s:empty() abort
-  return s:_new_from_list([])
+  return s:_new_from_list([], s:ORDERED + s:SIZED + s:IMMUTABLE)
 endfunction
 
-function! s:_new_from_list(list) abort
+function! s:_new_from_list(list, characteristics) abort
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = s:ORDERED + s:SIZED + s:IMMUTABLE
+  let stream._characteristics = a:characteristics
   let stream.__index = 0
   let stream.__end = 0
   let stream._list = a:list
