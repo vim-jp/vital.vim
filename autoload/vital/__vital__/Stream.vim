@@ -135,15 +135,6 @@ function! s:iterate(init, f) abort
   return stream
 endfunction
 
-function! s:_localfunc(name) abort
-  return function(s:SNR . a:name)
-endfunction
-
-function! s:_SID() abort
-  return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
-endfunction
-let s:SNR = '<SNR>' . s:_SID() . '_'
-
 
 let s:Stream = {}
 
