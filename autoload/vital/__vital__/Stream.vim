@@ -201,7 +201,7 @@ function! s:Stream.limit(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed'
     endif
-    let list = self._upstream.__take_possible__(self._n)[0]
+    let list = self._n > 0 ? self._upstream.__take_possible__(self._n)[0] : []
     let self.__end = (self.__estimate_size__() == 0)
     return [list, !self.__end]
   endfunction
