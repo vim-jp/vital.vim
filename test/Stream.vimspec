@@ -109,7 +109,7 @@ Describe Data.LazyList
   End
 
   Describe .to_list()
-    It mappings stream
+    It converts stream to a List
       let s = Stream.of([1,2,3])
       Assert Equals(s.to_list(), [1,2,3])
 
