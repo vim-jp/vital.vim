@@ -48,9 +48,36 @@ Describe Data.LazyList
   End
 
   Describe .has_characteristic()
-    It constructs stream from arguments
+    It checks if Stream.of(...) has certain characteristic
       let s = Stream.of(1,2,3)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+    It checks if Stream.from_list(...) has certain characteristic
+      let s = Stream.from_list([1,2,3])
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+    It checks if Stream.from_dict(...) has certain characteristic
+      let s = Stream.from_dict({"foo": 1, "bar": 3, "baz": 2})
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+    It checks if Stream.empty(...) has certain characteristic
+      let s = Stream.empty()
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
       Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
       Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
       Assert Equals(s.has_characteristic(Stream.SIZED()), 1)

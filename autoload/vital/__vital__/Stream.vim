@@ -38,11 +38,11 @@ endfunction
 " endfunction
 
 function! s:of(...) abort
-  return s:_new_from_list(a:000, s:ORDERED + s:SIZED + s:IMMUTABLE)
+  return s:_new_from_list(a:000, s:SIZED + s:IMMUTABLE)
 endfunction
 
 function! s:from_list(list) abort
-  return s:_new_from_list(a:list, s:ORDERED + s:SIZED + s:IMMUTABLE)
+  return s:_new_from_list(a:list, s:SIZED + s:IMMUTABLE)
 endfunction
 
 function! s:from_dict(dict) abort
@@ -50,7 +50,7 @@ function! s:from_dict(dict) abort
 endfunction
 
 function! s:empty() abort
-  return s:_new_from_list([], s:ORDERED + s:SIZED + s:IMMUTABLE)
+  return s:_new_from_list([], s:SIZED + s:IMMUTABLE)
 endfunction
 
 function! s:_new_from_list(list, characteristics) abort
