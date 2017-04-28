@@ -1,43 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:of(...) abort
-  return s:_new_from_list(a:000)
-endfunction
-
-function! s:empty() abort
-  return s:_new_from_list([])
-endfunction
-
-function! s:_new_from_list(list) abort
-  let stream = deepcopy(s:Stream)
-  let stream._characteristics = s:ORDERED + s:SIZED + s:IMMUTABLE
-  let stream.__index = 0
-  let stream.__end = 0
-  let stream._list = a:list
-  function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed'
-    endif
-    let list = self._list[self.__index : self.__index + a:n - 1]
-    let self.__index += a:n
-    let self.__end = (self.__estimate_size__() == 0)
-    return [list, !self.__end]
-  endfunction
-  function! stream.__estimate_size__() abort
-    return max([len(self._list) - self.__index, 0])
-  endfunction
-  return stream
-endfunction
-
-function! s:_localfunc(name) abort
-  return function(s:SNR . a:name)
-endfunction
-
-function! s:_SID() abort
-  return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
-endfunction
-let s:SNR = '<SNR>' . s:_SID() . '_'
 
 let s:ORDERED = 0x01
 function! s:ORDERED() abort
@@ -74,6 +37,35 @@ endfunction
 "   return s:CONCURRENT
 " endfunction
 
+function! s:of(...) abort
+  return s:_new_from_list(a:000)
+endfunction
+
+function! s:empty() abort
+  return s:_new_from_list([])
+endfunction
+
+function! s:_new_from_list(list) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = s:ORDERED + s:SIZED + s:IMMUTABLE
+  let stream.__index = 0
+  let stream.__end = 0
+  let stream._list = a:list
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed'
+    endif
+    let list = self._list[self.__index : self.__index + a:n - 1]
+    let self.__index += a:n
+    let self.__end = (self.__estimate_size__() == 0)
+    return [list, !self.__end]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return max([len(self._list) - self.__index, 0])
+  endfunction
+  return stream
+endfunction
+
 function! s:iterate(init, f) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = s:ORDERED + s:IMMUTABLE
@@ -94,6 +86,15 @@ function! s:iterate(init, f) abort
   endfunction
   return stream
 endfunction
+
+function! s:_localfunc(name) abort
+  return function(s:SNR . a:name)
+endfunction
+
+function! s:_SID() abort
+  return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
+endfunction
+let s:SNR = '<SNR>' . s:_SID() . '_'
 
 
 let s:Stream = {}
