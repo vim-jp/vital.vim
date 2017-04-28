@@ -1,8 +1,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:of(list) abort
-  return s:_new_from_list(a:list)
+function! s:of(...) abort
+  return s:_new_from_list(a:000)
 endfunction
 
 function! s:empty() abort

@@ -5,17 +5,17 @@ Describe Data.LazyList
 
   Describe .of()
     It constructs stream from arguments
-      Assert Equals(Stream.of([]).count(), 0)
-      Assert Equals(Stream.of([]).to_list(), [])
-      Assert Equals(Stream.of([1]).count(), 1)
-      Assert Equals(Stream.of([1]).to_list(), [1])
+      Assert Equals(Stream.of().count(), 0)
+      Assert Equals(Stream.of().to_list(), [])
+      Assert Equals(Stream.of(1).count(), 1)
+      Assert Equals(Stream.of(1).to_list(), [1])
     End
   End
 
   Describe .empty()
     It constructs empty stream
-      Assert Equals(Stream.empty().count(), Stream.of([]).count())
-      Assert Equals(Stream.empty().to_list(), Stream.of([]).to_list())
+      Assert Equals(Stream.empty().count(), Stream.of().count())
+      Assert Equals(Stream.empty().to_list(), Stream.of().to_list())
     End
   End
 
@@ -32,12 +32,12 @@ Describe Data.LazyList
 
   Describe .limit()
     It limits stream
-      let s = Stream.of([1,2,3,4,5])
+      let s = Stream.of(1,2,3,4,5)
       Assert Equals(s.limit(3).to_list(), [1,2,3])
 
       " Must not reuse stream
       try
-        let s = Stream.of([1,2,3,4,5])
+        let s = Stream.of(1,2,3,4,5)
         call s.to_list()
         call s.limit(3)
         Assert 1
@@ -45,7 +45,7 @@ Describe Data.LazyList
         Assert 0
       endtry
       try
-        let s = Stream.of([1,2,3,4,5])
+        let s = Stream.of(1,2,3,4,5)
         call s.to_list()
         call s.limit(3).to_list()
         Assert 0
@@ -63,7 +63,7 @@ Describe Data.LazyList
 
       " Must not reuse stream
       try
-        let s = Stream.of([1,2,3,4,5])
+        let s = Stream.of(1,2,3,4,5)
         call s.to_list()
         call s.map('v:val')
         Assert 1
@@ -71,7 +71,7 @@ Describe Data.LazyList
         Assert 0
       endtry
       try
-        let s = Stream.of([1,2,3,4,5])
+        let s = Stream.of(1,2,3,4,5)
         call s.to_list()
         call s.map('v:val').to_list()
         Assert 0
@@ -89,7 +89,7 @@ Describe Data.LazyList
 
       " Must not reuse stream
       try
-        let s = Stream.of([1,2,3,4,5])
+        let s = Stream.of(1,2,3,4,5)
         call s.to_list()
         call s.filter('v:val % 2 == 0')
         Assert 1
@@ -97,7 +97,7 @@ Describe Data.LazyList
         Assert 0
       endtry
       try
-        let s = Stream.of([1,2,3,4,5])
+        let s = Stream.of(1,2,3,4,5)
         call s.to_list()
         call s.filter('v:val % 2 == 0').to_list()
         Assert 0
@@ -110,12 +110,12 @@ Describe Data.LazyList
 
   Describe .to_list()
     It converts stream to a List
-      let s = Stream.of([1,2,3])
+      let s = Stream.of(1,2,3)
       Assert Equals(s.to_list(), [1,2,3])
 
       " Must not reuse stream
       try
-        let s = Stream.of([1,2,3,4,5])
+        let s = Stream.of(1,2,3,4,5)
         call s.to_list()
         call s.to_list()
         Assert 0
