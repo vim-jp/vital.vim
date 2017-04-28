@@ -14,7 +14,7 @@ function! s:_get_caller(f) abort
 endfunction
 
 function! s:_call_string_expr(expr, args)
-  return eval(substitute(a:expr, 'v:val', string(a:args[0]), 'g'))
+  return map([a:args[0]], a:expr)[0]
 endfunction
 
 
@@ -75,9 +75,10 @@ function! s:map(either, f) abort
   if s:is_left(a:either)
     return a:either
   endif
-  let l:right = s:unsafe_from_right(a:either)
+  let l:internal  = s:unsafe_from_right(a:either)
+  let l:internal_ = s:_get_caller(a:f)(a:f, [l:internal])
 
-  return s:_get_caller(a:f)(l:right)
+  return s:right(l:internal_)
 endfunction
 
 
