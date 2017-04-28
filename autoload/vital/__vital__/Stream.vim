@@ -90,7 +90,7 @@ function! s:Stream.map(f) abort
       throw 'vital: Stream: stream has already been operated upon or closed'
     endif
     let list = map(self._upstream.__take_possible__(a:n)[0], self._f)
-    let self.__end = (self.__estimate_size__() == 0)
+    let self.__end = (self._upstream.__estimate_size__() == 0)
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
@@ -137,7 +137,7 @@ function! s:Stream.limit(n) abort
       throw 'vital: Stream: stream has already been operated upon or closed'
     endif
     let list = self._upstream.__take_possible__(self._n)[0]
-    let self.__end = (self.__estimate_size__() == 0)
+    let self.__end = (self._upstream.__estimate_size__() == 0)
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
