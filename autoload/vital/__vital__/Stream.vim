@@ -74,6 +74,37 @@ function! s:_new_from_list(list, characteristics) abort
   return stream
 endfunction
 
+function! s:range(start_inclusive, end_exclusive) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics =
+  \ s:ORDERED + s:DISTINCT + s:SORTED + s:SIZED + s:IMMUTABLE
+  let stream.__index = a:start_inclusive
+  let stream._end_exclusive = a:end_exclusive
+  let stream.__end = 0
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed'
+    endif
+    " take n, but do not exceed end. and range(1,-1) causes E727 error.
+    let take_n = self.__index + a:n - 1
+    let end_exclusive = self._end_exclusive - 1
+    let e727_fix = self.__index - 1
+    let end = max([min([take_n, end_exclusive]), e727_fix])
+    let list = range(self.__index, end)
+    let self.__index = end + 1
+    let self.__end = self.__estimate_size__() == 0
+    return [list, !self.__end]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return max([self._end_exclusive - self.__index, 0])
+  endfunction
+  return stream
+endfunction
+
+function! s:range_closed(start_inclusive, end_inclusive) abort
+  return s:range(a:start_inclusive, a:end_inclusive + 1)
+endfunction
+
 function! s:iterate(init, f) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = s:ORDERED + s:IMMUTABLE

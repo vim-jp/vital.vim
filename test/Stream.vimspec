@@ -84,6 +84,15 @@ Describe Data.LazyList
       Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
       unlet s
     End
+    It checks if Stream.range(...) has certain characteristic
+      let s = Stream.range(1,10)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
     It checks if Stream.empty(...) has certain characteristic
       let s = Stream.empty()
       Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
@@ -92,6 +101,40 @@ Describe Data.LazyList
       Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
       Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
       unlet s
+    End
+  End
+
+  Describe .range()
+    It constructs stream from range
+      Assert Equals(
+      \   Stream.range(1, 0).to_list(),
+      \   [])
+      Assert Equals(
+      \   Stream.range(1, 1).to_list(),
+      \   [])
+      Assert Equals(
+      \   Stream.range(1, 2).to_list(),
+      \   [1])
+      Assert Equals(
+      \   Stream.range(1, 4).to_list(),
+      \   [1,2,3])
+    End
+  End
+
+  Describe .range_closed()
+    It constructs stream from closed range
+      Assert Equals(
+      \   Stream.range_closed(1, 0).to_list(),
+      \   [])
+      Assert Equals(
+      \   Stream.range_closed(1, 1).to_list(),
+      \   [1])
+      Assert Equals(
+      \   Stream.range_closed(1, 2).to_list(),
+      \   [1,2])
+      Assert Equals(
+      \   Stream.range_closed(1, 4).to_list(),
+      \   [1,2,3,4])
     End
   End
 
