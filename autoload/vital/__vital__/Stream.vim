@@ -2,6 +2,18 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
+let s:t_number = 0
+let s:t_string = 1
+let s:t_func = 2
+let s:t_list = 3
+let s:t_dict = 4
+let s:t_float = 5
+let s:t_bool = 6
+let s:t_none = 7
+let s:t_job = 8
+let s:t_channel = 9
+
+
 let s:ORDERED = 0x01
 function! s:ORDERED() abort
   return s:ORDERED
@@ -133,6 +145,14 @@ function! s:iterate(init, f) abort
     return 1/0
   endfunction
   return stream
+endfunction
+
+function! s:generate(f) abort
+  let type = type(a:f)
+  return s:iterate(
+  \ type is s:t_func ? a:f() :
+  \ type is s:t_string ? eval(a:f) : 0,
+  \ a:f)
 endfunction
 
 

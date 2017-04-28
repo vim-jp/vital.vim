@@ -211,13 +211,21 @@ Describe Data.LazyList
   End
 
   Describe .iterate()
-    It constructs infinite stream
+    It constructs infinite stream with initial value and function
       for n in range(1, 10)
         Assert Equals(
         \   Stream.iterate(5, 'v:val + 1').limit(n).to_list(),
         \   range(5, 5 + n - 1))
       endfor
       unlet n
+    End
+  End
+
+  Describe .generate()
+    It constructs infinite stream with function
+      Assert Equals(
+      \ Stream.generate('42').limit(5).to_list(),
+      \ [42, 42, 42, 42, 42])
     End
   End
 
