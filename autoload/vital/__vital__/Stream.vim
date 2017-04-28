@@ -13,38 +13,38 @@ let s:t_none = 7
 let s:t_job = 8
 let s:t_channel = 9
 
-
 let s:ORDERED = 0x01
+let s:DISTINCT = 0x02
+let s:SORTED = 0x04
+let s:SIZED = 0x08
+" let s:NONNULL = 0x10
+let s:IMMUTABLE = 0x20
+" let s:CONCURRENT = 0x40
+
 function! s:ORDERED() abort
   return s:ORDERED
 endfunction
 
-let s:DISTINCT = 0x02
 function! s:DISTINCT() abort
   return s:DISTINCT
 endfunction
 
-let s:SORTED = 0x04
 function! s:SORTED() abort
   return s:SORTED
 endfunction
 
-let s:SIZED = 0x08
 function! s:SIZED() abort
   return s:SIZED
 endfunction
 
-" let s:NONNULL = 0x10
 " function! s:NONNULL() abort
 "   return s:NONNULL
 " endfunction
 
-let s:IMMUTABLE = 0x20
 function! s:IMMUTABLE() abort
   return s:IMMUTABLE
 endfunction
 
-" let s:CONCURRENT = 0x40
 " function! s:CONCURRENT() abort
 "   return s:CONCURRENT
 " endfunction
