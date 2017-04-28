@@ -75,6 +75,15 @@ Describe Data.LazyList
       Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
       unlet s
     End
+    It checks if Stream.iterate(...) has certain characteristic
+      let s = Stream.iterate(1, 'v:val + 1')
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
     It checks if Stream.empty(...) has certain characteristic
       let s = Stream.empty()
       Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
