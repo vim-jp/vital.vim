@@ -9,6 +9,19 @@ Describe Data.LazyList
       Assert Equals(Stream.of().to_list(), [])
       Assert Equals(Stream.of(1).count(), 1)
       Assert Equals(Stream.of(1).to_list(), [1])
+      Assert Equals(Stream.of(1,2,3).count(), 3)
+      Assert Equals(Stream.of(1,2,3).to_list(), [1,2,3])
+    End
+  End
+
+  Describe .from_list()
+    It constructs stream from List
+      Assert Equals(Stream.from_list([]).count(), 0)
+      Assert Equals(Stream.from_list([]).to_list(), [])
+      Assert Equals(Stream.from_list([1]).count(), 1)
+      Assert Equals(Stream.from_list([1]).to_list(), [1])
+      Assert Equals(Stream.from_list([1,2,3]).count(), 3)
+      Assert Equals(Stream.from_list([1,2,3]).to_list(), [1,2,3])
     End
   End
 

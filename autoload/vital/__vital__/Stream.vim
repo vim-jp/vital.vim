@@ -41,6 +41,10 @@ function! s:of(...) abort
   return s:_new_from_list(a:000)
 endfunction
 
+function! s:from_list(list) abort
+  return s:_new_from_list(a:list)
+endfunction
+
 function! s:empty() abort
   return s:_new_from_list([])
 endfunction
