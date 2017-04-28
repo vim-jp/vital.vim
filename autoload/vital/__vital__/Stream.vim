@@ -41,6 +41,11 @@ function! s:of(...) abort
   return s:_new_from_list(a:000, s:ORDERED + s:SIZED + s:IMMUTABLE)
 endfunction
 
+function! s:from_chars(str, ...) abort
+  let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
+  return s:_new_from_list(split(a:str, '\zs'), characteristics)
+endfunction
+
 function! s:from_list(list, ...) abort
   let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
   return s:_new_from_list(a:list, characteristics)

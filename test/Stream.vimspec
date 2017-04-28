@@ -14,6 +14,32 @@ Describe Data.LazyList
     End
   End
 
+  Describe .from_chars()
+    It constructs stream from String
+      Assert Equals(Stream.from_chars("").count(), 0)
+      Assert Equals(Stream.from_chars("").to_list(), [])
+      Assert Equals(Stream.from_chars("a").count(), 1)
+      Assert Equals(Stream.from_chars("a").to_list(), ['a'])
+      Assert Equals(Stream.from_chars("abc").count(), 3)
+      Assert Equals(Stream.from_chars("abc").to_list(), ['a', 'b', 'c'])
+    End
+    It constructs stream from String with characteristics
+      let s = Stream.from_chars("abc", 0)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 0)
+      let s = Stream.from_chars("abc", Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+  End
+
   Describe .from_list()
     It constructs stream from List
       Assert Equals(Stream.from_list([]).count(), 0)
