@@ -50,7 +50,7 @@ Describe Data.LazyList
   Describe .has_characteristic()
     It checks if Stream.of(...) has certain characteristic
       let s = Stream.of(1,2,3)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
       Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
       Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
       Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
@@ -59,7 +59,7 @@ Describe Data.LazyList
     End
     It checks if Stream.from_list(...) has certain characteristic
       let s = Stream.from_list([1,2,3])
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
       Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
       Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
       Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
@@ -77,7 +77,7 @@ Describe Data.LazyList
     End
     It checks if Stream.empty(...) has certain characteristic
       let s = Stream.empty()
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
       Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
       Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
       Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
