@@ -11,7 +11,7 @@ endfunction
 
 function! s:_new_from_list(list) abort
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = s:CH_ORDERED + s:CH_SIZED + s:CH_IMMUTABLE
+  let stream._characteristics = s:ORDERED + s:SIZED + s:IMMUTABLE
   let stream.__index = 0
   let stream.__end = 0
   let stream._list = a:list
@@ -39,17 +39,44 @@ function! s:_SID() abort
 endfunction
 let s:SNR = '<SNR>' . s:_SID() . '_'
 
-let s:CH_ORDERED = 0x01
-let s:CH_DISTINCT = 0x02
-let s:CH_SORTED = 0x04
-let s:CH_SIZED = 0x08
-" let s:CH_NONNULL = 0x10
-let s:CH_IMMUTABLE = 0x20
-" let s:CH_CONCURRENT = 0x40
+let s:ORDERED = 0x01
+function! s:ORDERED() abort
+  return s:ORDERED
+endfunction
+
+let s:DISTINCT = 0x02
+function! s:DISTINCT() abort
+  return s:DISTINCT
+endfunction
+
+let s:SORTED = 0x04
+function! s:SORTED() abort
+  return s:SORTED
+endfunction
+
+let s:SIZED = 0x08
+function! s:SIZED() abort
+  return s:SIZED
+endfunction
+
+" let s:NONNULL = 0x10
+" function! s:NONNULL() abort
+"   return s:NONNULL
+" endfunction
+
+let s:IMMUTABLE = 0x20
+function! s:IMMUTABLE() abort
+  return s:IMMUTABLE
+endfunction
+
+" let s:CONCURRENT = 0x40
+" function! s:CONCURRENT() abort
+"   return s:CONCURRENT
+" endfunction
 
 function! s:iterate(init, f) abort
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = s:CH_ORDERED + s:CH_IMMUTABLE
+  let stream._characteristics = s:ORDERED + s:IMMUTABLE
   let stream.__value = a:init
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
@@ -70,6 +97,10 @@ endfunction
 
 
 let s:Stream = {}
+
+function! s:Stream.has_characteristic(flag) abort
+  return !!and(self._characteristics, a:flag)
+endfunction
 
 function! s:Stream.map(f) abort
   let stream = deepcopy(s:Stream)
@@ -120,7 +151,7 @@ endfunction
 
 function! s:Stream.limit(n) abort
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = s:CH_ORDERED + s:CH_SIZED + s:CH_IMMUTABLE
+  let stream._characteristics = s:ORDERED + s:SIZED + s:IMMUTABLE
   let stream._upstream = self
   let stream.__end = 0
   let stream._n = a:n
@@ -139,7 +170,7 @@ function! s:Stream.limit(n) abort
 endfunction
 
 function! s:Stream.count() abort
-  if and(self._characteristics, s:CH_SIZED)
+  if self.has_characteristic(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])
   endif
   return 1/0

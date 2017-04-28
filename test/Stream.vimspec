@@ -19,6 +19,18 @@ Describe Data.LazyList
     End
   End
 
+  Describe .has_characteristic()
+    It constructs stream from arguments
+      let s = Stream.of(1,2,3)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+  End
+
   Describe .iterate()
     It constructs infinite stream
       for n in range(0, 10)
