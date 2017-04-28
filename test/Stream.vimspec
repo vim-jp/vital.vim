@@ -119,6 +119,14 @@ Describe Data.LazyList
       \   Stream.range(1, 4).to_list(),
       \   [1,2,3])
     End
+    It constructs limited range when .limit() was specified
+      Assert Equals(
+      \   Stream.range(1, 1/0).limit(5).to_list(),
+      \   [1,2,3,4,5])
+      Assert Equals(
+      \   Stream.range(5, 1/0).limit(5).to_list(),
+      \   [5,6,7,8,9])
+    End
   End
 
   Describe .range_closed()
@@ -135,6 +143,14 @@ Describe Data.LazyList
       Assert Equals(
       \   Stream.range_closed(1, 4).to_list(),
       \   [1,2,3,4])
+    End
+    It constructs limited range when .limit() was specified
+      Assert Equals(
+      \   Stream.range_closed(1, 1/0).limit(5).to_list(),
+      \   [1,2,3,4,5])
+      Assert Equals(
+      \   Stream.range_closed(5, 1/0).limit(5).to_list(),
+      \   [5,6,7,8,9])
     End
   End
 
