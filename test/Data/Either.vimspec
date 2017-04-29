@@ -286,40 +286,41 @@ Describe Data.Either
       "TODO: Use quickcheck after quickcheck library is created
 
       function! LiftSuccOfEither(x) abort
-        return Either.return(a:x + 1)
+        return s:Either.return(a:x + 1)
       endfunction
 
       function! LiftToStringOfEither(x) abort
-        return Either.return(string(a:x))
+        return s:Either.return(string(a:x))
       endfunction
 
-      function! TestLeftIdLaw(mmodule) abort
-        let result_left  = a:mmodule.bind(a:mmodule.return(10), function('LiftSuccOfEither'))
+      function! TestLeftIdLaw(m) abort
+        let result_left  = a:m.bind(a:m.return(10), function('LiftSuccOfEither'))
         let result_right = LiftSuccOfEither(10)
         return result_left ==# result_right
       endfunction
 
-      function! TestRightIdLaw(mmodule) abort
+      function! TestRightIdLaw(m) abort
         "NOTE: Can I refactor this dirty closure ?
         " Workaround of the closure for vim7.4 test
-        let s:mmodule = a:mmodule
+        let s:m = a:m
         function! s:return(x) abort
-          return s:mmodule.return(a:x)
+          return s:m.return(a:x)
         endfunction
 
-        let mval = a:mmodule.return(10)
-        return a:mmodule.bind(mval, function('s:return')) ==# mval
+        let mval = a:m.return(10)
+        return a:m.bind(mval, function('s:return')) ==# mval
       endfunction
 
-      function! TestAssocLaw(mmodule) abort
-        let s:mmodule = a:mmodule
+      function! TestAssocLaw(m) abort
+        let s:m = a:m
         function! s:fg(x) abort
-          return LiftToStringOfEither(LiftSuccOfEither(a:x))
+          let l:mval = LiftSuccOfEither(a:x)
+          return s:m.bind(l:mval, function('LiftToStringOfEither'))
         endfunction
 
-        let mval = a:mmodule.return(10)
-        let result_left  = a:mmodule.bind( a:mmodule.bind(mval, function('LiftSuccOfEither')), function('LiftToStringOfEither'))
-        let result_right = a:mmodule.bind(mval, function('s:fg'))
+        let mval = a:m.return(10)
+        let result_left  = a:m.bind(a:m.bind(mval, function('LiftSuccOfEither')), function('LiftToStringOfEither'))
+        let result_right = a:m.bind(mval, function('s:fg'))
 
         return result_left ==# result_right
       endfunction
@@ -343,9 +344,6 @@ Describe Data.Either
       delfunction TestLeftIdLaw
       delfunction TestRightIdLaw
       delfunction TestAssocLaw
-      unlet s:mmodule
-      delfunction s:return
-      delfunction s:fg
     End
   End
 End
