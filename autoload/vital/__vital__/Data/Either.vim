@@ -149,13 +149,13 @@ function! s:join(nested_either) abort
   if s:is_left(a:nested_either)
     return a:nested_either
   endif
-  let l:right = s:unsafe_from_right(a:nested_either)
+  let l:either = s:unsafe_from_right(a:nested_either)
 
-  " Don't return anything if l:right isn't either
-  if !s:is_right(l:right) && !s:is_right(l:right)
+  " Don't return anything if l:either isn't either
+  if !s:is_left(l:either) && !s:is_right(l:either)
     throw "vital: Data.Either: join() cannot be applied if the argument isn't nested either"
   endif
-  return l:right
+  return l:either
 endfunction
 
 
