@@ -263,6 +263,61 @@ function! s:Stream.filter(f) abort
   return stream
 endfunction
 
+" 'n' may be 1/0, so when upstream is inifinite stream,
+" 'self._upstream.__take_possible__(n)' does not stop
+" unless .limit(n) was specified in downstream.
+" But regardless of whether .limit(n) was specified,
+" this method must stop for even upstream is inifinite stream.
+function! s:Stream.take_while(f) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = self._characteristics
+  let stream._upstream = self
+  let stream.__end = 0
+  let stream._f = a:f
+  let stream._BUFSIZE = 32
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
+    endif
+    let do_break = 0
+    let list = []
+    while !do_break
+      let [r, open] = self._upstream.__take_possible__(self._BUFSIZE)
+      for Value in (a:n > 0 ? r : [])
+        if !map([Value], self._f)[0]
+          let open = 0
+          let do_break = 1
+          break
+        endif
+        let list += [Value]
+        if len(list) >= a:n
+          " requested number of elements was obtained,
+          " but this stream is not closed for next call
+          let do_break = 1
+          break
+        endif
+      endfor
+      if !open
+        break
+      endif
+    endwhile
+    if !open
+      let self.__end = 1
+    endif
+    return [list, open]
+  endfunction
+  if self.has_characteristic(s:SIZED)
+    function! stream.__estimate_size__() abort
+      return self._upstream.__estimate_size__()
+    endfunction
+  else
+    function! stream.__estimate_size__() abort
+      return 1/0
+    endfunction
+  endif
+  return stream
+endfunction
+
 function! s:Stream.limit(n) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = s:ORDERED + s:SIZED + s:IMMUTABLE
