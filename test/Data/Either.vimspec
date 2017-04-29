@@ -210,18 +210,15 @@ Describe Data.Either
   End
 
   Describe .join()
-    It can remove one right if it is nested
+    It can remove one right if it is nested right
       let right       = Either.right(10)
       let right_right = Either.right(right)
       Assert Equals(Either.join(right_right), right)
     End
 
-    It throws an exception if unnested either is given
+    It throws an exception if unnested right is given
       let right = Either.right(10)
-      let left  = Either.left(20)
-
       Throws /^vital: Data.Either:/ Either.join(right)
-      Throws /^vital: Data.Either:/ Either.join(left)
     End
 
     It doesn't remove left
