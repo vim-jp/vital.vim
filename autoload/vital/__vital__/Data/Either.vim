@@ -66,6 +66,11 @@ function! s:is_right(either) abort
 endfunction
 
 
+function! s:is_either(x) abort
+  return s:is_left(a:x) || s:is_right(a:x)
+endfunction
+
+
 function! s:unsafe_from_left(either) abort
   if s:is_right(a:either)
     throw 'vital: Data.Either: from_left() cannot be applied by right value'

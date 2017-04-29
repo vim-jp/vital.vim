@@ -74,6 +74,10 @@ is_right({either})			*Vital.Data.Either.is_right()*
 	If {either} is {left}, return 1. If {either} is {right}, Return 0.
 	Otherwise, the behavior is undefined.
 
+is_either({value})			*Vital.Data.Either.is_either()*
+	If {value} is the {left} value or the {right} value, return 1.
+	Otherwise, return 0.
+
 
 from_left({default}, {either})		*Vital.Data.Either.from_left()*
 	If {either} is {left}, return the internal value of {either}. If

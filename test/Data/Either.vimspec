@@ -66,6 +66,28 @@ Describe Data.Either
     End
   End
 
+  Describe .is_either()
+    It returns true if the left value or the right value is given
+      let left  = Either.left(10)
+      let right = Either.right(10)
+
+      Assert True(Either.is_either(left))
+      Assert True(Either.is_either(right))
+    End
+
+    It returns false if another value is given
+      let a = 10
+      let b = [10, 20]
+      let c = {}
+      let d = 'poi poi'
+
+      Assert False(Either.is_either(a))
+      Assert False(Either.is_either(b))
+      Assert False(Either.is_either(c))
+      Assert False(Either.is_either(d))
+    End
+  End
+
   Describe .unsafe_from_left()
     It extracts a left value to a mere value
       let left = Either.left(10)
