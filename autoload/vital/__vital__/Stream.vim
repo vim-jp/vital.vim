@@ -252,9 +252,7 @@ function! s:Stream.filter(f) abort
       let [r, open] = self._upstream.__take_possible__(a:n - len(list))
       let list += filter(r, self._f)
     endwhile
-    if !open
-      let self.__end = 1
-    endif
+    let self.__end = !open
     return [list, open]
   endfunction
   function! stream.__estimate_size__() abort
@@ -301,9 +299,7 @@ function! s:Stream.take_while(f) abort
         break
       endif
     endwhile
-    if !open
-      let self.__end = 1
-    endif
+    let self.__end = !open
     return [list, open]
   endfunction
   if self.has_characteristic(s:SIZED)
