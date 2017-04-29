@@ -274,12 +274,12 @@ endfunction
 
 " similar to Ruby's detect or Haskell's find.
 function! s:find(list, default, f) abort
-  let l:Caller = type(a:f) is type(function('function'))
-  \            ? function('call')
-  \            : function('s:_call_string_expr')
+  let l:Call = type(a:f) is type(function('function'))
+  \          ? function('call')
+  \          : function('s:_call_string_expr')
 
   for x in a:list
-    if l:Caller(a:f, [x])
+    if l:Call(a:f, [x])
       return x
     endif
   endfor
