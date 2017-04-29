@@ -289,6 +289,23 @@ function! s:Stream.concat(stream) abort
   return s:concat(self, a:stream)
 endfunction
 
+function! s:Stream.reduce(f, ...) abort
+  let Result = get(a:000, 0, 0)
+  let type = type(a:f)
+  if type is s:t_string
+    for Value in self.__take_possible__(self.__estimate_size__())[0]
+      let Result = map([[Result, Value]], a:f)[0]
+    endfor
+  elseif type is s:t_func
+    for Value in self.__take_possible__(self.__estimate_size__())[0]
+      let Result = a:f(Result, Value)
+    endfor
+  else
+    throw 'vital: Stream: reduce(): invalid type argument was given (Funcref or String or Data.Closure)'
+  endif
+  return Result
+endfunction
+
 function! s:Stream.count() abort
   if self.has_characteristic(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])

@@ -402,6 +402,14 @@ Describe Data.LazyList
     End
   End
 
+  Describe .reduce()
+    It reduces stream
+      " Default {init} value is 0
+      Assert Equals(Stream.empty().reduce('v:val'), 0)
+      Assert Equals(Stream.of(1,2,3,4,5).reduce('v:val[0] + v:val[1]', 0), 15)
+    End
+  End
+
   Describe .to_list()
     It converts stream to a List
       let s = Stream.of(1,2,3)
