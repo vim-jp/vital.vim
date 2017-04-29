@@ -44,11 +44,11 @@ endfunction
 function! s:is_left(either) abort
   try
     " These are named by Pascal Case because it maybe the function
-    let [l:U, l:MayNotBeRight] = a:either
+    let l:MayNotBeRight = a:either[1]
     "TODO: Test is failed if l:result is removed
     let l:result = l:MayNotBeRight ==# s:_NOTHING
     return l:result
-  catch /\(E714\|E691\)/
+  catch /\(E714\|E716\|E691\)/
     return 0
   endtry
 endfunction
@@ -56,11 +56,11 @@ endfunction
 
 function! s:is_right(either) abort
   try
-    let [l:MayNotBeRight, l:U] = a:either
+    let l:MayNotBeRight = a:either[0]
     "TODO: Test is failed if l:result is removed
     let l:result = l:MayNotBeRight ==# s:_NOTHING
     return l:result
-  catch /\(E714\|E691\)/
+  catch /\(E714\|E716\|E691\)/
     return 0
   endtry
 endfunction
@@ -123,7 +123,7 @@ function! s:apply(either_func, ...) abort
     return s:is_left(a:either)
   endfunction
   "TODO: Use lambda instead when vital.vim remove vim7.4 support
-  function! UnsafeFromRightOfEither(_, either) abort
+  function! UnsafeFromRightOfEither(either) abort
     return s:unsafe_from_right(a:either)
   endfunction
   try
@@ -135,7 +135,7 @@ function! s:apply(either_func, ...) abort
     endif
 
     let l:Func   = s:unsafe_from_right(a:either_func)
-    let l:values = map(copy(l:either_values), function('UnsafeFromRightOfEither'))
+    let l:values = map(copy(l:either_values), 'UnsafeFromRightOfEither(v:val)')
     let l:result = s:_get_caller(l:Func)(l:Func, l:values)
     return s:right(l:result)
   finally
