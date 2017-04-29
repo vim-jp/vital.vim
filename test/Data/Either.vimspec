@@ -214,13 +214,16 @@ Describe Data.Either
   Describe .flatmap()
     Before all
       function! LiftSucc(x) abort
-        return Either.return(a:x + 1)
+        return s:Either.return(a:x + 1)
       endfunction
     End
 
     It is same as .bind()
-      let right 
-      Either.bind(function('LiftSucc'))
+      let left  = Either.left(10)
+      let right = Either.right(20)
+
+      Assert Equals(Either.flatmap(left, function('LiftSucc')), Either.bind(left, function('LiftSucc')))
+      Assert Equals(Either.flatmap(right, function('LiftSucc')), Either.bind(right, function('LiftSucc')))
     End
 
     After all
