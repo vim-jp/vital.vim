@@ -160,7 +160,7 @@ endfunction
 
 
 function! s:bind(either, karrow) abort
-  return s:map(s:map(a:either, a:karrow), function('s:join'))
+  return s:join(s:map(a:either, a:karrow))
 endfunction
 
 
