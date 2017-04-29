@@ -24,7 +24,7 @@ function! s:_get_caller(f) abort
   \      : function('s:_call_string_expr')
 endfunction
 
-function! s:_call_string_expr(expr, args)
+function! s:_call_string_expr(expr, args) abort
   return map([a:args[0]], a:expr)[0]
 endfunction
 
