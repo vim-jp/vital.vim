@@ -459,6 +459,15 @@ Describe Data.LazyList
     End
   End
 
+  Describe .find()
+    It returns the first element matching with given predicate function in stream
+      " Default {init} value is 0
+      Assert Equals(Stream.empty().find('v:val'), 0)
+      Assert Equals(Stream.empty().find('v:val', 42), 42)
+      Assert Equals(Stream.iterate(1, 'v:val + 1').find('v:val % 2 == 0'), 2)
+    End
+  End
+
   Describe .to_list()
     It converts stream to a List
       let s = Stream.of(1,2,3)

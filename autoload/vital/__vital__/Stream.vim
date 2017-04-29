@@ -358,6 +358,13 @@ function! s:Stream.find_first(...) abort
   return get(self.__take_possible__(1)[0], 0, Default)
 endfunction
 
+function! s:Stream.find(f, ...) abort
+  if self.__estimate_size__() == 0
+    return get(a:000, 0, 0)
+  endif
+  return self.filter(a:f).limit(1).find_first()
+endfunction
+
 function! s:Stream.count() abort
   if self.has_characteristic(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])
