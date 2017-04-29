@@ -306,6 +306,48 @@ function! s:Stream.reduce(f, ...) abort
   return Result
 endfunction
 
+function! s:Stream.max(...) abort
+  if self.__estimate_size__() == 0
+    return get(a:000, 0, 0)
+  endif
+  return self.reduce('max(v:val)', -1/0)
+endfunction
+
+function! s:Stream.max_by(f, ...) abort
+  if self.__estimate_size__() == 0
+    return get(a:000, 0, 0)
+  endif
+  let type = type(a:f)
+  if type is s:t_string
+    return self.reduce('max([map([v:val[1]], a:f)[0], v:val[0]])', -1/0)
+  elseif type is s:t_func
+    return self.reduce('max([call(a:f, [v:val[1]]), v:val[0]])', -1/0)
+  else
+    throw 'vital: Stream: max_by(): invalid type argument was given (Funcref or String or Data.Closure)'
+  endif
+endfunction
+
+function! s:Stream.min(...) abort
+  if self.__estimate_size__() == 0
+    return get(a:000, 0, 0)
+  endif
+  return self.reduce('min(v:val)', -1/0)
+endfunction
+
+function! s:Stream.min_by(f, ...) abort
+  if self.__estimate_size__() == 0
+    return get(a:000, 0, 0)
+  endif
+  let type = type(a:f)
+  if type is s:t_string
+    return self.reduce('min([map([v:val[1]], a:f)[0], v:val[0]])', -1/0)
+  elseif type is s:t_func
+    return self.reduce('min([call(a:f, [v:val[1]]), v:val[0]])', -1/0)
+  else
+    throw 'vital: Stream: min_by(): invalid type argument was given (Funcref or String or Data.Closure)'
+  endif
+endfunction
+
 function! s:Stream.count() abort
   if self.has_characteristic(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])

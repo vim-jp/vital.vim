@@ -410,6 +410,38 @@ Describe Data.LazyList
     End
   End
 
+  Describe .max()
+    It returns max value in stream
+      " Default {init} value is 0
+      Assert Equals(Stream.empty().max(42), 42)
+      Assert Equals(Stream.of(1,2,3,4,5).max(), 5)
+    End
+  End
+
+  Describe .max_by()
+    It returns max value by function in stream
+      " Default {init} value is 0
+      Assert Equals(Stream.empty().max_by('v:val', 42), 42)
+      Assert Equals(Stream.of('aaa', 'bb', '').max_by('len(v:val)'), 'aaa')
+    End
+  End
+
+  Describe .min()
+    It returns min value in stream
+      " Default {init} value is 0
+      Assert Equals(Stream.empty().min(42), 42)
+      Assert Equals(Stream.of(1,2,3,4,5).min(), 1)
+    End
+  End
+
+  Describe .min_by()
+    It returns min value by function in stream
+      " Default {init} value is 0
+      Assert Equals(Stream.empty().min_by('v:val', 42), 42)
+      Assert Equals(Stream.of('aaa', 'bb', '').min_by('len(v:val)'), 'aaa')
+    End
+  End
+
   Describe .to_list()
     It converts stream to a List
       let s = Stream.of(1,2,3)
