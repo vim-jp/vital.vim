@@ -25,22 +25,44 @@ Describe Data.Either
   End
 
   Describe .is_left()
-    It checks the argument is an left value
-      let left  = Either.left(10)
-      let right = Either.right(10)
-
+    It returns true if a left value is given
+      let left = Either.left(10)
       Assert True(Either.is_left(left))
+    End
+
+    It return false if another value is given
+      let right = Either.right(10)
+      let a     = 10
+      let b     = [10, 20]
+      let c     = {}
+      let d     = 'anatano-minarinsuki'
+
       Assert False(Either.is_left(right))
+      Assert False(Either.is_left(a))
+      Assert False(Either.is_left(b))
+      Assert False(Either.is_left(c))
+      Assert False(Either.is_left(d))
     End
   End
 
   Describe .is_right()
-    It checks the argument is an right value
+    It returns true if a right value is given
       let right = Either.right(10)
-      let left  = Either.left(10)
-
       Assert True(Either.is_right(right))
+    End
+
+    It returns false if another value is given
+      let left = Either.left(10)
+      let a    = 10
+      let b    = [10, 20]
+      let c    = {}
+      let d    = 'love-arrow'
+
       Assert False(Either.is_right(left))
+      Assert False(Either.is_right(a))
+      Assert False(Either.is_right(b))
+      Assert False(Either.is_right(c))
+      Assert False(Either.is_right(d))
     End
   End
 
