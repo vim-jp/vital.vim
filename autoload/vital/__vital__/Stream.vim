@@ -312,7 +312,7 @@ function! s:Stream.max(...) abort
   if self.__estimate_size__() == 0
     return get(a:000, 0, 0)
   endif
-  return self.reduce('max(v:val)', -1/0)
+  return max(self.__take_possible__(self.__estimate_size__())[0])
 endfunction
 
 function! s:Stream.max_by(f, ...) abort
@@ -334,7 +334,7 @@ function! s:Stream.min(...) abort
   if self.__estimate_size__() == 0
     return get(a:000, 0, 0)
   endif
-  return self.reduce('min(v:val)', 1/0)
+  return min(self.__take_possible__(self.__estimate_size__())[0])
 endfunction
 
 function! s:Stream.min_by(f, ...) abort
