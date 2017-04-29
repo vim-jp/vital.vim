@@ -122,10 +122,6 @@ function! s:apply(either_func, ...) abort
   function! IsLeftOfEither(either) abort
     return s:is_left(a:either)
   endfunction
-  "TODO: Use lambda instead when vital.vim remove vim7.4 support
-  function! UnsafeFromRightOfEither(either) abort
-    return s:unsafe_from_right(a:either)
-  endfunction
   try
     let l:NULL         = 0 | lockvar l:NULL
     let l:null_or_left = s:List.find(l:either_values, l:NULL, 'IsLeftOfEither(v:val)')
@@ -135,12 +131,14 @@ function! s:apply(either_func, ...) abort
     endif
 
     let l:Func   = s:unsafe_from_right(a:either_func)
-    let l:values = map(copy(l:either_values), 'UnsafeFromRightOfEither(v:val)')
+    let l:values = []
+    for l:either_value in l:either_values
+      call add(l:values, s:unsafe_from_right(l:either_value))
+    endfor
     let l:result = s:_get_caller(l:Func)(l:Func, l:values)
     return s:right(l:result)
   finally
     delfunction IsLeftOfEither
-    delfunction UnsafeFromRightOfEither
   endtry
 endfunction
 
