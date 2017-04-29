@@ -42,12 +42,13 @@ endfunction
 
 
 function! s:is_left(either) abort
-  " These are named by Pascal Case because it maybe the function
-  let [l:U, l:MayNotBeRight] = a:either
   try
+    " These are named by Pascal Case because it maybe the function
+    let [l:U, l:MayNotBeRight] = a:either
+    "TODO: Test is failed if l:result is removed
     let l:result = l:MayNotBeRight ==# s:_NOTHING
     return l:result
-  catch /^E691:/
+  catch /\(E714\|E691\)/
     return 0
   endtry
 endfunction
@@ -147,7 +148,7 @@ endfunction
 
 
 function! s:bind(either, karrow) abort
-  return s:map(s:map(a:either, a:karrow), s:join)
+  return s:map(s:map(a:either, a:karrow), function('s:join'))
 endfunction
 
 
