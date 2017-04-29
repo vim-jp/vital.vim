@@ -155,6 +155,29 @@ function! s:generate(f) abort
   \ a:f)
 endfunction
 
+function! s:zip(s1, s2) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = and(a:s1._characteristics, a:s2._characteristics)
+  let stream.__end = 0
+  let stream._s1 = a:s1
+  let stream._s2 = a:s2
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed'
+    endif
+    let l1 = self._s1.__take_possible__(a:n)[0]
+    let l2 = self._s2.__take_possible__(a:n)[0]
+    let smaller = min([len(l1), len(l2)])
+    let list = map(range(smaller), '[l1[v:val], l2[v:val]]')
+    let self.__end = (self.__estimate_size__() == 0)
+    return [list, !self.__end]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return min([self._s1.__estimate_size__(), self._s2.__estimate_size__()])
+  endfunction
+  return stream
+endfunction
+
 
 let s:Stream = {}
 
