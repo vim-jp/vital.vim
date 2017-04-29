@@ -273,6 +273,11 @@ Describe Data.LazyList
         \.limit(5).to_list(),
         \[[1,5], [2,4], [3,3], [4,2], [5,1]])
     End
+    It constructs infinite stream with function
+      Assert Equals(
+        \Stream.of(1,2,3).zip(Stream.of(4,5,6)).to_list(),
+        \[[1,4], [2,5], [3,6]])
+    End
   End
 
   Describe .concat()
@@ -310,6 +315,11 @@ Describe Data.LazyList
           \Stream.of(1,2,3),
           \Stream.iterate(4, 'v:val + 1'))
         \.limit(5).to_list(),
+        \[1,2,3,4,5])
+    End
+    It constructs infinite stream with function (method version)
+      Assert Equals(
+        \Stream.of(1,2,3).concat(Stream.of(4,5)).to_list(),
         \[1,2,3,4,5])
     End
   End

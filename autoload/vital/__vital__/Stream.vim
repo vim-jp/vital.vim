@@ -281,6 +281,14 @@ function! s:Stream.limit(n) abort
   return stream
 endfunction
 
+function! s:Stream.zip(stream) abort
+  return s:zip(self, a:stream)
+endfunction
+
+function! s:Stream.concat(stream) abort
+  return s:concat(self, a:stream)
+endfunction
+
 function! s:Stream.count() abort
   if self.has_characteristic(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])
