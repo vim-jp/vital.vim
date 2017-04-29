@@ -275,6 +275,45 @@ Describe Data.LazyList
     End
   End
 
+  Describe .concat()
+    It constructs infinite stream with function
+      Assert Equals(
+        \Stream.concat(
+          \Stream.of(1,2,3),
+          \Stream.of(4,5))
+        \.to_list(),
+        \[1,2,3,4,5])
+
+      Assert Equals(
+        \Stream.concat(
+          \Stream.of(1,2,3),
+          \Stream.of())
+        \.to_list(),
+        \[1,2,3])
+
+      Assert Equals(
+        \Stream.concat(
+          \Stream.of(),
+          \Stream.of(4,5))
+        \.to_list(),
+        \[4,5])
+
+      Assert Equals(
+        \Stream.concat(
+          \Stream.iterate(1, 'v:val + 1'),
+          \Stream.of('this stream cannot be merged...'))
+        \.limit(5).to_list(),
+        \[1,2,3,4,5])
+
+      Assert Equals(
+        \Stream.concat(
+          \Stream.of(1,2,3),
+          \Stream.iterate(4, 'v:val + 1'))
+        \.limit(5).to_list(),
+        \[1,2,3,4,5])
+    End
+  End
+
   Describe .limit()
     It limits stream
       Assert Equals(Stream.of(1,2,3,4,5).limit(3).to_list(), [1,2,3])

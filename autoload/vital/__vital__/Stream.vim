@@ -178,6 +178,35 @@ function! s:zip(s1, s2) abort
   return stream
 endfunction
 
+function! s:concat(s1, s2) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = and(a:s1._characteristics, a:s2._characteristics)
+  let stream.__end = 0
+  let stream._s1 = a:s1
+  let stream._s2 = a:s2
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed'
+    endif
+    let list = []
+    if self._s1.__estimate_size__() > 0
+      let list += self._s1.__take_possible__(a:n)[0]
+    endif
+    if len(list) < a:n && self._s2.__estimate_size__() > 0
+      let list += self._s2.__take_possible__(a:n - len(list))[0]
+    endif
+    let self.__end = (self._s1.__estimate_size__() == 0 &&
+    \                 self._s2.__estimate_size__() == 0)
+    return [list, !self.__end]
+  endfunction
+  function! stream.__estimate_size__() abort
+    let size1 = self._s1.__estimate_size__()
+    let size2 = self._s2.__estimate_size__()
+    return size1 + size2 >= size1 ? size1 + size2 : 1/0
+  endfunction
+  return stream
+endfunction
+
 
 let s:Stream = {}
 
