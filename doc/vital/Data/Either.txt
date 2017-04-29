@@ -3,7 +3,7 @@
 Maintainer: aiya000 <aiya000.develop@gmail.com>
 
 ==============================================================================
-CONTENTS				*Vital.Data.Optional-contents*
+CONTENTS				*Vital.Data.Either-contents*
 
 INTRODUCTION			|Vital.Data.Either-introduction|
 TERM				|Vital.Data.Either-term|
@@ -13,7 +13,7 @@ INTERFACE			|Vital.Data.Either-interface|
 
 
 ==============================================================================
-INTRODUCTION				*Vital.Data.Optional-introduction*
+INTRODUCTION				*Vital.Data.Either-introduction*
 
 *Vital.Data.Either* is representation of left/right value. This is like a
 Either in Haskell. The "left value" means invalid value in most case. The
