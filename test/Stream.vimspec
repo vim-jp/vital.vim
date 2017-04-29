@@ -406,6 +406,7 @@ Describe Data.LazyList
     It reduces stream
       " Default {init} value is 0
       Assert Equals(Stream.empty().reduce('v:val'), 0)
+      Assert Equals(Stream.empty().reduce('v:val', 42), 42)
       Assert Equals(Stream.of(1,2,3,4,5).reduce('v:val[0] + v:val[1]', 0), 15)
     End
   End
@@ -413,6 +414,7 @@ Describe Data.LazyList
   Describe .max()
     It returns max value in stream
       " Default {init} value is 0
+      Assert Equals(Stream.empty().max(), 0)
       Assert Equals(Stream.empty().max(42), 42)
       Assert Equals(Stream.of(1,2,3,4,5).max(), 5)
     End
@@ -422,6 +424,7 @@ Describe Data.LazyList
     It returns max value by function in stream
       Skip "this test kills Vim!"
       " Default {init} value is 0
+      Assert Equals(Stream.empty().max_by('v:val'), 0)
       Assert Equals(Stream.empty().max_by('v:val', 42), 42)
       Assert Equals(Stream.of('aaa', 'bb', '').max_by('len(v:val)'), 'aaa')
     End
@@ -430,6 +433,7 @@ Describe Data.LazyList
   Describe .min()
     It returns min value in stream
       " Default {init} value is 0
+      Assert Equals(Stream.empty().min(), 0)
       Assert Equals(Stream.empty().min(42), 42)
       Assert Equals(Stream.of(1,2,3,4,5).min(), 1)
     End
