@@ -50,37 +50,39 @@ endfunction
 " endfunction
 
 function! s:of(...) abort
-  return s:_new_from_list(a:000, s:ORDERED + s:SIZED + s:IMMUTABLE)
+  return s:_new_from_list(a:000, s:ORDERED + s:SIZED + s:IMMUTABLE, 'of()')
 endfunction
 
 function! s:from_chars(str, ...) abort
   let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
-  return s:_new_from_list(split(a:str, '\zs'), characteristics)
+  return s:_new_from_list(split(a:str, '\zs'), characteristics, 'from_chars()')
 endfunction
 
 function! s:from_list(list, ...) abort
   let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
-  return s:_new_from_list(a:list, characteristics)
+  return s:_new_from_list(a:list, characteristics, 'from_list()')
 endfunction
 
 function! s:from_dict(dict, ...) abort
   let characteristics = get(a:000, 0, s:DISTINCT + s:SIZED + s:IMMUTABLE)
-  return s:_new_from_list(items(a:dict), characteristics)
+  return s:_new_from_list(items(a:dict), characteristics, 'from_dict()')
 endfunction
 
 function! s:empty() abort
-  return s:_new_from_list([], s:ORDERED + s:SIZED + s:IMMUTABLE)
+  return s:_new_from_list([], s:ORDERED + s:SIZED + s:IMMUTABLE, 'empty()')
 endfunction
 
-function! s:_new_from_list(list, characteristics) abort
+function! s:_new_from_list(list, characteristics, callee) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = a:characteristics
   let stream.__index = 0
   let stream.__end = 0
   let stream._list = a:list
+  let stream._callee = a:callee
   function! stream.__take_possible__(n) abort
     if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed'
+      throw 'vital: Stream: stream has already been operated upon or closed at '
+      \     . self._callee
     endif
     " max(): fix overflow
     let list = self._list[self.__index : max([self.__index + a:n - 1, a:n - 1])]
@@ -103,7 +105,7 @@ function! s:range(start_inclusive, end_exclusive) abort
   let stream.__end = 0
   function! stream.__take_possible__(n) abort
     if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed'
+      throw 'vital: Stream: stream has already been operated upon or closed at range()'
     endif
     " take n, but do not exceed end. and range(1,-1) causes E727 error.
     " max(): fix overflow
@@ -163,7 +165,7 @@ function! s:zip(s1, s2) abort
   let stream._s2 = a:s2
   function! stream.__take_possible__(n) abort
     if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed'
+      throw 'vital: Stream: stream has already been operated upon or closed at zip()'
     endif
     let l1 = self._s1.__take_possible__(a:n)[0]
     let l2 = self._s2.__take_possible__(a:n)[0]
@@ -186,7 +188,7 @@ function! s:concat(s1, s2) abort
   let stream._s2 = a:s2
   function! stream.__take_possible__(n) abort
     if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed'
+      throw 'vital: Stream: stream has already been operated upon or closed at concat()'
     endif
     let list = []
     if self._s1.__estimate_size__() > 0
@@ -222,7 +224,7 @@ function! s:Stream.map(f) abort
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed'
+      throw 'vital: Stream: stream has already been operated upon or closed at map()'
     endif
     let list = map(self._upstream.__take_possible__(a:n)[0], self._f)
     let self.__end = (self.__estimate_size__() == 0)
@@ -242,7 +244,7 @@ function! s:Stream.filter(f) abort
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed'
+      throw 'vital: Stream: stream has already been operated upon or closed at filter()'
     endif
     let [r, open] = self._upstream.__take_possible__(a:n)
     let list = filter(r, self._f)
@@ -269,7 +271,7 @@ function! s:Stream.limit(n) abort
   let stream._n = max([a:n, 0])
   function! stream.__take_possible__(...) abort
     if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed'
+      throw 'vital: Stream: stream has already been operated upon or closed at limit()'
     endif
     let list = self._n > 0 ? self._upstream.__take_possible__(self._n)[0] : []
     let self.__end = (self.__estimate_size__() == 0)
