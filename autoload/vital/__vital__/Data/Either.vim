@@ -48,7 +48,7 @@ function! s:is_left(either) abort
     "TODO: Test is failed if l:result is removed
     let l:result = l:MayNotBeRight ==# s:_NOTHING
     return l:result
-  catch /\(E714\|E716\|E691\)/
+  catch /\(E714\|E716\|E691\|E692\|E693\)/
     return 0
   endtry
 endfunction
@@ -60,7 +60,7 @@ function! s:is_right(either) abort
     "TODO: Test is failed if l:result is removed
     let l:result = l:MayNotBeRight ==# s:_NOTHING
     return l:result
-  catch /\(E714\|E716\|E691\)/
+  catch /\(E714\|E716\|E691\|E692\|E693\)/
     return 0
   endtry
 endfunction
