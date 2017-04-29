@@ -443,8 +443,19 @@ Describe Data.LazyList
     It returns min value by function in stream
       Skip "this test kills Vim!"
       " Default {init} value is 0
+      Assert Equals(Stream.empty().min_by('v:val'), 0)
       Assert Equals(Stream.empty().min_by('v:val', 42), 42)
       Assert Equals(Stream.of('aaa', 'bb', '').min_by('len(v:val)'), '')
+    End
+  End
+
+  Describe .find_first()
+    It returns the first element in stream
+      " Default {init} value is 0
+      Assert Equals(Stream.empty().find_first(), 0)
+      Assert Equals(Stream.empty().find_first(42), 42)
+      Assert Equals(Stream.of('aaa', 'bb', '').find_first(), 'aaa')
+      Assert Equals(Stream.iterate(1, 'v:val + 1').filter('v:val % 2 == 0').limit(1).find_first(), 2)
     End
   End
 

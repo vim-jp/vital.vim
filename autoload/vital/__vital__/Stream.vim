@@ -350,6 +350,14 @@ function! s:Stream.min_by(f, ...) abort
   endif
 endfunction
 
+function! s:Stream.find_first(...) abort
+  let Default = get(a:000, 0, 0)
+  if self.__estimate_size__() == 0
+    return Default
+  endif
+  return get(self.__take_possible__(1)[0], 0, Default)
+endfunction
+
 function! s:Stream.count() abort
   if self.has_characteristic(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])
