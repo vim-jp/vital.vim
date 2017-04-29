@@ -55,7 +55,14 @@ endfunction
 
 
 function! s:is_right(either) abort
-  return !s:is_left(a:either)
+  try
+    let [l:MayNotBeRight, l:U] = a:either
+    "TODO: Test is failed if l:result is removed
+    let l:result = l:MayNotBeRight ==# s:_NOTHING
+    return l:result
+  catch /\(E714\|E691\)/
+    return 0
+  endtry
 endfunction
 
 
