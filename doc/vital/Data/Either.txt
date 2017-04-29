@@ -109,15 +109,16 @@ map({either}, {f})			*Vital.Data.Either.map()*
 	echo E.map(either, 'v:val + 1')  " Left(something)
 <
 
-apply({either_func}, {either_value})		*Vital.Data.Either.apply()*
+apply({either_func}, {either_values}...)		*Vital.Data.Either.apply()*
 	{either_func} is a function that is wraped by
-	|Vital.Data.Either.right()| or some {left} value. {either_func} is a
-	value that is wraped by |Vital.Data.Either.right()| or some {left}
-	value. If either {either_func} or {either_value} is {left}, return it
-	simply. If both {either_func} and {either_value} is {right}, extract
-	the function from {either_func}, extract the value from {either_value},
-	apply the value to the function, and wrap the result by
-	|Vital.Data.Either.right()|. And return it.
+	|Vital.Data.Either.right()|or some {left} value. {either_func} is a
+	value that is wraped by |Vital.Data.Either.right()|or some {left}
+	value. If {either_func} is {left} value or {either_values} has {left}
+	value, return first left element. If {either_func} and all
+	{either_values} is {right}, extract {either_func} to mere function,
+	extract {either_values} to mere values, apply the mere value to the
+	mere function, and wrap the result by |Vital.Data.Either.right()|. And
+	return it.
 >
 	let either_func = E.right('v:val + 1')
 	let either_value = E.right(10)

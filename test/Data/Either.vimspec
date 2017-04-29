@@ -1,6 +1,7 @@
 Describe Data.Either
   Before all
-    let Either = vital#vital#new().import('Data.Either')
+    let Either   = vital#vital#new().import('Data.Either')
+    let s:Either = Either
   End
 
   Describe .left()
@@ -191,7 +192,7 @@ Describe Data.Either
   Describe .bind()
     Before all
       function! LiftSucc(x) abort
-        return Either.return(a:x + 1)
+        return s:Either.return(a:x + 1)
       endfunction
     End
 

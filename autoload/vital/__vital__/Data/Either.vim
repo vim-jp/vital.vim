@@ -2,8 +2,19 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:List = s:V.import('Data.List')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Data.List']
+endfunction
+
+
 " --- private objects --- "
 
+" This value is regarded to an unique value in the future
 let s:_NOTHING = tempname() | lockvar s:_NOTHING
 
 " Return call of Funcref or String expression
@@ -31,8 +42,14 @@ endfunction
 
 
 function! s:is_left(either) abort
-  let [_, l:may_not_right] = a:either
-  return l:may_not_right ==# s:_NOTHING
+  " These are named by Pascal Case because it maybe the function
+  let [l:U, l:MayNotBeRight] = a:either
+  try
+    let l:result = l:MayNotBeRight ==# s:_NOTHING
+    return l:result
+  catch /^E691:/
+    return 0
+  endtry
 endfunction
 
 
@@ -45,8 +62,8 @@ function! s:unsafe_from_left(either) abort
   if s:is_right(a:either)
     throw 'vital: Data.Either: from_left() cannot be applied by right value'
   endif
-  let [l:x, _] = a:either
-  return l:x
+  let [l:X, _] = a:either
+  return l:X
 endfunction
 
 
@@ -54,8 +71,8 @@ function! s:unsafe_from_right(either) abort
   if s:is_left(a:either)
     throw 'vital: Data.Either: from_right() cannot be applied by left value'
   endif
-  let [_, l:y] = a:either
-  return l:y
+  let [_, l:Y] = a:either
+  return l:Y
 endfunction
 
 
@@ -82,23 +99,44 @@ function! s:map(either, f) abort
 endfunction
 
 
-function! s:apply(either_func, either_value) abort
+function! s:apply(either_func, ...) abort
   if s:is_left(a:either_func)
     return a:either_func
-  elseif s:is_left(a:either_value)
-    return a:either_value
   endif
-  let l:Func  = s:unsafe_from_right(a:either_func)
-  let l:value = s:unsafe_from_right(a:either_value)
-  return s:right(l:Func(l:value))
+  let l:either_values = a:000
+
+  "TODO: Use function('s:is_left') instead when s:List.find() corresponded Funcref
+  function! IsLeftOfEither(either) abort
+    return s:is_left(a:either)
+  endfunction
+  "TODO: Use lambda instead when vital.vim remove vim7.4 support
+  function! UnsafeFromRightOfEither(_, either) abort
+    return s:unsafe_from_right(a:either)
+  endfunction
+  try
+    let l:NULL         = 0 | lockvar l:NULL
+    let l:null_or_left = s:List.find(l:either_values, l:NULL, 'IsLeftOfEither(v:val)')
+    if l:null_or_left isnot l:NULL
+      " ^ if the left value is found, return it
+      return l:null_or_left  " a left value
+    endif
+
+    let l:Func   = s:unsafe_from_right(a:either_func)
+    let l:values = map(copy(l:either_values), function('UnsafeFromRightOfEither'))
+    let l:result = s:_get_caller(l:Func)(l:Func, l:values)
+    return s:right(l:result)
+  finally
+    delfunction IsLeftOfEither
+    delfunction UnsafeFromRightOfEither
+  endtry
 endfunction
 
 
-function! s:join(either) abort
-  if s:is_left(a:either)
-    return a:either
+function! s:join(nested_either) abort
+  if s:is_left(a:nested_either)
+    return a:nested_either
   endif
-  let l:right = s:unsafe_from_right(a:either)
+  let l:right = s:unsafe_from_right(a:nested_either)
 
   " Don't return anything if l:right isn't either
   if !s:is_right(l:right) && !s:is_right(l:right)
