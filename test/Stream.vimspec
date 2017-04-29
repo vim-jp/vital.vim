@@ -417,6 +417,20 @@ Describe Stream
     End
   End
 
+  Describe .drop_while()
+    It drops elements until element is matched
+      Assert Equals(
+      \ Stream.empty().drop_while('v:val').to_list(),
+      \ [])
+      Assert Equals(
+      \ Stream.of(1,2,3,4,5).drop_while('v:val < 4').to_list(),
+      \ [4,5])
+      Assert Equals(
+      \ Stream.iterate(1, 'v:val + 1').drop_while('v:val < 4').limit(2).to_list(),
+      \ [4,5])
+    End
+  End
+
   Describe .reduce()
     It reduces stream
       " Default {init} value is 0

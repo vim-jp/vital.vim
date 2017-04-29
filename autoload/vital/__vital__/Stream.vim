@@ -314,6 +314,48 @@ function! s:Stream.take_while(f) abort
   return stream
 endfunction
 
+function! s:Stream.drop_while(f) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = self._characteristics
+  let stream._upstream = self
+  let stream.__end = 0
+  let stream.__skipping = 1
+  let stream._f = a:f
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
+    endif
+    let list = []
+    let open = self.__estimate_size__()
+    while self.__skipping && open
+      let [r, open] = self._upstream.__take_possible__(a:n)
+      for i in range(len(r))
+        if !map([r[i]], self._f)[0]
+          let self.__skipping = 0
+          let list = r[i :]
+          break
+        endif
+      endfor
+    endwhile
+    if !self.__skipping && open && len(list) < a:n
+      let [r, open] = self._upstream.__take_possible__(a:n - len(list))
+      let list += r
+    endif
+    let self.__end = !open
+    return [list, open]
+  endfunction
+  if self.has_characteristic(s:SIZED)
+    function! stream.__estimate_size__() abort
+      return self._upstream.__estimate_size__()
+    endfunction
+  else
+    function! stream.__estimate_size__() abort
+      return 1/0
+    endfunction
+  endif
+  return stream
+endfunction
+
 function! s:Stream.limit(n) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = s:ORDERED + s:SIZED + s:IMMUTABLE
