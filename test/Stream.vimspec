@@ -387,8 +387,9 @@ Describe Stream
     It maps stream
       let s = Stream.iterate(1, 'v:val + 1')
       Assert Equals(s.map('v:val + 1').limit(3).to_list(), [2,3,4])
+    End
 
-      " Must not reuse stream
+    It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
         call s.to_list()
@@ -413,8 +414,9 @@ Describe Stream
     It filters stream
       let s = Stream.iterate(0, 'v:val + 1')
       Assert Equals(s.filter('v:val % 2 == 0').limit(3).to_list(), [0,2,4])
+    End
 
-      " Must not reuse stream
+    It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
         call s.to_list()
@@ -448,6 +450,26 @@ Describe Stream
       \ Stream.iterate(1, 'v:val + 1').take_while('v:val < 4').to_list(),
       \ [1,2,3])
     End
+
+    It must not reuse stream
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.take_while('v:val')
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.take_while('v:val').to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
+    End
   End
 
   Describe .drop_while()
@@ -461,6 +483,26 @@ Describe Stream
       Assert Equals(
       \ Stream.iterate(1, 'v:val + 1').drop_while('v:val < 4').limit(2).to_list(),
       \ [4,5])
+    End
+
+    It must not reuse stream
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.drop_while('v:val')
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.drop_while('v:val').to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
     End
   End
 
@@ -598,8 +640,9 @@ Describe Stream
   Describe .to_list()
     It converts stream to a List
       Assert Equals(Stream.of(1,2,3).to_list(), [1,2,3])
+    End
 
-      " Must not reuse stream
+    It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
         call s.to_list()
