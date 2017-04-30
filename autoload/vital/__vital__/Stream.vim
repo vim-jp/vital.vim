@@ -510,16 +510,22 @@ function! s:Stream.max(...) abort
   return max(self.__take_possible__(self.__estimate_size__())[0])
 endfunction
 
+" XXX: This lets Vim dump core! phew!
 function! s:Stream.max_by(f, ...) abort
   if self.__estimate_size__() == 0
     return get(a:000, 0, 0)
   endif
-  let [first] = self.__take_possible__(1)[0]
   let type = type(a:f)
   if type is s:t_string
-    return self.reduce('max([map([v:val[1]], a:f)[0], v:val[0]])', map([first], a:f)[0])
+    return self.reduce(
+    \ 'v:val[0][1] >= map([v:val[1]], a:f)[0] ? '
+    \       . 'v:val[0] : [v:val[1], map([v:val[1]], a:f)[0]]',
+    \ ['', -1/0])[0]
   elseif type is s:t_func
-    return self.reduce('max([a:f(v:val[1]), v:val[0]])', a:f(first))
+    return self.reduce(
+    \ 'v:val[0][1] >= a:f(v:val[1]) ? '
+    \       . 'v:val[0] : [v:val[1], a:f(v:val[1])]',
+    \ ['', -1/0])[0]
   else
     throw 'vital: Stream: max_by(): invalid type argument was given (Funcref or String or Data.Closure)'
   endif
@@ -532,16 +538,22 @@ function! s:Stream.min(...) abort
   return min(self.__take_possible__(self.__estimate_size__())[0])
 endfunction
 
+" XXX: This lets Vim dump core! phew!
 function! s:Stream.min_by(f, ...) abort
   if self.__estimate_size__() == 0
     return get(a:000, 0, 0)
   endif
-  let [first] = self.__take_possible__(1)[0]
   let type = type(a:f)
   if type is s:t_string
-    return self.reduce('min([map([v:val[1]], a:f)[0], v:val[0]])', map([first], a:f)[0])
+    return self.reduce(
+    \ 'v:val[0][1] <= map([v:val[1]], a:f)[0] ? '
+    \       . 'v:val[0] : [v:val[1], map([v:val[1]], a:f)[0]]',
+    \ ['', 1/0])[0]
   elseif type is s:t_func
-    return self.reduce('min([a:f(v:val[1]), v:val[0]])', a:f(first))
+    return self.reduce(
+    \ 'v:val[0][1] <= a:f(v:val[1]) ? '
+    \       . 'v:val[0] : [v:val[1], a:f(v:val[1])]',
+    \ ['', 1/0])[0]
   else
     throw 'vital: Stream: min_by(): invalid type argument was given (Funcref or String or Data.Closure)'
   endif

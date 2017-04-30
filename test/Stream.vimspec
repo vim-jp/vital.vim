@@ -608,7 +608,7 @@ Describe Stream
 
   Describe .max_by()
     It returns max value by function in stream
-      Skip "this test kills Vim!"
+      Skip "this test kills Vim! (Vim 8.0.0586)"
       " Default {init} value is 0
       Assert Equals(Stream.empty().max_by('v:val'), 0)
       Assert Equals(Stream.empty().max_by('v:val', 42), 42)
@@ -627,7 +627,7 @@ Describe Stream
 
   Describe .min_by()
     It returns min value by function in stream
-      Skip "this test kills Vim!"
+      Skip "this test kills Vim! (Vim 8.0.0586)"
       " Default {init} value is 0
       Assert Equals(Stream.empty().min_by('v:val'), 0)
       Assert Equals(Stream.empty().min_by('v:val', 42), 42)
