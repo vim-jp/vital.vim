@@ -383,6 +383,64 @@ Describe Stream
     End
   End
 
+  Describe .skip()
+    It limits stream
+      Assert Equals(Stream.of(1,2,3,4,5).skip(3).to_list(), [4,5])
+      Assert Equals(Stream.of(3,4,5,6,7).skip(3).to_list(), [6,7])
+      Assert Equals(Stream.iterate(1, 'v:val + 1').skip(3).limit(3).to_list(), [4,5,6])
+    End
+
+    It raises negative number argument
+      try
+        call Stream.of(1,2,3,4,5).skip(-1)
+        Assert 0
+      catch /vital: Stream: skip(n): n must be 0 or positive/
+        Assert 1
+      endtry
+      try
+        call Stream.of(1,2,3,4,5).skip(0)
+        Assert 1
+      catch /vital: Stream: skip(n): n must be 0 or positive/
+        Assert 0
+      endtry
+    End
+
+    It sets SIZED characteristic
+      let s = Stream.of(3,4,5,6,7).skip(3)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      let s = Stream.iterate(1, 'v:val + 1').skip(3)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+    End
+
+    It must not reuse stream
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.skip(3)
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.skip(3).to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
+    End
+  End
+
   Describe .map()
     It maps stream
       let s = Stream.iterate(1, 'v:val + 1')

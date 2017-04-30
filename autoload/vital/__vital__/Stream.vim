@@ -379,6 +379,43 @@ function! s:Stream.limit(n) abort
   return stream
 endfunction
 
+function! s:Stream.skip(n) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = or(self._characteristics, s:SIZED)
+  let stream._upstream = self
+  let stream.__end = 0
+  if a:n < 0
+    throw 'vital: Stream: skip(n): n must be 0 or positive'
+  endif
+  let stream.__n = a:n
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed at skip()'
+    endif
+    let open = self.__estimate_size__() > 0
+    if self.__n > 0 && open
+      let [_, open] = self._upstream.__take_possible__(self.__n)
+      let self.__n = 0
+    endif
+    let list = []
+    if self.__n == 0
+      let [list, open] = self._upstream.__take_possible__(a:n)
+    endif
+    let self.__end = !open
+    return [list, open]
+  endfunction
+  if self.has_characteristic(s:SIZED)
+    function! stream.__estimate_size__() abort
+      return max([self._upstream.__estimate_size__() - self.__n, 0])
+    endfunction
+  else
+    function! stream.__estimate_size__() abort
+      return 1/0
+    endfunction
+  endif
+  return stream
+endfunction
+
 function! s:Stream.zip(stream) abort
   return s:zip(self, a:stream)
 endfunction
