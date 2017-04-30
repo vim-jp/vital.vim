@@ -280,6 +280,7 @@ function! s:Stream.take_while(f) abort
     endif
     let do_break = 0
     let list = []
+    let open = (self._upstream.__estimate_size__() > 0)
     while !do_break
       let [r, open] = self._upstream.__take_possible__(self._BUFSIZE)
       for Value in (a:n > 0 ? r : [])
