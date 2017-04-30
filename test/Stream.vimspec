@@ -524,6 +524,58 @@ Describe Stream
     End
   End
 
+  Describe .sorted()
+    Before all
+      function! ByDesc(a, b) abort
+        return a:a > a:b ? -1 : a:a ==# a:b ? 0 : 1
+      endfunction
+    End
+
+    After all
+      delfunction ByDesc
+    End
+
+    It sorts elements in stream
+      Assert Equals(Stream.of().sorted().to_list(), [])
+      Assert Equals(Stream.of(2,1,3).sorted().to_list(), [1,2,3])
+      Assert Equals(Stream.of(2,1,3,2,1).sorted().to_list(), [1,1,2,2,3])
+      Assert Equals(
+      \ Stream.iterate(3, 'v:val - 1').limit(3).sorted().to_list(),
+      \ [1,2,3])
+      try
+        call Stream.iterate(3, 'v:val - 1').sorted()
+        Assert 0
+      catch /vital: Stream: sorted(): inifinite stream cannot be sorted/
+        Assert 1
+      endtry
+    End
+
+    It sorts elements by function in stream
+      Assert Equals(Stream.of().sorted('ByDesc').to_list(), [])
+      Assert Equals(Stream.of(2,1,3).sorted('ByDesc').to_list(), [3,2,1])
+      Assert Equals(Stream.of(2,1,3,2,1).sorted('ByDesc').to_list(), [3,2,2,1,1])
+      Assert Equals(Stream.of(2,1,3).sorted(function('ByDesc')).to_list(), [3,2,1])
+      Assert Equals(
+      \ Stream.iterate(1, 'v:val + 1').limit(3).sorted('ByDesc').to_list(),
+      \ [3,2,1])
+      try
+        call Stream.iterate(1, 'v:val + 1').sorted('ByDesc')
+        Assert 0
+      catch /vital: Stream: sorted(): inifinite stream cannot be sorted/
+        Assert 1
+      endtry
+    End
+
+    It sets SORTED characteristic
+      let s = Stream.of(1,2,3).sorted()
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+    End
+  End
+
   Describe .reduce()
     It reduces stream
       " Default {init} value is 0

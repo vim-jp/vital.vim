@@ -358,6 +358,30 @@ function! s:Stream.drop_while(f) abort
   return stream
 endfunction
 
+function! s:Stream.sorted(...) abort
+  if !self.has_characteristic(s:SIZED)
+    throw 'vital: Stream: sorted(): inifinite stream cannot be sorted'
+  endif
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = or(self._characteristics, s:SORTED)
+  let stream._upstream = self
+  let stream.__end = 0
+  let stream._sort_args = a:000
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
+    endif
+    let [list, open] = self._upstream.__take_possible__(a:n)
+    let sorted = call('sort', [list] + self._sort_args)
+    let self.__end = !open
+    return [sorted, open]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return self._upstream.__estimate_size__()
+  endfunction
+  return stream
+endfunction
+
 function! s:Stream.limit(n) abort
   if a:n < 0
     throw 'vital: Stream: limit(n): n must be 0 or positive'
