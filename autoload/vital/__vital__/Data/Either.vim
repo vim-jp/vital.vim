@@ -163,12 +163,12 @@ endfunction
 
 
 function! s:flatmap(either, f) abort
-	return s:bind(a:either, a:f)
+  return s:bind(a:either, a:f)
 endfunction
 
 
 function! s:return(x) abort
-	return s:right(a:x)
+  return s:right(a:x)
 endfunction
 
 
