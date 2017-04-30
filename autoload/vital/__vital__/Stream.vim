@@ -460,6 +460,42 @@ function! s:Stream.find(f, ...) abort
   return self.filter(a:f).limit(1).find_first()
 endfunction
 
+function! s:Stream.any_match(f) abort
+  let type = type(a:f)
+  if type is s:t_string
+    let NONE = []
+    return self.filter(a:f).find_first(NONE) isnot NONE
+  elseif type is s:t_func
+    throw 'vital: Stream: any_match(): does not support Funcref yet'
+  else
+    throw 'vital: Stream: any_match(): invalid type argument was given (Funcref or String or Data.Closure)'
+  endif
+endfunction
+
+function! s:Stream.all_match(f) abort
+  let type = type(a:f)
+  if type is s:t_string
+    let NONE = []
+    return self.filter('!map([v:val], '.string(a:f).')[0]').find_first(NONE) is NONE
+  elseif type is s:t_func
+    throw 'vital: Stream: all_match(): does not support Funcref yet'
+  else
+    throw 'vital: Stream: all_match(): invalid type argument was given (Funcref or String or Data.Closure)'
+  endif
+endfunction
+
+function! s:Stream.none_match(f) abort
+  let type = type(a:f)
+  if type is s:t_string
+    let NONE = []
+    return self.filter(a:f).find_first(NONE) is NONE
+  elseif type is s:t_func
+    throw 'vital: Stream: none_match(): does not support Funcref yet'
+  else
+    throw 'vital: Stream: none_match(): invalid type argument was given (Funcref or String or Data.Closure)'
+  endif
+endfunction
+
 function! s:Stream.count() abort
   if self.has_characteristic(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])

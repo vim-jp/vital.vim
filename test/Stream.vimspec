@@ -497,6 +497,30 @@ Describe Stream
     End
   End
 
+  Describe .any_match()
+    It returns boolean value if any elements are matched in stream
+      Assert Equals(Stream.empty().any_match('v:val'), 0)
+      Assert Equals(Stream.of(1,2,3).any_match('v:val > 2'), 1)
+      Assert Equals(Stream.of(1,2,3).any_match('v:val > 3'), 0)
+    End
+  End
+
+  Describe .all_match()
+    It returns boolean value if all elements are matched in stream
+      Assert Equals(Stream.empty().all_match('v:val'), 1)
+      Assert Equals(Stream.of(1,2,3).all_match('v:val > 0'), 1)
+      Assert Equals(Stream.of(1,2,3).all_match('v:val > 1'), 0)
+    End
+  End
+
+  Describe .none_match()
+    It returns boolean value if none elements are matched in stream
+      Assert Equals(Stream.empty().none_match('v:val'), 1)
+      Assert Equals(Stream.of(1,2,3).none_match('v:val > 3'), 1)
+      Assert Equals(Stream.of(1,2,3).none_match('v:val > 2'), 0)
+    End
+  End
+
   Describe .to_list()
     It converts stream to a List
       let s = Stream.of(1,2,3)
