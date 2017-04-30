@@ -237,6 +237,56 @@ function! s:Stream.map(f) abort
   return stream
 endfunction
 
+function! s:Stream.flatmap(f) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = self._characteristics
+  let stream._upstream = self
+  let stream.__end = 0
+  let stream._f = a:f
+  if self.has_characteristic(s:SIZED)
+    function! stream.__take_possible__(n) abort
+      if self.__end
+        throw 'vital: Stream: stream has already been operated upon or closed at filter()'
+      endif
+      let list = []
+      for l in map(self._upstream.__take_possible__(1/0)[0], self._f)
+        if len(l) + len(list) < a:n
+          let list += l
+        else
+          let list += l[: a:n - len(list) - 1]
+          break
+        endif
+      endfor
+      let self.__end = len(list) >= a:n || (self.__estimate_size__() == 0)
+      return [list, !self.__end]
+    endfunction
+  else
+    function! stream.__take_possible__(n) abort
+      if self.__end
+        throw 'vital: Stream: stream has already been operated upon or closed at filter()'
+      endif
+      let list = []
+      while len(list) < a:n
+        for l in map(self._upstream.__take_possible__(a:n)[0], self._f)
+          if len(l) + len(list) < a:n
+            let list += l
+          else
+            let list += l[: a:n - len(list) - 1]
+            break
+          endif
+        endfor
+      endwhile
+      let self.__end = len(list) >= a:n || (self.__estimate_size__() == 0)
+      return [list, !self.__end]
+    endfunction
+  endif
+  " stream count may decrease / be as-is / increase
+  function! stream.__estimate_size__() abort
+    return 1/0
+  endfunction
+  return stream
+endfunction
+
 function! s:Stream.filter(f) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = self._characteristics

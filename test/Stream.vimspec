@@ -429,6 +429,62 @@ Describe Stream
     End
   End
 
+  Describe .flatmap()
+    It flattens mapped stream
+      Assert Equals(Stream.empty().flatmap('[v:val]').to_list(), [])
+
+      Assert Equals(
+        \Stream.iterate(0, 'v:val + 1')
+          \.flatmap('repeat([v:val], v:val)').limit(6).to_list(),
+        \[1,2,2,3,3,3])
+
+      Assert Equals(
+        \Stream.of(1,2,3)
+          \.flatmap('repeat([v:val], v:val)').to_list(),
+        \[1,2,2,3,3,3])
+
+      Assert Equals(
+        \Stream.of(1,2,3)
+          \.flatmap('repeat([v:val], v:val)').limit(6).to_list(),
+        \[1,2,2,3,3,3])
+
+      Assert Equals(
+        \Stream.of(1,2,3,4,5)
+          \.flatmap('repeat([v:val], v:val)').limit(6).to_list(),
+        \[1,2,2,3,3,3])
+
+      Assert Equals(
+        \Stream.of(0,1,2,3,4,5)
+          \.flatmap('v:val % 2 == 0 ? [v:val * 2] : []').limit(3).to_list(),
+        \[0, 4, 8])
+
+      Assert Equals(
+        \Stream.iterate(0, 'v:val + 1')
+          \.flatmap('v:val % 2 == 0 ? [v:val * 2] : []').limit(3).to_list(),
+        \[0, 4, 8])
+    End
+
+    It must not reuse stream
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.flatmap('v:val')
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.flatmap('v:val').to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
+    End
+  End
+
   Describe .filter()
     It filters stream
       Assert Equals(
