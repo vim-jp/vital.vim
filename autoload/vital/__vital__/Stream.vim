@@ -95,12 +95,12 @@ function! s:_new_from_list(list, characteristics, callee) abort
   return stream
 endfunction
 
-function! s:range(start_inclusive, end_exclusive) abort
+function! s:range(start_inclusive, end_inclusive) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics =
   \ s:ORDERED + s:DISTINCT + s:SORTED + s:SIZED + s:IMMUTABLE
   let stream.__index = a:start_inclusive
-  let stream._end_exclusive = a:end_exclusive
+  let stream._end_exclusive = a:end_inclusive + 1
   let stream.__end = 0
   function! stream.__take_possible__(n) abort
     if self.__end
@@ -121,10 +121,6 @@ function! s:range(start_inclusive, end_exclusive) abort
     return max([self._end_exclusive - self.__index, 0])
   endfunction
   return stream
-endfunction
-
-function! s:range_closed(start_inclusive, end_inclusive) abort
-  return s:range(a:start_inclusive, a:end_inclusive + 1)
 endfunction
 
 function! s:iterate(init, f) abort
