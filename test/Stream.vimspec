@@ -521,6 +521,19 @@ Describe Stream
     End
   End
 
+  Describe .sum()
+    It sums elements in stream
+      Assert Equals(Stream.of().sum(), 0)
+      Assert Equals(Stream.of(1,2,3).sum(), 6)
+      try
+        call Stream.iterate(1, 'v:val + 1').sum()
+        Assert 0
+      catch /vital: Stream: sum(): inifinite stream cannot be summed/
+        Assert 1
+      endtry
+    End
+  End
+
   Describe .count()
     It counts elements in stream
       Assert Equals(Stream.of().count(), 0)

@@ -496,6 +496,13 @@ function! s:Stream.none_match(f) abort
   endif
 endfunction
 
+function! s:Stream.sum() abort
+  if !self.has_characteristic(s:SIZED)
+    throw 'vital: Stream: sum(): inifinite stream cannot be summed'
+  endif
+  return self.reduce('v:val[0] + v:val[1]', 0)
+endfunction
+
 function! s:Stream.count() abort
   if self.has_characteristic(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])
