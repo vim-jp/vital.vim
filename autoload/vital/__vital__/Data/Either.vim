@@ -14,9 +14,6 @@ endfunction
 
 " --- private objects --- "
 
-" This value is regarded to an unique value in the future
-let s:_NOTHING = tempname() | lockvar s:_NOTHING
-
 " Return call of Funcref or String expression
 function! s:_get_caller(f) abort
   return type(a:f) is type(function('function'))
@@ -32,23 +29,20 @@ endfunction
 " --- public objects --- "
 
 function! s:left(x) abort
-  return [a:x, s:_NOTHING]
+  return {'either_left_value': a:x}
 endfunction
 
 
 function! s:right(y) abort
-  return [s:_NOTHING, a:y]
+  return {'either_right_value': a:y}
 endfunction
 
 
 function! s:is_left(either) abort
   try
-    " These are named by Pascal Case because it maybe the function
-    let l:MayNotBeRight = a:either[1]
-    "TODO: Test is failed if l:result is removed
-    let l:result = l:MayNotBeRight ==# s:_NOTHING
+    let l:result = has_key(a:either, 'either_left_value')
     return l:result
-  catch /\(E714\|E716\|E691\|E692\|E693\)/
+  catch /E715/
     return 0
   endtry
 endfunction
@@ -56,11 +50,8 @@ endfunction
 
 function! s:is_right(either) abort
   try
-    let l:MayNotBeRight = a:either[0]
-    "TODO: Test is failed if l:result is removed
-    let l:result = l:MayNotBeRight ==# s:_NOTHING
-    return l:result
-  catch /\(E714\|E716\|E691\|E692\|E693\)/
+    return has_key(a:either, 'either_right_value')
+  catch /E715/
     return 0
   endtry
 endfunction
@@ -75,8 +66,7 @@ function! s:unsafe_from_left(either) abort
   if s:is_right(a:either)
     throw 'vital: Data.Either: from_left() cannot be applied by right value'
   endif
-  let [l:X, _] = a:either
-  return l:X
+  return a:either.either_left_value
 endfunction
 
 
@@ -84,8 +74,7 @@ function! s:unsafe_from_right(either) abort
   if s:is_left(a:either)
     throw 'vital: Data.Either: from_right() cannot be applied by left value'
   endif
-  let [_, l:Y] = a:either
-  return l:Y
+  return a:either.either_right_value
 endfunction
 
 
