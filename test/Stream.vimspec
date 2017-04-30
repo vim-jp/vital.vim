@@ -534,6 +534,26 @@ Describe Stream
     End
   End
 
+  Describe .average()
+    It averages elements in stream
+      try
+        Assert Equals(Stream.of().average(), 0)
+        Assert 0
+      catch /vital: Stream: average(): empty stream cannot be averaged/
+        Assert 1
+      endtry
+      Assert Equals(Stream.of(2).average(), 2)
+      Assert Equals(Stream.of(1,2,3).average(), 2)
+      Assert Equals(Stream.of(-5,0,5).average(), 0)
+      try
+        call Stream.iterate(1, 'v:val + 1').average()
+        Assert 0
+      catch /vital: Stream: average(): inifinite stream cannot be averaged/
+        Assert 1
+      endtry
+    End
+  End
+
   Describe .count()
     It counts elements in stream
       Assert Equals(Stream.of().count(), 0)

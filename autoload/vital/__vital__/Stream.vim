@@ -503,6 +503,17 @@ function! s:Stream.sum() abort
   return self.reduce('v:val[0] + v:val[1]', 0)
 endfunction
 
+function! s:Stream.average() abort
+  if !self.has_characteristic(s:SIZED)
+    throw 'vital: Stream: average(): inifinite stream cannot be averaged'
+  endif
+  let n = self.__estimate_size__()
+  if n == 0
+    throw 'vital: Stream: average(): empty stream cannot be averaged'
+  endif
+  return self.reduce('v:val[0] + v:val[1]', 0) / n
+endfunction
+
 function! s:Stream.count() abort
   if self.has_characteristic(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])
