@@ -403,8 +403,9 @@ Describe Stream
 
   Describe .map()
     It maps stream
-      let s = Stream.iterate(1, 'v:val + 1')
-      Assert Equals(s.map('v:val + 1').limit(3).to_list(), [2,3,4])
+      Assert Equals(
+      \ Stream.iterate(1, 'v:val + 1').map('v:val + 1').limit(3).to_list(),
+      \ [2,3,4])
     End
 
     It must not reuse stream
@@ -430,8 +431,9 @@ Describe Stream
 
   Describe .filter()
     It filters stream
-      let s = Stream.iterate(0, 'v:val + 1')
-      Assert Equals(s.filter('v:val % 2 == 0').limit(3).to_list(), [0,2,4])
+      Assert Equals(
+      \ Stream.iterate(0, 'v:val + 1').filter('v:val % 2 == 0').limit(3).to_list(),
+      \ [0,2,4])
     End
 
     It must not reuse stream
