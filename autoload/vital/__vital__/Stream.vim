@@ -359,13 +359,13 @@ function! s:Stream.drop_while(f) abort
 endfunction
 
 function! s:Stream.limit(n) abort
+  if a:n < 0
+    throw 'vital: Stream: limit(n): n must be 0 or positive'
+  endif
   let stream = deepcopy(s:Stream)
   let stream._characteristics = or(self._characteristics, s:SIZED)
   let stream._upstream = self
   let stream.__end = 0
-  if a:n < 0
-    throw 'vital: Stream: limit(n): n must be 0 or positive'
-  endif
   let stream._n = a:n
   function! stream.__take_possible__(...) abort
     if self.__end
@@ -384,13 +384,13 @@ endfunction
 " if stream.__n is greater than 0, the stream is skipping.
 " otherwise not skipping (just return given list from upstream)
 function! s:Stream.skip(n) abort
+  if a:n < 0
+    throw 'vital: Stream: skip(n): n must be 0 or positive'
+  endif
   let stream = deepcopy(s:Stream)
   let stream._characteristics = or(self._characteristics, s:SIZED)
   let stream._upstream = self
   let stream.__end = 0
-  if a:n < 0
-    throw 'vital: Stream: skip(n): n must be 0 or positive'
-  endif
   let stream.__n = a:n
   function! stream.__take_possible__(n) abort
     if self.__end
