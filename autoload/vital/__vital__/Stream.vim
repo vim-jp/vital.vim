@@ -1,7 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-
 let s:t_number = 0
 let s:t_string = 1
 let s:t_func = 2
@@ -261,7 +260,7 @@ function! s:Stream.filter(f) abort
   return stream
 endfunction
 
-" 'n' may be 1/0, so when upstream is inifinite stream,
+" __take_possible__(n): n may be 1/0, so when upstream is inifinite stream,
 " 'self._upstream.__take_possible__(n)' does not stop
 " unless .limit(n) was specified in downstream.
 " But regardless of whether .limit(n) was specified,
@@ -379,6 +378,8 @@ function! s:Stream.limit(n) abort
   return stream
 endfunction
 
+" if stream.__n is greater than 0, the stream is skipping.
+" otherwise not skipping (just return given list from upstream)
 function! s:Stream.skip(n) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = or(self._characteristics, s:SIZED)
