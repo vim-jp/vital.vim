@@ -524,6 +524,18 @@ Describe Stream
     End
   End
 
+  Describe .distinct()
+    It dedupes elements in stream
+      Assert Equals(Stream.of().distinct().to_list(), [])
+      Assert Equals(Stream.of(1,2,3).distinct().to_list(), [1,2,3])
+      Assert Equals(Stream.of(1,1,2,2,3).distinct().to_list(), [1,2,3])
+      Assert Equals(Stream.of(1,2,3,2,3).distinct().to_list(), [1,2,3])
+      Assert Equals(Stream.of(3,1,2).distinct().to_list(), [3,1,2])
+      Assert Equals(Stream.of(3,3,1,1,2).distinct().to_list(), [3,1,2])
+      Assert Equals(Stream.of(3,1,2,1,2).distinct().to_list(), [3,1,2])
+    End
+  End
+
   Describe .sorted()
     Before all
       function! ByDesc(a, b) abort

@@ -358,6 +358,40 @@ function! s:Stream.drop_while(f) abort
   return stream
 endfunction
 
+function! s:Stream.distinct() abort
+  if !self.has_characteristic(s:SIZED)
+    throw 'vital: Stream: distinct(): inifinite stream cannot be distinct'
+  endif
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = or(self._characteristics, s:DISTINCT)
+  let stream._upstream = self
+  let stream.__end = 0
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
+    endif
+    let [list, open] = self._upstream.__take_possible__(a:n)
+    if self.has_characteristic(s:SORTED)
+      let uniq_list = uniq(list)
+    else
+      let dup = {}
+      let uniq_list = []
+      for Value in list
+        if !has_key(dup, Value)
+          let uniq_list += [Value]
+          let dup[Value] = 1
+        endif
+      endfor
+    endif
+    let self.__end = !open
+    return [uniq_list, open]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return self._upstream.__estimate_size__()
+  endfunction
+  return stream
+endfunction
+
 function! s:Stream.sorted(...) abort
   if !self.has_characteristic(s:SIZED)
     throw 'vital: Stream: sorted(): inifinite stream cannot be sorted'
