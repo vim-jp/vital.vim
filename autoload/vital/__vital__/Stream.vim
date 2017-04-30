@@ -358,10 +358,13 @@ endfunction
 
 function! s:Stream.limit(n) abort
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = s:ORDERED + s:SIZED + s:IMMUTABLE
+  let stream._characteristics = or(self._characteristics, s:SIZED)
   let stream._upstream = self
   let stream.__end = 0
-  let stream._n = max([a:n, 0])
+  if a:n < 0
+    throw 'vital: Stream: limit(n): n must be 0 or positive'
+  endif
+  let stream._n = a:n
   function! stream.__take_possible__(...) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at limit()'
