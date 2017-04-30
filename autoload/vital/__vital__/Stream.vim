@@ -388,7 +388,7 @@ function! s:Stream.skip(n) abort
     throw 'vital: Stream: skip(n): n must be 0 or positive'
   endif
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = or(self._characteristics, s:SIZED)
+  let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
   let stream.__n = a:n

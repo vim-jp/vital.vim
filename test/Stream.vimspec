@@ -380,21 +380,6 @@ Describe Stream
       endtry
     End
 
-    It sets SIZED characteristic
-      let s = Stream.of(3,4,5,6,7).skip(3)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
-      let s = Stream.iterate(1, 'v:val + 1').skip(3)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
-    End
-
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
