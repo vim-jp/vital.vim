@@ -521,10 +521,17 @@ Describe Stream
     End
   End
 
+  Describe .count()
+    It counts elements in stream
+      Assert Equals(Stream.of().count(), 0)
+      Assert Equals(Stream.of(1,2,3).count(), 3)
+      Assert Equals(Stream.iterate(1, 'v:val + 1').count(), 1/0)
+    End
+  End
+
   Describe .to_list()
     It converts stream to a List
-      let s = Stream.of(1,2,3)
-      Assert Equals(s.to_list(), [1,2,3])
+      Assert Equals(Stream.of(1,2,3).to_list(), [1,2,3])
 
       " Must not reuse stream
       try
