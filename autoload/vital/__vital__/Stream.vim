@@ -196,11 +196,17 @@ function! s:concat(s1, s2) abort
     \                 self._s2.__estimate_size__() == 0)
     return [list, !self.__end]
   endfunction
-  function! stream.__estimate_size__() abort
-    let size1 = self._s1.__estimate_size__()
-    let size2 = self._s2.__estimate_size__()
-    return size1 + size2 >= size1 ? size1 + size2 : 1/0
-  endfunction
+  if stream._s1.has_characteristic(s:SIZED) && stream._s2.has_characteristic(s:SIZED)
+    function! stream.__estimate_size__() abort
+      let size1 = self._s1.__estimate_size__()
+      let size2 = self._s2.__estimate_size__()
+      return size1 + size2 >= size1 ? size1 + size2 : 1/0
+    endfunction
+  else
+    function! stream.__estimate_size__() abort
+      return 1/0
+    endfunction
+  endif
   return stream
 endfunction
 
