@@ -84,7 +84,9 @@ function! s:_new_from_list(list, characteristics, callee) abort
       \     . self._callee
     endif
     " max(): fix overflow
-    let list = self._list[self.__index : max([self.__index + a:n - 1, a:n - 1])]
+    let n = max([self.__index + a:n - 1, a:n - 1])
+    " min(): https://github.com/vim-jp/issues/issues/1049
+    let list = self._list[self.__index : min([n, len(self._list) - 1])]
     let self.__index = max([self.__index + a:n, a:n])
     let self.__end = (self.__estimate_size__() == 0)
     return [list, !self.__end]
@@ -253,7 +255,8 @@ function! s:Stream.flatmap(f) abort
         if len(l) + len(list) < a:n
           let list += l
         else
-          let list += l[: a:n - len(list) - 1]
+          " min(): https://github.com/vim-jp/issues/issues/1049
+          let list += l[: min([a:n - len(list) - 1, len(l) - 1])]
           break
         endif
       endfor
@@ -271,7 +274,8 @@ function! s:Stream.flatmap(f) abort
           if len(l) + len(list) < a:n
             let list += l
           else
-            let list += l[: a:n - len(list) - 1]
+            " min(): https://github.com/vim-jp/issues/issues/1049
+            let list += l[: min([a:n - len(list) - 1, len(l) - 1])]
             break
           endif
         endfor
@@ -384,7 +388,8 @@ function! s:Stream.drop_while(f) abort
       for i in range(len(r))
         if !map([r[i]], self._f)[0]
           let self.__skipping = 0
-          let list = r[i :]
+          " min(): https://github.com/vim-jp/issues/issues/1049
+          let list = r[min([i, len(r)]) :]
           break
         endif
       endfor
