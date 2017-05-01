@@ -410,6 +410,9 @@ function! s:Stream.drop_while(f) abort
 endfunction
 
 function! s:Stream.distinct() abort
+  if self.has_characteristic(s:DISTINCT)
+    return self
+  endif
   let stream = deepcopy(s:Stream)
   let stream._characteristics = or(self._characteristics, s:DISTINCT)
   let stream._upstream = self
@@ -444,6 +447,9 @@ function! s:Stream.sorted(...) abort
   if !self.has_characteristic(s:SIZED)
     throw 'vital: Stream: sorted(): inifinite stream cannot be sorted'
   endif
+  if self.has_characteristic(s:SORTED)
+    return self
+  endif
   let stream = deepcopy(s:Stream)
   let stream._characteristics = or(self._characteristics, s:SORTED)
   let stream._upstream = self
@@ -467,6 +473,9 @@ endfunction
 function! s:Stream.limit(n) abort
   if a:n < 0
     throw 'vital: Stream: limit(n): n must be 0 or positive'
+  endif
+  if a:n == 0
+    return s:empty()
   endif
   let stream = deepcopy(s:Stream)
   let stream._characteristics = or(self._characteristics, s:SIZED)
@@ -492,6 +501,9 @@ endfunction
 function! s:Stream.skip(n) abort
   if a:n < 0
     throw 'vital: Stream: skip(n): n must be 0 or positive'
+  endif
+  if a:n == 0
+    return self
   endif
   let stream = deepcopy(s:Stream)
   let stream._characteristics = self._characteristics

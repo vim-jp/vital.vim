@@ -300,13 +300,6 @@ Describe Stream
   End
 
   Describe .limit()
-    It limits stream
-      Assert Equals(Stream.of(1,2,3,4,5).limit(0).to_list(), [])
-      Assert Equals(Stream.of(1,2,3,4,5).limit(3).to_list(), [1,2,3])
-      Assert Equals(Stream.of(3,4,5,6,7).limit(3).to_list(), [3,4,5])
-      Assert Equals(Stream.iterate(1, 'v:val + 1').limit(3).to_list(), [1,2,3])
-    End
-
     It raises negative number argument
       try
         call Stream.of(1,2,3,4,5).limit(-1)
@@ -320,6 +313,13 @@ Describe Stream
       catch /vital: Stream: limit(n): n must be 0 or positive/
         Assert 0
       endtry
+    End
+
+    It limits stream
+      Assert Equals(Stream.of(1,2,3,4,5).limit(0).to_list(), [])
+      Assert Equals(Stream.of(1,2,3,4,5).limit(3).to_list(), [1,2,3])
+      Assert Equals(Stream.of(3,4,5,6,7).limit(3).to_list(), [3,4,5])
+      Assert Equals(Stream.iterate(1, 'v:val + 1').limit(3).to_list(), [1,2,3])
     End
 
     It sets SIZED characteristic
@@ -359,12 +359,6 @@ Describe Stream
   End
 
   Describe .skip()
-    It limits stream
-      Assert Equals(Stream.of(1,2,3,4,5).skip(3).to_list(), [4,5])
-      Assert Equals(Stream.of(3,4,5,6,7).skip(3).to_list(), [6,7])
-      Assert Equals(Stream.iterate(1, 'v:val + 1').skip(3).limit(3).to_list(), [4,5,6])
-    End
-
     It raises negative number argument
       try
         call Stream.of(1,2,3,4,5).skip(-1)
@@ -378,6 +372,13 @@ Describe Stream
       catch /vital: Stream: skip(n): n must be 0 or positive/
         Assert 0
       endtry
+    End
+
+    It limits stream
+      Assert Equals(Stream.of(1,2,3,4,5).skip(0).to_list(), [1,2,3,4,5])
+      Assert Equals(Stream.of(1,2,3,4,5).skip(3).to_list(), [4,5])
+      Assert Equals(Stream.of(3,4,5,6,7).skip(3).to_list(), [6,7])
+      Assert Equals(Stream.iterate(1, 'v:val + 1').skip(3).limit(3).to_list(), [4,5,6])
     End
 
     It must not reuse stream
