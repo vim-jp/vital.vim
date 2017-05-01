@@ -17,13 +17,16 @@ INTRODUCTION				*Vital.Data.Either-introduction*
 
 *Vital.Data.Either* is representation of left/right value. This is like a
 Either in Haskell. The "left value" means invalid value in most case. The
-"right value" means valid value in most case. But it can be used evenly. The
-"either" has either "left value" or "right value". The "either" has neither
-"left value" or "right value".
+"right value" means valid value in most case. But it can be used evenly.
+Either simply holds one of two different structures
 
-The "either" follows "monad", "applicative" and "functor" behavior. For
-example, |Vital.Data.Either.join()| doesn't extract the either value to mere
-value.
+The
+"either" has either "left value" or "right value". The "either" doesn't have
+both "left value" and "right value".
+
+The "either" follows behavior of "monad", "applicative", and "functor". For
+example, |Vital.Data.Either.join()| doesn't extract the either value to its
+mere value.
 >
 	let x = E.right(E.right(10))
 	echo E.join(x)  " Right(10)
@@ -62,7 +65,7 @@ right({value})				*Vital.Data.Either.right()*
 
 
 return({value})				*Vital.Data.Either.return()*
-	This is the alias of |Vital.Data.Either.right()| for "monad" behavior.
+	This is an alias of |Vital.Data.Either.right()| for monadic behavior.
 
 
 is_left({either})			*Vital.Data.Either.is_left()*
@@ -115,27 +118,37 @@ map({either}, {f})			*Vital.Data.Either.map()*
 
 apply({either_func}, {either_values}...)		*Vital.Data.Either.apply()*
 	{either_func} is a function that is wraped by
-	|Vital.Data.Either.right()|or some {left} value. {either_func} is a
+	|Vital.Data.Either.right()|or some {left} value. {either_values} is a
 	value that is wraped by |Vital.Data.Either.right()|or some {left}
 	value. If {either_func} is {left} value or {either_values} has {left}
 	value, return first left element. If {either_func} and all
-	{either_values} is {right}, extract {either_func} to mere function,
-	extract {either_values} to mere values, apply the mere value to the
-	mere function, and wrap the result by |Vital.Data.Either.right()|. And
-	return it.
+	{either_values} is {right}, extract {either_func} to its mere function,
+	extract {either_values} to its mere values, apply the mere value to
+	the mere function, and wrap the result by |Vital.Data.Either.right()|.
+	And return it.
 >
+	" Apply a right value to a right func
 	let either_func = E.right('v:val + 1')
 	let either_value = E.right(10)
 	echo E.apply(either_func, either_value)  " Right(11)
 
+	" Apply two right values to a right func
+	let either_func = {x, y -> x + y}
+	let either_value_x = E.right(10)
+	let either_value_y = E.right(20)
+	echo E.apply(either_func, either_value_x, either_value_y)
+
+	" Don't apply a right value to a "left" func
 	let either_func = E.left(something)
 	let either_value = E.right(10)
 	echo E.apply(either_func, either_value)  " Left(something)
 
+	" Don't apply a "left" value to a right func
 	let either_func = E.right({x -> x + 1})
 	let either_value = E.left(something)
 	echo E.apply(either_func, either_value)  " Left(something)
 
+	" Return first left if both is left
 	let either_func = E.left(something_x)
 	let either_value = E.left(something_y)
 	echo E.apply(either_func, either_value)  " Left(something_x)
@@ -185,7 +198,7 @@ bind({either}, {karrow})		*Vital.Data.Either.bind()*
 <
 
 flatmap({either}, {f})		*Vital.Data.Either.flatmap()*
-	This is the alias of |Vital.Data.Either.bind()|. Please see
+	This is an alias of |Vital.Data.Either.bind()|. Please see
 	|Vital.Data.Either.bind()| about this.
 
 
