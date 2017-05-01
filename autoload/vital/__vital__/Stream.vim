@@ -147,11 +147,7 @@ function! s:iterate(init, f) abort
 endfunction
 
 function! s:generate(f) abort
-  let type = type(a:f)
-  return s:iterate(
-  \ type is s:t_func ? a:f() :
-  \ type is s:t_string ? eval(a:f) : 0,
-  \ a:f)
+  return s:iterate(map([a:f], a:f)[0], a:f)
 endfunction
 
 function! s:zip(s1, s2) abort
