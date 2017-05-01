@@ -716,10 +716,23 @@ Describe Stream
 
   Describe .reduce()
     It reduces stream
-      " Default {init} value is 0
-      Assert Equals(Stream.empty().reduce('v:val'), 0)
       Assert Equals(Stream.empty().reduce('v:val', 42), 42)
       Assert Equals(Stream.of(1,2,3,4,5).reduce('v:val[0] + v:val[1]', 0), 15)
+    End
+  End
+
+  Describe .reduce_present()
+    It raises exception for empty stream
+      try
+        call Stream.empty().reduce_present('v:val')
+        Assert 0
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 1
+      endtry
+    End
+
+    It reduces stream
+      Assert Equals(Stream.of(1,2,3,4,5).reduce_present('v:val[0] + v:val[1]'), 15)
     End
   End
 
