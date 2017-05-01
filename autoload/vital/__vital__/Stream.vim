@@ -61,7 +61,7 @@ endfunction
 
 function! s:lines(str, ...) abort
   let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
-  let lines = a:str == '' ? [] : split(a:str, '\n', 1)
+  let lines = a:str ==# '' ? [] : split(a:str, '\n', 1)
   return s:_new_from_list(lines, characteristics, 'lines()')
 endfunction
 
@@ -96,7 +96,7 @@ function! s:_new_from_list(list, characteristics, callee) abort
     " min(): https://github.com/vim-jp/issues/issues/1049
     let list = self._list[self.__index : min([n, len(self._list) - 1])]
     let self.__index = max([self.__index + a:n, a:n])
-    let self.__end = (self.__estimate_size__() == 0)
+    let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
@@ -124,7 +124,7 @@ function! s:range(start_inclusive, end_inclusive) abort
     let end = max([min([take_n, end_exclusive]), e727_fix])
     let list = range(self.__index, end)
     let self.__index = end + 1
-    let self.__end = self.__estimate_size__() == 0
+    let self.__end = self.__estimate_size__() ==# 0
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
@@ -174,7 +174,7 @@ function! s:zip(s1, s2) abort
     let l2 = self._s2.__take_possible__(a:n)[0]
     let smaller = min([len(l1), len(l2)])
     let list = map(range(smaller), '[l1[v:val], l2[v:val]]')
-    let self.__end = (self.__estimate_size__() == 0)
+    let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
@@ -200,8 +200,8 @@ function! s:concat(s1, s2) abort
     if len(list) < a:n && self._s2.__estimate_size__() > 0
       let list += self._s2.__take_possible__(a:n - len(list))[0]
     endif
-    let self.__end = (self._s1.__estimate_size__() == 0 &&
-    \                 self._s2.__estimate_size__() == 0)
+    let self.__end = (self._s1.__estimate_size__() ==# 0 &&
+    \                 self._s2.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
   if stream._s1.has_characteristic(s:SIZED) && stream._s2.has_characteristic(s:SIZED)
@@ -236,7 +236,7 @@ function! s:Stream.map(f) abort
       throw 'vital: Stream: stream has already been operated upon or closed at map()'
     endif
     let list = map(self._upstream.__take_possible__(a:n)[0], self._f)
-    let self.__end = (self.__estimate_size__() == 0)
+    let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
@@ -266,7 +266,7 @@ function! s:Stream.flatmap(f) abort
           break
         endif
       endfor
-      let self.__end = len(list) >= a:n || (self.__estimate_size__() == 0)
+      let self.__end = len(list) >= a:n || (self.__estimate_size__() ==# 0)
       return [list, !self.__end]
     endfunction
   else
@@ -286,7 +286,7 @@ function! s:Stream.flatmap(f) abort
           endif
         endfor
       endwhile
-      let self.__end = len(list) >= a:n || (self.__estimate_size__() == 0)
+      let self.__end = len(list) >= a:n || (self.__estimate_size__() ==# 0)
       return [list, !self.__end]
     endfunction
   endif
@@ -481,7 +481,7 @@ function! s:Stream.limit(n) abort
   if a:n < 0
     throw 'vital: Stream: limit(n): n must be 0 or positive'
   endif
-  if a:n == 0
+  if a:n ==# 0
     return s:empty()
   endif
   let stream = deepcopy(s:Stream)
@@ -494,7 +494,7 @@ function! s:Stream.limit(n) abort
       throw 'vital: Stream: stream has already been operated upon or closed at limit()'
     endif
     let list = self._n > 0 ? self._upstream.__take_possible__(self._n)[0] : []
-    let self.__end = (self.__estimate_size__() == 0)
+    let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
@@ -509,7 +509,7 @@ function! s:Stream.skip(n) abort
   if a:n < 0
     throw 'vital: Stream: skip(n): n must be 0 or positive'
   endif
-  if a:n == 0
+  if a:n ==# 0
     return self
   endif
   let stream = deepcopy(s:Stream)
@@ -527,7 +527,7 @@ function! s:Stream.skip(n) abort
       let self.__n = 0
     endif
     let list = []
-    if self.__n == 0
+    if self.__n ==# 0
       let [list, open] = self._upstream.__take_possible__(a:n)
     endif
     let self.__end = !open
@@ -581,7 +581,7 @@ endfunction
 
 " XXX: This lets Vim dump core! phew!
 function! s:Stream.max_by(f, ...) abort
-  if self.__estimate_size__() == 0
+  if self.__estimate_size__() ==# 0
     return get(a:000, 0, 0)
   endif
   let type = type(a:f)
@@ -607,7 +607,7 @@ endfunction
 
 " XXX: This lets Vim dump core! phew!
 function! s:Stream.min_by(f, ...) abort
-  if self.__estimate_size__() == 0
+  if self.__estimate_size__() ==# 0
     return get(a:000, 0, 0)
   endif
   let type = type(a:f)
@@ -678,7 +678,7 @@ endfunction
 
 function! s:Stream.average() abort
   let n = self.__estimate_size__()
-  if n == 0
+  if n ==# 0
     throw 'vital: Stream: average(): empty stream cannot be average()d'
   endif
   return self.reduce('v:val[0] + v:val[1]', 0) / n
@@ -696,7 +696,7 @@ function! s:Stream.to_list() abort
 endfunction
 
 function! s:_get_present_list_or_throw(stream, size, default, callee) abort
-  if a:stream.__estimate_size__() == 0
+  if a:stream.__estimate_size__() ==# 0
     let list = []
   else
     let list = a:stream.__take_possible__(a:size)[0]
