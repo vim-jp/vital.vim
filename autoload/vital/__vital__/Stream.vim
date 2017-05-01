@@ -173,7 +173,7 @@ function! s:zip(s1, s2, ...) abort
     let smaller = min(map(copy(lists), 'len(v:val)'))
     " lists = [[1,2,3], [4,5,6]], list = [[1,4], [2,5], [3,6]]
     " let list = map(range(smaller), '[lists[0][v:val], lists[1][v:val], ...]')
-    let expr = '['.join(map(range(len(lists)), '"lists[".v:val."][v:val]"'), ',').']'
+    let expr = '['.join(map(range(len(lists)), '''lists[''.v:val.''][v:val]'''), ',').']'
     let list = map(range(smaller), expr)
     let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
