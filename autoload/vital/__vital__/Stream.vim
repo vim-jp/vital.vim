@@ -343,13 +343,13 @@ function! s:Stream.take_while(f) abort
     let open = (self._upstream.__estimate_size__() > 0)
     while !do_break
       let [r, open] = self._upstream.__take_possible__(self._BUFSIZE)
-      for Value in (a:n > 0 ? r : [])
-        if !map([Value], self._f)[0]
+      for l:Value in (a:n > 0 ? r : [])
+        if !map([l:Value], self._f)[0]
           let open = 0
           let do_break = 1
           break
         endif
-        let list += [Value]
+        let list += [l:Value]
         if len(list) >= a:n
           " requested number of elements was obtained,
           " but this stream is not closed for next call
@@ -437,10 +437,10 @@ function! s:Stream.distinct() abort
     else
       let dup = {}
       let uniq_list = []
-      for Value in list
-        if !has_key(dup, Value)
-          let uniq_list += [Value]
-          let dup[Value] = 1
+      for l:Value in list
+        if !has_key(dup, l:Value)
+          let uniq_list += [l:Value]
+          let dup[l:Value] = 1
         endif
       endfor
     endif
@@ -558,20 +558,20 @@ function! s:Stream.concat(stream) abort
 endfunction
 
 function! s:Stream.reduce(f, ...) abort
-  let Result = get(a:000, 0, 0)
+  let l:Result = get(a:000, 0, 0)
   let type = type(a:f)
   if type is s:t_string
-    for Value in self.__take_possible__(self.__estimate_size__())[0]
-      let Result = map([[Result, Value]], a:f)[0]
+    for l:Value in self.__take_possible__(self.__estimate_size__())[0]
+      let l:Result = map([[l:Result, l:Value]], a:f)[0]
     endfor
   elseif type is s:t_func
-    for Value in self.__take_possible__(self.__estimate_size__())[0]
-      let Result = a:f(Result, Value)
+    for l:Value in self.__take_possible__(self.__estimate_size__())[0]
+      let l:Result = a:f(l:Result, l:Value)
     endfor
   else
     throw 'vital: Stream: reduce(): invalid type argument was given (Funcref or String or Data.Closure)'
   endif
-  return Result
+  return l:Result
 endfunction
 
 function! s:Stream.max(...) abort
