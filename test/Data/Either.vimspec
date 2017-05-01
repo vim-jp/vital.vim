@@ -1,6 +1,6 @@
 Describe Data.Either
   Before all
-    let Either   = vital#vital#new().import('Data.Either')
+    let Either   = vital#vital#import('Data.Either')
     let s:Either = Either
   End
 
