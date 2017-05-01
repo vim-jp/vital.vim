@@ -305,7 +305,49 @@ Describe Stream
 
     It constructs stream from String with characteristics
       " Use or() for SIZED flag. Use and() for other flags
+      let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6))
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
       let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3))
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+
+    It constructs stream with 3 or more than streams
+      Assert Equals(
+          \Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9))
+                \.to_list(),
+          \[[1,4,7], [2,5,8], [3,6,9]])
+
+      Assert Equals(
+          \Stream.zip(Stream.of(1), Stream.of(4,5,6), Stream.of(7,8,9))
+                \.to_list(),
+          \[[1,4,7]])
+
+      Assert Equals(
+          \Stream.zip(
+              \Stream.iterate(1, 'v:val + 1'),
+              \Stream.of(4,5,6),
+              \Stream.of(7,8,9)).to_list(),
+          \[[1,4,7], [2,5,8], [3,6,9]])
+    End
+
+    It constructs stream with 3 or more than streams with characteristics
+      " Use or() for SIZED flag. Use and() for other flags
+      let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9))
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3), Stream.of(4,5,6))
       Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
       Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
       Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
@@ -474,6 +516,35 @@ Describe Stream
       unlet s
     End
   End
+
+  " Describe .peek()
+  "   It peeks stream
+  "     let g:peek = []
+  "     call Stream.of(1,2,3).peek('let g:peek += [<VAL>]').to_list()
+  "     Assert Equals(g:peek, [1,2,3])
+  "     unlet g:peek
+  "   End
+  "
+  "   It must not reuse stream
+  "     try
+  "       let s = Stream.of(1,2,3,4,5)
+  "       call s.to_list()
+  "       call s.peek('echo')
+  "       Assert 1
+  "     catch
+  "       Assert 0
+  "     endtry
+  "     try
+  "       let s = Stream.of(1,2,3,4,5)
+  "       call s.to_list()
+  "       call s.peek('echo').to_list()
+  "       Assert 0
+  "     catch
+  "       Assert 1
+  "     endtry
+  "     unlet s
+  "   End
+  " End
 
   Describe .map()
     It maps stream

@@ -159,29 +159,39 @@ function! s:generate(f) abort
   return s:iterate(map([a:f], a:f)[0], a:f)
 endfunction
 
-function! s:zip(s1, s2) abort
+function! s:zip(s1, s2, ...) abort
   let stream = deepcopy(s:Stream)
-  " Use or() for SIZED flag. Use and() for other flags
-  let stream._characteristics = and(a:s1._characteristics, a:s2._characteristics)
-  let stream._characteristics = or(stream._characteristics, and(or(a:s1._characteristics, a:s2._characteristics), s:SIZED))
+  let stream._characteristics =
+  \ s:_zip_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
   let stream.__end = 0
-  let stream._s1 = a:s1
-  let stream._s2 = a:s2
+  let stream._streams = [a:s1, a:s2] + a:000
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at zip()'
     endif
-    let l1 = self._s1.__take_possible__(a:n)[0]
-    let l2 = self._s2.__take_possible__(a:n)[0]
-    let smaller = min([len(l1), len(l2)])
-    let list = map(range(smaller), '[l1[v:val], l2[v:val]]')
+    let lists = map(copy(self._streams), 'v:val.__take_possible__(a:n)[0]')
+    let smaller = min(map(copy(lists), 'len(v:val)'))
+    " lists = [[1,2,3], [4,5,6]], list = [[1,4], [2,5], [3,6]]
+    " let list = map(range(smaller), '[lists[0][v:val], lists[1][v:val], ...]')
+    let expr = '['.join(map(range(len(lists)), '"lists[".v:val."][v:val]"'), ',').']'
+    let list = map(range(smaller), expr)
     let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
-    return min([self._s1.__estimate_size__(), self._s2.__estimate_size__()])
+    return min(map(copy(self._streams), 'v:val.__estimate_size__()'))
   endfunction
   return stream
+endfunction
+
+" Use or() for SIZED flag. Use and() for other flags
+function! s:_zip_characteristics(characteristics_list) abort
+  if len(a:characteristics_list) <= 1
+    return a:characteristics_list[0]
+  endif
+  let [c1, c2; others] = a:characteristics_list
+  let result = or(and(c1, c2), and(or(c1, c2), s:SIZED))
+  return s:_zip_characteristics([result] + others)
 endfunction
 
 function! s:concat(s1, s2) abort
