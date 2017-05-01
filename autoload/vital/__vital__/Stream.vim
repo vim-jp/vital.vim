@@ -2,6 +2,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:NONE = []
+lockvar! s:NONE
 
 let s:t_number = 0
 let s:t_string = 1
@@ -639,8 +640,7 @@ endfunction
 function! s:Stream.any_match(f) abort
   let type = type(a:f)
   if type is s:t_string
-    let NONE = []
-    return self.filter(a:f).find_first(NONE) isnot NONE
+    return self.filter(a:f).find_first(s:NONE) isnot s:NONE
   elseif type is s:t_func
     throw 'vital: Stream: any_match(): does not support Funcref yet'
   else
@@ -651,8 +651,7 @@ endfunction
 function! s:Stream.all_match(f) abort
   let type = type(a:f)
   if type is s:t_string
-    let NONE = []
-    return self.filter('!map([v:val], '.string(a:f).')[0]').find_first(NONE) is NONE
+    return self.filter('!map([v:val], '.string(a:f).')[0]').find_first(s:NONE) is s:NONE
   elseif type is s:t_func
     throw 'vital: Stream: all_match(): does not support Funcref yet'
   else
@@ -663,8 +662,7 @@ endfunction
 function! s:Stream.none_match(f) abort
   let type = type(a:f)
   if type is s:t_string
-    let NONE = []
-    return self.filter(a:f).find_first(NONE) is NONE
+    return self.filter(a:f).find_first(s:NONE) is s:NONE
   elseif type is s:t_func
     throw 'vital: Stream: none_match(): does not support Funcref yet'
   else
