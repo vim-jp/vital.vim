@@ -519,7 +519,6 @@ Describe Stream
 
   Describe .peek()
     It peeks stream
-      Skip "not implemented yet"
       let g:peek = []
       Assert Equals(Stream.of(1,2,3).peek('add(g:peek, v:val)').to_list(), [1,2,3])
       Assert Equals(g:peek, [1,2,3])
@@ -527,7 +526,6 @@ Describe Stream
     End
 
     It must not reuse stream
-      Skip "not implemented yet"
       try
         let s = Stream.of(1,2,3,4,5)
         call s.to_list()

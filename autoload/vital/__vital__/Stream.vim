@@ -236,6 +236,27 @@ function! s:Stream.has_characteristic(flag) abort
   return !!and(self._characteristics, a:flag)
 endfunction
 
+function! s:Stream.peek(f) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = self._characteristics
+  let stream._upstream = self
+  let stream.__end = 0
+  let stream._f = a:f
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed at peek()'
+    endif
+    let list = self._upstream.__take_possible__(a:n)[0]
+    call map(copy(list), self._f)
+    let self.__end = (self.__estimate_size__() ==# 0)
+    return [list, !self.__end]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return self._upstream.__estimate_size__()
+  endfunction
+  return stream
+endfunction
+
 function! s:Stream.map(f) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = self._characteristics
