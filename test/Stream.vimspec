@@ -675,16 +675,6 @@ Describe Stream
   End
 
   Describe .sorted()
-    Before all
-      function! ByDesc(a, b) abort
-        return a:a > a:b ? -1 : a:a ==# a:b ? 0 : 1
-      endfunction
-    End
-
-    After all
-      delfunction ByDesc
-    End
-
     It sorts elements in stream
       Assert Equals(Stream.of().sorted().to_list(), [])
       Assert Equals(Stream.of(2,1,3).sorted().to_list(), [1,2,3])
@@ -695,13 +685,14 @@ Describe Stream
     End
 
     It sorts elements by function in stream
-      Assert Equals(Stream.of().sorted('ByDesc').to_list(), [])
-      Assert Equals(Stream.of(2,1,3).sorted('ByDesc').to_list(), [3,2,1])
-      Assert Equals(Stream.of(2,1,3,2,1).sorted('ByDesc').to_list(), [3,2,2,1,1])
-      Assert Equals(Stream.of(2,1,3).sorted(function('ByDesc')).to_list(), [3,2,1])
+      let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
+      Assert Equals(Stream.of().sorted(by_desc).to_list(), [])
+      Assert Equals(Stream.of(2,1,3).sorted(by_desc).to_list(), [3,2,1])
+      Assert Equals(Stream.of(2,1,3,2,1).sorted(by_desc).to_list(), [3,2,2,1,1])
       Assert Equals(
-      \ Stream.iterate(1, 'v:val + 1').limit(3).sorted('ByDesc').to_list(),
+      \ Stream.iterate(1, 'v:val + 1').limit(3).sorted(by_desc).to_list(),
       \ [3,2,1])
+      unlet by_desc
     End
 
     It sets SORTED characteristic

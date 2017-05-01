@@ -462,15 +462,25 @@ function! s:Stream.sorted(...) abort
   let stream._characteristics = or(self._characteristics, s:SORTED)
   let stream._upstream = self
   let stream.__end = 0
-  let stream._sort_args = a:000
+  if a:0
+    let stream._call = s:_get_callfunc_for_func2(a:1, 'sorted()')
+    let stream._comparator = a:1
+  endif
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
     endif
     let [list, open] = self._upstream.__take_possible__(a:n)
-    let sorted = call('sort', [list] + self._sort_args)
+    if has_key(self, '_comparator')
+      let sorted = sort(list, self.__compare__, self)
+    else
+      let sorted = sort(list)
+    endif
     let self.__end = !open
     return [sorted, open]
+  endfunction
+  function! stream.__compare__(a, b) abort
+    return self._call(self._comparator, [a:a, a:b])
   endfunction
   function! stream.__estimate_size__() abort
     return self._upstream.__estimate_size__()
