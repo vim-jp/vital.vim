@@ -158,7 +158,9 @@ endfunction
 
 function! s:zip(s1, s2) abort
   let stream = deepcopy(s:Stream)
+  " Use or() for SIZED flag. Use and() for other flags
   let stream._characteristics = and(a:s1._characteristics, a:s2._characteristics)
+  let stream._characteristics = or(stream._characteristics, and(or(a:s1._characteristics, a:s2._characteristics), s:SIZED))
   let stream.__end = 0
   let stream._s1 = a:s1
   let stream._s2 = a:s2

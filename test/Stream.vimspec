@@ -3,6 +3,18 @@ Describe Stream
     let Stream = vital#vital#new().import('Stream')
   End
 
+  Describe .has_characteristic()
+    It checks if the stream has certain characteristic
+      let s = Stream.from_list([], Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+  End
+
   Describe .of()
     It constructs stream from arguments
       Assert Equals(Stream.of().count(), 0)
@@ -12,10 +24,20 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3).count(), 3)
       Assert Equals(Stream.of(1,2,3).to_list(), [1,2,3])
     End
+
+    It creates stream with characteristics
+      let s = Stream.of(1,2,3)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
   End
 
   Describe .chars()
-    It constructs stream from String
+    It constructs stream of each character from String
       Assert Equals(Stream.chars("").count(), 0)
       Assert Equals(Stream.chars("").to_list(), [])
       Assert Equals(Stream.chars("a").count(), 1)
@@ -23,7 +45,8 @@ Describe Stream
       Assert Equals(Stream.chars("abc").count(), 3)
       Assert Equals(Stream.chars("abc").to_list(), ['a', 'b', 'c'])
     End
-    It constructs stream from String with characteristics
+
+    It constructs stream of each character from String with characteristics
       let s = Stream.chars("abc", 0)
       Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
       Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
@@ -41,7 +64,7 @@ Describe Stream
   End
 
   Describe .lines()
-    It constructs stream from String
+    It constructs stream of each line from String
       Assert Equals(Stream.lines("").to_list(), [])
       Assert Equals(Stream.lines("foo").to_list(), ['foo'])
       Assert Equals(Stream.lines("foo\nbar").to_list(), ['foo', 'bar'])
@@ -51,7 +74,8 @@ Describe Stream
       Assert Equals(Stream.lines("foo\nbar\n").to_list(), ['foo', 'bar', ''])
       Assert Equals(Stream.lines("foo\nbar\n\n").to_list(), ['foo', 'bar', '', ''])
     End
-    It constructs stream from String with characteristics
+
+    It constructs stream of each line from String with characteristics
       let s = Stream.lines("abc", 0)
       Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
       Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
@@ -77,6 +101,17 @@ Describe Stream
       Assert Equals(Stream.from_list([1,2,3]).count(), 3)
       Assert Equals(Stream.from_list([1,2,3]).to_list(), [1,2,3])
     End
+
+    It creates stream with characteristics
+      let s = Stream.from_list([1,2,3])
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+
     It constructs stream from List with characteristics
       let s = Stream.from_list([1,2,3], 0)
       Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
@@ -107,6 +142,17 @@ Describe Stream
       \ sort(Stream.from_dict({"foo": 1, "bar": 3, "baz": 2}).to_list()),
       \ [["bar", 3], ["baz", 2], ["foo", 1]])
     End
+
+    It creates stream with characteristics
+      let s = Stream.from_dict({"foo": 1, "bar": 3, "baz": 2})
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+
     It constructs stream from Dictionary with characteristics
       let s = Stream.from_list({"foo": 1}, 0)
       Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
@@ -129,55 +175,8 @@ Describe Stream
       Assert Equals(Stream.empty().count(), Stream.of().count())
       Assert Equals(Stream.empty().to_list(), Stream.of().to_list())
     End
-  End
 
-  Describe .has_characteristic()
-    It checks if Stream.of(...) has certain characteristic
-      let s = Stream.of(1,2,3)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
-      unlet s
-    End
-    It checks if Stream.from_list(...) has certain characteristic
-      let s = Stream.from_list([1,2,3])
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
-      unlet s
-    End
-    It checks if Stream.from_dict(...) has certain characteristic
-      let s = Stream.from_dict({"foo": 1, "bar": 3, "baz": 2})
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
-      unlet s
-    End
-    It checks if Stream.iterate(...) has certain characteristic
-      let s = Stream.iterate(1, 'v:val + 1')
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
-      unlet s
-    End
-    It checks if Stream.range(...) has certain characteristic
-      let s = Stream.range(1,10)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
-      unlet s
-    End
-    It checks if Stream.empty(...) has certain characteristic
+    It creates stream with characteristics
       let s = Stream.empty()
       Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
       Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
@@ -203,6 +202,7 @@ Describe Stream
       \   Stream.range(1, 4).to_list(),
       \   [1,2,3,4])
     End
+
     It constructs limited range when .limit() was specified
       Assert Equals(
       \   Stream.range(1, 1/0).limit(5).to_list(),
@@ -210,6 +210,16 @@ Describe Stream
       Assert Equals(
       \   Stream.range(5, 1/0).limit(5).to_list(),
       \   [5,6,7,8,9])
+    End
+
+    It creates stream with characteristics
+      let s = Stream.range(1,10)
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
     End
   End
 
@@ -221,6 +231,16 @@ Describe Stream
       Assert Equals(
       \   Stream.iterate(5, 'v:val + 1').limit(3).to_list(),
       \   [5,6,7])
+    End
+
+    It creates stream with characteristics
+      let s = Stream.iterate(1, 'v:val + 1')
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
     End
   End
 
@@ -276,10 +296,22 @@ Describe Stream
         \.limit(5).to_list(),
         \[[1,5], [2,4], [3,3], [4,2], [5,1]])
     End
+
     It constructs infinite stream with function
       Assert Equals(
         \Stream.of(1,2,3).zip(Stream.of(4,5,6)).to_list(),
         \[[1,4], [2,5], [3,6]])
+    End
+
+    It constructs stream from String with characteristics
+      " Use or() for SIZED flag. Use and() for other flags
+      let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3))
+      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      unlet s
     End
   End
 
@@ -320,6 +352,7 @@ Describe Stream
         \.limit(5).to_list(),
         \[1,2,3,4,5])
     End
+
     It constructs infinite stream with function (method version)
       Assert Equals(
         \Stream.of(1,2,3).concat(Stream.of(4,5)).to_list(),
