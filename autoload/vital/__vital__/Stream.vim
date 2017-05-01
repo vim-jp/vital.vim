@@ -322,11 +322,11 @@ function! s:Stream.filter(f) abort
   return stream
 endfunction
 
-" __take_possible__(n): n may be 1/0, so when upstream is inifinite stream,
+" __take_possible__(n): n may be 1/0, so when upstream is infinite stream,
 " 'self._upstream.__take_possible__(n)' does not stop
 " unless .limit(n) was specified in downstream.
 " But regardless of whether .limit(n) was specified,
-" this method must stop for even upstream is inifinite stream.
+" this method must stop for even upstream is infinite stream.
 function! s:Stream.take_while(f) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = self._characteristics
@@ -454,9 +454,6 @@ function! s:Stream.distinct() abort
 endfunction
 
 function! s:Stream.sorted(...) abort
-  if !self.has_characteristic(s:SIZED)
-    throw 'vital: Stream: sorted(): inifinite stream cannot be sorted'
-  endif
   if self.has_characteristic(s:SORTED)
     return self
   endif
@@ -676,19 +673,13 @@ function! s:Stream.none_match(f) abort
 endfunction
 
 function! s:Stream.sum() abort
-  if !self.has_characteristic(s:SIZED)
-    throw 'vital: Stream: sum(): inifinite stream cannot be summed'
-  endif
   return self.reduce('v:val[0] + v:val[1]', 0)
 endfunction
 
 function! s:Stream.average() abort
-  if !self.has_characteristic(s:SIZED)
-    throw 'vital: Stream: average(): inifinite stream cannot be averaged'
-  endif
   let n = self.__estimate_size__()
   if n == 0
-    throw 'vital: Stream: average(): empty stream cannot be averaged'
+    throw 'vital: Stream: average(): empty stream cannot be average()d'
   endif
   return self.reduce('v:val[0] + v:val[1]', 0) / n
 endfunction

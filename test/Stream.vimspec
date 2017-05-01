@@ -692,12 +692,6 @@ Describe Stream
       Assert Equals(
       \ Stream.iterate(3, 'v:val - 1').limit(3).sorted().to_list(),
       \ [1,2,3])
-      try
-        call Stream.iterate(3, 'v:val - 1').sorted()
-        Assert 0
-      catch /vital: Stream: sorted(): inifinite stream cannot be sorted/
-        Assert 1
-      endtry
     End
 
     It sorts elements by function in stream
@@ -708,12 +702,6 @@ Describe Stream
       Assert Equals(
       \ Stream.iterate(1, 'v:val + 1').limit(3).sorted('ByDesc').to_list(),
       \ [3,2,1])
-      try
-        call Stream.iterate(1, 'v:val + 1').sorted('ByDesc')
-        Assert 0
-      catch /vital: Stream: sorted(): inifinite stream cannot be sorted/
-        Assert 1
-      endtry
     End
 
     It sets SORTED characteristic
@@ -864,12 +852,6 @@ Describe Stream
     It sums elements in stream
       Assert Equals(Stream.of().sum(), 0)
       Assert Equals(Stream.of(1,2,3).sum(), 6)
-      try
-        call Stream.iterate(1, 'v:val + 1').sum()
-        Assert 0
-      catch /vital: Stream: sum(): inifinite stream cannot be summed/
-        Assert 1
-      endtry
     End
   End
 
@@ -878,18 +860,12 @@ Describe Stream
       try
         Assert Equals(Stream.of().average(), 0)
         Assert 0
-      catch /vital: Stream: average(): empty stream cannot be averaged/
+      catch /vital: Stream: average(): empty stream cannot be average()d/
         Assert 1
       endtry
       Assert Equals(Stream.of(2).average(), 2)
       Assert Equals(Stream.of(1,2,3).average(), 2)
       Assert Equals(Stream.of(-5,0,5).average(), 0)
-      try
-        call Stream.iterate(1, 'v:val + 1').average()
-        Assert 0
-      catch /vital: Stream: average(): inifinite stream cannot be averaged/
-        Assert 1
-      endtry
     End
   End
 
