@@ -414,9 +414,6 @@ function! s:Stream.drop_while(f) abort
 endfunction
 
 function! s:Stream.distinct() abort
-  if !self.has_characteristic(s:SIZED)
-    throw 'vital: Stream: distinct(): inifinite stream cannot be distinct'
-  endif
   let stream = deepcopy(s:Stream)
   let stream._characteristics = or(self._characteristics, s:DISTINCT)
   let stream._upstream = self
