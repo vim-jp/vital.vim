@@ -3,8 +3,7 @@ set cpo&vim
 
 
 function! s:_vital_loaded(V) abort
-  let s:V = a:V
-  let s:List = s:V.import('Data.List')
+  let s:List = a:V.import('Data.List')
 endfunction
 
 function! s:_vital_depends() abort
@@ -42,7 +41,7 @@ function! s:is_left(either) abort
   try
     let l:result = has_key(a:either, 'either_left_value')
     return l:result
-  catch /E715/
+  catch /^Vim\%((\a\+)\)\=:E715/
     return 0
   endtry
 endfunction
@@ -51,7 +50,7 @@ endfunction
 function! s:is_right(either) abort
   try
     return has_key(a:either, 'either_right_value')
-  catch /E715/
+  catch /^Vim\%((\a\+)\)\=:E715/
     return 0
   endtry
 endfunction
