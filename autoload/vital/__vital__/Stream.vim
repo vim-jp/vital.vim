@@ -52,9 +52,15 @@ function! s:of(...) abort
   return s:_new_from_list(a:000, s:ORDERED + s:SIZED + s:IMMUTABLE, 'of()')
 endfunction
 
-function! s:from_chars(str, ...) abort
+function! s:chars(str, ...) abort
   let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
-  return s:_new_from_list(split(a:str, '\zs'), characteristics, 'from_chars()')
+  return s:_new_from_list(split(a:str, '\zs'), characteristics, 'chars()')
+endfunction
+
+function! s:lines(str, ...) abort
+  let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
+  let lines = a:str == '' ? [] : split(a:str, '\n', 1)
+  return s:_new_from_list(lines, characteristics, 'lines()')
 endfunction
 
 function! s:from_list(list, ...) abort
