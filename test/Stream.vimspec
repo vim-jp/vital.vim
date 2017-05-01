@@ -744,11 +744,21 @@ Describe Stream
   End
 
   Describe .max_by()
+    It raises exception for empty stream
+      try
+        call Stream.empty().max_by('v:val')
+        Assert 0
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 1
+      endtry
+      try
+        Assert Equals(Stream.empty().max_by('v:val', 42), 42)
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 0
+      endtry
+    End
+
     It returns max value by function in stream
-      Skip "this test kills Vim! (Vim 8.0.0586)"
-      " Default {init} value is 0
-      Assert Equals(Stream.empty().max_by('v:val'), 0)
-      Assert Equals(Stream.empty().max_by('v:val', 42), 42)
       Assert Equals(Stream.of('aaa', 'bb', '').max_by('len(v:val)'), 'aaa')
     End
   End
@@ -774,11 +784,21 @@ Describe Stream
   End
 
   Describe .min_by()
+    It raises exception for empty stream
+      try
+        call Stream.empty().min_by('v:val')
+        Assert 0
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 1
+      endtry
+      try
+        Assert Equals(Stream.empty().min_by('v:val', 42), 42)
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 0
+      endtry
+    End
+
     It returns min value by function in stream
-      Skip "this test kills Vim! (Vim 8.0.0586)"
-      " Default {init} value is 0
-      Assert Equals(Stream.empty().min_by('v:val'), 0)
-      Assert Equals(Stream.empty().min_by('v:val', 42), 42)
       Assert Equals(Stream.of('aaa', 'bb', '').min_by('len(v:val)'), '')
     End
   End

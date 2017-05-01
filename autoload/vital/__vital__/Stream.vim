@@ -572,25 +572,18 @@ function! s:Stream.max(...) abort
   \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'max()'))
 endfunction
 
-" XXX: This lets Vim dump core! phew!
 function! s:Stream.max_by(f, ...) abort
-  if self.__estimate_size__() ==# 0
-    return get(a:000, 0, 0)
-  endif
-  let type = type(a:f)
-  if type is s:t_string
-    return self.reduce(
-    \ 'v:val[0][1] >= map([v:val[1]], a:f)[0] ? '
-    \       . 'v:val[0] : [v:val[1], map([v:val[1]], a:f)[0]]',
-    \ ['', -1/0])[0]
-  elseif type is s:t_func
-    return self.reduce(
-    \ 'v:val[0][1] >= a:f(v:val[1]) ? '
-    \       . 'v:val[0] : [v:val[1], a:f(v:val[1])]',
-    \ ['', -1/0])[0]
-  else
-    throw 'vital: Stream: max_by(): invalid type argument was given (Funcref or String or Data.Closure)'
-  endif
+  let l:Call = s:_get_callfunc_for_func1(a:f, 'max_by()')
+  let list = s:_get_present_list_or_throw(
+  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'max_by()')
+  let result = [list[0], l:Call(a:f, [list[0]])]
+  for l:Value in list[1:]
+    let n = l:Call(a:f, [l:Value])
+    if n > result[1]
+      let result = [l:Value, n]
+    endif
+  endfor
+  return result[0]
 endfunction
 
 function! s:Stream.min(...) abort
@@ -598,25 +591,18 @@ function! s:Stream.min(...) abort
   \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'min()'))
 endfunction
 
-" XXX: This lets Vim dump core! phew!
 function! s:Stream.min_by(f, ...) abort
-  if self.__estimate_size__() ==# 0
-    return get(a:000, 0, 0)
-  endif
-  let type = type(a:f)
-  if type is s:t_string
-    return self.reduce(
-    \ 'v:val[0][1] <= map([v:val[1]], a:f)[0] ? '
-    \       . 'v:val[0] : [v:val[1], map([v:val[1]], a:f)[0]]',
-    \ ['', 1/0])[0]
-  elseif type is s:t_func
-    return self.reduce(
-    \ 'v:val[0][1] <= a:f(v:val[1]) ? '
-    \       . 'v:val[0] : [v:val[1], a:f(v:val[1])]',
-    \ ['', 1/0])[0]
-  else
-    throw 'vital: Stream: min_by(): invalid type argument was given (Funcref or String or Data.Closure)'
-  endif
+  let l:Call = s:_get_callfunc_for_func1(a:f, 'min_by()')
+  let list = s:_get_present_list_or_throw(
+  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'min_by()')
+  let result = [list[0], l:Call(a:f, [list[0]])]
+  for l:Value in list[1:]
+    let n = l:Call(a:f, [l:Value])
+    if n < result[1]
+      let result = [l:Value, n]
+    endif
+  endfor
+  return result[0]
 endfunction
 
 function! s:Stream.find_first(...) abort
@@ -683,6 +669,26 @@ endfunction
 
 function! s:Stream.to_list() abort
   return self.__take_possible__(self.__estimate_size__())[0]
+endfunction
+
+" Get funcref of call()-ish function to call a:f (arity is 1)
+" (see also s:_call_func1_expr())
+function! s:_get_callfunc_for_func1(f, callee) abort
+  let type = type(a:f)
+  if type is s:t_func
+    return function('call')
+  elseif type is s:t_string
+    return function('s:_call_func1_expr')
+  else
+    " TODO: Support Data.Closure
+    throw 'vital: Stream: ' . a:callee
+    \   . ': invalid type argument was given (expected funcref or string)'
+  endif
+endfunction
+
+" List of one element is passed to v:val
+function! s:_call_func1_expr(expr, args) abort
+  return map(a:args, a:expr)[0]
 endfunction
 
 " Get funcref of call()-ish function to call a:f (arity is 2)
