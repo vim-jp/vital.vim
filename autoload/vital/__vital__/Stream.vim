@@ -1,6 +1,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:NONE = []
+
 let s:t_number = 0
 let s:t_string = 1
 let s:t_func = 2
@@ -576,10 +578,8 @@ function! s:Stream.reduce(f, ...) abort
 endfunction
 
 function! s:Stream.max(...) abort
-  if self.__estimate_size__() == 0
-    return get(a:000, 0, 0)
-  endif
-  return max(self.__take_possible__(self.__estimate_size__())[0])
+  return max(s:_get_present_list_or_throw(
+  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'max()'))
 endfunction
 
 " XXX: This lets Vim dump core! phew!
@@ -604,10 +604,8 @@ function! s:Stream.max_by(f, ...) abort
 endfunction
 
 function! s:Stream.min(...) abort
-  if self.__estimate_size__() == 0
-    return get(a:000, 0, 0)
-  endif
-  return min(self.__take_possible__(self.__estimate_size__())[0])
+  return min(s:_get_present_list_or_throw(
+  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'min()'))
 endfunction
 
 " XXX: This lets Vim dump core! phew!
@@ -632,18 +630,13 @@ function! s:Stream.min_by(f, ...) abort
 endfunction
 
 function! s:Stream.find_first(...) abort
-  let Default = get(a:000, 0, 0)
-  if self.__estimate_size__() == 0
-    return Default
-  endif
-  return get(self.__take_possible__(1)[0], 0, Default)
+  return s:_get_present_list_or_throw(
+  \           self, 1, a:0 ? [a:1] : s:NONE, 'min()')[0]
 endfunction
 
 function! s:Stream.find(f, ...) abort
-  if self.__estimate_size__() == 0
-    return get(a:000, 0, 0)
-  endif
-  return self.filter(a:f).limit(1).find_first()
+  let s = self.filter(a:f).limit(1)
+  return a:0 ? s.find_first(a:1) : s.find_first()
 endfunction
 
 function! s:Stream.any_match(f) abort
@@ -709,6 +702,23 @@ endfunction
 
 function! s:Stream.to_list() abort
   return self.__take_possible__(self.__estimate_size__())[0]
+endfunction
+
+function! s:_get_present_list_or_throw(stream, size, default, callee) abort
+  if a:stream.__estimate_size__() == 0
+    let list = []
+  else
+    let list = a:stream.__take_possible__(a:size)[0]
+  endif
+  if !empty(list)
+    return list
+  endif
+  if a:default isnot s:NONE
+    return a:default
+  else
+    throw 'vital: Stream: ' . a:callee .
+    \     ': stream is empty and default value was not given'
+  endif
 endfunction
 
 

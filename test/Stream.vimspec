@@ -736,10 +736,21 @@ Describe Stream
   End
 
   Describe .max()
+    It raises exception for empty stream
+      try
+        call Stream.empty().max()
+        Assert 0
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 1
+      endtry
+      try
+        Assert Equals(Stream.empty().max(42), 42)
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 0
+      endtry
+    End
+
     It returns max value in stream
-      " Default {init} value is 0
-      Assert Equals(Stream.empty().max(), 0)
-      Assert Equals(Stream.empty().max(42), 42)
       Assert Equals(Stream.of(1,2,3,4,5).max(), 5)
     End
   End
@@ -755,10 +766,21 @@ Describe Stream
   End
 
   Describe .min()
+    It raises exception for empty stream
+      try
+        call Stream.empty().min()
+        Assert 0
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 1
+      endtry
+      try
+        Assert Equals(Stream.empty().min(42), 42)
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 0
+      endtry
+    End
+
     It returns min value in stream
-      " Default {init} value is 0
-      Assert Equals(Stream.empty().min(), 0)
-      Assert Equals(Stream.empty().min(42), 42)
       Assert Equals(Stream.of(1,2,3,4,5).min(), 1)
     End
   End
@@ -774,20 +796,42 @@ Describe Stream
   End
 
   Describe .find_first()
+    It raises exception for empty stream
+      try
+        call Stream.empty().find_first()
+        Assert 0
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 1
+      endtry
+      try
+        Assert Equals(Stream.empty().find_first(42), 42)
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 0
+      endtry
+    End
+
     It returns the first element in stream
-      " Default {init} value is 0
-      Assert Equals(Stream.empty().find_first(), 0)
-      Assert Equals(Stream.empty().find_first(42), 42)
       Assert Equals(Stream.of('aaa', 'bb', '').find_first(), 'aaa')
       Assert Equals(Stream.iterate(1, 'v:val + 1').filter('v:val % 2 == 0').limit(1).find_first(), 2)
     End
   End
 
   Describe .find()
+    It raises exception for empty stream
+      try
+        call Stream.empty().find('v:val')
+        Assert 0
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 1
+      endtry
+      try
+        Assert Equals(Stream.empty().find('v:val', 42), 42)
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 0
+      endtry
+    End
+
     It returns the first element matching with given predicate function in stream
-      " Default {init} value is 0
-      Assert Equals(Stream.empty().find('v:val'), 0)
-      Assert Equals(Stream.empty().find('v:val', 42), 42)
       Assert Equals(Stream.iterate(1, 'v:val + 1').find('v:val % 2 == 0'), 2)
     End
   End
