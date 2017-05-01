@@ -139,6 +139,10 @@ Describe Data.Either
       endfunction
     End
 
+    After all
+      delfunction Succ
+    End
+
     It maps content to a right value
       Assert Equals(Either.map(Either.right(10), function('Succ')), Either.right(11))
       Assert Equals(Either.map(Either.right(10), 'v:val + 1'), Either.right(11))
@@ -147,10 +151,6 @@ Describe Data.Either
     It doesn't map content to a left value
       Assert Equals(Either.map(Either.left(0), function('Succ')), Either.left(0))
       Assert Equals(Either.map(Either.left(0), 'v:val + 1'), Either.left(0))
-    End
-
-    After all
-      delfunction Succ
     End
   End
 
@@ -165,7 +165,12 @@ Describe Data.Either
       endfunction
     End
 
-    It applies a right function to right values
+    After all
+      delfunction Succ
+      delfunction Plus
+    End
+
+    It applies right values to a right function
       let right_func_x = Either.right(function('Succ'))
       let right_func_y = Either.right('v:val + 1')
       let right_func_z = Either.right(function('Plus'))
@@ -175,7 +180,7 @@ Describe Data.Either
       Assert Equals(Either.apply(right_func_z, Either.right(10), Either.right(20)), Either.right(30))
     End
 
-    It doesn't apply a right function to left values
+    It doesn't apply left values to a right function
       let right_func_x = Either.right(function('Succ'))
       let right_func_y = Either.right('v:val + 1')
       let right_func_z = Either.right(function('Plus'))
@@ -188,7 +193,7 @@ Describe Data.Either
       Assert Equals(Either.apply(right_func_z, right_value, left_value), left_value)
     End
 
-    It doesn't apply a left function to right values and left values
+    It doesn't apply right values and left values to a left function
       let left_func_x = Either.left(function('Succ'))
       let left_func_y = Either.left('v:val + 1')
       let left_func_z = Either.left(function('Plus'))
@@ -201,11 +206,6 @@ Describe Data.Either
       Assert Equals(Either.apply(left_func_z, Either.left(10),  Either.right(20)), left_func_z)
       Assert Equals(Either.apply(left_func_z, Either.right(10), Either.left(20)),  left_func_z)
       Assert Equals(Either.apply(left_func_z, Either.left(10),  Either.left(20)),  left_func_z)
-    End
-
-    After all
-      delfunction Succ
-      delfunction Plus
     End
   End
 
@@ -237,6 +237,10 @@ Describe Data.Either
       endfunction
     End
 
+    After all
+      delfunction LiftSucc
+    End
+
     It applies a lift function to a right value
       let right = Either.right(10)
       Assert Equals(Either.bind(right, function('LiftSucc')), Either.right(11))
@@ -245,10 +249,6 @@ Describe Data.Either
     It doesn't apply a lift function to a left value
       let left = Either.left(10)
       Assert Equals(Either.bind(left, function('LiftSucc')), left)
-    End
-
-    After all
-      delfunction LiftSucc
     End
   End
 
@@ -259,16 +259,16 @@ Describe Data.Either
       endfunction
     End
 
+    After all
+      delfunction LiftSucc
+    End
+
     It is same as .bind()
       let left  = Either.left(10)
       let right = Either.right(20)
 
       Assert Equals(Either.flatmap(left, function('LiftSucc')), Either.bind(left, function('LiftSucc')))
       Assert Equals(Either.flatmap(right, function('LiftSucc')), Either.bind(right, function('LiftSucc')))
-    End
-
-    After all
-      delfunction LiftSucc
     End
   End
 
@@ -326,6 +326,14 @@ Describe Data.Either
       endfunction
     End
 
+    After all
+      delfunction LiftSuccOfEither
+      delfunction LiftToStringOfEither
+      delfunction TestLeftIdLaw
+      delfunction TestRightIdLaw
+      delfunction TestAssocLaw
+    End
+
     It satisfies left identity law
       Assert True(TestLeftIdLaw(Either))
     End
@@ -336,14 +344,6 @@ Describe Data.Either
 
     It satisfies associative law
       Assert True(TestAssocLaw(Either))
-    End
-
-    After all
-      delfunction LiftSuccOfEither
-      delfunction LiftToStringOfEither
-      delfunction TestLeftIdLaw
-      delfunction TestRightIdLaw
-      delfunction TestAssocLaw
     End
   End
 End
