@@ -550,6 +550,10 @@ function! s:Stream.zip(stream) abort
   return s:zip(self, a:stream)
 endfunction
 
+function! s:Stream.zip_with_index() abort
+  return s:zip(s:iterate(0, 'v:val + 1'), self)
+endfunction
+
 function! s:Stream.concat(stream) abort
   return s:concat(self, a:stream)
 endfunction
