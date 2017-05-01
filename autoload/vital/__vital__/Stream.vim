@@ -559,19 +559,11 @@ function! s:Stream.concat(stream) abort
 endfunction
 
 function! s:Stream.reduce(f, ...) abort
+  let l:Call = s:_get_callfunc_for_func2(a:f, 'reduce()')
   let l:Result = get(a:000, 0, 0)
-  let type = type(a:f)
-  if type is s:t_string
-    for l:Value in self.__take_possible__(self.__estimate_size__())[0]
-      let l:Result = map([[l:Result, l:Value]], a:f)[0]
-    endfor
-  elseif type is s:t_func
-    for l:Value in self.__take_possible__(self.__estimate_size__())[0]
-      let l:Result = a:f(l:Result, l:Value)
-    endfor
-  else
-    throw 'vital: Stream: reduce(): invalid type argument was given (Funcref or String or Data.Closure)'
-  endif
+  for l:Value in self.__take_possible__(self.__estimate_size__())[0]
+    let l:Result = l:Call(a:f, [l:Result, l:Value])
+  endfor
   return l:Result
 endfunction
 
@@ -691,6 +683,26 @@ endfunction
 
 function! s:Stream.to_list() abort
   return self.__take_possible__(self.__estimate_size__())[0]
+endfunction
+
+" Get funcref of call()-ish function to call a:f (arity is 2)
+" (see also s:_call_func2_expr())
+function! s:_get_callfunc_for_func2(f, callee) abort
+  let type = type(a:f)
+  if type is s:t_func
+    return function('call')
+  elseif type is s:t_string
+    return function('s:_call_func2_expr')
+  else
+    " TODO: Support Data.Closure
+    throw 'vital: Stream: ' . a:callee
+    \   . ': invalid type argument was given (expected funcref or string)'
+  endif
+endfunction
+
+" List of two elements is passed to v:val
+function! s:_call_func2_expr(expr, args) abort
+  return map([a:args], a:expr)[0]
 endfunction
 
 function! s:_get_present_list_or_throw(stream, size, default, callee) abort
