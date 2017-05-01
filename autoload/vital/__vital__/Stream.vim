@@ -702,6 +702,10 @@ function! s:Stream.to_list() abort
   return self.__take_possible__(self.__estimate_size__())[0]
 endfunction
 
+function! s:Stream.foreach(f) abort
+  call self.map(a:f).to_list()
+endfunction
+
 " Get funcref of call()-ish function to call a:f (arity is 1)
 " (see also s:_call_func1_expr())
 function! s:_get_callfunc_for_func1(f, callee) abort

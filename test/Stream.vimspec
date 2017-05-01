@@ -517,34 +517,64 @@ Describe Stream
     End
   End
 
-  " Describe .peek()
-  "   It peeks stream
-  "     let g:peek = []
-  "     call Stream.of(1,2,3).peek('let g:peek += [<VAL>]').to_list()
-  "     Assert Equals(g:peek, [1,2,3])
-  "     unlet g:peek
-  "   End
-  "
-  "   It must not reuse stream
-  "     try
-  "       let s = Stream.of(1,2,3,4,5)
-  "       call s.to_list()
-  "       call s.peek('echo')
-  "       Assert 1
-  "     catch
-  "       Assert 0
-  "     endtry
-  "     try
-  "       let s = Stream.of(1,2,3,4,5)
-  "       call s.to_list()
-  "       call s.peek('echo').to_list()
-  "       Assert 0
-  "     catch
-  "       Assert 1
-  "     endtry
-  "     unlet s
-  "   End
-  " End
+  Describe .peek()
+    It peeks stream
+      Skip "not implemented yet"
+      let g:peek = []
+      Assert Equals(Stream.of(1,2,3).peek('add(g:peek, v:val)').to_list(), [1,2,3])
+      Assert Equals(g:peek, [1,2,3])
+      unlet g:peek
+    End
+
+    It must not reuse stream
+      Skip "not implemented yet"
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.peek('v:val')
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.peek('v:val').to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
+    End
+  End
+
+  Describe .foreach()
+    It iterates elements in stream
+      let g:foreach = []
+      Assert Equals(Stream.of(1,2,3).foreach('add(g:foreach, v:val)'), 0)
+      Assert Equals(g:foreach, [1,2,3])
+      unlet g:foreach
+    End
+
+    It must not reuse stream
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.foreach('v:val')
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.foreach('v:val')
+        call s.foreach('v:val')
+        Assert 0
+      catch
+        Assert 1
+      endtry
+      unlet s
+    End
+  End
 
   Describe .map()
     It maps stream
