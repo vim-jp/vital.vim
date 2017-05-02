@@ -215,7 +215,7 @@ function! s:concat(s1, s2) abort
     \                 self._s2.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
-  if stream._s1.has_characteristic(s:SIZED) && stream._s2.has_characteristic(s:SIZED)
+  if stream._s1.has_characteristics(s:SIZED) && stream._s2.has_characteristics(s:SIZED)
     function! stream.__estimate_size__() abort
       let size1 = self._s1.__estimate_size__()
       let size2 = self._s2.__estimate_size__()
@@ -232,8 +232,16 @@ endfunction
 
 let s:Stream = {}
 
-function! s:Stream.has_characteristic(flag) abort
-  return !!and(self._characteristics, a:flag)
+function! s:Stream.has_characteristics(flags) abort
+  let flags = type(a:flags) isnot s:t_list ? [a:flags] : a:flags
+  if empty(flags)
+    return 0
+  endif
+  let c = flags[0]
+  for flag in flags[1:]
+    let c = or(c, flag)
+  endfor
+  return !!and(self._characteristics, c)
 endfunction
 
 function! s:Stream.peek(f) abort
@@ -262,12 +270,14 @@ function! s:Stream.map(f) abort
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
+  let stream._call = s:_get_callfunc_for_func1(a:f, 'map()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at map()'
     endif
-    let list = map(self._upstream.__take_possible__(a:n)[0], self._f)
+    let list = self._upstream.__take_possible__(a:n)[0]
+    call map(list, 'self._call(self._f, [v:val])')
     let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
@@ -283,7 +293,7 @@ function! s:Stream.flatmap(f) abort
   let stream._upstream = self
   let stream.__end = 0
   let stream._f = a:f
-  if self.has_characteristic(s:SIZED)
+  if self.has_characteristics(s:SIZED)
     function! stream.__take_possible__(n) abort
       if self.__end
         throw 'vital: Stream: stream has already been operated upon or closed at filter()'
@@ -396,7 +406,7 @@ function! s:Stream.take_while(f) abort
     let self.__end = !open
     return [list, open]
   endfunction
-  if self.has_characteristic(s:SIZED)
+  if self.has_characteristics(s:SIZED)
     function! stream.__estimate_size__() abort
       return self._upstream.__estimate_size__()
     endfunction
@@ -439,7 +449,7 @@ function! s:Stream.drop_while(f) abort
     let self.__end = !open
     return [list, open]
   endfunction
-  if self.has_characteristic(s:SIZED)
+  if self.has_characteristics(s:SIZED)
     function! stream.__estimate_size__() abort
       return self._upstream.__estimate_size__()
     endfunction
@@ -452,7 +462,7 @@ function! s:Stream.drop_while(f) abort
 endfunction
 
 function! s:Stream.distinct() abort
-  if self.has_characteristic(s:DISTINCT)
+  if self.has_characteristics(s:DISTINCT)
     return self
   endif
   let stream = deepcopy(s:Stream)
@@ -464,7 +474,7 @@ function! s:Stream.distinct() abort
       throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
     endif
     let [list, open] = self._upstream.__take_possible__(a:n)
-    if self.has_characteristic(s:SORTED)
+    if self.has_characteristics(s:SORTED)
       let uniq_list = uniq(list)
     else
       let dup = {}
@@ -486,7 +496,7 @@ function! s:Stream.distinct() abort
 endfunction
 
 function! s:Stream.sorted(...) abort
-  if self.has_characteristic(s:SORTED)
+  if self.has_characteristics(s:SORTED)
     return self
   endif
   let stream = deepcopy(s:Stream)
@@ -575,7 +585,7 @@ function! s:Stream.skip(n) abort
     let self.__end = !open
     return [list, open]
   endfunction
-  if self.has_characteristic(s:SIZED)
+  if self.has_characteristics(s:SIZED)
     function! stream.__estimate_size__() abort
       return max([self._upstream.__estimate_size__() - self.__n, 0])
     endfunction
@@ -713,7 +723,7 @@ function! s:Stream.average() abort
 endfunction
 
 function! s:Stream.count() abort
-  if self.has_characteristic(s:SIZED)
+  if self.has_characteristics(s:SIZED)
     return len(self.__take_possible__(self.__estimate_size__())[0])
   endif
   return 1/0

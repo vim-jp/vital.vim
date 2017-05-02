@@ -3,14 +3,28 @@ Describe Stream
     let Stream = vital#vital#new().import('Stream')
   End
 
-  Describe .has_characteristic()
+  Describe .has_characteristics()
     It checks if the stream has certain characteristic
       let s = Stream.from_list([], Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
+      unlet s
+    End
+
+    It can check multiple flags at once
+      let s = Stream.from_list([], Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
+      Assert Equals(
+      \ s.has_characteristics([
+      \   Stream.ORDERED(),
+      \   Stream.DISTINCT(),
+      \   Stream.SORTED(),
+      \   Stream.SIZED(),
+      \   Stream.IMMUTABLE()]),
+      \ 1)
+      Assert Equals(Stream.of(1,2,3).has_characteristics([]), 0)
       unlet s
     End
   End
@@ -27,11 +41,11 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.of(1,2,3)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
   End
@@ -48,17 +62,17 @@ Describe Stream
 
     It constructs stream of each character from String with characteristics
       let s = Stream.chars("abc", 0)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 0)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 0)
       let s = Stream.chars("abc", Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
   End
@@ -77,17 +91,17 @@ Describe Stream
 
     It constructs stream of each line from String with characteristics
       let s = Stream.lines("abc", 0)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 0)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 0)
       let s = Stream.lines("abc", Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
   End
@@ -104,27 +118,27 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.from_list([1,2,3])
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
 
     It constructs stream from List with characteristics
       let s = Stream.from_list([1,2,3], 0)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 0)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 0)
       let s = Stream.from_list([1,2,3], Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
   End
@@ -145,27 +159,27 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.from_dict({"foo": 1, "bar": 3, "baz": 2})
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
 
     It constructs stream from Dictionary with characteristics
       let s = Stream.from_list({"foo": 1}, 0)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 0)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 0)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 0)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 0)
       let s = Stream.from_list({"foo": 1}, Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
   End
@@ -178,11 +192,11 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.empty()
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
   End
@@ -214,11 +228,11 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.range(1,10)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 1)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 1)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
   End
@@ -235,11 +249,11 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.iterate(1, 'v:val + 1')
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 0)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 0)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
   End
@@ -306,17 +320,17 @@ Describe Stream
     It constructs stream from String with characteristics
       " Use or() for SIZED flag. Use and() for other flags
       let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6))
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3))
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
 
@@ -342,17 +356,17 @@ Describe Stream
     It constructs stream with 3 or more than streams with characteristics
       " Use or() for SIZED flag. Use and() for other flags
       let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9))
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3), Stream.of(4,5,6))
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       unlet s
     End
   End
@@ -439,17 +453,17 @@ Describe Stream
 
     It sets SIZED characteristic
       let s = Stream.of(3,4,5,6,7).limit(3)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
       let s = Stream.iterate(1, 'v:val + 1').limit(3)
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 0)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 0)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
     End
 
     It must not reuse stream
@@ -796,11 +810,11 @@ Describe Stream
 
     It sets SORTED characteristic
       let s = Stream.of(1,2,3).sorted()
-      Assert Equals(s.has_characteristic(Stream.ORDERED()), 1)
-      Assert Equals(s.has_characteristic(Stream.DISTINCT()), 0)
-      Assert Equals(s.has_characteristic(Stream.SORTED()), 1)
-      Assert Equals(s.has_characteristic(Stream.SIZED()), 1)
-      Assert Equals(s.has_characteristic(Stream.IMMUTABLE()), 1)
+      Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
+      Assert Equals(s.has_characteristics(Stream.DISTINCT()), 0)
+      Assert Equals(s.has_characteristics(Stream.SORTED()), 1)
+      Assert Equals(s.has_characteristics(Stream.SIZED()), 1)
+      Assert Equals(s.has_characteristics(Stream.IMMUTABLE()), 1)
     End
   End
 
