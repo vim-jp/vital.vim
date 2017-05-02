@@ -1289,11 +1289,11 @@ Describe Stream
     End
   End
 
-  Describe .any_match()
+  Describe .any()
     It returns boolean value if any elements are matched in stream
-      Assert Equals(Stream.empty().any_match('v:val'), 0)
-      Assert Equals(Stream.of(1,2,3).any_match('v:val > 2'), 1)
-      Assert Equals(Stream.of(1,2,3).any_match('v:val > 3'), 0)
+      Assert Equals(Stream.empty().any('v:val'), 0)
+      Assert Equals(Stream.of(1,2,3).any('v:val > 2'), 1)
+      Assert Equals(Stream.of(1,2,3).any('v:val > 3'), 0)
     End
 
     It returns boolean value if any elements are matched in stream by funcref
@@ -1304,26 +1304,26 @@ Describe Stream
         return a:n > 3
       endfunction
 
-      Assert Equals(Stream.empty().any_match(function('Id')), 0)
-      Assert Equals(Stream.of(1,2,3).any_match(function('GreaterThan2')), 1)
-      Assert Equals(Stream.of(1,2,3).any_match(function('GreaterThan3')), 0)
+      Assert Equals(Stream.empty().any(function('Id')), 0)
+      Assert Equals(Stream.of(1,2,3).any(function('GreaterThan2')), 1)
+      Assert Equals(Stream.of(1,2,3).any(function('GreaterThan3')), 0)
 
       delfunction GreaterThan2
       delfunction GreaterThan3
     End
 
     It returns boolean value if any elements are matched in stream by Data.Closure
-      Assert Equals(Stream.empty().any_match(Closure.from_expr('a:1')), 0)
-      Assert Equals(Stream.of(1,2,3).any_match(Closure.from_expr('a:1 > 2')), 1)
-      Assert Equals(Stream.of(1,2,3).any_match(Closure.from_expr('a:1 > 3')), 0)
+      Assert Equals(Stream.empty().any(Closure.from_expr('a:1')), 0)
+      Assert Equals(Stream.of(1,2,3).any(Closure.from_expr('a:1 > 2')), 1)
+      Assert Equals(Stream.of(1,2,3).any(Closure.from_expr('a:1 > 3')), 0)
     End
   End
 
-  Describe .all_match()
+  Describe .all()
     It returns boolean value if all elements are matched in stream
-      Assert Equals(Stream.empty().all_match('v:val'), 1)
-      Assert Equals(Stream.of(1,2,3).all_match('v:val > 0'), 1)
-      Assert Equals(Stream.of(1,2,3).all_match('v:val > 1'), 0)
+      Assert Equals(Stream.empty().all('v:val'), 1)
+      Assert Equals(Stream.of(1,2,3).all('v:val > 0'), 1)
+      Assert Equals(Stream.of(1,2,3).all('v:val > 1'), 0)
     End
 
     It returns boolean value if all elements are matched in stream by funcref
@@ -1334,26 +1334,26 @@ Describe Stream
         return a:n > 1
       endfunction
 
-      Assert Equals(Stream.empty().all_match(function('Id')), 1)
-      Assert Equals(Stream.of(1,2,3).all_match(function('GreaterThan0')), 1)
-      Assert Equals(Stream.of(1,2,3).all_match(function('GreaterThan1')), 0)
+      Assert Equals(Stream.empty().all(function('Id')), 1)
+      Assert Equals(Stream.of(1,2,3).all(function('GreaterThan0')), 1)
+      Assert Equals(Stream.of(1,2,3).all(function('GreaterThan1')), 0)
 
       delfunction GreaterThan0
       delfunction GreaterThan1
     End
 
     It returns boolean value if all elements are matched in stream by Data.Closure
-      Assert Equals(Stream.empty().all_match(Closure.from_expr('a:1')), 1)
-      Assert Equals(Stream.of(1,2,3).all_match(Closure.from_expr('a:1 > 0')), 1)
-      Assert Equals(Stream.of(1,2,3).all_match(Closure.from_expr('a:1 > 1')), 0)
+      Assert Equals(Stream.empty().all(Closure.from_expr('a:1')), 1)
+      Assert Equals(Stream.of(1,2,3).all(Closure.from_expr('a:1 > 0')), 1)
+      Assert Equals(Stream.of(1,2,3).all(Closure.from_expr('a:1 > 1')), 0)
     End
   End
 
-  Describe .none_match()
+  Describe .none()
     It returns boolean value if none elements are matched in stream
-      Assert Equals(Stream.empty().none_match('v:val'), 1)
-      Assert Equals(Stream.of(1,2,3).none_match('v:val > 3'), 1)
-      Assert Equals(Stream.of(1,2,3).none_match('v:val > 2'), 0)
+      Assert Equals(Stream.empty().none('v:val'), 1)
+      Assert Equals(Stream.of(1,2,3).none('v:val > 3'), 1)
+      Assert Equals(Stream.of(1,2,3).none('v:val > 2'), 0)
     End
 
     It returns boolean value if none elements are matched in stream by funcref
@@ -1364,18 +1364,18 @@ Describe Stream
         return a:n > 2
       endfunction
 
-      Assert Equals(Stream.empty().none_match(function('Id')), 1)
-      Assert Equals(Stream.of(1,2,3).none_match(function('GreaterThan3')), 1)
-      Assert Equals(Stream.of(1,2,3).none_match(function('GreaterThan2')), 0)
+      Assert Equals(Stream.empty().none(function('Id')), 1)
+      Assert Equals(Stream.of(1,2,3).none(function('GreaterThan3')), 1)
+      Assert Equals(Stream.of(1,2,3).none(function('GreaterThan2')), 0)
 
       delfunction GreaterThan3
       delfunction GreaterThan2
     End
 
     It returns boolean value if none elements are matched in stream by Data.Closure
-      Assert Equals(Stream.empty().none_match(Closure.from_expr('a:1')), 1)
-      Assert Equals(Stream.of(1,2,3).none_match(Closure.from_expr('a:1 > 3')), 1)
-      Assert Equals(Stream.of(1,2,3).none_match(Closure.from_expr('a:1 > 2')), 0)
+      Assert Equals(Stream.empty().none(Closure.from_expr('a:1')), 1)
+      Assert Equals(Stream.of(1,2,3).none(Closure.from_expr('a:1 > 3')), 1)
+      Assert Equals(Stream.of(1,2,3).none(Closure.from_expr('a:1 > 2')), 0)
     End
   End
 
@@ -1623,6 +1623,24 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3).count(), 3)
       Assert Equals(Stream.iterate(1, 'v:val + 1').count(), 1/0)
     End
+
+    It counts elements by predicate function in stream
+      Assert Equals(Stream.of().count('v:val'), 0)
+      Assert Equals(Stream.of(1,2,3).count('v:val % 2 == 0'), 1)
+      Assert Equals(Stream.iterate(1, 'v:val + 1').count('v:val % 2 == 0'), 1/0)
+    End
+
+    It counts elements by predicate function in stream by funcref
+      Assert Equals(Stream.of().count(function('Id')), 0)
+      Assert Equals(Stream.of(1,2,3).count(function('IsEven')), 1)
+      Assert Equals(Stream.iterate(1, 'v:val + 1').count(function('IsEven')), 1/0)
+    End
+
+    It counts elements by predicate function in stream by Data.Closure
+      Assert Equals(Stream.of().count(function('Id')), 0)
+      Assert Equals(Stream.of(1,2,3).count(Closure.from_expr('a:1 % 2 == 0')), 1)
+      Assert Equals(Stream.iterate(1, 'v:val + 1').count(Closure.from_expr('a:1 % 2 == 0')), 1/0)
+    End
   End
 
   Describe .to_list()
@@ -1668,3 +1686,5 @@ Describe Stream
     End
   End
 End
+
+" vim: ft=vim

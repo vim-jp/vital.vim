@@ -1,3 +1,5 @@
+" Java Stream API like streaming library
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -33,16 +35,16 @@ endfunction
 let s:NONE = []
 lockvar! s:NONE
 
-let s:t_number = 0
-let s:t_string = 1
-let s:t_func = 2
-let s:t_list = 3
-let s:t_dict = 4
-let s:t_float = 5
-let s:t_bool = 6
-let s:t_none = 7
-let s:t_job = 8
-let s:t_channel = 9
+let s:T_NUMBER = 0
+let s:T_STRING = 1
+let s:T_FUNC = 2
+let s:T_LIST = 3
+let s:T_DICT = 4
+let s:T_FLOAT = 5
+let s:T_BOOL = 6
+let s:T_NONE = 7
+let s:T_JOB = 8
+let s:T_CHANNEL = 9
 
 let s:ORDERED = 0x01
 let s:DISTINCT = 0x02
@@ -68,17 +70,9 @@ function! s:SIZED() abort
   return s:SIZED
 endfunction
 
-" function! s:NONNULL() abort
-"   return s:NONNULL
-" endfunction
-
 function! s:IMMUTABLE() abort
   return s:IMMUTABLE
 endfunction
-
-" function! s:CONCURRENT() abort
-"   return s:CONCURRENT
-" endfunction
 
 function! s:of(...) abort
   return s:_new_from_list(a:000, s:ORDERED + s:SIZED + s:IMMUTABLE, 'of()')
@@ -340,7 +334,7 @@ endfunction
 let s:Stream = {}
 
 function! s:Stream.has_characteristics(flags) abort
-  let flags = type(a:flags) isnot s:t_list ? [a:flags] : a:flags
+  let flags = type(a:flags) isnot s:T_LIST ? [a:flags] : a:flags
   if empty(flags)
     return 0
   endif
@@ -526,6 +520,7 @@ function! s:Stream.take_while(f) abort
           let do_break = 1
           break
         endif
+        unlet l:Value
       endfor
       if !open
         break
@@ -621,6 +616,7 @@ function! s:Stream.distinct(...) abort
           let uniq_list += [l:Value]
           let dup[key] = 1
         endif
+        unlet l:Value
       endfor
     endif
     let self.__end = !open
@@ -640,7 +636,8 @@ function! s:Stream.sorted(...) abort
   let stream._characteristics = or(self._characteristics, s:SORTED)
   let stream._upstream = self
   let stream.__end = 0
-  " see stream.__take_possible__()
+  " if this key doesn't exist,
+  " sorted list of upstream elements will be set (first time only)
   " let stream.__sorted_list = []
   if a:0
     let stream._call = s:_get_callfunc_for_func2(a:1, 'sorted()')
@@ -762,6 +759,7 @@ function! s:Stream.reduce(f, ...) abort
   let l:Result = list[0]
   for l:Value in list[1:]
     let l:Result = l:Call(a:f, [l:Result, l:Value])
+    unlet l:Value
   endfor
   return l:Result
 endfunction
@@ -781,6 +779,7 @@ function! s:Stream.max_by(f, ...) abort
     if n > result[1]
       let result = [l:Value, n]
     endif
+    unlet l:Value
   endfor
   return result[0]
 endfunction
@@ -800,6 +799,7 @@ function! s:Stream.min_by(f, ...) abort
     if n < result[1]
       let result = [l:Value, n]
     endif
+    unlet l:Value
   endfor
   return result[0]
 endfunction
@@ -814,15 +814,15 @@ function! s:Stream.find(f, ...) abort
   return a:0 ? s.find_first(a:1) : s.find_first()
 endfunction
 
-function! s:Stream.any_match(f) abort
+function! s:Stream.any(f) abort
   return self.filter(a:f).find_first(s:NONE) isnot s:NONE
 endfunction
 
-function! s:Stream.all_match(f) abort
-  return self.filter(s:_not(a:f, 'all_match()')).find_first(s:NONE) is s:NONE
+function! s:Stream.all(f) abort
+  return self.filter(s:_not(a:f, 'all()')).find_first(s:NONE) is s:NONE
 endfunction
 
-function! s:Stream.none_match(f) abort
+function! s:Stream.none(f) abort
   return self.filter(a:f).find_first(s:NONE) is s:NONE
 endfunction
 
@@ -837,6 +837,7 @@ function! s:Stream.group_by(f) abort
   for l:Value in self.to_list()
     let key = l:Call(a:f, [l:Value])
     let l:Result[key] = get(l:Result, key, []) + [l:Value]
+    unlet l:Value
   endfor
   return l:Result
 endfunction
@@ -868,6 +869,7 @@ function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
         \   . '(key: ' . string(key . '') . ')'
       endif
       let l:Result[key] = l:CallVM(a:value_mapper, [l:Value])
+      unlet l:Value
     endfor
   endif
   return l:Result
@@ -885,9 +887,14 @@ function! s:Stream.average() abort
   return self.reduce('v:val[0] + v:val[1]', 0) / n
 endfunction
 
-function! s:Stream.count() abort
+function! s:Stream.count(...) abort
   if self.has_characteristics(s:SIZED)
-    return len(self.to_list())
+    if a:0
+      let l:Call = s:_get_callfunc_for_func1(a:1, 'count()')
+      return len(filter(self.to_list(), 'l:Call(a:1, [v:val])'))
+    else
+      return len(self.to_list())
+    endif
   endif
   return 1/0
 endfunction
@@ -905,9 +912,9 @@ function! s:_not(f, callee) abort
     return a:f.compose('=!a:1')
   endif
   let type = type(a:f)
-  if type is s:t_func
+  if type is s:T_FUNC
     return '!' . string(a:f) . '(v:val)'
-  elseif type is s:t_string
+  elseif type is s:T_STRING
     return '!map([v:val], ' . string(a:f) . ')[0]'
   else
     throw 'vital: Stream: ' . a:callee
@@ -923,9 +930,9 @@ function! s:_get_callfunc_for_func0(f, callee) abort
     return function('s:_call_closure0')
   endif
   let type = type(a:f)
-  if type is s:t_func
+  if type is s:T_FUNC
     return function('call')
-  elseif type is s:t_string
+  elseif type is s:T_STRING
     return function('s:_call_func0_expr')
   else
     throw 'vital: Stream: ' . a:callee
@@ -955,9 +962,9 @@ function! s:_get_callfunc_for_func1(f, callee) abort
     return function('s:_call_closure1')
   endif
   let type = type(a:f)
-  if type is s:t_func
+  if type is s:T_FUNC
     return function('call')
-  elseif type is s:t_string
+  elseif type is s:T_STRING
     return function('s:_call_func1_expr')
   else
     throw 'vital: Stream: ' . a:callee
@@ -982,9 +989,9 @@ function! s:_get_callfunc_for_func2(f, callee) abort
     return function('s:_call_closure2')
   endif
   let type = type(a:f)
-  if type is s:t_func
+  if type is s:T_FUNC
     return function('call')
-  elseif type is s:t_string
+  elseif type is s:T_STRING
     return function('s:_call_func2_expr')
   else
     throw 'vital: Stream: ' . a:callee
