@@ -678,19 +678,10 @@ function! s:Stream.concat(stream) abort
   return s:concat(self, a:stream)
 endfunction
 
-function! s:Stream.reduce(f, init) abort
+function! s:Stream.reduce(f, ...) abort
   let l:Call = s:_get_callfunc_for_func2(a:f, 'reduce()')
-  let l:Result = a:init
-  for l:Value in self.to_list()
-    let l:Result = l:Call(a:f, [l:Result, l:Value])
-  endfor
-  return l:Result
-endfunction
-
-function! s:Stream.reduce_present(f) abort
-  let l:Call = s:_get_callfunc_for_func2(a:f, 'reduce_present()')
   let list = s:_get_present_list_or_throw(
-  \             self, self.__estimate_size__(), s:NONE, 'reduce_present()')
+  \                 self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'reduce()')
   let l:Result = list[0]
   for l:Value in list[1:]
     let l:Result = l:Call(a:f, [l:Result, l:Value])

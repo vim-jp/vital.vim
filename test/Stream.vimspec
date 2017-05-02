@@ -1069,8 +1069,18 @@ Describe Stream
   End
 
   Describe .reduce()
+    It raises exception for empty stream
+      try
+        call Stream.empty().reduce('v:val')
+        Assert 0
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 1
+      endtry
+    End
+
     It reduces stream
       Assert Equals(Stream.empty().reduce('v:val', 42), 42)
+      Assert Equals(Stream.of(1,2,3,4,5).reduce('v:val[0] + v:val[1]'), 15)
       Assert Equals(Stream.of(1,2,3,4,5).reduce('v:val[0] + v:val[1]', 0), 15)
     End
 
@@ -1080,6 +1090,7 @@ Describe Stream
       endfunction
 
       Assert Equals(Stream.empty().reduce(function('Id'), 42), 42)
+      Assert Equals(Stream.of(1,2,3,4,5).reduce(function('Plus')), 15)
       Assert Equals(Stream.of(1,2,3,4,5).reduce(function('Plus'), 0), 15)
 
       delfunction Plus
@@ -1087,36 +1098,8 @@ Describe Stream
 
     It reduces stream by Data.Closure
       Assert Equals(Stream.empty().reduce(Closure.from_expr('a:1'), 42), 42)
+      Assert Equals(Stream.of(1,2,3,4,5).reduce(Closure.from_operator('+')), 15)
       Assert Equals(Stream.of(1,2,3,4,5).reduce(Closure.from_operator('+'), 0), 15)
-    End
-  End
-
-  Describe .reduce_present()
-    It raises exception for empty stream
-      try
-        call Stream.empty().reduce_present('v:val')
-        Assert 0
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 1
-      endtry
-    End
-
-    It reduces stream
-      Assert Equals(Stream.of(1,2,3,4,5).reduce_present('v:val[0] + v:val[1]'), 15)
-    End
-
-    It reduces stream by funcref
-      function! Plus(a, b) abort
-        return a:a + a:b
-      endfunction
-
-      Assert Equals(Stream.of(1,2,3,4,5).reduce_present(function('Plus')), 15)
-
-      delfunction Plus
-    End
-
-    It reduces stream by Data.Closure
-      Assert Equals(Stream.of(1,2,3,4,5).reduce_present(Closure.from_operator('+')), 15)
     End
   End
 
