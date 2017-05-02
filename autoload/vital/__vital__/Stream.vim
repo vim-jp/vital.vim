@@ -629,7 +629,7 @@ endfunction
 function! s:Stream.reduce(f, init) abort
   let l:Call = s:_get_callfunc_for_func2(a:f, 'reduce()')
   let l:Result = a:init
-  for l:Value in self.__take_possible__(self.__estimate_size__())[0]
+  for l:Value in self.to_list()
     let l:Result = l:Call(a:f, [l:Result, l:Value])
   endfor
   return l:Result
@@ -725,7 +725,7 @@ endfunction
 
 function! s:Stream.count() abort
   if self.has_characteristics(s:SIZED)
-    return len(self.__take_possible__(self.__estimate_size__())[0])
+    return len(self.to_list())
   endif
   return 1/0
 endfunction
