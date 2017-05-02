@@ -1437,4 +1437,28 @@ Describe Stream
     End
   End
 
+  Describe .generator()
+    It supports interface of generator function like Java's Spliterator
+      let generator = {}
+      function! generator.yield(times, NONE) abort
+        if a:times >= 3
+          return a:NONE
+        endif
+        return a:times
+      endfunction
+
+      Assert Equals(Stream.generator(generator).to_list(), [0,1,2])
+      unlet generator
+    End
+
+    It supports interface of infinite generator function like Java's Spliterator
+      let generator = {}
+      function! generator.yield(times, NONE) abort
+        return a:times
+      endfunction
+
+      Assert Equals(Stream.generator(generator).limit(5).to_list(), [0,1,2,3,4])
+      unlet generator
+    End
+  End
 End

@@ -167,6 +167,38 @@ function! s:_inf_stream(f, init, call, expr) abort
   return stream
 endfunction
 
+function! s:generator(dict) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = 0
+  let stream._dict = a:dict
+  let stream.__end = 0
+  let stream.__index = 0
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed at generator()'
+    endif
+    let list = []
+    let i = 0
+    let open = 1
+    while i < a:n
+      let l:Value = self._dict.yield(i + self.__index, s:NONE)
+      if l:Value is s:NONE
+        let open = 0
+        break
+      endif
+      let list += [l:Value]
+      let i += 1
+    endwhile
+    let self.__index += i
+    let self.__end = !open
+    return [list, open]
+  endfunction
+  function! stream.__estimate_size__() abort
+    return 1/0
+  endfunction
+  return stream
+endfunction
+
 function! s:zip(s1, s2, ...) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics =
