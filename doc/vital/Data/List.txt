@@ -427,10 +427,17 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 		echo idx.': '.line
 	endfor
 <
-find({list}, {default}, {f})			 *Vital.Data.List.find()*
+find({list}, {default}, {expr})			 *Vital.Data.List.find()*
 	Returns the first value in {list} where the given {expr} is satisfied.
-	{default} is returned when no item satisfies {expr}.
+	{default} is returned when no item satisfies {expr}. {expr} must be a
+	|String| or a |Funcref|.
 >
+	function! MyPredicate(x)
+	  return a:x % 2 == 0
+	endfunction
+
+	echo s:L.find([1, 2, 3, 1, 2, 3], '*not-found*', function('MyPredicate'))
+	" 2
 	echo s:L.find([1, 2, 3, 1, 2, 3], '*not-found*', 'v:val % 2 == 0')
 	" 2
 	echo s:L.find([1, 2, 3], '*not-found*', 'v:val % 10 == 0')

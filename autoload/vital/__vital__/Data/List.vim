@@ -274,12 +274,20 @@ endfunction
 
 " similar to Ruby's detect or Haskell's find.
 function! s:find(list, default, f) abort
+  let l:Call = type(a:f) is type(function('function'))
+  \          ? function('call')
+  \          : function('s:_call_string_expr')
+
   for x in a:list
-    if eval(substitute(a:f, 'v:val', string(x), 'g'))
+    if l:Call(a:f, [x])
       return x
     endif
   endfor
   return a:default
+endfunction
+
+function! s:_call_string_expr(expr, args) abort
+  return map([a:args[0]], a:expr)[0]
 endfunction
 
 " Returns the index of the first element which satisfies the given expr.
