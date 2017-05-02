@@ -520,6 +520,7 @@ function! s:Stream.sorted(...) abort
   let stream._characteristics = or(self._characteristics, s:SORTED)
   let stream._upstream = self
   let stream.__end = 0
+  " let stream.__sorted_list = []
   if a:0
     let stream._call = s:_get_callfunc_for_func2(a:1, 'sorted()')
     let stream._comparator = a:1
@@ -528,19 +529,28 @@ function! s:Stream.sorted(...) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
     endif
-    let [list, open] = self._upstream.__take_possible__(a:n)
-    if has_key(self, '_comparator')
-      let sorted = sort(list, self.__compare__, self)
-    else
-      let sorted = sort(list)
+    if !has_key(self, '__sorted_list')
+      let self.__sorted_list = self._upstream.__take_possible__(1/0)[0]
+      if has_key(self, '_comparator')
+        call sort(self.__sorted_list, self.__compare__, self)
+      else
+        call sort(self.__sorted_list)
+      endif
     endif
-    let self.__end = !open
-    return [sorted, open]
+    " min(): https://github.com/vim-jp/issues/issues/1049
+    let end_index = min([a:n, len(self.__sorted_list)]) - 1
+    let list = self.__sorted_list[: end_index]
+    let self.__sorted_list = self.__sorted_list[end_index + 1 :]
+    let self.__end = (self.__estimate_size__() > 0)
+    return [list, !self.__end]
   endfunction
   function! stream.__compare__(a, b) abort
     return self._call(self._comparator, [a:a, a:b])
   endfunction
   function! stream.__estimate_size__() abort
+    if has_key(self, '__sorted_list')
+      return len(self.__sorted_list)
+    endif
     return self._upstream.__estimate_size__()
   endfunction
   return stream

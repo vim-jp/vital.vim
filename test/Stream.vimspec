@@ -963,6 +963,7 @@ Describe Stream
       Assert Equals(
       \ Stream.iterate(3, 'v:val - 1').limit(3).sorted().to_list(),
       \ [1,2,3])
+      Assert Equals(Stream.of(4,5,6,1,2,3).sorted().limit(3).to_list(), [1,2,3])
     End
 
     It sorts elements by function in stream
