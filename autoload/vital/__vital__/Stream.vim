@@ -481,6 +481,72 @@ function! s:Stream.filter(f) abort
   return stream
 endfunction
 
+function! s:Stream.slice_before(f) abort
+  let stream = deepcopy(s:Stream)
+  let stream._characteristics = self._characteristics
+  let stream._upstream = self
+  let stream.__end = 0
+  let stream._call = s:_get_callfunc_for_func1(a:f, 'slice_before()')
+  let stream._f = a:f
+  let stream.__buffer = []
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed at slice_before()'
+    endif
+    let open = (self._upstream.__estimate_size__() > 0)
+    if a:n ==# 0
+      return [[], open]
+    endif
+    let open = self.__read_to_buffer__(a:n)
+    if empty(self.__buffer)
+      return [[], open]
+    endif
+    let list = []
+    let elem = [self.__buffer[0]]
+    let self.__buffer = self.__buffer[1:]
+    let do_break = 0
+    while open
+      let open = self.__read_to_buffer__(a:n - len(list))
+      for i in range(len(self.__buffer))
+        if self._call(self._f, [self.__buffer[i]])
+          let list += [elem]
+          if len(list) >= a:n
+            let self.__buffer = self.__buffer[i :]
+            let do_break = 1
+            break
+          endif
+          let elem = [self.__buffer[i]]
+        else
+          let elem += [self.__buffer[i]]
+        endif
+      endfor
+      if !open
+        let list += [elem]
+      endif
+      if do_break
+        break
+      endif
+      let self.__buffer = []
+    endwhile
+    return [list, open]
+  endfunction
+  " can use 'self.__buffer' instead of 'self._upstream.__take_possible__(n)[0]'
+  " after this function is invoked
+  function! stream.__read_to_buffer__(n) abort
+    let open = (self._upstream.__estimate_size__() > 0)
+    if len(self.__buffer) < a:n && open
+      let [r, open] = self._upstream.__take_possible__(a:n - len(self.__buffer))
+      let self.__buffer += r
+    endif
+    return open || !empty(self.__buffer)
+  endfunction
+  " the number of elements in stream is unknown (decreased, as-is, or increased)
+  function! stream.__estimate_size__() abort
+    return 1/0
+  endfunction
+  return stream
+endfunction
+
 " __take_possible__(n): n may be 1/0, so when upstream is infinite stream,
 " 'self._upstream.__take_possible__(n)' does not stop
 " unless .limit(n) was specified in downstream.
