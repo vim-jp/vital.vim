@@ -85,7 +85,7 @@ endfunction
 
 function! s:lines(str, ...) abort
   let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
-  let lines = a:str ==# '' ? [] : split(a:str, '\n', 1)
+  let lines = a:str ==# '' ? [] : split(a:str, '\r\?\n', 1)
   return s:_new_from_list(lines, characteristics, 'lines()')
 endfunction
 
