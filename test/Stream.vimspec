@@ -881,6 +881,82 @@ Describe Stream
     End
   End
 
+  Describe .slice_before()
+    It maps stream
+      let is_even = 'v:val % 2 == 0'
+      let is_multiple_of_3 = 'v:val % 3 == 0'
+
+      " empty stream
+      Assert Equals(Stream.empty().slice_before(is_even).to_list(), [])
+
+      " finite stream (is_even)
+      Assert Equals(
+      \ Stream.of(0,1,2,3,4,5).slice_before(is_even).to_list(),
+      \ [[0,1], [2,3], [4,5]])
+
+      Assert Equals(
+      \ Stream.of(1,2,3,4,5).slice_before(is_even).to_list(),
+      \ [[1], [2,3], [4,5]])
+
+      Assert Equals(
+      \ Stream.of(0,1,2,3,4).slice_before(is_even).to_list(),
+      \ [[0,1], [2,3], [4]])
+
+      Assert Equals(
+      \ Stream.of(1,2,3,4).slice_before(is_even).to_list(),
+      \ [[1], [2,3], [4]])
+
+      " finite stream (is_multiple_of_3)
+      Assert Equals(
+      \ Stream.of(0,1,2,3,4,5).slice_before(is_multiple_of_3).to_list(),
+      \ [[0,1,2], [3,4,5]])
+
+      Assert Equals(
+      \ Stream.of(1,2,3,4,5).slice_before(is_multiple_of_3).to_list(),
+      \ [[1,2], [3,4,5]])
+
+      Assert Equals(
+      \ Stream.of(0,1,2,3,4).slice_before(is_multiple_of_3).to_list(),
+      \ [[0,1,2], [3,4]])
+
+      Assert Equals(
+      \ Stream.of(1,2,3,4).slice_before(is_multiple_of_3).to_list(),
+      \ [[1,2], [3,4]])
+
+      " inifinite stream
+      Assert Equals(
+      \ Stream.iterate(1, 'v:val + 1').slice_before(is_even).limit(3).to_list(),
+      \ [[1], [2,3], [4,5]])
+
+      Assert Equals(
+      \ Stream.iterate(0, 'v:val + 1').slice_before(is_even).limit(3).to_list(),
+      \ [[0,1], [2,3], [4,5]])
+
+      Assert Equals(
+      \ Stream.iterate(1, 'v:val + 1').slice_before(is_even).limit(3).to_list(),
+      \ [[1], [2,3], [4,5]])
+    End
+
+    It must not reuse stream
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.slice_before('v:val')
+        Assert 1
+      catch
+        Assert 0
+      endtry
+      try
+        let s = Stream.of(1,2,3,4,5)
+        call s.to_list()
+        call s.slice_before('v:val').to_list()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+    End
+  End
+
   Describe .filter()
     It filters stream
       Assert Equals(Stream.empty().filter('v:val % 2 == 0').to_list(), [])
