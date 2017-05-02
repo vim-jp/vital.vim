@@ -722,6 +722,16 @@ function! s:Stream.string_join(...) abort
   return join(self.to_list(), sep)
 endfunction
 
+function! s:Stream.group_by(f) abort
+  let l:Call = s:_get_callfunc_for_func1(a:f, 'group_by()')
+  let l:Result = {}
+  for l:Value in self.to_list()
+    let key = l:Call(a:f, [l:Value])
+    let l:Result[key] = get(l:Result, key, []) + [l:Value]
+  endfor
+  return l:Result
+endfunction
+
 function! s:Stream.sum() abort
   return self.reduce('v:val[0] + v:val[1]', 0)
 endfunction
