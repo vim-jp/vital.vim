@@ -116,10 +116,9 @@ function! s:_new_from_list(list, characteristics, callee) abort
       \     . self._callee
     endif
     " max(): fix overflow
-    let n = max([self.__index + a:n - 1, a:n - 1])
-    " min(): https://github.com/vim-jp/issues/issues/1049
-    let list = self._list[self.__index : min([n, len(self._list) - 1])]
-    let self.__index = max([self.__index + a:n, a:n])
+    let n = max([self.__index + a:n, a:n])
+    let list = s:_slice(self._list, self.__index, n - 1)
+    let self.__index = n
     let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
@@ -270,12 +269,10 @@ function! s:concat(s1, s2, ...) abort
       throw 'vital: Stream: stream has already been operated upon or closed at concat()'
     endif
     " concat buffer and all streams
-    " min(): https://github.com/vim-jp/issues/issues/1049
     let list = []
     if !empty(self.__read_too_much)
-      let end_index = min([a:n, len(self.__read_too_much)]) - 1
-      let list = self.__read_too_much[: end_index]
-      let self.__read_too_much = self.__read_too_much[end_index + 1 :]
+      let list = s:_slice(self.__read_too_much, 0, a:n - 1)
+      let self.__read_too_much = s:_slice(self.__read_too_much, a:n)
     endif
     for stream in self._streams
       if len(list) >= a:n
@@ -286,10 +283,8 @@ function! s:concat(s1, s2, ...) abort
       endif
     endfor
     if len(list) > a:n
-      " min(): https://github.com/vim-jp/issues/issues/1049
-      let end_index = min([a:n, len(list)]) - 1
-      let self.__read_too_much = list[end_index + 1 :]
-      let list = list[: end_index]
+      let self.__read_too_much = s:_slice(list, a:n)
+      let list = s:_slice(list, 0, a:n - 1)
     endif
     " if all of buffer length, streams' __estimate_size__() are 0,
     " it is end of streams
@@ -408,8 +403,7 @@ function! s:Stream.flatmap(f) abort
         if len(l) + len(list) < a:n
           let list += l
         else
-          " min(): https://github.com/vim-jp/issues/issues/1049
-          let list += l[: min([a:n - len(list), len(l)]) - 1]
+          let list += s:_slice(l, 0, a:n - len(list) - 1)
           break
         endif
       endfor
@@ -427,19 +421,16 @@ function! s:Stream.flatmap(f) abort
         if len(self.__buffer) < a:n
           let self.__buffer += self._upstream.__take_possible__(a:n)[0]
         endif
-        " min(): https://github.com/vim-jp/issues/issues/1049
-        let end_index = min([a:n, len(self.__buffer)]) - 1
-        let r = self.__buffer[: end_index]
-        let self.__buffer = self.__buffer[end_index + 1 :]
+        let r = s:_slice(self.__buffer, 0, a:n - 1)
+        let self.__buffer = s:_slice(self.__buffer, a:n)
         " add results to list. len(l) <= a:n when the loop is end
         for l in map(r, 'self._call(self._f, [v:val])')
           if len(l) + len(list) < a:n
             let list += l
           else
-            " min(): https://github.com/vim-jp/issues/issues/1049
-            let end_index = min([a:n - len(list), len(l)]) - 1
-            let list += l[: end_index]
-            let self.__buffer = l[end_index + 1 :] + self.__buffer
+            let end = a:n - len(list)
+            let list += s:_slice(l, 0, end - 1)
+            let self.__buffer = s:_slice(l, end) + self.__buffer
             break
           endif
         endfor
@@ -511,7 +502,7 @@ function! s:Stream.slice_before(f) abort
         if self._call(self._f, [self.__buffer[i]])
           let list += [elem]
           if len(list) >= a:n
-            let self.__buffer = self.__buffer[i :]
+            let self.__buffer = s:_slice(self.__buffer, i)
             let do_break = 1
             break
           endif
@@ -626,8 +617,7 @@ function! s:Stream.drop_while(f) abort
       for i in range(len(r))
         if !map([r[i]], 'self._call(self._f, [v:val])')[0]
           let self.__skipping = 0
-          " min(): https://github.com/vim-jp/issues/issues/1049
-          let list = r[min([i, len(r)]) :]
+          let list = s:_slice(r, i)
           break
         endif
       endfor
@@ -721,10 +711,8 @@ function! s:Stream.sorted(...) abort
         call sort(self.__sorted_list)
       endif
     endif
-    " min(): https://github.com/vim-jp/issues/issues/1049
-    let end_index = min([a:n, len(self.__sorted_list)]) - 1
-    let list = self.__sorted_list[: end_index]
-    let self.__sorted_list = self.__sorted_list[end_index + 1 :]
+    let list = s:_slice(self.__sorted_list, 0, a:n - 1)
+    let self.__sorted_list = s:_slice(self.__sorted_list, a:n)
     let self.__end = (self.__estimate_size__() > 0)
     return [list, !self.__end]
   endfunction
@@ -971,6 +959,15 @@ endfunction
 
 function! s:Stream.foreach(f) abort
   call self.map(a:f).to_list()
+endfunction
+
+" safe slice
+" https://github.com/vim-jp/issues/issues/1049
+function! s:_slice(list, start, ...) abort
+  let len = len(a:list)
+  let start = min([a:start, len])
+  let end = a:0 ? min([a:1, len]) : len
+  return a:list[start : end]
 endfunction
 
 function! s:_not(f, callee) abort
