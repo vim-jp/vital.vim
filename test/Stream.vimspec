@@ -613,6 +613,17 @@ Describe Stream
       unlet g:foreach
     End
 
+    It peeks stream by funcref
+      let g:foreach = []
+      function! Add(v) abort
+        let g:foreach += [a:v]
+      endfunction
+      Assert Equals(Stream.of(1,2,3).foreach(function('Add')), 0)
+      Assert Equals(g:foreach, [1,2,3])
+      unlet g:foreach
+      delfunction Add
+    End
+
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
@@ -965,6 +976,17 @@ Describe Stream
       Assert Equals(Stream.empty().reduce('v:val', 42), 42)
       Assert Equals(Stream.of(1,2,3,4,5).reduce('v:val[0] + v:val[1]', 0), 15)
     End
+
+    It reduces stream
+      function! Plus(a, b) abort
+        return a:a + a:b
+      endfunction
+
+      Assert Equals(Stream.empty().reduce(function('Id'), 42), 42)
+      Assert Equals(Stream.of(1,2,3,4,5).reduce(function('Plus'), 0), 15)
+
+      delfunction Plus
+    End
   End
 
   Describe .reduce_present()
@@ -979,6 +1001,16 @@ Describe Stream
 
     It reduces stream
       Assert Equals(Stream.of(1,2,3,4,5).reduce_present('v:val[0] + v:val[1]'), 15)
+    End
+
+    It reduces stream
+      function! Plus(a, b) abort
+        return a:a + a:b
+      endfunction
+
+      Assert Equals(Stream.of(1,2,3,4,5).reduce_present(function('Plus')), 15)
+
+      delfunction Plus
     End
   End
 
