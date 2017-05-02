@@ -1,6 +1,7 @@
 Describe Stream
   Before all
     let Stream = vital#vital#import('Stream')
+    let Closure = vital#vital#import('Data.Closure')
 
     function! Id(n) abort
       return a:n
@@ -275,6 +276,15 @@ Describe Stream
       \   [5,6,7])
     End
 
+    It constructs infinite stream by Data.Closure
+      Assert Equals(
+      \   Stream.iterate(1, Closure.from_expr('a:1')).limit(3).to_list(),
+      \   [1,1,1])
+      Assert Equals(
+      \   Stream.iterate(5, Closure.from_expr('a:1 + 1')).limit(3).to_list(),
+      \   [5,6,7])
+    End
+
     It creates stream with characteristics
       let s = Stream.iterate(1, 'v:val + 1')
       Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
@@ -287,15 +297,21 @@ Describe Stream
   End
 
   Describe .generate()
-    It constructs infinite stream with function
+    It constructs infinite stream
       Assert Equals(
       \ Stream.generate('42').limit(5).to_list(),
       \ [42, 42, 42, 42, 42])
     End
 
-    It constructs infinite stream with function
+    It constructs infinite stream by funcref
       Assert Equals(
       \ Stream.generate(function('Answer')).limit(5).to_list(),
+      \ [42, 42, 42, 42, 42])
+    End
+
+    It constructs infinite stream by Data.Closure
+      Assert Equals(
+      \ Stream.generate(Closure.from_expr('42')).limit(5).to_list(),
       \ [42, 42, 42, 42, 42])
     End
   End
@@ -614,6 +630,13 @@ Describe Stream
       delfunction Add
     End
 
+    It peeks stream by Data.Closure
+      let g:peek = []
+      Assert Equals(Stream.of(1,2,3).peek(Closure.from_command('let g:peek += [a:1]')).to_list(), [1,2,3])
+      Assert Equals(g:peek, [1,2,3])
+      unlet g:peek
+    End
+
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
@@ -654,6 +677,13 @@ Describe Stream
       delfunction Add
     End
 
+    It peeks stream by Data.Closure
+      let g:foreach = []
+      Assert Equals(Stream.of(1,2,3).foreach(Closure.from_command('let g:foreach += [a:1]')), 0)
+      Assert Equals(g:foreach, [1,2,3])
+      unlet g:foreach
+    End
+
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
@@ -691,14 +721,12 @@ Describe Stream
       \ [2,3,4])
     End
 
-    It maps stream by funcref
-      function! F(n) abort
-        return a:n + 1
-      endfunction
+    It maps stream by Data.Closure
+      Assert Equals(Stream.empty().map(Closure.from_expr('a:1 + 1')).to_list(), [])
+
       Assert Equals(
-      \ Stream.iterate(1, 'v:val + 1').map(function('F')).limit(3).to_list(),
+      \ Stream.iterate(1, 'v:val + 1').map(Closure.from_expr('a:1 + 1')).limit(3).to_list(),
       \ [2,3,4])
-      delfunction F
     End
 
     It must not reuse stream
@@ -772,6 +800,15 @@ Describe Stream
       delfunction Repeat
     End
 
+    It flattens mapped stream by Data.Closure
+      Assert Equals(Stream.empty().flatmap(Closure.from_expr('repeat([a:1], a:1)')).to_list(), [])
+
+      Assert Equals(
+        \Stream.iterate(0, Closure.from_expr('a:1 + 1'))
+          \.flatmap(Closure.from_expr('repeat([a:1], a:1)')).limit(6).to_list(),
+        \[1,2,2,3,3,3])
+    End
+
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
@@ -807,6 +844,14 @@ Describe Stream
 
       Assert Equals(
       \ Stream.iterate(0, 'v:val + 1').filter(function('IsEven')).limit(3).to_list(),
+      \ [0,2,4])
+    End
+
+    It filters stream by Data.Closure
+      Assert Equals(Stream.empty().filter(Closure.from_expr('a:1 % 2 == 0')).to_list(), [])
+
+      Assert Equals(
+      \ Stream.iterate(0, 'v:val + 1').filter(Closure.from_expr('a:1 % 2 == 0')).limit(3).to_list(),
       \ [0,2,4])
     End
 
@@ -864,6 +909,19 @@ Describe Stream
       delfunction LessThan4
     End
 
+    It takes elements until element is matched by Data.Closure
+      Assert Equals(Stream.empty().take_while(Closure.from_expr('a:1')).to_list(), [])
+      Assert Equals(
+      \ Stream.range(1, 10).take_while(Closure.from_expr('a:1 < 4')).to_list(),
+      \ [1,2,3])
+      Assert Equals(
+      \ Stream.range(1, 10).take_while(Closure.from_expr('a:1 < 4')).limit(2).to_list(),
+      \ [1,2])
+      Assert Equals(
+      \ Stream.iterate(1, Closure.from_expr('a:1 + 1')).take_while(Closure.from_expr('a:1 < 4')).to_list(),
+      \ [1,2,3])
+    End
+
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
@@ -916,6 +974,18 @@ Describe Stream
       delfunction LessThan4
     End
 
+    It drops elements until element is matched by Data.Closure
+      Assert Equals(
+      \ Stream.empty().drop_while(Closure.from_expr('a:1')).to_list(),
+      \ [])
+      Assert Equals(
+      \ Stream.of(1,2,3,4,5).drop_while(Closure.from_expr('a:1 < 4')).to_list(),
+      \ [4,5])
+      Assert Equals(
+      \ Stream.iterate(1, Closure.from_expr('a:1 + 1')).drop_while(Closure.from_expr('a:1 < 4')).limit(2).to_list(),
+      \ [4,5])
+    End
+
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
@@ -956,7 +1026,7 @@ Describe Stream
   End
 
   Describe .sorted()
-    It sorts elements in stream
+    It sorts elements in stream without comparator
       Assert Equals(Stream.of().sorted().to_list(), [])
       Assert Equals(Stream.of(2,1,3).sorted().to_list(), [1,2,3])
       Assert Equals(Stream.of(2,1,3,2,1).sorted().to_list(), [1,1,2,2,3])
@@ -966,7 +1036,7 @@ Describe Stream
       Assert Equals(Stream.of(4,5,6,1,2,3).sorted().limit(3).to_list(), [1,2,3])
     End
 
-    It sorts elements by function in stream
+    It sorts elements in stream with comparator
       let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
       Assert Equals(Stream.of().sorted(by_desc).to_list(), [])
       Assert Equals(Stream.of(2,1,3).sorted(by_desc).to_list(), [3,2,1])
@@ -977,19 +1047,15 @@ Describe Stream
       unlet by_desc
     End
 
-    It sorts elements by function in stream
-      function! ByDesc(a, b) abort
-        return a:a > a:b ? -1 : a:a ==# a:b ? 0 : 1
-      endfunction
-
-      Assert Equals(Stream.of().sorted(function('ByDesc')).to_list(), [])
-      Assert Equals(Stream.of(2,1,3).sorted(function('ByDesc')).to_list(), [3,2,1])
-      Assert Equals(Stream.of(2,1,3,2,1).sorted(function('ByDesc')).to_list(), [3,2,2,1,1])
+    It sorts elements in stream with comparator by funcref
+      let by_desc = Closure.from_expr('a:1 > a:2 ? -1 : a:1 ==# a:2 ? 0 : 1')
+      Assert Equals(Stream.of().sorted(by_desc).to_list(), [])
+      Assert Equals(Stream.of(2,1,3).sorted(by_desc).to_list(), [3,2,1])
+      Assert Equals(Stream.of(2,1,3,2,1).sorted(by_desc).to_list(), [3,2,2,1,1])
       Assert Equals(
-      \ Stream.iterate(1, 'v:val + 1').limit(3).sorted(function('ByDesc')).to_list(),
+      \ Stream.iterate(1, 'v:val + 1').limit(3).sorted(by_desc).to_list(),
       \ [3,2,1])
-
-      delfunction ByDesc
+      unlet by_desc
     End
 
     It sets SORTED characteristic
@@ -1008,7 +1074,7 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3,4,5).reduce('v:val[0] + v:val[1]', 0), 15)
     End
 
-    It reduces stream
+    It reduces stream by funcref
       function! Plus(a, b) abort
         return a:a + a:b
       endfunction
@@ -1017,6 +1083,11 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3,4,5).reduce(function('Plus'), 0), 15)
 
       delfunction Plus
+    End
+
+    It reduces stream by Data.Closure
+      Assert Equals(Stream.empty().reduce(Closure.from_expr('a:1'), 42), 42)
+      Assert Equals(Stream.of(1,2,3,4,5).reduce(Closure.from_operator('+'), 0), 15)
     End
   End
 
@@ -1034,7 +1105,7 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3,4,5).reduce_present('v:val[0] + v:val[1]'), 15)
     End
 
-    It reduces stream
+    It reduces stream by funcref
       function! Plus(a, b) abort
         return a:a + a:b
       endfunction
@@ -1042,6 +1113,10 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3,4,5).reduce_present(function('Plus')), 15)
 
       delfunction Plus
+    End
+
+    It reduces stream by Data.Closure
+      Assert Equals(Stream.of(1,2,3,4,5).reduce_present(Closure.from_operator('+')), 15)
     End
   End
 
@@ -1080,7 +1155,7 @@ Describe Stream
       endtry
     End
 
-    It returns max value in stream by string expression
+    It returns max value in stream
       Assert Equals(Stream.of('aaa', 'bb', '').max_by('len(v:val)'), 'aaa')
     End
 
@@ -1092,6 +1167,10 @@ Describe Stream
       Assert Equals(Stream.of('aaa', 'bb', '').max_by(function('Len')), 'aaa')
 
       delfunction Len
+    End
+
+    It returns max value in stream by Data.Closure
+      Assert Equals(Stream.of('aaa', 'bb', '').max_by(Closure.from_funcname('len')), 'aaa')
     End
   End
 
@@ -1130,7 +1209,7 @@ Describe Stream
       endtry
     End
 
-    It returns min value in stream by string expression
+    It returns min value in stream
       Assert Equals(Stream.of('aaa', 'bb', '').min_by('len(v:val)'), '')
     End
 
@@ -1142,6 +1221,10 @@ Describe Stream
       Assert Equals(Stream.of('aaa', 'bb', '').min_by(function('Len')), '')
 
       delfunction Len
+    End
+
+    It returns min value in stream by Data.Closure
+      Assert Equals(Stream.of('aaa', 'bb', '').min_by(Closure.from_funcname('len')), '')
     End
   End
 
@@ -1186,7 +1269,11 @@ Describe Stream
     End
 
     It returns the first element matching with given predicate function in stream by funcref
-      Assert Equals(Stream.iterate(1, 'v:val + 1').find(function('IsEven')), 2)
+      Assert Equals(Stream.iterate(1, function('Succ')).find(function('IsEven')), 2)
+    End
+
+    It returns the first element matching with given predicate function in stream by Data.Closure
+      Assert Equals(Stream.iterate(1, Closure.from_expr('a:1 + 1')).find(Closure.from_expr('a:1 % 2 == 0')), 2)
     End
   End
 
@@ -1212,6 +1299,12 @@ Describe Stream
       delfunction GreaterThan2
       delfunction GreaterThan3
     End
+
+    It returns boolean value if any elements are matched in stream by Data.Closure
+      Assert Equals(Stream.empty().any_match(Closure.from_expr('a:1')), 0)
+      Assert Equals(Stream.of(1,2,3).any_match(Closure.from_expr('a:1 > 2')), 1)
+      Assert Equals(Stream.of(1,2,3).any_match(Closure.from_expr('a:1 > 3')), 0)
+    End
   End
 
   Describe .all_match()
@@ -1235,6 +1328,12 @@ Describe Stream
 
       delfunction GreaterThan0
       delfunction GreaterThan1
+    End
+
+    It returns boolean value if all elements are matched in stream by Data.Closure
+      Assert Equals(Stream.empty().all_match(Closure.from_expr('a:1')), 1)
+      Assert Equals(Stream.of(1,2,3).all_match(Closure.from_expr('a:1 > 0')), 1)
+      Assert Equals(Stream.of(1,2,3).all_match(Closure.from_expr('a:1 > 1')), 0)
     End
   End
 
@@ -1260,6 +1359,12 @@ Describe Stream
       delfunction GreaterThan3
       delfunction GreaterThan2
     End
+
+    It returns boolean value if none elements are matched in stream by Data.Closure
+      Assert Equals(Stream.empty().none_match(Closure.from_expr('a:1')), 1)
+      Assert Equals(Stream.of(1,2,3).none_match(Closure.from_expr('a:1 > 3')), 1)
+      Assert Equals(Stream.of(1,2,3).none_match(Closure.from_expr('a:1 > 2')), 0)
+    End
   End
 
   Describe .string_join()
@@ -1275,7 +1380,7 @@ Describe Stream
   End
 
   Describe .group_by()
-    It groups stream by given func
+    It groups stream
       Assert Equals(Stream.of().group_by('v:val'), {})
       Assert Equals(Stream.of(1).group_by('v:val'), {'1': [1]})
       Assert Equals(Stream.of(1,2,3).group_by('v:val'), {'1': [1], '2': [2], '3': [3]})
@@ -1283,6 +1388,38 @@ Describe Stream
       Assert Equals(Stream.of('foo', 'bar', 'baz').group_by('v:val'), {'foo': ['foo'], 'bar': ['bar'], 'baz': ['baz']})
       Assert Equals(Stream.of('a', 'bb', 'ccc').group_by('len(v:val)'), {'1': ['a'], '2': ['bb'], '3': ['ccc']})
       Assert Equals(Stream.of('a', 'bb', 'ccc', 'ddd').group_by('len(v:val)'), {'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
+    End
+
+    It groups stream by funcref
+      function! Len(v) abort
+        return len(a:v)
+      endfunction
+
+      Assert Equals(Stream.of().group_by(function('Id')), {})
+      Assert Equals(Stream.of(1).group_by(function('Id')), {'1': [1]})
+      Assert Equals(Stream.of(1,2,3).group_by(function('Id')), {'1': [1], '2': [2], '3': [3]})
+      Assert Equals(Stream.of(1,2,3,2,1).group_by(function('Id')), {'1': [1,1], '2': [2,2], '3': [3]})
+      Assert Equals(Stream.of('foo', 'bar', 'baz').group_by(function('Id')), {'foo': ['foo'], 'bar': ['bar'], 'baz': ['baz']})
+      Assert Equals(Stream.of('a', 'bb', 'ccc').group_by(function('Len')), {'1': ['a'], '2': ['bb'], '3': ['ccc']})
+      Assert Equals(Stream.of('a', 'bb', 'ccc', 'ddd').group_by(function('Len')), {'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
+
+      delfunction Len
+    End
+
+    It groups stream by Data.Closure
+      let id = Closure.from_expr('a:1')
+      let len = Closure.from_funcname('len')
+
+      Assert Equals(Stream.of().group_by(id), {})
+      Assert Equals(Stream.of(1).group_by(id), {'1': [1]})
+      Assert Equals(Stream.of(1,2,3).group_by(id), {'1': [1], '2': [2], '3': [3]})
+      Assert Equals(Stream.of(1,2,3,2,1).group_by(id), {'1': [1,1], '2': [2,2], '3': [3]})
+      Assert Equals(Stream.of('foo', 'bar', 'baz').group_by(id), {'foo': ['foo'], 'bar': ['bar'], 'baz': ['baz']})
+      Assert Equals(Stream.of('a', 'bb', 'ccc').group_by(len), {'1': ['a'], '2': ['bb'], '3': ['ccc']})
+      Assert Equals(Stream.of('a', 'bb', 'ccc', 'ddd').group_by(len), {'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
+
+      unlet id
+      unlet len
     End
   End
 
@@ -1387,6 +1524,63 @@ Describe Stream
       delfunction Len
       delfunction List
       delfunction Plus
+    End
+
+    It converts elements to Dictionary in stream by Data.Closure
+      let id = Closure.from_expr('a:1')
+      let len = Closure.from_funcname('len')
+
+      Assert Equals(Stream.of().to_dict(id, id), {})
+      Assert Equals(Stream.of(1).to_dict(id, id), {'1': 1})
+      Assert Equals(Stream.of(1,2,3).to_dict(id, id), {'1': 1, '2': 2, '3': 3})
+      Assert Equals(Stream.of('foo', 'bar', 'baz').to_dict(id, id), {'foo': 'foo', 'bar': 'bar', 'baz': 'baz'})
+      Assert Equals(Stream.of('a', 'bb', 'ccc').to_dict(len, id), {'1': 'a', '2': 'bb', '3': 'ccc'})
+
+      unlet id
+      unlet len
+    End
+
+    It converts elements to Dictionary in stream with merge function by Data.Closure
+      let id = Closure.from_expr('a:1')
+      let len = Closure.from_funcname('len')
+      let list = Closure.from_expr('[a:1]')
+      let plus = Closure.from_operator('+')
+
+      try
+        call Stream.of(1,2,3,2,1).to_dict(id, id)
+        Assert 0
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
+        Assert 1
+      endtry
+      try
+        Assert Equals(
+          \Stream.of(1,2,3,2,1)
+            \.to_dict(id, list, plus),
+          \{'1': [1,1], '2': [2,2], '3': [3]})
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
+        Assert 0
+      endtry
+
+      try
+        call Stream.of('a', 'bb', 'ccc', 'ddd').to_dict(len, id)
+        Assert 0
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
+        Assert 1
+      endtry
+      try
+        Assert Equals(
+          \Stream.of('a', 'bb', 'ccc', 'ddd')
+            \.to_dict(len, list),
+          \{'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
+        Assert 0
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
+        Assert 1
+      endtry
+
+      unlet id
+      unlet len
+      unlet list
+      unlet plus
     End
   End
 

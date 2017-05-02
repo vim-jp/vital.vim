@@ -1,6 +1,14 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:Closure = a:V.import('Data.Closure')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Data.Closure']
+endfunction
+
 let s:NONE = []
 lockvar! s:NONE
 
@@ -819,31 +827,41 @@ function! s:Stream.foreach(f) abort
 endfunction
 
 function! s:_not(f, callee) abort
+  if s:Closure.is_closure(a:f)
+    return a:f.compose('=!a:1')
+  endif
   let type = type(a:f)
   if type is s:t_func
     return '!' . string(a:f) . '(v:val)'
   elseif type is s:t_string
     return '!map([v:val], ' . string(a:f) . ')[0]'
   else
-    " TODO: Support Data.Closure
     throw 'vital: Stream: ' . a:callee
-    \   . ': invalid type argument was given (expected funcref or string)'
+    \   . ': invalid type argument was given '
+    \   . '(expected funcref, string, or Data.Closure)'
   endif
 endfunction
 
 " Get funcref of call()-ish function to call a:f (arity is 0)
 " (see also s:_call_func0_expr())
 function! s:_get_callfunc_for_func0(f, callee) abort
+  if s:Closure.is_closure(a:f)
+    return function('s:_call_closure0')
+  endif
   let type = type(a:f)
   if type is s:t_func
     return function('call')
   elseif type is s:t_string
     return function('s:_call_func0_expr')
   else
-    " TODO: Support Data.Closure
     throw 'vital: Stream: ' . a:callee
-    \   . ': invalid type argument was given (expected funcref or string)'
+    \   . ': invalid type argument was given '
+    \   . '(expected funcref, string, or Data.Closure)'
   endif
+endfunction
+
+function! s:_call_closure0(closure, _args) abort
+  return a:closure.call()
 endfunction
 
 " a:expr is passed to v:val (but it is not meaningless value because
@@ -855,16 +873,23 @@ endfunction
 " Get funcref of call()-ish function to call a:f (arity is 1)
 " (see also s:_call_func1_expr())
 function! s:_get_callfunc_for_func1(f, callee) abort
+  if s:Closure.is_closure(a:f)
+    return function('s:_call_closure1')
+  endif
   let type = type(a:f)
   if type is s:t_func
     return function('call')
   elseif type is s:t_string
     return function('s:_call_func1_expr')
   else
-    " TODO: Support Data.Closure
     throw 'vital: Stream: ' . a:callee
-    \   . ': invalid type argument was given (expected funcref or string)'
+    \   . ': invalid type argument was given '
+    \   . '(expected funcref, string, or Data.Closure)'
   endif
+endfunction
+
+function! s:_call_closure1(closure, args) abort
+  return a:closure.call(a:args[0])
 endfunction
 
 " List of one element is passed to v:val
@@ -875,16 +900,23 @@ endfunction
 " Get funcref of call()-ish function to call a:f (arity is 2)
 " (see also s:_call_func2_expr())
 function! s:_get_callfunc_for_func2(f, callee) abort
+  if s:Closure.is_closure(a:f)
+    return function('s:_call_closure2')
+  endif
   let type = type(a:f)
   if type is s:t_func
     return function('call')
   elseif type is s:t_string
     return function('s:_call_func2_expr')
   else
-    " TODO: Support Data.Closure
     throw 'vital: Stream: ' . a:callee
-    \   . ': invalid type argument was given (expected funcref or string)'
+    \   . ': invalid type argument was given '
+    \   . '(expected funcref, string, or Data.Closure)'
   endif
+endfunction
+
+function! s:_call_closure2(closure, args) abort
+  return a:closure.call(a:args[0], a:args[1])
 endfunction
 
 " List of two elements is passed to v:val
