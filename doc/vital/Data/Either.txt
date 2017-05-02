@@ -66,6 +66,8 @@ right({value})				*Vital.Data.Either.right()*
 
 return({value})				*Vital.Data.Either.return()*
 	This is an alias of |Vital.Data.Either.right()| for monadic behavior.
+	The is like the Haskell's "return" function of Monad type class. It
+	represents identity element in Monad.
 
 
 is_left({either})			*Vital.Data.Either.is_left()*
