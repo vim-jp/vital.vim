@@ -196,6 +196,7 @@ function! s:generator(dict) abort
       endif
       let list += [l:Value]
       let i += 1
+      unlet l:Value
     endwhile
     let self.__index += i
     let self.__end = !open
@@ -778,13 +779,18 @@ function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
   let l:Result = {}
   if a:0
     let l:CallMerge = s:_get_callfunc_for_func2(a:1, 'to_dict()')
-    for l:Value in self.to_list()
-      let key = l:CallKM(a:key_mapper, [l:Value])
-      let l:Value = l:CallVM(a:value_mapper, [l:Value])
+    for l:Value1 in self.to_list()
+      let key = l:CallKM(a:key_mapper, [l:Value1])
+      let l:Value2 = l:CallVM(a:value_mapper, [l:Value1])
       if has_key(l:Result, key)
-        let l:Value = l:CallMerge(a:1, [l:Result[key], l:Value])
+        let l:Value3 = l:CallMerge(a:1, [l:Result[key], l:Value2])
+      else
+        let l:Value3 = l:Value2
       endif
-      let l:Result[key] = l:Value
+      let l:Result[key] = l:Value3
+      unlet l:Value1
+      unlet l:Value2
+      unlet l:Value3
     endfor
   else
     for l:Value in self.to_list()
