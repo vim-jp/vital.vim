@@ -1263,7 +1263,7 @@ Describe Stream
   End
 
   Describe .string_join()
-    It sums elements in stream
+    It joins elements in stream
       Assert Equals(Stream.of().string_join(), '')
       Assert Equals(Stream.of(1).string_join(), '1')
       Assert Equals(Stream.of(1,2,3).string_join(), '1 2 3')
@@ -1275,7 +1275,7 @@ Describe Stream
   End
 
   Describe .group_by()
-    It sums elements in stream
+    It groups stream by given func
       Assert Equals(Stream.of().group_by('v:val'), {})
       Assert Equals(Stream.of(1).group_by('v:val'), {'1': [1]})
       Assert Equals(Stream.of(1,2,3).group_by('v:val'), {'1': [1], '2': [2], '3': [3]})
@@ -1283,6 +1283,110 @@ Describe Stream
       Assert Equals(Stream.of('foo', 'bar', 'baz').group_by('v:val'), {'foo': ['foo'], 'bar': ['bar'], 'baz': ['baz']})
       Assert Equals(Stream.of('a', 'bb', 'ccc').group_by('len(v:val)'), {'1': ['a'], '2': ['bb'], '3': ['ccc']})
       Assert Equals(Stream.of('a', 'bb', 'ccc', 'ddd').group_by('len(v:val)'), {'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
+    End
+  End
+
+  Describe .to_dict()
+    It converts elements to Dictionary in stream
+      Assert Equals(Stream.of().to_dict('v:val', 'v:val'), {})
+      Assert Equals(Stream.of(1).to_dict('v:val', 'v:val'), {'1': 1})
+      Assert Equals(Stream.of(1,2,3).to_dict('v:val', 'v:val'), {'1': 1, '2': 2, '3': 3})
+      Assert Equals(Stream.of('foo', 'bar', 'baz').to_dict('v:val', 'v:val'), {'foo': 'foo', 'bar': 'bar', 'baz': 'baz'})
+      Assert Equals(Stream.of('a', 'bb', 'ccc').to_dict('len(v:val)', 'v:val'), {'1': 'a', '2': 'bb', '3': 'ccc'})
+    End
+
+    It converts elements to Dictionary in stream with merge function
+      try
+        call Stream.of(1,2,3,2,1).to_dict('v:val', 'v:val')
+        Assert 0
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
+        Assert 1
+      endtry
+      try
+        Assert Equals(
+          \Stream.of(1,2,3,2,1)
+            \.to_dict('v:val', '[v:val]', 'v:val[0] + v:val[1]'),
+          \{'1': [1,1], '2': [2,2], '3': [3]})
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
+        Assert 0
+      endtry
+
+      try
+        call Stream.of('a', 'bb', 'ccc', 'ddd').to_dict('len(v:val)', 'v:val')
+        Assert 0
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
+        Assert 1
+      endtry
+      try
+        Assert Equals(
+          \Stream.of('a', 'bb', 'ccc', 'ddd')
+            \.to_dict('len(v:val)', '[v:val]'),
+          \{'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
+        Assert 0
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
+        Assert 1
+      endtry
+    End
+
+    It converts elements to Dictionary in stream by funcref
+      function! Len(v) abort
+        return len(a:v)
+      endfunction
+
+      Assert Equals(Stream.of().to_dict(function('Id'), function('Id')), {})
+      Assert Equals(Stream.of(1).to_dict(function('Id'), function('Id')), {'1': 1})
+      Assert Equals(Stream.of(1,2,3).to_dict(function('Id'), function('Id')), {'1': 1, '2': 2, '3': 3})
+      Assert Equals(Stream.of('foo', 'bar', 'baz').to_dict(function('Id'), function('Id')), {'foo': 'foo', 'bar': 'bar', 'baz': 'baz'})
+      Assert Equals(Stream.of('a', 'bb', 'ccc').to_dict(function('Len'), function('Id')), {'1': 'a', '2': 'bb', '3': 'ccc'})
+
+      delfunction Len
+    End
+
+    It converts elements to Dictionary in stream with merge function by funcref
+      function! Len(v) abort
+        return len(a:v)
+      endfunction
+      function! List(v) abort
+        return [a:v]
+      endfunction
+      function! Plus(a, b) abort
+        return a:a + a:b
+      endfunction
+
+      try
+        call Stream.of(1,2,3,2,1).to_dict(function('Id'), function('Id'))
+        Assert 0
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
+        Assert 1
+      endtry
+      try
+        Assert Equals(
+          \Stream.of(1,2,3,2,1)
+            \.to_dict(function('Id'), function('List'), function('Plus')),
+          \{'1': [1,1], '2': [2,2], '3': [3]})
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
+        Assert 0
+      endtry
+
+      try
+        call Stream.of('a', 'bb', 'ccc', 'ddd').to_dict(function('Len'), function('Id'))
+        Assert 0
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
+        Assert 1
+      endtry
+      try
+        Assert Equals(
+          \Stream.of('a', 'bb', 'ccc', 'ddd')
+            \.to_dict(function('Len'), function('List')),
+          \{'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
+        Assert 0
+      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
+        Assert 1
+      endtry
+
+      delfunction Len
+      delfunction List
+      delfunction Plus
     End
   End
 

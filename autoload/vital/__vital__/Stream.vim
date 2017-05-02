@@ -732,6 +732,35 @@ function! s:Stream.group_by(f) abort
   return l:Result
 endfunction
 
+function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
+  let l:CallKM = s:_get_callfunc_for_func1(a:key_mapper, 'to_dict()')
+  let l:CallVM = s:_get_callfunc_for_func1(a:value_mapper, 'to_dict()')
+  if a:0
+    let l:CallMerge = s:_get_callfunc_for_func2(a:1, 'to_dict()')
+  endif
+  let l:Result = {}
+  if a:0
+    for l:Value in self.to_list()
+      let key = l:CallKM(a:key_mapper, [l:Value])
+      let l:Value = l:CallVM(a:value_mapper, [l:Value])
+      if has_key(l:Result, key)
+        let l:Value = l:CallMerge(a:1, [l:Result[key], l:Value])
+      endif
+      let l:Result[key] = l:Value
+    endfor
+  else
+    for l:Value in self.to_list()
+      let key = l:CallKM(a:key_mapper, [l:Value])
+      if has_key(l:Result, key)
+        throw 'vital: Stream: to_dict(): duplicated elements exist in stream '
+        \   . '(key: ' . string(key . "") . ')'
+      endif
+      let l:Result[key] = l:CallVM(a:value_mapper, [l:Value])
+    endfor
+  endif
+  return l:Result
+endfunction
+
 function! s:Stream.sum() abort
   return self.reduce('v:val[0] + v:val[1]', 0)
 endfunction
