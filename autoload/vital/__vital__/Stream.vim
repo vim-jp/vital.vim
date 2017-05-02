@@ -264,33 +264,61 @@ function! s:_zip_characteristics(characteristics_list) abort
   return s:_zip_characteristics([result] + others)
 endfunction
 
-function! s:concat(s1, s2) abort
+function! s:concat(s1, s2, ...) abort
   let stream = deepcopy(s:Stream)
-  let stream._characteristics = and(a:s1._characteristics, a:s2._characteristics)
+  let stream._characteristics =
+  \ s:_concat_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
   let stream.__end = 0
-  let stream._s1 = a:s1
-  let stream._s2 = a:s2
+  let stream.__read_too_much = []
+  let stream._streams = [a:s1, a:s2] + a:000
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at concat()'
     endif
+    " concat buffer and all streams
+    " min(): https://github.com/vim-jp/issues/issues/1049
     let list = []
-    if self._s1.__estimate_size__() > 0
-      let list += self._s1.__take_possible__(a:n)[0]
+    if !empty(self.__read_too_much)
+      let end_index = min([a:n, len(self.__read_too_much)]) - 1
+      let list = self.__read_too_much[: end_index]
+      let self.__read_too_much = self.__read_too_much[end_index + 1 :]
     endif
-    if len(list) < a:n && self._s2.__estimate_size__() > 0
-      let list += self._s2.__take_possible__(a:n - len(list))[0]
+    for stream in self._streams
+      if len(list) >= a:n
+        break
+      endif
+      if stream.__estimate_size__() > 0
+        let list += stream.__take_possible__(a:n - len(list))[0]
+      endif
+    endfor
+    if len(list) > a:n
+      " min(): https://github.com/vim-jp/issues/issues/1049
+      let end_index = min([a:n, len(list)]) - 1
+      let self.__read_too_much = list[end_index + 1 :]
+      let list = list[: end_index]
     endif
-    let self.__end = (self._s1.__estimate_size__() ==# 0 &&
-    \                 self._s2.__estimate_size__() ==# 0)
+    " if all of buffer length, streams' __estimate_size__() are 0,
+    " it is end of streams
+    let sizes = [len(self.__read_too_much)] +
+    \           map(copy(self._streams), 'v:val.__estimate_size__()')
+    let self.__end = (max(sizes) ==# 0)
     return [list, !self.__end]
   endfunction
-  if stream._s1.has_characteristics(s:SIZED) && stream._s2.has_characteristics(s:SIZED)
-    " 1/0 when overflow
+  if and(stream._characteristics, s:SIZED)
     function! stream.__estimate_size__() abort
-      let size1 = self._s1.__estimate_size__()
-      let size2 = self._s2.__estimate_size__()
-      return size1 + size2 >= size1 ? size1 + size2 : 1/0
+      let sizes = [len(self.__read_too_much)] +
+      \           map(copy(self._streams), 'v:val.__estimate_size__()')
+      return self.__sum__(sizes)
+    endfunction
+    " 1/0 when overflow
+    function! stream.__sum__(sizes) abort
+      if len(a:sizes) <= 1
+        return a:sizes[0]
+      else
+        let [size1, size2; others] = a:sizes
+        return size1 + size2 >= size1 ?
+        \         self.__sum__([size1 + size2] + others) : 1/0
+      endif
     endfunction
   else
     function! stream.__estimate_size__() abort
@@ -298,6 +326,14 @@ function! s:concat(s1, s2) abort
     endfunction
   endif
   return stream
+endfunction
+
+function! s:_concat_characteristics(characteristics_list) abort
+  if len(a:characteristics_list) <= 1
+    return a:characteristics_list[0]
+  endif
+  let [c1, c2; others] = a:characteristics_list
+  return s:_concat_characteristics([and(c1, c2)] + others)
 endfunction
 
 
@@ -715,8 +751,8 @@ function! s:Stream.zip_with_index() abort
   return s:zip(s:iterate(0, 'v:val + 1'), self)
 endfunction
 
-function! s:Stream.concat(stream) abort
-  return s:concat(self, a:stream)
+function! s:Stream.concat(stream, ...) abort
+  return call('s:concat', [self, a:stream] + a:000)
 endfunction
 
 function! s:Stream.reduce(f, ...) abort

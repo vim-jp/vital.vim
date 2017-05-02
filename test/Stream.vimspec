@@ -501,6 +501,35 @@ Describe Stream
         \[1,2,3,4,5])
     End
 
+    It constructs stream from 3 or more than streams
+      Assert Equals(
+        \Stream.concat(
+          \Stream.of(1),
+          \Stream.of(2),
+          \Stream.of(3))
+        \.to_list(),
+        \[1,2,3])
+
+      Assert Equals(
+        \Stream.concat(
+          \Stream.of(1),
+          \Stream.of(2),
+          \Stream.empty(),
+          \Stream.of(3))
+        \.to_list(),
+        \[1,2,3])
+    End
+
+    It constructs stream from 3 or more than streams (method version)
+      Assert Equals(
+        \Stream.of(1).concat(Stream.of(2), Stream.of(3)).to_list(),
+        \[1,2,3])
+
+      Assert Equals(
+        \Stream.of(1).concat(Stream.of(2), Stream.empty(), Stream.of(3)).to_list(),
+        \[1,2,3])
+    End
+
     It constructs infinite stream with function (method version)
       Assert Equals(
         \Stream.of(1,2,3).concat(Stream.of(4,5)).to_list(),
