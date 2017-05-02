@@ -866,15 +866,19 @@ function! s:_get_callfunc_for_func0(f, callee) abort
   endif
 endfunction
 
-function! s:_call_closure0(closure, _args) abort
+" @vimlint(EVL103, 1, a:args)
+function! s:_call_closure0(closure, args) abort
   return a:closure.call()
 endfunction
+" @vimlint(EVL103, 0, a:args)
 
 " a:expr is passed to v:val (but it is not meaningless value because
 " a:expr should not have 'v:val')
-function! s:_call_func0_expr(expr, _args) abort
+" @vimlint(EVL103, 1, a:args)
+function! s:_call_func0_expr(expr, args) abort
   return map([a:expr], a:expr)[0]
 endfunction
+" @vimlint(EVL103, 0, a:args)
 
 " Get funcref of call()-ish function to call a:f (arity is 1)
 " (see also s:_call_func1_expr())
