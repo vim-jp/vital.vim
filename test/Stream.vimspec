@@ -304,6 +304,20 @@ Describe Stream
     It constructs infinite stream with function
       Assert Equals(
         \Stream.zip(
+          \Stream.empty(),
+          \Stream.empty())
+        \.to_list(),
+        \[])
+
+      Assert Equals(
+        \Stream.zip(
+          \Stream.empty(),
+          \Stream.of(1))
+        \.to_list(),
+        \[])
+
+      Assert Equals(
+        \Stream.zip(
           \Stream.of(1,2,3),
           \Stream.of(4,5,6))
         \.to_list(),
@@ -375,13 +389,29 @@ Describe Stream
           \[[1,4,7], [2,5,8], [3,6,9]])
 
       Assert Equals(
+          \Stream.of(1,2,3).zip(Stream.of(4,5,6), Stream.of(7,8,9))
+                \.to_list(),
+          \[[1,4,7], [2,5,8], [3,6,9]])
+
+      Assert Equals(
           \Stream.zip(Stream.of(1), Stream.of(4,5,6), Stream.of(7,8,9))
+                \.to_list(),
+          \[[1,4,7]])
+
+      Assert Equals(
+          \Stream.of(1).zip(Stream.of(4,5,6), Stream.of(7,8,9))
                 \.to_list(),
           \[[1,4,7]])
 
       Assert Equals(
           \Stream.zip(
               \Stream.iterate(1, 'v:val + 1'),
+              \Stream.of(4,5,6),
+              \Stream.of(7,8,9)).to_list(),
+          \[[1,4,7], [2,5,8], [3,6,9]])
+
+      Assert Equals(
+          \Stream.iterate(1, 'v:val + 1').zip(
               \Stream.of(4,5,6),
               \Stream.of(7,8,9)).to_list(),
           \[[1,4,7], [2,5,8], [3,6,9]])

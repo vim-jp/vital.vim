@@ -614,8 +614,8 @@ function! s:Stream.skip(n) abort
   return stream
 endfunction
 
-function! s:Stream.zip(stream) abort
-  return s:zip(self, a:stream)
+function! s:Stream.zip(stream, ...) abort
+  return call('s:zip', [self, a:stream] + a:000)
 endfunction
 
 function! s:Stream.zip_with_index() abort
