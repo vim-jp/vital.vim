@@ -383,7 +383,8 @@ endfunction
 " 'self._upstream.__take_possible__(n)' does not stop
 " unless .limit(n) was specified in downstream.
 " But regardless of whether .limit(n) was specified,
-" this method must stop for even upstream is infinite stream.
+" this method must stop for even upstream is infinite stream
+" if 'a:f' is not matched at any element in the stream.
 function! s:Stream.take_while(f) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = self._characteristics
