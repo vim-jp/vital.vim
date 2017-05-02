@@ -1,6 +1,6 @@
 Describe Stream
   Before all
-    let Stream = vital#vital#new().import('Stream')
+    let Stream = vital#vital#import('Stream')
 
     function! Id(n) abort
       return a:n
