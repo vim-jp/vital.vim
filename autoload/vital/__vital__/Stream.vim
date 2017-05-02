@@ -763,7 +763,7 @@ endfunction
 
 " a:expr is passed to v:val (but it is not meaningless value because
 " a:expr should not have 'v:val')
-function! s:_call_func0_expr(expr, args) abort
+function! s:_call_func0_expr(expr, _args) abort
   return map([a:expr], a:expr)[0]
 endfunction
 
