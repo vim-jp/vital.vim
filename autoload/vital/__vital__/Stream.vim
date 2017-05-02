@@ -135,16 +135,28 @@ function! s:range(start_inclusive, end_inclusive) abort
 endfunction
 
 function! s:iterate(init, f) abort
+  let l:Call = s:_get_callfunc_for_func1(a:f, 'iterate()')
+  return s:_inf_stream(a:f, a:init, l:Call, 'self._call(self._f, [v:val])')
+endfunction
+
+function! s:generate(f) abort
+  let l:Call = s:_get_callfunc_for_func0(a:f, 'generate()')
+  return s:_inf_stream(a:f, l:Call(a:f, []), l:Call, 'self._call(self._f, [])')
+endfunction
+
+function! s:_inf_stream(f, init, call, expr) abort
   let stream = deepcopy(s:Stream)
   let stream._characteristics = s:ORDERED + s:IMMUTABLE
-  let stream.__value = a:init
   let stream._f = a:f
+  let stream.__value = a:init
+  let stream._call = a:call
+  let stream._expr = a:expr
   function! stream.__take_possible__(n) abort
     let list = []
     let i = 0
     while i < a:n
       let list += [self.__value]
-      let self.__value = map([self.__value], self._f)[0]
+      let self.__value = map([self.__value], self._expr)[0]
       let i += 1
     endwhile
     return [list, 1]
@@ -153,10 +165,6 @@ function! s:iterate(init, f) abort
     return 1/0
   endfunction
   return stream
-endfunction
-
-function! s:generate(f) abort
-  return s:iterate(map([a:f], a:f)[0], a:f)
 endfunction
 
 function! s:zip(s1, s2, ...) abort
@@ -249,13 +257,14 @@ function! s:Stream.peek(f) abort
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
+  let stream._call = s:_get_callfunc_for_func1(a:f, 'peek()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at peek()'
     endif
     let list = self._upstream.__take_possible__(a:n)[0]
-    call map(copy(list), self._f)
+    call map(copy(list), 'self._call(self._f, [v:val])')
     let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
@@ -292,14 +301,17 @@ function! s:Stream.flatmap(f) abort
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
+  let stream._call = s:_get_callfunc_for_func1(a:f, 'flatmap()')
   let stream._f = a:f
   if self.has_characteristics(s:SIZED)
     function! stream.__take_possible__(n) abort
       if self.__end
-        throw 'vital: Stream: stream has already been operated upon or closed at filter()'
+        throw 'vital: Stream: stream has already been operated upon or closed at flatmap()'
       endif
       let list = []
-      for l in map(self._upstream.__take_possible__(1/0)[0], self._f)
+      for l in map(
+      \       self._upstream.__take_possible__(1/0)[0],
+      \       'self._call(self._f, [v:val])')
         if len(l) + len(list) < a:n
           let list += l
         else
@@ -318,7 +330,9 @@ function! s:Stream.flatmap(f) abort
       endif
       let list = []
       while len(list) < a:n
-        for l in map(self._upstream.__take_possible__(a:n)[0], self._f)
+        for l in map(
+        \       self._upstream.__take_possible__(a:n)[0],
+        \       'self._call(self._f, [v:val])')
           if len(l) + len(list) < a:n
             let list += l
           else
@@ -344,16 +358,17 @@ function! s:Stream.filter(f) abort
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
+  let stream._call = s:_get_callfunc_for_func1(a:f, 'filter()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at filter()'
     endif
     let [r, open] = self._upstream.__take_possible__(a:n)
-    let list = filter(r, self._f)
+    let list = filter(r, 'self._call(self._f, [v:val])')
     while open && len(list) < a:n
       let [r, open] = self._upstream.__take_possible__(a:n - len(list))
-      let list += filter(r, self._f)
+      let list += filter(r, 'self._call(self._f, [v:val])')
     endwhile
     let self.__end = !open
     return [list, open]
@@ -374,6 +389,7 @@ function! s:Stream.take_while(f) abort
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
+  let stream._call = s:_get_callfunc_for_func1(a:f, 'take_while()')
   let stream._f = a:f
   let stream._BUFSIZE = 32
   function! stream.__take_possible__(n) abort
@@ -386,7 +402,7 @@ function! s:Stream.take_while(f) abort
     while !do_break
       let [r, open] = self._upstream.__take_possible__(self._BUFSIZE)
       for l:Value in (a:n > 0 ? r : [])
-        if !map([l:Value], self._f)[0]
+        if !map([l:Value], 'self._call(self._f, [v:val])')[0]
           let open = 0
           let do_break = 1
           break
@@ -424,6 +440,7 @@ function! s:Stream.drop_while(f) abort
   let stream._upstream = self
   let stream.__end = 0
   let stream.__skipping = 1
+  let stream._call = s:_get_callfunc_for_func1(a:f, 'drop_while()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     if self.__end
@@ -434,7 +451,7 @@ function! s:Stream.drop_while(f) abort
     while self.__skipping && open
       let [r, open] = self._upstream.__take_possible__(a:n)
       for i in range(len(r))
-        if !map([r[i]], self._f)[0]
+        if !map([r[i]], 'self._call(self._f, [v:val])')[0]
           let self.__skipping = 0
           " min(): https://github.com/vim-jp/issues/issues/1049
           let list = r[min([i, len(r)]) :]
@@ -678,36 +695,15 @@ function! s:Stream.find(f, ...) abort
 endfunction
 
 function! s:Stream.any_match(f) abort
-  let type = type(a:f)
-  if type is s:t_string
-    return self.filter(a:f).find_first(s:NONE) isnot s:NONE
-  elseif type is s:t_func
-    throw 'vital: Stream: any_match(): does not support Funcref yet'
-  else
-    throw 'vital: Stream: any_match(): invalid type argument was given (Funcref or String or Data.Closure)'
-  endif
+  return self.filter(a:f).find_first(s:NONE) isnot s:NONE
 endfunction
 
 function! s:Stream.all_match(f) abort
-  let type = type(a:f)
-  if type is s:t_string
-    return self.filter('!map([v:val], '.string(a:f).')[0]').find_first(s:NONE) is s:NONE
-  elseif type is s:t_func
-    throw 'vital: Stream: all_match(): does not support Funcref yet'
-  else
-    throw 'vital: Stream: all_match(): invalid type argument was given (Funcref or String or Data.Closure)'
-  endif
+  return self.filter(s:_not(a:f, 'all_match()')).find_first(s:NONE) is s:NONE
 endfunction
 
 function! s:Stream.none_match(f) abort
-  let type = type(a:f)
-  if type is s:t_string
-    return self.filter(a:f).find_first(s:NONE) is s:NONE
-  elseif type is s:t_func
-    throw 'vital: Stream: none_match(): does not support Funcref yet'
-  else
-    throw 'vital: Stream: none_match(): invalid type argument was given (Funcref or String or Data.Closure)'
-  endif
+  return self.filter(a:f).find_first(s:NONE) is s:NONE
 endfunction
 
 function! s:Stream.sum() abort
@@ -735,6 +731,40 @@ endfunction
 
 function! s:Stream.foreach(f) abort
   call self.map(a:f).to_list()
+endfunction
+
+function! s:_not(f, callee) abort
+  let type = type(a:f)
+  if type is s:t_func
+    return '!' . string(a:f) . '(v:val)'
+  elseif type is s:t_string
+    return '!map([v:val], ' . string(a:f) . ')[0]'
+  else
+    " TODO: Support Data.Closure
+    throw 'vital: Stream: ' . a:callee
+    \   . ': invalid type argument was given (expected funcref or string)'
+  endif
+endfunction
+
+" Get funcref of call()-ish function to call a:f (arity is 0)
+" (see also s:_call_func0_expr())
+function! s:_get_callfunc_for_func0(f, callee) abort
+  let type = type(a:f)
+  if type is s:t_func
+    return function('call')
+  elseif type is s:t_string
+    return function('s:_call_func0_expr')
+  else
+    " TODO: Support Data.Closure
+    throw 'vital: Stream: ' . a:callee
+    \   . ': invalid type argument was given (expected funcref or string)'
+  endif
+endfunction
+
+" a:expr is passed to v:val (but it is not meaningless value because
+" a:expr should not have 'v:val')
+function! s:_call_func0_expr(expr, args) abort
+  return map([a:expr], a:expr)[0]
 endfunction
 
 " Get funcref of call()-ish function to call a:f (arity is 1)

@@ -1,6 +1,25 @@
 Describe Stream
   Before all
     let Stream = vital#vital#new().import('Stream')
+
+    function! Id(n) abort
+      return a:n
+    endfunction
+    function! Succ(n) abort
+      return a:n + 1
+    endfunction
+    function! IsEven(n) abort
+      return a:n % 2 == 0
+    endfunction
+    function! Answer() abort
+      return 42
+    endfunction
+  End
+
+  After all
+    delfunction Id
+    delfunction Succ
+    delfunction Answer
   End
 
   Describe .has_characteristics()
@@ -247,6 +266,15 @@ Describe Stream
       \   [5,6,7])
     End
 
+    It constructs infinite stream by funcref
+      Assert Equals(
+      \   Stream.iterate(1, function('Id')).limit(3).to_list(),
+      \   [1,1,1])
+      Assert Equals(
+      \   Stream.iterate(5, function('Succ')).limit(3).to_list(),
+      \   [5,6,7])
+    End
+
     It creates stream with characteristics
       let s = Stream.iterate(1, 'v:val + 1')
       Assert Equals(s.has_characteristics(Stream.ORDERED()), 1)
@@ -262,6 +290,12 @@ Describe Stream
     It constructs infinite stream with function
       Assert Equals(
       \ Stream.generate('42').limit(5).to_list(),
+      \ [42, 42, 42, 42, 42])
+    End
+
+    It constructs infinite stream with function
+      Assert Equals(
+      \ Stream.generate(function('Answer')).limit(5).to_list(),
       \ [42, 42, 42, 42, 42])
     End
   End
@@ -539,6 +573,17 @@ Describe Stream
       unlet g:peek
     End
 
+    It peeks stream by funcref
+      let g:peek = []
+      function! Add(v) abort
+        let g:peek += [a:v]
+      endfunction
+      Assert Equals(Stream.of(1,2,3).peek(function('Add')).to_list(), [1,2,3])
+      Assert Equals(g:peek, [1,2,3])
+      unlet g:peek
+      delfunction Add
+    End
+
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
@@ -590,9 +635,29 @@ Describe Stream
 
   Describe .map()
     It maps stream
+      Assert Equals(Stream.empty().map('v:val + 1').to_list(), [])
+
       Assert Equals(
       \ Stream.iterate(1, 'v:val + 1').map('v:val + 1').limit(3).to_list(),
       \ [2,3,4])
+    End
+
+    It maps stream by funcref
+      Assert Equals(Stream.empty().map(function('Succ')).to_list(), [])
+
+      Assert Equals(
+      \ Stream.iterate(1, 'v:val + 1').map(function('Succ')).limit(3).to_list(),
+      \ [2,3,4])
+    End
+
+    It maps stream by funcref
+      function! F(n) abort
+        return a:n + 1
+      endfunction
+      Assert Equals(
+      \ Stream.iterate(1, 'v:val + 1').map(function('F')).limit(3).to_list(),
+      \ [2,3,4])
+      delfunction F
     End
 
     It must not reuse stream
@@ -651,6 +716,21 @@ Describe Stream
         \[0, 4, 8])
     End
 
+    It flattens mapped stream by funcref
+      function! Repeat(n) abort
+        return repeat([a:n], a:n)
+      endfunction
+
+      Assert Equals(Stream.empty().flatmap(function('Repeat')).to_list(), [])
+
+      Assert Equals(
+        \Stream.iterate(0, function('Succ'))
+          \.flatmap(function('Repeat')).limit(6).to_list(),
+        \[1,2,2,3,3,3])
+
+      delfunction Repeat
+    End
+
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
@@ -674,8 +754,18 @@ Describe Stream
 
   Describe .filter()
     It filters stream
+      Assert Equals(Stream.empty().filter('v:val % 2 == 0').to_list(), [])
+
       Assert Equals(
       \ Stream.iterate(0, 'v:val + 1').filter('v:val % 2 == 0').limit(3).to_list(),
+      \ [0,2,4])
+    End
+
+    It filters stream by funcref
+      Assert Equals(Stream.empty().filter(function('IsEven')).to_list(), [])
+
+      Assert Equals(
+      \ Stream.iterate(0, 'v:val + 1').filter(function('IsEven')).limit(3).to_list(),
       \ [0,2,4])
     End
 
@@ -714,6 +804,25 @@ Describe Stream
       \ [1,2,3])
     End
 
+    It takes elements until element is matched by funcref
+      function! LessThan4(n) abort
+        return a:n < 4
+      endfunction
+
+      Assert Equals(Stream.empty().take_while(function('Id')).to_list(), [])
+      Assert Equals(
+      \ Stream.range(1, 10).take_while(function('LessThan4')).to_list(),
+      \ [1,2,3])
+      Assert Equals(
+      \ Stream.range(1, 10).take_while(function('LessThan4')).limit(2).to_list(),
+      \ [1,2])
+      Assert Equals(
+      \ Stream.iterate(1, function('Succ')).take_while(function('LessThan4')).to_list(),
+      \ [1,2,3])
+
+      delfunction LessThan4
+    End
+
     It must not reuse stream
       try
         let s = Stream.of(1,2,3,4,5)
@@ -746,6 +855,24 @@ Describe Stream
       Assert Equals(
       \ Stream.iterate(1, 'v:val + 1').drop_while('v:val < 4').limit(2).to_list(),
       \ [4,5])
+    End
+
+    It drops elements until element is matched by funcref
+      function! LessThan4(n) abort
+        return a:n < 4
+      endfunction
+
+      Assert Equals(
+      \ Stream.empty().drop_while(function('Id')).to_list(),
+      \ [])
+      Assert Equals(
+      \ Stream.of(1,2,3,4,5).drop_while(function('LessThan4')).to_list(),
+      \ [4,5])
+      Assert Equals(
+      \ Stream.iterate(1, function('Succ')).drop_while(function('LessThan4')).limit(2).to_list(),
+      \ [4,5])
+
+      delfunction LessThan4
     End
 
     It must not reuse stream
@@ -806,6 +933,21 @@ Describe Stream
       \ Stream.iterate(1, 'v:val + 1').limit(3).sorted(by_desc).to_list(),
       \ [3,2,1])
       unlet by_desc
+    End
+
+    It sorts elements by function in stream
+      function! ByDesc(a, b) abort
+        return a:a > a:b ? -1 : a:a ==# a:b ? 0 : 1
+      endfunction
+
+      Assert Equals(Stream.of().sorted(function('ByDesc')).to_list(), [])
+      Assert Equals(Stream.of(2,1,3).sorted(function('ByDesc')).to_list(), [3,2,1])
+      Assert Equals(Stream.of(2,1,3,2,1).sorted(function('ByDesc')).to_list(), [3,2,2,1,1])
+      Assert Equals(
+      \ Stream.iterate(1, 'v:val + 1').limit(3).sorted(function('ByDesc')).to_list(),
+      \ [3,2,1])
+
+      delfunction ByDesc
     End
 
     It sets SORTED characteristic
@@ -875,8 +1017,18 @@ Describe Stream
       endtry
     End
 
-    It returns max value by function in stream
+    It returns max value in stream by string expression
       Assert Equals(Stream.of('aaa', 'bb', '').max_by('len(v:val)'), 'aaa')
+    End
+
+    It returns max value in stream by funcref
+      function! Len(v) abort
+        return len(a:v)
+      endfunction
+
+      Assert Equals(Stream.of('aaa', 'bb', '').max_by(function('Len')), 'aaa')
+
+      delfunction Len
     End
   End
 
@@ -915,8 +1067,18 @@ Describe Stream
       endtry
     End
 
-    It returns min value by function in stream
+    It returns min value in stream by string expression
       Assert Equals(Stream.of('aaa', 'bb', '').min_by('len(v:val)'), '')
+    End
+
+    It returns min value in stream by funcref
+      function! Len(v) abort
+        return len(a:v)
+      endfunction
+
+      Assert Equals(Stream.of('aaa', 'bb', '').min_by(function('Len')), '')
+
+      delfunction Len
     End
   End
 
@@ -959,6 +1121,10 @@ Describe Stream
     It returns the first element matching with given predicate function in stream
       Assert Equals(Stream.iterate(1, 'v:val + 1').find('v:val % 2 == 0'), 2)
     End
+
+    It returns the first element matching with given predicate function in stream by funcref
+      Assert Equals(Stream.iterate(1, 'v:val + 1').find(function('IsEven')), 2)
+    End
   End
 
   Describe .any_match()
@@ -966,6 +1132,22 @@ Describe Stream
       Assert Equals(Stream.empty().any_match('v:val'), 0)
       Assert Equals(Stream.of(1,2,3).any_match('v:val > 2'), 1)
       Assert Equals(Stream.of(1,2,3).any_match('v:val > 3'), 0)
+    End
+
+    It returns boolean value if any elements are matched in stream by funcref
+      function! GreaterThan2(n) abort
+        return a:n > 2
+      endfunction
+      function! GreaterThan3(n) abort
+        return a:n > 3
+      endfunction
+
+      Assert Equals(Stream.empty().any_match(function('Id')), 0)
+      Assert Equals(Stream.of(1,2,3).any_match(function('GreaterThan2')), 1)
+      Assert Equals(Stream.of(1,2,3).any_match(function('GreaterThan3')), 0)
+
+      delfunction GreaterThan2
+      delfunction GreaterThan3
     End
   End
 
@@ -975,6 +1157,22 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3).all_match('v:val > 0'), 1)
       Assert Equals(Stream.of(1,2,3).all_match('v:val > 1'), 0)
     End
+
+    It returns boolean value if all elements are matched in stream by funcref
+      function! GreaterThan0(n) abort
+        return a:n > 0
+      endfunction
+      function! GreaterThan1(n) abort
+        return a:n > 1
+      endfunction
+
+      Assert Equals(Stream.empty().all_match(function('Id')), 1)
+      Assert Equals(Stream.of(1,2,3).all_match(function('GreaterThan0')), 1)
+      Assert Equals(Stream.of(1,2,3).all_match(function('GreaterThan1')), 0)
+
+      delfunction GreaterThan0
+      delfunction GreaterThan1
+    End
   End
 
   Describe .none_match()
@@ -982,6 +1180,22 @@ Describe Stream
       Assert Equals(Stream.empty().none_match('v:val'), 1)
       Assert Equals(Stream.of(1,2,3).none_match('v:val > 3'), 1)
       Assert Equals(Stream.of(1,2,3).none_match('v:val > 2'), 0)
+    End
+
+    It returns boolean value if none elements are matched in stream by funcref
+      function! GreaterThan3(n) abort
+        return a:n > 3
+      endfunction
+      function! GreaterThan2(n) abort
+        return a:n > 2
+      endfunction
+
+      Assert Equals(Stream.empty().none_match(function('Id')), 1)
+      Assert Equals(Stream.of(1,2,3).none_match(function('GreaterThan3')), 1)
+      Assert Equals(Stream.of(1,2,3).none_match(function('GreaterThan2')), 0)
+
+      delfunction GreaterThan3
+      delfunction GreaterThan2
     End
   End
 
