@@ -706,6 +706,11 @@ function! s:Stream.none_match(f) abort
   return self.filter(a:f).find_first(s:NONE) is s:NONE
 endfunction
 
+function! s:Stream.string_join(...) abort
+  let sep = a:0 ? a:1 : ' '
+  return join(self.to_list(), sep)
+endfunction
+
 function! s:Stream.sum() abort
   return self.reduce('v:val[0] + v:val[1]', 0)
 endfunction
