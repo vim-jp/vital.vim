@@ -1066,6 +1066,80 @@ Describe Stream
       Assert Equals(Stream.of(3,1,2,1,2).distinct().to_list(), [3,1,2])
     End
 
+    It dedupes elements in stream with stringifier
+      Assert Equals(Stream.empty().distinct('v:val.value').to_list(), [])
+      Assert Equals(
+        \Stream.of({'value': 1}, {'value': 2}, {'value': 3}).distinct('v:val.value').to_list(),
+        \[{'value': 1}, {'value': 2}, {'value': 3}])
+      Assert Equals(
+        \Stream.of({'value': 1}, {'value': 1}, {'value': 2}, {'value': 2}, {'value': 3}).distinct('v:val.value').to_list(),
+        \[{'value': 1}, {'value': 2}, {'value': 3}])
+      Assert Equals(
+        \Stream.of({'value': 1}, {'value': 2}, {'value': 3}, {'value': 2}, {'value': 3}).distinct('v:val.value').to_list(),
+        \[{'value': 1}, {'value': 2}, {'value': 3}])
+      Assert Equals(
+        \Stream.of({'value': 3}, {'value': 1}, {'value': 2}).distinct('v:val.value').to_list(),
+        \[{'value': 3}, {'value': 1}, {'value': 2}])
+      Assert Equals(
+        \Stream.of({'value': 3}, {'value': 3}, {'value': 1}, {'value': 1}, {'value': 2}).distinct('v:val.value').to_list(),
+        \[{'value': 3}, {'value': 1}, {'value': 2}])
+      Assert Equals(
+        \Stream.of({'value': 3}, {'value': 1}, {'value': 2}, {'value': 1}, {'value': 2}).distinct('v:val.value').to_list(),
+        \[{'value': 3}, {'value': 1}, {'value': 2}])
+    End
+
+    It dedupes elements in stream with stringifier by funcref
+      function! ValueOf(v) abort
+        return a:v.value
+      endfunction
+
+      Assert Equals(Stream.empty().distinct(function('ValueOf')).to_list(), [])
+      Assert Equals(
+        \Stream.of({'value': 1}, {'value': 2}, {'value': 3}).distinct(function('ValueOf')).to_list(),
+        \[{'value': 1}, {'value': 2}, {'value': 3}])
+      Assert Equals(
+        \Stream.of({'value': 1}, {'value': 1}, {'value': 2}, {'value': 2}, {'value': 3}).distinct(function('ValueOf')).to_list(),
+        \[{'value': 1}, {'value': 2}, {'value': 3}])
+      Assert Equals(
+        \Stream.of({'value': 1}, {'value': 2}, {'value': 3}, {'value': 2}, {'value': 3}).distinct(function('ValueOf')).to_list(),
+        \[{'value': 1}, {'value': 2}, {'value': 3}])
+      Assert Equals(
+        \Stream.of({'value': 3}, {'value': 1}, {'value': 2}).distinct(function('ValueOf')).to_list(),
+        \[{'value': 3}, {'value': 1}, {'value': 2}])
+      Assert Equals(
+        \Stream.of({'value': 3}, {'value': 3}, {'value': 1}, {'value': 1}, {'value': 2}).distinct(function('ValueOf')).to_list(),
+        \[{'value': 3}, {'value': 1}, {'value': 2}])
+      Assert Equals(
+        \Stream.of({'value': 3}, {'value': 1}, {'value': 2}, {'value': 1}, {'value': 2}).distinct(function('ValueOf')).to_list(),
+        \[{'value': 3}, {'value': 1}, {'value': 2}])
+
+      delfunction ValueOf
+    End
+
+    It dedupes elements in stream with stringifier by Data.Closure
+      let value_of = Closure.from_expr('a:1.value')
+
+      Assert Equals(Stream.empty().distinct(value_of).to_list(), [])
+      Assert Equals(
+        \Stream.of({'value': 1}, {'value': 2}, {'value': 3}).distinct(value_of).to_list(),
+        \[{'value': 1}, {'value': 2}, {'value': 3}])
+      Assert Equals(
+        \Stream.of({'value': 1}, {'value': 1}, {'value': 2}, {'value': 2}, {'value': 3}).distinct(value_of).to_list(),
+        \[{'value': 1}, {'value': 2}, {'value': 3}])
+      Assert Equals(
+        \Stream.of({'value': 1}, {'value': 2}, {'value': 3}, {'value': 2}, {'value': 3}).distinct(value_of).to_list(),
+        \[{'value': 1}, {'value': 2}, {'value': 3}])
+      Assert Equals(
+        \Stream.of({'value': 3}, {'value': 1}, {'value': 2}).distinct(value_of).to_list(),
+        \[{'value': 3}, {'value': 1}, {'value': 2}])
+      Assert Equals(
+        \Stream.of({'value': 3}, {'value': 3}, {'value': 1}, {'value': 1}, {'value': 2}).distinct(value_of).to_list(),
+        \[{'value': 3}, {'value': 1}, {'value': 2}])
+      Assert Equals(
+        \Stream.of({'value': 3}, {'value': 1}, {'value': 2}, {'value': 1}, {'value': 2}).distinct(value_of).to_list(),
+        \[{'value': 3}, {'value': 1}, {'value': 2}])
+    End
+
     It stops for infinite stream if downstream limited the number elements
       Assert Equals(
       \ Stream.iterate(0, '(v:val + 1) % 3').distinct().limit(6).to_list(),
