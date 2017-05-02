@@ -1,6 +1,27 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+" ============= Design of Internal API =============
+"
+" * __take_possible__(n)
+"   * n must be 0 or positive
+"     * callee must not pass negative value
+"     * in order to take all elements from the stream, pass 1/0
+"   * this function returns '[list, open]'
+"     * 'len(list) <= n'
+"     * callee must not invoke this function after 'open == 0' is returned
+" * `__estimate_size__()`
+"   * this function must not change stream's state
+"   * if the number of elements is 'unknown', 1/0 is returned
+"     * 'flatmap()' cannot determine the number of elements of the result
+"     * 'Stream.of(0,1,2,3).flatmap({n -> repeat([n], n)}).to_list() == [1,2,2,3,3,3]'
+"     * 'Stream.of(0,1,2,3).flatmap({n -> repeat([n], n)}).__estimate_size__() == 1/0'
+"   * if the stream is finite stream ('stream.has_characteristics(s:SIZED) == 1'),
+"     returns the number of rest elements
+"   * if the stream is infinite stream ('stream.has_characteristics(s:SIZED) == 0'),
+"     returns 1/0
+"
+
 function! s:_vital_loaded(V) abort
   let s:Closure = a:V.import('Data.Closure')
 endfunction
@@ -265,6 +286,7 @@ function! s:concat(s1, s2) abort
     return [list, !self.__end]
   endfunction
   if stream._s1.has_characteristics(s:SIZED) && stream._s2.has_characteristics(s:SIZED)
+    " 1/0 when overflow
     function! stream.__estimate_size__() abort
       let size1 = self._s1.__estimate_size__()
       let size2 = self._s2.__estimate_size__()
@@ -357,7 +379,7 @@ function! s:Stream.flatmap(f) abort
           let list += l
         else
           " min(): https://github.com/vim-jp/issues/issues/1049
-          let list += l[: min([a:n - len(list) - 1, len(l) - 1])]
+          let list += l[: min([a:n - len(list), len(l)]) - 1]
           break
         endif
       endfor
@@ -365,20 +387,29 @@ function! s:Stream.flatmap(f) abort
       return [list, !self.__end]
     endfunction
   else
+    let stream.__buffer = []
     function! stream.__take_possible__(n) abort
       if self.__end
         throw 'vital: Stream: stream has already been operated upon or closed at filter()'
       endif
       let list = []
       while len(list) < a:n
-        for l in map(
-        \       self._upstream.__take_possible__(a:n)[0],
-        \       'self._call(self._f, [v:val])')
+        if len(self.__buffer) < a:n
+          let self.__buffer += self._upstream.__take_possible__(a:n)[0]
+        endif
+        " min(): https://github.com/vim-jp/issues/issues/1049
+        let end_index = min([a:n, len(self.__buffer)]) - 1
+        let r = self.__buffer[: end_index]
+        let self.__buffer = self.__buffer[end_index + 1 :]
+        " add results to list. len(l) <= a:n when the loop is end
+        for l in map(r, 'self._call(self._f, [v:val])')
           if len(l) + len(list) < a:n
             let list += l
           else
             " min(): https://github.com/vim-jp/issues/issues/1049
-            let list += l[: min([a:n - len(list) - 1, len(l) - 1])]
+            let end_index = min([a:n - len(list), len(l)]) - 1
+            let list += l[: end_index]
+            let self.__buffer = l[end_index + 1 :] + self.__buffer
             break
           endif
         endfor
@@ -387,7 +418,7 @@ function! s:Stream.flatmap(f) abort
       return [list, !self.__end]
     endfunction
   endif
-  " stream count may decrease / be as-is / increase
+  " the number of elements in stream is unknown (decreased, as-is, or increased)
   function! stream.__estimate_size__() abort
     return 1/0
   endfunction
@@ -433,17 +464,20 @@ function! s:Stream.take_while(f) abort
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'take_while()')
   let stream._f = a:f
-  let stream._BUFSIZE = 32
+  let stream._BULK_SIZE = 32
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
     endif
+    let open = (self._upstream.__estimate_size__() > 0)
+    if a:n ==# 0
+      return [[], open]
+    endif
     let do_break = 0
     let list = []
-    let open = (self._upstream.__estimate_size__() > 0)
     while !do_break
-      let [r, open] = self._upstream.__take_possible__(self._BUFSIZE)
-      for l:Value in (a:n > 0 ? r : [])
+      let [r, open] = self._upstream.__take_possible__(self._BULK_SIZE)
+      for l:Value in r
         if !map([l:Value], 'self._call(self._f, [v:val])')[0]
           let open = 0
           let do_break = 1
@@ -489,7 +523,7 @@ function! s:Stream.drop_while(f) abort
       throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
     endif
     let list = []
-    let open = self.__estimate_size__()
+    let open = (self.__estimate_size__() > 0)
     while self.__skipping && open
       let [r, open] = self._upstream.__take_possible__(a:n)
       for i in range(len(r))
@@ -520,13 +554,20 @@ function! s:Stream.drop_while(f) abort
   return stream
 endfunction
 
-function! s:Stream.distinct() abort
+function! s:Stream.distinct(...) abort
   if self.has_characteristics(s:DISTINCT)
     return self
   endif
   let stream = deepcopy(s:Stream)
   let stream._characteristics = or(self._characteristics, s:DISTINCT)
   let stream._upstream = self
+  if a:0
+    let stream._call = s:_get_callfunc_for_func1(a:1, 'distinct()')
+    let stream._stringify = a:1
+  else
+    let stream._call = function('call')
+    let stream._stringify = function('string')
+  endif
   let stream.__end = 0
   function! stream.__take_possible__(n) abort
     if self.__end
@@ -539,9 +580,10 @@ function! s:Stream.distinct() abort
       let dup = {}
       let uniq_list = []
       for l:Value in list
-        if !has_key(dup, l:Value)
+        let key = self._call(self._stringify, [l:Value])
+        if !has_key(dup, key)
           let uniq_list += [l:Value]
-          let dup[l:Value] = 1
+          let dup[key] = 1
         endif
       endfor
     endif
@@ -562,6 +604,7 @@ function! s:Stream.sorted(...) abort
   let stream._characteristics = or(self._characteristics, s:SORTED)
   let stream._upstream = self
   let stream.__end = 0
+  " see stream.__take_possible__()
   " let stream.__sorted_list = []
   if a:0
     let stream._call = s:_get_callfunc_for_func2(a:1, 'sorted()')
@@ -614,7 +657,7 @@ function! s:Stream.limit(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at limit()'
     endif
-    let list = self._n > 0 ? self._upstream.__take_possible__(self._n)[0] : []
+    let list = self._upstream.__take_possible__(self._n)[0]
     let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
@@ -624,8 +667,6 @@ function! s:Stream.limit(n) abort
   return stream
 endfunction
 
-" if stream.__n is greater than 0, the stream is skipping.
-" otherwise not skipping (just return given list from upstream)
 function! s:Stream.skip(n) abort
   if a:n < 0
     throw 'vital: Stream: skip(n): n must be 0 or positive'
@@ -644,7 +685,7 @@ function! s:Stream.skip(n) abort
     endif
     let open = self.__estimate_size__() > 0
     if self.__n > 0 && open
-      let [_, open] = self._upstream.__take_possible__(self.__n)
+      let open = self._upstream.__take_possible__(self.__n)[1]
       let self.__n = 0
     endif
     let list = []
@@ -680,7 +721,7 @@ endfunction
 
 function! s:Stream.reduce(f, ...) abort
   let l:Call = s:_get_callfunc_for_func2(a:f, 'reduce()')
-  let list = s:_get_present_list_or_throw(
+  let list = s:_get_non_empty_list_or_default(
   \                 self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'reduce()')
   let l:Result = list[0]
   for l:Value in list[1:]
@@ -690,13 +731,13 @@ function! s:Stream.reduce(f, ...) abort
 endfunction
 
 function! s:Stream.max(...) abort
-  return max(s:_get_present_list_or_throw(
+  return max(s:_get_non_empty_list_or_default(
   \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'max()'))
 endfunction
 
 function! s:Stream.max_by(f, ...) abort
   let l:Call = s:_get_callfunc_for_func1(a:f, 'max_by()')
-  let list = s:_get_present_list_or_throw(
+  let list = s:_get_non_empty_list_or_default(
   \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'max_by()')
   let result = [list[0], l:Call(a:f, [list[0]])]
   for l:Value in list[1:]
@@ -709,13 +750,13 @@ function! s:Stream.max_by(f, ...) abort
 endfunction
 
 function! s:Stream.min(...) abort
-  return min(s:_get_present_list_or_throw(
+  return min(s:_get_non_empty_list_or_default(
   \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'min()'))
 endfunction
 
 function! s:Stream.min_by(f, ...) abort
   let l:Call = s:_get_callfunc_for_func1(a:f, 'min_by()')
-  let list = s:_get_present_list_or_throw(
+  let list = s:_get_non_empty_list_or_default(
   \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'min_by()')
   let result = [list[0], l:Call(a:f, [list[0]])]
   for l:Value in list[1:]
@@ -728,8 +769,8 @@ function! s:Stream.min_by(f, ...) abort
 endfunction
 
 function! s:Stream.find_first(...) abort
-  return s:_get_present_list_or_throw(
-  \           self, 1, a:0 ? [a:1] : s:NONE, 'min()')[0]
+  return s:_get_non_empty_list_or_default(
+  \           self, 1, a:0 ? [a:1] : s:NONE, 'find_first()')[0]
 endfunction
 
 function! s:Stream.find(f, ...) abort
@@ -867,7 +908,7 @@ endfunction
 " a:expr should not have 'v:val')
 " @vimlint(EVL103, 1, a:args)
 function! s:_call_func0_expr(expr, args) abort
-  return map([a:expr], a:expr)[0]
+  return eval(a:expr)
 endfunction
 " @vimlint(EVL103, 0, a:args)
 
@@ -893,7 +934,7 @@ function! s:_call_closure1(closure, args) abort
   return a:closure.call(a:args[0])
 endfunction
 
-" List of one element is passed to v:val
+" a:args[0] is passed to v:val
 function! s:_call_func1_expr(expr, args) abort
   return map(a:args, a:expr)[0]
 endfunction
@@ -925,7 +966,7 @@ function! s:_call_func2_expr(expr, args) abort
   return map([a:args], a:expr)[0]
 endfunction
 
-function! s:_get_present_list_or_throw(stream, size, default, callee) abort
+function! s:_get_non_empty_list_or_default(stream, size, default, callee) abort
   if a:stream.__estimate_size__() ==# 0
     let list = []
   else
