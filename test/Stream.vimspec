@@ -50,9 +50,16 @@ Describe Stream
   End
 
   Describe .of()
+    It raises exception for empty arguments
+      try
+        call Stream.of()
+        Assert 0
+      catch
+        Assert 1
+      endtry
+    End
+
     It constructs stream from arguments
-      Assert Equals(Stream.of().count(), 0)
-      Assert Equals(Stream.of().to_list(), [])
       Assert Equals(Stream.of(1).count(), 1)
       Assert Equals(Stream.of(1).to_list(), [1])
       Assert Equals(Stream.of(1,2,3).count(), 3)
@@ -206,8 +213,8 @@ Describe Stream
 
   Describe .empty()
     It constructs empty stream
-      Assert Equals(Stream.empty().count(), Stream.of().count())
-      Assert Equals(Stream.empty().to_list(), Stream.of().to_list())
+      Assert Equals(Stream.empty().count(), 0)
+      Assert Equals(Stream.empty().to_list(), [])
     End
 
     It creates stream with characteristics
@@ -356,13 +363,13 @@ Describe Stream
       Assert Equals(
         \Stream.zip(
           \Stream.of(1),
-          \Stream.of())
+          \Stream.empty())
         \.to_list(),
         \[])
 
       Assert Equals(
         \Stream.zip(
-          \Stream.of(),
+          \Stream.empty(),
           \Stream.of(1))
         \.to_list(),
         \[])
@@ -475,13 +482,13 @@ Describe Stream
       Assert Equals(
         \Stream.concat(
           \Stream.of(1,2,3),
-          \Stream.of())
+          \Stream.empty())
         \.to_list(),
         \[1,2,3])
 
       Assert Equals(
         \Stream.concat(
-          \Stream.of(),
+          \Stream.empty(),
           \Stream.of(4,5))
         \.to_list(),
         \[4,5])
@@ -1038,7 +1045,7 @@ Describe Stream
 
   Describe .distinct()
     It dedupes elements in stream
-      Assert Equals(Stream.of().distinct().to_list(), [])
+      Assert Equals(Stream.empty().distinct().to_list(), [])
       Assert Equals(Stream.of(1,2,3).distinct().to_list(), [1,2,3])
       Assert Equals(Stream.of(1,1,2,2,3).distinct().to_list(), [1,2,3])
       Assert Equals(Stream.of(1,2,3,2,3).distinct().to_list(), [1,2,3])
@@ -1056,7 +1063,7 @@ Describe Stream
 
   Describe .sorted()
     It sorts elements in stream without comparator
-      Assert Equals(Stream.of().sorted().to_list(), [])
+      Assert Equals(Stream.empty().sorted().to_list(), [])
       Assert Equals(Stream.of(2,1,3).sorted().to_list(), [1,2,3])
       Assert Equals(Stream.of(2,1,3,2,1).sorted().to_list(), [1,1,2,2,3])
       Assert Equals(
@@ -1067,7 +1074,7 @@ Describe Stream
 
     It sorts elements in stream with comparator
       let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
-      Assert Equals(Stream.of().sorted(by_desc).to_list(), [])
+      Assert Equals(Stream.empty().sorted(by_desc).to_list(), [])
       Assert Equals(Stream.of(2,1,3).sorted(by_desc).to_list(), [3,2,1])
       Assert Equals(Stream.of(2,1,3,2,1).sorted(by_desc).to_list(), [3,2,2,1,1])
       Assert Equals(
@@ -1078,7 +1085,7 @@ Describe Stream
 
     It sorts elements in stream with comparator by funcref
       let by_desc = Closure.from_expr('a:1 > a:2 ? -1 : a:1 ==# a:2 ? 0 : 1')
-      Assert Equals(Stream.of().sorted(by_desc).to_list(), [])
+      Assert Equals(Stream.empty().sorted(by_desc).to_list(), [])
       Assert Equals(Stream.of(2,1,3).sorted(by_desc).to_list(), [3,2,1])
       Assert Equals(Stream.of(2,1,3,2,1).sorted(by_desc).to_list(), [3,2,2,1,1])
       Assert Equals(
@@ -1381,7 +1388,7 @@ Describe Stream
 
   Describe .string_join()
     It joins elements in stream
-      Assert Equals(Stream.of().string_join(), '')
+      Assert Equals(Stream.empty().string_join(), '')
       Assert Equals(Stream.of(1).string_join(), '1')
       Assert Equals(Stream.of(1,2,3).string_join(), '1 2 3')
       Assert Equals(Stream.of(1,2,3).string_join(','), '1,2,3')
@@ -1393,7 +1400,7 @@ Describe Stream
 
   Describe .group_by()
     It groups stream
-      Assert Equals(Stream.of().group_by('v:val'), {})
+      Assert Equals(Stream.empty().group_by('v:val'), {})
       Assert Equals(Stream.of(1).group_by('v:val'), {'1': [1]})
       Assert Equals(Stream.of(1,2,3).group_by('v:val'), {'1': [1], '2': [2], '3': [3]})
       Assert Equals(Stream.of(1,2,3,2,1).group_by('v:val'), {'1': [1,1], '2': [2,2], '3': [3]})
@@ -1407,7 +1414,7 @@ Describe Stream
         return len(a:v)
       endfunction
 
-      Assert Equals(Stream.of().group_by(function('Id')), {})
+      Assert Equals(Stream.empty().group_by(function('Id')), {})
       Assert Equals(Stream.of(1).group_by(function('Id')), {'1': [1]})
       Assert Equals(Stream.of(1,2,3).group_by(function('Id')), {'1': [1], '2': [2], '3': [3]})
       Assert Equals(Stream.of(1,2,3,2,1).group_by(function('Id')), {'1': [1,1], '2': [2,2], '3': [3]})
@@ -1422,7 +1429,7 @@ Describe Stream
       let id = Closure.from_expr('a:1')
       let len = Closure.from_funcname('len')
 
-      Assert Equals(Stream.of().group_by(id), {})
+      Assert Equals(Stream.empty().group_by(id), {})
       Assert Equals(Stream.of(1).group_by(id), {'1': [1]})
       Assert Equals(Stream.of(1,2,3).group_by(id), {'1': [1], '2': [2], '3': [3]})
       Assert Equals(Stream.of(1,2,3,2,1).group_by(id), {'1': [1,1], '2': [2,2], '3': [3]})
@@ -1437,7 +1444,7 @@ Describe Stream
 
   Describe .to_dict()
     It converts elements to Dictionary in stream
-      Assert Equals(Stream.of().to_dict('v:val', 'v:val'), {})
+      Assert Equals(Stream.empty().to_dict('v:val', 'v:val'), {})
       Assert Equals(Stream.of(1).to_dict('v:val', 'v:val'), {'1': 1})
       Assert Equals(Stream.of(1,2,3).to_dict('v:val', 'v:val'), {'1': 1, '2': 2, '3': 3})
       Assert Equals(Stream.of('foo', 'bar', 'baz').to_dict('v:val', 'v:val'), {'foo': 'foo', 'bar': 'bar', 'baz': 'baz'})
@@ -1482,7 +1489,7 @@ Describe Stream
         return len(a:v)
       endfunction
 
-      Assert Equals(Stream.of().to_dict(function('Id'), function('Id')), {})
+      Assert Equals(Stream.empty().to_dict(function('Id'), function('Id')), {})
       Assert Equals(Stream.of(1).to_dict(function('Id'), function('Id')), {'1': 1})
       Assert Equals(Stream.of(1,2,3).to_dict(function('Id'), function('Id')), {'1': 1, '2': 2, '3': 3})
       Assert Equals(Stream.of('foo', 'bar', 'baz').to_dict(function('Id'), function('Id')), {'foo': 'foo', 'bar': 'bar', 'baz': 'baz'})
@@ -1542,7 +1549,7 @@ Describe Stream
       let id = Closure.from_expr('a:1')
       let len = Closure.from_funcname('len')
 
-      Assert Equals(Stream.of().to_dict(id, id), {})
+      Assert Equals(Stream.empty().to_dict(id, id), {})
       Assert Equals(Stream.of(1).to_dict(id, id), {'1': 1})
       Assert Equals(Stream.of(1,2,3).to_dict(id, id), {'1': 1, '2': 2, '3': 3})
       Assert Equals(Stream.of('foo', 'bar', 'baz').to_dict(id, id), {'foo': 'foo', 'bar': 'bar', 'baz': 'baz'})
@@ -1598,7 +1605,7 @@ Describe Stream
 
   Describe .sum()
     It sums elements in stream
-      Assert Equals(Stream.of().sum(), 0)
+      Assert Equals(Stream.empty().sum(), 0)
       Assert Equals(Stream.of(1,2,3).sum(), 6)
     End
   End
@@ -1606,7 +1613,7 @@ Describe Stream
   Describe .average()
     It averages elements in stream
       try
-        Assert Equals(Stream.of().average(), 0)
+        Assert Equals(Stream.empty().average(), 0)
         Assert 0
       catch /vital: Stream: average(): empty stream cannot be average()d/
         Assert 1
@@ -1619,25 +1626,25 @@ Describe Stream
 
   Describe .count()
     It counts elements in stream
-      Assert Equals(Stream.of().count(), 0)
+      Assert Equals(Stream.empty().count(), 0)
       Assert Equals(Stream.of(1,2,3).count(), 3)
       Assert Equals(Stream.iterate(1, 'v:val + 1').count(), 1/0)
     End
 
     It counts elements by predicate function in stream
-      Assert Equals(Stream.of().count('v:val'), 0)
+      Assert Equals(Stream.empty().count('v:val'), 0)
       Assert Equals(Stream.of(1,2,3).count('v:val % 2 == 0'), 1)
       Assert Equals(Stream.iterate(1, 'v:val + 1').count('v:val % 2 == 0'), 1/0)
     End
 
     It counts elements by predicate function in stream by funcref
-      Assert Equals(Stream.of().count(function('Id')), 0)
+      Assert Equals(Stream.empty().count(function('Id')), 0)
       Assert Equals(Stream.of(1,2,3).count(function('IsEven')), 1)
       Assert Equals(Stream.iterate(1, 'v:val + 1').count(function('IsEven')), 1/0)
     End
 
     It counts elements by predicate function in stream by Data.Closure
-      Assert Equals(Stream.of().count(function('Id')), 0)
+      Assert Equals(Stream.empty().count(function('Id')), 0)
       Assert Equals(Stream.of(1,2,3).count(Closure.from_expr('a:1 % 2 == 0')), 1)
       Assert Equals(Stream.iterate(1, 'v:val + 1').count(Closure.from_expr('a:1 % 2 == 0')), 1/0)
     End

@@ -74,8 +74,8 @@ function! s:IMMUTABLE() abort
   return s:IMMUTABLE
 endfunction
 
-function! s:of(...) abort
-  return s:_new_from_list(a:000, s:ORDERED + s:SIZED + s:IMMUTABLE, 'of()')
+function! s:of(elem, ...) abort
+  return s:_new_from_list([a:elem] + a:000, s:ORDERED + s:SIZED + s:IMMUTABLE, 'of()')
 endfunction
 
 function! s:chars(str, ...) abort
