@@ -173,7 +173,7 @@ function! s:range(expr, ...) abort
   return stream
 endfunction
 
-" a0 < a1, a2 > 0, a_0 = a0, i >= 0
+" a0 <= a1, a2 > 0, a_0 = a0, i >= 0
 " a_i = a0 + i * a2
 " num = (a1 - a_i) / a2 + 1
 "     = (a1 - a0) / a2 - i + 1
