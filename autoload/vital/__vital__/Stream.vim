@@ -128,32 +128,68 @@ function! s:_new_from_list(list, characteristics, callee) abort
   return stream
 endfunction
 
-function! s:range(start_inclusive, end_inclusive) abort
+" same arguments as Vim script's range()
+function! s:range(expr, ...) abort
+  if a:0 ==# 0
+    let args = [0, a:expr - 1, 1]
+  elseif a:0 ==# 1
+    let args = [a:expr] + a:000 + [1]
+  else
+    let args = [a:expr] + a:000
+  endif
+  if args[2] ==# 0    " E726
+    throw 'vital: Stream: range(): stride is 0'
+  endif
+  if s:_estimate_range_size(args, 0) ==# 0
+    return s:empty()
+  endif
   let stream = s:_new(s:Stream)
   let stream._characteristics =
   \ s:ORDERED + s:DISTINCT + s:SORTED + s:SIZED + s:IMMUTABLE
-  let stream.__index = a:start_inclusive
-  let stream._end_exclusive = a:end_inclusive + 1
+  let stream.__index = 0
+  let stream._args = args
   let stream.__end = 0
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at range()'
     endif
-    " take n, but do not exceed end. and range(1,-1) causes E727 error.
-    " max(): fix overflow
-    let take_n = max([self.__index + a:n - 1, a:n - 1])
-    let end_exclusive = self._end_exclusive - 1
-    let e727_fix = self.__index - 1
-    let end = max([min([take_n, end_exclusive]), e727_fix])
-    let list = range(self.__index, end)
-    let self.__index = end + 1
+    if a:n ==# 0
+      return [[], 1]
+    endif
+    " workaround for E727 error when 'range(1, 1/0)'
+    " a_i = a0 + (n - 1) * a2
+    let args = copy(self._args)
+    let args[1] = args[0] + (a:n - 1) * args[2]
+    " 'call(...)' is non-empty and 's:_slice(...)' is also non-empty
+    " assert a:n != 0
+    let list = s:_slice(call('range', args), self.__index, self.__index + a:n - 1)
+    let self.__index += a:n
     let self.__end = self.__estimate_size__() ==# 0
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
-    return max([self._end_exclusive - self.__index, 0])
+    return s:_estimate_range_size(self._args, self.__index)
   endfunction
   return stream
+endfunction
+
+" a0 < a1, a2 > 0, a_0 = a0, i >= 0
+" a_i = a0 + i * a2
+" num = (a1 - a_i) / a2 + 1
+"     = (a1 - a0) / a2 - i + 1
+"
+" @assert a:args[2] != 0
+" @assert len(a:args) >= 3
+" @assert a:index >= 0
+function! s:_estimate_range_size(args, index) abort
+  let [a0, a1, a2] = a:args
+  if a2 < 0
+    return s:_estimate_range_size([a1, a0, -a2], a:index)
+  elseif a0 > a1
+    return 0
+  else
+    return (a1 - a0) / a2 - a:index + 1
+  endif
 endfunction
 
 function! s:iterate(init, f) abort

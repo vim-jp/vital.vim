@@ -244,7 +244,20 @@ Describe Stream
   End
 
   Describe .range()
+    It throws an exception for invalid arguments
+      try
+        call Stream.range(-2, 2, 0)
+        Assert 0
+      catch /vital: Stream: range(): stride is 0/
+        Assert 1
+      endtry
+    End
+
     It constructs stream from range
+      Assert Equals(
+      \   Stream.range(-2, 2).to_list(),
+      \   [-2,-1,0,1,2])
+
       Assert Equals(
       \   Stream.range(10, 3).to_list(),
       \   [])
@@ -260,6 +273,41 @@ Describe Stream
       Assert Equals(
       \   Stream.range(1, 4).to_list(),
       \   [1,2,3,4])
+    End
+
+    It can omit 2nd or 3rd argument
+      Assert Equals(
+      \   Stream.range(-2, 2, 2).to_list(),
+      \   [-2,0,2])
+
+      Assert Equals(
+      \   Stream.range(3).to_list(),
+      \   [0,1,2])
+      Assert Equals(
+      \   Stream.range(1).to_list(),
+      \   [0])
+      Assert Equals(
+      \   Stream.range(0).to_list(),
+      \   [])
+      Assert Equals(
+      \   Stream.range(-1).to_list(),
+      \   [])
+      Assert Equals(
+      \   Stream.range(-2).to_list(),
+      \   [])
+
+      Assert Equals(
+      \   Stream.range(0, 10, 2).to_list(),
+      \   [0,2,4,6,8,10])
+      Assert Equals(
+      \   Stream.range(0, 9, 2).to_list(),
+      \   [0,2,4,6,8])
+      Assert Equals(
+      \   Stream.range(0, 9, 3).to_list(),
+      \   [0,3,6,9])
+      Assert Equals(
+      \   Stream.range(0, 8, 3).to_list(),
+      \   [0,3,6])
     End
 
     It constructs limited range when .limit() was specified
