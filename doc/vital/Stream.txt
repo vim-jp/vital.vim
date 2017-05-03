@@ -1,0 +1,470 @@
+*vital/Stream.txt*	Java Stream API like streaming library
+
+Maintainer: tyru <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Stream-contents*
+
+INTRODUCTION			|Vital.Stream-introduction|
+EXAMPLES			|Vital.Stream-examples|
+LIMITATION			|Vital.Stream-limitation|
+INTERFACE			|Vital.Stream-interface|
+  FUNCTIONS			  |Vital.Stream-functions|
+STREAM OBJECT			|Vital.Stream-Stream-object|
+INTERMEDIATE OPERATIONS		|Vital.Stream-intermediate-operations|
+TERMINAL OPERATIONS		|Vital.Stream-terminal-operations|
+CHARACTERISTICS			|Vital.Stream-characteristics|
+TODO				|Vital.Stream-todo|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Stream-introduction*
+
+*Vital.Stream* is a streaming library, that the API is made to resemble Java 8
+Stream API.
+
+This module provides:
+
+- **Laziness** like |Vital.Data.LazyList|
+- **chaining** like underscore.vim
+  - https://github.com/haya14busa/underscore.vim
+- Functional interface focusing what you want than how you solve a problem
+  - Stream module builds execution plan instead of you
+- An interface of stream generation function like Java's Spliterator.
+  See |Vital.Stream.generator()|.
+- A higher-order function that supports string expression, |Funcref|,
+  |Vital.Data.Closure|.
+  - String expression: `s:Stream.of(1,2,3).map('v:val * 2')`
+  - Funcref (lambda): `s:Stream.of(1,2,3).map({n -> n * 2})`
+  - Data.Closure: `s:Stream.of(1,2,3).map(s:Closure.from_expr('a:1 * 2'))`
+
+==============================================================================
+EXAMPLES				*Vital.Stream-examples*
+>
+	" Random generator (linear congruential generators)
+	function! s:make_rand() abort
+	  let seed = reltime()[1]
+	  let max = float2nr(pow(2, 31) - 1)
+	  " rand generates random numbers.
+	  " skip(): the first number seems too small...
+	  " map(): limits to 0.0 <= 1.0
+	  " distinct(): gets rid of the same second decimal place of numbers
+	  return s:Stream.iterate(seed, '(48271 * v:val) % '.max)
+	                \.skip(1)
+	                \.map('v:val / '.max.'.0')
+	                \.distinct('float2nr(round(v:val * 100))')
+	endfunction
+
+	" echo 20 random numbers
+	for d in s:make_rand().limit(20).to_list()
+	  echo d
+	endfor
+<
+==============================================================================
+LIMITATION				*Vital.Stream-limitation*
+
+NOTE: A stream is not reusable as same as Java Stream API. This limitation
+allows internal optimization in the point of view of immutability.
+
+>
+  let s = Stream.of([1,2,3,4,5])
+  call s.map('v:val + 1').to_list()
+  " This throws 'vital: Stream: stream has already been operated upon or closed'
+  call s.map('v:val + 1').to_list()
+<
+==============================================================================
+INTERFACE				*Vital.Stream-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Stream-functions*
+
+empty()					*Vital.Stream.empty()*
+	Shortcut for `s:Stream.from_list([])` .
+
+of({elem1} [, {elem2} ...])		*Vital.Stream.of()*
+	Shortcut for `s:Stream.from_list([{elem1} [, {elem2} ...]])` .
+
+chars({str} [, {characteristics}])	*Vital.Stream.chars()*
+	Shortcut for `s:Stream.from_list(split(str, '\zs'), characteristics)` .
+
+lines({str} [, {characteristics}])	*Vital.Stream.lines()*
+	Shortcut for `s:Stream.from_list(split(str, '\r\?\n', 1), characteristics)` .
+	but this makes empty stream for empty string.
+
+from_dict({dict} [, {characteristics}])	*Vital.Stream.from_dict()*
+	Shortcut for `s:Stream.from_list(items(dict), characteristics)` .
+	Default {characteristics} is `[DISTINCT(), SIZED(), IMMUTABLE()]` .
+
+from_list({list} [, {characteristics}])	*Vital.Stream.from_list()*
+	This makes a stream of elements of {list}.
+	See |Vital.Stream-Stream.has_characteristics()| for {characteristics}.
+
+ORDERED()		*Vital.Stream.ORDERED()*
+	Characteristic value signifying that an encounter order is defined for
+	elements.  See also |Vital.Stream-Stream.has_characteristics()|.
+
+DISTINCT()		*Vital.Stream.DISTINCT()*
+	Characteristic value signifying that, for each pair of encountered
+	elements x, y, `x != y` . See also
+	|Vital.Stream-Stream.has_characteristics()|.
+
+SORTED()		*Vital.Stream.SORTED()*
+	Characteristic value signifying that encounter order follows a defined
+	sort order. See also |Vital.Stream-Stream.has_characteristics()|.
+
+SIZED()			*Vital.Stream.SIZED()*
+	Characteristic value signifying that the value returned from internal
+	API `stream.__estimate_size__()` prior to traversal or splitting
+	represents a finite size that, in the absence of structural source
+	modification, represents an exact count of the number of elements that
+	would be encountered by a complete traversal. See also
+	|Vital.Stream-Stream.has_characteristics()|.
+
+IMMUTABLE()		*Vital.Stream.IMMUTABLE()*
+	Characteristic value signifying that the element source cannot be
+	structurally modified; that is, elements cannot be added, replaced, or
+	removed, so such changes cannot occur during traversal.  See also
+	|Vital.Stream-Stream.has_characteristics()|.
+
+			*Vital.Stream.zip()*
+zip({stream1}, {stream2} [, {stream3} ...])
+	Combines given streams with the minimum number of elements.
+>
+	" Output is '[[1,3], [2,4]]'
+	echo s:Stream.zip(s:Stream.of(1,2), s:Stream.of(3,4)).to_list()
+
+	" Output is '[[1,3]]'
+	echo s:Stream.zip(s:Stream.of(1,2), s:Stream.of(3)).to_list()
+
+	" Output is '[[1,3,5], [2,4,6]]'
+	echo s:Stream.zip(
+	      \s:Stream.of(1,2),
+	      \s:Stream.of(3,4),
+	      \s:Stream.of(5,6))
+	        \.to_list()
+
+	" You can zip infinite stream and finite stream
+	" Output is '[[1,'foo'], [2,'bar'], [3,'baz']]'
+	echo s:Stream.zip(
+	      \s:Stream.iterate(1, 'v:val + 1'),
+	      \s:Stream.of('foo', 'bar', 'baz))
+	        \.to_list()
+
+	" You can zip two infinite streams
+	" NOTE: .limit(3) prohibits infinite loop
+	" Output is '[[1,-1], [2,-2], [3,-3]]'
+	echo s:Stream.zip(
+	      \s:Stream.iterate(1, 'v:val + 1'),
+	      \s:Stream.iterate(-1, 'v:val - 1'))
+	        \.limit(3).to_list()
+<
+				*Vital.Stream.concat()*
+concat({stream1}, {stream2} [, {stream3} ...])
+	Concatenates given streams.  If any of stream is an inifinite stream,
+	a result stream is an infinite stream.
+>
+	" Output is '[1,2,3,4]'
+	echo s:Stream.concat(s:Stream.of(1,2), s:Stream.of(3,4)).to_list()
+
+	" Output is '[1,2,3]'
+	echo s:Stream.concat(s:Stream.of(1,2), s:Stream.of(3)).to_list()
+
+	" Output is '[1,2,3,4,5,6]'
+	echo s:Stream.concat(
+	      \s:Stream.of(1,2),
+	      \s:Stream.of(3,4),
+	      \s:Stream.of(5,6))
+	        \.to_list()
+
+	" You can combine infinite stream and finite stream
+	" Output is '[1,2,3,4,5]'
+	echo s:Stream.concat(
+	      \s:Stream.of(1,2,3),
+	      \s:Stream.iterate(4, 'v:val + 1'))
+	        \.limit(5).to_list()
+
+	" You can combine two infinite streams
+	" NOTE: .limit(3) prohibits infinite loop
+	" Output is '[[1,-1], [2,-2], [3,-3]]'
+	echo s:Stream.concat(
+	      \s:Stream.iterate(1, 'v:val + 1'),
+	      \s:Stream.iterate(-1, 'v:val - 1'))
+	        \.limit(3).to_list()
+<
+iterate({init}, {func})		*Vital.Stream.iterate()*
+	Generates an infinite stream. {init} is the first element of stream.
+	the second element of stream is the value that {init} is applied to
+	{func}. And the result is applied to {func} until the end (if
+	downstream limited the number of elements, otherwise it results in
+	an infinite-loop).
+>
+	" Output is '[1,2,3]'
+	echo s:Stream.iterate(1, 'v:val + 1').limit(3).to_list()
+<
+generate({func})		*Vital.Stream.generate()*
+	Generates an infinite stream. This is normally used for a constant
+	stream.
+>
+	" Output is '[42,42,42]'
+	echo s:Stream.generate('42').limit(3).to_list()
+<
+	But this can be also used for random number generation if {func}
+	returns random values each time.
+>
+	" Simple (but not so randomized?) implementation
+	echo s:Stream.generate('reltime()[0] % reltime()[1]').first()
+<
+				*Vital.Stream.range()*
+range({expr} [, {max} [, {stride}]])
+	Unlike Vim script's |range()|, this function does not create the large
+	number of elements of List like Vim script's |range()|.
+>
+	" In Vim script, 1/0 is evaluated to the max value of number
+	let very_big_number = 1/0
+	" Output is '[1,2,3]'
+	echo s:Stream.range(1, very_big_number).limit(3).to_list()
+<
+generator({dict})		*Vital.Stream.generator()*
+	Creates an finite/infinite stream from generator object {dict}.
+	{dict} must have the following method:
+
+	yield({n}, {none})
+	  Returns a value used for an element of a stream. If the return value
+	  is same as {none}, the stream ends. {n} is 0 or positive value that
+	  means the number of called times. At the first time, {n} is 0.
+>
+	" This generator creates an infinite stream
+	let dict = {}
+	function! dict.yield(times, NONE) abort
+	  return a:times
+	endfunction
+
+	" Output is '[0,1,2]'
+	echo s:Stream.generator(dict).limit(3).to_list()
+
+	" This generator creates a finite stream
+	let dict = {}
+	function! dict.yield(times, NONE) abort
+	if a:times >= 3
+	  return a:NONE
+	endif
+	  return a:times
+	endfunction
+
+	" Output is '[0,1,2]'
+	echo s:Stream.generator(dict).to_list()
+<
+==============================================================================
+STREAM OBJECT				*Vital.Stream-Stream-object*
+
+				*Vital.Stream-Stream.has_characteristics()*
+Stream.has_characteristics({characteristics})
+	Returns non-zero if the stream has {characteristics}.
+	See also |Vital.Stream-characteristics|.
+
+				*Vital.Stream-Stream.get_comparator()*
+Stream.get_comparator([{default}])
+	Returns a comparator if the stream has a SORTED characteristic and a
+	defined comparator (an argument passed to
+	|Vital.Stream-Stream.sorted()| method).
+	Otherwise, if {default} was given, returns {default}.
+	Or if {default} was not given, throws an exception.
+
+Intermediate operation			*Vital.Stream-intermediate-operations*
+----------------------
+
+Intermediate operations returns |Vital.Stream-Stream-object|.
+
+				*Vital.Stream-Stream.zip()*
+Stream.zip({stream1} [, {stream2} ...])
+	Shortcut for `s:Stream.zip(self, {stream1}, {stream2}, ...)` .
+	See |Vital.Stream.zip()|.
+
+Stream.zip_with_index()		*Vital.Stream-Stream.zip_with_index()*
+	Shortcut for `s:Stream.zip(s:Stream.iterate(1, 'v:val + 1'), self)` .
+	See |Vital.Stream.zip()|.
+
+				*Vital.Stream-Stream.concat()*
+Stream.concat({stream1} [, {stream2} ...])
+	Shortcut for `s:Stream.concat(self, {stream1}, {stream2}, ...)` .
+
+				*Vital.Stream-Stream.peek()*
+Stream.peek({func})
+  TODO
+
+				*Vital.Stream-Stream.map()*
+Stream.map({func})
+	Creates a stream which each element is applied {func}.
+
+  TODO
+
+				*Vital.Stream-Stream.flatmap()*
+Stream.flatmap({func})
+	Creates a flattened stream which each element is applied {func}
+	which returns |List|.
+
+  TODO
+
+				*Vital.Stream-Stream.filter()*
+Stream.filter({func})
+	Creates a filtered stream which each element is matched to {func}.
+
+  TODO
+
+				*Vital.Stream-Stream.slice_before()*
+Stream.slice_before({func})
+  TODO
+
+				*Vital.Stream-Stream.skip()*
+Stream.skip({n})
+  TODO
+
+				*Vital.Stream-Stream.limit()*
+Stream.limit({n})
+  TODO
+
+				*Vital.Stream-Stream.take_while()*
+Stream.take_while({func})
+  TODO
+
+				*Vital.Stream-Stream.drop_while()*
+Stream.drop_while({func})
+  TODO
+
+				*Vital.Stream-Stream.distinct()*
+Stream.distinct([{stringifier}])
+  TODO
+
+				*Vital.Stream-Stream.sorted()*
+Stream.sorted([{comparator}])
+  TODO
+
+Terminal operation			*Vital.Stream-terminal-operations*
+------------------
+
+Terminal operations do not return |Vital.Stream-Stream-object|.
+
+				*Vital.Stream-Stream.foreach()*
+Stream.foreach({func})
+  TODO
+
+				*Vital.Stream-Stream.to_list()*
+Stream.to_list()
+  TODO
+
+				*Vital.Stream-Stream.count()*
+Stream.count([{func}])
+  TODO
+
+				*Vital.Stream-Stream.reduce()*
+Stream.reduce({func} [, {init}])
+  TODO
+
+				*Vital.Stream-Stream.average()*
+Stream.average()
+  TODO
+
+				*Vital.Stream-Stream.sum()*
+Stream.sum()
+  TODO
+
+				*Vital.Stream-Stream.max()*
+Stream.max([{default}])
+  TODO
+
+				*Vital.Stream-Stream.max_by()*
+Stream.max_by({func} [, {default}])
+  TODO
+
+				*Vital.Stream-Stream.min()*
+Stream.min([{default}])
+  TODO
+
+				*Vital.Stream-Stream.min_by()*
+Stream.min_by({func} [, {default}])
+  TODO
+
+				*Vital.Stream-Stream.first()*
+Stream.first([{default}])
+	Returns the first element of a stream.
+
+  TODO
+
+				*Vital.Stream-Stream.last()*
+Stream.last([{default}])
+  TODO
+
+				*Vital.Stream-Stream.find()*
+Stream.find({func} [, {default}])
+	Shortcut for `filter(func).limit(1).first(default)` .
+
+				*Vital.Stream-Stream.any()*
+Stream.any({func})
+  TODO
+
+				*Vital.Stream-Stream.all()*
+Stream.all({func})
+  TODO
+
+				*Vital.Stream-Stream.none()*
+Stream.none({func})
+  TODO
+
+				*Vital.Stream-Stream.to_dict()*
+Stream.to_dict({keymapper}, {valuemapper} [, {mergefunc}])
+  TODO
+
+				*Vital.Stream-Stream.string_join()*
+Stream.string_join([{sep}])
+	|join()| each elements with {sep}.  Default value of {sep} is " " (one
+	whitespace) as well as Vim script's `join()`)
+
+  TODO
+
+				*Vital.Stream-Stream.group_by()*
+Stream.group_by({func})
+  TODO
+
+==============================================================================
+CHARACTERISTICS				*Vital.Stream-characteristics*
+
+A stream has one or more "characteristics",
+and "characteristics" are flags to describe the stream.
+
+- |Vital.Stream.ORDERED()|
+- |Vital.Stream.DISTINCT()|
+- |Vital.Stream.SORTED()|
+- |Vital.Stream.SIZED()|
+- |Vital.Stream.IMMUTABLE()|
+
+The following code checks if a stream has one or more characteristics.
+>
+	let s:Stream = vital#{plugin-name}#new().import('Stream')
+	let stream = s:Stream.of(1,2,3)
+	if stream.has_characteristics(s:Stream.SIZED())
+	  " the stream is finite stream
+	endif
+
+	let stream = s:Stream.iterate(1, 'v:val + 1')
+	if !stream.has_characteristics(s:Stream.SIZED())
+	  " the stream is infinite stream
+	endif
+
+	" you can check two or more characteristics at once
+	let stream = s:Stream.of(2,1,3).sorted()
+	if stream.has_characteristics([s:Stream.SIZED(), s:Stream.SORTED()])
+	  " the stream is finite and sorted stream
+	endif
+<
+
+==============================================================================
+TODO					*Vital.Stream-todo*
+
+- Create an execution plan and unroll a stream flow (do not create a s:Stream
+  object each time functions / methods are called)
+  - `s:Stream.of(1,2,3).skip(1).limit(1)` should create slice operation like
+    `[1,2,3][1:1]`.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
