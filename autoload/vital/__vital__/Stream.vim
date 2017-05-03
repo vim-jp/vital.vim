@@ -878,6 +878,11 @@ function! s:Stream.first(...) abort
   \           self, 1, a:0 ? [a:1] : s:NONE, 'first()')[0]
 endfunction
 
+function! s:Stream.last(...) abort
+  return s:_get_non_empty_list_or_default(
+  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'last()')[-1]
+endfunction
+
 function! s:Stream.find(f, ...) abort
   let s = self.filter(a:f).limit(1)
   return a:0 ? s.first(a:1) : s.first()

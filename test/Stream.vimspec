@@ -1482,6 +1482,27 @@ Describe Stream
     End
   End
 
+  Describe .last()
+    It raises exception for empty stream
+      try
+        call Stream.empty().last()
+        Assert 0
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 1
+      endtry
+      try
+        Assert Equals(Stream.empty().last(42), 42)
+      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
+        Assert 0
+      endtry
+    End
+
+    It returns the last element in stream
+      Assert Equals(Stream.of('aaa', 'bb', '').last(), '')
+      Assert Equals(Stream.iterate(1, 'v:val + 1').filter('v:val % 2 == 0').take_while('v:val <= 10').last(), 10)
+    End
+  End
+
   Describe .find()
     It raises exception for empty stream
       try
