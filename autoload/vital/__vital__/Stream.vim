@@ -5,6 +5,9 @@ set cpo&vim
 
 " ============= Design of Internal API =============
 "
+" * a stream works like queue.
+"   __take_possible__(n) takes n or less elements from queue.
+"
 " * __take_possible__(n)
 "   * n must be 0 or positive
 "     * callee must not pass negative value
@@ -19,7 +22,7 @@ set cpo&vim
 "     * 'Stream.of(0,1,2,3).flatmap({n -> repeat([n], n)}).to_list() == [1,2,2,3,3,3]'
 "     * 'Stream.of(0,1,2,3).flatmap({n -> repeat([n], n)}).__estimate_size__() == 1/0'
 "   * if the stream is finite stream ('stream.has_characteristics(s:SIZED) == 1'),
-"     returns the number of rest elements
+"     returns the number of elements
 "   * if the stream is infinite stream ('stream.has_characteristics(s:SIZED) == 0'),
 "     returns 1/0
 "

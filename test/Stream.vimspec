@@ -388,7 +388,7 @@ Describe Stream
   End
 
   Describe .zip()
-    It constructs infinite stream with function
+    It combines zipped stream
       Assert Equals(
         \Stream.zip(
           \Stream.empty(),
@@ -442,17 +442,24 @@ Describe Stream
         \Stream.zip(
           \Stream.iterate(1, 'v:val + 1'),
           \Stream.of(5, 4, 3, 2, 1))
-        \.limit(5).to_list(),
+        \.to_list(),
         \[[1,5], [2,4], [3,3], [4,2], [5,1]])
+
+      Assert Equals(
+        \Stream.zip(
+          \Stream.iterate(1, 'v:val + 1'),
+          \Stream.iterate(-1, 'v:val - 1'))
+        \.limit(5).to_list(),
+        \[[1,-1], [2,-2], [3,-3], [4,-4], [5,-5]])
     End
 
-    It constructs infinite stream with function
+    It combines zipped stream (method version)
       Assert Equals(
         \Stream.of(1,2,3).zip(Stream.of(4,5,6)).to_list(),
         \[[1,4], [2,5], [3,6]])
     End
 
-    It constructs stream from String with characteristics
+    It combines stream from String with characteristics
       " Use or() for SIZED flag. Use and() for other flags
       let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6))
       Assert True(s.has_characteristics(Stream.ORDERED()))
@@ -468,7 +475,7 @@ Describe Stream
       Assert True(s.has_characteristics(Stream.IMMUTABLE()))
     End
 
-    It constructs stream with 3 or more than streams
+    It combines stream with 3 or more than streams
       Assert Equals(
           \Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9))
                 \.to_list(),
@@ -503,7 +510,7 @@ Describe Stream
           \[[1,4,7], [2,5,8], [3,6,9]])
     End
 
-    It constructs stream with 3 or more than streams with characteristics
+    It combines stream with 3 or more than streams with characteristics
       " Use or() for SIZED flag. Use and() for other flags
       let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9))
       Assert True(s.has_characteristics(Stream.ORDERED()))
@@ -521,7 +528,7 @@ Describe Stream
   End
 
   Describe .zip_with_index()
-    It constructs infinite stream with function
+    It combines infinite stream with function
       Assert Equals(
       \ Stream.empty().zip_with_index().to_list(),
       \ [])
@@ -533,7 +540,7 @@ Describe Stream
   End
 
   Describe .concat()
-    It constructs infinite stream with function
+    It concatenates stream
       Assert Equals(
         \Stream.concat(
           \Stream.of(1,2,3),
@@ -570,7 +577,7 @@ Describe Stream
         \[1,2,3,4,5])
     End
 
-    It constructs stream from 3 or more than streams
+    It concatenates stream from 3 or more than streams
       Assert Equals(
         \Stream.concat(
           \Stream.of(1),
@@ -589,7 +596,7 @@ Describe Stream
         \[1,2,3])
     End
 
-    It constructs stream from 3 or more than streams (method version)
+    It concatenates stream from 3 or more than streams (method version)
       Assert Equals(
         \Stream.of(1).concat(Stream.of(2), Stream.of(3)).to_list(),
         \[1,2,3])
@@ -599,7 +606,7 @@ Describe Stream
         \[1,2,3])
     End
 
-    It constructs infinite stream with function (method version)
+    It concatenates infinite stream with function (method version)
       Assert Equals(
         \Stream.of(1,2,3).concat(Stream.of(4,5)).to_list(),
         \[1,2,3,4,5])
