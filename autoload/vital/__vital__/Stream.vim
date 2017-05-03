@@ -873,26 +873,26 @@ function! s:Stream.min_by(f, ...) abort
   return result[0]
 endfunction
 
-function! s:Stream.find_first(...) abort
+function! s:Stream.first(...) abort
   return s:_get_non_empty_list_or_default(
-  \           self, 1, a:0 ? [a:1] : s:NONE, 'find_first()')[0]
+  \           self, 1, a:0 ? [a:1] : s:NONE, 'first()')[0]
 endfunction
 
 function! s:Stream.find(f, ...) abort
   let s = self.filter(a:f).limit(1)
-  return a:0 ? s.find_first(a:1) : s.find_first()
+  return a:0 ? s.first(a:1) : s.first()
 endfunction
 
 function! s:Stream.any(f) abort
-  return self.filter(a:f).find_first(s:NONE) isnot s:NONE
+  return self.filter(a:f).first(s:NONE) isnot s:NONE
 endfunction
 
 function! s:Stream.all(f) abort
-  return self.filter(s:_not(a:f, 'all()')).find_first(s:NONE) is s:NONE
+  return self.filter(s:_not(a:f, 'all()')).first(s:NONE) is s:NONE
 endfunction
 
 function! s:Stream.none(f) abort
-  return self.filter(a:f).find_first(s:NONE) is s:NONE
+  return self.filter(a:f).first(s:NONE) is s:NONE
 endfunction
 
 function! s:Stream.string_join(...) abort
