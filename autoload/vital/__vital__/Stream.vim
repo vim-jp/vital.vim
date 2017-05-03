@@ -104,7 +104,7 @@ function! s:empty() abort
 endfunction
 
 function! s:_new_from_list(list, characteristics, callee) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = a:characteristics
   let stream.__index = 0
   let stream.__end = 0
@@ -129,7 +129,7 @@ function! s:_new_from_list(list, characteristics, callee) abort
 endfunction
 
 function! s:range(start_inclusive, end_inclusive) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics =
   \ s:ORDERED + s:DISTINCT + s:SORTED + s:SIZED + s:IMMUTABLE
   let stream.__index = a:start_inclusive
@@ -167,7 +167,7 @@ function! s:generate(f) abort
 endfunction
 
 function! s:_inf_stream(f, init, call, expr) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = s:ORDERED + s:IMMUTABLE
   let stream._f = a:f
   let stream.__value = a:init
@@ -190,7 +190,7 @@ function! s:_inf_stream(f, init, call, expr) abort
 endfunction
 
 function! s:generator(dict) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = 0
   let stream._dict = a:dict
   let stream.__end = 0
@@ -223,7 +223,7 @@ function! s:generator(dict) abort
 endfunction
 
 function! s:zip(s1, s2, ...) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics =
   \ s:_zip_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
   let stream.__end = 0
@@ -258,7 +258,7 @@ function! s:_zip_characteristics(characteristics_list) abort
 endfunction
 
 function! s:concat(s1, s2, ...) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics =
   \ s:_concat_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
   let stream.__end = 0
@@ -341,7 +341,7 @@ function! s:Stream.has_characteristics(flags) abort
 endfunction
 
 function! s:Stream.peek(f) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -363,7 +363,7 @@ function! s:Stream.peek(f) abort
 endfunction
 
 function! s:Stream.map(f) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -385,60 +385,40 @@ function! s:Stream.map(f) abort
 endfunction
 
 function! s:Stream.flatmap(f) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream, [s:WithBufferred])
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'flatmap()')
   let stream._f = a:f
-  if self.has_characteristics(s:SIZED)
-    function! stream.__take_possible__(n) abort
-      if self.__end
-        throw 'vital: Stream: stream has already been operated upon or closed at flatmap()'
-      endif
-      let list = []
-      for l in map(
-      \       self._upstream.__take_possible__(1/0)[0],
-      \       'self._call(self._f, [v:val])')
+  function! stream.__take_possible__(n) abort
+    if self.__end
+      throw 'vital: Stream: stream has already been operated upon or closed at filter()'
+    endif
+    let open = (self._upstream.__estimate_size__() > 0)
+    if a:n ==# 0
+      return [[], open]
+    endif
+    let list = []
+    while open && len(list) < a:n
+      let open = self.__read_to_buffer__(a:n)
+      let r = s:_slice(self.__buffer, 0, a:n - 1)
+      let self.__buffer = s:_slice(self.__buffer, a:n)
+      " add results to list. len(l) <= a:n when the loop is end
+      for l in map(r, 'self._call(self._f, [v:val])')
         if len(l) + len(list) < a:n
           let list += l
         else
-          let list += s:_slice(l, 0, a:n - len(list) - 1)
+          let end = a:n - len(list)
+          let list += s:_slice(l, 0, end - 1)
+          let self.__buffer = s:_slice(l, end) + self.__buffer
           break
         endif
       endfor
-      let self.__end = len(list) >= a:n || (self.__estimate_size__() ==# 0)
-      return [list, !self.__end]
-    endfunction
-  else
-    let stream.__buffer = []
-    function! stream.__take_possible__(n) abort
-      if self.__end
-        throw 'vital: Stream: stream has already been operated upon or closed at filter()'
-      endif
-      let list = []
-      while len(list) < a:n
-        if len(self.__buffer) < a:n
-          let self.__buffer += self._upstream.__take_possible__(a:n)[0]
-        endif
-        let r = s:_slice(self.__buffer, 0, a:n - 1)
-        let self.__buffer = s:_slice(self.__buffer, a:n)
-        " add results to list. len(l) <= a:n when the loop is end
-        for l in map(r, 'self._call(self._f, [v:val])')
-          if len(l) + len(list) < a:n
-            let list += l
-          else
-            let end = a:n - len(list)
-            let list += s:_slice(l, 0, end - 1)
-            let self.__buffer = s:_slice(l, end) + self.__buffer
-            break
-          endif
-        endfor
-      endwhile
-      let self.__end = len(list) >= a:n || (self.__estimate_size__() ==# 0)
-      return [list, !self.__end]
-    endfunction
-  endif
+    endwhile
+    let self.__end = !open
+    return [list, !self.__end]
+  endfunction
   " the number of elements in stream is unknown (decreased, as-is, or increased)
   function! stream.__estimate_size__() abort
     return 1/0
@@ -447,7 +427,7 @@ function! s:Stream.flatmap(f) abort
 endfunction
 
 function! s:Stream.filter(f) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -473,13 +453,12 @@ function! s:Stream.filter(f) abort
 endfunction
 
 function! s:Stream.slice_before(f) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream, [s:WithBufferred])
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'slice_before()')
   let stream._f = a:f
-  let stream.__buffer = []
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at slice_before()'
@@ -521,16 +500,6 @@ function! s:Stream.slice_before(f) abort
     endwhile
     return [list, open]
   endfunction
-  " can use 'self.__buffer' instead of 'self._upstream.__take_possible__(n)[0]'
-  " after this function is invoked
-  function! stream.__read_to_buffer__(n) abort
-    let open = (self._upstream.__estimate_size__() > 0)
-    if len(self.__buffer) < a:n && open
-      let [r, open] = self._upstream.__take_possible__(a:n - len(self.__buffer))
-      let self.__buffer += r
-    endif
-    return open || !empty(self.__buffer)
-  endfunction
   " the number of elements in stream is unknown (decreased, as-is, or increased)
   function! stream.__estimate_size__() abort
     return 1/0
@@ -545,7 +514,7 @@ endfunction
 " this method must stop for even upstream is infinite stream
 " if 'a:f' is not matched at any element in the stream.
 function! s:Stream.take_while(f) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -599,7 +568,7 @@ function! s:Stream.take_while(f) abort
 endfunction
 
 function! s:Stream.drop_while(f) abort
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -645,7 +614,7 @@ function! s:Stream.distinct(...) abort
   if self.has_characteristics(s:DISTINCT)
     return self
   endif
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = or(self._characteristics, s:DISTINCT)
   let stream._upstream = self
   if a:0
@@ -688,7 +657,7 @@ function! s:Stream.sorted(...) abort
   if self.has_characteristics(s:SORTED)
     return self
   endif
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = or(self._characteristics, s:SORTED)
   let stream._upstream = self
   let stream.__end = 0
@@ -735,7 +704,7 @@ function! s:Stream.limit(n) abort
   if a:n ==# 0
     return s:empty()
   endif
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = or(self._characteristics, s:SIZED)
   let stream._upstream = self
   let stream.__end = 0
@@ -761,7 +730,7 @@ function! s:Stream.skip(n) abort
   if a:n ==# 0
     return self
   endif
-  let stream = deepcopy(s:Stream)
+  let stream = s:_new(s:Stream)
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -959,6 +928,32 @@ endfunction
 
 function! s:Stream.foreach(f) abort
   call self.map(a:f).to_list()
+endfunction
+
+function! s:_new(base, ...) abort
+  if a:0 ==# 0
+    return deepcopy(a:base)
+  else
+    let base = deepcopy(a:base)
+    for trait in a:1
+      call extend(base, deepcopy(trait))
+    endfor
+    return base
+  endif
+endfunction
+
+" NOTE: This requires '_upstream'.
+let s:WithBufferred = {'__buffer': []}
+
+" can use 'self.__buffer' instead of 'self._upstream.__take_possible__(n)[0]'
+" after this function is invoked
+function! s:WithBufferred.__read_to_buffer__(n) abort
+  let open = (self._upstream.__estimate_size__() > 0)
+  if len(self.__buffer) < a:n && open
+    let [r, open] = self._upstream.__take_possible__(a:n - len(self.__buffer))
+    let self.__buffer += r
+  endif
+  return open || !empty(self.__buffer)
 endfunction
 
 " safe slice
