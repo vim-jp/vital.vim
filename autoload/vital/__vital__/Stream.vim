@@ -175,8 +175,8 @@ endfunction
 
 " a0 <= a1, a2 > 0, a_0 = a0, i >= 0
 " a_i = a0 + i * a2
-" num = (a1 - a_i) / a2 + 1
-"     = (a1 - a0) / a2 - i + 1
+" size([a0,a1,a2],i) = (a1 - a_i) / a2 + 1
+"                    = (a1 - a0) / a2 - i + 1
 "
 " @assert a:args[2] != 0
 " @assert len(a:args) >= 3
@@ -188,7 +188,8 @@ function! s:_estimate_range_size(args, index) abort
   elseif a0 > a1
     return 0
   else
-    return (a1 - a0) / a2 - a:index + 1
+    " if a:index exceeds range, it becomes 0 or negative
+    return max([(a1 - a0) / a2 - a:index + 1, 0])
   endif
 endfunction
 
