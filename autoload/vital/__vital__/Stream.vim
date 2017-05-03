@@ -401,7 +401,8 @@ endfunction
 
 function! s:Stream.map(f) abort
   let stream = s:_new(s:Stream)
-  let stream._characteristics = self._characteristics
+  let stream._characteristics =
+  \ and(self._characteristics, invert(s:DISTINCT + s:SORTED + s:IMMUTABLE))
   let stream._upstream = self
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'map()')
@@ -423,7 +424,8 @@ endfunction
 
 function! s:Stream.flatmap(f) abort
   let stream = s:_new(s:Stream, [s:WithBufferred])
-  let stream._characteristics = self._characteristics
+  let stream._characteristics =
+  \ and(self._characteristics, invert(s:DISTINCT + s:SORTED + s:IMMUTABLE))
   let stream._upstream = self
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'flatmap()')
