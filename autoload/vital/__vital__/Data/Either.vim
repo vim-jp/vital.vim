@@ -106,28 +106,20 @@ function! s:apply(either_func, ...) abort
   endif
   let l:either_values = a:000
 
-  "TODO: Use function('s:is_left') instead when s:List.find() corresponded Funcref
-  function! IsLeftOfEither(either) abort
-    return s:is_left(a:either)
-  endfunction
-  try
-    let l:NULL         = 0 | lockvar l:NULL
-    let l:null_or_left = s:List.find(l:either_values, l:NULL, 'IsLeftOfEither(v:val)')
-    if l:null_or_left isnot l:NULL
-      " ^ if the left value is found, return it
-      return l:null_or_left  " a left value
-    endif
+  let l:NULL         = 0 | lockvar l:NULL
+  let l:null_or_left = s:List.find(l:either_values, l:NULL, function('s:is_left'))
+  if l:null_or_left isnot l:NULL
+    " ^ if the left value is found, return it
+    return l:null_or_left  " a left value
+  endif
 
-    let l:Func   = s:unsafe_from_right(a:either_func)
-    let l:values = []
-    for l:either_value in l:either_values
-      call add(l:values, s:unsafe_from_right(l:either_value))
-    endfor
-    let l:result = s:_get_caller(l:Func)(l:Func, l:values)
-    return s:right(l:result)
-  finally
-    delfunction IsLeftOfEither
-  endtry
+  let l:Func   = s:unsafe_from_right(a:either_func)
+  let l:values = []
+  for l:either_value in l:either_values
+    call add(l:values, s:unsafe_from_right(l:either_value))
+  endfor
+  let l:result = s:_get_caller(l:Func)(l:Func, l:values)
+  return s:right(l:result)
 endfunction
 
 
