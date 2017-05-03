@@ -724,7 +724,7 @@ function! s:Stream.sorted(...) abort
     endif
     let list = s:_slice(self.__sorted_list, 0, a:n - 1)
     let self.__sorted_list = s:_slice(self.__sorted_list, a:n)
-    let self.__end = (self.__estimate_size__() > 0)
+    let self.__end = (self.__estimate_size__() ==# 0)
     return [list, !self.__end]
   endfunction
   function! stream.__compare__(a, b) abort
