@@ -287,11 +287,12 @@ function! s:zip(s1, s2, ...) abort
   return stream
 endfunction
 
-" Use or() for SIZED flag. Use and() for other flags
 function! s:_zip_characteristics(characteristics_list) abort
   if len(a:characteristics_list) <= 1
-    return a:characteristics_list[0]
+    " clears SORTED flag
+    return and(a:characteristics_list[0], invert(s:SORTED))
   endif
+  " or() for SIZED flag. and() for other flags
   let [c1, c2; others] = a:characteristics_list
   let result = or(and(c1, c2), and(or(c1, c2), s:SIZED))
   return s:_zip_characteristics([result] + others)
@@ -359,8 +360,10 @@ endfunction
 
 function! s:_concat_characteristics(characteristics_list) abort
   if len(a:characteristics_list) <= 1
-    return a:characteristics_list[0]
+    " clears DISTINCT,SORTED flag
+    return and(a:characteristics_list[0], invert(s:DISTINCT + s:SORTED))
   endif
+  " and() for all flags
   let [c1, c2; others] = a:characteristics_list
   return s:_concat_characteristics([and(c1, c2)] + others)
 endfunction
@@ -740,6 +743,31 @@ function! s:Stream.sorted(...) abort
     return self._upstream.__estimate_size__()
   endfunction
   return stream
+endfunction
+
+function! s:Stream.get_comparator(...) abort
+  let l:C = a:0 ? a:1 : s:NONE
+  if self.has_characteristics(s:SORTED)
+    let l:C = s:_find_comparator(self, l:C)
+  endif
+  if l:C is s:NONE
+      throw 'vital: Stream: get_comparator(): comparator not found and '
+      \   . 'default argument was not given'
+  endif
+  return l:C
+endfunction
+
+" No need to find a:stream._streams. because only s:zip() and s:concat() have
+" the property and they clear SORTED flag. so get_comparator() method will not
+" call s:_find_comparator().
+function! s:_find_comparator(stream, default) abort
+  if has_key(a:stream, '_comparator')
+    return a:stream._comparator
+  elseif has_key(a:stream, '_upstream')
+    return s:_find_comparator(a:stream._upstream, a:default)
+  else
+    return a:default
+  endif
 endfunction
 
 function! s:Stream.limit(n) abort

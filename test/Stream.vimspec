@@ -1294,10 +1294,24 @@ Describe Stream
       Assert Equals(
       \ Stream.iterate(1, 'v:val + 1').limit(3).sorted(by_desc).to_list(),
       \ [3,2,1])
-      unlet by_desc
     End
 
     It sorts elements in stream with comparator by funcref
+      function! Compare(a, b) abort
+        return a:a > a:b ? -1 : a:a ==# a:b ? 0 : 1
+      endfunction
+
+      Assert Equals(Stream.empty().sorted(function('Compare')).to_list(), [])
+      Assert Equals(Stream.of(2,1,3).sorted(function('Compare')).to_list(), [3,2,1])
+      Assert Equals(Stream.of(2,1,3,2,1).sorted(function('Compare')).to_list(), [3,2,2,1,1])
+      Assert Equals(
+      \ Stream.iterate(1, 'v:val + 1').limit(3).sorted(function('Compare')).to_list(),
+      \ [3,2,1])
+
+      delfunction Compare
+    End
+
+    It sorts elements in stream with comparator by Data.Closure
       let by_desc = Closure.from_expr('a:1 > a:2 ? -1 : a:1 ==# a:2 ? 0 : 1')
       Assert Equals(Stream.empty().sorted(by_desc).to_list(), [])
       Assert Equals(Stream.of(2,1,3).sorted(by_desc).to_list(), [3,2,1])
@@ -1305,7 +1319,6 @@ Describe Stream
       Assert Equals(
       \ Stream.iterate(1, 'v:val + 1').limit(3).sorted(by_desc).to_list(),
       \ [3,2,1])
-      unlet by_desc
     End
 
     It sets SORTED characteristic
@@ -1315,6 +1328,61 @@ Describe Stream
       Assert True(s.has_characteristics(Stream.SORTED()))
       Assert True(s.has_characteristics(Stream.SIZED()))
       Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+    End
+  End
+
+  Describe .get_comparator()
+    It raises exception if comparator is not defined
+      try
+        call Stream.empty().sorted().get_comparator()
+        Assert 0
+      catch /vital: Stream: get_comparator(): comparator not found and default argument was not given/
+        Assert 1
+      endtry
+      try
+        Assert Equals(Stream.empty().sorted().get_comparator(42), 42)
+      catch /vital: Stream: get_comparator(): comparator not found and default argument was not given/
+        Assert 0
+      endtry
+    End
+
+    It raises exception if SORTED flag is not set
+      try
+        call Stream.empty().get_comparator()
+        Assert 0
+      catch /vital: Stream: get_comparator(): comparator not found and default argument was not given/
+        Assert 1
+      endtry
+      try
+        Assert Equals(Stream.empty().get_comparator(42), 42)
+      catch /vital: Stream: get_comparator(): comparator not found and default argument was not given/
+        Assert 0
+      endtry
+
+      let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
+
+      " map() clears SORTED flag
+      Assert Equals(Stream.of(1,2).sorted(by_desc).map('v:val').get_comparator('NONE'), 'NONE')
+
+      " flatmap() clears SORTED flag
+      Assert Equals(Stream.of(1,2).sorted(by_desc).flatmap('[v:val]').get_comparator('NONE'), 'NONE')
+
+      " concat() clears SORTED flag
+      Assert Equals(Stream.of(1,2).sorted(by_desc).concat(Stream.of(3,4)).get_comparator('NONE'), 'NONE')
+      Assert Equals(Stream.of(1,2).concat(Stream.of(3,4).sorted(by_desc)).get_comparator('NONE'), 'NONE')
+
+      " zip() clears SORTED flag
+      Assert Equals(Stream.of(1,2).sorted(by_desc).zip(Stream.of(3,4)).get_comparator('NONE'), 'NONE')
+      Assert Equals(Stream.of(1,2).zip(Stream.of(3,4).sorted(by_desc)).get_comparator('NONE'), 'NONE')
+    End
+
+    It finds a comparator from a upstream
+      let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
+      Assert Equals(Stream.empty().sorted(by_desc).get_comparator(), by_desc)
+      Assert Equals(Stream.of(1,2).sorted(by_desc).get_comparator(), by_desc)
+
+      Assert Equals(Stream.of(1,2).sorted(by_desc).limit(1).get_comparator(), by_desc)
+      Assert Equals(Stream.of(1,2).sorted(by_desc).skip(1).get_comparator(), by_desc)
     End
   End
 
@@ -1671,9 +1739,6 @@ Describe Stream
       Assert Equals(Stream.of('foo', 'bar', 'baz').group_by(id), {'foo': ['foo'], 'bar': ['bar'], 'baz': ['baz']})
       Assert Equals(Stream.of('a', 'bb', 'ccc').group_by(len), {'1': ['a'], '2': ['bb'], '3': ['ccc']})
       Assert Equals(Stream.of('a', 'bb', 'ccc', 'ddd').group_by(len), {'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
-
-      unlet id
-      unlet len
     End
   End
 
@@ -1789,9 +1854,6 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3).to_dict(id, id), {'1': 1, '2': 2, '3': 3})
       Assert Equals(Stream.of('foo', 'bar', 'baz').to_dict(id, id), {'foo': 'foo', 'bar': 'bar', 'baz': 'baz'})
       Assert Equals(Stream.of('a', 'bb', 'ccc').to_dict(len, id), {'1': 'a', '2': 'bb', '3': 'ccc'})
-
-      unlet id
-      unlet len
     End
 
     It converts elements to Dictionary in stream with merge function by Data.Closure
@@ -1830,11 +1892,6 @@ Describe Stream
       catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
         Assert 1
       endtry
-
-      unlet id
-      unlet len
-      unlet list
-      unlet plus
     End
   End
 
