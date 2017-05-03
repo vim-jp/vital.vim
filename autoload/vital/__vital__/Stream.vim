@@ -668,21 +668,24 @@ function! s:Stream.distinct(...) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
     endif
-    let [list, open] = self._upstream.__take_possible__(a:n)
-    if self.has_characteristics(s:SORTED)
-      let uniq_list = uniq(list)
-    else
-      let dup = {}
-      let uniq_list = []
-      for l:Value in list
+    let uniq_list = []
+    let open = (self._upstream.__estimate_size__() > 0)
+    let dup = {}
+    while open && len(uniq_list) < a:n
+      let [r, open] = self._upstream.__take_possible__(a:n - len(uniq_list))
+      for l:Value in r
         let key = self._call(self._stringify, [l:Value])
         if !has_key(dup, key)
           let uniq_list += [l:Value]
+          if len(uniq_list) >= a:n
+            let open = 0
+            break
+          endif
           let dup[key] = 1
         endif
         unlet l:Value
       endfor
-    endif
+    endwhile
     let self.__end = !open
     return [uniq_list, open]
   endfunction
@@ -747,17 +750,18 @@ function! s:Stream.limit(n) abort
   let stream._characteristics = or(self._characteristics, s:SIZED)
   let stream._upstream = self
   let stream.__end = 0
-  let stream._n = a:n
-  function! stream.__take_possible__(...) abort
+  let stream._max_n = a:n
+  function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at limit()'
     endif
-    let list = self._upstream.__take_possible__(self._n)[0]
-    let self.__end = (self.__estimate_size__() ==# 0)
+    let n = min([self._upstream.__estimate_size__(), self._max_n, a:n])
+    let [list, open] = self._upstream.__take_possible__(n)
+    let self.__end = !open
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
-    return min([self._n, self._upstream.__estimate_size__()])
+    return min([self._max_n, self._upstream.__estimate_size__()])
   endfunction
   return stream
 endfunction
