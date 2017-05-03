@@ -106,6 +106,7 @@ function! s:apply(either_func, ...) abort
   endif
   let l:either_values = a:000
 
+  "NOTE: It isn't needed to consider value of other than either. Only either values is considered in here.
   let l:NULL         = 0 | lockvar l:NULL
   let l:null_or_left = s:List.find(l:either_values, l:NULL, function('s:is_left'))
   if l:null_or_left isnot l:NULL
