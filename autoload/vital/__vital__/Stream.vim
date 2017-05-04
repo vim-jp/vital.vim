@@ -746,9 +746,10 @@ function! s:Stream.sorted(...) abort
 endfunction
 
 function! s:Stream.get_comparator(...) abort
-  let l:C = a:0 ? a:1 : s:NONE
   if self.has_characteristics(s:SORTED)
-    let l:C = s:_find_comparator(self, l:C)
+    let l:C = s:_find_comparator(self, a:0 ? a:1 : s:NONE)
+  else
+    let l:C = a:0 ? a:1 : s:NONE
   endif
   if l:C is s:NONE
       throw 'vital: Stream: get_comparator(): comparator not found and '
