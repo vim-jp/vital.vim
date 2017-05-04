@@ -852,10 +852,18 @@ endfunction
 
 function! s:Stream.reduce(f, ...) abort
   let l:Call = s:_get_callfunc_for_func2(a:f, 'reduce()')
-  let list = s:_get_non_empty_list_or_default(
-  \                 self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'reduce()')
-  let l:Result = list[0]
-  for l:Value in list[1:]
+  let list = self.to_list()
+  if a:0 ==# 0 && empty(list)
+    throw 'vital: Stream: reduce()' .
+    \     ': stream is empty and default value was not given'
+  endif
+  if a:0 > 0 || empty(list)
+    let l:Result = a:1
+  else
+    let l:Result = list[0]
+    let list = list[1:]
+  endif
+  for l:Value in list
     let l:Result = l:Call(a:f, [l:Result, l:Value])
     unlet l:Value
   endfor
