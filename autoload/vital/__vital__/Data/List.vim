@@ -24,6 +24,14 @@ function! s:cons(x, xs) abort
   return [a:x] + a:xs
 endfunction
 
+function! s:uncons(xs) abort
+  if len(a:xs) < 1
+    throw 'vital: Data.List: uncons() requires non empty list'
+  endif
+  " This is pair (tuple)
+  return [a:xs[0], a:xs[1:]]
+endfunction
+
 function! s:conj(xs, x) abort
   return a:xs + [a:x]
 endfunction

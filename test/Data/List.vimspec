@@ -75,6 +75,17 @@ Describe Data.List
     End
   End
 
+  Describe .uncons()
+    It returns a pair of a head element and tail elements
+      Assert Equals(List.uncons([1,2,3,4,5]), [1, [2,3,4,5]])
+      Assert Equals(List.uncons([1]), [1, []])
+    End
+
+    It throws an exception if empty list is given
+      Throws /^vital: Data.List:/ List.uncons([])
+    End
+  End
+
   Describe .conj()
     It makes new list which last items are {val} and the preceding items remain {list}.
       let a = []

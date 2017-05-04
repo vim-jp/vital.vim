@@ -70,6 +70,17 @@ cons({val}, {list})			*Vital.Data.List.cons()*
 	echo s:L.cons([1], 2)
 	" ERROR: E745
 <
+uncons({list})			*Vital.Data.List.uncons()*
+	Returns a pair of a head element and tail elements. {list} must not be
+	empty list.
+>
+	echo s:L.uncons([1,2,3,4,5])
+	" [1, [2,3,4,5]]
+	echo s:L.uncons([1])
+	" [1, []]
+	echo s:L.uncons([])
+	" ERROR: vital: Data.List: ...
+
 
 conj({list}, {val})			*Vital.Data.List.conj()*
 	Makes new |List| which first items are |List| {list} and the final
