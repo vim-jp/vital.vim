@@ -274,20 +274,13 @@ endfunction
 
 " similar to Ruby's detect or Haskell's find.
 function! s:find(list, default, f) abort
-  let l:Call = type(a:f) is type(function('function'))
-  \          ? function('call')
-  \          : function('s:_call_string_expr')
-
+  let l:Call = s:_get_caller(a:f)
   for x in a:list
     if l:Call(a:f, [x])
       return x
     endif
   endfor
   return a:default
-endfunction
-
-function! s:_call_string_expr(expr, args) abort
-  return map([a:args[0]], a:expr)[0]
 endfunction
 
 " Returns the index of the first element which satisfies the given expr.
@@ -447,6 +440,17 @@ function! s:combinations(list, r) abort
     endif
   endfor
   return result
+endfunction
+
+
+function! s:_get_caller(f) abort
+  return type(a:f) is type(function('function'))
+  \        ? function('call')
+  \        : function('s:_call_string_expr')
+endfunction
+
+function! s:_call_string_expr(expr, args) abort
+  return map([a:args[0]], a:expr)[0]
 endfunction
 
 let &cpo = s:save_cpo
