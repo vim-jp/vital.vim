@@ -1277,13 +1277,13 @@ Describe Stream
 
   Describe .sorted()
     Before all
-      function! Compare(a, b) abort
+      function! Comp(a, b) abort
         return a:a > a:b ? -1 : a:a ==# a:b ? 0 : 1
       endfunction
     End
 
     After all
-      delfunction Compare
+      delfunction Comp
     End
 
     It sorts elements in stream without comparator
@@ -1307,11 +1307,11 @@ Describe Stream
     End
 
     It sorts elements in stream with comparator by funcref
-      Assert Equals(Stream.empty().sorted(function('Compare')).to_list(), [])
-      Assert Equals(Stream.of(2,1,3).sorted(function('Compare')).to_list(), [3,2,1])
-      Assert Equals(Stream.of(2,1,3,2,1).sorted(function('Compare')).to_list(), [3,2,2,1,1])
+      Assert Equals(Stream.empty().sorted(function('Comp')).to_list(), [])
+      Assert Equals(Stream.of(2,1,3).sorted(function('Comp')).to_list(), [3,2,1])
+      Assert Equals(Stream.of(2,1,3,2,1).sorted(function('Comp')).to_list(), [3,2,2,1,1])
       Assert Equals(
-      \ Stream.iterate(1, 'v:val + 1').take(3).sorted(function('Compare')).to_list(),
+      \ Stream.iterate(1, 'v:val + 1').take(3).sorted(function('Comp')).to_list(),
       \ [3,2,1])
     End
 
