@@ -118,7 +118,7 @@ map({either}, {f})			*Vital.Data.Either.map()*
 	echo E.map(either, 'v:val + 1')  " Left(something)
 <
 
-apply({either_func}, {either_values}...)		*Vital.Data.Either.apply()*
+apply({either_func}, {either_values}...)	*Vital.Data.Either.apply()*
 	{either_func} is a function that is wrapped by
 	|Vital.Data.Either.right()| or some {left} value. {either_values} is a
 	value that is wrapped by |Vital.Data.Either.right()| or some {left}
@@ -199,7 +199,7 @@ bind({either}, {karrow})		*Vital.Data.Either.bind()*
 	echo E.bind(either, function('Devide10'))  " Left(something)
 <
 
-flatmap({either}, {f})		*Vital.Data.Either.flatmap()*
+flatmap({either}, {f})			*Vital.Data.Either.flatmap()*
 	This is an alias of |Vital.Data.Either.bind()|. Please see
 	|Vital.Data.Either.bind()| about this.
 
