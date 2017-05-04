@@ -554,8 +554,8 @@ endfunction
 
 " __take_possible__(n): n may be 1/0, so when upstream is infinite stream,
 " 'self._upstream.__take_possible__(n)' does not stop
-" unless .limit(n) was specified in downstream.
-" But regardless of whether .limit(n) was specified,
+" unless .take(n) was specified in downstream.
+" But regardless of whether .take(n) was specified,
 " this method must stop for even upstream is infinite stream
 " if 'a:f' is not matched at any element in the stream.
 function! s:Stream.take_while(f) abort
@@ -770,9 +770,9 @@ function! s:_find_comparator(stream, default) abort
   endif
 endfunction
 
-function! s:Stream.limit(n) abort
+function! s:Stream.take(n) abort
   if a:n < 0
-    throw 'vital: Stream: limit(n): n must be 0 or positive'
+    throw 'vital: Stream: take(n): n must be 0 or positive'
   endif
   if a:n ==# 0
     return s:empty()
@@ -784,7 +784,7 @@ function! s:Stream.limit(n) abort
   let stream._max_n = a:n
   function! stream.__take_possible__(n) abort
     if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at limit()'
+      throw 'vital: Stream: stream has already been operated upon or closed at take()'
     endif
     let n = min([self._upstream.__estimate_size__(), self._max_n, a:n])
     let [list, open] = self._upstream.__take_possible__(n)
@@ -797,9 +797,9 @@ function! s:Stream.limit(n) abort
   return stream
 endfunction
 
-function! s:Stream.skip(n) abort
+function! s:Stream.drop(n) abort
   if a:n < 0
-    throw 'vital: Stream: skip(n): n must be 0 or positive'
+    throw 'vital: Stream: drop(n): n must be 0 or positive'
   endif
   if a:n ==# 0
     return self
@@ -811,7 +811,7 @@ function! s:Stream.skip(n) abort
   let stream.__n = a:n
   function! stream.__take_possible__(n) abort
     if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at skip()'
+      throw 'vital: Stream: stream has already been operated upon or closed at drop()'
     endif
     let open = self.__estimate_size__() > 0
     if self.__n > 0 && open
@@ -912,7 +912,7 @@ function! s:Stream.last(...) abort
 endfunction
 
 function! s:Stream.find(f, ...) abort
-  let s = self.filter(a:f).limit(1)
+  let s = self.filter(a:f).take(1)
   return a:0 ? s.first(a:1) : s.first()
 endfunction
 
