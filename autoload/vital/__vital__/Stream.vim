@@ -429,7 +429,7 @@ function! s:Stream.map(f) abort
 endfunction
 
 function! s:Stream.flatmap(f) abort
-  let stream = s:_new(s:Stream, [s:WithBufferred])
+  let stream = s:_new(s:Stream, [s:WithBuffered])
   let stream._characteristics =
   \ and(self._characteristics, invert(s:DISTINCT + s:SORTED + s:IMMUTABLE))
   let stream._upstream = self
@@ -498,7 +498,7 @@ function! s:Stream.filter(f) abort
 endfunction
 
 function! s:Stream.slice_before(f) abort
-  let stream = s:_new(s:Stream, [s:WithBufferred])
+  let stream = s:_new(s:Stream, [s:WithBuffered])
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -558,6 +558,7 @@ endfunction
 " But regardless of whether .take(n) was specified,
 " this method must stop for even upstream is infinite stream
 " if 'a:f' is not matched at any element in the stream.
+let s:BULK_SIZE = 32
 function! s:Stream.take_while(f) abort
   let stream = s:_new(s:Stream)
   let stream._characteristics = self._characteristics
@@ -565,7 +566,6 @@ function! s:Stream.take_while(f) abort
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'take_while()')
   let stream._f = a:f
-  let stream._BULK_SIZE = 32
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
@@ -577,7 +577,7 @@ function! s:Stream.take_while(f) abort
     let do_break = 0
     let list = []
     while !do_break
-      let [r, open] = self._upstream.__take_possible__(self._BULK_SIZE)
+      let [r, open] = self._upstream.__take_possible__(s:BULK_SIZE)
       for l:Value in r
         if !map([l:Value], 'self._call(self._f, [v:val])')[0]
           let open = 0
@@ -1016,19 +1016,17 @@ function! s:_new(base, ...) abort
     return deepcopy(a:base)
   else
     let base = deepcopy(a:base)
-    for trait in a:1
-      call extend(base, deepcopy(trait))
-    endfor
+    call map(copy(a:1), 'extend(base, deepcopy(v:val))')
     return base
   endif
 endfunction
 
 " NOTE: This requires '_upstream'.
-let s:WithBufferred = {'__buffer': []}
+let s:WithBuffered = {'__buffer': []}
 
 " can use 'self.__buffer' instead of 'self._upstream.__take_possible__(n)[0]'
 " after this function is invoked
-function! s:WithBufferred.__read_to_buffer__(n) abort
+function! s:WithBuffered.__read_to_buffer__(n) abort
   let open = (self._upstream.__estimate_size__() > 0)
   if len(self.__buffer) < a:n && open
     let [r, open] = self._upstream.__take_possible__(a:n - len(self.__buffer))
