@@ -364,14 +364,25 @@ foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 
 	Examples:
 >
+	function! Plus(x, y) abort
+	  return a:x + a:y
+	endfunction
+
+	function! Ratio(x, y) abort
+	  return {'l': a:x, 'r': a:y}
+	endfunction
+
 	echo s:L.foldl('v:memo + v:val', 0, range(1, 10))
 	" 55 := 1+2+3+4+5+6+7+8+9+10
+
+	echo s:L.foldl(function('Plus'), 0, range(1, 10))
+	" 55
 
 	echo s:L.foldl('v:memo + v:val', 20, range(1, 10))
 	" 75 := 20 + 1+2+3+4+5+6+7+8+9+10
 
-	echo s:L.foldl('[v:memo, v:val]', [], [1, 2])
-	" [[[], 1], 2]
+	echo s:L.foldl(function('Ratio'), 0, [1, 2])
+	" {'l': {'l': 0, 'r': 1}, 'r': 2}
 <
 	See also: foldl1, foldr, foldr1
 	If you know Haskell, this foldl() is like Haskell's Data.List.foldl

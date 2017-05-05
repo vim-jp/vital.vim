@@ -225,14 +225,21 @@ endfunction
 
 " similar to Haskell's Prelude.foldl
 function! s:foldl(f, init, xs) abort
+  "NOTE: The 'Call' should be named with l: for the conflict problem
+  let l:Call = type(a:f) is type(function('function'))
+  \          ? function('call')
+  \          : function('s:_call_two_argument_string_expr')
   let memo = a:init
   for x in a:xs
-    let expr = substitute(a:f, 'v:val', string(x), 'g')
-    let expr = substitute(expr, 'v:memo', string(memo), 'g')
-    unlet memo
-    let memo = eval(expr)
+    let memo = l:Call(a:f, [memo, x])
   endfor
   return memo
+endfunction
+
+function! s:_call_two_argument_string_expr(expr, bi_arg) abort
+    let expr = substitute(a:expr, 'v:memo', string(a:bi_arg[0]), 'g')
+    let expr = substitute(expr, 'v:val', string(a:bi_arg[1]), 'g')
+    return eval(expr)
 endfunction
 
 " similar to Haskell's Prelude.foldl1

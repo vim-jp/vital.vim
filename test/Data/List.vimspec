@@ -285,9 +285,29 @@ Describe Data.List
   End
 
   Describe .foldl()
-    It folds a list from left
+    Before all
+      function! Plus(x, y) abort
+        return a:x + a:y
+      endfunction
+
+      function! Pair(x, y) abort
+        return [a:x, a:y]
+      endfunction
+    End
+
+    After all
+      delfunction Plus
+      delfunction Pair
+    End
+
+    It folds a list from left with string expression
       Assert Equals(List.foldl('v:memo + v:val', 0, range(1, 10)), 55)
-      Assert Equals(List.foldl('[v:memo, v:val]', [], [1, 2]), [[[], 1], 2])
+      Assert Equals(List.foldl('[v:memo, v:val]', 0, [1, 2]), [[0, 1], 2])
+    End
+
+    It folds a list from left with funcref
+      Assert Equals(List.foldl(function('Plus'), 0, range(1, 10)), 55)
+      Assert Equals(List.foldl(function('Pair'), 0, [1, 2]), [[0, 1], 2])
     End
 
     It does nothing if the list is empty
