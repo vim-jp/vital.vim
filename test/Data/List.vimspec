@@ -326,9 +326,37 @@ Describe Data.List
   End
 
   Describe .foldl1()
-    It folds a list from left
+    Before all
+      function! Plus(x, y) abort
+        return a:x + a:y
+      endfunction
+
+      function! Pair(x, y) abort
+        return [a:x, a:y]
+      endfunction
+    End
+
+    After all
+      delfunction Plus
+      delfunction Pair
+    End
+
+    It folds a list from left with string expression
       Assert Equals(List.foldl1('v:memo + v:val', range(1, 10)), 55)
-      Assert Equals(List.foldl1('[v:memo, v:val]', [1, 2]), [1, 2])
+      Assert Equals(List.foldl1('[v:memo, v:val]', [0, 1, 2]), [[0, 1], 2])
+    End
+
+    It folds a list from left with funcref
+      Assert Equals(List.foldl1(function('Plus'), range(1, 10)), 55)
+      Assert Equals(List.foldl1(function('Pair'), [0, 1, 2]), [[0, 1], 2])
+    End
+
+    It folds a list from left with Data.Closure
+      let plus = Closure.from_funcref(function('Plus'))
+      let pair = Closure.from_funcref(function('Pair'))
+
+      Assert Equals(List.foldl(plus, 0, range(1, 10)), 55)
+      Assert Equals(List.foldl(pair, 0, [1, 2]), [[0, 1], 2])
     End
 
     It causes an error when the list is empty
