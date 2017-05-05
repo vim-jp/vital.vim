@@ -921,7 +921,7 @@ function! s:Stream.last(...) abort
 endfunction
 
 function! s:Stream.find(f, ...) abort
-  let s = self.filter(a:f).take(1)
+  let s = self.filter(a:f)
   return a:0 ? s.first(a:1) : s.first()
 endfunction
 
@@ -943,14 +943,7 @@ function! s:Stream.string_join(...) abort
 endfunction
 
 function! s:Stream.group_by(f) abort
-  let l:Call = s:_get_callfunc_for_func1(a:f, 'group_by()')
-  let l:Result = {}
-  for l:Value in self.to_list()
-    let key = l:Call(a:f, [l:Value])
-    let l:Result[key] = get(l:Result, key, []) + [l:Value]
-    unlet l:Value
-  endfor
-  return l:Result
+  return self.to_dict(a:f, '[v:val]', 'v:val[0] + v:val[1]')
 endfunction
 
 function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
