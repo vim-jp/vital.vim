@@ -11,8 +11,8 @@ LIMITATION			|Vital.Stream-limitation|
 INTERFACE			|Vital.Stream-interface|
   FUNCTIONS			  |Vital.Stream-functions|
 STREAM OBJECT			|Vital.Stream-Stream-object|
-INTERMEDIATE OPERATIONS		|Vital.Stream-intermediate-operations|
-TERMINAL OPERATIONS		|Vital.Stream-terminal-operations|
+  INTERMEDIATE OPERATIONS	  |Vital.Stream-intermediate-operations|
+  TERMINAL OPERATIONS		  |Vital.Stream-terminal-operations|
 CHARACTERISTICS			|Vital.Stream-characteristics|
 TODO				|Vital.Stream-todo|
 
