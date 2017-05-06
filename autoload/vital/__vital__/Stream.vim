@@ -93,17 +93,17 @@ function! s:empty() abort
   return s:_new_from_list([], s:SIZED, 'empty()')
 endfunction
 
-function! s:_new_from_list(list, characteristics, callee) abort
+function! s:_new_from_list(list, characteristics, caller) abort
   let stream = s:_new(s:Stream)
   let stream._characteristics = a:characteristics
   let stream.__index = 0
   let stream.__end = 0
   let stream._list = a:list
-  let stream._callee = a:callee
+  let stream._caller = a:caller
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at '
-      \     . self._callee
+      \     . self._caller
     endif
     " max(): fix overflow
     let n = max([self.__index + a:n, a:n])
@@ -1033,7 +1033,7 @@ endfunction
 
 " Get funcref of call()-ish function to call a:f (arity is 0)
 " (see also s:_call_func0_expr())
-function! s:_get_callfunc_for_func0(f, callee) abort
+function! s:_get_callfunc_for_func0(f, caller) abort
   if s:Closure.is_closure(a:f)
     return function('s:_call_closure0')
   endif
@@ -1043,7 +1043,7 @@ function! s:_get_callfunc_for_func0(f, callee) abort
   elseif type is s:T_STRING
     return function('s:_call_func0_expr')
   else
-    throw 'vital: Stream: ' . a:callee
+    throw 'vital: Stream: ' . a:caller
     \   . ': invalid type argument was given '
     \   . '(expected funcref, string, or Data.Closure)'
   endif
@@ -1065,7 +1065,7 @@ endfunction
 
 " Get funcref of call()-ish function to call a:f (arity is 1)
 " (see also s:_call_func1_expr())
-function! s:_get_callfunc_for_func1(f, callee) abort
+function! s:_get_callfunc_for_func1(f, caller) abort
   if s:Closure.is_closure(a:f)
     return function('s:_call_closure1')
   endif
@@ -1075,7 +1075,7 @@ function! s:_get_callfunc_for_func1(f, callee) abort
   elseif type is s:T_STRING
     return function('s:_call_func1_expr')
   else
-    throw 'vital: Stream: ' . a:callee
+    throw 'vital: Stream: ' . a:caller
     \   . ': invalid type argument was given '
     \   . '(expected funcref, string, or Data.Closure)'
   endif
@@ -1092,7 +1092,7 @@ endfunction
 
 " Get funcref of call()-ish function to call a:f (arity is 2)
 " (see also s:_call_func2_expr())
-function! s:_get_callfunc_for_func2(f, callee) abort
+function! s:_get_callfunc_for_func2(f, caller) abort
   if s:Closure.is_closure(a:f)
     return function('s:_call_closure2')
   endif
@@ -1102,7 +1102,7 @@ function! s:_get_callfunc_for_func2(f, callee) abort
   elseif type is s:T_STRING
     return function('s:_call_func2_expr')
   else
-    throw 'vital: Stream: ' . a:callee
+    throw 'vital: Stream: ' . a:caller
     \   . ': invalid type argument was given '
     \   . '(expected funcref, string, or Data.Closure)'
   endif
@@ -1117,7 +1117,7 @@ function! s:_call_func2_expr(expr, args) abort
   return map([a:args], a:expr)[0]
 endfunction
 
-function! s:_get_non_empty_list_or_default(stream, size, default, callee) abort
+function! s:_get_non_empty_list_or_default(stream, size, default, caller) abort
   if a:stream.__estimate_size__() ==# 0
     let list = []
   else
@@ -1129,7 +1129,7 @@ function! s:_get_non_empty_list_or_default(stream, size, default, callee) abort
   if a:default isnot s:NONE
     return a:default
   else
-    throw 'vital: Stream: ' . a:callee .
+    throw 'vital: Stream: ' . a:caller .
     \     ': stream is empty and default value was not given'
   endif
 endfunction
