@@ -428,13 +428,14 @@ Stream.sorted([{comparator}])
 	{comparator} is a function of 2 arity.
 >
 	" Output: [1,2,3]
-	echo s:Stream.of(1,2,2,3,3).distinct().to_list()
+	echo s:Stream.of(2,1,3).sorted().to_list()
 
-	" Output: [1,2,3]
-	echo s:Stream.of(1,2,3,2,1).distinct().to_list()
-
-	" Output: ["a", "bb", "ccc"]
-	echo s:Stream.of('a', 'bb', 'ccc', 'ddd', 'ee').distinct('len(v:val)').to_list()
+	" Output: [3,2,1]
+	let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
+	echo s:Stream.of(2,1,3).sorted(by_desc).to_list()
+	" Or
+	let l:ByDesc = {a,b -> a > b ? -1 : a ==# b ? 0 : 1}
+	echo s:Stream.of(2,1,3).sorted(l:ByDesc).to_list()
 <
 Terminal operations			*Vital.Stream-terminal-operations*
 ------------------
