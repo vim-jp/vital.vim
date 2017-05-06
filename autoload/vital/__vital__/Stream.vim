@@ -917,7 +917,7 @@ function! s:Stream.any(f) abort
 endfunction
 
 function! s:Stream.all(f) abort
-  return self.filter(s:_not(a:f, 'all()')).first(s:NONE) is s:NONE
+  return self.map(a:f).filter('!v:val').first(s:NONE) is s:NONE
 endfunction
 
 function! s:Stream.none(f) abort
@@ -1029,22 +1029,6 @@ function! s:_slice(list, start, ...) abort
   let start = min([a:start, len])
   let end = a:0 ? min([a:1, len]) : len
   return a:list[start : end]
-endfunction
-
-function! s:_not(f, callee) abort
-  if s:Closure.is_closure(a:f)
-    return a:f.compose('=!a:1')
-  endif
-  let type = type(a:f)
-  if type is s:T_FUNC
-    return '!' . string(a:f) . '(v:val)'
-  elseif type is s:T_STRING
-    return '!map([v:val], ' . string(a:f) . ')[0]'
-  else
-    throw 'vital: Stream: ' . a:callee
-    \   . ': invalid type argument was given '
-    \   . '(expected funcref, string, or Data.Closure)'
-  endif
 endfunction
 
 " Get funcref of call()-ish function to call a:f (arity is 0)
