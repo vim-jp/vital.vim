@@ -1,4 +1,4 @@
-*vital/Stream.txt*	Java Stream API like streaming library
+*vital/Stream.txt*	A streaming library
 
 Maintainer: tyru <tyru.exe@gmail.com>
 
@@ -14,6 +14,7 @@ STREAM OBJECT			|Vital.Stream-Stream-object|
   INTERMEDIATE OPERATIONS	  |Vital.Stream-intermediate-operations|
   TERMINAL OPERATIONS		  |Vital.Stream-terminal-operations|
 CHARACTERISTICS			|Vital.Stream-characteristics|
+TIPS				|Vital.Stream-tips|
 TODO				|Vital.Stream-todo|
 
 ==============================================================================
@@ -30,15 +31,16 @@ This module provides:
   - https://github.com/haya14busa/underscore.vim
 - Functional interface focusing what you want than how you solve a problem
   - Stream module builds execution plan instead of you
-- An interface of stream generation function like Java's Spliterator.
+- An interface of stream generation function like Java's Spliterator
   See |Vital.Stream.generator()|
 - Higher-order functions that support string expression, |Funcref|,
   |Vital.Data.Closure|
   - String expression: `s:Stream.of(1,2,3).map('v:val * 2')`
+    `v:key` (index) cannot be used. see |Vital.Stream-tip-1|
   - Funcref (lambda): `s:Stream.of(1,2,3).map({n -> n * 2})`
   - Data.Closure: `s:Stream.of(1,2,3).map(s:Closure.from_expr('a:1 * 2'))`
   - NOTE: a function which receives 2 arguments receives |List| of 2 elements
-    in string expression. but Funcref and Data.Closure takes exact 2 arguments.
+    in string expression. but Funcref and Data.Closure takes exact 2 arguments
     - String expression: `s:Stream.of(1,2,3).reduce('v:val[0] + v:val[1]')`
     - Funcref (lambda): `s:Stream.of(1,2,3).reduce({a,b -> a + b})`
     - Data.Closure: `s:Stream.of(1,2,3).reduce(s:Closure.from_operator('+'))`
@@ -119,26 +121,26 @@ lines({str} [, {characteristics}])	*Vital.Stream.lines()*
 
 from_dict({dict} [, {characteristics}])	*Vital.Stream.from_dict()*
 	Shortcut for `s:Stream.from_list(items(dict), characteristics)` .
-	Default {characteristics} is `[DISTINCT(), SIZED(), IMMUTABLE()]` .
+	Default {characteristics} is `[DISTINCT, SIZED, IMMUTABLE]` .
 
 from_list({list} [, {characteristics}])	*Vital.Stream.from_list()*
 	This makes a stream of elements of {list}.
 	See |Vital.Stream-Stream.has_characteristics()| for {characteristics}.
 
-ORDERED()		*Vital.Stream.ORDERED()*
+ORDERED		*Vital.Stream.ORDERED*
 	Characteristic value signifying that an encounter order is defined for
 	elements.  See also |Vital.Stream-Stream.has_characteristics()|.
 
-DISTINCT()		*Vital.Stream.DISTINCT()*
+DISTINCT		*Vital.Stream.DISTINCT*
 	Characteristic value signifying that, for each pair of encountered
 	elements x, y, `x != y` . See also
 	|Vital.Stream-Stream.has_characteristics()|.
 
-SORTED()		*Vital.Stream.SORTED()*
+SORTED		*Vital.Stream.SORTED*
 	Characteristic value signifying that encounter order follows a defined
 	sort order. See also |Vital.Stream-Stream.has_characteristics()|.
 
-SIZED()			*Vital.Stream.SIZED()*
+SIZED			*Vital.Stream.SIZED*
 	Characteristic value signifying that the value returned from internal
 	API `stream.__estimate_size__()` prior to traversal or splitting
 	represents a finite size that, in the absence of structural source
@@ -146,7 +148,7 @@ SIZED()			*Vital.Stream.SIZED()*
 	would be encountered by a complete traversal. See also
 	|Vital.Stream-Stream.has_characteristics()|.
 
-IMMUTABLE()		*Vital.Stream.IMMUTABLE()*
+IMMUTABLE		*Vital.Stream.IMMUTABLE*
 	Characteristic value signifying that the element source cannot be
 	structurally modified; that is, elements cannot be added, replaced, or
 	removed, so such changes cannot occur during traversal.  See also
@@ -699,32 +701,47 @@ CHARACTERISTICS				*Vital.Stream-characteristics*
 A stream has one or more "characteristics",
 and "characteristics" are flags to describe the stream.
 
-- |Vital.Stream.ORDERED()|
-- |Vital.Stream.DISTINCT()|
-- |Vital.Stream.SORTED()|
-- |Vital.Stream.SIZED()|
-- |Vital.Stream.IMMUTABLE()|
+- |Vital.Stream.ORDERED|
+- |Vital.Stream.DISTINCT|
+- |Vital.Stream.SORTED|
+- |Vital.Stream.SIZED|
+- |Vital.Stream.IMMUTABLE|
 
 The following code checks if a stream has one or more characteristics.
 >
 	let s:Stream = vital#{plugin-name}#new().import('Stream')
 	let stream = s:Stream.of(1,2,3)
-	if stream.has_characteristics(s:Stream.SIZED())
+	if stream.has_characteristics(s:Stream.SIZED)
 	  " the stream is finite stream
 	endif
 
 	let stream = s:Stream.iterate(1, 'v:val + 1')
-	if !stream.has_characteristics(s:Stream.SIZED())
+	if !stream.has_characteristics(s:Stream.SIZED)
 	  " the stream is infinite stream
 	endif
 
 	" you can check two or more characteristics at once
 	let stream = s:Stream.of(2,1,3).sorted()
-	if stream.has_characteristics([s:Stream.SIZED(), s:Stream.SORTED()])
+	if stream.has_characteristics([s:Stream.SIZED, s:Stream.SORTED])
 	  " the stream is finite and sorted stream
 	endif
 <
 
+==============================================================================
+TIPS					*Vital.Stream-tips*
+
+					*Vital.Stream-tip-1*
+Q. Can I use `v:key` in Stream.map() ?
+A. `v:key` is used for index number in |map()|.
+   In Stream module, you can use |Vital.Stream-Stream.zip_with_index()|
+   instead.
+>
+	" Output: ['0: foo', '1: bar', '2: baz']
+	echo s:Stream.of('foo', 'bar', 'baz')
+	            \.zip_with_index()
+	            \.map({l -> join(l, ': ')})
+	            \.to_list()
+<
 ==============================================================================
 TODO					*Vital.Stream-todo*
 

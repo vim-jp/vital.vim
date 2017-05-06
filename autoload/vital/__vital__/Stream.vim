@@ -10,11 +10,10 @@ set cpo&vim
 "
 " * __take_possible__(n)
 "   * n must be 0 or positive
-"     * callee must not pass negative value
-"     * in order to take all elements from the stream, pass 1/0
+"     * in order to take all elements from the stream, pass 1/0 (:help expr-/)
 "   * this function returns '[list, open]'
 "     * 'len(list) <= n'
-"     * callee must not invoke this function after 'open == 0' is returned
+"     * caller must not invoke this function after 'open == 0' is returned
 " * `__estimate_size__()`
 "   * this function must not change stream's state
 "   * if the number of elements is 'unknown', 1/0 is returned
@@ -33,6 +32,16 @@ endfunction
 
 function! s:_vital_depends() abort
   return ['Data.Closure']
+endfunction
+
+function! s:_vital_created(module) abort
+  call extend(a:module, {
+  \ 'ORDERED': s:ORDERED,
+  \ 'DISTINCT': s:DISTINCT,
+  \ 'SORTED': s:SORTED,
+  \ 'SIZED': s:SIZED,
+  \ 'IMMUTABLE': s:IMMUTABLE,
+  \})
 endfunction
 
 let s:NONE = []
@@ -56,26 +65,6 @@ let s:SIZED = 0x08
 " let s:NONNULL = 0x10
 let s:IMMUTABLE = 0x20
 " let s:CONCURRENT = 0x40
-
-function! s:ORDERED() abort
-  return s:ORDERED
-endfunction
-
-function! s:DISTINCT() abort
-  return s:DISTINCT
-endfunction
-
-function! s:SORTED() abort
-  return s:SORTED
-endfunction
-
-function! s:SIZED() abort
-  return s:SIZED
-endfunction
-
-function! s:IMMUTABLE() abort
-  return s:IMMUTABLE
-endfunction
 
 function! s:of(elem, ...) abort
   return s:_new_from_list([a:elem] + a:000, s:ORDERED + s:SIZED + s:IMMUTABLE, 'of()')

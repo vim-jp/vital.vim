@@ -25,23 +25,23 @@ Describe Stream
 
   Describe .has_characteristics()
     It checks if the stream has certain characteristic
-      let s = Stream.from_list([], Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert True(s.has_characteristics(Stream.DISTINCT()))
-      Assert True(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      let s = Stream.from_list([], Stream.ORDERED + Stream.DISTINCT + Stream.SORTED + Stream.SIZED + Stream.IMMUTABLE)
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert True(s.has_characteristics(Stream.DISTINCT))
+      Assert True(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
 
     It can check multiple flags at once
-      let s = Stream.from_list([], Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
+      let s = Stream.from_list([], Stream.ORDERED + Stream.DISTINCT + Stream.SORTED + Stream.SIZED + Stream.IMMUTABLE)
       Assert Equals(
       \ s.has_characteristics([
-      \   Stream.ORDERED(),
-      \   Stream.DISTINCT(),
-      \   Stream.SORTED(),
-      \   Stream.SIZED(),
-      \   Stream.IMMUTABLE()]),
+      \   Stream.ORDERED,
+      \   Stream.DISTINCT,
+      \   Stream.SORTED,
+      \   Stream.SIZED,
+      \   Stream.IMMUTABLE]),
       \ 1)
       Assert False(Stream.of(1,2,3).has_characteristics([]))
     End
@@ -75,11 +75,11 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.of(1,2,3)
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -95,17 +95,17 @@ Describe Stream
 
     It constructs stream of each character from String with characteristics
       let s = Stream.chars("abc", 0)
-      Assert False(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert False(s.has_characteristics(Stream.SIZED()))
-      Assert False(s.has_characteristics(Stream.IMMUTABLE()))
-      let s = Stream.chars("abc", Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert True(s.has_characteristics(Stream.DISTINCT()))
-      Assert True(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert False(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert False(s.has_characteristics(Stream.SIZED))
+      Assert False(s.has_characteristics(Stream.IMMUTABLE))
+      let s = Stream.chars("abc", Stream.ORDERED + Stream.DISTINCT + Stream.SORTED + Stream.SIZED + Stream.IMMUTABLE)
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert True(s.has_characteristics(Stream.DISTINCT))
+      Assert True(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -134,17 +134,17 @@ Describe Stream
 
     It constructs stream of each line from String with characteristics
       let s = Stream.lines("abc", 0)
-      Assert False(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert False(s.has_characteristics(Stream.SIZED()))
-      Assert False(s.has_characteristics(Stream.IMMUTABLE()))
-      let s = Stream.lines("abc", Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert True(s.has_characteristics(Stream.DISTINCT()))
-      Assert True(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert False(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert False(s.has_characteristics(Stream.SIZED))
+      Assert False(s.has_characteristics(Stream.IMMUTABLE))
+      let s = Stream.lines("abc", Stream.ORDERED + Stream.DISTINCT + Stream.SORTED + Stream.SIZED + Stream.IMMUTABLE)
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert True(s.has_characteristics(Stream.DISTINCT))
+      Assert True(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -160,26 +160,26 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.from_list([1,2,3])
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
 
     It constructs stream from List with characteristics
       let s = Stream.from_list([1,2,3], 0)
-      Assert False(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert False(s.has_characteristics(Stream.SIZED()))
-      Assert False(s.has_characteristics(Stream.IMMUTABLE()))
-      let s = Stream.from_list([1,2,3], Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert True(s.has_characteristics(Stream.DISTINCT()))
-      Assert True(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert False(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert False(s.has_characteristics(Stream.SIZED))
+      Assert False(s.has_characteristics(Stream.IMMUTABLE))
+      let s = Stream.from_list([1,2,3], Stream.ORDERED + Stream.DISTINCT + Stream.SORTED + Stream.SIZED + Stream.IMMUTABLE)
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert True(s.has_characteristics(Stream.DISTINCT))
+      Assert True(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -209,26 +209,26 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.from_dict({"foo": 1, "bar": 3, "baz": 2})
-      Assert False(s.has_characteristics(Stream.ORDERED()))
-      Assert True(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert False(s.has_characteristics(Stream.ORDERED))
+      Assert True(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
 
     It constructs stream from Dictionary with characteristics
       let s = Stream.from_list({"foo": 1}, 0)
-      Assert False(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert False(s.has_characteristics(Stream.SIZED()))
-      Assert False(s.has_characteristics(Stream.IMMUTABLE()))
-      let s = Stream.from_list({"foo": 1}, Stream.ORDERED() + Stream.DISTINCT() + Stream.SORTED() + Stream.SIZED() + Stream.IMMUTABLE())
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert True(s.has_characteristics(Stream.DISTINCT()))
-      Assert True(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert False(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert False(s.has_characteristics(Stream.SIZED))
+      Assert False(s.has_characteristics(Stream.IMMUTABLE))
+      let s = Stream.from_list({"foo": 1}, Stream.ORDERED + Stream.DISTINCT + Stream.SORTED + Stream.SIZED + Stream.IMMUTABLE)
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert True(s.has_characteristics(Stream.DISTINCT))
+      Assert True(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -240,11 +240,11 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.empty()
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -326,11 +326,11 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.range(1,10)
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert True(s.has_characteristics(Stream.DISTINCT()))
-      Assert True(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert True(s.has_characteristics(Stream.DISTINCT))
+      Assert True(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -364,11 +364,11 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.iterate(1, 'v:val + 1')
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert False(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert False(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -467,17 +467,17 @@ Describe Stream
     It combines stream from String with characteristics
       " Use or() for SIZED flag. Use and() for other flags
       let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6))
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
       let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3))
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
 
     It combines stream with 3 or more than streams
@@ -518,17 +518,17 @@ Describe Stream
     It combines stream with 3 or more than streams with characteristics
       " Use or() for SIZED flag. Use and() for other flags
       let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9))
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
       let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3), Stream.of(4,5,6))
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -541,6 +541,13 @@ Describe Stream
       Assert Equals(
       \ Stream.of(4,5,6).zip_with_index().to_list(),
       \ [[0,4], [1,5], [2,6]])
+
+      if v:version >= 800
+        Assert Equals(
+        \Stream.of('foo', 'bar', 'baz')
+              \.zip_with_index().map({l -> join(l, ': ')}).to_list(),
+        \['0: foo', '1: bar', '2: baz'])
+      endif
     End
   End
 
@@ -643,17 +650,17 @@ Describe Stream
 
     It sets SIZED characteristic
       let s = Stream.of(3,4,5,6,7).take(3)
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
       let s = Stream.iterate(1, 'v:val + 1').take(3)
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert False(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert False(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
 
     It must not reuse stream
@@ -1339,11 +1346,11 @@ Describe Stream
 
     It sets SORTED characteristic
       let s = Stream.of(1,2,3).sorted()
-      Assert True(s.has_characteristics(Stream.ORDERED()))
-      Assert False(s.has_characteristics(Stream.DISTINCT()))
-      Assert True(s.has_characteristics(Stream.SORTED()))
-      Assert True(s.has_characteristics(Stream.SIZED()))
-      Assert True(s.has_characteristics(Stream.IMMUTABLE()))
+      Assert True(s.has_characteristics(Stream.ORDERED))
+      Assert False(s.has_characteristics(Stream.DISTINCT))
+      Assert True(s.has_characteristics(Stream.SORTED))
+      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.has_characteristics(Stream.IMMUTABLE))
     End
   End
 
@@ -2019,5 +2026,3 @@ Describe Stream
     End
   End
 End
-
-" vim: ft=vim
