@@ -36,11 +36,9 @@ endfunction
 
 function! s:_vital_created(module) abort
   call extend(a:module, {
-  \ 'ORDERED': s:ORDERED,
   \ 'DISTINCT': s:DISTINCT,
   \ 'SORTED': s:SORTED,
   \ 'SIZED': s:SIZED,
-  \ 'IMMUTABLE': s:IMMUTABLE,
   \})
 endfunction
 
@@ -58,41 +56,41 @@ let s:T_NONE = 7
 let s:T_JOB = 8
 let s:T_CHANNEL = 9
 
-let s:ORDERED = 0x01
+" let s:ORDERED = 0x01
 let s:DISTINCT = 0x02
 let s:SORTED = 0x04
 let s:SIZED = 0x08
 " let s:NONNULL = 0x10
-let s:IMMUTABLE = 0x20
+" let s:IMMUTABLE = 0x20
 " let s:CONCURRENT = 0x40
 
 function! s:of(elem, ...) abort
-  return s:_new_from_list([a:elem] + a:000, s:ORDERED + s:SIZED + s:IMMUTABLE, 'of()')
+  return s:_new_from_list([a:elem] + a:000, s:SIZED, 'of()')
 endfunction
 
 function! s:chars(str, ...) abort
-  let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
+  let characteristics = get(a:000, 0, s:SIZED)
   return s:_new_from_list(split(a:str, '\zs'), characteristics, 'chars()')
 endfunction
 
 function! s:lines(str, ...) abort
-  let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
+  let characteristics = get(a:000, 0, s:SIZED)
   let lines = a:str ==# '' ? [] : split(a:str, '\r\?\n', 1)
   return s:_new_from_list(lines, characteristics, 'lines()')
 endfunction
 
 function! s:from_list(list, ...) abort
-  let characteristics = get(a:000, 0, s:ORDERED + s:SIZED + s:IMMUTABLE)
+  let characteristics = get(a:000, 0, s:SIZED)
   return s:_new_from_list(a:list, characteristics, 'from_list()')
 endfunction
 
 function! s:from_dict(dict, ...) abort
-  let characteristics = get(a:000, 0, s:DISTINCT + s:SIZED + s:IMMUTABLE)
+  let characteristics = get(a:000, 0, s:DISTINCT + s:SIZED)
   return s:_new_from_list(items(a:dict), characteristics, 'from_dict()')
 endfunction
 
 function! s:empty() abort
-  return s:_new_from_list([], s:ORDERED + s:SIZED + s:IMMUTABLE, 'empty()')
+  return s:_new_from_list([], s:SIZED, 'empty()')
 endfunction
 
 function! s:_new_from_list(list, characteristics, callee) abort
@@ -137,7 +135,7 @@ function! s:range(expr, ...) abort
   endif
   let stream = s:_new(s:Stream)
   let stream._characteristics =
-  \ s:ORDERED + s:DISTINCT + s:SORTED + s:SIZED + s:IMMUTABLE
+  \ s:DISTINCT + s:SORTED + s:SIZED
   let stream.__index = 0
   let stream._args = args
   let stream.__end = 0
@@ -197,7 +195,7 @@ endfunction
 
 function! s:_inf_stream(f, init, call, expr) abort
   let stream = s:_new(s:Stream)
-  let stream._characteristics = s:ORDERED + s:IMMUTABLE
+  let stream._characteristics = 0
   let stream._f = a:f
   let stream.__value = a:init
   let stream._call = a:call
@@ -397,7 +395,7 @@ endfunction
 function! s:Stream.map(f) abort
   let stream = s:_new(s:Stream)
   let stream._characteristics =
-  \ and(self._characteristics, invert(s:DISTINCT + s:SORTED + s:IMMUTABLE))
+  \ and(self._characteristics, invert(s:DISTINCT + s:SORTED))
   let stream._upstream = self
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'map()')
@@ -420,7 +418,7 @@ endfunction
 function! s:Stream.flatmap(f) abort
   let stream = s:_new(s:Stream, [s:WithBuffered])
   let stream._characteristics =
-  \ and(self._characteristics, invert(s:DISTINCT + s:SORTED + s:IMMUTABLE))
+  \ and(self._characteristics, invert(s:DISTINCT + s:SORTED))
   let stream._upstream = self
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'flatmap()')
