@@ -496,7 +496,7 @@ function! s:Stream.slice_before(f) abort
           let elem += [self.__buffer[i]]
         endif
       endfor
-      if !open
+      if !open && len(list) < a:n
         let list += [elem]
       endif
       if do_break
