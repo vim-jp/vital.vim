@@ -448,13 +448,25 @@ foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
 	" [[[], 2], 1]
 <
 foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
-	TODO
+	Sames |Data.List.foldr()|, but doesn't take the initial value. Takes
+	the last element from {xs} as the initial value.
 	Behaves like Haskell's Data.List.foldr1().
 >
+	function! Plus(x, y) abort
+	  return a:x + a:y
+	endfunction
+
+	function! Pair(x, y) abort
+	  return [a:x, a:y]
+	endfunction
+
 	echo s:L.foldr1('v:memo + v:val', range(1, 10))
 	" 55
-	echo s:L.foldr1('[v:memo, v:val]', [1, 2])
-	" [1, 2]
+	echo s:L.foldr1(function('Plus'), range(1, 10))
+	" 55
+	echo s:L.foldr1(function('Pair'), [0, 1, 2])
+	" [0, [1, 2]]
+<
 <
 zip(...)				*Vital.Data.List.zip()*
 	TODO
