@@ -1,0 +1,596 @@
+*vital/Stream.txt*	A streaming library
+
+Maintainer: tyru <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Stream-contents*
+
+INTRODUCTION			|Vital.Stream-introduction|
+EXAMPLES			|Vital.Stream-examples|
+LIMITATION			|Vital.Stream-limitation|
+INTERFACE			|Vital.Stream-interface|
+  FUNCTIONS			  |Vital.Stream-functions|
+STREAM OBJECT			|Vital.Stream-Stream-object|
+  INTERMEDIATE OPERATIONS	  |Vital.Stream-intermediate-operations|
+  TERMINAL OPERATIONS		  |Vital.Stream-terminal-operations|
+TIPS				|Vital.Stream-tips|
+TODO				|Vital.Stream-todo|
+
+==============================================================================
+INTRODUCTION				*Vital.Stream-introduction*
+
+*Vital.Stream* is a streaming library, that its APIs are made to resemble Java 8
+Stream API (+ Ruby's Enumerable methods, and so on).
+https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html
+
+This module provides:
+
+- Laziness like |Vital.Data.LazyList|
+- Chaining like underscore.vim
+  - https://github.com/haya14busa/underscore.vim
+- Functional interface focusing what you want than how you solve a problem
+  - Stream module builds execution plan instead of you
+- An interface of stream generation function like Java's Spliterator
+  See |Vital.Stream.generator()|
+- Higher-order functions that support string expression, |Funcref|
+  - String expression: `s:Stream.of(1,2,3).map('v:val * 2')`
+    `v:key` (index) cannot be used. see |Vital.Stream-tip-1|
+  - Funcref (lambda): `s:Stream.of(1,2,3).map({n -> n * 2})`
+  - NOTE: a function which receives 2 arguments receives |List| of 2 elements
+    in string expression. but Funcref takes exact 2 arguments
+    - String expression: `s:Stream.of(1,2,3).reduce('v:val[0] + v:val[1]')`
+    - Funcref (lambda): `s:Stream.of(1,2,3).reduce({a,b -> a + b})`
+
+Some methods are not in Java 8 Stream API and vice versa (skip() -> drop(),
+limit() -> take(), and slice_before() is not in Stream API). This module does
+not aim to be like Java 8 Stream API.
+
+==============================================================================
+EXAMPLES				*Vital.Stream-examples*
+
+FizzBuzz				*Vital.Stream-example-fizzbuzz*
+--------
+>
+	let s:Stream = vital#{plugin-name}#import('Stream')
+
+	function! s:fizzbuzz(n) abort
+	  return a:n % 15 == 0 ? 'FizzBuzz' :
+	  \      a:n % 5  == 0 ? 'Buzz' :
+	  \      a:n % 3  == 0 ? 'Fizz' : a:n
+	endfunction
+
+	echo s:Stream.range(1, 100)
+	            \.map(function('s:fizzbuzz'))
+	            \.to_list()
+<
+Random number generator			*Vital.Stream-example-rng*
+-----------------------
+>
+	" Random number generator (linear congruential generators)
+	function! s:make_rand() abort
+	  let seed = reltime()[1]
+	  let max = float2nr(pow(2, 31) - 1)
+	  " rand generates random numbers.
+	  " drop(): the first number seems too small...
+	  " map(): limits to 0.0 <= val < 1.0
+	  " distinct(): gets rid of the same second decimal place of numbers
+	  return s:Stream.iterate(seed, '(48271 * v:val) % '.max)
+	                \.drop(1)
+	                \.map('v:val / '.max.'.0')
+	                \.distinct('float2nr(round(v:val * 100))')
+	endfunction
+
+	" echo 20 random numbers
+	for d in s:make_rand().take(20).to_list()
+	  echo d
+	endfor
+<
+==============================================================================
+LIMITATION				*Vital.Stream-limitation*
+
+NOTE: A stream is not reusable as same as Java Stream API. This limitation
+allows internal optimization in the point of view of immutability.
+>
+  let s = Stream.of([1,2,3,4,5])
+  call s.map('v:val + 1').to_list()
+  " This throws 'vital: Stream: stream has already been operated upon or closed'
+  call s.map('v:val + 1').to_list()
+<
+==============================================================================
+INTERFACE				*Vital.Stream-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Stream-functions*
+
+empty()					*Vital.Stream.empty()*
+	Shortcut for `s:Stream.from_list([])` .
+
+of({elem1} [, {elem2} ...])		*Vital.Stream.of()*
+	Shortcut for `s:Stream.from_list([elem1, elem2, ...])` .
+
+chars({str})	*Vital.Stream.chars()*
+	Shortcut for `s:Stream.from_list(split(str, '\zs'))` .
+
+lines({str})	*Vital.Stream.lines()*
+	Shortcut for `s:Stream.from_list(split(str, '\r\?\n', 1))` .
+	But this makes empty stream for empty string.
+
+from_dict({dict})	*Vital.Stream.from_dict()*
+	Shortcut for `s:Stream.from_list(items(dict))` .
+
+from_list({list})	*Vital.Stream.from_list()*
+	This makes a stream of elements of {list}.
+
+			*Vital.Stream.zip()*
+zip({stream1}, {stream2} [, {stream3} ...])
+	Combines given streams with the minimum number of elements.
+>
+	" Output: [[1,3], [2,4]]
+	echo s:Stream.zip(s:Stream.of(1,2), s:Stream.of(3,4)).to_list()
+
+	" Output: [[1,3]]
+	echo s:Stream.zip(s:Stream.of(1,2), s:Stream.of(3)).to_list()
+
+	" Output: [[1,3,5], [2,4,6]]
+	echo s:Stream.zip(
+	      \s:Stream.of(1,2),
+	      \s:Stream.of(3,4),
+	      \s:Stream.of(5,6))
+	        \.to_list()
+
+	" You can zip infinite stream and finite stream
+	" Output: [[1,'foo'], [2,'bar'], [3,'baz']]
+	echo s:Stream.zip(
+	      \s:Stream.iterate(1, 'v:val + 1'),
+	      \s:Stream.of('foo', 'bar', 'baz))
+	        \.to_list()
+
+	" You can zip two infinite streams
+	" NOTE: .take(3) prohibits infinite loop
+	" Output: [[1,-1], [2,-2], [3,-3]]
+	echo s:Stream.zip(
+	      \s:Stream.iterate(1, 'v:val + 1'),
+	      \s:Stream.iterate(-1, 'v:val - 1'))
+	        \.take(3).to_list()
+<
+				*Vital.Stream.concat()*
+concat({stream1}, {stream2} [, {stream3} ...])
+	Concatenates given streams.  If any of stream is an inifinite stream,
+	a result stream is an infinite stream.
+>
+	" Output: [1,2,3,4]
+	echo s:Stream.concat(s:Stream.of(1,2), s:Stream.of(3,4)).to_list()
+
+	" Output: [1,2,3]
+	echo s:Stream.concat(s:Stream.of(1,2), s:Stream.of(3)).to_list()
+
+	" Output: [1,2,3,4,5,6]
+	echo s:Stream.concat(
+	      \s:Stream.of(1,2),
+	      \s:Stream.of(3,4),
+	      \s:Stream.of(5,6))
+	        \.to_list()
+
+	" You can combine infinite stream and finite stream
+	" Output: [1,2,3,4,5]
+	echo s:Stream.concat(
+	      \s:Stream.of(1,2,3),
+	      \s:Stream.iterate(4, 'v:val + 1'))
+	        \.take(5).to_list()
+
+	" You can combine two infinite streams
+	" NOTE: .take(3) prohibits infinite loop
+	" Output: [[1,-1], [2,-2], [3,-3]]
+	echo s:Stream.concat(
+	      \s:Stream.iterate(1, 'v:val + 1'),
+	      \s:Stream.iterate(-1, 'v:val - 1'))
+	        \.take(3).to_list()
+<
+iterate({init}, {func})		*Vital.Stream.iterate()*
+	Generates an infinite stream. {init} is the first element of a stream.
+	The second element of a stream is the value that {init} is applied to
+	{func}. And the result is applied to {func} until the end (if
+	downstream limited the number of elements, otherwise it results in an
+	infinite loop).
+>
+	" Output: [1,2,3]
+	echo s:Stream.iterate(1, 'v:val + 1').take(3).to_list()
+<
+generate({func})		*Vital.Stream.generate()*
+	Generates an infinite stream. This is normally used for a constant
+	stream.
+>
+	" Output: [42,42,42]
+	echo s:Stream.generate('42').take(3).to_list()
+<
+	But this can be also used for random number generation if {func}
+	returns random values each time.
+>
+	" Simple (but not so randomized?) implementation
+	echo s:Stream.generate('reltime()[0] % reltime()[1]').first()
+<
+				*Vital.Stream.range()*
+range({expr} [, {max} [, {stride}]])
+	Unlike Vim script's |range()|, this function does not create the large
+	number of elements of List like Vim script's |range()|.
+>
+	" In Vim script, 1/0 is evaluated to the max value of number
+	let very_big_number = 1/0
+	" Output: [1,2,3]
+	echo s:Stream.range(1, very_big_number).take(3).to_list()
+<
+generator({dict})		*Vital.Stream.generator()*
+	Creates a stream from generator object {dict}.
+	{dict} must have the following method:
+
+	yield({n}, {none})
+	  Returns a value used for an element of a stream. If the return value
+	  is same as {none}, the stream ends. {n} is 0 or positive value that
+	  means the number of called times. At the first time, {n} is 0.
+>
+	" This generator creates an infinite stream
+	let dict = {}
+	function! dict.yield(times, NONE) abort
+	  return a:times
+	endfunction
+
+	" Output: [0,1,2]
+	echo s:Stream.generator(dict).take(3).to_list()
+
+	" This generator creates a finite stream
+	let dict = {}
+	function! dict.yield(times, NONE) abort
+	  if a:times >= 3
+	    return a:NONE
+	  endif
+	  return a:times
+	endfunction
+
+	" Output: [0,1,2]
+	echo s:Stream.generator(dict).to_list()
+<
+==============================================================================
+STREAM OBJECT				*Vital.Stream-Stream-object*
+
+Intermediate operations			*Vital.Stream-intermediate-operations*
+----------------------
+
+Intermediate operations return |Vital.Stream-Stream-object|.
+
+				*Vital.Stream-Stream.zip()*
+Stream.zip({stream1} [, {stream2} ...])
+	Shortcut for `s:Stream.zip(self, stream1, stream2, ...)` .
+	See |Vital.Stream.zip()|.
+
+Stream.zip_with_index()		*Vital.Stream-Stream.zip_with_index()*
+	Shortcut for `s:Stream.zip(s:Stream.iterate(1, 'v:val + 1'), self)` .
+	See |Vital.Stream.zip()|.
+
+				*Vital.Stream-Stream.concat()*
+Stream.concat({stream1} [, {stream2} ...])
+	Shortcut for `s:Stream.concat(self, stream1, stream2, ...)` .
+
+				*Vital.Stream-Stream.peek()*
+Stream.peek({func})
+	Peeks elements of stream and does not change the values of elements.
+	This method is useful for debugging. You can pass a function which
+	causes side effect. {func} is a function of 1 arity.
+>
+	let g:peek = []
+	" Output: [1,2,3]
+	echo s:Stream.of(1,2,3).peek('add(g:peek, v:val)').to_list()
+	" Output: [1,2,3]
+	echo g:peek
+
+	let g:peek = []
+	" Output: [2,4,6]
+	echo s:Stream.of(1,2,3).peek('add(g:peek, v:val)').map('v:val * 2').to_list()
+	" Output: [1,2,3]
+	echo g:peek
+<
+				*Vital.Stream-Stream.map()*
+Stream.map({func})
+	Creates a stream applying {func} to each element. {func} is a function
+	of 1 arity.
+>
+	" Output: [1,4,9]
+	echo s:Stream.of(1,2,3).map('v:val * 2').to_list()
+<
+				*Vital.Stream-Stream.flatmap()*
+Stream.flatmap({func})
+	Creates a flattened stream applying {func} to each element.
+	{func} returns |List|, and is a function of 1 arity.
+>
+	" Output: [1,2,2,3,3,3]
+	echo s:Stream.of(0,1,2,3).flatmap('repeat([v:val], v:val)').to_list()
+
+	" Output: [0,4,8]
+	echo s:Stream.of(0,1,2,3,4).flatmap('v:val % 2 == 0 ? [v:val * 2] : []').to_list()
+<
+				*Vital.Stream-Stream.filter()*
+Stream.filter({func})
+	Creates a stream filtering elements with {func}
+	{func} is a function of 1 arity.
+>
+	" Output: [0,2,4]
+	echo s:Stream.of(0,1,2,3,4).map('v:val % 2 == 0').to_list()
+<
+				*Vital.Stream-Stream.slice_before()*
+Stream.slice_before({func})
+	Slices a stream into each element before {func} returns non-zero. {func} is
+	a function of 1 arity. (this method was inspired by Ruby's
+	Enumerable#slice_before())
+>
+	" Output: [[0,1], [2,3], [4,5]]
+	echo s:Stream.of(0,1,2,3,4,5).slice_before('v:val % 2 == 0').to_list()
+
+	" Output: [[1], [2,3], [4,5]]
+	echo s:Stream.of(1,2,3,4,5).slice_before('v:val % 2 == 0').to_list()
+<
+				*Vital.Stream-Stream.drop()*
+Stream.drop({n})
+	Drops the first {n} elements.
+>
+	" Output: [1,2,3]
+	echo s:Stream.of(42,1,2,3).drop(1).to_list()
+<
+				*Vital.Stream-Stream.take()*
+Stream.take({n})
+	Takes the first {n} elements.
+>
+	" Output: [1,2,3]
+	echo s:Stream.of(1,2,3,42).take(3).to_list()
+<
+				*Vital.Stream-Stream.take_while()*
+Stream.take_while({func})
+	Takes the first elements while {func} returns non-zero value. {func} is a
+	function of 1 arity.
+>
+	" Output: [1,2,3]
+	echo s:Stream.of(1,2,3,42,4,5,6).take_while('v:val < 10').to_list()
+<
+				*Vital.Stream-Stream.drop_while()*
+Stream.drop_while({func})
+	Drops the first elements while {func} returns non-zero value. {func} is a
+	function of 1 arity.
+>
+	" Output: [42,1,2,3]
+	echo s:Stream.of(1,2,3,42,4,5,6).drop_while('v:val < 10').to_list()
+<
+				*Vital.Stream-Stream.distinct()*
+Stream.distinct([{hashfunc}])
+	Gets rid of duplicate elements. {hashfunc} is a function of 1 arity
+	which is used for stringification of an element to a key string. If
+	the key string is same, only the first element is returned. Default
+	{hashfunc} is |string()|.
+>
+	" Output: [1,2,3]
+	echo s:Stream.of(1,2,2,3,3).distinct().to_list()
+
+	" Output: [1,2,3]
+	echo s:Stream.of(1,2,3,2,1).distinct().to_list()
+
+	" Output: ["a", "bb", "ccc"]
+	echo s:Stream.of('a', 'bb', 'ccc', 'ddd', 'ee').distinct('len(v:val)').to_list()
+<
+				*Vital.Stream-Stream.sorted()*
+Stream.sorted([{comparator}])
+	Gets all elements from upstream and sorts all elements.
+	{comparator} is a function of 2 arity.
+>
+	" Output: [1,2,3]
+	echo s:Stream.of(2,1,3).sorted().to_list()
+
+	" Output: [3,2,1]
+	let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
+	echo s:Stream.of(2,1,3).sorted(by_desc).to_list()
+	" Or
+	let l:ByDesc = {a,b -> a > b ? -1 : a ==# b ? 0 : 1}
+	echo s:Stream.of(2,1,3).sorted(l:ByDesc).to_list()
+<
+Terminal operations			*Vital.Stream-terminal-operations*
+------------------
+
+Terminal operations do not return |Vital.Stream-Stream-object|. And the stream
+cannot be called twice (because stream is already closed).
+
+				*Vital.Stream-Stream.foreach()*
+Stream.foreach({func})
+	Iterates each element and returns 0. {func} is a function of
+	1 arity.
+>
+	function! Echo(n)
+	  echo a:n
+	endfunction
+	call s:Stream.of(1,2,3).foreach('Echo(v:val)')
+<
+				*Vital.Stream-Stream.to_list()*
+Stream.to_list()
+	Returns |List| of elements.
+>
+	" Output: [1,2,3]
+	echo s:Stream.of(1,2,3).to_list()
+<
+				*Vital.Stream-Stream.count()*
+Stream.count([{func}])
+	Returns the number of elements. If {func} was given, it counts
+	elements only which {func} returns non-zero. {func} is a function of 1
+	arity.
+>
+	" Output: 3
+	echo s:Stream.of(1,2,3).count()
+
+	" Output: 1
+	echo s:Stream.of(1,2,3).count('v:val % 2 == 0')
+<
+				*Vital.Stream-Stream.reduce()*
+Stream.reduce({func} [, {init}])
+	Accumulates each element by applying {func}. {func} is a function of 2
+	arity. If {init} was given, {init} is passed to the first argument of
+	{func}. Otherwise, the first element is passed. If {init} was not
+	given and stream is empty, an exception is thrown.
+>
+	" Output: 6
+	echo s:Stream.of(1,2,3).reduce('v:val[0] + v:val[1]', 0)
+	" Vim 8 version (lambda)
+	echo s:Stream.of(1,2,3).reduce({a,b -> a + b}, 0)
+
+	" Throws an exception
+	echo s:Stream.empty().reduce('v:val[0] + v:val[1]')
+
+	" Output: [3,2,1]
+	echo s:Stream.of(1,2,3).reduce('insert(v:val[0], v:val[1])', [])
+	echo s:Stream.of(1,2,3).reduce(function('insert'), [])
+<
+				*Vital.Stream-Stream.first()*
+Stream.first([{default}])
+	Returns the first element. When the stream is empty and if {default} was
+	given, returns {default}. Or if {default} was not given, throws an
+	exception.
+>
+	" Output: 42
+	echo s:Stream.of(42,1,2,3).first()
+
+	" Throws an exception
+	echo s:Stream.empty().first()
+
+	" Output: 42
+	echo s:Stream.empty().first(42)
+<
+				*Vital.Stream-Stream.last()*
+Stream.last([{default}])
+	Returns the last element. When the stream is empty and if {default} was
+	given, returns {default}. Or if {default} was not given, throws an
+	exception.
+>
+	" Output: 42
+	echo s:Stream.of(1,2,3,42).last()
+
+	" Throws an exception
+	echo s:Stream.empty().last()
+
+	" Output: 42
+	echo s:Stream.empty().last(42)
+<
+				*Vital.Stream-Stream.find()*
+Stream.find({func} [, {default}])
+	Shortcut for `filter(func).first(default)` .
+	See |Vital.Stream-Stream.filter()| and |Vital.Stream-Stream.first()|.
+>
+	" Output: 42
+	echo s:Stream.of(1,2,42,3).find('v:val > 10')
+
+	" Throws an exception
+	echo s:Stream.of(1,2,3).find('v:val > 10')
+
+	" Output: 42
+	echo s:Stream.of(1,2,3).find('v:val > 10', 42)
+<
+				*Vital.Stream-Stream.any()*
+Stream.any({func})
+	Returns 1 if any of the result value(s) which {func} returns are
+	non-zero. Otherwise returns 0. if a stream is empty, returns 0.
+>
+	" Output: 1
+	echo s:Stream.of(1,2,42,3).any('v:val > 10')
+
+	" Output: 0
+	echo s:Stream.of(1,2,3).any('v:val > 10')
+
+	" Output: 0
+	echo s:Stream.empty().any('v:val > 10')
+<
+				*Vital.Stream-Stream.all()*
+Stream.all({func})
+	Returns 1 if all of the result value(s) which {func} returns are
+	non-zero. Otherwise returns 0. if a stream is empty, returns 1.
+>
+	" Output: 1
+	echo s:Stream.of(1,2,3).all('v:val > 0')
+
+	" Output: 0
+	echo s:Stream.of(1,2,3,-1).all('v:val > 0')
+
+	" Output: 1
+	echo s:Stream.empty().all('v:val > 0')
+<
+				*Vital.Stream-Stream.none()*
+Stream.none({func})
+	Returns 1 if none of the result value(s) which {func} returns
+	are non-zero. Otherwise returns 0. if a stream is empty, returns
+	1.
+>
+	" Output: 1
+	echo s:Stream.of(1,2,3).none('v:val < 0')
+
+	" Output: 0
+	echo s:Stream.of(1,2,3,-1).none('v:val < 0')
+
+	" Output: 1
+	echo s:Stream.empty().none('v:val < 0')
+<
+				*Vital.Stream-Stream.to_dict()*
+Stream.to_dict({keymapper}, {valuemapper} [, {mergefunc}])
+	Accumulates elements into a |Dictionary| whose keys and values are the
+	result of applying the provided mapping functions to the input
+	elements. {keymapper} / {valuemapper} create key / value pair. And If
+	{mergefunc} was given, {mergefunc} is invoked when the key is
+	duplicate to merge 2 values. If {mergefunc} was not given and met the
+	duplicate key, throws an exception. {keymapper} and {valuemapper} are
+	a function of 1 arity. {mergefunc} is a function of 2 arity.
+	See also |Vital.Stream-Stream.group_by()|.
+>
+	" Output: {'1': 2, '2': 4, '3': 6}
+	echo s:Stream.of(1,2,3)
+	            \.to_dict('v:val', 'v:val * 2')
+
+	" Throws an exception
+	echo s:Stream.of(1,2,3,3)
+	            \.to_dict('v:val', 'v:val')
+
+	" Output: {'1': 1, '2': 2, '3': 6}
+	echo s:Stream.of(1,2,3,3)
+	            \.to_dict('v:val', 'v:val', 'v:val[0] + v:val[1]')
+<
+				*Vital.Stream-Stream.group_by()*
+Stream.group_by({func})
+	Grouping elements of a stream with {func}. Shortcut for
+	`stream.to_dict(func, '[v:val]', 'v:val[0] + v:val[1]')` .
+>
+	" Output: {'even': [2,4], 'odd': [1,3,5]}
+	echo s:Stream.of(1,2,3,4,5).group_by('v:val % 2 == 0 ? "even" : "odd"')
+<
+==============================================================================
+TIPS					*Vital.Stream-tips*
+
+					*Vital.Stream-tip-1*
+Q. Can I use `v:key` in Stream.map() ?
+A. `v:key` is used for index number in |map()|.
+   In Stream module, you can use |Vital.Stream-Stream.zip_with_index()|
+   instead.
+>
+	" Output: ['0: foo', '1: bar', '2: baz']
+	echo s:Stream.of('foo', 'bar', 'baz')
+	            \.zip_with_index()
+	            \.map({l -> join(l, ': ')})
+	            \.to_list()
+<
+==============================================================================
+TODO					*Vital.Stream-todo*
+
+- Build an AST at each creation / intermediate operation.
+  And make an execution plan and unroll a stream flow (do not create a s:Stream
+  object each time functions / methods are called)
+  - `s:Stream.of(1,2,3).drop(1).take(1)` should create slice operation like
+    `[1,2,3][1:1]`
+  - `s:Stream.range(1, 100).take(10).sorted()` should skip sorted() operation
+  - Java Stream API has "characteristics" like SORTED, DISTINCT which
+    represent the stream is already sorted(), or distinct(). But this module
+    should take essentially a different approach because Vim script is
+    interpreter language, that means, an execution of Ex command is slow even
+    just creating object
+- Better examples (|Vital.Stream-examples|) to show the power of this module
+- Provides a way to extend methods like underscore.vim
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
