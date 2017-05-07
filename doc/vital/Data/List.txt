@@ -362,14 +362,17 @@ foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 	foldl(f, z, [x1, x2, ..., xn]) ==
 	  f(... f(f(z, x1), x2) ..., xn)
 
+	{f} must be either|Funcref|, |String|(as expression), or
+	|Vital.Data.Closure-term-callable|.
+
 	Examples:
 >
 	function! Plus(x, y) abort
 	  return a:x + a:y
 	endfunction
 
-	function! Ratio(x, y) abort
-	  return {'l': a:x, 'r': a:y}
+	function! Pair(x, y) abort
+	  return [a:x, a:y]
 	endfunction
 
 	echo s:L.foldl('v:memo + v:val', 0, range(1, 10))
@@ -378,11 +381,12 @@ foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 	echo s:L.foldl(function('Plus'), 0, range(1, 10))
 	" 55
 
-	echo s:L.foldl('v:memo + v:val', 20, range(1, 10))
-	" 75 := 20 + 1+2+3+4+5+6+7+8+9+10
+	let plus = Closure.from_funcref(function('Plus'))
+	echo s:L.foldl(plus, 0, range(1, 10))
+	" 55
 
-	echo s:L.foldl(function('Ratio'), 0, [1, 2])
-	" {'l': {'l': 0, 'r': 1}, 'r': 2}
+	echo s:L.foldl(function('Pair'), 0, [1, 2])
+	" [[0, 1], 2]
 <
 	See also: foldl1, foldr, foldr1
 	If you know Haskell, this foldl() is like Haskell's Data.List.foldl

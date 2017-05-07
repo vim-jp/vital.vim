@@ -1,6 +1,8 @@
 Describe Data.List
   Before all
-    let List = vital#vital#new().import('Data.List')
+    let V = vital#vital#new()
+    let List = V.import('Data.List')
+    let Closure = V.import('Data.Closure')
   End
 
   Describe .pop()
@@ -308,6 +310,14 @@ Describe Data.List
     It folds a list from left with funcref
       Assert Equals(List.foldl(function('Plus'), 0, range(1, 10)), 55)
       Assert Equals(List.foldl(function('Pair'), 0, [1, 2]), [[0, 1], 2])
+    End
+
+    It folds a list from left with Data.Closure
+      let plus = Closure.from_funcref(function('Plus'))
+      let pair = Closure.from_funcref(function('Pair'))
+
+      Assert Equals(List.foldl(plus, 0, range(1, 10)), 55)
+      Assert Equals(List.foldl(pair, 0, [1, 2]), [[0, 1], 2])
     End
 
     It does nothing if the list is empty
