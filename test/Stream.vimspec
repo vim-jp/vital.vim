@@ -21,17 +21,13 @@ Describe Stream
   After all
     delfunction Id
     delfunction Succ
+    delfunction IsEven
     delfunction Answer
   End
 
   Describe .of()
     It raises exception for empty arguments
-      try
-        call Stream.of()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      Throws Stream.of()
     End
 
     It constructs stream from arguments
@@ -161,12 +157,7 @@ Describe Stream
 
   Describe .range()
     It throws an exception for invalid arguments
-      try
-        call Stream.range(-2, 2, 0)
-        Assert 0
-      catch /vital: Stream: range(): stride is 0/
-        Assert 1
-      endtry
+      Throws /vital: Stream: range(): stride is 0/ Stream.range(-2, 2, 0)
     End
 
     It constructs stream from range
@@ -274,9 +265,23 @@ Describe Stream
     End
 
     It constructs infinite stream by funcref
+
       Assert Equals(
       \ Stream.generate(function('Answer')).take(5).to_list(),
       \ [42, 42, 42, 42, 42])
+
+      let g:count = 0
+      function! IncCount() abort
+        let g:count += 1
+        return g:count
+      endfunction
+
+      Assert Equals(
+      \ Stream.generate(function('IncCount')).take(5).to_list(),
+      \ [1,2,3,4,5])
+
+      unlet g:count
+      delfunction IncCount
     End
   End
 
@@ -499,18 +504,10 @@ Describe Stream
 
   Describe .take()
     It raises negative number argument
-      try
-        call Stream.of(1,2,3,4,5).take(-1)
-        Assert 0
-      catch /vital: Stream: take(n): n must be 0 or positive/
-        Assert 1
-      endtry
-      try
-        call Stream.of(1,2,3,4,5).take(0)
-        Assert 1
-      catch /vital: Stream: take(n): n must be 0 or positive/
-        Assert 0
-      endtry
+      Throws /vital: Stream: take(n): n must be 0 or positive/
+      \      Stream.of(1,2,3,4,5).take(-1)
+      " throws nothing
+      call Stream.of(1,2,3,4,5).take(0)
     End
 
     It limits stream
@@ -528,39 +525,23 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.take(3)
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.take(3).to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      call s.take(3)
+
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      Throws call s.take(3).to_list()
     End
   End
 
   Describe .drop()
     It raises negative number argument
-      try
-        call Stream.of(1,2,3,4,5).drop(-1)
-        Assert 0
-      catch /vital: Stream: drop(n): n must be 0 or positive/
-        Assert 1
-      endtry
-      try
-        call Stream.of(1,2,3,4,5).drop(0)
-        Assert 1
-      catch /vital: Stream: drop(n): n must be 0 or positive/
-        Assert 0
-      endtry
+      Throws /vital: Stream: drop(n): n must be 0 or positive/
+      \      Stream.of(1,2,3,4,5).drop(-1)
+      " throws nothing
+      call Stream.of(1,2,3,4,5).drop(0)
     End
 
     It limits stream
@@ -571,22 +552,14 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.drop(3)
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.drop(3).to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      call s.drop(3)
+
+      let s = Stream.of(1,2,3,4,5)
+      Assert Equals(s.to_list(), [1,2,3,4,5])
+      Throws s.drop(3).to_list()
     End
   End
 
@@ -624,22 +597,14 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.peek('v:val')
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.peek('v:val').to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      call s.peek('v:val')
+
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      Throws s.peek('v:val').to_list()
     End
   End
 
@@ -663,21 +628,13 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.foreach('v:val')
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.foreach('v:val')
-        call s.foreach('v:val')
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.foreach('v:val')
+
+      let s = Stream.of(1,2,3,4,5)
+      call s.foreach('v:val')
+      Throws s.foreach('v:val')
     End
   End
 
@@ -699,22 +656,14 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.map('v:val')
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.map('v:val').to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      call s.map('v:val')
+
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      Throws s.map('v:val').to_list()
     End
   End
 
@@ -769,22 +718,14 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.flatmap('v:val')
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.flatmap('v:val').to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      call s.flatmap('v:val')
+
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      Throws s.flatmap('v:val').to_list()
     End
   End
 
@@ -845,22 +786,14 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.slice_before('v:val')
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.slice_before('v:val').to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      call s.slice_before('v:val')
+
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      Throws s.slice_before('v:val').to_list()
     End
   End
 
@@ -882,22 +815,14 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.filter('v:val % 2 == 0')
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.filter('v:val % 2 == 0').to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      call s.filter('v:val % 2 == 0')
+
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      Throws s.filter('v:val % 2 == 0').to_list()
     End
   End
 
@@ -935,22 +860,14 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.take_while('v:val')
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.take_while('v:val').to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      call s.take_while('v:val')
+
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      Throws s.take_while('v:val').to_list()
     End
   End
 
@@ -986,22 +903,14 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.drop_while('v:val')
-        Assert 1
-      catch
-        Assert 0
-      endtry
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.drop_while('v:val').to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      " throws nothing
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      call s.drop_while('v:val')
+
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      Throws s.drop_while('v:val').to_list()
     End
   End
 
@@ -1170,12 +1079,8 @@ Describe Stream
 
   Describe .reduce()
     It raises exception for empty stream
-      try
-        call Stream.empty().reduce('v:val')
-        Assert 0
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 1
-      endtry
+      Throws /vital: Stream: \w\+(): stream is empty and default value was not given/
+      \      Stream.empty().reduce('v:val')
     End
 
     It accumulates stream
@@ -1203,17 +1108,10 @@ Describe Stream
 
   Describe .first()
     It raises exception for empty stream
-      try
-        call Stream.empty().first()
-        Assert 0
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 1
-      endtry
-      try
-        Assert Equals(Stream.empty().first(42), 42)
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 0
-      endtry
+      Throws /vital: Stream: \w\+(): stream is empty and default value was not given/
+      \      Stream.empty().first()
+      " throws nothing
+      Assert Equals(Stream.empty().first(42), 42)
     End
 
     It returns the first element in stream
@@ -1224,17 +1122,10 @@ Describe Stream
 
   Describe .last()
     It raises exception for empty stream
-      try
-        call Stream.empty().last()
-        Assert 0
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 1
-      endtry
-      try
-        Assert Equals(Stream.empty().last(42), 42)
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 0
-      endtry
+      Throws /vital: Stream: \w\+(): stream is empty and default value was not given/
+      \      Stream.empty().last()
+      " throws nothing
+      Assert Equals(Stream.empty().last(42), 42)
     End
 
     It returns the last element in stream
@@ -1245,17 +1136,10 @@ Describe Stream
 
   Describe .find()
     It raises exception for empty stream
-      try
-        call Stream.empty().find('v:val')
-        Assert 0
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 1
-      endtry
-      try
-        Assert Equals(Stream.empty().find('v:val', 42), 42)
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 0
-      endtry
+      Throws /vital: Stream: \w\+(): stream is empty and default value was not given/
+      \      Stream.empty().find('v:val')
+      " throws nothing
+      Assert Equals(Stream.empty().find('v:val', 42), 42)
     End
 
     It returns the first element matching with given predicate function in stream
@@ -1391,35 +1275,21 @@ Describe Stream
     End
 
     It converts elements to Dictionary in stream with merge function
-      try
-        call Stream.of(1,2,3,2,1).to_dict('v:val', 'v:val')
-        Assert 0
-      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
-        Assert 1
-      endtry
-      try
-        Assert Equals(
-          \Stream.of(1,2,3,2,1)
-            \.to_dict('v:val', '[v:val]', 'v:val[0] + v:val[1]'),
-          \{'1': [1,1], '2': [2,2], '3': [3]})
-      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
-        Assert 0
-      endtry
+      Throws /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
+      \      Stream.of(1,2,3,2,1).to_dict('v:val', 'v:val')
+      " throws nothing
+      Assert Equals(
+        \Stream.of(1,2,3,2,1)
+          \.to_dict('v:val', '[v:val]', 'v:val[0] + v:val[1]'),
+        \{'1': [1,1], '2': [2,2], '3': [3]})
 
-      try
-        call Stream.of('a', 'bb', 'ccc', 'ddd').to_dict('len(v:val)', 'v:val')
-        Assert 0
-      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
-        Assert 1
-      endtry
-      try
-        Assert Equals(
-          \Stream.of('a', 'bb', 'ccc', 'ddd')
-            \.to_dict('len(v:val)', '[v:val]', 'v:val[0] + v:val[1]'),
-          \{'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
-      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
-        Assert 0
-      endtry
+      Throws /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
+      \      Stream.of('a', 'bb', 'ccc', 'ddd').to_dict('len(v:val)', 'v:val')
+      " throws nothing
+      Assert Equals(
+        \Stream.of('a', 'bb', 'ccc', 'ddd')
+          \.to_dict('len(v:val)', '[v:val]', 'v:val[0] + v:val[1]'),
+        \{'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
     End
 
     It converts elements to Dictionary in stream by funcref
@@ -1447,35 +1317,21 @@ Describe Stream
         return a:a + a:b
       endfunction
 
-      try
-        call Stream.of(1,2,3,2,1).to_dict(function('Id'), function('Id'))
-        Assert 0
-      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
-        Assert 1
-      endtry
-      try
-        Assert Equals(
-          \Stream.of(1,2,3,2,1)
-            \.to_dict(function('Id'), function('List'), function('Plus')),
-          \{'1': [1,1], '2': [2,2], '3': [3]})
-      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
-        Assert 0
-      endtry
+      Throws /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
+      \      Stream.of(1,2,3,2,1).to_dict(function('Id'), function('Id'))
+      " throws nothing
+      Assert Equals(
+        \Stream.of(1,2,3,2,1)
+          \.to_dict(function('Id'), function('List'), function('Plus')),
+        \{'1': [1,1], '2': [2,2], '3': [3]})
 
-      try
-        call Stream.of('a', 'bb', 'ccc', 'ddd').to_dict(function('Len'), function('Id'))
-        Assert 0
-      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
-        Assert 1
-      endtry
-      try
-        Assert Equals(
-          \Stream.of('a', 'bb', 'ccc', 'ddd')
-            \.to_dict(function('Len'), function('List'), function('Plus')),
-          \{'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
-      catch /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
-        Assert 0
-      endtry
+      Throws /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
+      \      Stream.of('a', 'bb', 'ccc', 'ddd').to_dict(function('Len'), function('Id'))
+      " throws nothing
+      Assert Equals(
+        \Stream.of('a', 'bb', 'ccc', 'ddd')
+          \.to_dict(function('Len'), function('List'), function('Plus')),
+        \{'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
 
       delfunction Len
       delfunction List
@@ -1509,14 +1365,9 @@ Describe Stream
     End
 
     It must not reuse stream
-      try
-        let s = Stream.of(1,2,3,4,5)
-        call s.to_list()
-        call s.to_list()
-        Assert 0
-      catch
-        Assert 1
-      endtry
+      let s = Stream.of(1,2,3,4,5)
+      call s.to_list()
+      Throws s.to_list()
     End
   End
 

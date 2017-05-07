@@ -75,18 +75,18 @@ endfunction
 
 function! s:_new_from_list(list, characteristics, caller) abort
   let stream = s:_new(s:Stream)
+  let stream._name = a:caller
   let stream._characteristics = a:characteristics
   let stream.__index = 0
   let stream.__end = 0
   let stream._list = a:list
-  let stream._caller = a:caller
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at '
-      \     . self._caller
+      \     . self._name
     endif
-    " max(): fix overflow
-    let n = max([self.__index + a:n, a:n])
+    " fix overflow
+    let n = self.__index + a:n < a:n ? 1/0 : self.__index + a:n
     let list = s:_slice(self._list, self.__index, n - 1)
     let self.__index = n
     let self.__end = (self.__estimate_size__() ==# 0)
@@ -110,10 +110,11 @@ function! s:range(expr, ...) abort
   if args[2] ==# 0    " E726
     throw 'vital: Stream: range(): stride is 0'
   endif
-  if s:_estimate_range_size(args, 0) ==# 0
+  if s:_range_size(args, 0) ==# 0
     return s:empty()
   endif
   let stream = s:_new(s:Stream)
+  let stream._name = 'range()'
   let stream._characteristics = s:SIZED
   let stream.__index = 0
   let stream._args = args
@@ -139,7 +140,7 @@ function! s:range(expr, ...) abort
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
-    return s:_estimate_range_size(self._args, self.__index)
+    return s:_range_size(self._args, self.__index)
   endfunction
   return stream
 endfunction
@@ -152,10 +153,10 @@ endfunction
 " @assert a:args[2] != 0
 " @assert len(a:args) >= 3
 " @assert a:index >= 0
-function! s:_estimate_range_size(args, index) abort
+function! s:_range_size(args, index) abort
   let [a0, a1, a2] = a:args
   if a2 < 0
-    return s:_estimate_range_size([a1, a0, -a2], a:index)
+    return s:_range_size([a1, a0, -a2], a:index)
   elseif a0 > a1
     return 0
   else
@@ -166,16 +167,21 @@ endfunction
 
 function! s:iterate(init, f) abort
   let l:Call = s:_get_callfunc_for_func1(a:f, 'iterate()')
-  return s:_inf_stream(a:f, a:init, l:Call, 'self._call(self._f, [v:val])')
+  return s:_inf_stream(
+  \ a:f, a:init, l:Call, 'self._call(self._f, [v:val])', 'iterate()'
+  \)
 endfunction
 
 function! s:generate(f) abort
   let l:Call = s:_get_callfunc_for_func0(a:f, 'generate()')
-  return s:_inf_stream(a:f, l:Call(a:f, []), l:Call, 'self._call(self._f, [])')
+  return s:_inf_stream(
+  \ a:f, l:Call(a:f, []), l:Call, 'self._call(self._f, [])', 'generate()'
+  \)
 endfunction
 
-function! s:_inf_stream(f, init, call, expr) abort
+function! s:_inf_stream(f, init, call, expr, caller) abort
   let stream = s:_new(s:Stream)
+  let stream._name = a:caller
   let stream._characteristics = 0
   let stream._f = a:f
   let stream.__value = a:init
@@ -199,6 +205,7 @@ endfunction
 
 function! s:generator(dict) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'generator()'
   let stream._characteristics = 0
   let stream._dict = a:dict
   let stream.__end = 0
@@ -232,6 +239,7 @@ endfunction
 
 function! s:zip(s1, s2, ...) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'zip()'
   let stream._characteristics =
   \ s:_zip_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
   let stream.__end = 0
@@ -267,6 +275,7 @@ endfunction
 
 function! s:concat(s1, s2, ...) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'concat()'
   let stream._characteristics =
   \ s:_concat_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
   let stream.__end = 0
@@ -343,6 +352,7 @@ endfunction
 
 function! s:Stream.peek(f) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'peek()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -365,6 +375,7 @@ endfunction
 
 function! s:Stream.map(f) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'map()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -387,6 +398,7 @@ endfunction
 
 function! s:Stream.flatmap(f) abort
   let stream = s:_new(s:Stream, [s:WithBuffered])
+  let stream._name = 'flatmap()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -429,6 +441,7 @@ endfunction
 
 function! s:Stream.filter(f) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'filter()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -455,6 +468,7 @@ endfunction
 
 function! s:Stream.slice_before(f) abort
   let stream = s:_new(s:Stream, [s:WithBuffered])
+  let stream._name = 'slice_before()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -517,6 +531,7 @@ endfunction
 let s:BULK_SIZE = 32
 function! s:Stream.take_while(f) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'take_while()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -570,6 +585,7 @@ endfunction
 
 function! s:Stream.drop_while(f) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'drop_while()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -613,6 +629,7 @@ endfunction
 
 function! s:Stream.distinct(...) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'distinct()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   if a:0
@@ -656,6 +673,7 @@ endfunction
 
 function! s:Stream.sorted(...) abort
   let stream = s:_new(s:Stream)
+  let stream._name = 'sorted()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -703,10 +721,11 @@ function! s:Stream.take(n) abort
     return s:empty()
   endif
   let stream = s:_new(s:Stream)
+  let stream._name = 'take()'
   let stream._characteristics = or(self._characteristics, s:SIZED)
   let stream._upstream = self
   let stream.__end = 0
-  let stream.__skipped = 0
+  let stream._took_count = 0
   let stream._max_n = a:n
   function! stream.__take_possible__(n) abort
     if self.__end
@@ -714,12 +733,12 @@ function! s:Stream.take(n) abort
     endif
     let n = min([self._upstream.__estimate_size__(), self._max_n, a:n])
     let [list, open] = self._upstream.__take_possible__(n)
-    let self.__skipped += len(list)
-    let self.__end = !open || self.__skipped >= min([self._max_n, a:n])
+    let self._took_count += len(list)
+    let self.__end = !open || self._took_count >= min([self._max_n, a:n])
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
-    return min([self._max_n - self.__skipped, self._upstream.__estimate_size__()])
+    return min([self._max_n - self._took_count, self._upstream.__estimate_size__()])
   endfunction
   return stream
 endfunction
@@ -732,6 +751,7 @@ function! s:Stream.drop(n) abort
     return self
   endif
   let stream = s:_new(s:Stream)
+  let stream._name = 'drop()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
@@ -873,7 +893,7 @@ function! s:Stream.count(...) abort
 endfunction
 
 function! s:Stream.to_list() abort
-  return self.__take_possible__(self.__estimate_size__())[0]
+  return s:_take_freeze(self, self.__estimate_size__())
 endfunction
 
 function! s:Stream.foreach(f) abort
@@ -980,7 +1000,7 @@ function! s:_get_non_empty_list_or_default(stream, size, default, caller) abort
   if a:stream.__estimate_size__() ==# 0
     let list = []
   else
-    let list = a:stream.__take_possible__(a:size)[0]
+    let list = s:_take_freeze(a:stream, a:size)
   endif
   if !empty(list)
     return list
@@ -993,6 +1013,26 @@ function! s:_get_non_empty_list_or_default(stream, size, default, caller) abort
   endif
 endfunction
 
+function! s:_take_freeze(stream, size) abort
+  let list = a:stream.__take_possible__(a:size)[0]
+  call s:_freeze(a:stream)
+  return list
+endfunction
+
+function! s:_freeze(stream) abort
+  let a:stream.__take_possible__ = function('s:_throw_closed_stream_exception')
+  let a:stream.__estimate_size__ = function('s:_throw_closed_stream_exception')
+  if has_key(a:stream, '_upstream')
+    let upstreams = type(a:stream._upstream) is s:T_LIST ?
+    \               a:stream._upstream : [a:stream._upstream]
+    call map(copy(upstreams), 's:_freeze(v:val)')
+  endif
+endfunction
+
+function! s:_throw_closed_stream_exception(...) abort dict
+  throw 'vital: Stream: stream has already been operated upon or closed at '
+  \     . self._name
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

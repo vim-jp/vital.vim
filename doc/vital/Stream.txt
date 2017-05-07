@@ -51,7 +51,7 @@ EXAMPLES				*Vital.Stream-examples*
 FizzBuzz				*Vital.Stream-example-fizzbuzz*
 --------
 >
-	let s:Stream = vital#{plugin-name}#new().import('Stream')
+	let s:Stream = vital#{plugin-name}#import('Stream')
 
 	function! s:fizzbuzz(n) abort
 	  return a:n % 15 == 0 ? 'FizzBuzz' :
@@ -358,11 +358,11 @@ Stream.drop_while({func})
 	echo s:Stream.of(1,2,3,42,4,5,6).drop_while('v:val < 10').to_list()
 <
 				*Vital.Stream-Stream.distinct()*
-Stream.distinct([{stringifier}])
-	Gets rid of duplicate elements. {stringifier} is a function of 1 arity
+Stream.distinct([{hashfunc}])
+	Gets rid of duplicate elements. {hashfunc} is a function of 1 arity
 	which is used for stringification of an element to a key string. If
 	the key string is same, only the first element is returned. Default
-	{stringifier} is |string()|.
+	{hashfunc} is |string()|.
 >
 	" Output: [1,2,3]
 	echo s:Stream.of(1,2,2,3,3).distinct().to_list()
@@ -417,8 +417,11 @@ Stream.count([{func}])
 	elements only which {func} returns non-zero. {func} is a function of 1
 	arity.
 >
-	" Output: [1,2,3]
-	echo s:Stream.of(1,2,3).to_list()
+	" Output: 3
+	echo s:Stream.of(1,2,3).count()
+
+	" Output: 1
+	echo s:Stream.of(1,2,3).count('v:val % 2 == 0')
 <
 				*Vital.Stream-Stream.reduce()*
 Stream.reduce({func} [, {init}])
@@ -485,9 +488,8 @@ Stream.find({func} [, {default}])
 <
 				*Vital.Stream-Stream.any()*
 Stream.any({func})
-	Returns non-zero if any of the result value(s) which {func} returns
-	are non-zero. Otherwise returns zero. if a stream is empty, returns
-	zero.
+	Returns 1 if any of the result value(s) which {func} returns are
+	non-zero. Otherwise returns 0. if a stream is empty, returns 0.
 >
 	" Output: 1
 	echo s:Stream.of(1,2,42,3).any('v:val > 10')
@@ -500,9 +502,8 @@ Stream.any({func})
 <
 				*Vital.Stream-Stream.all()*
 Stream.all({func})
-	Returns non-zero if all of the result value(s) which {func} returns
-	are non-zero. Otherwise returns zero. if a stream is empty, returns
-	non-zero.
+	Returns 1 if all of the result value(s) which {func} returns are
+	non-zero. Otherwise returns 0. if a stream is empty, returns 1.
 >
 	" Output: 1
 	echo s:Stream.of(1,2,3).all('v:val > 0')
@@ -515,9 +516,9 @@ Stream.all({func})
 <
 				*Vital.Stream-Stream.none()*
 Stream.none({func})
-	Returns non-zero if none of the result value(s) which {func} returns
-	are non-zero. Otherwise returns zero. if a stream is empty, returns
-	non-zero.
+	Returns 1 if none of the result value(s) which {func} returns
+	are non-zero. Otherwise returns 0. if a stream is empty, returns
+	1.
 >
 	" Output: 1
 	echo s:Stream.of(1,2,3).none('v:val < 0')
@@ -577,10 +578,19 @@ A. `v:key` is used for index number in |map()|.
 ==============================================================================
 TODO					*Vital.Stream-todo*
 
-- Create an execution plan and unroll a stream flow (do not create a s:Stream
+- Build an AST at each creation / intermediate operation.
+  And make an execution plan and unroll a stream flow (do not create a s:Stream
   object each time functions / methods are called)
   - `s:Stream.of(1,2,3).drop(1).take(1)` should create slice operation like
-    `[1,2,3][1:1]`.
+    `[1,2,3][1:1]`
+  - `s:Stream.range(1, 100).take(10).sorted()` should skip sorted() operation
+  - Java Stream API has "characteristics" like SORTED, DISTINCT which
+    represent the stream is already sorted(), or distinct(). But this module
+    should take essentially a different approach because Vim script is
+    interpreter language, that means, an execution of Ex command is slow even
+    just creating object
+- Better examples (|Vital.Stream-examples|) to show the power of this module
+- Provides a way to extend methods like underscore.vim
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
