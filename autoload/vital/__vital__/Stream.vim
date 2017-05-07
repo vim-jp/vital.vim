@@ -700,34 +700,6 @@ function! s:Stream.sorted(...) abort
   return stream
 endfunction
 
-function! s:Stream.get_comparator(...) abort
-  let stream = s:_traverse_until(
-  \   self, function('s:_has_comparator'), s:NONE
-  \)
-  if stream is s:NONE || !stream.__has_characteristic__(s:SORTED)
-    if a:0
-      return a:1
-    else
-      throw 'vital: Stream: get_comparator(): comparator not found and '
-      \   . 'default argument was not given'
-    endif
-  endif
-  return stream._comparator
-endfunction
-
-" Traversal stops if a:stream is one of the following streams:
-" * stream is not s:SORTED
-" * The nearest SORTED stream which has '_comparator' key
-function! s:_has_comparator(stream) abort
-  if !a:stream.__has_characteristic__(s:SORTED)
-    return 1    " nothing
-  elseif has_key(a:stream, '_comparator')
-    return 1    " found
-  else
-    return 0
-  endif
-endfunction
-
 function! s:Stream.take(n) abort
   if a:n < 0
     throw 'vital: Stream: take(n): n must be 0 or positive'
@@ -829,36 +801,6 @@ function! s:Stream.reduce(f, ...) abort
   return l:Result
 endfunction
 
-function! s:Stream.max_by(f, ...) abort
-  let l:Call = s:_get_callfunc_for_func1(a:f, 'max_by()')
-  let list = s:_get_non_empty_list_or_default(
-  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'max_by()')
-  let result = [list[0], l:Call(a:f, [list[0]])]
-  for l:Value in list[1:]
-    let n = l:Call(a:f, [l:Value])
-    if n > result[1]
-      let result = [l:Value, n]
-    endif
-    unlet l:Value
-  endfor
-  return result[0]
-endfunction
-
-function! s:Stream.min_by(f, ...) abort
-  let l:Call = s:_get_callfunc_for_func1(a:f, 'min_by()')
-  let list = s:_get_non_empty_list_or_default(
-  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'min_by()')
-  let result = [list[0], l:Call(a:f, [list[0]])]
-  for l:Value in list[1:]
-    let n = l:Call(a:f, [l:Value])
-    if n < result[1]
-      let result = [l:Value, n]
-    endif
-    unlet l:Value
-  endfor
-  return result[0]
-endfunction
-
 function! s:Stream.first(...) abort
   return s:_get_non_empty_list_or_default(
   \           self, 1, a:0 ? [a:1] : s:NONE, 'first()')[0]
@@ -884,11 +826,6 @@ endfunction
 
 function! s:Stream.none(f) abort
   return self.filter(a:f).first(s:NONE) is s:NONE
-endfunction
-
-function! s:Stream.string_join(...) abort
-  let sep = a:0 ? a:1 : ' '
-  return join(self.to_list(), sep)
 endfunction
 
 function! s:Stream.group_by(f) abort
@@ -926,18 +863,6 @@ function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
     endfor
   endif
   return l:Result
-endfunction
-
-function! s:Stream.sum() abort
-  return self.reduce('v:val[0] + v:val[1]', 0)
-endfunction
-
-function! s:Stream.average() abort
-  let n = self.__estimate_size__()
-  if n ==# 0
-    throw 'vital: Stream: average(): empty stream cannot be average()d'
-  endif
-  return self.reduce('v:val[0] + v:val[1]', 0) / n
 endfunction
 
 function! s:Stream.count(...) abort
@@ -982,20 +907,6 @@ function! s:WithBuffered.__read_to_buffer__(n) abort
     let self.__buffer += r
   endif
   return open || !empty(self.__buffer)
-endfunction
-
-" Traverse from a:stream to upstream.
-" If a:pred returns 1, returns the stream.
-" Otherwise, returns a:default.
-function! s:_traverse_until(stream, pred, default) abort
-  if a:pred(a:stream)
-    return a:stream
-  elseif has_key(a:stream, '_upstream') &&
-  \      type(a:stream._upstream) isnot s:T_LIST
-    return s:_traverse_until(a:stream._upstream, a:pred, a:default)
-  else
-    return a:default
-  endif
 endfunction
 
 " safe slice

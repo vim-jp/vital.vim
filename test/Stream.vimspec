@@ -1205,61 +1205,6 @@ Describe Stream
     End
   End
 
-  Describe .get_comparator()
-    It raises exception if comparator is not defined
-      try
-        call Stream.empty().sorted().get_comparator()
-        Assert 0
-      catch /vital: Stream: get_comparator(): comparator not found and default argument was not given/
-        Assert 1
-      endtry
-      try
-        Assert Equals(Stream.empty().sorted().get_comparator(42), 42)
-      catch /vital: Stream: get_comparator(): comparator not found and default argument was not given/
-        Assert 0
-      endtry
-    End
-
-    It raises exception if SORTED flag is not set
-      try
-        call Stream.empty().get_comparator()
-        Assert 0
-      catch /vital: Stream: get_comparator(): comparator not found and default argument was not given/
-        Assert 1
-      endtry
-      try
-        Assert Equals(Stream.empty().get_comparator(42), 42)
-      catch /vital: Stream: get_comparator(): comparator not found and default argument was not given/
-        Assert 0
-      endtry
-
-      let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
-
-      " map() clears SORTED flag
-      Assert Equals(Stream.of(1,2).sorted(by_desc).map('v:val').get_comparator('NONE'), 'NONE')
-
-      " flatmap() clears SORTED flag
-      Assert Equals(Stream.of(1,2).sorted(by_desc).flatmap('[v:val]').get_comparator('NONE'), 'NONE')
-
-      " concat() clears SORTED flag
-      Assert Equals(Stream.of(1,2).sorted(by_desc).concat(Stream.of(3,4)).get_comparator('NONE'), 'NONE')
-      Assert Equals(Stream.of(1,2).concat(Stream.of(3,4).sorted(by_desc)).get_comparator('NONE'), 'NONE')
-
-      " zip() clears SORTED flag
-      Assert Equals(Stream.of(1,2).sorted(by_desc).zip(Stream.of(3,4)).get_comparator('NONE'), 'NONE')
-      Assert Equals(Stream.of(1,2).zip(Stream.of(3,4).sorted(by_desc)).get_comparator('NONE'), 'NONE')
-    End
-
-    It finds a comparator from a upstream
-      let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
-      Assert Equals(Stream.empty().sorted(by_desc).get_comparator(), by_desc)
-      Assert Equals(Stream.of(1,2).sorted(by_desc).get_comparator(), by_desc)
-
-      Assert Equals(Stream.of(1,2).sorted(by_desc).take(1).get_comparator(), by_desc)
-      Assert Equals(Stream.of(1,2).sorted(by_desc).drop(1).get_comparator(), by_desc)
-    End
-  End
-
   Describe .reduce()
     It raises exception for empty stream
       try
@@ -1290,66 +1235,6 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3).reduce(function('insert'), []), [3,2,1])
 
       delfunction Plus
-    End
-  End
-
-  Describe .max_by()
-    It raises exception for empty stream
-      try
-        call Stream.empty().max_by('v:val')
-        Assert 0
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 1
-      endtry
-      try
-        Assert Equals(Stream.empty().max_by('v:val', 42), 42)
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 0
-      endtry
-    End
-
-    It returns max value in stream
-      Assert Equals(Stream.of('aaa', 'bb', '').max_by('len(v:val)'), 'aaa')
-    End
-
-    It returns max value in stream by funcref
-      function! Len(v) abort
-        return len(a:v)
-      endfunction
-
-      Assert Equals(Stream.of('aaa', 'bb', '').max_by(function('Len')), 'aaa')
-
-      delfunction Len
-    End
-  End
-
-  Describe .min_by()
-    It raises exception for empty stream
-      try
-        call Stream.empty().min_by('v:val')
-        Assert 0
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 1
-      endtry
-      try
-        Assert Equals(Stream.empty().min_by('v:val', 42), 42)
-      catch /vital: Stream: \w\+(): stream is empty and default value was not given/
-        Assert 0
-      endtry
-    End
-
-    It returns min value in stream
-      Assert Equals(Stream.of('aaa', 'bb', '').min_by('len(v:val)'), '')
-    End
-
-    It returns min value in stream by funcref
-      function! Len(v) abort
-        return len(a:v)
-      endfunction
-
-      Assert Equals(Stream.of('aaa', 'bb', '').min_by(function('Len')), '')
-
-      delfunction Len
     End
   End
 
@@ -1488,18 +1373,6 @@ Describe Stream
 
       delfunction GreaterThan3
       delfunction GreaterThan2
-    End
-  End
-
-  Describe .string_join()
-    It joins elements in stream
-      Assert Equals(Stream.empty().string_join(), '')
-      Assert Equals(Stream.of(1).string_join(), '1')
-      Assert Equals(Stream.of(1,2,3).string_join(), '1 2 3')
-      Assert Equals(Stream.of(1,2,3).string_join(','), '1,2,3')
-      Assert Equals(Stream.of('foo').string_join(), 'foo')
-      Assert Equals(Stream.of('foo', 'bar', 'baz').string_join(), 'foo bar baz')
-      Assert Equals(Stream.of('foo', 'bar', 'baz').string_join(','), 'foo,bar,baz')
     End
   End
 
@@ -1644,27 +1517,6 @@ Describe Stream
       delfunction Len
       delfunction List
       delfunction Plus
-    End
-  End
-
-  Describe .sum()
-    It sums elements in stream
-      Assert Equals(Stream.empty().sum(), 0)
-      Assert Equals(Stream.of(1,2,3).sum(), 6)
-    End
-  End
-
-  Describe .average()
-    It averages elements in stream
-      try
-        call Stream.empty().average()
-        Assert 0
-      catch /vital: Stream: average(): empty stream cannot be average()d/
-        Assert 1
-      endtry
-      Assert Equals(Stream.of(2).average(), 2)
-      Assert Equals(Stream.of(1,2,3).average(), 2)
-      Assert Equals(Stream.of(-5,0,5).average(), 0)
     End
   End
 

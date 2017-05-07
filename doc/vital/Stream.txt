@@ -252,16 +252,6 @@ generator({dict})		*Vital.Stream.generator()*
 ==============================================================================
 STREAM OBJECT				*Vital.Stream-Stream-object*
 
-				*Vital.Stream-Stream.get_comparator()*
-Stream.get_comparator([{default}])
-	Returns a comparator if the stream is marked as sorted and a defined
-	comparator (an argument passed to |Vital.Stream-Stream.sorted()|
-	method). Otherwise, if {default} was given, returns {default}. Or if
-	{default} was not given, throws an exception.
-
-	NOTE: If no comparator was passed to sorted() method, the
-	stream does not have a defined comparator.
-
 Intermediate operations			*Vital.Stream-intermediate-operations*
 ----------------------
 
@@ -449,82 +439,6 @@ Stream.reduce({func} [, {init}])
 	echo s:Stream.of(1,2,3).reduce('insert(v:val[0], v:val[1])', [])
 	echo s:Stream.of(1,2,3).reduce(function('insert'), [])
 <
-				*Vital.Stream-Stream.average()*
-Stream.average()
-	Returns the average of all elements. If a stream is empty, this throws
-	an exception.
->
-	" Output: 2
-	echo s:Stream.of(1,2,3).average()
-<
-				*Vital.Stream-Stream.sum()*
-Stream.sum()
-	Sums all elements. This is shortcut for
-	`stream.reduce({a,b -> a + b}, 0)`
->
-	" Output: 6
-	echo s:Stream.of(1,2,3).sum()
-<
-				*Vital.Stream-Stream.max()*
-Stream.max([{default}])
-	Returns a maximum value in a stream. When the stream is empty and if
-	{default} was given, returns {default}. Or if {default} was not given,
-	throws an exception.
->
-	" Output: 42
-	echo s:Stream.of(1,2,42).max()
-
-	" Throws an exception
-	echo s:Stream.empty().max()
-
-	" Output: 42
-	echo s:Stream.empty().max(42)
-<
-				*Vital.Stream-Stream.max_by()*
-Stream.max_by({func} [, {default}])
-	Returns an element whose value returned by {func} is a maximum value.
-	When the stream is empty and if {default} was given, returns {default}.
-	Or if {default} was not given, throws an exception.
->
-	" Output: 'ccc'
-	echo s:Stream.of('a', 'bb', 'ccc').max_by('len(v:val)')
-
-	" Throws an exception
-	echo s:Stream.empty().max_by('v:val')
-
-	" Output: 42
-	echo s:Stream.empty().max_by('v:val', 42)
-<
-				*Vital.Stream-Stream.min()*
-Stream.min([{default}])
-	Returns a minimum value in a stream. When the stream is empty if
-	{default} was given, returns {default}. Or if {default} was not given,
-	throws an exception.
->
-	" Output: 1
-	echo s:Stream.of(1,2,42).min()
-
-	" Throws an exception
-	echo s:Stream.of().min()
-
-	" Output: 42
-	echo s:Stream.of().min(42)
-<
-				*Vital.Stream-Stream.min_by()*
-Stream.min_by({func} [, {default}])
-	Returns an element whose value returned by {func} is a minimum value.
-	When the stream is empty and if {default} was given, returns {default}.
-	Or if {default} was not given, throws an exception.
->
-	" Output: 'a'
-	echo s:Stream.of('a', 'bb', 'ccc').min_by('len(v:val)')
-
-	" Throws an exception
-	echo s:Stream.empty().min_by('v:val')
-
-	" Output: 42
-	echo s:Stream.empty().min_by('v:val', 42)
-<
 				*Vital.Stream-Stream.first()*
 Stream.first([{default}])
 	Returns the first element. When the stream is empty and if {default} was
@@ -636,18 +550,6 @@ Stream.to_dict({keymapper}, {valuemapper} [, {mergefunc}])
 	" Output: {'1': 1, '2': 2, '3': 6}
 	echo s:Stream.of(1,2,3,3)
 	            \.to_dict('v:val', 'v:val', 'v:val[0] + v:val[1]')
-<
-				*Vital.Stream-Stream.string_join()*
-Stream.string_join([{sep}])
-	|join()| each elements with {sep}. Default value of {sep} is " " (one
-	whitespace) as well as Vim script's |join()|)
->
-	" Output: 'Vim script'
-	echo s:Stream.of('Vim', 'script').string_join()
-	" Output: 'JavaScript'
-	echo s:Stream.of('Java', 'Script').string_join('')
-	" Output: ''
-	echo s:Stream.empty().string_join()
 <
 				*Vital.Stream-Stream.group_by()*
 Stream.group_by({func})
