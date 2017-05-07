@@ -3,6 +3,10 @@ Describe Stream
     let Stream = vital#vital#import('Stream')
     let Closure = vital#vital#import('Data.Closure')
 
+    let DISTINCT = 0x02
+    let SORTED = 0x04
+    let SIZED = 0x08
+
     function! Id(n) abort
       return a:n
     endfunction
@@ -21,26 +25,6 @@ Describe Stream
     delfunction Id
     delfunction Succ
     delfunction Answer
-  End
-
-  Describe .has_characteristics()
-    It checks if the stream has certain characteristic
-      let s = Stream.from_list([], Stream.DISTINCT + Stream.SORTED + Stream.SIZED)
-      Assert True(s.has_characteristics(Stream.DISTINCT))
-      Assert True(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
-    End
-
-    It can check multiple flags at once
-      let s = Stream.from_list([], Stream.DISTINCT + Stream.SORTED + Stream.SIZED)
-      Assert Equals(
-      \ s.has_characteristics([
-      \   Stream.DISTINCT,
-      \   Stream.SORTED,
-      \   Stream.SIZED]),
-      \ 1)
-      Assert False(Stream.of(1,2,3).has_characteristics([]))
-    End
   End
 
   Describe .of()
@@ -71,9 +55,9 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.of(1,2,3)
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
   End
 
@@ -88,14 +72,10 @@ Describe Stream
     End
 
     It constructs stream of each character from String with characteristics
-      let s = Stream.chars("abc", 0)
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert False(s.has_characteristics(Stream.SIZED))
-      let s = Stream.chars("abc", Stream.DISTINCT + Stream.SORTED + Stream.SIZED)
-      Assert True(s.has_characteristics(Stream.DISTINCT))
-      Assert True(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      let s = Stream.chars("abc")
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
   End
 
@@ -123,14 +103,10 @@ Describe Stream
     End
 
     It constructs stream of each line from String with characteristics
-      let s = Stream.lines("abc", 0)
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert False(s.has_characteristics(Stream.SIZED))
-      let s = Stream.lines("abc", Stream.DISTINCT + Stream.SORTED + Stream.SIZED)
-      Assert True(s.has_characteristics(Stream.DISTINCT))
-      Assert True(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      let s = Stream.lines("abc")
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
   End
 
@@ -146,20 +122,9 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.from_list([1,2,3])
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
-    End
-
-    It constructs stream from List with characteristics
-      let s = Stream.from_list([1,2,3], 0)
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert False(s.has_characteristics(Stream.SIZED))
-      let s = Stream.from_list([1,2,3], Stream.DISTINCT + Stream.SORTED + Stream.SIZED)
-      Assert True(s.has_characteristics(Stream.DISTINCT))
-      Assert True(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
   End
 
@@ -189,20 +154,9 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.from_dict({"foo": 1, "bar": 3, "baz": 2})
-      Assert True(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
-    End
-
-    It constructs stream from Dictionary with characteristics
-      let s = Stream.from_list({"foo": 1}, 0)
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert False(s.has_characteristics(Stream.SIZED))
-      let s = Stream.from_list({"foo": 1}, Stream.DISTINCT + Stream.SORTED + Stream.SIZED)
-      Assert True(s.has_characteristics(Stream.DISTINCT))
-      Assert True(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
   End
 
@@ -214,9 +168,9 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.empty()
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
   End
 
@@ -298,9 +252,9 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.range(1,10)
-      Assert True(s.has_characteristics(Stream.DISTINCT))
-      Assert True(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert True(s.__has_characteristic__(DISTINCT))
+      Assert True(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
   End
 
@@ -334,9 +288,9 @@ Describe Stream
 
     It creates stream with characteristics
       let s = Stream.iterate(1, 'v:val + 1')
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert False(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert False(s.__has_characteristic__(SIZED))
     End
   End
 
@@ -435,13 +389,13 @@ Describe Stream
     It combines stream from String with characteristics
       " Use or() for SIZED flag. Use and() for other flags
       let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6))
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
       let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3))
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
 
     It combines stream with 3 or more than streams
@@ -482,13 +436,13 @@ Describe Stream
     It combines stream with 3 or more than streams with characteristics
       " Use or() for SIZED flag. Use and() for other flags
       let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9))
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
       let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3), Stream.of(4,5,6))
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
   End
 
@@ -610,13 +564,13 @@ Describe Stream
 
     It sets SIZED characteristic
       let s = Stream.of(3,4,5,6,7).take(3)
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
       let s = Stream.iterate(1, 'v:val + 1').take(3)
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert False(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert False(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
 
     It must not reuse stream
@@ -1195,11 +1149,21 @@ Describe Stream
       Assert Equals(
         \Stream.of({'value': 3}, {'value': 1}, {'value': 2}, {'value': 1}, {'value': 2}).distinct('v:val.value').to_list(),
         \[{'value': 3}, {'value': 1}, {'value': 2}])
+
+      Assert Equals(
+        \Stream.range(1, 3).distinct('string(v:val)').to_list(),
+        \[1,2,3])
+      Assert Equals(
+        \Stream.range(1, 1/0).take(100).distinct('v:val % 5').to_list(),
+        \[1,2,3,4,5])
     End
 
     It dedupes elements in stream with stringifier by funcref
       function! ValueOf(v) abort
         return a:v.value
+      endfunction
+      function! Mod5(v) abort
+        return a:v % 5
       endfunction
 
       Assert Equals(Stream.empty().distinct(function('ValueOf')).to_list(), [])
@@ -1222,7 +1186,15 @@ Describe Stream
         \Stream.of({'value': 3}, {'value': 1}, {'value': 2}, {'value': 1}, {'value': 2}).distinct(function('ValueOf')).to_list(),
         \[{'value': 3}, {'value': 1}, {'value': 2}])
 
+      Assert Equals(
+        \Stream.range(1, 3).distinct(function('string')).to_list(),
+        \[1,2,3])
+      Assert Equals(
+        \Stream.range(1, 1/0).take(100).distinct(function('Mod5')).to_list(),
+        \[1,2,3,4,5])
+
       delfunction ValueOf
+      delfunction Mod5
     End
 
     It dedupes elements in stream with stringifier by Data.Closure
@@ -1247,18 +1219,25 @@ Describe Stream
       Assert Equals(
         \Stream.of({'value': 3}, {'value': 1}, {'value': 2}, {'value': 1}, {'value': 2}).distinct(value_of).to_list(),
         \[{'value': 3}, {'value': 1}, {'value': 2}])
+
+      Assert Equals(
+        \Stream.range(1, 3).distinct(Closure.from_funcname('string')).to_list(),
+        \[1,2,3])
+      Assert Equals(
+        \Stream.range(1, 1/0).take(100).distinct(Closure.from_expr('a:1 % 5')).to_list(),
+        \[1,2,3,4,5])
     End
   End
 
   Describe .sorted()
     Before all
-      function! Comp(a, b) abort
+      function! ByDesc(a, b) abort
         return a:a > a:b ? -1 : a:a ==# a:b ? 0 : 1
       endfunction
     End
 
     After all
-      delfunction Comp
+      delfunction ByDesc
     End
 
     It sorts elements in stream without comparator
@@ -1279,14 +1258,22 @@ Describe Stream
       Assert Equals(
       \ Stream.iterate(1, 'v:val + 1').take(3).sorted(by_desc).to_list(),
       \ [3,2,1])
+
+      Assert Equals(
+      \ Stream.range(1, 3).sorted(by_desc).to_list(),
+      \ [3,2,1])
     End
 
     It sorts elements in stream with comparator by funcref
-      Assert Equals(Stream.empty().sorted(function('Comp')).to_list(), [])
-      Assert Equals(Stream.of(2,1,3).sorted(function('Comp')).to_list(), [3,2,1])
-      Assert Equals(Stream.of(2,1,3,2,1).sorted(function('Comp')).to_list(), [3,2,2,1,1])
+      Assert Equals(Stream.empty().sorted(function('ByDesc')).to_list(), [])
+      Assert Equals(Stream.of(2,1,3).sorted(function('ByDesc')).to_list(), [3,2,1])
+      Assert Equals(Stream.of(2,1,3,2,1).sorted(function('ByDesc')).to_list(), [3,2,2,1,1])
       Assert Equals(
-      \ Stream.iterate(1, 'v:val + 1').take(3).sorted(function('Comp')).to_list(),
+      \ Stream.iterate(1, 'v:val + 1').take(3).sorted(function('ByDesc')).to_list(),
+      \ [3,2,1])
+
+      Assert Equals(
+      \ Stream.range(1, 3).sorted(function('ByDesc')).to_list(),
       \ [3,2,1])
     End
 
@@ -1298,13 +1285,17 @@ Describe Stream
       Assert Equals(
       \ Stream.iterate(1, 'v:val + 1').take(3).sorted(by_desc).to_list(),
       \ [3,2,1])
+
+      Assert Equals(
+      \ Stream.range(1, 3).sorted(by_desc).to_list(),
+      \ [3,2,1])
     End
 
     It sets SORTED characteristic
       let s = Stream.of(1,2,3).sorted()
-      Assert False(s.has_characteristics(Stream.DISTINCT))
-      Assert True(s.has_characteristics(Stream.SORTED))
-      Assert True(s.has_characteristics(Stream.SIZED))
+      Assert False(s.__has_characteristic__(DISTINCT))
+      Assert True(s.__has_characteristic__(SORTED))
+      Assert True(s.__has_characteristic__(SIZED))
     End
   End
 

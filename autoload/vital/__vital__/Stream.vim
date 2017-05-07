@@ -20,9 +20,9 @@ set cpo&vim
 "     * 'flatmap()' cannot determine the number of elements of the result
 "     * 'Stream.of(0,1,2,3).flatmap({n -> repeat([n], n)}).to_list() == [1,2,2,3,3,3]'
 "     * 'Stream.of(0,1,2,3).flatmap({n -> repeat([n], n)}).__estimate_size__() == 1/0'
-"   * if the stream is finite stream ('stream.has_characteristics(s:SIZED) == 1'),
+"   * if the stream is finite stream ('self.__has_characteristic__(s:SIZED) == 1'),
 "     returns the number of elements
-"   * if the stream is infinite stream ('stream.has_characteristics(s:SIZED) == 0'),
+"   * if the stream is infinite stream ('self.__has_characteristic__(s:SIZED) == 0'),
 "     returns 1/0
 "
 
@@ -32,14 +32,6 @@ endfunction
 
 function! s:_vital_depends() abort
   return ['Data.Closure']
-endfunction
-
-function! s:_vital_created(module) abort
-  call extend(a:module, {
-  \ 'DISTINCT': s:DISTINCT,
-  \ 'SORTED': s:SORTED,
-  \ 'SIZED': s:SIZED,
-  \})
 endfunction
 
 let s:NONE = []
@@ -68,25 +60,21 @@ function! s:of(elem, ...) abort
   return s:_new_from_list([a:elem] + a:000, s:SIZED, 'of()')
 endfunction
 
-function! s:chars(str, ...) abort
-  let characteristics = get(a:000, 0, s:SIZED)
-  return s:_new_from_list(split(a:str, '\zs'), characteristics, 'chars()')
+function! s:chars(str) abort
+  return s:_new_from_list(split(a:str, '\zs'), s:SIZED, 'chars()')
 endfunction
 
-function! s:lines(str, ...) abort
-  let characteristics = get(a:000, 0, s:SIZED)
+function! s:lines(str) abort
   let lines = a:str ==# '' ? [] : split(a:str, '\r\?\n', 1)
-  return s:_new_from_list(lines, characteristics, 'lines()')
+  return s:_new_from_list(lines, s:SIZED, 'lines()')
 endfunction
 
-function! s:from_list(list, ...) abort
-  let characteristics = get(a:000, 0, s:SIZED)
-  return s:_new_from_list(a:list, characteristics, 'from_list()')
+function! s:from_list(list) abort
+  return s:_new_from_list(a:list, s:SIZED, 'from_list()')
 endfunction
 
-function! s:from_dict(dict, ...) abort
-  let characteristics = get(a:000, 0, s:DISTINCT + s:SIZED)
-  return s:_new_from_list(items(a:dict), characteristics, 'from_dict()')
+function! s:from_dict(dict) abort
+  return s:_new_from_list(items(a:dict), s:DISTINCT + s:SIZED, 'from_dict()')
 endfunction
 
 function! s:empty() abort
@@ -146,10 +134,12 @@ function! s:range(expr, ...) abort
     if a:n ==# 0
       return [[], 1]
     endif
-    " workaround for E727 error when 'range(1, 1/0)'
+    " workaround for E727 error when the second argument is too big (e.g.: 1/0)
     " a_i = a0 + (n - 1) * a2
     let args = copy(self._args)
-    let args[1] = args[0] + (a:n - 1) * args[2]
+    if args[1] >= a:n
+      let args[1] = args[0] + (a:n - 1) * args[2]
+    endif
     " 'call(...)' is non-empty and 's:_slice(...)' is also non-empty
     " assert a:n != 0
     let list = s:_slice(call('range', args), self.__index, self.__index + a:n - 1)
@@ -254,12 +244,12 @@ function! s:zip(s1, s2, ...) abort
   let stream._characteristics =
   \ s:_zip_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
   let stream.__end = 0
-  let stream._streams = [a:s1, a:s2] + a:000
+  let stream._upstream = [a:s1, a:s2] + a:000
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at zip()'
     endif
-    let lists = map(copy(self._streams), 'v:val.__take_possible__(a:n)[0]')
+    let lists = map(copy(self._upstream), 'v:val.__take_possible__(a:n)[0]')
     let smaller = min(map(copy(lists), 'len(v:val)'))
     " lists = [[1,2,3], [4,5,6]], list = [[1,4], [2,5], [3,6]]
     " let list = map(range(smaller), '[lists[0][v:val], lists[1][v:val], ...]')
@@ -269,7 +259,7 @@ function! s:zip(s1, s2, ...) abort
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
-    return min(map(copy(self._streams), 'v:val.__estimate_size__()'))
+    return min(map(copy(self._upstream), 'v:val.__estimate_size__()'))
   endfunction
   return stream
 endfunction
@@ -291,7 +281,7 @@ function! s:concat(s1, s2, ...) abort
   \ s:_concat_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
   let stream.__end = 0
   let stream.__read_too_much = []
-  let stream._streams = [a:s1, a:s2] + a:000
+  let stream._upstream = [a:s1, a:s2] + a:000
   function! stream.__take_possible__(n) abort
     if self.__end
       throw 'vital: Stream: stream has already been operated upon or closed at concat()'
@@ -302,7 +292,7 @@ function! s:concat(s1, s2, ...) abort
       let list = s:_slice(self.__read_too_much, 0, a:n - 1)
       let self.__read_too_much = s:_slice(self.__read_too_much, a:n)
     endif
-    for stream in self._streams
+    for stream in self._upstream
       if len(list) >= a:n
         break
       endif
@@ -317,14 +307,14 @@ function! s:concat(s1, s2, ...) abort
     " if all of buffer length, streams' __estimate_size__() are 0,
     " it is end of streams
     let sizes = [len(self.__read_too_much)] +
-    \           map(copy(self._streams), 'v:val.__estimate_size__()')
+    \           map(copy(self._upstream), 'v:val.__estimate_size__()')
     let self.__end = (max(sizes) ==# 0)
     return [list, !self.__end]
   endfunction
   if and(stream._characteristics, s:SIZED)
     function! stream.__estimate_size__() abort
       let sizes = [len(self.__read_too_much)] +
-      \           map(copy(self._streams), 'v:val.__estimate_size__()')
+      \           map(copy(self._upstream), 'v:val.__estimate_size__()')
       return self.__sum__(sizes)
     endfunction
     " 1/0 when overflow
@@ -358,16 +348,8 @@ endfunction
 
 let s:Stream = {}
 
-function! s:Stream.has_characteristics(flags) abort
-  let flags = type(a:flags) isnot s:T_LIST ? [a:flags] : a:flags
-  if empty(flags)
-    return 0
-  endif
-  let c = flags[0]
-  for flag in flags[1:]
-    let c = or(c, flag)
-  endfor
-  return !!and(self._characteristics, c)
+function! s:Stream.__has_characteristic__(flag) abort
+  return !!and(self._characteristics, a:flag)
 endfunction
 
 function! s:Stream.peek(f) abort
@@ -587,7 +569,7 @@ function! s:Stream.take_while(f) abort
     let self.__end = !open
     return [list, open]
   endfunction
-  if self.has_characteristics(s:SIZED)
+  if self.__has_characteristic__(s:SIZED)
     function! stream.__estimate_size__() abort
       return self._upstream.__estimate_size__()
     endfunction
@@ -630,7 +612,7 @@ function! s:Stream.drop_while(f) abort
     let self.__end = !open
     return [list, open]
   endfunction
-  if self.has_characteristics(s:SIZED)
+  if self.__has_characteristic__(s:SIZED)
     function! stream.__estimate_size__() abort
       return self._upstream.__estimate_size__()
     endfunction
@@ -643,7 +625,8 @@ function! s:Stream.drop_while(f) abort
 endfunction
 
 function! s:Stream.distinct(...) abort
-  if self.has_characteristics(s:DISTINCT)
+  " check if this stream is uniqued by same stringifier
+  if s:_can_skip_distinct(self, a:0 ? a:1 : s:NONE)
     return self
   endif
   let stream = s:_new(s:Stream)
@@ -688,8 +671,37 @@ function! s:Stream.distinct(...) abort
   return stream
 endfunction
 
+" Returns true if a:stream is uniqued by a:stringifier
+function! s:_can_skip_distinct(stream, stringifier) abort
+  let stream = s:_traverse_until(
+  \   a:stream, function('s:_is_root_of_distinct_stream'), s:NONE
+  \)
+  return stream isnot s:NONE &&
+  \      stream.__has_characteristic__(s:DISTINCT) &&
+  \      get(stream, '_stringify', s:NONE) is a:stringifier
+endfunction
+
+" Traversal stops if a:stream is one of the following streams:
+" * stream is not s:DISTINCT
+" * The nearest DISTINCT stream which has '_stringify' key
+" * The top DISTINCT stream
+function! s:_is_root_of_distinct_stream(stream) abort
+  if !a:stream.__has_characteristic__(s:DISTINCT)
+    return 1    " nothing
+  elseif has_key(a:stream, '_stringify')
+    return 1    " found
+  elseif has_key(a:stream, '_upstream') &&
+  \      type(a:stream._upstream) isnot s:T_LIST &&
+  \      !a:stream._upstream.__has_characteristic__(s:DISTINCT)
+    return 1    " found
+  else
+    return 0
+  endif
+endfunction
+
 function! s:Stream.sorted(...) abort
-  if self.has_characteristics(s:SORTED)
+  " check if this stream has been already sorted by same comparator
+  if s:_can_skip_sorted(self, a:0 ? a:1 : s:NONE)
     return self
   endif
   let stream = s:_new(s:Stream)
@@ -732,29 +744,59 @@ function! s:Stream.sorted(...) abort
   return stream
 endfunction
 
-function! s:Stream.get_comparator(...) abort
-  if self.has_characteristics(s:SORTED)
-    let l:C = s:_find_comparator(self, a:0 ? a:1 : s:NONE)
-  else
-    let l:C = a:0 ? a:1 : s:NONE
-  endif
-  if l:C is s:NONE
-      throw 'vital: Stream: get_comparator(): comparator not found and '
-      \   . 'default argument was not given'
-  endif
-  return l:C
+" Returns true if a:stream is uniqued by a:comparator
+function! s:_can_skip_sorted(stream, comparator) abort
+  let stream = s:_traverse_until(
+  \   a:stream, function('s:_is_root_of_sorted_stream'), s:NONE
+  \)
+  return stream isnot s:NONE &&
+  \      stream.__has_characteristic__(s:SORTED) &&
+  \      get(stream, '_comparator', s:NONE) is a:comparator
 endfunction
 
-" No need to find a:stream._streams. because only s:zip() and s:concat() have
-" the property and they clear SORTED flag. so get_comparator() method will not
-" call s:_find_comparator().
-function! s:_find_comparator(stream, default) abort
-  if has_key(a:stream, '_comparator')
-    return a:stream._comparator
-  elseif has_key(a:stream, '_upstream')
-    return s:_find_comparator(a:stream._upstream, a:default)
+" Traversal stops if a:stream is one of the following streams:
+" * stream is not s:SORTED
+" * The nearest SORTED stream which has '_comparator' key
+" * The top SORTED stream
+function! s:_is_root_of_sorted_stream(stream) abort
+  if !a:stream.__has_characteristic__(s:SORTED)
+    return 1    " nothing
+  elseif has_key(a:stream, '_comparator')
+    return 1    " found
+  elseif has_key(a:stream, '_upstream') &&
+  \      type(a:stream._upstream) isnot s:T_LIST &&
+  \      !a:stream._upstream.__has_characteristic__(s:SORTED)
+    return 1    " found
   else
-    return a:default
+    return 0
+  endif
+endfunction
+
+function! s:Stream.get_comparator(...) abort
+  let stream = s:_traverse_until(
+  \   self, function('s:_has_comparator'), s:NONE
+  \)
+  if stream is s:NONE || !stream.__has_characteristic__(s:SORTED)
+    if a:0
+      return a:1
+    else
+      throw 'vital: Stream: get_comparator(): comparator not found and '
+      \   . 'default argument was not given'
+    endif
+  endif
+  return stream._comparator
+endfunction
+
+" Traversal stops if a:stream is one of the following streams:
+" * stream is not s:SORTED
+" * The nearest SORTED stream which has '_comparator' key
+function! s:_has_comparator(stream) abort
+  if !a:stream.__has_characteristic__(s:SORTED)
+    return 1    " nothing
+  elseif has_key(a:stream, '_comparator')
+    return 1    " found
+  else
+    return 0
   endif
 endfunction
 
@@ -769,6 +811,7 @@ function! s:Stream.take(n) abort
   let stream._characteristics = or(self._characteristics, s:SIZED)
   let stream._upstream = self
   let stream.__end = 0
+  let stream.__skipped = 0
   let stream._max_n = a:n
   function! stream.__take_possible__(n) abort
     if self.__end
@@ -776,11 +819,12 @@ function! s:Stream.take(n) abort
     endif
     let n = min([self._upstream.__estimate_size__(), self._max_n, a:n])
     let [list, open] = self._upstream.__take_possible__(n)
-    let self.__end = !open
+    let self.__skipped += len(list)
+    let self.__end = !open || self.__skipped >= min([self._max_n, a:n])
     return [list, !self.__end]
   endfunction
   function! stream.__estimate_size__() abort
-    return min([self._max_n, self._upstream.__estimate_size__()])
+    return min([self._max_n - self.__skipped, self._upstream.__estimate_size__()])
   endfunction
   return stream
 endfunction
@@ -813,7 +857,7 @@ function! s:Stream.drop(n) abort
     let self.__end = !open
     return [list, open]
   endfunction
-  if self.has_characteristics(s:SIZED)
+  if self.__has_characteristic__(s:SIZED)
     function! stream.__estimate_size__() abort
       return max([self._upstream.__estimate_size__() - self.__n, 0])
     endfunction
@@ -979,7 +1023,7 @@ function! s:Stream.average() abort
 endfunction
 
 function! s:Stream.count(...) abort
-  if self.has_characteristics(s:SIZED)
+  if self.__has_characteristic__(s:SIZED)
     if a:0
       let l:Call = s:_get_callfunc_for_func1(a:1, 'count()')
       return len(filter(self.to_list(), 'l:Call(a:1, [v:val])'))
@@ -1020,6 +1064,20 @@ function! s:WithBuffered.__read_to_buffer__(n) abort
     let self.__buffer += r
   endif
   return open || !empty(self.__buffer)
+endfunction
+
+" Traverse from a:stream to upstream.
+" If a:pred returns 1, returns the stream.
+" Otherwise, returns a:default.
+function! s:_traverse_until(stream, pred, default) abort
+  if a:pred(a:stream)
+    return a:stream
+  elseif has_key(a:stream, '_upstream') &&
+  \      type(a:stream._upstream) isnot s:T_LIST
+    return s:_traverse_until(a:stream._upstream, a:pred, a:default)
+  else
+    return a:default
+  endif
 endfunction
 
 " safe slice

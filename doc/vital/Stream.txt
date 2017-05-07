@@ -13,7 +13,6 @@ INTERFACE			|Vital.Stream-interface|
 STREAM OBJECT			|Vital.Stream-Stream-object|
   INTERMEDIATE OPERATIONS	  |Vital.Stream-intermediate-operations|
   TERMINAL OPERATIONS		  |Vital.Stream-terminal-operations|
-CHARACTERISTICS			|Vital.Stream-characteristics|
 TIPS				|Vital.Stream-tips|
 TODO				|Vital.Stream-todo|
 
@@ -112,47 +111,18 @@ empty()					*Vital.Stream.empty()*
 of({elem1} [, {elem2} ...])		*Vital.Stream.of()*
 	Shortcut for `s:Stream.from_list([elem1, elem2, ...])` .
 
-chars({str} [, {characteristics}])	*Vital.Stream.chars()*
-	Shortcut for `s:Stream.from_list(split(str, '\zs'), characteristics)` .
+chars({str})	*Vital.Stream.chars()*
+	Shortcut for `s:Stream.from_list(split(str, '\zs'))` .
 
-lines({str} [, {characteristics}])	*Vital.Stream.lines()*
-	Shortcut for `s:Stream.from_list(split(str, '\r\?\n', 1), characteristics)` .
+lines({str})	*Vital.Stream.lines()*
+	Shortcut for `s:Stream.from_list(split(str, '\r\?\n', 1))` .
 	But this makes empty stream for empty string.
 
-from_dict({dict} [, {characteristics}])	*Vital.Stream.from_dict()*
-	Shortcut for `s:Stream.from_list(items(dict), characteristics)` .
-	Default {characteristics} is `[DISTINCT, SIZED, IMMUTABLE]` .
+from_dict({dict})	*Vital.Stream.from_dict()*
+	Shortcut for `s:Stream.from_list(items(dict))` .
 
-from_list({list} [, {characteristics}])	*Vital.Stream.from_list()*
+from_list({list})	*Vital.Stream.from_list()*
 	This makes a stream of elements of {list}.
-	See |Vital.Stream-Stream.has_characteristics()| for {characteristics}.
-
-ORDERED		*Vital.Stream.ORDERED*
-	Characteristic value signifying that an encounter order is defined for
-	elements.  See also |Vital.Stream-Stream.has_characteristics()|.
-
-DISTINCT		*Vital.Stream.DISTINCT*
-	Characteristic value signifying that, for each pair of encountered
-	elements x, y, `x != y` . See also
-	|Vital.Stream-Stream.has_characteristics()|.
-
-SORTED		*Vital.Stream.SORTED*
-	Characteristic value signifying that encounter order follows a defined
-	sort order. See also |Vital.Stream-Stream.has_characteristics()|.
-
-SIZED			*Vital.Stream.SIZED*
-	Characteristic value signifying that the value returned from internal
-	API `stream.__estimate_size__()` prior to traversal or splitting
-	represents a finite size that, in the absence of structural source
-	modification, represents an exact count of the number of elements that
-	would be encountered by a complete traversal. See also
-	|Vital.Stream-Stream.has_characteristics()|.
-
-IMMUTABLE		*Vital.Stream.IMMUTABLE*
-	Characteristic value signifying that the element source cannot be
-	structurally modified; that is, elements cannot be added, replaced, or
-	removed, so such changes cannot occur during traversal.  See also
-	|Vital.Stream-Stream.has_characteristics()|.
 
 			*Vital.Stream.zip()*
 zip({stream1}, {stream2} [, {stream3} ...])
@@ -284,11 +254,6 @@ generator({dict})		*Vital.Stream.generator()*
 <
 ==============================================================================
 STREAM OBJECT				*Vital.Stream-Stream-object*
-
-				*Vital.Stream-Stream.has_characteristics()*
-Stream.has_characteristics({characteristics})
-	Returns non-zero if the stream has {characteristics}.
-	See also |Vital.Stream-characteristics|.
 
 				*Vital.Stream-Stream.get_comparator()*
 Stream.get_comparator([{default}])
@@ -696,38 +661,6 @@ Stream.group_by({func})
 	" Output: {'even': [2,4], 'odd': [1,3,5]}
 	echo s:Stream.of(1,2,3,4,5).group_by('v:val % 2 == 0 ? "even" : "odd"')
 <
-==============================================================================
-CHARACTERISTICS				*Vital.Stream-characteristics*
-
-A stream has one or more "characteristics",
-and "characteristics" are flags to describe the stream.
-
-- |Vital.Stream.ORDERED|
-- |Vital.Stream.DISTINCT|
-- |Vital.Stream.SORTED|
-- |Vital.Stream.SIZED|
-- |Vital.Stream.IMMUTABLE|
-
-The following code checks if a stream has one or more characteristics.
->
-	let s:Stream = vital#{plugin-name}#new().import('Stream')
-	let stream = s:Stream.of(1,2,3)
-	if stream.has_characteristics(s:Stream.SIZED)
-	  " the stream is finite stream
-	endif
-
-	let stream = s:Stream.iterate(1, 'v:val + 1')
-	if !stream.has_characteristics(s:Stream.SIZED)
-	  " the stream is infinite stream
-	endif
-
-	" you can check two or more characteristics at once
-	let stream = s:Stream.of(2,1,3).sorted()
-	if stream.has_characteristics([s:Stream.SIZED, s:Stream.SORTED])
-	  " the stream is finite and sorted stream
-	endif
-<
-
 ==============================================================================
 TIPS					*Vital.Stream-tips*
 
