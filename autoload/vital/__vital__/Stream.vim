@@ -26,14 +26,6 @@ set cpo&vim
 "     returns 1/0
 "
 
-function! s:_vital_loaded(V) abort
-  let s:Closure = a:V.import('Data.Closure')
-endfunction
-
-function! s:_vital_depends() abort
-  return ['Data.Closure']
-endfunction
-
 let s:NONE = []
 lockvar! s:NONE
 
@@ -625,10 +617,6 @@ function! s:Stream.drop_while(f) abort
 endfunction
 
 function! s:Stream.distinct(...) abort
-  " check if this stream is uniqued by same stringifier
-  if s:_can_skip_distinct(self, a:0 ? a:1 : s:NONE)
-    return self
-  endif
   let stream = s:_new(s:Stream)
   let stream._characteristics = or(self._characteristics, s:DISTINCT)
   let stream._upstream = self
@@ -671,39 +659,7 @@ function! s:Stream.distinct(...) abort
   return stream
 endfunction
 
-" Returns true if a:stream is uniqued by a:stringifier
-function! s:_can_skip_distinct(stream, stringifier) abort
-  let stream = s:_traverse_until(
-  \   a:stream, function('s:_is_root_of_distinct_stream'), s:NONE
-  \)
-  return stream isnot s:NONE &&
-  \      stream.__has_characteristic__(s:DISTINCT) &&
-  \      get(stream, '_stringify', s:NONE) is a:stringifier
-endfunction
-
-" Traversal stops if a:stream is one of the following streams:
-" * stream is not s:DISTINCT
-" * The nearest DISTINCT stream which has '_stringify' key
-" * The top DISTINCT stream
-function! s:_is_root_of_distinct_stream(stream) abort
-  if !a:stream.__has_characteristic__(s:DISTINCT)
-    return 1    " nothing
-  elseif has_key(a:stream, '_stringify')
-    return 1    " found
-  elseif has_key(a:stream, '_upstream') &&
-  \      type(a:stream._upstream) isnot s:T_LIST &&
-  \      !a:stream._upstream.__has_characteristic__(s:DISTINCT)
-    return 1    " found
-  else
-    return 0
-  endif
-endfunction
-
 function! s:Stream.sorted(...) abort
-  " check if this stream has been already sorted by same comparator
-  if s:_can_skip_sorted(self, a:0 ? a:1 : s:NONE)
-    return self
-  endif
   let stream = s:_new(s:Stream)
   let stream._characteristics = or(self._characteristics, s:SORTED)
   let stream._upstream = self
@@ -742,34 +698,6 @@ function! s:Stream.sorted(...) abort
     return self._upstream.__estimate_size__()
   endfunction
   return stream
-endfunction
-
-" Returns true if a:stream is uniqued by a:comparator
-function! s:_can_skip_sorted(stream, comparator) abort
-  let stream = s:_traverse_until(
-  \   a:stream, function('s:_is_root_of_sorted_stream'), s:NONE
-  \)
-  return stream isnot s:NONE &&
-  \      stream.__has_characteristic__(s:SORTED) &&
-  \      get(stream, '_comparator', s:NONE) is a:comparator
-endfunction
-
-" Traversal stops if a:stream is one of the following streams:
-" * stream is not s:SORTED
-" * The nearest SORTED stream which has '_comparator' key
-" * The top SORTED stream
-function! s:_is_root_of_sorted_stream(stream) abort
-  if !a:stream.__has_characteristic__(s:SORTED)
-    return 1    " nothing
-  elseif has_key(a:stream, '_comparator')
-    return 1    " found
-  elseif has_key(a:stream, '_upstream') &&
-  \      type(a:stream._upstream) isnot s:T_LIST &&
-  \      !a:stream._upstream.__has_characteristic__(s:SORTED)
-    return 1    " found
-  else
-    return 0
-  endif
 endfunction
 
 function! s:Stream.get_comparator(...) abort
@@ -901,11 +829,6 @@ function! s:Stream.reduce(f, ...) abort
   return l:Result
 endfunction
 
-function! s:Stream.max(...) abort
-  return max(s:_get_non_empty_list_or_default(
-  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'max()'))
-endfunction
-
 function! s:Stream.max_by(f, ...) abort
   let l:Call = s:_get_callfunc_for_func1(a:f, 'max_by()')
   let list = s:_get_non_empty_list_or_default(
@@ -919,11 +842,6 @@ function! s:Stream.max_by(f, ...) abort
     unlet l:Value
   endfor
   return result[0]
-endfunction
-
-function! s:Stream.min(...) abort
-  return min(s:_get_non_empty_list_or_default(
-  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'min()'))
 endfunction
 
 function! s:Stream.min_by(f, ...) abort
@@ -1092,9 +1010,6 @@ endfunction
 " Get funcref of call()-ish function to call a:f (arity is 0)
 " (see also s:_call_func0_expr())
 function! s:_get_callfunc_for_func0(f, caller) abort
-  if s:Closure.is_closure(a:f)
-    return function('s:_call_closure0')
-  endif
   let type = type(a:f)
   if type is s:T_FUNC
     return function('call')
@@ -1103,15 +1018,9 @@ function! s:_get_callfunc_for_func0(f, caller) abort
   else
     throw 'vital: Stream: ' . a:caller
     \   . ': invalid type argument was given '
-    \   . '(expected funcref, string, or Data.Closure)'
+    \   . '(expected funcref or string)'
   endif
 endfunction
-
-" @vimlint(EVL103, 1, a:args)
-function! s:_call_closure0(closure, args) abort
-  return a:closure.call()
-endfunction
-" @vimlint(EVL103, 0, a:args)
 
 " a:expr is passed to v:val (but it is not meaningless value because
 " a:expr should not have 'v:val')
@@ -1124,9 +1033,6 @@ endfunction
 " Get funcref of call()-ish function to call a:f (arity is 1)
 " (see also s:_call_func1_expr())
 function! s:_get_callfunc_for_func1(f, caller) abort
-  if s:Closure.is_closure(a:f)
-    return function('s:_call_closure1')
-  endif
   let type = type(a:f)
   if type is s:T_FUNC
     return function('call')
@@ -1135,12 +1041,8 @@ function! s:_get_callfunc_for_func1(f, caller) abort
   else
     throw 'vital: Stream: ' . a:caller
     \   . ': invalid type argument was given '
-    \   . '(expected funcref, string, or Data.Closure)'
+    \   . '(expected funcref or string)'
   endif
-endfunction
-
-function! s:_call_closure1(closure, args) abort
-  return a:closure.call(a:args[0])
 endfunction
 
 " a:args[0] is passed to v:val
@@ -1151,9 +1053,6 @@ endfunction
 " Get funcref of call()-ish function to call a:f (arity is 2)
 " (see also s:_call_func2_expr())
 function! s:_get_callfunc_for_func2(f, caller) abort
-  if s:Closure.is_closure(a:f)
-    return function('s:_call_closure2')
-  endif
   let type = type(a:f)
   if type is s:T_FUNC
     return function('call')
@@ -1162,12 +1061,8 @@ function! s:_get_callfunc_for_func2(f, caller) abort
   else
     throw 'vital: Stream: ' . a:caller
     \   . ': invalid type argument was given '
-    \   . '(expected funcref, string, or Data.Closure)'
+    \   . '(expected funcref or string)'
   endif
-endfunction
-
-function! s:_call_closure2(closure, args) abort
-  return a:closure.call(a:args[0], a:args[1])
 endfunction
 
 " List of two elements is passed to v:val

@@ -32,17 +32,14 @@ This module provides:
   - Stream module builds execution plan instead of you
 - An interface of stream generation function like Java's Spliterator
   See |Vital.Stream.generator()|
-- Higher-order functions that support string expression, |Funcref|,
-  |Vital.Data.Closure|
+- Higher-order functions that support string expression, |Funcref|
   - String expression: `s:Stream.of(1,2,3).map('v:val * 2')`
     `v:key` (index) cannot be used. see |Vital.Stream-tip-1|
   - Funcref (lambda): `s:Stream.of(1,2,3).map({n -> n * 2})`
-  - Data.Closure: `s:Stream.of(1,2,3).map(s:Closure.from_expr('a:1 * 2'))`
   - NOTE: a function which receives 2 arguments receives |List| of 2 elements
-    in string expression. but Funcref and Data.Closure takes exact 2 arguments
+    in string expression. but Funcref takes exact 2 arguments
     - String expression: `s:Stream.of(1,2,3).reduce('v:val[0] + v:val[1]')`
     - Funcref (lambda): `s:Stream.of(1,2,3).reduce({a,b -> a + b})`
-    - Data.Closure: `s:Stream.of(1,2,3).reduce(s:Closure.from_operator('+'))`
 
 Some methods are not in Java 8 Stream API and vice versa (skip() -> drop(),
 limit() -> take(), and slice_before() is not in Stream API). This module does
@@ -257,11 +254,10 @@ STREAM OBJECT				*Vital.Stream-Stream-object*
 
 				*Vital.Stream-Stream.get_comparator()*
 Stream.get_comparator([{default}])
-	Returns a comparator if the stream has a SORTED characteristic and a
-	defined comparator (an argument passed to
-	|Vital.Stream-Stream.sorted()| method).  Otherwise, if {default} was
-	given, returns {default}.  Or if {default} was not given, throws an
-	exception.
+	Returns a comparator if the stream is marked as sorted and a defined
+	comparator (an argument passed to |Vital.Stream-Stream.sorted()|
+	method). Otherwise, if {default} was given, returns {default}. Or if
+	{default} was not given, throws an exception.
 
 	NOTE: If no comparator was passed to sorted() method, the
 	stream does not have a defined comparator.
