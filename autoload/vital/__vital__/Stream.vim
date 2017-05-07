@@ -41,8 +41,8 @@ let s:T_JOB = 8
 let s:T_CHANNEL = 9
 
 " let s:ORDERED = 0x01
-let s:DISTINCT = 0x02
-let s:SORTED = 0x04
+" let s:DISTINCT = 0x02
+" let s:SORTED = 0x04
 let s:SIZED = 0x08
 " let s:NONNULL = 0x10
 " let s:IMMUTABLE = 0x20
@@ -66,7 +66,7 @@ function! s:from_list(list) abort
 endfunction
 
 function! s:from_dict(dict) abort
-  return s:_new_from_list(items(a:dict), s:DISTINCT + s:SIZED, 'from_dict()')
+  return s:_new_from_list(items(a:dict), s:SIZED, 'from_dict()')
 endfunction
 
 function! s:empty() abort
@@ -114,8 +114,7 @@ function! s:range(expr, ...) abort
     return s:empty()
   endif
   let stream = s:_new(s:Stream)
-  let stream._characteristics =
-  \ s:DISTINCT + s:SORTED + s:SIZED
+  let stream._characteristics = s:SIZED
   let stream.__index = 0
   let stream._args = args
   let stream.__end = 0
@@ -258,8 +257,7 @@ endfunction
 
 function! s:_zip_characteristics(characteristics_list) abort
   if len(a:characteristics_list) <= 1
-    " clears SORTED flag
-    return and(a:characteristics_list[0], invert(s:SORTED))
+    return a:characteristics_list[0]
   endif
   " or() for SIZED flag. and() for other flags
   let [c1, c2; others] = a:characteristics_list
@@ -329,8 +327,7 @@ endfunction
 
 function! s:_concat_characteristics(characteristics_list) abort
   if len(a:characteristics_list) <= 1
-    " clears DISTINCT,SORTED flag
-    return and(a:characteristics_list[0], invert(s:DISTINCT + s:SORTED))
+    return a:characteristics_list[0]
   endif
   " and() for all flags
   let [c1, c2; others] = a:characteristics_list
@@ -368,8 +365,7 @@ endfunction
 
 function! s:Stream.map(f) abort
   let stream = s:_new(s:Stream)
-  let stream._characteristics =
-  \ and(self._characteristics, invert(s:DISTINCT + s:SORTED))
+  let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'map()')
@@ -391,8 +387,7 @@ endfunction
 
 function! s:Stream.flatmap(f) abort
   let stream = s:_new(s:Stream, [s:WithBuffered])
-  let stream._characteristics =
-  \ and(self._characteristics, invert(s:DISTINCT + s:SORTED))
+  let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'flatmap()')
@@ -618,7 +613,7 @@ endfunction
 
 function! s:Stream.distinct(...) abort
   let stream = s:_new(s:Stream)
-  let stream._characteristics = or(self._characteristics, s:DISTINCT)
+  let stream._characteristics = self._characteristics
   let stream._upstream = self
   if a:0
     let stream._call = s:_get_callfunc_for_func1(a:1, 'distinct()')
@@ -661,7 +656,7 @@ endfunction
 
 function! s:Stream.sorted(...) abort
   let stream = s:_new(s:Stream)
-  let stream._characteristics = or(self._characteristics, s:SORTED)
+  let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__end = 0
   " if this key doesn't exist,
