@@ -281,6 +281,28 @@ Describe Data.Either
     End
   End
 
+  Describe .null_to_left()
+    It doesn't support Vim7.4 or faster
+      if !exists('v:null')
+        Throws /^vital: Data.Either:/ Either.null_to_left(10, 'error')
+      endif
+    End
+
+    It returns a left value with the error message if v:null is given
+      if exists('v:null')
+        let errMsg = 'error'
+        Assert Equals(Either.null_to_left(v:null, errMsg), Either.left(errMsg))
+      endif
+    End
+
+    It returns a right value if a valid value is given
+      if exists('v:null')
+        let valid_value = 10
+        Assert Equals(Either.null_to_left(valid_value, 'error'), Either.right(valid_value))
+      endif
+    End
+  End
+
   Describe as monad
     Before all
       "TODO: Use quickcheck after quickcheck library is created

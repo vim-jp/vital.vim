@@ -152,6 +152,14 @@ function! s:return(x) abort
   return s:right(a:x)
 endfunction
 
+function! s:null_to_left(x, errorMsg) abort
+  if !exists('v:null')
+    throw 'vital: Data.Either: null_to_left() supports only vim8 or later'
+  endif
+  return a:x ==# v:null ? s:left(a:errorMsg)
+  \                     : s:right(a:x)
+endfunction
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

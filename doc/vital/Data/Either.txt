@@ -204,5 +204,20 @@ flatmap({either}, {f})			*Vital.Data.Either.flatmap()*
 	|Vital.Data.Either.bind()| about this.
 
 
+null_to_left({value}, {message})	*Vital.Data.Either.null_to_left()*
+	Lift |v:null| to {left} value, or pass {value} to {right} value.
+>
+	let dict = {'foo': 10}
+
+	echo E.null_to_left(get(dict, 'foo', v:null), 'error')
+	" Right(10)
+
+	echo E.null_to_left(get(dict, 'bar', v:null), 'error')
+	" Left('error')
+
+	echo E.null_to_left(get(dict, 'foo'), 'error')
+	" Right(0)
+<
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
