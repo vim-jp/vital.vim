@@ -365,9 +365,29 @@ Describe Data.List
   End
 
   Describe .foldr()
-    It folds a list from right
+    Before all
+      function! Plus(x, y) abort
+        return a:x + a:y
+      endfunction
+
+      function! Pair(x, y) abort
+        return [a:x, a:y]
+      endfunction
+    End
+
+    After all
+      delfunction Plus
+      delfunction Pair
+    End
+
+    It folds a list from right with string expression
       Assert Equals(List.foldr('v:memo + v:val', 0, range(1, 10)), 55)
-      Assert Equals(List.foldr('[v:memo, v:val]', [], [1, 2]), [[[], 2], 1])
+      Assert Equals(List.foldr('[v:memo, v:val]', 3, [1, 2]), [1, [2, 3]])
+    End
+
+    It folds a list from right with funcref
+      Assert Equals(List.foldr(function('Plus'), 0, range(1, 10)), 55)
+      Assert Equals(List.foldr(function('Pair'), 3, [1, 2]), [1, [2, 3]])
     End
 
     It does nothing if the list is empty

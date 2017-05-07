@@ -261,7 +261,19 @@ endfunction
 
 " similar to Haskell's Prelude.foldr
 function! s:foldr(f, init, xs) abort
-  return s:foldl(a:f, a:init, reverse(copy(a:xs)))
+  let curried_f_expr = type(a:f) is type(function('function'))
+  \                    ? 's:Closure.from_funcref(a:f, [v:val])'
+  \                    : printf('s:Closure.from_funcref(function("s:_call_expr_memo_val"), ["%s", v:val])', a:f)
+  let partitions = map(a:xs, curried_f_expr)
+  let identity = s:Closure.from_funcref(function('s:_id'))
+  let linear = s:foldl(function('s:_compose'), identity, partitions)
+  return linear.call(a:init)
+endfunction
+
+function! s:_call_expr_memo_val(expr, memo, val) abort
+  let expr = substitute(a:expr, 'v:memo', string(a:memo), 'g')
+  let expr = substitute(expr, 'v:val', string(a:val), 'g')
+  return eval(expr)
 endfunction
 
 " similar to Haskell's Prelude.fold11
@@ -475,6 +487,14 @@ endfunction
 
 function! s:_call_string_expr(expr, args) abort
   return map([a:args[0]], a:expr)[0]
+endfunction
+
+function! s:_compose(g, f) abort
+  return s:Closure.compose([a:g, a:f])
+endfunction
+
+function! s:_id(x) abort
+  return a:x
 endfunction
 
 let &cpo = s:save_cpo

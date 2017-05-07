@@ -413,10 +413,18 @@ foldl1({f}, {xs})			*Vital.Data.List.foldl1()*
 	" [[0, 1], 2]
 <
 foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
-	TODO
+	Reduces the list {xs} using the binary operator {f}, from right to
+	left. The starting value of the reduction (typically the
+	right-identity of the operator) is {init}.
 	Behaves like Haskell's Data.List.foldr().
 >
+	function! Plus(x, y) abort
+	  return a:x + a:y
+	endfunction
+
 	echo s:L.foldr('v:memo + v:val', 0, range(1, 10))
+	" 55
+	echo s:L.foldr(function('Plus'), 0, range(1, 10))
 	" 55
 	echo s:L.foldr('v:memo + v:val', 20, range(1, 10))
 	" 75
