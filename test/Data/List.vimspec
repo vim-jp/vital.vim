@@ -3,6 +3,19 @@ Describe Data.List
     let V = vital#vital#new()
     let List = V.import('Data.List')
     let Closure = V.import('Data.Closure')
+
+    function! Plus(x, y) abort
+      return a:x + a:y
+    endfunction
+
+    function! Pair(x, y) abort
+      return [a:x, a:y]
+    endfunction
+  End
+
+  After all
+    delfunction Plus
+    delfunction Pair
   End
 
   Describe .pop()
@@ -339,21 +352,6 @@ Describe Data.List
   End
 
   Describe .foldl()
-    Before all
-      function! Plus(x, y) abort
-        return a:x + a:y
-      endfunction
-
-      function! Pair(x, y) abort
-        return [a:x, a:y]
-      endfunction
-    End
-
-    After all
-      delfunction Plus
-      delfunction Pair
-    End
-
     It folds a list from left with string expression
       Assert Equals(List.foldl('v:memo + v:val', 0, range(1, 10)), 55)
       Assert Equals(List.foldl('[v:memo, v:val]', 0, [1, 2]), [[0, 1], 2])
@@ -378,21 +376,6 @@ Describe Data.List
   End
 
   Describe .foldl1()
-    Before all
-      function! Plus(x, y) abort
-        return a:x + a:y
-      endfunction
-
-      function! Pair(x, y) abort
-        return [a:x, a:y]
-      endfunction
-    End
-
-    After all
-      delfunction Plus
-      delfunction Pair
-    End
-
     It folds a list from left with string expression
       Assert Equals(List.foldl1('v:memo + v:val', range(1, 10)), 55)
       Assert Equals(List.foldl1('[v:memo, v:val]', [0, 1, 2]), [[0, 1], 2])
@@ -417,21 +400,6 @@ Describe Data.List
   End
 
   Describe .foldr()
-    Before all
-      function! Plus(x, y) abort
-        return a:x + a:y
-      endfunction
-
-      function! Pair(x, y) abort
-        return [a:x, a:y]
-      endfunction
-    End
-
-    After all
-      delfunction Plus
-      delfunction Pair
-    End
-
     It folds a list from right with string expression
       Assert Equals(List.foldr('v:memo + v:val', 0, range(1, 10)), 55)
       Assert Equals(List.foldr('[v:memo, v:val]', 3, [1, 2]), [1, [2, 3]])
@@ -456,21 +424,6 @@ Describe Data.List
   End
 
   Describe .foldr1()
-    Before all
-      function! Plus(x, y) abort
-        return a:x + a:y
-      endfunction
-
-      function! Pair(x, y) abort
-        return [a:x, a:y]
-      endfunction
-    End
-
-    After all
-      delfunction Plus
-      delfunction Pair
-    End
-
     It folds a list from right with string expression
       Assert Equals(List.foldr1('v:memo + v:val', range(0, 10)), 55)
       Assert Equals(List.foldr1('[v:memo, v:val]', [0, 1, 2]), [0, [1, 2]])

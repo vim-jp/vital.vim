@@ -6,6 +6,7 @@ Maintainer: ujihisa <ujihisa at gmail com>
 CONTENTS				*Vital.Data.List-contents*
 
 INTRODUCTION			|Vital.Data.List-introduction|
+TERM				|Vital.Data.List.term|
 INTERFACE			|Vital.Data.List-interface|
   Functions			  |Vital.Data.List-functions|
 
@@ -37,6 +38,13 @@ manipulate |List|.
 <
 
 ==============================================================================
+TERM					*Vital.Data.List-term*
+
+{function}				*Vital.Data.List-term-function*
+	Either|Funcref|, |String|(as expression), or
+	|Vital.Data.Closure-term-callable|.
+
+==============================================================================
 INTERFACE				*Vital.Data.List-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Data.List-functions*
@@ -45,16 +53,20 @@ pop({list})				*Vital.Data.List.pop()*
 	Removes the last element from |List| {list} and returns the element,
 	as if the {list} is a stack.
 
+
 push({list}, {val})			*Vital.Data.List.push()*
 	Appends {val} to the end of |List| {list} and returns the list itself,
 	as if the {list} is a stack.
 
+
 shift({list})				*Vital.Data.List.shift()*
 	Removes the first element from |List| {list} and returns the element.
+
 
 unshift({list}, {val})			*Vital.Data.List.unshift()*
 	Inserts {val} to the head of |List| {list} and returns the list
 	itself.
+
 
 cons({val}, {list})			*Vital.Data.List.cons()*
 	Makes new |List| which first item is {val} and the rest of items are
@@ -70,6 +82,7 @@ cons({val}, {list})			*Vital.Data.List.cons()*
 	echo s:L.cons([1], 2)
 	" ERROR: E745
 <
+
 uncons({list})			*Vital.Data.List.uncons()*
 	Returns a pair of a head element and tail elements. {list} must not be
 	empty list.
@@ -97,14 +110,12 @@ conj({list}, {val})			*Vital.Data.List.conj()*
 	" ERROR: E745
 <
 
-map({list}, {func})			*Vital.Data.List.map()*
-	Generalized map(). {func} can be passed as |String|(as expression), or
-	|Vital.Data.Closure-term-callable|. The different of this and
-	|map()|is
-
-	1. Can use |Vital.Data.Closure-term-callable| as {f}
-	2. Don't require to take the index as the argument
+map({list}, {function})			*Vital.Data.List.map()*
+	Generalized map(). The followings are different of |map()|:
+	* Can use |Vital.Data.Closure-term-callable| as {f}
+	* Don't require to take the index as the argument
 	   (See the section of 'If {expr2} is a Funcref...' in |map()|)
+
 
 uniq({list})			*Vital.Data.List.uniq()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In
@@ -114,10 +125,10 @@ uniq({list})			*Vital.Data.List.uniq()*
 	uniq(['vim', 'emacs', 'vim', 'vim']) == ['vim', 'emacs']
 <
 
-uniq_by({list}, {func})			*Vital.Data.List.uniq_by()*
+uniq_by({list}, {function})			*Vital.Data.List.uniq_by()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In
 	particular, it keeps only the first occurrence of each element.  The
-	uniqueness is judged with the value {func} to which a formula is
+	uniqueness is judged with the value {function} to which a formula is
 	applied.
 	See also: |Vital.Data.List.uniq()|
 >
@@ -129,6 +140,7 @@ uniq_by({list}, {func})			*Vital.Data.List.uniq_by()*
 clear({list})				*Vital.Data.List.clear()*
 	Removes all the items of |List| {list}.  Returns the empty list.
 
+
 concat({list})				*Vital.Data.List.concat()*
 	Concatenates |List| {list} of lists.
 >
@@ -137,6 +149,7 @@ concat({list})				*Vital.Data.List.concat()*
 <
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
+
 
 flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 	Take each {list} elements in |List| {list} into a new {list}
@@ -150,6 +163,7 @@ flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 	echo s:L.flatten([[['a']], [[['b']], 'c']], 2)
 	" ['a', ['b'], 'c']
 <
+
 sort({list}, {expr})			*Vital.Data.List.sort()*
 	Sorts the items in |List| {list} in-place.  Returns {list}.  {expr}
 	must be a |String| or a |Funcref|.  When {expr} is a |Funcref|, this
@@ -176,8 +190,10 @@ sort({list}, {expr})			*Vital.Data.List.sort()*
 	echo s:L.sort(copy(list), 'len(a:a)-len(a:b)')
 	" ['apple', 'orange', 'banana', 'pineapple']
 <
+
 sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
 	Returns a sorted |List| with key in |List| {list}.
+
 
 max_by({list}, {expr})			*Vital.Data.List.max_by()*
 	Returns a maximum value in {list} through given {expr}.
@@ -200,15 +216,19 @@ min_by({list}, {expr})			*Vital.Data.List.min_by()*
 	echo s:L.min_by([20, -50, -15, 30], 'abs(v:val)')
 	" -15
 <
+
 char_range({from}, {to})		*Vital.Data.List.char_range()*
 	Returns a |List| of letters from {from} to {to}.
+
 
 has({list}, {value})			*Vital.Data.List.has()*
 	Returns Number 1 if {value} is in |List| {list}, otherwise zero.
 
+
 has_index({list}, {index})		*Vital.Data.List.has_index()*
 	Returns Number 1 if can point to {index} for |List| {list}, otherwise
 	zero.  If {index} is negative Number, this function returns zero.
+
 
 span({expr}, {list})			*Vital.Data.List.span()*
 	Returns a list of two lists where concatenation of them is
@@ -228,6 +248,7 @@ span({expr}, {list})			*Vital.Data.List.span()*
 	If you know Haskell, this span() is like Haskell's Data.List.span just
 	for your info.
 
+
 break({expr}, {list})			*Vital.Data.List.break()*
 	Returns a list of two lists where concatenation of them is
 	equal to {list}, all the items of the first list do not satisfy
@@ -246,6 +267,7 @@ break({expr}, {list})			*Vital.Data.List.break()*
 	If you know Haskell, this break() is like Haskell's Data.List.break
 	just for your info.
 
+
 take_while({expr}, {list})		*Vital.Data.List.take_while()*
 	Returns a list which is from the beginning of the given {list} to an
 	element that all of them satisfies given expression {expr}.
@@ -263,6 +285,7 @@ take_while({expr}, {list})		*Vital.Data.List.take_while()*
 	If you know Haskell, this take_while() is like Haskell's
 	Data.List.takeWhile just for your info.
 
+
 drop_while({expr}, {list})		*Vital.Data.List.drop_while()*
 	Returns the suffix remaining after |Vital.Data.List.take_while()|.
 	Inside {expr} |v:val| has the value of the current item.
@@ -278,6 +301,7 @@ drop_while({expr}, {list})		*Vital.Data.List.drop_while()*
 <
 	If you know Haskell, this drop_while() is like Haskell's
 	Data.List.dropWhile just for your info.
+
 
 all({expr}, {list})			*Vital.Data.List.all()*
 	Returns Number 1 if all the items in |List| {list} fulfill the
@@ -298,6 +322,7 @@ all({expr}, {list})			*Vital.Data.List.all()*
 	If you know Haskell, this all() is like Haskell's Prelude.all just for
 	your info.
 
+
 any({expr}, {list})			*Vital.Data.List.any()*
 	Returns Number 1 if at least one item in |List| {list} fulfills the
 	condition {expr}, zero otherwise.  If {list} is empty, this function
@@ -317,6 +342,7 @@ any({expr}, {list})			*Vital.Data.List.any()*
 	If you know Haskell, this any() is like Haskell's Prelude.any just for
 	your info.
 
+
 and({list})				*Vital.Data.List.and()*
 	Returns Number 1 if all the items of |List| {list} are non-zero
 	Numbers, zero otherwise.  If {list} is empty, this function returns 1.
@@ -330,6 +356,7 @@ and({list})				*Vital.Data.List.and()*
 <
 	If you know Haskell, this and() is like Haskell's Prelude.and just for
 	your info.
+
 
 or({list})				*Vital.Data.List.or()*
 	Returns Number 1 if at least one item in List {list} is non-zero,
@@ -345,9 +372,11 @@ or({list})				*Vital.Data.List.or()*
 	If you know Haskell, this or() is like Haskell's Prelude.or just for
 	your info.
 
+
 partition({expr}, {list})		*Vital.Data.List.partition()*
 	TODO
 	Behaves like Haskell's Data.List.partition().
+
 
 map_accum({expr}, {xs}, {init})		*Vital.Data.List.map_accum()*
 	This is similar to |map()| but the followings are different:
@@ -363,18 +392,14 @@ map_accum({expr}, {xs}, {init})		*Vital.Data.List.map_accum()*
 	"=> [11, 13, 15]
 <
 
-foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
-	Reduces the list {xs} using the binary operator {f}, from left to
-	right. The starting value of the reduction (typically the
+foldl({function}, {init}, {xs})		*Vital.Data.List.foldl()*
+	Reduces the list {xs} using the binary operator {function}, from left
+	to right. The starting value of the reduction (typically the
 	left-identity of the operator) is {init}.
+	Behaves like Haskell's Data.List.foldl().
 
 	foldl(f, z, [x1, x2, ..., xn]) ==
 	  f(... f(f(z, x1), x2) ..., xn)
-
-	{f} must be either|Funcref|, |String|(as expression), or
-	|Vital.Data.Closure-term-callable|.
-
-	Examples:
 >
 	function! Plus(x, y) abort
 	  return a:x + a:y
@@ -401,7 +426,8 @@ foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
 	If you know Haskell, this foldl() is like Haskell's Data.List.foldl
 	just for your info.
 
-foldl1({f}, {xs})			*Vital.Data.List.foldl1()*
+
+foldl1({function}, {xs})			*Vital.Data.List.foldl1()*
 	Sames |Data.List.foldl()|, but doesn't take the initial value. Takes
 	the first element from {xs} as the initial value.
 	Behaves like Haskell's Data.List.foldl1().
@@ -421,16 +447,12 @@ foldl1({f}, {xs})			*Vital.Data.List.foldl1()*
 	echo s:L.foldl1(function('Pair'), [0, 1, 2])
 	" [[0, 1], 2]
 <
-foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
-	Reduces the list {xs} using the binary operator {f}, from right to
-	left. The starting value of the reduction (typically the
+
+foldr({function}, {init}, {xs})		*Vital.Data.List.foldr()*
+	Reduces the list {xs} using the binary operator {function}, from right
+	to left. The starting value of the reduction (typically the
 	right-identity of the operator) is {init}.
 	Behaves like Haskell's Data.List.foldr().
-
-	{f} must be either|Funcref|, |String|(as expression), or
-	|Vital.Data.Closure-term-callable|.
-
-	Examples:
 >
 	function! Plus(x, y) abort
 	  return a:x + a:y
@@ -456,7 +478,8 @@ foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
 	echo s:L.foldr(function('Pair'), [], [1, 2])
 	" [[[], 2], 1]
 <
-foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
+
+foldr1({function}, {xs})			*Vital.Data.List.foldr1()*
 	Sames |Data.List.foldr()|, but doesn't take the initial value. Takes
 	the last element from {xs} as the initial value.
 	Behaves like Haskell's Data.List.foldr1().
@@ -476,7 +499,7 @@ foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
 	echo s:L.foldr1(function('Pair'), [0, 1, 2])
 	" [0, [1, 2]]
 <
-<
+
 zip(...)				*Vital.Data.List.zip()*
 	TODO
 	Behaves like python's zip().
@@ -486,6 +509,7 @@ zip(...)				*Vital.Data.List.zip()*
 	echo s:L.zip([1, 2, 3], [4, 5, 6], [7, 8, 9])
 	" [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 <
+
 with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 	Returns {list} with index. {offset} means the base of index.
 	If you specify {offset}, index starts with {offset}.
@@ -509,6 +533,7 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 		echo idx.': '.line
 	endfor
 <
+
 find({list}, {default}, {expr})			 *Vital.Data.List.find()*
 	Returns the first value in {list} where the given {expr} is satisfied.
 	{default} is returned when no item satisfies {expr}. {expr} must be a
@@ -528,6 +553,7 @@ find({list}, {default}, {expr})			 *Vital.Data.List.find()*
 	If you know Haskell, this find() is like Haskell's Data.List.find
 	just for your info.
 
+
 					*Vital.Data.List.find_index()*
 find_index({list}, {expr} [, {start} [, {default}]])
 	Returns the lowest index in {list} where the given {expr} is
@@ -542,6 +568,7 @@ find_index({list}, {expr} [, {start} [, {default}]])
 	echo s:L.find_index([0, 1, 2, 3], 'v:val > 10')
 	" -1
 <
+
 					*Vital.Data.List.find_last_index()*
 find_last_index({list}, {expr} [, {start} [, {default}]])
 	Similar to find_index but this returns the highest index.
@@ -550,6 +577,7 @@ find_last_index({list}, {expr} [, {start} [, {default}]])
 	echo s:L.find_last_index([0, 1, 2, 3], 'v:val%2 == 1')
 	" 3
 <
+
 					*Vital.Data.List.find_indices()*
 find_indices({list}, {expr} [, {start}])
 	Similar to find_index but this returns all of indices specifying
@@ -561,6 +589,7 @@ find_indices({list}, {expr} [, {start}])
 	echo s:L.find_indices([0, 1, 2, 3], 'v:val > 10')
 	" []
 <
+
 has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	Returns non-zero if a:list1 and a:list2 have a common item, otherwise
 	zero.
@@ -571,6 +600,7 @@ has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	" 1
 	echo s:L.has_common_items(['a'], ['b', 'c'])
 	" 0
+
 
 intersect({list1}, {list2})		*Vital.Data.List.intersect()*
 	Returns a |List| of common items between {list1} and {list2}, and it's
@@ -585,6 +615,7 @@ intersect({list1}, {list2})		*Vital.Data.List.intersect()*
 	echo s:L.intersect(['a'], ['b', 'c'])
 	" []
 <
+
 group_by({list}, {expr})		*Vital.Data.List.group_by()*
 	Returns a |Dictionary| grouped by the result of {expr}.
 	"v:val" can be used in {expr}.
@@ -594,6 +625,7 @@ group_by({list}, {expr})		*Vital.Data.List.group_by()*
 	echo s:L.group_by(['a', 'b', 'ab'], 'v:val[0]')
 	" {'a': ['a', 'ab'], 'b': ['b']}
 <
+
 			      		*Vital.Data.List.binary_search()*
 binary_search({list}, {expr}, [{func}, [{dict}]])
 	Returns the index in {list} where the item has a value equal to
@@ -630,6 +662,7 @@ binary_search({list}, {expr}, [{func}, [{dict}]])
 	echo s:L.binary_search(['a', 'aa', 'aaa'], 'vivi', CompareByLength.func, CompareByLength)
 	" -1
 <
+
 product({lists})			*Vital.Data.List.product()*
 	Returns Cartesian product of elements in the {lists}.
 >
@@ -638,6 +671,7 @@ product({lists})			*Vital.Data.List.product()*
 	echo s:L.product([range(2), range(2), range(2)])
 	" [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]]
 <
+
 permutations({list} [, {r}])	      	*Vital.Data.List.permutations()*
 	Returns successive {r} length permutations of elements in the {list}.
 	If {r} is not specified, then {r} defaults to the length of the {list}
@@ -648,6 +682,7 @@ permutations({list} [, {r}])	      	*Vital.Data.List.permutations()*
 	echo s:L.permutations([1, 2, 3], 2)
 	" [[1, 2] , [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
 <
+
 combinations({list}, {r})	      	*Vital.Data.List.combinations()*
 	Returns successive {r} length combinations of elements in the {list}.
 >
