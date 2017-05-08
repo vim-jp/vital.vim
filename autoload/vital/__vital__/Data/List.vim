@@ -61,19 +61,13 @@ endfunction
 
 " Removes duplicates from a list.
 function! s:uniq_by(list, f) abort
-  let list = map(copy(a:list), printf('[v:val, %s]', a:f))
-  let i = 0
-  let seen = {}
-  while i < len(list)
-    let key = string(list[i][1])
-    if has_key(seen, key)
-      call remove(list, i)
-    else
-      let seen[key] = 1
-      let i += 1
-    endif
-  endwhile
-  return map(list, 'v:val[0]')
+  let cons_of_if_has = s:Closure.from_funcref(function('s:_cons_if_has'), [a:f])
+  return s:foldl(cons_of_if_has, [], a:list)
+endfunction
+
+function! s:_cons_if_has(f, xs, x) abort
+  let l:Call = s:_get_caller(a:f)
+  return s:has(s:map(a:xs, a:f), l:Call(a:f, [a:x])) ? a:xs : s:conj(a:xs, a:x)
 endfunction
 
 function! s:clear(list) abort

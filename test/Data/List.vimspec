@@ -142,12 +142,39 @@ Describe Data.List
   End
 
   Describe .uniq_by()
-    It makes a list unique based on given expression
+    It makes a list unique based on given string expression
       Assert Equals(
       \ List.uniq_by([
       \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
       \     ],
       \     'tolower(v:val)'
+      \   ),
+      \ [
+      \   'vim', 'emacs', 'gVim'
+      \ ]
+      \ )
+    End
+
+    It makes a list unique based on given funcref
+      Assert Equals(
+      \ List.uniq_by([
+      \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
+      \     ],
+      \     function('tolower')
+      \   ),
+      \ [
+      \   'vim', 'emacs', 'gVim'
+      \ ]
+      \ )
+    End
+
+    It makes a list unique based on given Data.Closure
+      let tolower_ = Closure.from_funcref(function('tolower'))
+      Assert Equals(
+      \ List.uniq_by([
+      \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
+      \     ],
+      \     tolower_
       \   ),
       \ [
       \   'vim', 'emacs', 'gVim'
