@@ -417,18 +417,34 @@ foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
 	left. The starting value of the reduction (typically the
 	right-identity of the operator) is {init}.
 	Behaves like Haskell's Data.List.foldr().
+
+	{f} must be either|Funcref|, |String|(as expression), or
+	|Vital.Data.Closure-term-callable|.
+
+	Examples:
 >
 	function! Plus(x, y) abort
 	  return a:x + a:y
 	endfunction
 
+	function! Pair(x, y) abort
+	  return [a:x, a:y]
+	endfunction
+
 	echo s:L.foldr('v:memo + v:val', 0, range(1, 10))
 	" 55
+
 	echo s:L.foldr(function('Plus'), 0, range(1, 10))
 	" 55
+
+	let plus = Closure.from_funcref(function('Plus'))
+	echo s:L.foldr(plus, 0, range(1, 10))
+	" 55
+
 	echo s:L.foldr('v:memo + v:val', 20, range(1, 10))
 	" 75
-	echo s:L.foldr('[v:memo, v:val]', [], [1, 2])
+
+	echo s:L.foldr(function('Pair'), [], [1, 2])
 	" [[[], 2], 1]
 <
 foldr1({f}, {xs})			*Vital.Data.List.foldr1()*

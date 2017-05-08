@@ -261,9 +261,9 @@ endfunction
 
 " similar to Haskell's Prelude.foldr
 function! s:foldr(f, init, xs) abort
-  let curried_f_expr = type(a:f) is type(function('function'))
-  \                    ? 's:Closure.from_funcref(a:f, [v:val])'
-  \                    : printf('s:Closure.from_funcref(function("s:_call_expr_memo_val"), ["%s", v:val])', a:f)
+  let curried_f_expr = s:Closure.is_closure(a:f)               ? 'a:f.with_arglist([v:val])'
+  \                  : type(a:f) is type(function('function')) ? 's:Closure.from_funcref(a:f, [v:val])'
+  \                  : printf('s:Closure.from_funcref(function("s:_call_expr_memo_val"), ["%s", v:val])', a:f)
   let partitions = map(a:xs, curried_f_expr)
   let identity = s:Closure.from_funcref(function('s:_id'))
   let linear = s:foldl(function('s:_compose'), identity, partitions)
