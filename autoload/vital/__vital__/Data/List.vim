@@ -45,6 +45,15 @@ function! s:conj(xs, x) abort
   return a:xs + [a:x]
 endfunction
 
+function! s:map(xs, f) abort
+  let l:Call = s:_get_caller(a:f)
+  let result = []
+  for x in a:xs
+    call add(result, l:Call(a:f, [x]))
+  endfor
+  return result
+endfunction
+
 " Removes duplicates from a list.
 function! s:uniq(list) abort
   return s:uniq_by(a:list, 'v:val')
@@ -480,9 +489,9 @@ endfunction
 
 
 function! s:_get_caller(f) abort
-  return type(a:f) is type(function('function'))
-  \        ? function('call')
-  \        : function('s:_call_string_expr')
+  return s:Closure.is_closure(a:f)               ? s:Closure.apply
+  \    : type(a:f) is type(function('function')) ? function('call')
+  \    : function('s:_call_string_expr')
 endfunction
 
 function! s:_call_string_expr(expr, args) abort

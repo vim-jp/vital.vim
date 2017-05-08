@@ -97,6 +97,15 @@ conj({list}, {val})			*Vital.Data.List.conj()*
 	" ERROR: E745
 <
 
+map({list}, {func})			*Vital.Data.List.map()*
+	Generalized map(). {func} can be passed as |String|(as expression), or
+	|Vital.Data.Closure-term-callable|. The different of this and
+	|map()|is
+
+	1. Can use |Vital.Data.Closure-term-callable| as {f}
+	2. Don't require to take the index as the argument
+	   (See the section of 'If {expr2} is a Funcref...' in |map()|)
+
 uniq({list})			*Vital.Data.List.uniq()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In
 	particular, it keeps only the first occurrence of each element.
