@@ -164,14 +164,14 @@ flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 	" ['a', ['b'], 'c']
 <
 
-sort({list}, {expr})			*Vital.Data.List.sort()*
-	Sorts the items in |List| {list} in-place.  Returns {list}.  {expr}
-	must be a |String| or a |Funcref|.  When {expr} is a |Funcref|, this
-	function returns the same result as |sort()|.  When {expr} is a
-	|String|, this function uses {expr} to compare items.  Inside {expr}
-	a:a and a:b have the value of the current items.  The evaluating
-	result of {expr} must have zero if they are equal, 1 or bigger if a:a
-	sorts after the a:b, -1 or smaller if a:a sorts before a:b.
+sort({list}, {function})			*Vital.Data.List.sort()*
+	Sorts the items in |List| {list} in-place.  Returns {list}. When
+	{function} is a |Funcref|, this function returns the same result as
+	|sort()|. When {function} is a |String|expression, this function uses
+	{function} to compare items.  Inside {function} a:a and a:b have the
+	value of the current items.  The evaluating result of {function} must
+	have zero if they are equal, 1 or bigger if a:a sorts after the a:b,
+	-1 or smaller if a:a sorts before a:b.
 >
 	function! MyCompare(i1, i2)
 	  return a:i1 ==
@@ -190,6 +190,11 @@ sort({list}, {expr})			*Vital.Data.List.sort()*
 	echo s:L.sort(copy(list), 'len(a:a)-len(a:b)')
 	" ['apple', 'orange', 'banana', 'pineapple']
 <
+	Notice:
+	If you use {function} as |String| expression or
+	|Vital.Data.Closure-term-closure|, this function gives up job safety
+	(thread safety). It may not work correctly. Please use lambda
+	expression or partial applying of function if it can be used.
 
 sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
 	Returns a sorted |List| with key in |List| {list}.
