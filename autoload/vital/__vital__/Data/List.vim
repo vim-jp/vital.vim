@@ -238,9 +238,8 @@ endfunction
 " similar to Haskell's Prelude.foldl
 function! s:foldl(f, init, xs) abort
   "NOTE: The 'Call' should be named with l: for the conflict problem
-  let l:Call = s:Closure.is_callable(a:f)              ? s:Closure.apply
-  \          : type(a:f) is type(function('function')) ? function('call')
-  \                                                    : function('s:_call_two_argument_string_expr')
+  let l:Call = s:Closure.is_callable(a:f) ? s:Closure.apply
+  \                                       : function('s:_call_two_argument_string_expr')
   let memo = a:init
   for x in a:xs
     let memo = l:Call(a:f, [memo, x])
@@ -264,8 +263,8 @@ endfunction
 
 " similar to Haskell's Prelude.foldr
 function! s:foldr(f, init, xs) abort
-  let curried_f_expr = s:Closure.is_closure(a:f)               ? 'a:f.with_arglist([v:val])'
-  \                  : type(a:f) is type(function('function')) ? 's:Closure.from_funcref(a:f, [v:val])'
+  let curried_f_expr = s:Closure.is_callable(a:f)
+  \                  ? 's:Closure.build(a:f, [v:val])'
   \                  : printf('s:Closure.from_funcref(function("s:_call_expr_memo_val"), ["%s", v:val])', a:f)
   let partitions = map(a:xs, curried_f_expr)
   let identity = s:Closure.from_funcref(function('s:_id'))
@@ -483,9 +482,8 @@ endfunction
 
 
 function! s:_get_caller(f) abort
-  return s:Closure.is_closure(a:f)               ? s:Closure.apply
-  \    : type(a:f) is type(function('function')) ? function('call')
-  \    : function('s:_call_string_expr')
+  return s:Closure.is_callable(a:f) ? s:Closure.apply
+  \                                 : function('s:_call_string_expr')
 endfunction
 
 function! s:_call_string_expr(expr, args) abort
