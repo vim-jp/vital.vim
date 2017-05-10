@@ -196,8 +196,24 @@ sort({list}, {function})			*Vital.Data.List.sort()*
 	(thread safety). It may not work correctly. Please use lambda
 	expression or partial applying of function if it can be used.
 
-sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
+sort_by({list}, {function})			*Vital.Data.List.sort_by()*
 	Returns a sorted |List| with key in |List| {list}.
+>
+	function! Lookup(x)
+	  return a:x.field
+	endfunction
+
+	let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
+
+	echo s:L.sort_by(copy(list), 'v:val.field')
+	" [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}]
+
+	echo s:L.sort_by(copy(list), function('Lookup'))
+	" [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}]
+
+	echo s:L.sort_by(copy(list), Closure.from_funcname('*Lookup'))
+	" [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}]
+<
 
 
 max_by({list}, {expr})			*Vital.Data.List.max_by()*

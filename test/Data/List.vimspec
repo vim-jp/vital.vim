@@ -509,6 +509,34 @@ Describe Data.List
     End
   End
 
+  Describe .sort_by()
+    Before all
+      function! Lookup(x)
+        return a:x.field
+      endfunction
+    End
+
+    After all
+      delfunction Lookup
+    End
+
+    It sorts list with given string expression
+      let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
+      Assert Equals(List.sort_by(copy(list), 'v:val.field'), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
+    End
+
+    It sorts list with given funcref
+      let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
+      Assert Equals(List.sort_by(copy(list), function('Lookup')), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
+    End
+
+    It sorts list with given Data.Closure
+      let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
+      let lookup = Closure.from_funcname('*Lookup')
+      Assert Equals(List.sort_by(copy(list), lookup), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
+    End
+  End
+
   Describe .find()
     Before all
       function! MyPredicate(x) abort
