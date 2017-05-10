@@ -293,7 +293,7 @@ Stream.map({func})
 	Creates a stream applying {func} to each element. {func} is a function
 	of 1 arity.
 >
-	" Output: [1,4,9]
+	" Output: [2,4,6]
 	echo s:Stream.of(1,2,3).map('v:val * 2').to_list()
 <
 				*Vital.Stream-Stream.flatmap()*
