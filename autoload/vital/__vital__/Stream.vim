@@ -78,19 +78,13 @@ function! s:_new_from_list(list, characteristics, caller) abort
   let stream._name = a:caller
   let stream._characteristics = a:characteristics
   let stream.__index = 0
-  let stream.__end = 0
   let stream._list = a:list
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at '
-      \     . self._name
-    endif
     " fix overflow
     let n = self.__index + a:n < a:n ? 1/0 : self.__index + a:n
     let list = s:_slice(self._list, self.__index, n - 1)
     let self.__index = n
-    let self.__end = (self.__estimate_size__() ==# 0)
-    return [list, !self.__end]
+    return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__estimate_size__() abort
     return max([len(self._list) - self.__index, 0])
@@ -118,11 +112,7 @@ function! s:range(expr, ...) abort
   let stream._characteristics = s:SIZED
   let stream.__index = 0
   let stream._args = args
-  let stream.__end = 0
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at range()'
-    endif
     if a:n ==# 0
       return [[], 1]
     endif
@@ -136,8 +126,7 @@ function! s:range(expr, ...) abort
     " assert a:n != 0
     let list = s:_slice(call('range', args), self.__index, self.__index + a:n - 1)
     let self.__index += a:n
-    let self.__end = self.__estimate_size__() ==# 0
-    return [list, !self.__end]
+    return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__estimate_size__() abort
     return s:_range_size(self._args, self.__index)
@@ -208,12 +197,8 @@ function! s:generator(dict) abort
   let stream._name = 'generator()'
   let stream._characteristics = 0
   let stream._dict = a:dict
-  let stream.__end = 0
   let stream.__index = 0
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at generator()'
-    endif
     let list = []
     let i = 0
     let open = 1
@@ -228,7 +213,6 @@ function! s:generator(dict) abort
       unlet l:Value
     endwhile
     let self.__index += i
-    let self.__end = !open
     return [list, open]
   endfunction
   function! stream.__estimate_size__() abort
@@ -242,20 +226,16 @@ function! s:zip(s1, s2, ...) abort
   let stream._name = 'zip()'
   let stream._characteristics =
   \ s:_zip_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
-  let stream.__end = 0
   let stream._upstream = [a:s1, a:s2] + a:000
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at zip()'
-    endif
-    let lists = map(copy(self._upstream), 'v:val.__take_possible__(a:n)[0]')
+    let lists = map(copy(self._upstream),
+    \               's:_take_freeze_intermediate(v:val, a:n)[0]')
     let smaller = min(map(copy(lists), 'len(v:val)'))
     " lists = [[1,2,3], [4,5,6]], list = [[1,4], [2,5], [3,6]]
     " let list = map(range(smaller), '[lists[0][v:val], lists[1][v:val], ...]')
     let expr = '[' . join(map(range(len(lists)), '''lists['' . v:val . ''][v:val]'''), ',') . ']'
     let list = map(range(smaller), expr)
-    let self.__end = (self.__estimate_size__() ==# 0)
-    return [list, !self.__end]
+    return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__estimate_size__() abort
     return min(map(copy(self._upstream), 'v:val.__estimate_size__()'))
@@ -278,12 +258,8 @@ function! s:concat(s1, s2, ...) abort
   let stream._name = 'concat()'
   let stream._characteristics =
   \ s:_concat_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
-  let stream.__end = 0
   let stream._upstream = [a:s1, a:s2] + a:000
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at concat()'
-    endif
     " concat buffer and all streams
     let list = []
     for stream in self._upstream
@@ -291,14 +267,13 @@ function! s:concat(s1, s2, ...) abort
         break
       endif
       if stream.__estimate_size__() > 0
-        let list += stream.__take_possible__(a:n - len(list))[0]
+        let list += s:_take_freeze_intermediate(stream, a:n - len(list))[0]
       endif
     endfor
     " if all of buffer length, streams' __estimate_size__() are 0,
     " it is end of streams
     let sizes = map(copy(self._upstream), 'v:val.__estimate_size__()')
-    let self.__end = (max(sizes) ==# 0)
-    return [list, !self.__end]
+    return [list, max(sizes) > 0]
   endfunction
   if and(stream._characteristics, s:SIZED)
     function! stream.__estimate_size__() abort
@@ -344,17 +319,12 @@ function! s:Stream.peek(f) abort
   let stream._name = 'peek()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'peek()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at peek()'
-    endif
-    let list = self._upstream.__take_possible__(a:n)[0]
+    let list = s:_take_freeze_intermediate(self._upstream, a:n)[0]
     call map(copy(list), 'self._call(self._f, [v:val])')
-    let self.__end = (self.__estimate_size__() ==# 0)
-    return [list, !self.__end]
+    return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__estimate_size__() abort
     return self._upstream.__estimate_size__()
@@ -367,17 +337,12 @@ function! s:Stream.map(f) abort
   let stream._name = 'map()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'map()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at map()'
-    endif
-    let list = self._upstream.__take_possible__(a:n)[0]
+    let list = s:_take_freeze_intermediate(self._upstream, a:n)[0]
     call map(list, 'self._call(self._f, [v:val])')
-    let self.__end = (self.__estimate_size__() ==# 0)
-    return [list, !self.__end]
+    return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__estimate_size__() abort
     return self._upstream.__estimate_size__()
@@ -390,13 +355,9 @@ function! s:Stream.flatmap(f) abort
   let stream._name = 'flatmap()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'flatmap()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at filter()'
-    endif
     let open = (self._upstream.__estimate_size__() > 0)
     if a:n ==# 0
       return [[], open]
@@ -418,8 +379,7 @@ function! s:Stream.flatmap(f) abort
         endif
       endfor
     endwhile
-    let self.__end = !open
-    return [list, !self.__end]
+    return [list, open]
   endfunction
   " the number of elements in stream is unknown (decreased, as-is, or increased)
   function! stream.__estimate_size__() abort
@@ -433,20 +393,15 @@ function! s:Stream.filter(f) abort
   let stream._name = 'filter()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'filter()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at filter()'
-    endif
-    let [r, open] = self._upstream.__take_possible__(a:n)
+    let [r, open] = s:_take_freeze_intermediate(self._upstream, a:n)
     let list = filter(r, 'self._call(self._f, [v:val])')
     while open && len(list) < a:n
-      let [r, open] = self._upstream.__take_possible__(a:n - len(list))
+      let [r, open] = s:_take_freeze_intermediate(self._upstream, a:n - len(list))
       let list += filter(r, 'self._call(self._f, [v:val])')
     endwhile
-    let self.__end = !open
     return [list, open]
   endfunction
   function! stream.__estimate_size__() abort
@@ -460,13 +415,9 @@ function! s:Stream.slice_before(f) abort
   let stream._name = 'slice_before()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'slice_before()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at slice_before()'
-    endif
     let open = (self._upstream.__estimate_size__() > 0)
     if a:n ==# 0
       return [[], open]
@@ -523,13 +474,9 @@ function! s:Stream.take_while(f) abort
   let stream._name = 'take_while()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__end = 0
   let stream._call = s:_get_callfunc_for_func1(a:f, 'take_while()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
-    endif
     let open = (self._upstream.__estimate_size__() > 0)
     if a:n ==# 0
       return [[], open]
@@ -537,7 +484,7 @@ function! s:Stream.take_while(f) abort
     let do_break = 0
     let list = []
     while !do_break
-      let [r, open] = self._upstream.__take_possible__(s:BULK_SIZE)
+      let [r, open] = s:_take_freeze_intermediate(self._upstream, s:BULK_SIZE)
       for l:Value in r
         if !map([l:Value], 'self._call(self._f, [v:val])')[0]
           let open = 0
@@ -557,7 +504,6 @@ function! s:Stream.take_while(f) abort
         break
       endif
     endwhile
-    let self.__end = !open
     return [list, open]
   endfunction
   if self.__has_characteristic__(s:SIZED)
@@ -577,18 +523,14 @@ function! s:Stream.drop_while(f) abort
   let stream._name = 'drop_while()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__end = 0
   let stream.__skipping = 1
   let stream._call = s:_get_callfunc_for_func1(a:f, 'drop_while()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
-    endif
     let list = []
     let open = (self.__estimate_size__() > 0)
     while self.__skipping && open
-      let [r, open] = self._upstream.__take_possible__(a:n)
+      let [r, open] = s:_take_freeze_intermediate(self._upstream, a:n)
       for i in range(len(r))
         if !map([r[i]], 'self._call(self._f, [v:val])')[0]
           let self.__skipping = 0
@@ -598,10 +540,9 @@ function! s:Stream.drop_while(f) abort
       endfor
     endwhile
     if !self.__skipping && open && len(list) < a:n
-      let [r, open] = self._upstream.__take_possible__(a:n - len(list))
+      let [r, open] = s:_take_freeze_intermediate(self._upstream, a:n - len(list))
       let list += r
     endif
-    let self.__end = !open
     return [list, open]
   endfunction
   if self.__has_characteristic__(s:SIZED)
@@ -628,16 +569,13 @@ function! s:Stream.distinct(...) abort
     let stream._call = function('call')
     let stream._stringify = function('string')
   endif
-  let stream.__end = 0
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
-    endif
     let uniq_list = []
     let open = (self._upstream.__estimate_size__() > 0)
     let dup = {}
     while open && len(uniq_list) < a:n
-      let [r, open] = self._upstream.__take_possible__(a:n - len(uniq_list))
+      let [r, open] = s:_take_freeze_intermediate(
+      \                   self._upstream, a:n - len(uniq_list))
       for l:Value in r
         let key = self._call(self._stringify, [l:Value])
         if !has_key(dup, key)
@@ -651,7 +589,6 @@ function! s:Stream.distinct(...) abort
         unlet l:Value
       endfor
     endwhile
-    let self.__end = !open
     return [uniq_list, open]
   endfunction
   function! stream.__estimate_size__() abort
@@ -665,7 +602,6 @@ function! s:Stream.sorted(...) abort
   let stream._name = 'sorted()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__end = 0
   " if this key doesn't exist,
   " sorted list of upstream elements will be set (first time only)
   " let stream.__sorted_list = []
@@ -674,11 +610,8 @@ function! s:Stream.sorted(...) abort
     let stream._comparator = a:1
   endif
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at take_while()'
-    endif
     if !has_key(self, '__sorted_list')
-      let self.__sorted_list = self._upstream.__take_possible__(1/0)[0]
+      let self.__sorted_list = s:_take_freeze_intermediate(self._upstream, 1/0)[0]
       if has_key(self, '_comparator')
         call sort(self.__sorted_list, self.__compare__, self)
       else
@@ -687,8 +620,7 @@ function! s:Stream.sorted(...) abort
     endif
     let list = s:_slice(self.__sorted_list, 0, a:n - 1)
     let self.__sorted_list = s:_slice(self.__sorted_list, a:n)
-    let self.__end = (self.__estimate_size__() ==# 0)
-    return [list, !self.__end]
+    return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__compare__(a, b) abort
     return self._call(self._comparator, [a:a, a:b])
@@ -713,21 +645,16 @@ function! s:Stream.take(n) abort
   let stream._name = 'take()'
   let stream._characteristics = or(self._characteristics, s:SIZED)
   let stream._upstream = self
-  let stream.__end = 0
-  let stream._took_count = 0
+  let stream.__took_count = 0
   let stream._max_n = a:n
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at take()'
-    endif
     let n = min([self._upstream.__estimate_size__(), self._max_n, a:n])
-    let [list, open] = self._upstream.__take_possible__(n)
-    let self._took_count += len(list)
-    let self.__end = !open || self._took_count >= min([self._max_n, a:n])
-    return [list, !self.__end]
+    let [list, open] = s:_take_freeze_intermediate(self._upstream, n)
+    let self.__took_count += len(list)
+    return [list, open && self.__took_count < min([self._max_n, a:n])]
   endfunction
   function! stream.__estimate_size__() abort
-    return min([self._max_n - self._took_count, self._upstream.__estimate_size__()])
+    return min([self._max_n - self.__took_count, self._upstream.__estimate_size__()])
   endfunction
   return stream
 endfunction
@@ -743,22 +670,17 @@ function! s:Stream.drop(n) abort
   let stream._name = 'drop()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__end = 0
   let stream.__n = a:n
   function! stream.__take_possible__(n) abort
-    if self.__end
-      throw 'vital: Stream: stream has already been operated upon or closed at drop()'
-    endif
     let open = self.__estimate_size__() > 0
     if self.__n > 0 && open
-      let open = self._upstream.__take_possible__(self.__n)[1]
+      let open = s:_take_freeze_intermediate(self._upstream, self.__n)[1]
       let self.__n = 0
     endif
     let list = []
     if self.__n ==# 0
-      let [list, open] = self._upstream.__take_possible__(a:n)
+      let [list, open] = s:_take_freeze_intermediate(self._upstream, a:n)
     endif
-    let self.__end = !open
     return [list, open]
   endfunction
   if self.__has_characteristic__(s:SIZED)
@@ -882,7 +804,7 @@ function! s:Stream.count(...) abort
 endfunction
 
 function! s:Stream.to_list() abort
-  return s:_take_freeze(self, self.__estimate_size__())
+  return s:_take_freeze_terminal(self, self.__estimate_size__())
 endfunction
 
 function! s:Stream.foreach(f) abort
@@ -907,7 +829,7 @@ let s:WithBuffered = {'__buffer': []}
 function! s:WithBuffered.__read_to_buffer__(n) abort
   let open = (self._upstream.__estimate_size__() > 0)
   if len(self.__buffer) < a:n && open
-    let [r, open] = self._upstream.__take_possible__(a:n - len(self.__buffer))
+    let [r, open] = s:_take_freeze_intermediate(self._upstream, a:n - len(self.__buffer))
     let self.__buffer += r
   endif
   return open || !empty(self.__buffer)
@@ -989,7 +911,7 @@ function! s:_get_non_empty_list_or_default(stream, size, default, caller) abort
   if a:stream.__estimate_size__() ==# 0
     let list = []
   else
-    let list = s:_take_freeze(a:stream, a:size)
+    let list = s:_take_freeze_terminal(a:stream, a:size)
   endif
   if !empty(list)
     return list
@@ -1002,19 +924,30 @@ function! s:_get_non_empty_list_or_default(stream, size, default, caller) abort
   endif
 endfunction
 
-function! s:_take_freeze(stream, size) abort
+function! s:_take_freeze_intermediate(stream, size) abort
+  let [list, open] = a:stream.__take_possible__(a:size)
+  if !open
+    call s:_freeze(a:stream, 1, 1)
+  endif
+  return [list, open]
+endfunction
+
+function! s:_take_freeze_terminal(stream, size) abort
   let list = a:stream.__take_possible__(a:size)[0]
-  call s:_freeze(a:stream)
+  call s:_freeze(a:stream, 1/0, 0)
   return list
 endfunction
 
-function! s:_freeze(stream) abort
-  let a:stream.__take_possible__ = function('s:_throw_closed_stream_exception')
-  let a:stream.__estimate_size__ = function('s:_throw_closed_stream_exception')
-  if has_key(a:stream, '_upstream')
+function! s:_freeze(stream, depth, intermediate) abort
+  if a:intermediate
+    let a:stream.__take_possible__ = function('s:_throw_closed_stream_exception')
+  else
+    let a:stream.__estimate_size__ = function('s:_throw_closed_stream_exception')
+  endif
+  if has_key(a:stream, '_upstream') && a:depth > 0
     let upstreams = type(a:stream._upstream) is s:T_LIST ?
     \               a:stream._upstream : [a:stream._upstream]
-    call map(copy(upstreams), 's:_freeze(v:val)')
+    call map(copy(upstreams), 's:_freeze(v:val, a:depth - 1, a:intermediate)')
   endif
 endfunction
 
