@@ -227,14 +227,14 @@ max_by({list}, {function})			*Vital.Data.List.max_by()*
 	" -50
 <
 
-min_by({list}, {expr})			*Vital.Data.List.min_by()*
-	Returns a minimum value in |List| {list} through given {expr}.
+min_by({list}, {function})			*Vital.Data.List.min_by()*
+	Returns a minimum value in |List| {list} through given {function}.
 	Returns 0 if {list} is empty.
-	"v:val" can be used in {expr}.
+	"v:val" can be used in {function} if {function} is string expression.
 >
 	echo s:L.min_by(['pineapple','orange','banana','apple'], 'len(v:val)')
 	" apple
-	echo s:L.min_by([20, -50, -15, 30], 'abs(v:val)')
+	echo s:L.min_by([20, -50, -15, 30], function('abs'))
 	" -15
 <
 

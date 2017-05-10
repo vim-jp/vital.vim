@@ -193,8 +193,13 @@ endfunction
 " Returns 0 if {list} is empty.
 " v:val is used in {expr}
 " FIXME: -0x80000000 == 0x80000000
-function! s:min_by(list, expr) abort
-  return s:max_by(a:list, '-(' . a:expr . ')')
+function! s:min_by(list, f) abort
+  let l:F = s:Closure.is_callable(a:f) ? a:f
+  \                                    : substitute(a:f, 'v:val', 'a:1', 'g')
+  let l:Build = s:Closure.is_callable(l:F) ? s:Closure.build
+  \                                        : s:Closure.from_expr
+  let g = s:Closure.compose([s:Closure.from_expr('-a:1'), l:Build(l:F)])
+  return s:max_by(a:list, g)
 endfunction
 
 " Returns List of character sequence between [a:from, a:to]

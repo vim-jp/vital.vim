@@ -242,13 +242,28 @@ Describe Data.List
   End
 
   Describe .min_by()
-    It returns a minimum value in the list through the given expr.
-      Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'foo')
-      Assert Equals(List.min_by([20, -50, -15, 30], 'abs(v:val)'), -15)
-    End
     It returns 0 if the list is empty.
       Assert Equals(List.min_by([], 'v:val'), 0)
     End
+
+    It returns a minimum value in the non empty list through the given string expr
+      Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'foo')
+      Assert Equals(List.min_by([20, -50, -15, 30], 'abs(v:val)'), -15)
+    End
+
+    It returns a minimum value in the non empty list through the given funcref
+      Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], function('len')), 'foo')
+      Assert Equals(List.min_by([20, -50, -15, 30], function('abs')), -15)
+    End
+
+    It returns a minimum value in the non empty list through the given Data.Closure
+      let len = Closure.from_funcname('*len')
+      let abs = Closure.from_funcname('*abs')
+
+      Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], len), 'foo')
+      Assert Equals(List.min_by([20, -50, -15, 30], abs), -15)
+    End
+
   End
 
   Describe .span()
