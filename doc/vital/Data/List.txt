@@ -216,14 +216,14 @@ sort_by({list}, {function})			*Vital.Data.List.sort_by()*
 <
 
 
-max_by({list}, {expr})			*Vital.Data.List.max_by()*
-	Returns a maximum value in {list} through given {expr}.
+max_by({list}, {function})			*Vital.Data.List.max_by()*
+	Returns a maximum value in {list} through given {function}.
 	Returns 0 if {list} is empty.
-	"v:val" can be used in {expr}.
+	"v:val" can be used in {function} if {function} is string expression.
 >
 	echo s:L.max_by(['pineapple','orange','banana','apple'], 'len(v:val)')
 	" pineapple
-	echo s:L.max_by([20, -50, -15, 30], 'abs(v:val)')
+	echo s:L.max_by([20, -50, -15, 30], function('abs'))
 	" -50
 <
 

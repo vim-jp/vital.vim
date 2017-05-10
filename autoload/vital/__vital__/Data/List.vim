@@ -178,14 +178,14 @@ function! s:_list_comparator(xs, ys) abort
   return 0
 endfunction
 
-" Returns a maximum value in {list} through given {expr}.
+" Returns a maximum value in {list} through given {function}.
 " Returns 0 if {list} is empty.
-" v:val is used in {expr}
-function! s:max_by(list, expr) abort
+" v:val is used in {function} if {function} is string expression
+function! s:max_by(list, f) abort
   if empty(a:list)
     return 0
   endif
-  let list = map(copy(a:list), a:expr)
+  let list = s:map(copy(a:list), a:f)
   return a:list[index(list, max(list))]
 endfunction
 

@@ -217,13 +217,28 @@ Describe Data.List
   End
 
   Describe .max_by()
-    It returns a maximum value in the list through the given expr.
-      Assert Equals(List.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'hehehe')
-      Assert Equals(List.max_by([20, -50, -15, 30], 'abs(v:val)'), -50)
-    End
     It returns 0 if the list is empty.
       Assert Equals(List.max_by([], 'v:val'), 0)
     End
+
+    It returns a maximum value in the non empty list through the given string expr
+      Assert Equals(List.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'hehehe')
+      Assert Equals(List.max_by([20, -50, -15, 30], 'abs(v:val)'), -50)
+    End
+
+    It returns a maximum value in the non empty list through the given funcref
+      Assert Equals(List.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], function('len')), 'hehehe')
+      Assert Equals(List.max_by([20, -50, -15, 30], function('abs')), -50)
+    End
+
+    It returns a maximum value in the non empty list through the given Data.Closure
+      let len = Closure.from_funcname('*len')
+      let abs = Closure.from_funcname('*abs')
+
+      Assert Equals(List.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], len), 'hehehe')
+      Assert Equals(List.max_by([20, -50, -15, 30], abs), -50)
+    End
+
   End
 
   Describe .min_by()
