@@ -279,7 +279,6 @@ function! s:concat(s1, s2, ...) abort
   let stream._characteristics =
   \ s:_concat_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
   let stream.__end = 0
-  let stream.__read_too_much = []
   let stream._upstream = [a:s1, a:s2] + a:000
   function! stream.__take_possible__(n) abort
     if self.__end
@@ -287,10 +286,6 @@ function! s:concat(s1, s2, ...) abort
     endif
     " concat buffer and all streams
     let list = []
-    if !empty(self.__read_too_much)
-      let list = s:_slice(self.__read_too_much, 0, a:n - 1)
-      let self.__read_too_much = s:_slice(self.__read_too_much, a:n)
-    endif
     for stream in self._upstream
       if len(list) >= a:n
         break
@@ -299,21 +294,15 @@ function! s:concat(s1, s2, ...) abort
         let list += stream.__take_possible__(a:n - len(list))[0]
       endif
     endfor
-    if len(list) > a:n
-      let self.__read_too_much = s:_slice(list, a:n)
-      let list = s:_slice(list, 0, a:n - 1)
-    endif
     " if all of buffer length, streams' __estimate_size__() are 0,
     " it is end of streams
-    let sizes = [len(self.__read_too_much)] +
-    \           map(copy(self._upstream), 'v:val.__estimate_size__()')
+    let sizes = map(copy(self._upstream), 'v:val.__estimate_size__()')
     let self.__end = (max(sizes) ==# 0)
     return [list, !self.__end]
   endfunction
   if and(stream._characteristics, s:SIZED)
     function! stream.__estimate_size__() abort
-      let sizes = [len(self.__read_too_much)] +
-      \           map(copy(self._upstream), 'v:val.__estimate_size__()')
+      let sizes = map(copy(self._upstream), 'v:val.__estimate_size__()')
       return self.__sum__(sizes)
     endfunction
     " 1/0 when overflow
