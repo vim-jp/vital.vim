@@ -122,68 +122,68 @@ from_list({list})	*Vital.Stream.from_list()*
 	This makes a stream of elements of {list}.
 
 			*Vital.Stream.zip()*
-zip({stream1}, {stream2} [, {stream3} ...])
+zip({streams})
 	Combines given streams with the minimum number of elements.
 >
 	" Output: [[1,3], [2,4]]
-	echo s:Stream.zip(s:Stream.of(1,2), s:Stream.of(3,4)).to_list()
+	echo s:Stream.zip([s:Stream.of(1,2), s:Stream.of(3,4)]).to_list()
 
 	" Output: [[1,3]]
-	echo s:Stream.zip(s:Stream.of(1,2), s:Stream.of(3)).to_list()
+	echo s:Stream.zip([s:Stream.of(1,2), s:Stream.of(3)]).to_list()
 
 	" Output: [[1,3,5], [2,4,6]]
-	echo s:Stream.zip(
+	echo s:Stream.zip([
 	      \s:Stream.of(1,2),
 	      \s:Stream.of(3,4),
-	      \s:Stream.of(5,6))
+	      \s:Stream.of(5,6)])
 	        \.to_list()
 
 	" You can zip infinite stream and finite stream
 	" Output: [[1,'foo'], [2,'bar'], [3,'baz']]
-	echo s:Stream.zip(
+	echo s:Stream.zip([
 	      \s:Stream.iterate(1, 'v:val + 1'),
-	      \s:Stream.of('foo', 'bar', 'baz))
+	      \s:Stream.of('foo', 'bar', 'baz)])
 	        \.to_list()
 
 	" You can zip two infinite streams
 	" NOTE: .take(3) prohibits infinite loop
 	" Output: [[1,-1], [2,-2], [3,-3]]
-	echo s:Stream.zip(
+	echo s:Stream.zip([
 	      \s:Stream.iterate(1, 'v:val + 1'),
-	      \s:Stream.iterate(-1, 'v:val - 1'))
+	      \s:Stream.iterate(-1, 'v:val - 1')])
 	        \.take(3).to_list()
 <
 				*Vital.Stream.concat()*
-concat({stream1}, {stream2} [, {stream3} ...])
+concat({streams})
 	Concatenates given streams.  If any of stream is an inifinite stream,
 	a result stream is an infinite stream.
 >
 	" Output: [1,2,3,4]
-	echo s:Stream.concat(s:Stream.of(1,2), s:Stream.of(3,4)).to_list()
+	echo s:Stream.concat([s:Stream.of(1,2), s:Stream.of(3,4)]).to_list()
 
 	" Output: [1,2,3]
-	echo s:Stream.concat(s:Stream.of(1,2), s:Stream.of(3)).to_list()
+	echo s:Stream.concat([s:Stream.of(1,2), s:Stream.of(3)]).to_list()
 
 	" Output: [1,2,3,4,5,6]
-	echo s:Stream.concat(
+	echo s:Stream.concat([
 	      \s:Stream.of(1,2),
 	      \s:Stream.of(3,4),
-	      \s:Stream.of(5,6))
+	      \s:Stream.of(5,6)])
 	        \.to_list()
 
 	" You can combine infinite stream and finite stream
 	" Output: [1,2,3,4,5]
-	echo s:Stream.concat(
+	echo s:Stream.concat([
 	      \s:Stream.of(1,2,3),
-	      \s:Stream.iterate(4, 'v:val + 1'))
+	      \s:Stream.iterate(4, 'v:val + 1')])
 	        \.take(5).to_list()
 
 	" You can combine two infinite streams
 	" NOTE: .take(3) prohibits infinite loop
 	" Output: [[1,-1], [2,-2], [3,-3]]
-	echo s:Stream.concat(
+	echo s:Stream.concat([
 	      \s:Stream.iterate(1, 'v:val + 1'),
-	      \s:Stream.iterate(-1, 'v:val - 1'))
+	      \s:Stream.iterate(-1, 'v:val - 1')])
 	        \.take(3).to_list()
 <
 iterate({init}, {func})		*Vital.Stream.iterate()*

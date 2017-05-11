@@ -221,12 +221,12 @@ function! s:generator(dict) abort
   return stream
 endfunction
 
-function! s:zip(s1, s2, ...) abort
+function! s:zip(streams) abort
   let stream = s:_new(s:Stream)
   let stream._name = 'zip()'
   let stream._characteristics =
-  \ s:_zip_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
-  let stream._upstream = [a:s1, a:s2] + a:000
+  \ s:_zip_characteristics(map(copy(a:streams), 'v:val._characteristics'))
+  let stream._upstream = a:streams
   function! stream.__take_possible__(n) abort
     let lists = map(copy(self._upstream),
     \               's:_take_freeze_intermediate(v:val, a:n)[0]')
@@ -253,12 +253,12 @@ function! s:_zip_characteristics(characteristics_list) abort
   return s:_zip_characteristics([result] + others)
 endfunction
 
-function! s:concat(s1, s2, ...) abort
+function! s:concat(streams) abort
   let stream = s:_new(s:Stream)
   let stream._name = 'concat()'
   let stream._characteristics =
-  \ s:_concat_characteristics(map([a:s1, a:s2] + a:000, 'v:val._characteristics'))
-  let stream._upstream = [a:s1, a:s2] + a:000
+  \ s:_concat_characteristics(map(copy(a:streams), 'v:val._characteristics'))
+  let stream._upstream = a:streams
   function! stream.__take_possible__(n) abort
     " concat buffer and all streams
     let list = []
@@ -695,16 +695,16 @@ function! s:Stream.drop(n) abort
   return stream
 endfunction
 
-function! s:Stream.zip(stream, ...) abort
-  return call('s:zip', [self, a:stream] + a:000)
+function! s:Stream.zip(streams) abort
+  return s:zip([self] + a:streams)
 endfunction
 
 function! s:Stream.zip_with_index() abort
-  return s:zip(s:iterate(0, 'v:val + 1'), self)
+  return s:zip([s:iterate(0, 'v:val + 1'), self])
 endfunction
 
-function! s:Stream.concat(stream, ...) abort
-  return call('s:concat', [self, a:stream] + a:000)
+function! s:Stream.concat(streams) abort
+  return s:concat([self] + a:streams)
 endfunction
 
 function! s:Stream.reduce(f, ...) abort

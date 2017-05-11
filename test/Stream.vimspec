@@ -288,123 +288,123 @@ Describe Stream
   Describe .zip()
     It combines zipped stream
       Assert Equals(
-        \Stream.zip(
+        \Stream.zip([
           \Stream.empty(),
-          \Stream.empty())
+          \Stream.empty()])
         \.to_list(),
         \[])
 
       Assert Equals(
-        \Stream.zip(
+        \Stream.zip([
           \Stream.empty(),
-          \Stream.of(1))
+          \Stream.of(1)])
         \.to_list(),
         \[])
 
       Assert Equals(
-        \Stream.zip(
+        \Stream.zip([
           \Stream.of(1,2,3),
-          \Stream.of(4,5,6))
+          \Stream.of(4,5,6)])
         \.to_list(),
         \[[1,4], [2,5], [3,6]])
 
       Assert Equals(
-        \Stream.zip(
+        \Stream.zip([
           \Stream.of(1,2),
-          \Stream.of(4,5,6))
+          \Stream.of(4,5,6)])
         \.to_list(),
         \[[1,4], [2,5]])
 
       Assert Equals(
-        \Stream.zip(
+        \Stream.zip([
           \Stream.of(1,2,3),
-          \Stream.of(4,5))
+          \Stream.of(4,5)])
         \.to_list(),
         \[[1,4], [2,5]])
 
       Assert Equals(
-        \Stream.zip(
+        \Stream.zip([
           \Stream.of(1),
-          \Stream.empty())
+          \Stream.empty()])
         \.to_list(),
         \[])
 
       Assert Equals(
-        \Stream.zip(
+        \Stream.zip([
           \Stream.empty(),
-          \Stream.of(1))
+          \Stream.of(1)])
         \.to_list(),
         \[])
 
       Assert Equals(
-        \Stream.zip(
+        \Stream.zip([
           \Stream.iterate(1, 'v:val + 1'),
-          \Stream.of(5, 4, 3, 2, 1))
+          \Stream.of(5, 4, 3, 2, 1)])
         \.to_list(),
         \[[1,5], [2,4], [3,3], [4,2], [5,1]])
 
       Assert Equals(
-        \Stream.zip(
+        \Stream.zip([
           \Stream.iterate(1, 'v:val + 1'),
-          \Stream.iterate(-1, 'v:val - 1'))
+          \Stream.iterate(-1, 'v:val - 1')])
         \.take(5).to_list(),
         \[[1,-1], [2,-2], [3,-3], [4,-4], [5,-5]])
     End
 
     It combines zipped stream (method version)
       Assert Equals(
-        \Stream.of(1,2,3).zip(Stream.of(4,5,6)).to_list(),
+        \Stream.of(1,2,3).zip([Stream.of(4,5,6)]).to_list(),
         \[[1,4], [2,5], [3,6]])
     End
 
     It combines stream from String with characteristics
       " Use or() for SIZED flag. Use and() for other flags
-      let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6))
+      let s = Stream.zip([Stream.of(1,2,3), Stream.of(4,5,6)])
       Assert True(s.__has_characteristic__(SIZED))
-      let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3))
+      let s = Stream.zip([Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3)])
       Assert True(s.__has_characteristic__(SIZED))
     End
 
     It combines stream with 3 or more than streams
       Assert Equals(
-          \Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9))
+          \Stream.zip([Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9)])
                 \.to_list(),
           \[[1,4,7], [2,5,8], [3,6,9]])
 
       Assert Equals(
-          \Stream.of(1,2,3).zip(Stream.of(4,5,6), Stream.of(7,8,9))
+          \Stream.of(1,2,3).zip([Stream.of(4,5,6), Stream.of(7,8,9)])
                 \.to_list(),
           \[[1,4,7], [2,5,8], [3,6,9]])
 
       Assert Equals(
-          \Stream.zip(Stream.of(1), Stream.of(4,5,6), Stream.of(7,8,9))
+          \Stream.zip([Stream.of(1), Stream.of(4,5,6), Stream.of(7,8,9)])
                 \.to_list(),
           \[[1,4,7]])
 
       Assert Equals(
-          \Stream.of(1).zip(Stream.of(4,5,6), Stream.of(7,8,9))
+          \Stream.of(1).zip([Stream.of(4,5,6), Stream.of(7,8,9)])
                 \.to_list(),
           \[[1,4,7]])
 
       Assert Equals(
-          \Stream.zip(
+          \Stream.zip([
               \Stream.iterate(1, 'v:val + 1'),
               \Stream.of(4,5,6),
-              \Stream.of(7,8,9)).to_list(),
+              \Stream.of(7,8,9)]).to_list(),
           \[[1,4,7], [2,5,8], [3,6,9]])
 
       Assert Equals(
-          \Stream.iterate(1, 'v:val + 1').zip(
+          \Stream.iterate(1, 'v:val + 1').zip([
               \Stream.of(4,5,6),
-              \Stream.of(7,8,9)).to_list(),
+              \Stream.of(7,8,9)]).to_list(),
           \[[1,4,7], [2,5,8], [3,6,9]])
     End
 
     It combines stream with 3 or more than streams with characteristics
       " Use or() for SIZED flag. Use and() for other flags
-      let s = Stream.zip(Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9))
+      let s = Stream.zip([Stream.of(1,2,3), Stream.of(4,5,6), Stream.of(7,8,9)])
       Assert True(s.__has_characteristic__(SIZED))
-      let s = Stream.zip(Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3), Stream.of(4,5,6))
+      let s = Stream.zip([Stream.iterate(0, 'v:val + 1'), Stream.of(1,2,3), Stream.of(4,5,6)])
       Assert True(s.__has_characteristic__(SIZED))
     End
   End
@@ -431,73 +431,73 @@ Describe Stream
   Describe .concat()
     It concatenates stream
       Assert Equals(
-        \Stream.concat(
+        \Stream.concat([
           \Stream.of(1,2,3),
-          \Stream.of(4,5))
+          \Stream.of(4,5)])
         \.to_list(),
         \[1,2,3,4,5])
 
       Assert Equals(
-        \Stream.concat(
+        \Stream.concat([
           \Stream.of(1,2,3),
-          \Stream.empty())
+          \Stream.empty()])
         \.to_list(),
         \[1,2,3])
 
       Assert Equals(
-        \Stream.concat(
+        \Stream.concat([
           \Stream.empty(),
-          \Stream.of(4,5))
+          \Stream.of(4,5)])
         \.to_list(),
         \[4,5])
 
       Assert Equals(
-        \Stream.concat(
+        \Stream.concat([
           \Stream.iterate(1, 'v:val + 1'),
-          \Stream.of('this stream cannot be merged...'))
+          \Stream.of('this stream cannot be merged...')])
         \.take(5).to_list(),
         \[1,2,3,4,5])
 
       Assert Equals(
-        \Stream.concat(
+        \Stream.concat([
           \Stream.of(1,2,3),
-          \Stream.iterate(4, 'v:val + 1'))
+          \Stream.iterate(4, 'v:val + 1')])
         \.take(5).to_list(),
         \[1,2,3,4,5])
     End
 
     It concatenates stream from 3 or more than streams
       Assert Equals(
-        \Stream.concat(
+        \Stream.concat([
           \Stream.of(1),
           \Stream.of(2),
-          \Stream.of(3))
+          \Stream.of(3)])
         \.to_list(),
         \[1,2,3])
 
       Assert Equals(
-        \Stream.concat(
+        \Stream.concat([
           \Stream.of(1),
           \Stream.of(2),
           \Stream.empty(),
-          \Stream.of(3))
+          \Stream.of(3)])
         \.to_list(),
         \[1,2,3])
     End
 
     It concatenates stream from 3 or more than streams (method version)
       Assert Equals(
-        \Stream.of(1).concat(Stream.of(2), Stream.of(3)).to_list(),
+        \Stream.of(1).concat([Stream.of(2), Stream.of(3)]).to_list(),
         \[1,2,3])
 
       Assert Equals(
-        \Stream.of(1).concat(Stream.of(2), Stream.empty(), Stream.of(3)).to_list(),
+        \Stream.of(1).concat([Stream.of(2), Stream.empty(), Stream.of(3)]).to_list(),
         \[1,2,3])
     End
 
     It concatenates infinite stream with function (method version)
       Assert Equals(
-        \Stream.of(1,2,3).concat(Stream.of(4,5)).to_list(),
+        \Stream.of(1,2,3).concat([Stream.of(4,5)]).to_list(),
         \[1,2,3,4,5])
     End
   End
