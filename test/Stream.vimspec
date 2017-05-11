@@ -667,38 +667,38 @@ Describe Stream
     End
   End
 
-  Describe .flatmap()
+  Describe .flat_map()
     It flattens mapped stream
-      Assert Equals(Stream.empty().flatmap('[v:val]').to_list(), [])
+      Assert Equals(Stream.empty().flat_map('[v:val]').to_list(), [])
 
       Assert Equals(
         \Stream.iterate(0, 'v:val + 1')
-          \.flatmap('repeat([v:val], v:val)').take(6).to_list(),
+          \.flat_map('repeat([v:val], v:val)').take(6).to_list(),
         \[1,2,2,3,3,3])
 
       Assert Equals(
         \Stream.of(1,2,3)
-          \.flatmap('repeat([v:val], v:val)').to_list(),
+          \.flat_map('repeat([v:val], v:val)').to_list(),
         \[1,2,2,3,3,3])
 
       Assert Equals(
         \Stream.of(1,2,3)
-          \.flatmap('repeat([v:val], v:val)').take(6).to_list(),
+          \.flat_map('repeat([v:val], v:val)').take(6).to_list(),
         \[1,2,2,3,3,3])
 
       Assert Equals(
         \Stream.of(1,2,3,4,5)
-          \.flatmap('repeat([v:val], v:val)').take(6).to_list(),
+          \.flat_map('repeat([v:val], v:val)').take(6).to_list(),
         \[1,2,2,3,3,3])
 
       Assert Equals(
         \Stream.of(0,1,2,3,4,5)
-          \.flatmap('v:val % 2 == 0 ? [v:val * 2] : []').take(3).to_list(),
+          \.flat_map('v:val % 2 == 0 ? [v:val * 2] : []').take(3).to_list(),
         \[0, 4, 8])
 
       Assert Equals(
         \Stream.iterate(0, 'v:val + 1')
-          \.flatmap('v:val % 2 == 0 ? [v:val * 2] : []').take(3).to_list(),
+          \.flat_map('v:val % 2 == 0 ? [v:val * 2] : []').take(3).to_list(),
         \[0, 4, 8])
     End
 
@@ -707,11 +707,11 @@ Describe Stream
         return repeat([a:n], a:n)
       endfunction
 
-      Assert Equals(Stream.empty().flatmap(function('Repeat')).to_list(), [])
+      Assert Equals(Stream.empty().flat_map(function('Repeat')).to_list(), [])
 
       Assert Equals(
         \Stream.iterate(0, function('Succ'))
-          \.flatmap(function('Repeat')).take(6).to_list(),
+          \.flat_map(function('Repeat')).take(6).to_list(),
         \[1,2,2,3,3,3])
 
       delfunction Repeat
@@ -721,11 +721,11 @@ Describe Stream
       " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.flatmap('v:val')
+      call s.flat_map('v:val')
 
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      Throws s.flatmap('v:val').to_list()
+      Throws s.flat_map('v:val').to_list()
     End
   End
 

@@ -17,9 +17,9 @@ set cpo&vim
 " * `__estimate_size__()`
 "   * this function must not change stream's state
 "   * if the number of elements is 'unknown', 1/0 is returned
-"     * 'flatmap()' cannot determine the number of elements of the result
-"     * 'Stream.of(0,1,2,3).flatmap({n -> repeat([n], n)}).to_list() == [1,2,2,3,3,3]'
-"     * 'Stream.of(0,1,2,3).flatmap({n -> repeat([n], n)}).__estimate_size__() == 1/0'
+"     * 'flat_map()' cannot determine the number of elements of the result
+"     * 'Stream.of(0,1,2,3).flat_map({n -> repeat([n], n)}).to_list() == [1,2,2,3,3,3]'
+"     * 'Stream.of(0,1,2,3).flat_map({n -> repeat([n], n)}).__estimate_size__() == 1/0'
 "   * if the stream is finite stream ('self.__has_characteristic__(s:SIZED) == 1'),
 "     returns the number of elements
 "   * if the stream is infinite stream ('self.__has_characteristic__(s:SIZED) == 0'),
@@ -350,12 +350,12 @@ function! s:Stream.map(f) abort
   return stream
 endfunction
 
-function! s:Stream.flatmap(f) abort
+function! s:Stream.flat_map(f) abort
   let stream = s:_new(s:Stream, [s:WithBuffered])
-  let stream._name = 'flatmap()'
+  let stream._name = 'flat_map()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._call = s:_get_callfunc_for_func1(a:f, 'flatmap()')
+  let stream._call = s:_get_callfunc_for_func1(a:f, 'flat_map()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     let open = (self._upstream.__estimate_size__() > 0)

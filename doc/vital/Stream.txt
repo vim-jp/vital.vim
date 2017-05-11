@@ -296,16 +296,16 @@ Stream.map({func})
 	" Output: [2,4,6]
 	echo s:Stream.of(1,2,3).map('v:val * 2').to_list()
 <
-				*Vital.Stream-Stream.flatmap()*
-Stream.flatmap({func})
+				*Vital.Stream-Stream.flat_map()*
+Stream.flat_map({func})
 	Creates a flattened stream applying {func} to each element.
 	{func} returns |List|, and is a function of 1 arity.
 >
 	" Output: [1,2,2,3,3,3]
-	echo s:Stream.of(0,1,2,3).flatmap('repeat([v:val], v:val)').to_list()
+	echo s:Stream.of(0,1,2,3).flat_map('repeat([v:val], v:val)').to_list()
 
 	" Output: [0,4,8]
-	echo s:Stream.of(0,1,2,3,4).flatmap('v:val % 2 == 0 ? [v:val * 2] : []').to_list()
+	echo s:Stream.of(0,1,2,3,4).flat_map('v:val % 2 == 0 ? [v:val * 2] : []').to_list()
 <
 				*Vital.Stream-Stream.filter()*
 Stream.filter({func})
