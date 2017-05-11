@@ -591,6 +591,7 @@ TODO					*Vital.Stream-todo*
     just creating object
 - Better examples (|Vital.Stream-examples|) to show the power of this module
 - Provides a way to extend methods like underscore.vim
+- .peek() should accept the number of element to peek
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
