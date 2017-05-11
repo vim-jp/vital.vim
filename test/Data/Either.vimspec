@@ -252,7 +252,7 @@ Describe Data.Either
     End
   End
 
-  Describe .flatmap()
+  Describe .flat_map()
     Before all
       function! LiftSucc(x) abort
         return s:Either.return(a:x + 1)
@@ -267,8 +267,8 @@ Describe Data.Either
       let left  = Either.left(10)
       let right = Either.right(20)
 
-      Assert Equals(Either.flatmap(left, function('LiftSucc')), Either.bind(left, function('LiftSucc')))
-      Assert Equals(Either.flatmap(right, function('LiftSucc')), Either.bind(right, function('LiftSucc')))
+      Assert Equals(Either.flat_map(left, function('LiftSucc')), Either.bind(left, function('LiftSucc')))
+      Assert Equals(Either.flat_map(right, function('LiftSucc')), Either.bind(right, function('LiftSucc')))
     End
   End
 

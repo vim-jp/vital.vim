@@ -199,7 +199,7 @@ bind({either}, {karrow})		*Vital.Data.Either.bind()*
 	echo E.bind(either, function('Devide10'))  " Left(something)
 <
 
-flatmap({either}, {f})			*Vital.Data.Either.flatmap()*
+flat_map({either}, {f})			*Vital.Data.Either.flat_map()*
 	This is an alias of |Vital.Data.Either.bind()|. Please see
 	|Vital.Data.Either.bind()| about this.
 

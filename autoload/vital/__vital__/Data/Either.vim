@@ -143,7 +143,7 @@ function! s:bind(either, karrow) abort
 endfunction
 
 
-function! s:flatmap(either, f) abort
+function! s:flat_map(either, f) abort
   return s:bind(a:either, a:f)
 endfunction
 
