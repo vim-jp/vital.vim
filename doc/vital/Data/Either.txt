@@ -15,14 +15,13 @@ INTERFACE			|Vital.Data.Either-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Data.Either-introduction*
 
-*Vital.Data.Either* is representation of left/right value. This is like a
+*Vital.Data.Either* is representation of left/right value. This is like the
 Either in Haskell. The "left value" means invalid value in most case. The
 "right value" means valid value in most case. But it can be used evenly.
 Either simply holds one of two different structures
 
-The
-"either" has either "left value" or "right value". The "either" doesn't have
-both "left value" and "right value".
+The "either" has either "left value" or "right value". The "either" doesn't
+have both "left value" and "right value".
 
 The "either" follows behavior of "monad", "applicative", and "functor". For
 example, |Vital.Data.Either.join()| doesn't extract the either value to its
@@ -33,7 +32,7 @@ mere value.
 
 	let y = E.right(10)
 	echo E.join(y)  " An exception is thrown
->
+<
 
 
 ==============================================================================
