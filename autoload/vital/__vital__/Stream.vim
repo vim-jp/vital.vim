@@ -82,7 +82,7 @@ function! s:_new_from_list(list, characteristics, caller) abort
   function! stream.__take_possible__(n) abort
     " fix overflow
     let n = self.__index + a:n < a:n ? 1/0 : self.__index + a:n
-    let list = s:_slice(self._list, self.__index, n - 1)
+    let list = s:_sublist(self._list, self.__index, n - 1)
     let self.__index = n
     return [list, self.__estimate_size__() > 0]
   endfunction
@@ -122,9 +122,9 @@ function! s:range(expr, ...) abort
     if args[1] >= a:n
       let args[1] = args[0] + (a:n - 1) * args[2]
     endif
-    " 'call(...)' is non-empty and 's:_slice(...)' is also non-empty
+    " 'call(...)' is non-empty and 's:_sublist(...)' is also non-empty
     " assert a:n != 0
-    let list = s:_slice(call('range', args), self.__index, self.__index + a:n - 1)
+    let list = s:_sublist(call('range', args), self.__index, self.__index + a:n - 1)
     let self.__index += a:n
     return [list, self.__estimate_size__() > 0]
   endfunction
@@ -351,7 +351,7 @@ function! s:Stream.map(f) abort
 endfunction
 
 function! s:Stream.flat_map(f) abort
-  let stream = s:_new(s:Stream, [s:WithBuffered])
+  let stream = s:_new(s:Stream, s:WithBuffered)
   let stream._name = 'flat_map()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
@@ -365,16 +365,16 @@ function! s:Stream.flat_map(f) abort
     let list = []
     while open && len(list) < a:n
       let open = self.__read_to_buffer__(a:n)
-      let r = s:_slice(self.__buffer, 0, a:n - 1)
-      let self.__buffer = s:_slice(self.__buffer, a:n)
+      let r = s:_sublist(self.__buffer, 0, a:n - 1)
+      let self.__buffer = s:_sublist(self.__buffer, a:n)
       " add results to list. len(l) <= a:n when the loop is end
       for l in map(r, 'self._call(self._f, [v:val])')
         if len(l) + len(list) < a:n
           let list += l
         else
           let end = a:n - len(list)
-          let list += s:_slice(l, 0, end - 1)
-          let self.__buffer = s:_slice(l, end) + self.__buffer
+          let list += s:_sublist(l, 0, end - 1)
+          let self.__buffer = s:_sublist(l, end) + self.__buffer
           break
         endif
       endfor
@@ -411,7 +411,7 @@ function! s:Stream.filter(f) abort
 endfunction
 
 function! s:Stream.slice_before(f) abort
-  let stream = s:_new(s:Stream, [s:WithBuffered])
+  let stream = s:_new(s:Stream, s:WithBuffered)
   let stream._name = 'slice_before()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
@@ -436,7 +436,7 @@ function! s:Stream.slice_before(f) abort
         if self._call(self._f, [self.__buffer[i]])
           let list += [elem]
           if len(list) >= a:n
-            let self.__buffer = s:_slice(self.__buffer, i)
+            let self.__buffer = s:_sublist(self.__buffer, i)
             let do_break = 1
             break
           endif
@@ -534,7 +534,7 @@ function! s:Stream.drop_while(f) abort
       for i in range(len(r))
         if !map([r[i]], 'self._call(self._f, [v:val])')[0]
           let self.__skipping = 0
-          let list = s:_slice(r, i)
+          let list = s:_sublist(r, i)
           break
         endif
       endfor
@@ -618,8 +618,8 @@ function! s:Stream.sorted(...) abort
         call sort(self.__sorted_list)
       endif
     endif
-    let list = s:_slice(self.__sorted_list, 0, a:n - 1)
-    let self.__sorted_list = s:_slice(self.__sorted_list, a:n)
+    let list = s:_sublist(self.__sorted_list, 0, a:n - 1)
+    let self.__sorted_list = s:_sublist(self.__sorted_list, a:n)
     return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__compare__(a, b) abort
@@ -812,13 +812,9 @@ function! s:Stream.foreach(f) abort
 endfunction
 
 function! s:_new(base, ...) abort
-  if a:0 ==# 0
-    return deepcopy(a:base)
-  else
-    let base = deepcopy(a:base)
-    call map(copy(a:1), 'extend(base, deepcopy(v:val))')
-    return base
-  endif
+  let base = deepcopy(a:base)
+  call map(copy(a:000), 'extend(base, deepcopy(v:val))')
+  return base
 endfunction
 
 " NOTE: This requires '_upstream'.
@@ -835,13 +831,14 @@ function! s:WithBuffered.__read_to_buffer__(n) abort
   return open || !empty(self.__buffer)
 endfunction
 
-" safe slice
+" Safely slice if [start, end] range is narrower than [0, len - 1].
+" Otherwise just return a:list (it does not copy).
 " https://github.com/vim-jp/issues/issues/1049
-function! s:_slice(list, start, ...) abort
+function! s:_sublist(list, start, ...) abort
   let len = len(a:list)
   let start = min([a:start, len])
   let end = a:0 ? min([a:1, len]) : len
-  return a:list[start : end]
+  return start ==# 0 && end >= len - 1 ? a:list : a:list[start : end]
 endfunction
 
 " Get funcref of call()-ish function to call a:f (arity is 0)
