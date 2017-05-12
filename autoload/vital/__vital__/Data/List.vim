@@ -245,7 +245,15 @@ endfunction
 
 " similar to Haskell's Data.List.takeWhile
 function! s:take_while(f, xs) abort
-  return s:span(a:f, a:xs)[0]
+  let l:Call = s:_get_caller(a:f)
+  let result = []
+  for x in a:xs
+    if l:Call(a:f, [x])
+      call add(result, x)
+    else
+      return result
+    endif
+  endfor
 endfunction
 
 " similar to Haskell's Data.List.dropWhile
