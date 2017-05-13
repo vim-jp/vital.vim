@@ -592,6 +592,12 @@ TODO					*Vital.Stream-todo*
 - Better examples (|Vital.Stream-examples|) to show the power of this module
 - Provides a way to extend methods like underscore.vim
 - .peek() should accept the number of element to peek
+- Support Stream.tap(f): f receives stream object and its return value is used
+  as the return value of Stream.tap(f)
+- Support Stream.reversed(): reverse elements order
+- Check types of arguments at each method
+  - When invalid types were passed to each method, it's hard to debug
+    (methods in stacktrace are unnamed functions / lambda)
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
