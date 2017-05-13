@@ -128,13 +128,13 @@ Describe Stream
       Assert Equals(Stream.from_dict({}).count(), 0)
       Assert Equals(Stream.from_dict({}).to_list(), [])
       Assert Equals(Stream.from_dict({"foo": 1}).count(), 1)
-      Assert Equals(Stream.from_dict({"foo": 1}).to_list(), [["foo", 1]])
+      Assert Equals(Stream.from_dict({"foo": 1}).to_list(), [{'key': 'foo', 'value': 1}])
       Assert Equals(Stream.from_dict(
       \ {"foo": 1, "bar": 3, "baz": 2}).count(),
       \ 3)
       Assert Equals(
       \ sort(Stream.from_dict({"foo": 1, "bar": 3, "baz": 2}).to_list()),
-      \ [["bar", 3], ["baz", 2], ["foo", 1]])
+      \ [{"key": "bar", "value": 3}, {"key": "baz", "value": 2}, {"key": "foo", "value": 1}])
     End
 
     It constructs heterogeneous stream from Dictionary
@@ -144,7 +144,7 @@ Describe Stream
       Assert Equals(
       \ sort(Stream.from_dict(
       \ {"foo": 42, "bar": 3.14, "baz": function('tr')}).to_list()),
-      \ [['bar', 3.14], ['baz', function('tr')], ['foo', 42]])
+      \ [{"key": 'bar', "value": 3.14}, {"key": 'baz', "value": function('tr')}, {"key": 'foo', "value": 42}])
     End
 
     It creates stream with characteristics
@@ -154,12 +154,16 @@ Describe Stream
 
     It does not destroy original dictionary
       let dict = {'foo': 2, 'bar': 1, 'baz': 3}
-      let by_value = 'v:val[0][1] > v:val[1][1] ? 1 : v:val[0][1] == v:val[1][1] ? 0 : -1'
-      Assert Equals(Stream.from_dict(dict).sorted(by_value).to_list(), [['bar', 1], ['foo', 2], ['baz', 3]])
+      let by_value = 'v:val[0].value > v:val[1].value ? 1 : v:val[0].value == v:val[1].value ? 0 : -1'
+      Assert Equals(
+      \ Stream.from_dict(dict).sorted(by_value).to_list(),
+      \ [{"key": 'bar', "value": 1}, {"key": 'foo', "value": 2}, {"key": 'baz', "value": 3}])
       Assert Equals(dict, {'foo': 2, 'bar': 1, 'baz': 3})
 
       let dict = {'one': 1, 'two': 2, 'three': 3, 'four': 4}
-      Assert Equals(Stream.from_dict(dict).filter('v:val[1] % 2 == 0').sorted(by_value).to_list(), [['two', 2], ['four', 4]])
+      Assert Equals(
+      \ Stream.from_dict(dict).filter('v:val.value % 2 == 0').sorted(by_value).to_list(),
+      \ [{"key": 'two', "value": 2}, {"key": 'four', "value": 4}])
       Assert Equals(dict, {'one': 1, 'two': 2, 'three': 3, 'four': 4})
     End
   End

@@ -116,7 +116,8 @@ lines({str})	*Vital.Stream.lines()*
 	But this makes empty stream for empty string.
 
 from_dict({dict})	*Vital.Stream.from_dict()*
-	Shortcut for `s:Stream.from_list(items(dict))` .
+	Shortcut for `s:Stream.from_list(map(items(dict), '{"key": v:val[0], "value": v:val[1]}'))` .
+	Each element is `{"key": key, "value": value}` .
 
 from_list({list})	*Vital.Stream.from_list()*
 	This makes a stream of elements of {list}.

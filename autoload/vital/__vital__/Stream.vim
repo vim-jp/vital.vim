@@ -66,7 +66,8 @@ function! s:from_list(list) abort
 endfunction
 
 function! s:from_dict(dict) abort
-  return s:_new_from_list(items(a:dict), s:SIZED, 'from_dict()')
+  let list = map(items(a:dict), '{''key'': v:val[0], ''value'': v:val[1]}')
+  return s:_new_from_list(list, s:SIZED, 'from_dict()')
 endfunction
 
 function! s:empty() abort
