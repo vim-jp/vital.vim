@@ -564,10 +564,10 @@ function! s:Stream.distinct(...) abort
   let stream._upstream = self
   if a:0
     let stream._call = s:_get_callfunc_for_func1(a:1, 'distinct()')
-    let stream._stringify = a:1
+    let stream._hashfunc = a:1
   else
     let stream._call = function('call')
-    let stream._stringify = function('string')
+    let stream._hashfunc = function('string')
   endif
   function! stream.__take_possible__(n) abort
     let uniq_list = []
@@ -577,7 +577,7 @@ function! s:Stream.distinct(...) abort
       let [r, open] = s:_take_freeze_intermediate(
       \                   self._upstream, a:n - len(uniq_list))
       for l:Value in r
-        let key = self._call(self._stringify, [l:Value])
+        let key = self._call(self._hashfunc, [l:Value])
         if !has_key(dup, key)
           let uniq_list += [l:Value]
           if len(uniq_list) >= a:n
