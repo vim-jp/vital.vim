@@ -228,14 +228,9 @@ endfunction
 
 " similar to Haskell's Data.List.span
 function! s:span(f, xs) abort
-  let border = len(a:xs)
-  for i in range(len(a:xs))
-    if !eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
-      let border = i
-      break
-    endif
-  endfor
-  return border == 0 ? [[], copy(a:xs)] : [a:xs[: border - 1], a:xs[border :]]
+  let body = s:take_while(a:f, a:xs)
+  let tail = a:xs[len(body) :]
+  return [body, tail]
 endfunction
 
 " similar to Haskell's Data.List.break
