@@ -253,7 +253,17 @@ endfunction
 
 " similar to Haskell's Data.List.dropWhile
 function! s:drop_while(f, xs) abort
-  return s:span(a:f, a:xs)[1]
+  let l:Call = s:_get_caller(a:f)
+  let i = -1
+  for x in a:xs
+    if l:Call(a:f, [x])
+      let i += 1
+    else
+      break
+    endif
+  endfor
+
+  return a:xs[i + 1 :]
 endfunction
 
 " similar to Haskell's Data.List.partition

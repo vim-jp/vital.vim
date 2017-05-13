@@ -312,7 +312,7 @@ take_while({function}, {list})		*Vital.Data.List.take_while()*
 	echo s:L.take_while(function('Under5'), [1, 3, 5, 2])
 	" [1, 3]
 
-	echo s:L.take_while("v:val==1", [1, 2])
+	echo s:L.take_while('v:val == 1', [1, 2])
 	" [1]
 	echo s:L.take_while('v:val > 3', [1, 2, 3, 4, 5])
 	" []
@@ -323,14 +323,22 @@ take_while({function}, {list})		*Vital.Data.List.take_while()*
 	Data.List.takeWhile just for your info.
 
 
-drop_while({expr}, {list})		*Vital.Data.List.drop_while()*
+drop_while({function}, {list})		*Vital.Data.List.drop_while()*
 	Returns the suffix remaining after |Vital.Data.List.take_while()|.
-	Inside {expr} |v:val| has the value of the current item.
+	If {function} is the string expression,|v:val| has the value of the
+	current item.
 >
-	echo s:L.drop_while("v:val==1", [1, 2])
-	" [2]
+	function! Under5(x) abort
+	  return a:x < 5
+	endfunction
+
 	echo s:L.drop_while('v:val < 5', [1, 3, 5, 2])
 	" [5, 2]
+	echo s:L.drop_while(function('Under5'), [1, 3, 5, 2])
+	" [5, 2]
+
+	echo s:L.drop_while("v:val==1", [1, 2])
+	" [2]
 	echo s:L.drop_while('v:val > 3', [1, 2, 3, 4, 5])
 	" [1, 2, 3, 4, 5]
 	echo s:L.drop_while('v:val < 3', [1, 2, 3, 4, 5])
