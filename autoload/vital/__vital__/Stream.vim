@@ -62,7 +62,7 @@ function! s:lines(str) abort
 endfunction
 
 function! s:from_list(list) abort
-  return s:_new_from_list(a:list, s:SIZED, 'from_list()')
+  return s:_new_from_list(copy(a:list), s:SIZED, 'from_list()')
 endfunction
 
 function! s:from_dict(dict) abort
