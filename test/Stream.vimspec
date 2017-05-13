@@ -54,24 +54,24 @@ Describe Stream
 
   Describe .chars()
     It constructs stream of each character from String
-      Assert Equals(Stream.chars("").count(), 0)
-      Assert Equals(Stream.chars("").to_list(), [])
-      Assert Equals(Stream.chars("a").count(), 1)
-      Assert Equals(Stream.chars("a").to_list(), ['a'])
-      Assert Equals(Stream.chars("abc").count(), 3)
-      Assert Equals(Stream.chars("abc").to_list(), ['a', 'b', 'c'])
+      Assert Equals(Stream.chars('').count(), 0)
+      Assert Equals(Stream.chars('').to_list(), [])
+      Assert Equals(Stream.chars('a').count(), 1)
+      Assert Equals(Stream.chars('a').to_list(), ['a'])
+      Assert Equals(Stream.chars('abc').count(), 3)
+      Assert Equals(Stream.chars('abc').to_list(), ['a', 'b', 'c'])
     End
 
     It constructs stream of each character from String with characteristics
-      let s = Stream.chars("abc")
+      let s = Stream.chars('abc')
       Assert True(s.__has_characteristic__(SIZED))
     End
   End
 
   Describe .lines()
     It constructs stream of each line from String
-      Assert Equals(Stream.lines("").to_list(), [])
-      Assert Equals(Stream.lines("foo").to_list(), ['foo'])
+      Assert Equals(Stream.lines('').to_list(), [])
+      Assert Equals(Stream.lines('foo').to_list(), ['foo'])
       Assert Equals(Stream.lines("foo\nbar").to_list(), ['foo', 'bar'])
       Assert Equals(Stream.lines("foo\n\nbar").to_list(), ['foo', '', 'bar'])
       Assert Equals(Stream.lines("\nfoo\nbar").to_list(), ['', 'foo', 'bar'])
@@ -81,8 +81,8 @@ Describe Stream
     End
 
     It constructs stream of each line from String (\r\n)
-      Assert Equals(Stream.lines("").to_list(), [])
-      Assert Equals(Stream.lines("foo").to_list(), ['foo'])
+      Assert Equals(Stream.lines('').to_list(), [])
+      Assert Equals(Stream.lines('foo').to_list(), ['foo'])
       Assert Equals(Stream.lines("foo\r\nbar").to_list(), ['foo', 'bar'])
       Assert Equals(Stream.lines("foo\r\n\r\nbar").to_list(), ['foo', '', 'bar'])
       Assert Equals(Stream.lines("\r\nfoo\r\nbar").to_list(), ['', 'foo', 'bar'])
@@ -92,7 +92,7 @@ Describe Stream
     End
 
     It constructs stream of each line from String with characteristics
-      let s = Stream.lines("abc")
+      let s = Stream.lines('abc')
       Assert True(s.__has_characteristic__(SIZED))
     End
   End
@@ -127,28 +127,28 @@ Describe Stream
     It constructs stream from Dictionary
       Assert Equals(Stream.from_dict({}).count(), 0)
       Assert Equals(Stream.from_dict({}).to_list(), [])
-      Assert Equals(Stream.from_dict({"foo": 1}).count(), 1)
-      Assert Equals(Stream.from_dict({"foo": 1}).to_list(), [{'key': 'foo', 'value': 1}])
+      Assert Equals(Stream.from_dict({'foo': 1}).count(), 1)
+      Assert Equals(Stream.from_dict({'foo': 1}).to_list(), [{'key': 'foo', 'value': 1}])
       Assert Equals(Stream.from_dict(
-      \ {"foo": 1, "bar": 3, "baz": 2}).count(),
+      \ {'foo': 1, 'bar': 3, 'baz': 2}).count(),
       \ 3)
       Assert Equals(
-      \ sort(Stream.from_dict({"foo": 1, "bar": 3, "baz": 2}).to_list()),
-      \ [{"key": "bar", "value": 3}, {"key": "baz", "value": 2}, {"key": "foo", "value": 1}])
+      \ sort(Stream.from_dict({'foo': 1, 'bar': 3, 'baz': 2}).to_list()),
+      \ [{'key': 'bar', 'value': 3}, {'key': 'baz', 'value': 2}, {'key': 'foo', 'value': 1}])
     End
 
     It constructs heterogeneous stream from Dictionary
       Assert Equals(Stream.from_dict(
-      \ {"foo": 42, "bar": 3.14, "baz": function('tr')}).count(),
+      \ {'foo': 42, 'bar': 3.14, 'baz': function('tr')}).count(),
       \ 3)
       Assert Equals(
       \ sort(Stream.from_dict(
-      \ {"foo": 42, "bar": 3.14, "baz": function('tr')}).to_list()),
-      \ [{"key": 'bar', "value": 3.14}, {"key": 'baz', "value": function('tr')}, {"key": 'foo', "value": 42}])
+      \ {'foo': 42, 'bar': 3.14, 'baz': function('tr')}).to_list()),
+      \ [{'key': 'bar', 'value': 3.14}, {'key': 'baz', 'value': function('tr')}, {'key': 'foo', 'value': 42}])
     End
 
     It creates stream with characteristics
-      let s = Stream.from_dict({"foo": 1, "bar": 3, "baz": 2})
+      let s = Stream.from_dict({'foo': 1, 'bar': 3, 'baz': 2})
       Assert True(s.__has_characteristic__(SIZED))
     End
 
@@ -157,13 +157,13 @@ Describe Stream
       let by_value = 'v:val[0].value > v:val[1].value ? 1 : v:val[0].value == v:val[1].value ? 0 : -1'
       Assert Equals(
       \ Stream.from_dict(dict).sorted(by_value).to_list(),
-      \ [{"key": 'bar', "value": 1}, {"key": 'foo', "value": 2}, {"key": 'baz', "value": 3}])
+      \ [{'key': 'bar', 'value': 1}, {'key': 'foo', 'value': 2}, {'key': 'baz', 'value': 3}])
       Assert Equals(dict, {'foo': 2, 'bar': 1, 'baz': 3})
 
       let dict = {'one': 1, 'two': 2, 'three': 3, 'four': 4}
       Assert Equals(
       \ Stream.from_dict(dict).filter('v:val.value % 2 == 0').sorted(by_value).to_list(),
-      \ [{"key": 'two', "value": 2}, {"key": 'four', "value": 4}])
+      \ [{'key': 'two', 'value': 2}, {'key': 'four', 'value': 4}])
       Assert Equals(dict, {'one': 1, 'two': 2, 'three': 3, 'four': 4})
     End
   End
@@ -1258,7 +1258,7 @@ Describe Stream
       Assert Equals(Stream.of('a', 'bb', 'ccc').group_by('len(v:val)'), {'1': ['a'], '2': ['bb'], '3': ['ccc']})
       Assert Equals(Stream.of('a', 'bb', 'ccc', 'ddd').group_by('len(v:val)'), {'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
       Assert Equals(
-        \Stream.of(1,2,3,4,5).group_by('v:val % 2 == 0 ? "even" : "odd"'),
+        \Stream.of(1,2,3,4,5).group_by('v:val % 2 == 0 ? ''even'' : ''odd'''),
         \{'even': [2,4], 'odd': [1,3,5]})
     End
 
