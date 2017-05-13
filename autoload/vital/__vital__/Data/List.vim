@@ -194,6 +194,7 @@ endfunction
 " v:val is used in {expr}
 " FIXME: -0x80000000 == 0x80000000
 function! s:min_by(list, f) abort
+  "TODO: DRY
   let l:F = s:Closure.is_callable(a:f) ? a:f
   \                                    : substitute(a:f, 'v:val', 'a:1', 'g')
   let l:Build = s:Closure.is_callable(l:F) ? s:Closure.build
@@ -235,7 +236,13 @@ endfunction
 
 " similar to Haskell's Data.List.break
 function! s:break(f, xs) abort
-  return s:span(printf('!(%s)', a:f), a:xs)
+  "TODO: DRY
+  let l:F = s:Closure.is_callable(a:f) ? a:f
+  \                                    : substitute(a:f, 'v:val', 'a:1', 'g')
+  let l:Build = s:Closure.is_callable(l:F) ? s:Closure.build
+  \                                        : s:Closure.from_expr
+  let not_f = s:Closure.compose([function('s:_not'), l:Build(l:F)])
+  return s:span(not_f, a:xs)
 endfunction
 
 " similar to Haskell's Data.List.takeWhile
@@ -564,6 +571,10 @@ endfunction
 
 function! s:_id(x) abort
   return a:x
+endfunction
+
+function! s:_not(x) abort
+  return !a:x
 endfunction
 
 let &cpo = s:save_cpo
