@@ -48,25 +48,107 @@ let s:SIZED = 0x08
 " let s:IMMUTABLE = 0x20
 " let s:CONCURRENT = 0x40
 
+function! s:_vital_loaded(V) abort
+  let validator = a:V.import('Validator.Args')
+  let T = validator.TYPE
+  let s:chars_args = validator.of('vital: Stream: chars()').type(T.STRING)
+  let s:lines_args = validator.of('vital: Stream: lines()').type(T.STRING)
+  let s:from_list_args = validator.of('vital: Stream: from_list()').type(T.LIST)
+  let s:from_dict_args = validator.of('vital: Stream: from_dict()').type(T.DICT)
+  let s:range_args = validator.of('vital: Stream: range()')
+                             \.type(T.NUMBER, T.OPTARG, T.NUMBER, T.NUMBER)
+  let s:iterate_args = validator.of('vital: Stream: iterate()')
+                               \.type(T.ANY, T.FUNC)
+  let s:generate_args = validator.of('vital: Stream: generate()')
+                                \.type(T.FUNC)
+  let s:generator_args = validator.of('vital: Stream: generator()')
+                          \.type(T.DICT)
+                          \.assert(1, 'type(get(v:val, ''yield'', 0)) is '.s:T_FUNC,
+                          \        'the first argument should have ''yield'' method')
+  let s:zip_args = validator.of('vital: Stream: zip()')
+                           \.type(T.LIST)
+                           \.assert(1,
+                           \ function('s:_is_list_of_streams'),
+                           \ 'the first argument should be a list of streams')
+  let s:concat_args = validator.of('vital: Stream: concat()')
+                              \.type(T.LIST)
+                              \.assert(1,
+                              \ function('s:_is_list_of_streams'),
+                              \ 'the first argument should be a list of streams')
+  let s:peek_args = validator.of('vital: Stream: Stream.peek()')
+                            \.type(T.FUNC)
+  let s:map_args = validator.of('vital: Stream: Stream.map()')
+                           \.type(T.FUNC)
+  let s:flat_map_args = validator.of('vital: Stream: Stream.flat_map()')
+                                \.type(T.FUNC)
+  let s:filter_args = validator.of('vital: Stream: Stream.filter()')
+                              \.type(T.FUNC)
+  let s:slice_before_args = validator.of('vital: Stream: Stream.slice_before()')
+                                    \.type(T.FUNC)
+  let s:take_while_args = validator.of('vital: Stream: Stream.take_while()')
+                                  \.type(T.FUNC)
+  let s:drop_while_args = validator.of('vital: Stream: Stream.drop_while()')
+                                  \.type(T.FUNC)
+  let s:distinct_args = validator.of('vital: Stream: Stream.distinct()')
+                                \.type(T.OPTARG, T.FUNC)
+  let s:sorted_args = validator.of('vital: Stream: Stream.sorted()')
+                              \.type(T.OPTARG, T.FUNC)
+  let s:take_args = validator.of('vital: Stream: Stream.take()')
+                            \.type(T.NUMBER)
+                            \.assert(1, 'v:val >= 0',
+                            \ 'the first argument must be 0 or positive')
+  let s:drop_args = validator.of('vital: Stream: Stream.drop()')
+                            \.type(T.NUMBER)
+                            \.assert(1, 'v:val >= 0',
+                            \ 'the first argument must be 0 or positive')
+  let s:reduce_args = validator.of('vital: Stream: Stream.reduce()')
+                              \.type(T.FUNC, T.OPTARG, T.ANY)
+  let s:find_args = validator.of('vital: Stream: Stream.find()')
+                            \.type(T.FUNC, T.OPTARG, T.ANY)
+  let s:any_args = validator.of('vital: Stream: Stream.any()')
+                           \.type(T.FUNC)
+  let s:all_args = validator.of('vital: Stream: Stream.all()')
+                           \.type(T.FUNC)
+  let s:none_args = validator.of('vital: Stream: Stream.none()')
+                            \.type(T.FUNC)
+  let s:group_by_args = validator.of('vital: Stream: Stream.group_by()')
+                                \.type(T.FUNC)
+  let s:to_dict_args = validator.of('vital: Stream: Stream.to_dict()')
+                               \.type(T.FUNC, T.FUNC, T.OPTARG, T.FUNC)
+  let s:count_args = validator.of('vital: Stream: Stream.count()')
+                             \.type(T.OPTARG, T.FUNC)
+  let s:foreach_args = validator.of('vital: Stream: Stream.foreach()')
+                               \.type(T.FUNC)
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Validator.Args']
+endfunction
+
+
 function! s:of(elem, ...) abort
   return s:_new_from_list([a:elem] + a:000, s:SIZED, 'of()')
 endfunction
 
-function! s:chars(str) abort
-  return s:_new_from_list(split(a:str, '\zs'), s:SIZED, 'chars()')
+function! s:chars(...) abort
+  let [str] = s:chars_args.validate(a:000)
+  return s:_new_from_list(split(str, '\zs'), s:SIZED, 'chars()')
 endfunction
 
-function! s:lines(str) abort
-  let lines = a:str ==# '' ? [] : split(a:str, '\r\?\n', 1)
+function! s:lines(...) abort
+  let [str] = s:lines_args.validate(a:000)
+  let lines = str ==# '' ? [] : split(str, '\r\?\n', 1)
   return s:_new_from_list(lines, s:SIZED, 'lines()')
 endfunction
 
-function! s:from_list(list) abort
-  return s:_new_from_list(copy(a:list), s:SIZED, 'from_list()')
+function! s:from_list(...) abort
+  let [list] = s:from_list_args.validate(a:000)
+  return s:_new_from_list(copy(list), s:SIZED, 'from_list()')
 endfunction
 
-function! s:from_dict(dict) abort
-  let list = map(items(a:dict), '{''key'': v:val[0], ''value'': v:val[1]}')
+function! s:from_dict(...) abort
+  let [dict] = s:from_dict_args.validate(a:000)
+  let list = map(items(dict), '{''key'': v:val[0], ''value'': v:val[1]}')
   return s:_new_from_list(list, s:SIZED, 'from_dict()')
 endfunction
 
@@ -94,13 +176,14 @@ function! s:_new_from_list(list, characteristics, caller) abort
 endfunction
 
 " same arguments as Vim script's range()
-function! s:range(expr, ...) abort
-  if a:0 ==# 0
-    let args = [0, a:expr - 1, 1]
-  elseif a:0 ==# 1
-    let args = [a:expr] + a:000 + [1]
+function! s:range(...) abort
+  let [expr; rest] = s:range_args.validate(a:000)
+  if len(rest) ==# 0
+    let args = [0, expr - 1, 1]
+  elseif len(rest) ==# 1
+    let args = [expr, rest[0], 1]
   else
-    let args = [a:expr] + a:000
+    let args = [expr, rest[0], rest[1]]
   endif
   if args[2] ==# 0    " E726
     throw 'vital: Stream: range(): stride is 0'
@@ -155,16 +238,17 @@ function! s:_range_size(args, index) abort
   endif
 endfunction
 
-function! s:iterate(init, f) abort
+function! s:iterate(...) abort
+  let [l:Init, l:Func] = s:iterate_args.validate(a:000)
   return s:_inf_stream(
-  \ a:f, a:init, 'self._f(v:val)', 'iterate()'
+  \ l:Func, l:Init, 'self._f(v:val)', 'iterate()'
   \)
 endfunction
 
-function! s:generate(f) abort
+function! s:generate(...) abort
+  let [l:Func] = s:generate_args.validate(a:000)
   return s:_inf_stream(
-  \ a:f, a:f(), 'self._f()', 'generate()'
-  \)
+  \ l:Func, l:Func(), 'self._f()', 'generate()')
 endfunction
 
 function! s:_inf_stream(f, init, expr, caller) abort
@@ -190,11 +274,12 @@ function! s:_inf_stream(f, init, expr, caller) abort
   return stream
 endfunction
 
-function! s:generator(dict) abort
+function! s:generator(...) abort
+  let [dict] = s:generator_args.validate(a:000)
   let stream = s:_new(s:Stream)
   let stream._name = 'generator()'
   let stream._characteristics = 0
-  let stream._dict = a:dict
+  let stream._dict = dict
   let stream.__index = 0
   function! stream.__take_possible__(n) abort
     let list = []
@@ -219,12 +304,16 @@ function! s:generator(dict) abort
   return stream
 endfunction
 
-function! s:zip(streams) abort
+function! s:zip(...) abort
+  let [streams] = s:zip_args.validate(a:000)
+  if empty(streams)
+    return s:empty()
+  endif
   let stream = s:_new(s:Stream)
   let stream._name = 'zip()'
   let stream._characteristics =
-  \ s:_zip_characteristics(map(copy(a:streams), 'v:val._characteristics'))
-  let stream._upstream = a:streams
+  \ s:_zip_characteristics(map(copy(streams), 'v:val._characteristics'))
+  let stream._upstream = streams
   function! stream.__take_possible__(n) abort
     let lists = map(copy(self._upstream),
     \               's:_take_freeze_intermediate(v:val, a:n)[0]')
@@ -251,12 +340,14 @@ function! s:_zip_characteristics(characteristics_list) abort
   return s:_zip_characteristics([result] + others)
 endfunction
 
-function! s:concat(streams) abort
+function! s:concat(...) abort
+  let [streams] = s:concat_args.validate(a:000)
+  let nonempty = filter(copy(streams), 'v:val.__estimate_size__() > 0')
   let stream = s:_new(s:Stream)
   let stream._name = 'concat()'
   let stream._characteristics =
-  \ s:_concat_characteristics(map(copy(a:streams), 'v:val._characteristics'))
-  let stream._upstream = a:streams
+  \ s:_concat_characteristics(map(copy(nonempty), 'v:val._characteristics'))
+  let stream._upstream = nonempty
   function! stream.__take_possible__(n) abort
     " concat buffer and all streams
     let list = []
@@ -312,12 +403,14 @@ function! s:Stream.__has_characteristic__(flag) abort
   return !!and(self._characteristics, a:flag)
 endfunction
 
-function! s:Stream.peek(f) abort
+function! s:Stream.peek(...) abort
+  call s:_validate_closed_stream(self)
+  let [l:Func] = s:peek_args.validate(a:000)
   let stream = s:_new(s:Stream)
-  let stream._name = 'peek()'
+  let stream._name = 'Stream.peek()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._f = a:f
+  let stream._f = l:Func
   function! stream.__take_possible__(n) abort
     let list = s:_take_freeze_intermediate(self._upstream, a:n)[0]
     call map(copy(list), 'self._f(v:val)')
@@ -329,12 +422,14 @@ function! s:Stream.peek(f) abort
   return stream
 endfunction
 
-function! s:Stream.map(f) abort
+function! s:Stream.map(...) abort
+  call s:_validate_closed_stream(self)
+  let [l:Func] = s:map_args.validate(a:000)
   let stream = s:_new(s:Stream)
-  let stream._name = 'map()'
+  let stream._name = 'Stream.map()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._f = a:f
+  let stream._f = l:Func
   function! stream.__take_possible__(n) abort
     let list = s:_take_freeze_intermediate(self._upstream, a:n)[0]
     call map(list, 'self._f(v:val)')
@@ -346,12 +441,14 @@ function! s:Stream.map(f) abort
   return stream
 endfunction
 
-function! s:Stream.flat_map(f) abort
+function! s:Stream.flat_map(...) abort
+  call s:_validate_closed_stream(self)
+  let [l:Func] = s:flat_map_args.validate(a:000)
   let stream = s:_new(s:Stream, s:WithBuffered)
-  let stream._name = 'flat_map()'
+  let stream._name = 'Stream.flat_map()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._f = a:f
+  let stream._f = l:Func
   function! stream.__take_possible__(n) abort
     let open = (self._upstream.__estimate_size__() > 0)
     if a:n ==# 0
@@ -383,12 +480,14 @@ function! s:Stream.flat_map(f) abort
   return stream
 endfunction
 
-function! s:Stream.filter(f) abort
+function! s:Stream.filter(...) abort
+  call s:_validate_closed_stream(self)
+  let [l:Func] = s:filter_args.validate(a:000)
   let stream = s:_new(s:Stream)
-  let stream._name = 'filter()'
+  let stream._name = 'Stream.filter()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._f = a:f
+  let stream._f = l:Func
   function! stream.__take_possible__(n) abort
     let [r, open] = s:_take_freeze_intermediate(self._upstream, a:n)
     let list = filter(r, 'self._f(v:val)')
@@ -404,12 +503,14 @@ function! s:Stream.filter(f) abort
   return stream
 endfunction
 
-function! s:Stream.slice_before(f) abort
+function! s:Stream.slice_before(...) abort
+  call s:_validate_closed_stream(self)
+  let [l:Func] = s:slice_before_args.validate(a:000)
   let stream = s:_new(s:Stream, s:WithBuffered)
-  let stream._name = 'slice_before()'
+  let stream._name = 'Stream.slice_before()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._f = a:f
+  let stream._f = l:Func
   function! stream.__take_possible__(n) abort
     let open = (self._upstream.__estimate_size__() > 0)
     if a:n ==# 0
@@ -462,12 +563,14 @@ endfunction
 " this method must stop for even upstream is infinite stream
 " if 'a:f' is not matched at any element in the stream.
 let s:BULK_SIZE = 32
-function! s:Stream.take_while(f) abort
+function! s:Stream.take_while(...) abort
+  call s:_validate_closed_stream(self)
+  let [l:Func] = s:take_while_args.validate(a:000)
   let stream = s:_new(s:Stream)
-  let stream._name = 'take_while()'
+  let stream._name = 'Stream.take_while()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._f = a:f
+  let stream._f = l:Func
   function! stream.__take_possible__(n) abort
     let open = (self._upstream.__estimate_size__() > 0)
     if a:n ==# 0
@@ -510,13 +613,15 @@ function! s:Stream.take_while(f) abort
   return stream
 endfunction
 
-function! s:Stream.drop_while(f) abort
+function! s:Stream.drop_while(...) abort
+  call s:_validate_closed_stream(self)
+  let [l:Func] = s:drop_while_args.validate(a:000)
   let stream = s:_new(s:Stream)
-  let stream._name = 'drop_while()'
+  let stream._name = 'Stream.drop_while()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__skipping = 1
-  let stream._f = a:f
+  let stream._f = l:Func
   function! stream.__take_possible__(n) abort
     let list = []
     let open = (self.__estimate_size__() > 0)
@@ -549,12 +654,14 @@ function! s:Stream.drop_while(f) abort
 endfunction
 
 function! s:Stream.distinct(...) abort
+  call s:_validate_closed_stream(self)
+  let args = s:distinct_args.validate(a:000)
   let stream = s:_new(s:Stream)
-  let stream._name = 'distinct()'
+  let stream._name = 'Stream.distinct()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  if a:0
-    let stream._hashfunc = a:1
+  if !empty(args)
+    let stream._hashfunc = args[0]
   else
     let stream._hashfunc = function('string')
   endif
@@ -587,15 +694,17 @@ function! s:Stream.distinct(...) abort
 endfunction
 
 function! s:Stream.sorted(...) abort
+  call s:_validate_closed_stream(self)
+  let args = s:sorted_args.validate(a:000)
   let stream = s:_new(s:Stream)
-  let stream._name = 'sorted()'
+  let stream._name = 'Stream.sorted()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   " if this key doesn't exist,
   " sorted list of upstream elements will be set (first time only)
   " let stream.__sorted_list = []
-  if a:0
-    let stream._comparator = a:1
+  if !empty(args)
+    let stream._comparator = args[0]
   endif
   function! stream.__take_possible__(n) abort
     if !has_key(self, '__sorted_list')
@@ -622,11 +731,10 @@ function! s:Stream.sorted(...) abort
   return stream
 endfunction
 
-function! s:Stream.take(n) abort
-  if a:n < 0
-    throw 'vital: Stream: take(n): n must be 0 or positive'
-  endif
-  if a:n ==# 0
+function! s:Stream.take(...) abort
+  call s:_validate_closed_stream(self)
+  let [n] = s:take_args.validate(a:000)
+  if n ==# 0
     return s:empty()
   endif
   let stream = s:_new(s:Stream)
@@ -634,7 +742,7 @@ function! s:Stream.take(n) abort
   let stream._characteristics = or(self._characteristics, s:SIZED)
   let stream._upstream = self
   let stream.__took_count = 0
-  let stream._max_n = a:n
+  let stream._max_n = n
   function! stream.__take_possible__(n) abort
     let n = min([self._upstream.__estimate_size__(), self._max_n, a:n])
     let [list, open] = s:_take_freeze_intermediate(self._upstream, n)
@@ -647,18 +755,17 @@ function! s:Stream.take(n) abort
   return stream
 endfunction
 
-function! s:Stream.drop(n) abort
-  if a:n < 0
-    throw 'vital: Stream: drop(n): n must be 0 or positive'
-  endif
-  if a:n ==# 0
+function! s:Stream.drop(...) abort
+  call s:_validate_closed_stream(self)
+  let [n] = s:drop_args.validate(a:000)
+  if n ==# 0
     return self
   endif
   let stream = s:_new(s:Stream)
   let stream._name = 'drop()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream.__n = a:n
+  let stream.__n = n
   function! stream.__take_possible__(n) abort
     let open = self.__estimate_size__() > 0
     if self.__n > 0 && open
@@ -684,7 +791,9 @@ function! s:Stream.drop(n) abort
 endfunction
 
 function! s:Stream.zip(streams) abort
-  return s:zip([self] + a:streams)
+  call s:_validate_closed_stream(self)
+  let streams = type(a:streams) is s:T_LIST ? a:streams : [s:NONE]
+  return s:zip([self] + streams)
 endfunction
 
 function! s:Stream.zip_with_index() abort
@@ -696,23 +805,26 @@ function! s:_succ(n) abort
 endfunction
 
 function! s:Stream.concat(streams) abort
-  return s:concat([self] + a:streams)
+  call s:_validate_closed_stream(self)
+  let streams = type(a:streams) is s:T_LIST ? a:streams : [s:NONE]
+  return s:concat([self] + streams)
 endfunction
 
-function! s:Stream.reduce(f, ...) abort
+function! s:Stream.reduce(...) abort
+  let [l:Func; rest] = s:reduce_args.validate(a:000)
   let list = self.to_list()
-  if a:0 ==# 0 && empty(list)
-    throw 'vital: Stream: reduce()' .
+  if empty(rest) && empty(list)
+    throw 'vital: Stream: Stream.reduce()' .
     \     ': stream is empty and default value was not given'
   endif
-  if a:0 > 0 || empty(list)
-    let l:Result = a:1
+  if !empty(rest) || empty(list)
+    let l:Result = rest[0]
   else
     let l:Result = list[0]
     let list = list[1:]
   endif
   for l:Value in list
-    let l:Result = a:f(l:Result, l:Value)
+    let l:Result = l:Func(l:Result, l:Value)
     unlet l:Value
   endfor
   return l:Result
@@ -720,37 +832,42 @@ endfunction
 
 function! s:Stream.first(...) abort
   return s:_get_non_empty_list_or_default(
-  \           self, 1, a:0 ? [a:1] : s:NONE, 'first()')[0]
+  \ self, 1, a:0 ? [a:1] : s:NONE, 'Stream.first()')[0]
 endfunction
 
 function! s:Stream.last(...) abort
   return s:_get_non_empty_list_or_default(
-  \           self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'last()')[-1]
+  \ self, self.__estimate_size__(), a:0 ? [a:1] : s:NONE, 'Stream.last()')[-1]
 endfunction
 
-function! s:Stream.find(f, ...) abort
-  let s = self.filter(a:f)
-  return a:0 ? s.first(a:1) : s.first()
+function! s:Stream.find(...) abort
+  let [l:Func; rest] = s:find_args.validate(a:000)
+  let s = self.filter(l:Func)
+  return !empty(rest) ? s.first(rest[0]) : s.first()
 endfunction
 
-function! s:Stream.any(f) abort
-  return self.filter(a:f).first(s:NONE) isnot s:NONE
+function! s:Stream.any(...) abort
+  let [l:Func] = s:any_args.validate(a:000)
+  return self.filter(l:Func).first(s:NONE) isnot s:NONE
 endfunction
 
-function! s:Stream.all(f) abort
-  return self.map(a:f).filter(function('s:_not')).first(s:NONE) is s:NONE
+function! s:Stream.all(...) abort
+  let [l:Func] = s:all_args.validate(a:000)
+  return self.map(l:Func).filter(function('s:_not')).first(s:NONE) is s:NONE
 endfunction
 
 function! s:_not(v) abort
   return !a:v
 endfunction
 
-function! s:Stream.none(f) abort
-  return self.filter(a:f).first(s:NONE) is s:NONE
+function! s:Stream.none(...) abort
+  let [l:Func] = s:none_args.validate(a:000)
+  return self.filter(l:Func).first(s:NONE) is s:NONE
 endfunction
 
-function! s:Stream.group_by(f) abort
-  return self.to_dict(a:f, function('s:_list'), function('s:_plus'))
+function! s:Stream.group_by(...) abort
+  let [l:Func] = s:group_by_args.validate(a:000)
+  return self.to_dict(l:Func, function('s:_list'), function('s:_plus'))
 endfunction
 
 function! s:_list(v) abort
@@ -761,42 +878,42 @@ function! s:_plus(a, b) abort
   return a:a + a:b
 endfunction
 
-" @vimlint(EVL102, 1, a:1)
-function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
-  let l:Result = {}
-  if a:0
+function! s:Stream.to_dict(...) abort
+  let [l:KeyMapper, l:ValueMapper; rest] = s:to_dict_args.validate(a:000)
+  let result = {}
+  if !empty(rest)
     for l:Value1 in self.to_list()
-      let key = a:key_mapper(l:Value1)
-      let l:Value2 = a:value_mapper(l:Value1)
-      if has_key(l:Result, key)
-        let l:Value3 = a:1(l:Result[key], l:Value2)
+      let key = l:KeyMapper(l:Value1)
+      let l:Value2 = l:ValueMapper(l:Value1)
+      if has_key(result, key)
+        let l:Value3 = rest[0](result[key], l:Value2)
       else
         let l:Value3 = l:Value2
       endif
-      let l:Result[key] = l:Value3
+      let result[key] = l:Value3
       unlet l:Value1
       unlet l:Value2
       unlet l:Value3
     endfor
   else
     for l:Value in self.to_list()
-      let key = a:key_mapper(l:Value)
-      if has_key(l:Result, key)
-        throw 'vital: Stream: to_dict(): duplicated elements exist in stream '
+      let key = l:KeyMapper(l:Value)
+      if has_key(result, key)
+        throw 'vital: Stream: Stream.to_dict(): duplicated elements exist in stream '
         \   . '(key: ' . string(key . '') . ')'
       endif
-      let l:Result[key] = a:value_mapper(l:Value)
+      let result[key] = l:ValueMapper(l:Value)
       unlet l:Value
     endfor
   endif
-  return l:Result
+  return result
 endfunction
-" @vimlint(EVL102, 0, a:1)
 
 function! s:Stream.count(...) abort
+  let args = s:count_args.validate(a:000)
   if self.__has_characteristic__(s:SIZED)
-    if a:0
-      return len(filter(self.to_list(), 'a:1(v:val)'))
+    if !empty(args)
+      return len(filter(self.to_list(), 'args[0](v:val)'))
     else
       return len(self.to_list())
     endif
@@ -808,8 +925,24 @@ function! s:Stream.to_list() abort
   return s:_take_freeze_terminal(self, self.__estimate_size__())
 endfunction
 
-function! s:Stream.foreach(f) abort
-  call self.map(a:f).to_list()
+function! s:Stream.foreach(...) abort
+  let [l:Func] = s:foreach_args.validate(a:000)
+  let mapped = self.map(l:Func)
+  call mapped.to_list()
+endfunction
+
+function! s:_is_list_of_streams(streams) abort
+  return empty(filter(copy(a:streams), '!s:_is_stream(v:val)'))
+endfunction
+
+function! s:_is_stream(stream) abort
+  return type(a:stream) is s:T_DICT
+  \   && type(get(a:stream, '__take_possible__', 0)) is s:T_FUNC
+  \   && type(get(a:stream, '__estimate_size__', 0)) is s:T_FUNC
+endfunction
+
+function! s:_validate_closed_stream(stream) abort
+  call a:stream.__estimate_size__()
 endfunction
 
 function! s:_new(base, ...) abort

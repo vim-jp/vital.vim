@@ -74,6 +74,20 @@ Describe Stream
       let s = Stream.chars('abc')
       Assert True(s.__has_characteristic__(SIZED))
     End
+
+    It raises exception for invalid type arguments
+      Throws Stream.chars(42)
+      call Stream.chars('')
+      Throws Stream.chars(function('function'))
+      Throws Stream.chars([])
+      Throws Stream.chars({})
+      Throws Stream.chars(3.14)
+      if v:version >= 800
+        Throws Stream.chars(v:false)
+        Throws Stream.chars(v:null)
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .lines()
@@ -103,6 +117,20 @@ Describe Stream
       let s = Stream.lines('abc')
       Assert True(s.__has_characteristic__(SIZED))
     End
+
+    It raises exception for invalid type arguments
+      Throws Stream.lines(42)
+      call Stream.lines('')
+      Throws Stream.lines(function('function'))
+      Throws Stream.lines([])
+      Throws Stream.lines({})
+      Throws Stream.lines(3.14)
+      if v:version >= 800
+        Throws Stream.lines(v:false)
+        Throws Stream.lines(v:null)
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .from_list()
@@ -128,6 +156,20 @@ Describe Stream
       let list = [1,2,3,4]
       Assert Equals(Stream.from_list(list).filter(function('IsEven')).to_list(), [2,4])
       Assert Equals(list, [1,2,3,4])
+    End
+
+    It raises exception for invalid type arguments
+      Throws Stream.from_list(42)
+      Throws Stream.from_list('')
+      Throws Stream.from_list(function('function'))
+      call Stream.from_list([])
+      Throws Stream.from_list({})
+      Throws Stream.from_list(3.14)
+      if v:version >= 800
+        Throws Stream.from_list(v:false)
+        Throws Stream.from_list(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -186,6 +228,20 @@ Describe Stream
       delfunction Compare
       delfunction IsEvenValue
       delfunction ByValue
+    End
+
+    It raises exception for invalid type arguments
+      Throws Stream.from_dict(42)
+      Throws Stream.from_dict('')
+      Throws Stream.from_dict(function('function'))
+      Throws Stream.from_dict([])
+      call Stream.from_dict({})
+      Throws Stream.from_dict(3.14)
+      if v:version >= 800
+        Throws Stream.from_dict(v:false)
+        Throws Stream.from_dict(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -276,6 +332,25 @@ Describe Stream
       let s = Stream.range(1,10)
       Assert True(s.__has_characteristic__(SIZED))
     End
+
+    It raises exception for invalid type arguments
+      call Stream.range(42)
+      Throws Stream.range('')
+      Throws Stream.range(function('function'))
+      Throws Stream.range([])
+      Throws Stream.range({})
+      Throws Stream.range(3.14)
+      if v:version >= 800
+        Throws Stream.range(v:false)
+        Throws Stream.range(v:null)
+        " TODO: job, channel
+      endif
+
+      Throws Stream.range(42, '')
+      Throws Stream.range(0, 1, [])
+      Throws Stream.range(0, 1, 2, 3)
+      Throws Stream.range(0, 1, 2, [])
+    End
   End
 
   Describe .iterate()
@@ -291,6 +366,34 @@ Describe Stream
     It creates stream with characteristics
       let s = Stream.iterate(1, function('Succ'))
       Assert False(s.__has_characteristic__(SIZED))
+    End
+
+    It raises exception for invalid type arguments
+      " the 1st argument
+      call Stream.iterate(42, function('function'))
+      call Stream.iterate('', function('function'))
+      call Stream.iterate(function('function'), function('function'))
+      call Stream.iterate([], function('function'))
+      call Stream.iterate({}, function('function'))
+      call Stream.iterate(3.14, function('function'))
+      if v:version >= 800
+        call Stream.iterate(v:false, function('function'))
+        call Stream.iterate(v:null, function('function'))
+        " TODO: job, channel
+      endif
+
+      " the 2nd argument
+      Throws Stream.iterate(42, 42)
+      Throws Stream.iterate(42, '')
+      call Stream.iterate(42, function('function'))
+      Throws Stream.iterate(42, [])
+      Throws Stream.iterate(42, {})
+      Throws Stream.iterate(42, 3.14)
+      if v:version >= 800
+        Throws Stream.iterate(42, v:false)
+        Throws Stream.iterate(42, v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -313,6 +416,21 @@ Describe Stream
 
       unlet g:count
       delfunction IncCount
+    End
+
+    It raises exception for invalid type arguments
+      Throws Stream.generate(42)
+      Throws Stream.generate('')
+      Throws Stream.generate('42')
+      call Stream.generate(function('Answer'))
+      Throws Stream.generate([])
+      Throws Stream.generate({})
+      Throws Stream.generate(3.14)
+      if v:version >= 800
+        Throws Stream.generate(v:false)
+        Throws Stream.generate(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -444,6 +562,49 @@ Describe Stream
       let s = Stream.zip([Stream.iterate(0, function('Succ')), Stream.of(1,2,3), Stream.of(4,5,6)])
       Assert True(s.__has_characteristic__(SIZED))
     End
+
+    It combines 0 or 1 stream(s)
+      Assert Equals(Stream.zip([]).to_list(), [])
+      Assert Equals(Stream.zip([Stream.of(1)]).to_list(), [[1]])
+      Assert Equals(Stream.zip([Stream.of(1,2,3)]).to_list(), [[1], [2], [3]])
+    End
+
+    It raises exception for invalid type arguments
+      Throws Stream.zip(42)
+      Throws Stream.zip('')
+      Throws Stream.zip(function('function'))
+      Throws Stream.zip({})
+      Throws Stream.zip(3.14)
+      if v:version >= 800
+        Throws Stream.zip(v:false)
+        Throws Stream.zip(v:null)
+        " TODO: job, channel
+      endif
+
+      Throws Stream.zip([42, 42])
+      Throws Stream.zip(['', ''])
+      Throws Stream.zip([function('function'), function('function')])
+      Throws Stream.zip([[], []])
+      Throws Stream.zip([{}, {}])
+      Throws Stream.zip([3.14, 3.14])
+      if v:version >= 800
+        Throws Stream.zip([v:false, v:false])
+        Throws Stream.zip([v:null, v:null])
+        " TODO: job, channel
+      endif
+
+      Throws Stream.zip([Stream.empty(), 42])
+      Throws Stream.zip([Stream.empty(), ''])
+      Throws Stream.zip([Stream.empty(), function('function')])
+      Throws Stream.zip([Stream.empty(), []])
+      Throws Stream.zip([Stream.empty(), {}])
+      Throws Stream.zip([Stream.empty(), 3.14])
+      if v:version >= 800
+        Throws Stream.zip([Stream.empty(), v:false])
+        Throws Stream.zip([Stream.empty(), v:null])
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .zip_with_index()
@@ -537,11 +698,49 @@ Describe Stream
         \Stream.of(1,2,3).concat([Stream.of(4,5)]).to_list(),
         \[1,2,3,4,5])
     End
+
+    It raises exception for invalid type arguments
+      Throws Stream.concat(42)
+      Throws Stream.concat('')
+      Throws Stream.concat(function('function'))
+      Throws Stream.concat([])
+      Throws Stream.concat({})
+      Throws Stream.concat(3.14)
+      if v:version >= 800
+        Throws Stream.concat(v:false)
+        Throws Stream.concat(v:null)
+        " TODO: job, channel
+      endif
+
+      Throws Stream.concat([42, 42])
+      Throws Stream.concat(['', ''])
+      Throws Stream.concat([function('function'), function('function')])
+      Throws Stream.concat([[], []])
+      Throws Stream.concat([{}, {}])
+      Throws Stream.concat([3.14, 3.14])
+      if v:version >= 800
+        Throws Stream.concat([v:false, v:false])
+        Throws Stream.concat([v:null, v:null])
+        " TODO: job, channel
+      endif
+
+      Throws Stream.concat([Stream.empty(), 42])
+      Throws Stream.concat([Stream.empty(), ''])
+      Throws Stream.concat([Stream.empty(), function('function')])
+      Throws Stream.concat([Stream.empty(), []])
+      Throws Stream.concat([Stream.empty(), {}])
+      Throws Stream.concat([Stream.empty(), 3.14])
+      if v:version >= 800
+        Throws Stream.concat([Stream.empty(), v:false])
+        Throws Stream.concat([Stream.empty(), v:null])
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .take()
     It raises negative number argument
-      Throws /vital: Stream: take(n): n must be 0 or positive/
+      Throws /vital: Stream: Stream.take(): the first argument must be 0 or positive/
       \      Stream.of(1,2,3,4,5).take(-1)
       " throws nothing
       call Stream.of(1,2,3,4,5).take(0)
@@ -562,20 +761,30 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.take(3)
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.take(3)
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      call s.to_list()
-      Throws call s.take(3).to_list()
+    It raises exception for invalid type arguments
+      call Stream.of(1).take(42)
+      Throws Stream.of(1).take('42')
+      Throws Stream.of(1).take(function('function'))
+      Throws Stream.of(1).take([])
+      Throws Stream.of(1).take({})
+      Throws Stream.of(1).take(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).take(v:false)
+        Throws Stream.of(1).take(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
   Describe .drop()
     It raises negative number argument
-      Throws /vital: Stream: drop(n): n must be 0 or positive/
+      Throws /vital: Stream: Stream.drop(): the first argument must be 0 or positive/
       \      Stream.of(1,2,3,4,5).drop(-1)
       " throws nothing
       call Stream.of(1,2,3,4,5).drop(0)
@@ -589,14 +798,24 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.drop(3)
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.drop(3)
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      Assert Equals(s.to_list(), [1,2,3,4,5])
-      Throws s.drop(3).to_list()
+    It raises exception for invalid type arguments
+      call Stream.of(1).drop(42)
+      Throws Stream.of(1).drop('42')
+      Throws Stream.of(1).drop(function('function'))
+      Throws Stream.of(1).drop([])
+      Throws Stream.of(1).drop({})
+      Throws Stream.of(1).drop(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).drop(v:false)
+        Throws Stream.of(1).drop(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -633,14 +852,24 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.peek(function('Id'))
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.peek(function('Id'))
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      call s.to_list()
-      Throws s.peek(function('Id')).to_list()
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).peek(42)
+      Throws Stream.of(1).peek('42')
+      call Stream.of(1).peek(function('function'))
+      Throws Stream.of(1).peek([])
+      Throws Stream.of(1).peek({})
+      Throws Stream.of(1).peek(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).peek(v:false)
+        Throws Stream.of(1).peek(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -657,13 +886,24 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.foreach(function('Id'))
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.foreach(function('Id'))
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      call s.foreach(function('Id'))
-      Throws s.foreach(function('Id'))
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).foreach(42)
+      Throws Stream.of(1).foreach('42')
+      call Stream.of(1).foreach(function('Id'))
+      Throws Stream.of(1).foreach([])
+      Throws Stream.of(1).foreach({})
+      Throws Stream.of(1).foreach(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).foreach(v:false)
+        Throws Stream.of(1).foreach(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -677,14 +917,24 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.map(function('Id'))
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.map(function('Id'))
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      call s.to_list()
-      Throws s.map(function('Id')).to_list()
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).map(42)
+      Throws Stream.of(1).map('42')
+      call Stream.of(1).map(function('function'))
+      Throws Stream.of(1).map([])
+      Throws Stream.of(1).map({})
+      Throws Stream.of(1).map(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).map(v:false)
+        Throws Stream.of(1).map(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -738,14 +988,24 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.flat_map(function('Id'))
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.flat_map(function('Id'))
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      call s.to_list()
-      Throws s.flat_map(function('Id')).to_list()
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).flat_map(42)
+      Throws Stream.of(1).flat_map('42')
+      call Stream.of(1).flat_map(function('function'))
+      Throws Stream.of(1).flat_map([])
+      Throws Stream.of(1).flat_map({})
+      Throws Stream.of(1).flat_map(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).flat_map(v:false)
+        Throws Stream.of(1).flat_map(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -809,14 +1069,24 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.slice_before(function('Id'))
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.slice_before(function('Id'))
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      call s.to_list()
-      Throws s.slice_before(function('Id')).to_list()
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).slice_before(42)
+      Throws Stream.of(1).slice_before('42')
+      call Stream.of(1).slice_before(function('function'))
+      Throws Stream.of(1).slice_before([])
+      Throws Stream.of(1).slice_before({})
+      Throws Stream.of(1).slice_before(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).slice_before(v:false)
+        Throws Stream.of(1).slice_before(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -830,14 +1100,24 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.filter(function('IsEven'))
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.filter(function('IsEven'))
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      call s.to_list()
-      Throws s.filter(function('IsEven')).to_list()
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).filter(42)
+      Throws Stream.of(1).filter('42')
+      call Stream.of(1).filter(function('function'))
+      Throws Stream.of(1).filter([])
+      Throws Stream.of(1).filter({})
+      Throws Stream.of(1).filter(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).filter(v:false)
+        Throws Stream.of(1).filter(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -862,14 +1142,24 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.take_while(function('Id'))
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.take_while(function('Id'))
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      call s.to_list()
-      Throws s.take_while(function('Id')).to_list()
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).take_while(42)
+      Throws Stream.of(1).take_while('42')
+      call Stream.of(1).take_while(function('function'))
+      Throws Stream.of(1).take_while([])
+      Throws Stream.of(1).take_while({})
+      Throws Stream.of(1).take_while(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).take_while(v:false)
+        Throws Stream.of(1).take_while(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -893,14 +1183,24 @@ Describe Stream
     End
 
     It must not reuse stream
-      " throws nothing
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      call s.drop_while(function('Id'))
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.drop_while(function('Id'))
+    End
 
-      let s = Stream.of(1,2,3,4,5)
-      call s.to_list()
-      Throws s.drop_while(function('Id')).to_list()
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).drop_while(42)
+      Throws Stream.of(1).drop_while('42')
+      call Stream.of(1).drop_while(function('function'))
+      Throws Stream.of(1).drop_while([])
+      Throws Stream.of(1).drop_while({})
+      Throws Stream.of(1).drop_while(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).drop_while(v:false)
+        Throws Stream.of(1).drop_while(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -969,6 +1269,20 @@ Describe Stream
       delfunction ValueOf
       delfunction Mod5
     End
+
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).distinct(42)
+      Throws Stream.of(1).distinct('42')
+      call Stream.of(1).distinct(function('function'))
+      Throws Stream.of(1).distinct([])
+      Throws Stream.of(1).distinct({})
+      Throws Stream.of(1).distinct(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).distinct(v:false)
+        Throws Stream.of(1).distinct(v:null)
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .sorted()
@@ -1016,11 +1330,27 @@ Describe Stream
       \ Stream.iterate(1, function('Succ')).take(3).sorted(function('ByDesc')).to_list(),
       \ [3,2,1])
     End
+
+    It raises exception for invalid type arguments
+      let by_desc = 'v:val[0] > v:val[1] ? -1 : v:val[0] ==# v:val[1] ? 0 : 1'
+
+      Throws Stream.of(1).sorted(42)
+      Throws Stream.of(1).sorted(by_desc)
+      call Stream.of(1).sorted(function('ByDesc'))
+      Throws Stream.of(1).sorted([])
+      Throws Stream.of(1).sorted({})
+      Throws Stream.of(1).sorted(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).sorted(v:false)
+        Throws Stream.of(1).sorted(v:null)
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .reduce()
     It raises exception for empty stream
-      Throws /vital: Stream: \w\+(): stream is empty and default value was not given/
+      Throws /vital: Stream: Stream.reduce(): stream is empty and default value was not given/
       \      Stream.empty().reduce(function('Id'))
     End
 
@@ -1031,11 +1361,27 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3,4,5).reduce(function('Plus'), 0), 15)
       Assert Equals(Stream.of(1,2,3).reduce(function('insert'), []), [3,2,1])
     End
+
+    It raises exception for invalid type arguments
+      let plus = 'v:val[0] + v:val[1]'
+
+      Throws Stream.of(1).reduce(42)
+      Throws Stream.of(1).reduce(plus)
+      call Stream.of(1).reduce(function('Plus'))
+      Throws Stream.of(1).reduce([])
+      Throws Stream.of(1).reduce({})
+      Throws Stream.of(1).reduce(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).reduce(v:false)
+        Throws Stream.of(1).reduce(v:null)
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .first()
     It raises exception for empty stream
-      Throws /vital: Stream: \w\+(): stream is empty and default value was not given/
+      Throws /vital: Stream: Stream.first(): stream is empty and default value was not given/
       \      Stream.empty().first()
       " throws nothing
       Assert Equals(Stream.empty().first(42), 42)
@@ -1049,7 +1395,7 @@ Describe Stream
 
   Describe .last()
     It raises exception for empty stream
-      Throws /vital: Stream: \w\+(): stream is empty and default value was not given/
+      Throws /vital: Stream: Stream.last(): stream is empty and default value was not given/
       \      Stream.empty().last()
       " throws nothing
       Assert Equals(Stream.empty().last(42), 42)
@@ -1069,7 +1415,7 @@ Describe Stream
 
   Describe .find()
     It raises exception for empty stream
-      Throws /vital: Stream: \w\+(): stream is empty and default value was not given/
+      Throws /vital: Stream: Stream.first(): stream is empty and default value was not given/
       \      Stream.empty().find(function('Id'))
       " throws nothing
       Assert Equals(Stream.empty().find(function('Id'), 42), 42)
@@ -1077,6 +1423,22 @@ Describe Stream
 
     It returns the first element matching with given predicate function in stream
       Assert Equals(Stream.iterate(1, function('Succ')).find(function('IsEven')), 2)
+    End
+
+    It raises exception for invalid type arguments
+      let is_even = 'v:val % 2 == 0'
+
+      Throws Stream.of(1,2).find(42)
+      Throws Stream.of(1,2).find(is_even)
+      call Stream.of(1,2).find(function('IsEven'))
+      Throws Stream.of(1,2).find([])
+      Throws Stream.of(1,2).find({})
+      Throws Stream.of(1,2).find(3.14)
+      if v:version >= 800
+        Throws Stream.of(1,2).find(v:false)
+        Throws Stream.of(1,2).find(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -1096,6 +1458,22 @@ Describe Stream
       delfunction GreaterThan2
       delfunction GreaterThan3
     End
+
+    It raises exception for invalid type arguments
+      let is_even = 'v:val % 2 == 0'
+
+      Throws Stream.of(1).any(42)
+      Throws Stream.of(1).any(is_even)
+      call Stream.of(1).any(function('IsEven'))
+      Throws Stream.of(1).any([])
+      Throws Stream.of(1).any({})
+      Throws Stream.of(1).any(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).any(v:false)
+        Throws Stream.of(1).any(v:null)
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .all()
@@ -1113,6 +1491,22 @@ Describe Stream
 
       delfunction GreaterThan0
       delfunction GreaterThan1
+    End
+
+    It raises exception for invalid type arguments
+      let is_even = 'v:val % 2 == 0'
+
+      Throws Stream.of(1).all(42)
+      Throws Stream.of(1).all(is_even)
+      call Stream.of(1).all(function('IsEven'))
+      Throws Stream.of(1).all([])
+      Throws Stream.of(1).all({})
+      Throws Stream.of(1).all(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).all(v:false)
+        Throws Stream.of(1).all(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -1132,13 +1526,26 @@ Describe Stream
       delfunction GreaterThan3
       delfunction GreaterThan2
     End
+
+    It raises exception for invalid type arguments
+      let is_even = 'v:val % 2 == 0'
+
+      Throws Stream.of(1).none(42)
+      Throws Stream.of(1).none(is_even)
+      call Stream.of(1).none(function('IsEven'))
+      Throws Stream.of(1).none([])
+      Throws Stream.of(1).none({})
+      Throws Stream.of(1).none(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).none(v:false)
+        Throws Stream.of(1).none(v:null)
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .group_by()
     It groups stream
-      function! Len(v) abort
-        return len(a:v)
-      endfunction
       function! EvenOrOdd(n) abort
         return a:n % 2 == 0 ? 'even' : 'odd'
       endfunction
@@ -1148,14 +1555,27 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3).group_by(function('Id')), {'1': [1], '2': [2], '3': [3]})
       Assert Equals(Stream.of(1,2,3,2,1).group_by(function('Id')), {'1': [1,1], '2': [2,2], '3': [3]})
       Assert Equals(Stream.of('foo', 'bar', 'baz').group_by(function('Id')), {'foo': ['foo'], 'bar': ['bar'], 'baz': ['baz']})
-      Assert Equals(Stream.of('a', 'bb', 'ccc').group_by(function('Len')), {'1': ['a'], '2': ['bb'], '3': ['ccc']})
-      Assert Equals(Stream.of('a', 'bb', 'ccc', 'ddd').group_by(function('Len')), {'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
+      Assert Equals(Stream.of('a', 'bb', 'ccc').group_by(function('len')), {'1': ['a'], '2': ['bb'], '3': ['ccc']})
+      Assert Equals(Stream.of('a', 'bb', 'ccc', 'ddd').group_by(function('len')), {'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
       Assert Equals(
         \Stream.of(1,2,3,4,5).group_by(function('EvenOrOdd')),
         \{'even': [2,4], 'odd': [1,3,5]})
 
-      delfunction Len
       delfunction EvenOrOdd
+    End
+
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).group_by(42)
+      Throws Stream.of(1).group_by('v:val')
+      call Stream.of(1).group_by(function('Id'))
+      Throws Stream.of(1).group_by([])
+      Throws Stream.of(1).group_by({})
+      Throws Stream.of(1).group_by(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).group_by(v:false)
+        Throws Stream.of(1).group_by(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -1177,7 +1597,7 @@ Describe Stream
         return [a:v]
       endfunction
 
-      Throws /vital: Stream: to_dict(): duplicated elements exist in stream (key: '2')/
+      Throws /vital: Stream: Stream.to_dict(): duplicated elements exist in stream (key: '2')/
       \      Stream.of(1,2,3,2,1).to_dict(function('Id'), function('Id'))
       " throws nothing
       Assert Equals(
@@ -1185,7 +1605,7 @@ Describe Stream
           \.to_dict(function('Id'), function('List'), function('Plus')),
         \{'1': [1,1], '2': [2,2], '3': [3]})
 
-      Throws /vital: Stream: to_dict(): duplicated elements exist in stream (key: '3')/
+      Throws /vital: Stream: Stream.to_dict(): duplicated elements exist in stream (key: '3')/
       \      Stream.of('a', 'bb', 'ccc', 'ddd').to_dict(function('len'), function('Id'))
       " throws nothing
       Assert Equals(
@@ -1194,6 +1614,44 @@ Describe Stream
         \{'1': ['a'], '2': ['bb'], '3': ['ccc', 'ddd']})
 
       delfunction List
+    End
+
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).to_dict(42, 42)
+      Throws Stream.of(1).to_dict('v:val', 'v:val')
+      call Stream.of(1).to_dict(function('Id'), function('Id'))
+      Throws Stream.of(1).to_dict([], [])
+      Throws Stream.of(1).to_dict({}, {})
+      Throws Stream.of(1).to_dict(3.14, 3.14)
+      if v:version >= 800
+        Throws Stream.of(1).to_dict(v:false, v:false)
+        Throws Stream.of(1).to_dict(v:null, v:null)
+        " TODO: job, channel
+      endif
+
+      Throws Stream.of(1).to_dict(function('Id'), 42)
+      Throws Stream.of(1).to_dict(function('Id'), 'v:val')
+      call Stream.of(1).to_dict(function('Id'), function('Id'))
+      Throws Stream.of(1).to_dict(function('Id'), [])
+      Throws Stream.of(1).to_dict(function('Id'), {})
+      Throws Stream.of(1).to_dict(function('Id'), 3.14)
+      if v:version >= 800
+        Throws Stream.of(1).to_dict(function('Id'), v:false)
+        Throws Stream.of(1).to_dict(function('Id'), v:null)
+        " TODO: job, channel
+      endif
+
+      Throws Stream.of(1).to_dict(function('Id'), function('Id'), 42)
+      Throws Stream.of(1).to_dict(function('Id'), function('Id'), 'v:val')
+      call Stream.of(1).to_dict(function('Id'), function('Id'), function('Id'))
+      Throws Stream.of(1).to_dict(function('Id'), function('Id'), [])
+      Throws Stream.of(1).to_dict(function('Id'), function('Id'), {})
+      Throws Stream.of(1).to_dict(function('Id'), function('Id'), 3.14)
+      if v:version >= 800
+        Throws Stream.of(1).to_dict(function('Id'), function('Id'), v:false)
+        Throws Stream.of(1).to_dict(function('Id'), function('Id'), v:null)
+        " TODO: job, channel
+      endif
     End
   End
 
@@ -1209,6 +1667,20 @@ Describe Stream
       Assert Equals(Stream.of(1,2,3).count(function('IsEven')), 1)
       Assert Equals(Stream.iterate(1, function('Succ')).count(function('IsEven')), 1/0)
     End
+
+    It raises exception for invalid type arguments
+      Throws Stream.of(1).count(42)
+      Throws Stream.of(1).count('v:val')
+      call Stream.of(1).count(function('Id'))
+      Throws Stream.of(1).count([])
+      Throws Stream.of(1).count({})
+      Throws Stream.of(1).count(3.14)
+      if v:version >= 800
+        Throws Stream.of(1).count(v:false)
+        Throws Stream.of(1).count(v:null)
+        " TODO: job, channel
+      endif
+    End
   End
 
   Describe .to_list()
@@ -1219,7 +1691,8 @@ Describe Stream
     It must not reuse stream
       let s = Stream.of(1,2,3,4,5)
       call s.to_list()
-      Throws s.to_list()
+      Throws /vital: Stream: stream has already been operated upon or closed at/
+      \      s.to_list()
     End
   End
 
@@ -1243,6 +1716,20 @@ Describe Stream
       endfunction
 
       Assert Equals(Stream.generator(generator).take(5).to_list(), [0,1,2,3,4])
+    End
+
+    It raises exception for invalid type arguments
+      Throws Stream.generator(42)
+      Throws Stream.generator('')
+      Throws Stream.generator(function('function'))
+      Throws Stream.generator([])
+      Throws Stream.generator({})
+      Throws Stream.generator(3.14)
+      if v:version >= 800
+        Throws Stream.generator(v:false)
+        Throws Stream.generator(v:null)
+        " TODO: job, channel
+      endif
     End
   End
 End
