@@ -65,6 +65,9 @@ function! s:uniq_by(list, f) abort
   return s:foldl(cons_of_if_has, [], a:list)
 endfunction
 
+" If a:f(a:x) ∈ s:map(a:xs, a:f), returns s:conj(a:xs, a:x) .
+" Otherwise, returns a:xs .
+" a:f is either the string expression, the funcref, or Data.Closure's {callable}.
 function! s:_cons_if_has(f, xs, x) abort
   let l:Call = s:_get_caller(a:f)
   return s:has(s:map(a:xs, a:f), l:Call(a:f, [a:x])) ? a:xs : s:conj(a:xs, a:x)
@@ -121,10 +124,16 @@ function! s:sort(list, f) abort
   endif
 endfunction
 
+" Unlifts Data.Closure's {closure} to the function.
+" s:sort_closure_func must be defined as the {callable} of the binary function
+" before this is called.
 function! s:_compare_by_closure(a, b) abort
   return s:Closure.apply(s:sort_closure_func, [a:a, a:b])
 endfunction
 
+" Lifts the string expression to the function.
+" s:sort_expr must be defined as the string expression of the binary function
+" before this is called.
 function! s:_compare_by_string_expr(a, b) abort
   return eval(s:sort_expr)
 endfunction
@@ -137,6 +146,9 @@ function! s:sort_by(list, unary_f) abort
   return s:sort(a:list, field_comparator)
 endfunction
 
+" Compares a:unary_f(a:x) and a:unary_f(a:y) .
+" Doesn't return if the type of a:x and a:y is mismatched,
+" or the types is unexpected.
 function! s:_compare_with(unary_f, x, y) abort
   let l:Call = s:_get_caller(a:unary_f)
   let x = l:Call(a:unary_f, [a:x])
@@ -152,11 +164,11 @@ function! s:_compare_with(unary_f, x, y) abort
   \       : execute(printf("throw 'vital: Data.List: sort_by() cannot compare %s and %s'", string(x), string(y)), 1)
 endfunction
 
-" for number and string
+" The basic comparator for Number and String
 function! s:_basic_comparator(x, y) abort
-  return a:x > a:y ? 1
-  \    : a:x < a:y ? -1
-  \                : 0
+  return a:x ># a:y ? 1
+  \    : a:x <# a:y ? -1
+  \                 : 0
 endfunction
 
 " The comparator of the dictionary order
@@ -191,19 +203,15 @@ endfunction
 
 " Returns a minimum value in {list} through given {expr}.
 " Returns 0 if {list} is empty.
-" v:val is used in {expr}
+" v:val is used in {expr}.
 " FIXME: -0x80000000 == 0x80000000
 function! s:min_by(list, f) abort
-  "TODO: DRY
-  let l:F = s:Closure.is_callable(a:f) ? a:f
-  \                                    : substitute(a:f, 'v:val', 'a:1', 'g')
-  let l:Build = s:Closure.is_callable(l:F) ? s:Closure.build
-  \                                        : s:Closure.from_expr
-  let g = s:Closure.compose([s:Closure.from_expr('-a:1'), l:Build(l:F)])
+  let l:F = s:_build_unary_func(a:f)
+  let g   = s:Closure.compose([s:Closure.from_expr('-a:1'), l:F])
   return s:max_by(a:list, g)
 endfunction
 
-" Returns List of character sequence between [a:from, a:to]
+" Returns List of character sequence between [a:from, a:to] .
 " e.g.: s:char_range('a', 'c') returns ['a', 'b', 'c']
 function! s:char_range(from, to) abort
   return map(
@@ -227,25 +235,21 @@ function! s:has_index(list, index) abort
   return 0 <= a:index && a:index < len(a:list)
 endfunction
 
-" similar to Haskell's Data.List.span
+" Similar to Haskell's Data.List.span .
 function! s:span(f, xs) abort
   let body = s:take_while(a:f, a:xs)
   let tail = a:xs[len(body) :]
   return [body, tail]
 endfunction
 
-" similar to Haskell's Data.List.break
+" Similar to Haskell's Data.List.break .
 function! s:break(f, xs) abort
-  "TODO: DRY
-  let l:F = s:Closure.is_callable(a:f) ? a:f
-  \                                    : substitute(a:f, 'v:val', 'a:1', 'g')
-  let l:Build = s:Closure.is_callable(l:F) ? s:Closure.build
-  \                                        : s:Closure.from_expr
-  let not_f = s:Closure.compose([function('s:_not'), l:Build(l:F)])
+  let l:F   = s:_build_unary_func(a:f)
+  let not_f = s:Closure.compose([function('s:_not'), l:F])
   return s:span(not_f, a:xs)
 endfunction
 
-" similar to Haskell's Data.List.takeWhile
+" Similar to Haskell's Data.List.takeWhile .
 function! s:take_while(f, xs) abort
   let l:Call = s:_get_caller(a:f)
   let result = []
@@ -258,7 +262,7 @@ function! s:take_while(f, xs) abort
   endfor
 endfunction
 
-" similar to Haskell's Data.List.dropWhile
+" Similar to Haskell's Data.List.dropWhile .
 function! s:drop_while(f, xs) abort
   let l:Call = s:_get_caller(a:f)
   let i = -1
@@ -273,27 +277,27 @@ function! s:drop_while(f, xs) abort
   return a:xs[i + 1 :]
 endfunction
 
-" similar to Haskell's Data.List.partition
+" Similar to Haskell's Data.List.partition .
 function! s:partition(f, xs) abort
   return [filter(copy(a:xs), a:f), filter(copy(a:xs), '!(' . a:f . ')')]
 endfunction
 
-" similar to Haskell's Prelude.all
+" Similar to Haskell's Prelude.all .
 function! s:all(f, xs) abort
   return !s:any(printf('!(%s)', a:f), a:xs)
 endfunction
 
-" similar to Haskell's Prelude.any
+" Similar to Haskell's Prelude.any .
 function! s:any(f, xs) abort
   return !empty(filter(map(copy(a:xs), a:f), 'v:val'))
 endfunction
 
-" similar to Haskell's Prelude.and
+" Similar to Haskell's Prelude.and .
 function! s:and(xs) abort
   return s:all('v:val', a:xs)
 endfunction
 
-" similar to Haskell's Prelude.or
+" Similar to Haskell's Prelude.or .
 function! s:or(xs) abort
   return s:any('v:val', a:xs)
 endfunction
@@ -310,7 +314,7 @@ function! s:map_accum(expr, xs, init) abort
   return memo
 endfunction
 
-" similar to Haskell's Prelude.foldl
+" Similar to Haskell's Prelude.foldl .
 function! s:foldl(f, init, xs) abort
   "NOTE: The 'Call' should be named with l: for the conflict problem
   let l:Call = s:Closure.is_callable(a:f) ? s:Closure.apply
@@ -322,13 +326,15 @@ function! s:foldl(f, init, xs) abort
   return memo
 endfunction
 
+" Returns the result of that apply the two element list to the binary string expression.
+" The binary expression has 'v:memo' and 'v:val'.
 function! s:_call_two_argument_string_expr(expr, bi_arg) abort
     let expr = substitute(a:expr, 'v:memo', string(a:bi_arg[0]), 'g')
     let expr = substitute(expr, 'v:val', string(a:bi_arg[1]), 'g')
     return eval(expr)
 endfunction
 
-" similar to Haskell's Prelude.foldl1
+" Similar to Haskell's Prelude.foldl1 .
 function! s:foldl1(f, xs) abort
   if len(a:xs) == 0
     throw 'vital: Data.List: foldl1'
@@ -336,7 +342,7 @@ function! s:foldl1(f, xs) abort
   return s:foldl(a:f, a:xs[0], a:xs[1:])
 endfunction
 
-" similar to Haskell's Prelude.foldr
+" Similar to Haskell's Prelude.foldr .
 function! s:foldr(f, init, xs) abort
   let curried_f_expr = s:Closure.is_callable(a:f)
   \                  ? 's:Closure.build(a:f, [v:val])'
@@ -347,13 +353,15 @@ function! s:foldr(f, init, xs) abort
   return linear.call(a:init)
 endfunction
 
+" Returns the result of that apply a:memo and a:val to the binary string expression.
+" The binary expression has 'v:memo' and 'v:val'.
 function! s:_call_expr_memo_val(expr, memo, val) abort
   let expr = substitute(a:expr, 'v:memo', string(a:memo), 'g')
   let expr = substitute(expr, 'v:val', string(a:val), 'g')
   return eval(expr)
 endfunction
 
-" similar to Haskell's Prelude.fold11
+" Similar to Haskell's Prelude.fold11 .
 function! s:foldr1(f, xs) abort
   if len(a:xs) == 0
     throw 'vital: Data.List: foldr1'
@@ -361,12 +369,12 @@ function! s:foldr1(f, xs) abort
   return s:foldr(a:f, a:xs[-1], a:xs[0:-2])
 endfunction
 
-" similar to python's zip()
+" Similar to python's zip() .
 function! s:zip(...) abort
   return map(range(min(map(copy(a:000), 'len(v:val)'))), "map(copy(a:000), 'v:val['.v:val.']')")
 endfunction
 
-" similar to zip(), but goes until the longer one.
+" Similar to zip(), but goes until the longer one.
 function! s:zip_fill(xs, ys, filler) abort
   if empty(a:xs) && empty(a:ys)
     return []
@@ -385,7 +393,7 @@ function! s:with_index(list, ...) abort
   return map(copy(a:list), '[v:val, v:key + base]')
 endfunction
 
-" similar to Ruby's detect or Haskell's find.
+" Similar to Ruby's detect or Haskell's find.
 function! s:find(list, default, f) abort
   let l:Call = s:_get_caller(a:f)
   for x in a:list
@@ -461,7 +469,7 @@ function! s:intersect(list1, list2) abort
   return items
 endfunction
 
-" similar to Ruby's group_by.
+" Similar to Ruby's group_by.
 function! s:group_by(xs, f) abort
   let result = {}
   let list = map(copy(a:xs), printf('[v:val, %s]', a:f))
@@ -478,12 +486,8 @@ function! s:group_by(xs, f) abort
   return result
 endfunction
 
-function! s:_default_compare(a, b) abort
-  return a:a <# a:b ? -1 : a:a ># a:b ? 1 : 0
-endfunction
-
 function! s:binary_search(list, value, ...) abort
-  let Predicate = a:0 >= 1 ? a:1 : 's:_default_compare'
+  let Predicate = a:0 >= 1 ? a:1 : 's:_basic_comparator'
   let dic = a:0 >= 2 ? a:2 : {}
   let start = 0
   let end = len(a:list) - 1
@@ -556,25 +560,42 @@ function! s:combinations(list, r) abort
 endfunction
 
 
+" Takes the unary function of the funcref or the string expression.
+" Returns the caller function that is like call() .
 function! s:_get_caller(f) abort
   return s:Closure.is_callable(a:f) ? s:Closure.apply
   \                                 : function('s:_call_string_expr')
 endfunction
 
+" Applies the string expression to the head element of a:args.
+" Returns the result.
 function! s:_call_string_expr(expr, args) abort
   return map([a:args[0]], a:expr)[0]
 endfunction
 
+" Composes two function
 function! s:_compose(g, f) abort
   return s:Closure.compose([a:g, a:f])
 endfunction
 
+" The identity function
 function! s:_id(x) abort
   return a:x
 endfunction
 
+" The function of the '!' operator
 function! s:_not(x) abort
   return !a:x
+endfunction
+
+" Converts the unary function to Data.Closure's {callable}.
+" If the unary function is the string expression, substitutes 'v:val' to 'a:1'.
+function! s:_build_unary_func(unary_f) abort
+  let l:F = s:Closure.is_callable(a:unary_f)
+  \           ? a:unary_f
+  \           : substitute(a:unary_f, 'v:val', 'a:1', 'g')
+  return s:Closure.is_callable(l:F) ? s:Closure.build(l:F)
+  \                                 : s:Closure.from_expr(l:F)
 endfunction
 
 let &cpo = s:save_cpo
