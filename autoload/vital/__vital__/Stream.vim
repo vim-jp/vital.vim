@@ -156,26 +156,23 @@ function! s:_range_size(args, index) abort
 endfunction
 
 function! s:iterate(init, f) abort
-  let l:Call = s:_get_callfunc_for_func1(a:f, 'iterate()')
   return s:_inf_stream(
-  \ a:f, a:init, l:Call, 'self._call(self._f, [v:val])', 'iterate()'
+  \ a:f, a:init, 'self._f(v:val)', 'iterate()'
   \)
 endfunction
 
 function! s:generate(f) abort
-  let l:Call = s:_get_callfunc_for_func0(a:f, 'generate()')
   return s:_inf_stream(
-  \ a:f, l:Call(a:f, []), l:Call, 'self._call(self._f, [])', 'generate()'
+  \ a:f, a:f(), 'self._f()', 'generate()'
   \)
 endfunction
 
-function! s:_inf_stream(f, init, call, expr, caller) abort
+function! s:_inf_stream(f, init, expr, caller) abort
   let stream = s:_new(s:Stream)
   let stream._name = a:caller
   let stream._characteristics = 0
   let stream._f = a:f
   let stream.__value = a:init
-  let stream._call = a:call
   let stream._expr = a:expr
   function! stream.__take_possible__(n) abort
     let list = []
@@ -320,11 +317,10 @@ function! s:Stream.peek(f) abort
   let stream._name = 'peek()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._call = s:_get_callfunc_for_func1(a:f, 'peek()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     let list = s:_take_freeze_intermediate(self._upstream, a:n)[0]
-    call map(copy(list), 'self._call(self._f, [v:val])')
+    call map(copy(list), 'self._f(v:val)')
     return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__estimate_size__() abort
@@ -338,11 +334,10 @@ function! s:Stream.map(f) abort
   let stream._name = 'map()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._call = s:_get_callfunc_for_func1(a:f, 'map()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     let list = s:_take_freeze_intermediate(self._upstream, a:n)[0]
-    call map(list, 'self._call(self._f, [v:val])')
+    call map(list, 'self._f(v:val)')
     return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__estimate_size__() abort
@@ -356,7 +351,6 @@ function! s:Stream.flat_map(f) abort
   let stream._name = 'flat_map()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._call = s:_get_callfunc_for_func1(a:f, 'flat_map()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     let open = (self._upstream.__estimate_size__() > 0)
@@ -369,7 +363,7 @@ function! s:Stream.flat_map(f) abort
       let r = s:_sublist(self.__buffer, 0, a:n - 1)
       let self.__buffer = s:_sublist(self.__buffer, a:n)
       " add results to list. len(l) <= a:n when the loop is end
-      for l in map(r, 'self._call(self._f, [v:val])')
+      for l in map(r, 'self._f(v:val)')
         if len(l) + len(list) < a:n
           let list += l
         else
@@ -394,14 +388,13 @@ function! s:Stream.filter(f) abort
   let stream._name = 'filter()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._call = s:_get_callfunc_for_func1(a:f, 'filter()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     let [r, open] = s:_take_freeze_intermediate(self._upstream, a:n)
-    let list = filter(r, 'self._call(self._f, [v:val])')
+    let list = filter(r, 'self._f(v:val)')
     while open && len(list) < a:n
       let [r, open] = s:_take_freeze_intermediate(self._upstream, a:n - len(list))
-      let list += filter(r, 'self._call(self._f, [v:val])')
+      let list += filter(r, 'self._f(v:val)')
     endwhile
     return [list, open]
   endfunction
@@ -416,7 +409,6 @@ function! s:Stream.slice_before(f) abort
   let stream._name = 'slice_before()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._call = s:_get_callfunc_for_func1(a:f, 'slice_before()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     let open = (self._upstream.__estimate_size__() > 0)
@@ -434,7 +426,7 @@ function! s:Stream.slice_before(f) abort
     while open
       let open = self.__read_to_buffer__(a:n - len(list))
       for i in range(len(self.__buffer))
-        if self._call(self._f, [self.__buffer[i]])
+        if self._f(self.__buffer[i])
           let list += [elem]
           if len(list) >= a:n
             let self.__buffer = s:_sublist(self.__buffer, i)
@@ -475,7 +467,6 @@ function! s:Stream.take_while(f) abort
   let stream._name = 'take_while()'
   let stream._characteristics = self._characteristics
   let stream._upstream = self
-  let stream._call = s:_get_callfunc_for_func1(a:f, 'take_while()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     let open = (self._upstream.__estimate_size__() > 0)
@@ -487,7 +478,7 @@ function! s:Stream.take_while(f) abort
     while !do_break
       let [r, open] = s:_take_freeze_intermediate(self._upstream, s:BULK_SIZE)
       for l:Value in r
-        if !map([l:Value], 'self._call(self._f, [v:val])')[0]
+        if !map([l:Value], 'self._f(v:val)')[0]
           let open = 0
           let do_break = 1
           break
@@ -525,7 +516,6 @@ function! s:Stream.drop_while(f) abort
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   let stream.__skipping = 1
-  let stream._call = s:_get_callfunc_for_func1(a:f, 'drop_while()')
   let stream._f = a:f
   function! stream.__take_possible__(n) abort
     let list = []
@@ -533,7 +523,7 @@ function! s:Stream.drop_while(f) abort
     while self.__skipping && open
       let [r, open] = s:_take_freeze_intermediate(self._upstream, a:n)
       for i in range(len(r))
-        if !map([r[i]], 'self._call(self._f, [v:val])')[0]
+        if !map([r[i]], 'self._f(v:val)')[0]
           let self.__skipping = 0
           let list = s:_sublist(r, i)
           break
@@ -564,10 +554,8 @@ function! s:Stream.distinct(...) abort
   let stream._characteristics = self._characteristics
   let stream._upstream = self
   if a:0
-    let stream._call = s:_get_callfunc_for_func1(a:1, 'distinct()')
     let stream._hashfunc = a:1
   else
-    let stream._call = function('call')
     let stream._hashfunc = function('string')
   endif
   function! stream.__take_possible__(n) abort
@@ -578,7 +566,7 @@ function! s:Stream.distinct(...) abort
       let [r, open] = s:_take_freeze_intermediate(
       \                   self._upstream, a:n - len(uniq_list))
       for l:Value in r
-        let key = self._call(self._hashfunc, [l:Value])
+        let key = self._hashfunc(l:Value)
         if !has_key(dup, key)
           let uniq_list += [l:Value]
           if len(uniq_list) >= a:n
@@ -607,7 +595,6 @@ function! s:Stream.sorted(...) abort
   " sorted list of upstream elements will be set (first time only)
   " let stream.__sorted_list = []
   if a:0
-    let stream._call = s:_get_callfunc_for_func2(a:1, 'sorted()')
     let stream._comparator = a:1
   endif
   function! stream.__take_possible__(n) abort
@@ -624,7 +611,7 @@ function! s:Stream.sorted(...) abort
     return [list, self.__estimate_size__() > 0]
   endfunction
   function! stream.__compare__(a, b) abort
-    return self._call(self._comparator, [a:a, a:b])
+    return self._comparator(a:a, a:b)
   endfunction
   function! stream.__estimate_size__() abort
     if has_key(self, '__sorted_list')
@@ -701,7 +688,11 @@ function! s:Stream.zip(streams) abort
 endfunction
 
 function! s:Stream.zip_with_index() abort
-  return s:zip([s:iterate(0, 'v:val + 1'), self])
+  return s:zip([s:iterate(0, function('s:_succ')), self])
+endfunction
+
+function! s:_succ(n) abort
+  return a:n + 1
 endfunction
 
 function! s:Stream.concat(streams) abort
@@ -709,7 +700,6 @@ function! s:Stream.concat(streams) abort
 endfunction
 
 function! s:Stream.reduce(f, ...) abort
-  let l:Call = s:_get_callfunc_for_func2(a:f, 'reduce()')
   let list = self.to_list()
   if a:0 ==# 0 && empty(list)
     throw 'vital: Stream: reduce()' .
@@ -722,7 +712,7 @@ function! s:Stream.reduce(f, ...) abort
     let list = list[1:]
   endif
   for l:Value in list
-    let l:Result = l:Call(a:f, [l:Result, l:Value])
+    let l:Result = a:f(l:Result, l:Value)
     unlet l:Value
   endfor
   return l:Result
@@ -748,7 +738,11 @@ function! s:Stream.any(f) abort
 endfunction
 
 function! s:Stream.all(f) abort
-  return self.map(a:f).filter('!v:val').first(s:NONE) is s:NONE
+  return self.map(a:f).filter(function('s:_not')).first(s:NONE) is s:NONE
+endfunction
+
+function! s:_not(v) abort
+  return !a:v
 endfunction
 
 function! s:Stream.none(f) abort
@@ -756,20 +750,25 @@ function! s:Stream.none(f) abort
 endfunction
 
 function! s:Stream.group_by(f) abort
-  return self.to_dict(a:f, '[v:val]', 'v:val[0] + v:val[1]')
+  return self.to_dict(a:f, function('s:_list'), function('s:_plus'))
+endfunction
+
+function! s:_list(v) abort
+  return [a:v]
+endfunction
+
+function! s:_plus(a, b) abort
+  return a:a + a:b
 endfunction
 
 function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
-  let l:CallKM = s:_get_callfunc_for_func1(a:key_mapper, 'to_dict()')
-  let l:CallVM = s:_get_callfunc_for_func1(a:value_mapper, 'to_dict()')
   let l:Result = {}
   if a:0
-    let l:CallMerge = s:_get_callfunc_for_func2(a:1, 'to_dict()')
     for l:Value1 in self.to_list()
-      let key = l:CallKM(a:key_mapper, [l:Value1])
-      let l:Value2 = l:CallVM(a:value_mapper, [l:Value1])
+      let key = a:key_mapper(l:Value1)
+      let l:Value2 = a:value_mapper(l:Value1)
       if has_key(l:Result, key)
-        let l:Value3 = l:CallMerge(a:1, [l:Result[key], l:Value2])
+        let l:Value3 = a:1(l:Result[key], l:Value2)
       else
         let l:Value3 = l:Value2
       endif
@@ -780,12 +779,12 @@ function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
     endfor
   else
     for l:Value in self.to_list()
-      let key = l:CallKM(a:key_mapper, [l:Value])
+      let key = a:key_mapper(l:Value)
       if has_key(l:Result, key)
         throw 'vital: Stream: to_dict(): duplicated elements exist in stream '
         \   . '(key: ' . string(key . '') . ')'
       endif
-      let l:Result[key] = l:CallVM(a:value_mapper, [l:Value])
+      let l:Result[key] = a:value_mapper(l:Value)
       unlet l:Value
     endfor
   endif
@@ -795,8 +794,7 @@ endfunction
 function! s:Stream.count(...) abort
   if self.__has_characteristic__(s:SIZED)
     if a:0
-      let l:Call = s:_get_callfunc_for_func1(a:1, 'count()')
-      return len(filter(self.to_list(), 'l:Call(a:1, [v:val])'))
+      return len(filter(self.to_list(), 'a:1(v:val)'))
     else
       return len(self.to_list())
     endif
@@ -840,69 +838,6 @@ function! s:_sublist(list, start, ...) abort
   let start = min([a:start, len])
   let end = a:0 ? min([a:1, len]) : len
   return start ==# 0 && end >= len - 1 ? a:list : a:list[start : end]
-endfunction
-
-" Get funcref of call()-ish function to call a:f (arity is 0)
-" (see also s:_call_func0_expr())
-function! s:_get_callfunc_for_func0(f, caller) abort
-  let type = type(a:f)
-  if type is s:T_FUNC
-    return function('call')
-  elseif type is s:T_STRING
-    return function('s:_call_func0_expr')
-  else
-    throw 'vital: Stream: ' . a:caller
-    \   . ': invalid type argument was given '
-    \   . '(expected funcref or string)'
-  endif
-endfunction
-
-" a:expr is passed to v:val (but it is not meaningless value because
-" a:expr should not have 'v:val')
-" @vimlint(EVL103, 1, a:args)
-function! s:_call_func0_expr(expr, args) abort
-  return eval(a:expr)
-endfunction
-" @vimlint(EVL103, 0, a:args)
-
-" Get funcref of call()-ish function to call a:f (arity is 1)
-" (see also s:_call_func1_expr())
-function! s:_get_callfunc_for_func1(f, caller) abort
-  let type = type(a:f)
-  if type is s:T_FUNC
-    return function('call')
-  elseif type is s:T_STRING
-    return function('s:_call_func1_expr')
-  else
-    throw 'vital: Stream: ' . a:caller
-    \   . ': invalid type argument was given '
-    \   . '(expected funcref or string)'
-  endif
-endfunction
-
-" a:args[0] is passed to v:val
-function! s:_call_func1_expr(expr, args) abort
-  return map(a:args, a:expr)[0]
-endfunction
-
-" Get funcref of call()-ish function to call a:f (arity is 2)
-" (see also s:_call_func2_expr())
-function! s:_get_callfunc_for_func2(f, caller) abort
-  let type = type(a:f)
-  if type is s:T_FUNC
-    return function('call')
-  elseif type is s:T_STRING
-    return function('s:_call_func2_expr')
-  else
-    throw 'vital: Stream: ' . a:caller
-    \   . ': invalid type argument was given '
-    \   . '(expected funcref or string)'
-  endif
-endfunction
-
-" List of two elements is passed to v:val
-function! s:_call_func2_expr(expr, args) abort
-  return map([a:args], a:expr)[0]
 endfunction
 
 function! s:_get_non_empty_list_or_default(stream, size, default, caller) abort
