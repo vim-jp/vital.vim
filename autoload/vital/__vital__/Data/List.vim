@@ -563,8 +563,9 @@ endfunction
 " Takes the unary function of the funcref or the string expression.
 " Returns the caller function that is like call() .
 function! s:_get_caller(f) abort
-  return s:Closure.is_callable(a:f) ? s:Closure.apply
-  \                                 : function('s:_call_string_expr')
+  return type(a:f) is type(function('function'))
+  \        ? function('call')
+  \        : function('s:_call_string_expr')
 endfunction
 
 " Applies the string expression to the head element of a:args.

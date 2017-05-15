@@ -153,11 +153,6 @@ Describe Data.List
     It maps given funcref to a list without indice
       Assert Equals(List.map([1, 2, 3], function('Succ')), [2, 3, 4])
     End
-
-    It maps given Data.Closure to a list
-      let succ = Closure.from_funcref(function('Succ'))
-      Assert Equals(List.map([1, 2, 3], succ), [2, 3, 4])
-    End
   End
 
   Describe .uniq()

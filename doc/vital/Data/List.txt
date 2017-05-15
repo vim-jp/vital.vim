@@ -111,8 +111,22 @@ conj({list}, {val})			*Vital.Data.List.conj()*
 
 map({list}, {function})			*Vital.Data.List.map()*
 	Generalized map(). The followings are different of |map()|:
-	* Don't require to take the index as the argument
+	* Don't require taking the index as the argument
 	   (See the section of 'If {expr2} is a Funcref...' in |map()|)
+	* Don't require copying
+	   (See the section of 'The operation is done in-place' in |map()|)
+	* Remove v:key support
+>
+	function! Succ(x) abort
+	  return a:x + 1
+	endfunction
+
+	echo s:L.map(range(0, 4), function('Even'))
+	" [1, 2, 3, 4, 5]
+	echo s:L.map(range(0, 4), 'v:val % 2 is 0')
+	" [1, 2, 3, 4, 5]
+<
+	But this maybe slower than builtin |map()|.
 
 
 uniq({list})			*Vital.Data.List.uniq()*

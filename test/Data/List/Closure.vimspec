@@ -4,6 +4,23 @@ Describe Data.List.Closure
     let Closure = V.import('Data.Closure')
     let ListCl = V.import('Data.List.Closure')
   End
+
+  Describe .map()
+    Before all
+      function! Succ(x) abort
+        return a:x + 1
+      endfunction
+    End
+
+    After all
+      delfunction Succ
+    End
+
+    It maps given the callable to a list without indice
+      let succ = Closure.from_funcref(function('Succ'))
+      Assert Equals(ListCl.map([1, 2, 3], succ), [2, 3, 4])
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
