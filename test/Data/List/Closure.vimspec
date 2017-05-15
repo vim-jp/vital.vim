@@ -1,0 +1,9 @@
+Describe Data.List.Closure
+  Before all
+    let V = vital#vital#new()
+    let Closure = V.import('Data.Closure')
+    let ListCl = V.import('Data.List.Closure')
+  End
+End
+
+" vim:ts=2:sw=2:et

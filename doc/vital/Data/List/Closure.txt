@@ -1,0 +1,118 @@
+*vital/Data/List.txt*	The representation of Data.List for Data.Closure
+
+Maintainer: aiya000 <aiya000.develop at gmail com>
+
+==============================================================================
+CONTENTS				*Vital.Data.List.Closure-contents*
+
+INTRODUCTION			|Vital.Data.List.Closure-introduction|
+TERM				|Vital.Data.List.Closure.term|
+INTERFACE			|Vital.Data.List.Closure-interface|
+  Functions			  |Vital.Data.List.Closure-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.List.Closure-introduction*
+
+*Vital.Data.List.Closure* provides to pass
+|Vital.Data.Closure-term-callable| to |Data.List| .
+>
+	let s:V  = vital#{plugin-name}#new()
+	let s:C  = s:V.import('Data.Closure')
+	let s:LC = s:V.import('Data.List.Closure')
+<
+Notice:
+This module doesn't have the job safety. I recommend to use |Data.List|
+directly if you use Vim 8 or later. (This problem depends unlifting of
+{closure} to |Funcref|)
+
+
+==============================================================================
+TERM					*Vital.Data.List.Closure-term*
+
+{callable}				*Vital.Data.List.Closure-term-callable*
+	|Vital.Data.Closure-term-callable|.
+
+==============================================================================
+INTERFACE				*Vital.Data.List.Closure-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.List.Closure-functions*
+
+map({list}, {callable})			*Vital.Data.List.Closure.map()*
+	Please see |Vital.Data.List.map()| .
+
+uniq_by({list}, {callable})		*Vital.Data.List.Closure.uniq_by()*
+	Please see |Vital.Data.List.uniq_by()| .
+
+sort({list}, {callable})		*Vital.Data.List.Closure.sort()*
+	Please see |Vital.Data.List.sort()| .
+
+sort_by({list}, {callable})		*Vital.Data.List.Closure.sort_by()*
+	Please see |Vital.Data.List.sort_by()| .
+
+max_by({list}, {callable})		*Vital.Data.List.Closure.max_by()*
+	Please see |Vital.Data.List.max_by()| .
+
+min_by({list}, {callable})		*Vital.Data.List.Closure.min_by()*
+	Please see |Vital.Data.List.min_by()| .
+
+span({callable}, {list})		*Vital.Data.List.Closure.span()*
+	Please see |Vital.Data.List.span()| .
+
+break({callable}, {list})		*Vital.Data.List.Closure.break()*
+	Please see |Vital.Data.List.break()| .
+
+take_while({callable}, {list})		*Vital.Data.List.Closure.take_while()*
+	Please see |Vital.Data.List.take_while()| .
+
+drop_while({callable}, {list})		*Vital.Data.List.Closure.drop_while()*
+	Please see |Vital.Data.List.drop_while()| .
+
+all({callable}, {list})			*Vital.Data.List.Closure.all()*
+	Please see |Vital.Data.List.all()| .
+
+any({callable}, {list})			*Vital.Data.List.Closure.any()*
+	Please see |Vital.Data.List.any()| .
+
+partition({callable}, {list})		*Vital.Data.List.Closure.partition()*
+	Please see |Vital.Data.List.partition()| .
+
+map_accum({callable}, {list}, {init})	*Vital.Data.List.Closure.map_accum()*
+	Please see |Vital.Data.List.map_accum()| .
+
+foldl({callable}, {init}, {list})	*Vital.Data.List.Closure.foldl()*
+	Please see |Vital.Data.List.foldl()| .
+
+foldl1({callable}, {list})		*Vital.Data.List.Closure.foldl1()*
+	Please see |Vital.Data.List.foldl1()| .
+
+foldr({callable}, {init}, {list})	*Vital.Data.List.Closure.foldr()*
+	Please see |Vital.Data.List.foldr()| .
+
+foldr1({callable}, {list})		*Vital.Data.List.Closure.foldr1()*
+	Please see |Vital.Data.List.foldr1()| .
+
+find({list}, {default}, {callable})		*Vital.Data.List.Closure.find()*
+	Please see |Vital.Data.List.find()| .
+
+					*Vital.Data.List.Closure.find_index()*
+find_index({list}, {callable} [, {start} [, {default}]])
+	Please see |Vital.Data.List.find_index()| .
+
+					*Vital.Data.List.Closure.find_last_index()*
+find_last_index({list}, {callable} [, {start} [, {default}]])
+	Please see |Vital.Data.List.find_last_index()| .
+
+					*Vital.Data.List.Closure.find_indices()*
+find_indices({list}, {callable} [, {start}])
+	Please see |Vital.Data.List.find_indices()| .
+
+group_by({list}, {callable})		*Vital.Data.List.Closure.group_by()*
+	Please see |Vital.Data.List.group_by()| .
+
+					*Vital.Data.List.Closure.binary_search()*
+binary_search({list}, {callable}, [{func}, [{dict}]])
+	Please see |Vital.Data.List.binary_search()| .
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

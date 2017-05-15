@@ -41,8 +41,7 @@ manipulate |List|.
 TERM					*Vital.Data.List-term*
 
 {function}				*Vital.Data.List-term-function*
-	Either|Funcref|, |String|(as expression), or
-	|Vital.Data.Closure-term-callable|.
+	|Funcref| or |String|(as expression)
 
 ==============================================================================
 INTERFACE				*Vital.Data.List-interface*
@@ -112,7 +111,6 @@ conj({list}, {val})			*Vital.Data.List.conj()*
 
 map({list}, {function})			*Vital.Data.List.map()*
 	Generalized map(). The followings are different of |map()|:
-	* Can use |Vital.Data.Closure-term-callable| as {f}
 	* Don't require to take the index as the argument
 	   (See the section of 'If {expr2} is a Funcref...' in |map()|)
 
