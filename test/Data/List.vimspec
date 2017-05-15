@@ -517,14 +517,6 @@ Describe Data.List
       Assert Equals(List.foldl(function('Pair'), 0, [1, 2]), [[0, 1], 2])
     End
 
-    It folds a list from left with Data.Closure
-      let plus = Closure.from_funcref(function('Plus'))
-      let pair = Closure.from_funcref(function('Pair'))
-
-      Assert Equals(List.foldl(plus, 0, range(1, 10)), 55)
-      Assert Equals(List.foldl(pair, 0, [1, 2]), [[0, 1], 2])
-    End
-
     It does nothing if the list is empty
       Assert Equals(List.foldl('echoerr omg', 123, []), 123)
     End

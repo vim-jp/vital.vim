@@ -317,8 +317,9 @@ endfunction
 " Similar to Haskell's Prelude.foldl .
 function! s:foldl(f, init, xs) abort
   "NOTE: The 'Call' should be named with l: for the conflict problem
-  let l:Call = s:Closure.is_callable(a:f) ? s:Closure.apply
-  \                                       : function('s:_call_two_argument_string_expr')
+  let l:Call = type(a:f) is type(function('function'))
+  \              ? function('call')
+  \              : function('s:_call_two_argument_string_expr')
   let memo = a:init
   for x in a:xs
     let memo = l:Call(a:f, [memo, x])

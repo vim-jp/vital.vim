@@ -3,6 +3,19 @@ Describe Data.List.Closure
     let V = vital#vital#new()
     let Closure = V.import('Data.Closure')
     let ListCl = V.import('Data.List.Closure')
+
+    function! Plus(x, y) abort
+      return a:x + a:y
+    endfunction
+
+    function! Pair(x, y) abort
+      return [a:x, a:y]
+    endfunction
+  End
+
+  After all
+    delfunction Plus
+    delfunction Pair
   End
 
   Describe .map()
@@ -19,6 +32,16 @@ Describe Data.List.Closure
     It maps given the callable to a list without indice
       let succ = Closure.from_funcref(function('Succ'))
       Assert Equals(ListCl.map([1, 2, 3], succ), [2, 3, 4])
+    End
+  End
+
+  Describe .foldl()
+    It folds a list from left with the callable
+      let plus = Closure.from_funcname('*Plus')
+      let pair = Closure.from_funcname('*Pair')
+
+      Assert Equals(ListCl.foldl(plus, 0, range(1, 10)), 55)
+      Assert Equals(ListCl.foldl(pair, 0, [1, 2]), [[0, 1], 2])
     End
   End
 End

@@ -13,8 +13,13 @@ endfunction
 
 
 function! s:map(xs, callable) abort
-  let s:closure_func = a:callable
+  let s:unary_closure_func = a:callable
   return s:List.map(a:xs, function('s:_provide_unary_callable'))
+endfunction
+
+function! s:foldl(callable, x, xs) abort
+  let s:binary_closure_func = a:callable
+  return s:List.foldl(function('s:_provide_binary_callable'), a:x, a:xs)
 endfunction
 
 
@@ -22,7 +27,14 @@ endfunction
 " This is not job safe.
 " The function may not work correctly.
 function! s:_provide_unary_callable(x) abort
-  return s:Closure.apply(s:closure_func, [a:x])
+  return s:Closure.apply(s:unary_closure_func, [a:x])
+endfunction
+
+" Notice:
+" This is not job safe.
+" The function may not work correctly.
+function! s:_provide_binary_callable(x, y) abort
+  return s:Closure.apply(s:binary_closure_func, [a:x, a:y])
 endfunction
 
 
