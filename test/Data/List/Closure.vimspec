@@ -44,6 +44,16 @@ Describe Data.List.Closure
       Assert Equals(ListCl.foldl(pair, 0, [1, 2]), [[0, 1], 2])
     End
   End
+
+  Describe .foldl1()
+    It folds a list from left with the callable
+      let plus = Closure.from_funcname('*Plus')
+      let pair = Closure.from_funcname('*Pair')
+
+      Assert Equals(ListCl.foldl1(plus,  range(0, 10)), 55)
+      Assert Equals(ListCl.foldl1(pair,  [0, 1, 2]), [[0, 1], 2])
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et

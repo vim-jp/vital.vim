@@ -22,6 +22,11 @@ function! s:foldl(callable, x, xs) abort
   return s:List.foldl(function('s:_provide_binary_callable'), a:x, a:xs)
 endfunction
 
+function! s:foldl1(callable, xs) abort
+  let s:binary_closure_func = a:callable
+  return s:List.foldl1(function('s:_provide_binary_callable'), a:xs)
+endfunction
+
 
 " Notice:
 " This is not job safe.
