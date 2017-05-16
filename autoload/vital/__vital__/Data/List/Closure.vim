@@ -37,6 +37,11 @@ function! s:foldr1(callable, xs) abort
   return s:List.foldr1(function('s:_provide_binary_callable'), a:xs)
 endfunction
 
+function! s:uniq_by(xs, callable) abort
+  let s:unary_closure_func = a:callable
+  return s:List.uniq_by(a:xs, function('s:_provide_unary_callable'))
+endfunction
+
 
 " Notice:
 " This is not job safe.

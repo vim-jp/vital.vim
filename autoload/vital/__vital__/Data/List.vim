@@ -61,16 +61,17 @@ endfunction
 
 " Removes duplicates from a list.
 function! s:uniq_by(list, f) abort
-  let cons_of_if_has = s:Closure.from_funcref(function('s:_cons_if_has'), [a:f])
-  return s:foldl(cons_of_if_has, [], a:list)
-endfunction
-
-" If a:f(a:x) ∈ s:map(a:xs, a:f), returns s:conj(a:xs, a:x) .
-" Otherwise, returns a:xs .
-" a:f is either the string expression, the funcref, or Data.Closure's {callable}.
-function! s:_cons_if_has(f, xs, x) abort
-  let l:Call = s:_get_caller(a:f)
-  return s:has(s:map(a:xs, a:f), l:Call(a:f, [a:x])) ? a:xs : s:conj(a:xs, a:x)
+  let l:Call  = s:_get_caller(a:f)
+  let applied = []
+  let result  = []
+  for x in a:list
+    let y = l:Call(a:f, [x])
+    if !s:has(applied, y)
+      call add(result, x)
+      call add(applied, y)
+    endif
+  endfor
+  return result
 endfunction
 
 function! s:clear(list) abort

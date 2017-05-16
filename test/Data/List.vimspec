@@ -195,20 +195,6 @@ Describe Data.List
       \ ]
       \ )
     End
-
-    It makes a list unique based on given Data.Closure
-      let tolower_ = Closure.from_funcref(function('tolower'))
-      Assert Equals(
-      \ List.uniq_by([
-      \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
-      \     ],
-      \     tolower_
-      \   ),
-      \ [
-      \   'vim', 'emacs', 'gVim'
-      \ ]
-      \ )
-    End
   End
 
   Describe .clear()

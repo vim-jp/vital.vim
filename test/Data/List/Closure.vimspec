@@ -74,6 +74,22 @@ Describe Data.List.Closure
       Assert Equals(ListCl.foldr1(pair, [0, 1, 2]), [0, [1, 2]])
     End
   End
+
+  Describe .uniq_by()
+    It makes a list unique based on given the callable
+      let tolower_ = Closure.from_funcref(function('tolower'))
+      Assert Equals(
+      \ ListCl.uniq_by([
+      \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
+      \     ],
+      \     tolower_
+      \   ),
+      \ [
+      \   'vim', 'emacs', 'gVim'
+      \ ]
+      \ )
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
