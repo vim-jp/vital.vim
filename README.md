@@ -47,10 +47,11 @@ Module						 | Description
 [Random.Mt19937ar](doc/vital/Random/Mt19937ar.txt)| random number generator using mt19937ar
 [Random.Xor128](doc/vital/Random/Xor128.txt)	 | random number generator using xor128
 [Random](doc/vital/Random.txt)			 | Random utility frontend library
-[System.Process](doc/vital/System/Process.txt)	 | A cross-platform process utilities
+[Stream](doc/vital/Stream.txt)			 | A streaming library
 [System.Cache](doc/vital/System/Cache.txt)	 | An unified cache system
 [System.File](doc/vital/System/File.txt)	 | filesystem utilities library
 [System.Filepath](doc/vital/System/Filepath.txt) | path string utilities library
+[System.Process](doc/vital/System/Process.txt)	 | A cross-platform process utilities
 [Text.CSV](doc/vital/Text/CSV.txt)		 | CSV library
 [Text.INI](doc/vital/Text/INI.txt)		 | INI file library
 [Text.LTSV](doc/vital/Text/LTSV.txt)		 | LTSV library
@@ -59,15 +60,15 @@ Module						 | Description
 [Text.Sexp](doc/vital/Text/Sexp.txt)	         | S-Expression parser
 [Text.TOML](doc/vital/Text/TOML.txt)		 | TOML library
 [Text.Table](doc/vital/Text/Table.txt)		 | Character table library
-[Vim.Buffer](doc/vital/Vim/Buffer.txt)		 | Vim's buffer related stuff in general
 [Vim.BufferManager](doc/vital/Vim/BufferManager.txt)  | buffer manager
+[Vim.Buffer](doc/vital/Vim/Buffer.txt)		 | Vim's buffer related stuff in general
 [Vim.Compat](doc/vital/Vim/Compat.txt)		 | Vim compatibility wrapper functions
-[Vim.Python](doc/vital/Vim/Python.txt)		 | +python/+python3 compatibility functions
-[Vim.Message](doc/vital/Vim/Message.txt)	 | Vim message functions
-[Vim.Search](doc/vital/Vim/Search.txt)		 | Vim's [I like function
-[Vim.ScriptLocal](doc/vital/Vim/ScriptLocal.txt) | Get script-local things
-[Vim.ViewTracer](doc/vital/Vim/ViewTracer.txt) | Trace window and tabpage
 [Vim.Guard](doc/vital/Vim/Guard.txt)		 | Guard options/variables
+[Vim.Message](doc/vital/Vim/Message.txt)	 | Vim message functions
+[Vim.Python](doc/vital/Vim/Python.txt)		 | +python/+python3 compatibility functions
+[Vim.ScriptLocal](doc/vital/Vim/ScriptLocal.txt) | Get script-local things
+[Vim.Search](doc/vital/Vim/Search.txt)		 | Vim's \[I like function
+[Vim.ViewTracer](doc/vital/Vim/ViewTracer.txt) | Trace window and tabpage
 [Web.HTML](doc/vital/Web/HTML.txt)		 | HTML parser written in pure Vim script
 [Web.HTTP](doc/vital/Web/HTTP.txt)		 | simple HTTP client library
 [Web.JSON](doc/vital/Web/JSON.txt)		 | JSON parser written in pure Vim script
