@@ -345,13 +345,21 @@ endfunction
 
 " Similar to Haskell's Prelude.foldr .
 function! s:foldr(f, init, xs) abort
-  let curried_f_expr = s:Closure.is_callable(a:f)
-  \                  ? 's:Closure.build(a:f, [v:val])'
-  \                  : printf('s:Closure.from_funcref(function("s:_call_expr_memo_val"), ["%s", v:val])', a:f)
-  let partitions = map(a:xs, curried_f_expr)
-  let identity = s:Closure.from_funcref(function('s:_id'))
-  let linear = s:foldl(function('s:_compose'), identity, partitions)
-  return linear.call(a:init)
+  "NOTE: The 'Call' should be named with l: for the conflict problem
+  let l:Call = type(a:f) is type(function('function'))
+  \              ? function('call')
+  \              : function('s:_call_two_argument_string_expr')
+  return s:_foldr_internal(l:Call, a:f, a:init, a:xs)
+endfunction
+
+" Avoids caller's overhead
+function! s:_foldr_internal(call, f, state, xs) abort
+  if empty(a:xs)
+    return a:state
+  endif
+
+  let [y, ys] = s:uncons(a:xs)
+  return a:call(a:f, [y, s:_foldr_internal(a:call, a:f, a:state, ys)])
 endfunction
 
 " Returns the result of that apply a:memo and a:val to the binary string expression.
