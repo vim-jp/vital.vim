@@ -565,14 +565,6 @@ Describe Data.List
       Assert Equals(List.foldr1(function('Pair'), [0, 1, 2]), [0, [1, 2]])
     End
 
-    It folds a list from right with Data.Closure
-      let plus = Closure.from_funcref(function('Plus'))
-      let pair = Closure.from_funcref(function('Pair'))
-
-      Assert Equals(List.foldr1(plus, range(0, 10)), 55)
-      Assert Equals(List.foldr1(pair, [0, 1, 2]), [0, [1, 2]])
-    End
-
     It causes an error when the list is empty
       Throw /^vital: Data.List: foldr1$/ List.foldr1('123', [])
     End

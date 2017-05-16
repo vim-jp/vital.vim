@@ -32,6 +32,11 @@ function! s:foldr(callable, x, xs) abort
   return s:List.foldr(function('s:_provide_binary_callable'), a:x, a:xs)
 endfunction
 
+function! s:foldr1(callable, xs) abort
+  let s:binary_closure_func = a:callable
+  return s:List.foldr1(function('s:_provide_binary_callable'), a:xs)
+endfunction
+
 
 " Notice:
 " This is not job safe.
