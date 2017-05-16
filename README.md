@@ -67,7 +67,7 @@ Module						 | Description
 [Vim.Message](doc/vital/Vim/Message.txt)	 | Vim message functions
 [Vim.Python](doc/vital/Vim/Python.txt)		 | +python/+python3 compatibility functions
 [Vim.ScriptLocal](doc/vital/Vim/ScriptLocal.txt) | Get script-local things
-[Vim.Search](doc/vital/Vim/Search.txt)		 | Vim's [I like function
+[Vim.Search](doc/vital/Vim/Search.txt)		 | Vim's \[I like function
 [Vim.ViewTracer](doc/vital/Vim/ViewTracer.txt) | Trace window and tabpage
 [Web.HTML](doc/vital/Web/HTML.txt)		 | HTML parser written in pure Vim script
 [Web.HTTP](doc/vital/Web/HTTP.txt)		 | simple HTTP client library
