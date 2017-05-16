@@ -47,6 +47,7 @@ Module						 | Description
 [Random.Mt19937ar](doc/vital/Random/Mt19937ar.txt)| random number generator using mt19937ar
 [Random.Xor128](doc/vital/Random/Xor128.txt)	 | random number generator using xor128
 [Random](doc/vital/Random.txt)			 | Random utility frontend library
+[Stream](doc/vital/Stream.txt)			 | A streaming library
 [System.Process](doc/vital/System/Process.txt)	 | A cross-platform process utilities
 [System.Cache](doc/vital/System/Cache.txt)	 | An unified cache system
 [System.File](doc/vital/System/File.txt)	 | filesystem utilities library
