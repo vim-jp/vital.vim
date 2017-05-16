@@ -13,21 +13,21 @@ function! s:suite.__of__()
 
   function! of.of_should_throw_if_it_received_non_string_value() abort
     let [A, T] = [s:A, s:T]
-    Throws /^Validator.Args: of(): expected String argument but got Number/
+    Throws /^vital: Validator.Args: of(): expected String argument but got Number/
     \ A.of(42)
     call A.of('')
-    Throws /^Validator.Args: of(): expected String argument but got Funcref/
+    Throws /^vital: Validator.Args: of(): expected String argument but got Funcref/
     \ A.of(function('function'))
-    Throws /^Validator.Args: of(): expected String argument but got List/
+    Throws /^vital: Validator.Args: of(): expected String argument but got List/
     \ A.of([42])
-    Throws /^Validator.Args: of(): expected String argument but got Dictionary/
+    Throws /^vital: Validator.Args: of(): expected String argument but got Dictionary/
     \ A.of({})
-    Throws /^Validator.Args: of(): expected String argument but got Float/
+    Throws /^vital: Validator.Args: of(): expected String argument but got Float/
     \ A.of(3.14)
     if v:version >= 800
-      Throws /^Validator.Args: of(): expected String argument but got Bool/
+      Throws /^vital: Validator.Args: of(): expected String argument but got Bool/
       \ A.of(v:false)
-      Throws /^Validator.Args: of(): expected String argument but got None/
+      Throws /^vital: Validator.Args: of(): expected String argument but got None/
       \ A.of(v:null)
       " TODO: job, channel
     endif
@@ -100,21 +100,21 @@ function! s:suite.__of__()
 
   function! of.validate_should_throw_if_it_received_non_list_value() abort
     let [A, T] = [s:A, s:T]
-    Throws /^Validator.Args: Validator.validate(): expected List argument but got Number/
+    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Number/
     \ A.of('test()').type(T.ANY).validate(42)
-    Throws /^Validator.Args: Validator.validate(): expected List argument but got String/
+    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got String/
     \ A.of('test()').type(T.ANY).validate('')
-    Throws /^Validator.Args: Validator.validate(): expected List argument but got Funcref/
+    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Funcref/
     \ A.of('test()').type(T.ANY).validate(function('function'))
     call A.of('test()').type(T.ANY).validate([42])
-    Throws /^Validator.Args: Validator.validate(): expected List argument but got Dictionary/
+    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Dictionary/
     \ A.of('test()').type(T.ANY).validate({})
-    Throws /^Validator.Args: Validator.validate(): expected List argument but got Float/
+    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Float/
     \ A.of('test()').type(T.ANY).validate(3.14)
     if v:version >= 800
-      Throws /^Validator.Args: Validator.validate(): expected List argument but got Bool/
+      Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Bool/
       \ A.of('test()').type(T.ANY).validate(v:false)
-      Throws /^Validator.Args: Validator.validate(): expected List argument but got None/
+      Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got None/
       \ A.of('test()').type(T.ANY).validate(v:null)
       " TODO: job, channel
     endif
@@ -137,12 +137,12 @@ function! s:suite.__of__()
   function! of.type_invalid_args() abort
     let [A, T] = [s:A, s:T]
 
-    Throws /^Validator.Args: Validator.type(): expected type or union types but got String/
+    Throws /^vital: Validator.Args: Validator.type(): expected type or union types but got String/
     \ A.of('test()').type('String')
-    Throws /^Validator.Args: Validator.type(): expected type or union types but got Number/
+    Throws /^vital: Validator.Args: Validator.type(): expected type or union types but got Number/
     \ A.of('test()').type(10)
 
-    Throws /^Validator.Args: Validator.type(): multiple OPTARG were given/
+    Throws /^vital: Validator.Args: Validator.type(): multiple OPTARG were given/
     \ A.of('test()').type(T.OPTARG, T.OPTARG)
   endfunction
 
@@ -176,10 +176,10 @@ function! s:suite.__of__()
 
   function! of.assert_invalid_args() abort
     let [A, T] = [s:A, s:T]
-    Throws /^Validator.Args: Validator.assert(): the first argument number was not positive/
+    Throws /^vital: Validator.Args: Validator.assert(): the first argument number was not positive/
     \ A.of('test()').assert(-1, 'v:val != ''''',
                    \            'the first argument should be non empty string')
-    Throws /^Validator.Args: Validator.assert(): the first argument number was not positive/
+    Throws /^vital: Validator.Args: Validator.assert(): the first argument number was not positive/
     \ A.of('test()').assert(0, 'v:val != ''''',
                    \            'the first argument should be non empty string')
     " TODO: is type check necessary?
@@ -256,19 +256,19 @@ function! s:suite.__of__()
 
   function! of.assert_no_out_of_range()
     let [A, T] = [s:A, s:T]
-    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1 arguments)/
+    Throws /^vital: Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1 arguments)/
     \ A.of('test()').type(T.STRING)
                    \.assert(1, 'v:val != ''''',
                    \            'the first argument should be non empty string')
                    \.assert(2, 'v:val != ''''',
                    \            'the second argument?')
-    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1 arguments)/
+    Throws /^vital: Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1 arguments)/
     \ A.of('test()').assert(1, 'v:val != ''''',
                    \            'the first argument should be non empty string')
                    \.assert(2, 'v:val != ''''',
                    \            'the second argument?')
                    \.type(T.STRING)
-    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1-2 arguments)/
+    Throws /^vital: Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1-2 arguments)/
     \ A.of('test()').type(T.STRING, T.OPTARG, T.STRING)
                    \.assert(1, 'v:val != ''''',
                    \            'the first argument should be non empty string')
@@ -276,7 +276,7 @@ function! s:suite.__of__()
                    \            'the second argument should be non empty string')
                    \.assert(3, 'v:val != ''''',
                    \            'the third argument?')
-    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1-2 arguments)/
+    Throws /^vital: Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1-2 arguments)/
     \ A.of('test()').assert(1, 'v:val != ''''',
                    \            'the first argument should be non empty string')
                    \.assert(2, 'v:val != ''''',
@@ -284,7 +284,7 @@ function! s:suite.__of__()
                    \.assert(3, 'v:val != ''''',
                    \            'the third argument?')
                    \.type(T.STRING, T.OPTARG, T.STRING)
-    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1-3 arguments)/
+    Throws /^vital: Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1-3 arguments)/
     \ A.of('test()').assert(1, 'v:val != ''''',
                    \            'the first argument should be non empty string')
                    \.assert(2, 'v:val != ''''',

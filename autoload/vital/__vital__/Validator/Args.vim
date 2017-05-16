@@ -34,7 +34,7 @@ endfunction
 
 function! s:of(prefix) abort
   if type(a:prefix) isnot s:TYPE.STRING
-    throw 'Validator.Args: of(): expected String argument ' .
+    throw 'vital: Validator.Args: of(): expected String argument ' .
     \     'but got ' . s:TYPES[type(a:prefix)]
   endif
   let validator = {'_prefix': a:prefix, '_asserts': {}}
@@ -59,7 +59,7 @@ function! s:of(prefix) abort
   endfunction
   function! validator.validate(args) abort
     if type(a:args) isnot s:TYPE.LIST
-      throw 'Validator.Args: Validator.validate(): expected List argument ' .
+      throw 'vital: Validator.Args: Validator.validate(): expected List argument ' .
       \     'but got ' . s:TYPES[type(a:args)]
     endif
     if has_key(self, '_types')
@@ -78,7 +78,7 @@ function! s:_check_type_args(args) abort
     if a:args[i] is s:TYPE.OPTARG
       let optarg += 1
       if optarg > 1
-        throw 'Validator.Args: Validator.type(): multiple OPTARG were given'
+        throw 'vital: Validator.Args: Validator.type(): multiple OPTARG were given'
       endif
     endif
     if !(type(a:args[i]) is s:TYPE.NUMBER &&
@@ -88,7 +88,7 @@ function! s:_check_type_args(args) abort
     \     empty(filter(copy(a:args[i]),
     \                  'type(v:val) isnot s:TYPE.NUMBER || ' .
     \                  'v:val < s:TYPE.NUMBER || v:val > s:TYPE.CHANNEL')))
-      throw 'Validator.Args: Validator.type(): expected type or union types ' .
+      throw 'vital: Validator.Args: Validator.type(): expected type or union types ' .
       \     'but got ' . s:TYPES[type(a:args[i])]
     endif
   endfor
@@ -97,7 +97,7 @@ endfunction
 function! s:_check_assert_args(args) abort
   let no = a:args[0]
   if no <= 0
-    throw 'Validator.Args: Validator.assert(): ' .
+    throw 'vital: Validator.Args: Validator.assert(): ' .
     \     'the first argument number was not positive'
   endif
 endfunction
@@ -110,7 +110,7 @@ function! s:_check_out_of_range(no, types) abort
     else
       let arity = len(a:types)
     endif
-    throw 'Validator.Args: Validator.assert(): ' .
+    throw 'vital: Validator.Args: Validator.assert(): ' .
     \     'the first argument number was out of range ' .
     \     '(type() defines ' . arity . ' arguments)'
   endif
