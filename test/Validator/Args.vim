@@ -128,9 +128,22 @@ function! s:suite.__of__()
     call A.of('test()').type(T.STRING, T.OPTARG, T.STRING, T.STRING)
                         \.validate(['foo', 'bar'])
     " if the last type is OPTARG, skip validation of rest arguments
+    " (but if any types were given after OPTARG, check the types and arity)
     call A.of('test()').type(T.STRING, T.OPTARG).validate(['foo'])
     call A.of('test()').type(T.STRING, T.OPTARG).validate(['foo', 'bar'])
     call A.of('test()').type(T.STRING, T.OPTARG).validate(['foo', 'bar', 'baz'])
+  endfunction
+
+  function! of.type_invalid_args() abort
+    let [A, T] = [s:A, s:T]
+
+    Throws /^Validator.Args: Validator.type(): expected type or union types but got String/
+    \ A.of('test()').type('String')
+    Throws /^Validator.Args: Validator.type(): expected type or union types but got Number/
+    \ A.of('test()').type(10)
+
+    Throws /^Validator.Args: Validator.type(): multiple OPTARG were given/
+    \ A.of('test()').type(T.OPTARG, T.OPTARG)
   endfunction
 
   function! of.arity_is_wrong() abort
@@ -145,4 +158,142 @@ function! s:suite.__of__()
     \ A.of('test()').type(T.STRING, T.OPTARG, T.STRING)
                     \.validate(['foo', 'bar', 'baz'])
   endfunction
+
+  function! of.assert_only() abort
+    let [A, T] = [s:A, s:T]
+    Throws /^test(): the first argument should be non empty string/
+    \ A.of('test()').assert(1, 'type(v:val) is type('''') && v:val != ''''',
+                   \           'the first argument should be non empty string')
+                   \.validate([''])
+    Throws /^test(): the 1th argument's assertion failed/
+    \ A.of('test()').assert(1, 'type(v:val) is type('''') && v:val != ''''')
+                   \.validate([''])
+    call
+    \ A.of('test()').assert(1, 'type(v:val) is type('''') && v:val != ''''',
+                   \           'the first argument should be non empty string')
+                   \.validate(['foo'])
+  endfunction
+
+  function! of.assert_invalid_args() abort
+    let [A, T] = [s:A, s:T]
+    Throws /^Validator.Args: Validator.assert(): the first argument number was not positive/
+    \ A.of('test()').assert(-1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+    Throws /^Validator.Args: Validator.assert(): the first argument number was not positive/
+    \ A.of('test()').assert(0, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+    " TODO: is type check necessary?
+  endfunction
+
+  function! of.assert_with_type() abort
+    let [A, T] = [s:A, s:T]
+    Throws /^test(): the first argument should be non empty string/
+    \ A.of('test()').type(T.STRING)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.validate([''])
+    Throws /^test(): the 1th argument's assertion failed/
+    \ A.of('test()').type(T.STRING)
+                   \.assert(1, 'v:val != ''''')
+                   \.validate([''])
+    call
+    \ A.of('test()').type(T.STRING)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.validate(['foo'])
+  endfunction
+
+  function! of.mixed_validation_with_assert_and_type() abort
+    let [A, T] = [s:A, s:T]
+    " .type() checking failure
+    Throws /^test(): invalid type arguments were given (expected: String, got: Number)/
+    \ A.of('test()').type(T.STRING)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.validate([42])
+    " too few arguments
+    Throws /^test(): too few arguments/
+    \ A.of('test()').type(T.STRING)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.validate([])
+    " too many arguments
+    Throws /^test(): too many arguments/
+    \ A.of('test()').type(T.STRING)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.validate(['foo', 'bar'])
+    " type() with OPTARG, and assert()
+    call
+    \ A.of('test()').type(T.STRING, T.OPTARG)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.assert(2, 'v:val != ''''',
+                   \            'the second argument should be non empty string')
+                   \.validate(['foo', 'bar'])
+    Throws /^test(): the second argument should be non empty string/
+    \ A.of('test()').type(T.STRING, T.OPTARG)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.assert(2, 'v:val != ''''',
+                   \            'the second argument should be non empty string')
+                   \.validate(['foo', ''])
+    call
+    \ A.of('test()').type(T.STRING, T.OPTARG, T.STRING)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.assert(2, 'v:val != ''''',
+                   \            'the second argument should be non empty string')
+                   \.validate(['foo', 'bar'])
+    Throws /^test(): the second argument should be non empty string/
+    \ A.of('test()').type(T.STRING, T.OPTARG, T.STRING)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.assert(2, 'v:val != ''''',
+                   \            'the second argument should be non empty string')
+                   \.validate(['foo', ''])
+  endfunction
+
+  function! of.assert_no_out_of_range()
+    let [A, T] = [s:A, s:T]
+    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1 arguments)/
+    \ A.of('test()').type(T.STRING)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.assert(2, 'v:val != ''''',
+                   \            'the second argument?')
+    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1 arguments)/
+    \ A.of('test()').assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.assert(2, 'v:val != ''''',
+                   \            'the second argument?')
+                   \.type(T.STRING)
+    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1-2 arguments)/
+    \ A.of('test()').type(T.STRING, T.OPTARG, T.STRING)
+                   \.assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.assert(2, 'v:val != ''''',
+                   \            'the second argument should be non empty string')
+                   \.assert(3, 'v:val != ''''',
+                   \            'the third argument?')
+    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1-2 arguments)/
+    \ A.of('test()').assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.assert(2, 'v:val != ''''',
+                   \            'the second argument should be non empty string')
+                   \.assert(3, 'v:val != ''''',
+                   \            'the third argument?')
+                   \.type(T.STRING, T.OPTARG, T.STRING)
+    Throws /^Validator.Args: Validator.assert(): the first argument number was out of range (type() defines 1-3 arguments)/
+    \ A.of('test()').assert(1, 'v:val != ''''',
+                   \            'the first argument should be non empty string')
+                   \.assert(2, 'v:val != ''''',
+                   \            'the second argument should be non empty string')
+                   \.assert(3, 'v:val != ''''',
+                   \            'the third argument should be non empty string')
+                   \.assert(4, 'v:val != ''''',
+                   \            'the fourth argument?')
+                   \.type(T.STRING, T.OPTARG, T.STRING, T.STRING)
+  endfunction
+
 endfunction
