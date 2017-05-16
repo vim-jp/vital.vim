@@ -39,13 +39,18 @@ function! s:of(prefix) abort
   endif
   let validator = {'_prefix': a:prefix, '_asserts': {}}
   function! validator.type(...) abort
-    if len(filter(copy(a:000), 'v:val is s:TYPE.OPTARG')) >= 2
-      throw 'Validator.Args: multiple OPTARG were given'
-    endif
+    call s:_check_type_args(a:000)
+    for index in keys(self._asserts)
+      call s:_check_out_of_range(index + 1, a:000)
+    endfor
     let self._types = a:000
     return self
   endfunction
   function! validator.assert(no, funclist, ...) abort
+    call s:_check_assert_args([a:no, a:funclist] + a:000)
+    if has_key(self, '_types')
+      call s:_check_out_of_range(a:no, self._types)
+    endif
     let self._asserts[a:no - 1] = {
     \ 'funclist': type(a:funclist) is s:TYPE.LIST ? a:funclist : [a:funclist],
     \ 'msg': get(a:000, 0, 'the ' . a:no . 'th argument''s assertion failed')
@@ -65,6 +70,50 @@ function! s:of(prefix) abort
     endif
   endfunction
   return validator
+endfunction
+
+function! s:_check_type_args(args) abort
+  let optarg = 0
+  for i in range(len(a:args))
+    if a:args[i] is s:TYPE.OPTARG
+      let optarg += 1
+      if optarg > 1
+        throw 'Validator.Args: Validator.type(): multiple OPTARG were given'
+      endif
+    endif
+    if !(type(a:args[i]) is s:TYPE.NUMBER &&
+    \     a:args[i] >= s:TYPE.NUMBER &&
+    \     a:args[i] <= s:TYPE.CHANNEL) &&
+    \  !(type(a:args[i]) is s:TYPE.LIST &&
+    \     empty(filter(copy(a:args[i]),
+    \                  'type(v:val) isnot s:TYPE.NUMBER || ' .
+    \                  'v:val < s:TYPE.NUMBER || v:val > s:TYPE.CHANNEL')))
+      throw 'Validator.Args: Validator.type(): expected type or union types ' .
+      \     'but got ' . s:TYPES[type(a:args[i])]
+    endif
+  endfor
+endfunction
+
+function! s:_check_assert_args(args) abort
+  let no = a:args[0]
+  if no <= 0
+    throw 'Validator.Args: Validator.assert(): ' .
+    \     'the first argument number was not positive'
+  endif
+endfunction
+
+function! s:_check_out_of_range(no, types) abort
+  let idx = index(a:types, s:TYPE.OPTARG)
+  if a:no > len(a:types) - (idx >= 0 && idx !=# len(a:types) - 1 ? 1 : 0)
+    if idx >= 0
+      let arity = idx . '-' . (len(a:types) - idx)
+    else
+      let arity = len(a:types)
+    endif
+    throw 'Validator.Args: Validator.assert(): ' .
+    \     'the first argument number was out of range ' .
+    \     '(type() defines ' . arity . ' arguments)'
+  endif
 endfunction
 
 function! s:_validate_arg_types(args, types, prefix) abort
