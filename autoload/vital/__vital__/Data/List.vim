@@ -247,9 +247,15 @@ endfunction
 
 " Similar to Haskell's Data.List.break .
 function! s:break(f, xs) abort
-  let l:F   = s:_build_unary_func(a:f)
-  let not_f = s:Closure.compose([function('s:_not'), l:F])
-  return s:span(not_f, a:xs)
+  let l:Call = s:_get_caller(a:f)
+  let first = []
+  for x in a:xs
+    if l:Call(a:f, [x])
+      break
+    endif
+    call add(first, x)
+  endfor
+  return [first, a:xs[len(first) :]]
 endfunction
 
 " Similar to Haskell's Data.List.takeWhile .

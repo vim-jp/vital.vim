@@ -120,6 +120,38 @@ Describe Data.List.Closure
       Assert Equals(ListCl.min_by([20, -50, -15, 30], abs), -15)
     End
   End
+
+  Describe .break()
+    Before all
+      function! Is5(x) abort
+        return a:x is 5
+      endfunction
+
+      function! IsOver3(x) abort
+        return a:x > 3
+      endfunction
+
+      function! IsUnder3(x) abort
+        return a:x < 3
+      endfunction
+    End
+
+    After all
+      delfunction Is5
+      delfunction IsOver3
+      delfunction IsUnder3
+    End
+
+    It splits a list into two lists. The latter is from the given callable satisfies.
+      let is_5       = Closure.from_funcname('*Is5')
+      let is_over_3  = Closure.from_funcname('*IsOver3')
+      let is_under_3 = Closure.from_funcname('*IsUnder3')
+
+      Assert Equals(ListCl.break(is_5, [1, 3, 5, 2]), [[1, 3], [5, 2]])
+      Assert Equals(ListCl.break(is_over_3, [1, 2, 3, 4, 5]), [[1, 2, 3], [4, 5]])
+      Assert Equals(ListCl.break(is_under_3, [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
