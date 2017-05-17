@@ -29,6 +29,7 @@ Module						 | Description
 [Data.Dict](doc/vital/Data/Dict.txt)		 | dictionary utilities library
 [Data.LazyList](doc/vital/Data/LazyList.txt)	 | lazy list including file io
 [Data.List](doc/vital/Data/List.txt)		 | list utilities library
+[Data.List.Closure](doc/vital/Data/List.txt)	 | Data.List provider for Data.Closure
 [Data.Optional](doc/vital/Data/Optional.txt)	 | optional value library
 [Data.OrderedSet](doc/vital/Data/OrderedSet.txt)| ordered collection library
 [Data.String](doc/vital/Data/String.txt)	 | string utilities library
