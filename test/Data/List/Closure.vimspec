@@ -90,6 +90,16 @@ Describe Data.List.Closure
       \ )
     End
   End
+
+  Describe .max_by()
+    It returns a maximum value in the non empty list through the given the callable
+      let len = Closure.from_funcname('*len')
+      let abs = Closure.from_funcname('*abs')
+
+      Assert Equals(ListCl.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], len), 'hehehe')
+      Assert Equals(ListCl.max_by([20, -50, -15, 30], abs), -50)
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
