@@ -75,6 +75,15 @@ function! s:max_by(xs, callable) abort
   endtry
 endfunction
 
+function! s:min_by(xs, callable) abort
+  let s:unary_closure_func = a:callable
+  try
+    return s:List.min_by(a:xs, function('s:_provide_unary_callable'))
+  finally
+    unlet s:unary_closure_func
+  endtry
+endfunction
+
 
 " Notice:
 " This is not job safe.

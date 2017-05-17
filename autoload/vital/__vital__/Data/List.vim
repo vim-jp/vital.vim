@@ -207,9 +207,11 @@ endfunction
 " v:val is used in {expr}.
 " FIXME: -0x80000000 == 0x80000000
 function! s:min_by(list, f) abort
-  let l:F = s:_build_unary_func(a:f)
-  let g   = s:Closure.compose([s:Closure.from_expr('-a:1'), l:F])
-  return s:max_by(a:list, g)
+  if empty(a:list)
+    return 0
+  endif
+  let list = s:map(copy(a:list), a:f)
+  return a:list[index(list, min(list))]
 endfunction
 
 " Returns List of character sequence between [a:from, a:to] .
@@ -597,16 +599,6 @@ endfunction
 " The function of the '!' operator
 function! s:_not(x) abort
   return !a:x
-endfunction
-
-" Converts the unary function to Data.Closure's {callable}.
-" If the unary function is the string expression, substitutes 'v:val' to 'a:1'.
-function! s:_build_unary_func(unary_f) abort
-  let l:F = s:Closure.is_callable(a:unary_f)
-  \           ? a:unary_f
-  \           : substitute(a:unary_f, 'v:val', 'a:1', 'g')
-  return s:Closure.is_callable(l:F) ? s:Closure.build(l:F)
-  \                                 : s:Closure.from_expr(l:F)
 endfunction
 
 let &cpo = s:save_cpo
