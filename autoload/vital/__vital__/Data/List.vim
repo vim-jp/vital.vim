@@ -276,13 +276,11 @@ function! s:drop_while(f, xs) abort
   let l:Call = s:_get_caller(a:f)
   let i = -1
   for x in a:xs
-    if l:Call(a:f, [x])
-      let i += 1
-    else
+    if !l:Call(a:f, [x])
       break
     endif
+    let i += 1
   endfor
-
   return a:xs[i + 1 :]
 endfunction
 

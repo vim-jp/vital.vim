@@ -347,30 +347,14 @@ Describe Data.List
       Assert Equals(List.drop_while(function('Is3'), [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
     End
 
-    It drops elements while an element satisfies given the Data.Closure
-      let is_under_5 = Closure.from_funcname('*IsUnder5')
-      let is_over_3  = Closure.from_funcname('*IsOver3')
-      let is_under_3 = Closure.from_funcname('*IsUnder3')
-      let is_3       = Closure.from_funcname('*Is3')
-
-      Assert Equals(List.drop_while(is_under_5, [1, 3, 5, 2]), [5, 2])
-      Assert Equals(List.drop_while(is_over_3, [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
-      Assert Equals(List.drop_while(is_under_3, [1, 2, 3, 4, 5]), [3, 4, 5])
-      Assert Equals(List.drop_while(is_3, [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
-    End
-
     It do nothing if empty list is given
       Assert Equals(List.drop_while('v:val is 1', []), [])
     End
 
     It of course handles list of list.
-      let is_non_empty = Closure.from_funcname('*IsNonEmpty')
-
       Assert Equals(List.drop_while('len(v:val) > 0', [[1], [2, 3], [], [4]]),
             \ [[], [4]])
       Assert Equals(List.drop_while(function('IsNonEmpty'), [[1], [2, 3], [], [4]]),
-            \ [[], [4]])
-      Assert Equals(List.drop_while(is_non_empty, [[1], [2, 3], [], [4]]),
             \ [[], [4]])
     End
   End
