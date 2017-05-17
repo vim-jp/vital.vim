@@ -702,7 +702,7 @@ let s:URI = {
 " Thus it shares this instance also cache.
 " But it is no problem because of the following reasons.
 " 1. Each component's return value doesn't change
-"    unless it is overriden by a user. but...
+"    unless it is overridden by a user. but...
 " 2. s:DefaultPatternSet can't be accessed by a user.
 let s:DefaultPatternSet = {'_cache': {}}
 

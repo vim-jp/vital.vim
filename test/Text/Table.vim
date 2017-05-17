@@ -365,7 +365,7 @@ function! s:suite.It_automatically_resizes_width_for_each_column() abort
     \])
 endfunction
 
-function! s:suite.It_supresses_resizes_if_specified_table_style() abort
+function! s:suite.It_suppresses_resizes_if_specified_table_style() abort
     let table = s:T.new({
     \ 'columns': [{'width': 5}, {'width': 10}, {'max_width': 30}],
     \})

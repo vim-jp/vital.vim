@@ -252,7 +252,7 @@ get({component})			*Vital.Web.URI-PatternSet.get()*
 <
 Listing all customizable components here (alphabetic order).
 NOTE: DON'T call these methods directly.
-These methods are used when defining custimized PatternSet.
+These methods are used when defining customized PatternSet.
 See how-to at |Vital.Web.URI-PatternSet|.
 
 dec_octet()					*Vital.Web.URI-PatternSet.dec_octet()*

@@ -535,7 +535,7 @@ function! s:clients.curl.request(settings) abort
     if has_key(s:clients.curl.errcode, retcode)
       throw 'vital: Web.HTTP: ' . s:clients.curl.errcode[retcode]
     else
-      throw 'vital: Web.HTTP: Unknown error code has occured in curl: code=' . retcode
+      throw 'vital: Web.HTTP: Unknown error code has occurred in curl: code=' . retcode
     endif
   endif
   if !empty(headers)

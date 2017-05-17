@@ -18,7 +18,7 @@ set cpo&vim
 " dict: it differs a little from `maparg` above. it contains more keys like "unique", etc.
 " chars: String that each character means option. e.g., "b" (which means <buffer>)
 " raw: String that option passing to :map command's argument. e.g., "<buffer>"
-" mode: a character which means current mode. see s:get_all_modes() for avaiable modes.
+" mode: a character which means current mode. see s:get_all_modes() for available modes.
 " lhs: :help {lhs}
 " rhs: :help {rhs}
 

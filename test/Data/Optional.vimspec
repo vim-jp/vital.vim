@@ -202,7 +202,7 @@ Describe Data.Optional
       function! Div(a, b)
         " Note:
         " This is workaround because 'O' is defined in outer 'Before all'
-        " and it can't be refered here.
+        " and it can't be referred here.
         let O = vital#vital#new().import('Data.Optional')
 
         if a:b == 0
