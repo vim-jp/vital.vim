@@ -18,3 +18,8 @@ runner:
     cmd: go run ./scripts/lint-throw.go $(find autoload/vital/__vital__/ | grep -e '\.vim$')
     errorformat:
       - "%f:%l:%c: %m"
+
+  misspell:
+    cmd: misspell .
+    errorformat:
+      - "%f:%l:%c: %m"
