@@ -110,6 +110,16 @@ Describe Data.List.Closure
       Assert Equals(ListCl.min_by([20, -50, -15, 30], abs), -15)
     End
   End
+
+  Describe .span()
+    It returns a minimum value in the non empty list through the given the callable
+      let len = Closure.from_funcname('*len')
+      let abs = Closure.from_funcname('*abs')
+
+      Assert Equals(ListCl.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], len), 'foo')
+      Assert Equals(ListCl.min_by([20, -50, -15, 30], abs), -15)
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et

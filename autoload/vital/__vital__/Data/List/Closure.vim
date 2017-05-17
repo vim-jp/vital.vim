@@ -84,6 +84,15 @@ function! s:min_by(xs, callable) abort
   endtry
 endfunction
 
+function! s:span(callable, xs) abort
+  let s:unary_closure_func = a:callable
+  try
+    return s:List.span(function('s:_provide_unary_callable'), a:xs)
+  finally
+    unlet s:unary_closure_func
+  endtry
+endfunction
+
 
 " Notice:
 " This is not job safe.
