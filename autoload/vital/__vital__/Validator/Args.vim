@@ -68,6 +68,7 @@ function! s:of(prefix) abort
     if !empty(self._asserts)
       call s:_validate_arg_assert(a:args, self._asserts, self._prefix)
     endif
+    return a:args
   endfunction
   return validator
 endfunction

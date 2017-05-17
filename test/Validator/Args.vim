@@ -40,6 +40,15 @@ function! s:suite.__of__()
     call A.of('test()').validate([1,'foo'])
   endfunction
 
+  function! of.validate_returns_given_args()
+    let A = s:A
+    Assert Equals(A.of('test()').validate([]), [])
+    Assert Equals(A.of('test()').validate(['foo']), ['foo'])
+    Assert Equals(
+    \         A.of('test()').validate(['str', ['list'], {'value': 'dict'}]),
+    \         ['str', ['list'], {'value': 'dict'}])
+  endfunction
+
   function! of.union_types()
     let [A, T] = [s:A, s:T]
     Throws /^test(): invalid type arguments were given (expected: String or Funcref, got: Number)/
