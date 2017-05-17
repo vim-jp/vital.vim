@@ -115,7 +115,7 @@ Vital has module system. The below is an example to import/load a module
 `Data.OrderedSet` and to call a function `f()` of the module.
 
 ```vim
-" Recommented way
+" Recommended way
 let s:V = vital#ujihisa#new()
 let s:O = s:V.import('Data.OrderedSet')
 call s:O.f()
