@@ -152,6 +152,38 @@ Describe Data.List.Closure
       Assert Equals(ListCl.break(is_under_3, [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
     End
   End
+
+  Describe .take_while()
+    Before all
+      function! IsUnder5(x) abort
+        return a:x < 5
+      endfunction
+
+      function! IsOver3(x) abort
+        return a:x > 3
+      endfunction
+
+      function! IsUnder3(x) abort
+        return a:x < 3
+      endfunction
+    End
+
+    After all
+      delfunction IsUnder5
+      delfunction IsOver3
+      delfunction IsUnder3
+    End
+
+    It takes elements while an element satisfies given the callable
+      let is_under_5 = Closure.from_funcname('*IsUnder5')
+      let is_over_3  = Closure.from_funcname('*IsOver3')
+      let is_under_3 = Closure.from_funcname('*IsUnder3')
+
+      Assert Equals(ListCl.take_while(is_under_5, [1, 3, 5, 2]), [1, 3])
+      Assert Equals(ListCl.take_while(is_over_3, [1, 2, 3, 4, 5]), [])
+      Assert Equals(ListCl.take_while(is_under_3, [1, 2, 3, 4, 5]), [1, 2])
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et

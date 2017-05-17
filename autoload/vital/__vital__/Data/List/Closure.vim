@@ -102,6 +102,15 @@ function! s:break(callable, xs) abort
   endtry
 endfunction
 
+function! s:take_while(callable, xs) abort
+  let s:unary_closure_func = a:callable
+  try
+    return s:List.take_while(function('s:_provide_unary_callable'), a:xs)
+  finally
+    unlet s:unary_closure_func
+  endtry
+endfunction
+
 
 " Notice:
 " This is not job safe.
