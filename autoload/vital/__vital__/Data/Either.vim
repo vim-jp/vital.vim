@@ -38,21 +38,12 @@ endfunction
 
 
 function! s:is_left(either) abort
-  try
-    let l:result = has_key(a:either, 'either_left_value')
-    return l:result
-  catch /^Vim\%((\a\+)\)\=:E715/
-    return 0
-  endtry
+  return type(a:either) is type({}) && has_key(a:either, 'either_left_value')
 endfunction
 
 
 function! s:is_right(either) abort
-  try
-    return has_key(a:either, 'either_right_value')
-  catch /^Vim\%((\a\+)\)\=:E715/
-    return 0
-  endtry
+  return type(a:either) is type({}) && has_key(a:either, 'either_right_value')
 endfunction
 
 
@@ -152,13 +143,17 @@ function! s:return(x) abort
   return s:right(a:x)
 endfunction
 
-function! s:null_to_left(x, errorMsg) abort
-  if !exists('v:null')
+
+if !exists('v:null')
+  function! s:null_to_left(_, __) abort
     throw 'vital: Data.Either: null_to_left() supports only vim8 or later'
-  endif
-  return a:x ==# v:null ? s:left(a:errorMsg)
-  \                     : s:right(a:x)
-endfunction
+  endfunction
+else
+  function! s:null_to_left(x, errorMsg) abort
+    return a:x is v:null ? s:left(a:errorMsg)
+    \                    : s:right(a:x)
+  endfunction
+endif
 
 
 let &cpo = s:save_cpo
