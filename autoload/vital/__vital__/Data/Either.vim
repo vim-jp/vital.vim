@@ -110,8 +110,8 @@ function! s:apply(either_func, ...) abort
   for l:either_value in l:either_values
     call add(l:values, s:unsafe_from_right(l:either_value))
   endfor
-  let l:result = s:_get_caller(l:Func)(l:Func, l:values)
-  return s:right(l:result)
+  let l:Call = s:_get_caller(l:Func)
+  return s:right(l:Call(l:Func, l:values))
 endfunction
 
 

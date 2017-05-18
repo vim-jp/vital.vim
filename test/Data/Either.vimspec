@@ -163,6 +163,10 @@ Describe Data.Either
       function! Plus(x, y) abort
         return a:x + a:y
       endfunction
+
+      function! Compose(g, f, x) abort
+        return a:g(a:f(a:x))
+      endfunction
     End
 
     After all
@@ -174,10 +178,12 @@ Describe Data.Either
       let right_func_x = Either.right(function('Succ'))
       let right_func_y = Either.right('v:val + 1')
       let right_func_z = Either.right(function('Plus'))
+      let right_func_w = Either.right(function('Compose'))  " The higher function
 
       Assert Equals(Either.apply(right_func_x, Either.right(10)), Either.right(11))
       Assert Equals(Either.apply(right_func_y, Either.right(10)), Either.right(11))
       Assert Equals(Either.apply(right_func_z, Either.right(10), Either.right(20)), Either.right(30))
+      Assert Equals(Either.apply(right_func_w, right_func_x, Either.right(function('len')), Either.right([1, 2, 3])), Either.right(4))
     End
 
     It doesn't apply left values to a right function
