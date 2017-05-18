@@ -149,8 +149,8 @@ if !exists('v:null')
     throw 'vital: Data.Either: null_to_left() supports only vim8 or later'
   endfunction
 else
-  function! s:null_to_left(x, errorMsg) abort
-    return a:x is v:null ? s:left(a:errorMsg)
+  function! s:null_to_left(x, error_msg) abort
+    return a:x is v:null ? s:left(a:error_msg)
     \                    : s:right(a:x)
   endfunction
 endif
