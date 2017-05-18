@@ -124,6 +124,7 @@ endfunction
 " Lifts the string expression to the function.
 " s:sort_expr must be defined as the string expression of the binary function
 " before this is called.
+" a:a and a:b are used in s:sort_expr .
 function! s:_compare_by_string_expr(a, b) abort
   return eval(s:sort_expr)
 endfunction
@@ -152,7 +153,7 @@ function! s:sort_by(list, unary_f) abort
     \       : execute(printf("throw 'vital: Data.List: sort_by() cannot compare %s and %s'", string(x), string(y)), 1)
   endfunction
 
-  return s:sort(a:list, function(scope.compare_with, [], scope))
+  return s:sort(a:list, scope.compare_with)
 endfunction
 
 " The basic comparator for Number and String
