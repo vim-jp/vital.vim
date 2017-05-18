@@ -84,10 +84,10 @@ function! s:map(either, f) abort
   if s:is_left(a:either)
     return a:either
   endif
-  let l:internal  = s:unsafe_from_right(a:either)
-  let l:internal_ = s:_get_caller(a:f)(a:f, [l:internal])
+  let internal  = s:unsafe_from_right(a:either)
+  let internal_ = s:_get_caller(a:f)(a:f, [internal])
 
-  return s:right(l:internal_)
+  return s:right(internal_)
 endfunction
 
 
@@ -95,23 +95,23 @@ function! s:apply(either_func, ...) abort
   if s:is_left(a:either_func)
     return a:either_func
   endif
-  let l:either_values = a:000
+  let either_values = a:000
 
   "NOTE: It isn't needed to consider value of other than either. Only either values is considered in here.
-  let l:NULL         = 0 | lockvar l:NULL
-  let l:null_or_left = s:List.find(l:either_values, l:NULL, function('s:is_left'))
-  if l:null_or_left isnot l:NULL
+  let NULL         = 0 | lockvar NULL
+  let null_or_left = s:List.find(either_values, NULL, function('s:is_left'))
+  if null_or_left isnot NULL
     " ^ if the left value is found, return it
-    return l:null_or_left  " a left value
+    return null_or_left  " a left value
   endif
 
   let l:Func   = s:unsafe_from_right(a:either_func)
-  let l:values = []
-  for l:either_value in l:either_values
-    call add(l:values, s:unsafe_from_right(l:either_value))
+  let values = []
+  for either_value in either_values
+    call add(values, s:unsafe_from_right(either_value))
   endfor
   let l:Call = s:_get_caller(l:Func)
-  return s:right(l:Call(l:Func, l:values))
+  return s:right(l:Call(l:Func, values))
 endfunction
 
 
@@ -119,13 +119,13 @@ function! s:join(nested_either) abort
   if s:is_left(a:nested_either)
     return a:nested_either
   endif
-  let l:either = s:unsafe_from_right(a:nested_either)
+  let either = s:unsafe_from_right(a:nested_either)
 
-  " Don't return anything if l:either isn't either
-  if !s:is_left(l:either) && !s:is_right(l:either)
+  " Don't return anything if either isn't either
+  if !s:is_left(either) && !s:is_right(either)
     throw "vital: Data.Either: join() cannot be applied if the argument isn't nested either"
   endif
-  return l:either
+  return either
 endfunction
 
 
