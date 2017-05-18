@@ -553,20 +553,14 @@ Describe Data.List
       delfunction Lookup
     End
 
-    It sorts list with given string expression
+    It sorts list with given the string expression
       let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
       Assert Equals(List.sort_by(copy(list), 'v:val.field'), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
     End
 
-    It sorts list with given funcref
+    It sorts list with given the funcref
       let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
       Assert Equals(List.sort_by(copy(list), function('Lookup')), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
-    End
-
-    It sorts list with given Data.Closure
-      let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
-      let lookup = Closure.from_funcname('*Lookup')
-      Assert Equals(List.sort_by(copy(list), lookup), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
     End
   End
 

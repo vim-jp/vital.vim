@@ -214,6 +214,25 @@ Describe Data.List.Closure
       Assert Equals(ListCl.sort(copy(list), my_compare), ['apple', 'banana', 'orange', 'pineapple'])
     End
   End
+
+  Describe .sort_by()
+    Before all
+      function! Lookup(x)
+        return a:x.field
+      endfunction
+    End
+
+    After all
+      delfunction Lookup
+    End
+
+    It sorts list with given the callable
+      let lookup = Closure.from_funcname('*Lookup')
+
+      let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
+      Assert Equals(ListCl.sort_by(copy(list), lookup), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
