@@ -120,6 +120,15 @@ function! s:drop_while(callable, xs) abort
   endtry
 endfunction
 
+function! s:sort(xs, callable) abort
+  let s:binary_closure_func = a:callable
+  try
+    return s:List.sort(a:xs, function('s:_provide_binary_callable'))
+  finally
+    unlet s:binary_closure_func
+  endtry
+endfunction
+
 
 " Notice:
 " This is not job safe.

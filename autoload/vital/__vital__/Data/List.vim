@@ -114,22 +114,11 @@ endfunction
 function! s:sort(list, f) abort
   if type(a:f) is type(function('function'))
     return sort(a:list, a:f)
-  elseif s:Closure.is_closure(a:f)
-    " Give up job safety (atomically)
-    let s:sort_closure_func = a:f
-    return sort(a:list, 's:_compare_by_closure')
   else
     " Give up job safety (atomically)
     let s:sort_expr = a:f
     return sort(a:list, 's:_compare_by_string_expr')
   endif
-endfunction
-
-" Unlifts Data.Closure's {closure} to the function.
-" s:sort_closure_func must be defined as the {callable} of the binary function
-" before this is called.
-function! s:_compare_by_closure(a, b) abort
-  return s:Closure.apply(s:sort_closure_func, [a:a, a:b])
 endfunction
 
 " Lifts the string expression to the function.

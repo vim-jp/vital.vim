@@ -529,22 +529,16 @@ Describe Data.List
       delfunction MyCompare
     End
 
-    It sorts list with given string expression
+    It sorts list with given the string expression
       let list = ['pineapple', 'orange', 'banana', 'apple']
 
       Assert Equals(List.sort([3, 1, 2], 'a:a - a:b'), [1, 2, 3])
       Assert Equals(List.sort(copy(list), 'len(a:a)-len(a:b)'), ['apple', 'orange', 'banana', 'pineapple'])
     End
 
-    It sorts list with given funcref
+    It sorts list with given the funcref
       let list = ['pineapple', 'orange', 'banana', 'apple']
       Assert Equals(List.sort(copy(list), function('MyCompare')), ['apple', 'banana', 'orange', 'pineapple'])
-    End
-
-    It sorts list with given Data.Closure
-      let list = ['pineapple', 'orange', 'banana', 'apple']
-      let my_compare = Closure.from_funcref(function('MyCompare'))
-      Assert Equals(List.sort(copy(list), my_compare), ['apple', 'banana', 'orange', 'pineapple'])
     End
   End
 

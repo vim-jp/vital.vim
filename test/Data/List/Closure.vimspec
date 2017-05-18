@@ -193,6 +193,27 @@ Describe Data.List.Closure
       Assert Equals(ListCl.drop_while(is_3, [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
     End
   End
+
+  Describe .sort()
+    Before all
+      function! MyCompare(i1, i2)
+        return a:i1 == a:i2 ? 0
+        \    : a:i1 >  a:i2 ? 1
+        \                   : -1
+      endfunction
+    End
+
+    After all
+      delfunction MyCompare
+    End
+
+    It sorts list with given the callable
+      let my_compare = Closure.from_funcname('*MyCompare')
+
+      let list = ['pineapple', 'orange', 'banana', 'apple']
+      Assert Equals(ListCl.sort(copy(list), my_compare), ['apple', 'banana', 'orange', 'pineapple'])
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
