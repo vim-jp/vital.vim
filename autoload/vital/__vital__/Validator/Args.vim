@@ -53,7 +53,7 @@ function! s:of(prefix) abort
     endif
     let self._asserts[a:no - 1] = {
     \ 'funclist': type(a:funclist) is s:TYPE.LIST ? a:funclist : [a:funclist],
-    \ 'msg': get(a:000, 0, 'the ' . a:no . 'th argument''s assertion failed')
+    \ 'msg': get(a:000, 0, 'the ' . a:no . 'th argument''s assertion was failed')
     \}
     return self
   endfunction

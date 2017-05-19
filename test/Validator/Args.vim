@@ -174,7 +174,7 @@ function! s:suite.__of__()
     \ A.of('test()').assert(1, 'type(v:val) is type('''') && v:val != ''''',
                    \           'the first argument should be non empty string')
                    \.validate([''])
-    Throws /^test(): the 1th argument's assertion failed/
+    Throws /^test(): the 1th argument's assertion was failed/
     \ A.of('test()').assert(1, 'type(v:val) is type('''') && v:val != ''''')
                    \.validate([''])
     call
@@ -201,7 +201,7 @@ function! s:suite.__of__()
                    \.assert(1, 'v:val != ''''',
                    \            'the first argument should be non empty string')
                    \.validate([''])
-    Throws /^test(): the 1th argument's assertion failed/
+    Throws /^test(): the 1th argument's assertion was failed/
     \ A.of('test()').type(T.STRING)
                    \.assert(1, 'v:val != ''''')
                    \.validate([''])
