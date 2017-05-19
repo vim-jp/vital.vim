@@ -1,4 +1,4 @@
-*vital/Data/List.txt*	The representation of Data.List for Data.Closure
+*vital/Data/List/Closure.txt* The representation of Data.List for Data.Closure
 
 Maintainer: aiya000 <aiya000.develop at gmail com>
 
