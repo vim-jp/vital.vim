@@ -287,7 +287,7 @@ endfunction
 
 " Similar to Haskell's Prelude.any .
 function! s:any(f, xs) abort
-  return !empty(filter(map(copy(a:xs), a:f), 'v:val'))
+  return !empty(filter(s:map(a:xs, a:f), 'v:val'))
 endfunction
 
 " Similar to Haskell's Prelude.and .

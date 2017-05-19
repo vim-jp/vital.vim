@@ -388,13 +388,20 @@ all({expr}, {list})			*Vital.Data.List.all()*
 	your info.
 
 
-any({expr}, {list})			*Vital.Data.List.any()*
+any({function}, {list})			*Vital.Data.List.any()*
 	Returns Number 1 if at least one item in |List| {list} fulfills the
-	condition {expr}, zero otherwise.  If {list} is empty, this function
-	returns 0.
+	condition {function}, zero otherwise.  If {list} is empty, this
+	function returns 0.
 >
+	function! Even(x) abort
+	  return a:x % 2 == 0
+	endfunction
+
 	echo s:L.any('v:val % 2 == 0', [2, 8, 4, 6])
 	" 1
+	echo s:L.any(function('Even'), [2, 8, 4, 6])
+	" 1
+
 	echo s:L.any('v:val % 2 == 1', [2, 8, 4, 6])
 	" 0
 	echo s:L.any('v:val % 2 == 0', [2, 8, 5, 6])

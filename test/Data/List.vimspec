@@ -379,11 +379,33 @@ Describe Data.List
   End
 
   Describe .any()
-    It returns true if at least one item in the list fulfills the condition.
+    Before all
+      function! Odd(x) abort
+        return a:x % 2 == 1
+      endfunction
+
+      function! IsUnder0(x) abort
+        return 0 >= a:x
+      endfunction
+    End
+
+    After all
+      delfunction Odd
+      delfunction IsUnder0
+    End
+
+    It returns true if at least one item in the list fulfills the string expression.
       Assert False(List.any('v:val % 2 == 1', [2, 8, 4, 6]))
       Assert True(List.any('v:val % 2 == 1', [2, 8, 5, 6]))
       Assert False(List.any('0 >= v:val', [2, 8, 4, 6]))
       Assert True(List.any('0 >= v:val', [2, 0, 4, 6]))
+    End
+
+    It returns true if at least one item in the list fulfills the funcref.
+      Assert False(List.any(function('Odd'), [2, 8, 4, 6]))
+      Assert True(List.any(function('Odd'), [2, 8, 5, 6]))
+      Assert False(List.any(function('IsUnder0'), [2, 8, 4, 6]))
+      Assert True(List.any(function('IsUnder0'), [2, 0, 4, 6]))
     End
 
     It returns false if the list is empty.
