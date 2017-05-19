@@ -1,0 +1,204 @@
+*vital/Validator/Args.txt*	Arguments validation library
+
+Maintainer: tyru <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Validator.Args-contents*
+
+INTRODUCTION			|Vital.Validator.Args-introduction|
+EXAMPLES			|Vital.Validator.Args-examples|
+INTERFACE			|Vital.Validator.Args-interface|
+  FUNCTIONS			  |Vital.Validator.Args-functions|
+  TYPES				  |Vital.Validator.Args-types|
+VALIDATOR OBJECT		|Vital.Validator.Args-Validator-object|
+
+==============================================================================
+INTRODUCTION				*Vital.Validator.Args-introduction*
+
+*Vital.Validator.Args* is a library to validate arity / types / contents of
+function's arguments. This library separates concerns about invalid arity,
+types, and values.
+
+==============================================================================
+EXAMPLES				*Vital.Validator.Args-examples*
+
+type()				*Vital.Validator.Args-example-type*
+------
+>
+	let s:Validator = vital#{plugin-name}#import('Validator.Args')
+	let s:TYPE = s:Validator.TYPE
+
+	" s:func1() receives one number argument
+	let s:func1_args =
+	\ s:Validator.of('func1()')
+	            \.type(s:TYPE.NUMBER)
+	function! s:func1(...) abort
+	  " validate() throws an exception when:
+	  " * arity is not 1
+	  " * if the first argument is not a number
+	  let [n] = s:func1_args.validate(a:000)
+	  echo 'n is a number: ' . n
+	endfunction
+
+	" s:func2() receives two number and string arguments
+	let s:func2_args =
+	\ s:Validator.of('func2()')
+	            \.type(s:TYPE.NUMBER, s:TYPE.STRING)
+<
+type(): Union types		*Vital.Validator.Args-example-union-types*
+-------------------
+>
+	" s:func3() receives one number or float argument
+	let s:func3_args =
+	\ s:Validator.of('func3()')
+	            \.type([s:TYPE.NUMBER, s:TYPE.FLOAT])
+<
+			*Vital.Validator.Args-example-optional-arguments*
+type(): Optional arguments
+--------------------------
+>
+	" s:func4() receives one string argument and zero or more optional arguments
+	" (NOTE: if the last type is OPTARG, skip the rest arguments validations)
+	let s:func4_args =
+	\ s:Validator.of('func4()')
+	            \.type(s:TYPE.STRING, s:TYPE.OPTARG)
+
+	" if you want to check also the optional arguments, specify the types
+	" after OPTARG (s:func5() receives exact 1-2 argument(s): Number [, Number])
+	let s:func5_args =
+	\ s:Validator.of('func5()')
+	            \.type(s:TYPE.NUMBER, s:TYPE.OPTARG, s:TYPE.NUMBER)
+<
+type(): Any type		*Vital.Validator.Args-example-any-type*
+----------------
+>
+	" s:func6() receives one arbitrary type argument
+	let s:func6_args =
+	\ s:Validator.of('func6()')
+	            \.type(s:TYPE.ANY)
+<
+assert()			*Vital.Validator.Args-example-assert*
+--------
+>
+	" s:func7() receives one positive number argument
+	" (type() validations were done before assert() validations
+	"  regardless of invoked order)
+	let s:func7_args =
+	\ s:Validator.of('func7()')
+	            \.type(s:TYPE.NUMBER)
+	            \.assert(1, 'v:val > 0',
+	            \  'the first argument should be a positive number')
+	function! s:func7(...) abort
+	  " validate() throws an exception when:
+	  " * arity is not 1
+	  " * if the first argument is not a number
+	  " * if the first argument is not a positive number
+	  let [n] = s:func7_args.validate(a:000)
+	  echo 'n is a positive number: ' . n
+	endfunction
+	
+	" Here is an example of Vim script's built-in function range()
+	let s:range_args = validator.of('vital: Stream: range()')
+	                           \.type(T.NUMBER, T.OPTARG, T.NUMBER, T.NUMBER)
+	                           \.assert(3, 'v:val !=# 0', 'stride is zero')
+<
+==============================================================================
+INTERFACE				*Vital.Validator.Args-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Validator.Args-functions*
+
+of({prefix})					*Vital.Validator.Args.empty()*
+	Creates validator of a function. {prefix} is a prefix of a thrown
+	exception message. see |Vital.Validator.Args-exceptions| for the
+	examples of thrown exception messages.
+
+------------------------------------------------------------------------------
+TYPES				*Vital.Validator.Args-types*
+
+TYPE.NUMBER		*Vital.Validator.Args-type-NUMBER*
+	A |Number| argument.
+
+TYPE.STRING		*Vital.Validator.Args-type-String*
+	A |String| argument.
+
+TYPE.FUNC		*Vital.Validator.Args-type-FUNC*
+	A |Funcref| argument.
+
+TYPE.LIST		*Vital.Validator.Args-type-LIST*
+	A |List| argument.
+
+TYPE.DICT		*Vital.Validator.Args-type-DICT*
+	A |Dictionary| argument.
+
+TYPE.FLOAT		*Vital.Validator.Args-type-FLOAT*
+	A |Float| argument.
+
+TYPE.BOOL		*Vital.Validator.Args-type-BOOL*
+	A Boolean argument (|v:true| or |v:false|).
+
+TYPE.NONE		*Vital.Validator.Args-type-NONE*
+	A None argument (|v:null| or |v:none|).
+
+TYPE.JOB		*Vital.Validator.Args-type-JOB*
+	A |Job| argument.
+
+TYPE.CHANNEL		*Vital.Validator.Args-type-CHANNEL*
+	A |Channel| argument.
+
+TYPE.ANY		*Vital.Validator.Args-type-ANY*
+	An arbitrary type argument.
+
+TYPE.OPTARG		*Vital.Validator.Args-type-OPTARG*
+	An optional argument (Vim script's "..." in :function arguments).
+	If the last type is OPTARG, skip validation of rest arguments.
+	But if any type(s) were given after OPTARG, check the type(s) and arity.
+
+==============================================================================
+VALIDATOR OBJECT			*Vital.Validator.Args-Validator-object*
+
+Validator.type([{type} ...])		*Vital.Validator.Args-Validator.type()*
+	Specify types of arguments.
+
+	See |Vital.Validator.Args-types| for all available types.
+	See |Vital.Validator.Args-example-type| for examples.
+
+					*Vital.Validator.Args-Validator.assert()*
+Validator.assert({nth}, {assert} [, {msg}])
+	Specify assertions of arguments.
+
+	{nth} is 1-origin number which specifies the number of argument.
+
+	{assert} is a |Funcref| or |String| which is a function to receive a
+	value of each argument.
+
+	{msg} is a exception message.
+	Default value is: `"the " . nth . "th argument's assertion failed"`
+
+	See |Vital.Validator.Args-example-assert| for examples.
+
+Validator.validate({args})		*Vital.Validator.Args-Validator.validate()*
+	Validates given arguments {args} and throw an exception if the given
+	arguments don't match with defined arguments. {args} is a |List| of
+	arguments. A thrown exception format is: `{prefix}: {msg}`
+
+	See |Vital.Validator.Args-example-assert| for examples.
+
+					*Vital.Validator.Args-exceptions*
+	This method throws an exception when:
+
+	* Arity is different with type()'s arguments:
+	  `func(): too few arguments` or
+	  `func(): too many arguments`
+
+	* Any types of function arguments and type()'s arguments
+	  are different:
+	  `func(): invalid type arguments were given (expected: String, got: Number)`
+
+	* assert()'s {assert} argument doesn't match with the given argument:
+	  `func(): the {nth}th argument's assertion was failed`
+	  or, assert()'s {msg} was given:
+	  `func(): {msg}`
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
