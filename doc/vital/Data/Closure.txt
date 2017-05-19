@@ -126,7 +126,7 @@ from_method({object}, {method})		*Vital.Data.Closure.from_method()*
 
 compose({callables})			*Vital.Data.Closure.compose()*
 	Builds a new composed Closure objects from {callables}.
-	{callables} is a List of callable(|Vital.Data.Closure-callable|).
+	{callables} is a List of callable(|Vital.Data.Closure-term-callable|).
 
 	For example, there are the functions named "F", "G", "H":
 >
