@@ -258,10 +258,6 @@ Describe Stream
   End
 
   Describe .range()
-    It throws an exception for invalid arguments
-      Throws /vital: Stream: range(): stride is 0/ Stream.range(-2, 2, 0)
-    End
-
     It constructs stream from range
       Assert Equals(
       \   Stream.range(-2, 2).to_list(),
@@ -350,6 +346,9 @@ Describe Stream
       Throws Stream.range(0, 1, [])
       Throws Stream.range(0, 1, 2, 3)
       Throws Stream.range(0, 1, 2, [])
+
+      Throws /^vital: Stream: range(): stride is zero/
+      \      Stream.range(1, 10, 0)
     End
   End
 

@@ -57,6 +57,7 @@ function! s:_vital_loaded(V) abort
   let s:from_dict_args = validator.of('vital: Stream: from_dict()').type(T.DICT)
   let s:range_args = validator.of('vital: Stream: range()')
                              \.type(T.NUMBER, T.OPTARG, T.NUMBER, T.NUMBER)
+                             \.assert(3, 'v:val !=# 0', 'stride is zero')
   let s:iterate_args = validator.of('vital: Stream: iterate()')
                                \.type(T.ANY, T.FUNC)
   let s:generate_args = validator.of('vital: Stream: generate()')
@@ -184,9 +185,6 @@ function! s:range(...) abort
     let args = [expr, rest[0], 1]
   else
     let args = [expr, rest[0], rest[1]]
-  endif
-  if args[2] ==# 0    " E726
-    throw 'vital: Stream: range(): stride is 0'
   endif
   if s:_range_size(args, 0) ==# 0
     return s:empty()
