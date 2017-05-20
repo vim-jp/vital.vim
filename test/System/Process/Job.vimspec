@@ -3,18 +3,20 @@ scriptencoding utf-8
 let s:V = vital#vital#new()
 let s:Prelude = s:V.import('Prelude')
 let s:Path = s:V.import('System.Filepath')
+let s:ProcessClient = s:V.import('System.Process.Job')
 let s:testdata = './test/_testdata/System/Process/'
 let s:cmd = ['cmd', '/C']
 
-" NOTE:
-" 'echo' in cmd.exe return a double quote enclosed string if the {string}
-" includes spaces.
+if !s:ProcessClient.is_available()
+  finish
+endif
 
-Describe System.Process.System
+Describe System.Process.Job
   Before
     let Process = s:V.import('System.Process')
+    call Process.register('System.Process.Job')
     let options = {
-          \ 'clients': ['System.Process.System'],
+          \ 'clients': ['System.Process.Job'],
           \}
   End
 
@@ -23,14 +25,38 @@ Describe System.Process.System
 
     Context [Windows]
       Describe .execute({args}[, {options}])
-        It throws an exception when {options.timeout} is specified
-          let options.timeout = 100
-          Throws /None of client support/
-                \ Process.execute([], options)
+        if empty($APPVEYOR)
+          " NOTE:
+          " Not sure but 'sleep' doesn't properly works in AppVeyor?
+          " The code below worked on Windows 10 + PowerShell
+          It DOES NOT throws an exception when {options.timeout} is specified
+            let options.timeout = 100
+            let args = s:cmd + ['sleep', '10']
+            let result = Process.execute(args, options)
+            " While the execution time reachs the timeout, the success is 0.
+            Assert Equals(result.success, 0)
+            Assert Equals(result.status, 15)
+          End
+        endif
+
+        It DOES NOT throws an exception when {options.background} is specified
+          let options.background = 1
+          let args = s:cmd + ['exit 1']
+          let result = Process.execute(args, options)
+          " While the process is executed in background, the success is 1.
+          Assert Equals(result.success, 1)
+          Assert Equals(result.status, 0)
         End
 
-        It throws an exception when {options.background} is specified
+        It throws an exception when {options.background} and {options.input}/{options.timeout} are specified
           let options.background = 1
+          let options.input = 'foo'
+          Throws /None of client support/
+                \ Process.execute([], options)
+
+          let options.background = 1
+          let options.input = 0
+          let options.timeout = 100
           Throws /None of client support/
                 \ Process.execute([], options)
         End
@@ -99,7 +125,7 @@ Describe System.Process.System
         End
 
         It executes command with spaces (filename)
-          let args = ['type', s:Path.realpath(s:testdata . 't e s t.txt')]
+          let args = s:cmd + ['type', s:Path.realpath(s:testdata . 't e s t.txt')]
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
@@ -109,19 +135,19 @@ Describe System.Process.System
 
         if s:is_japanese_supported
           It executes command with non ascii characters without spaces (filename)
-            let args = ['type', s:Path.realpath(s:testdata . 'テスト.txt')]
+            let args = s:cmd + ['type', s:Path.realpath(s:testdata . 'テスト.txt')]
             let result = Process.execute(args, options)
             Assert Equals(result.success, 1)
-          Assert Equals(result.status, 0)
+            Assert Equals(result.status, 0)
             Assert Equals(result.output, "test\n")
             Assert Equals(result.content, ['test'])
           End
 
           It executes command with non ascii characters with spaces (filename)
-            let args = ['type', s:Path.realpath(s:testdata . 'テ ス ト.txt')]
+            let args = s:cmd + ['type', s:Path.realpath(s:testdata . 'テ ス ト.txt')]
             let result = Process.execute(args, options)
             Assert Equals(result.success, 1)
-          Assert Equals(result.status, 0)
+            Assert Equals(result.status, 0)
             Assert Equals(result.output, "t e s t\n")
             Assert Equals(result.content, ['t e s t'])
           End
@@ -131,13 +157,16 @@ Describe System.Process.System
   else
     Context [Unix]
       Describe .execute({args}[, {options}])
-        It throws an exception when {options.timeout} is specified
+        It DOES NOT throws an exception when {options.timeout} is specified
           let options.timeout = 100
-          Throws /None of client support/
-                \ Process.execute([], options)
+          let args = ['sleep', '10']
+          let result = Process.execute(args, options)
+          " While the execution time reachs the timeout, the success is 0.
+          Assert Equals(result.success, 0)
+          Assert Equals(result.status, 15)
         End
 
-        It DOES NOT throw an exception when {options.background} is specified
+        It DOES NOT throws an exception when {options.background} is specified
           let options.background = 1
           let args = ['false']
           let result = Process.execute(args, options)
@@ -146,20 +175,31 @@ Describe System.Process.System
           Assert Equals(result.status, 0)
         End
 
+        It throws an exception when {options.background} and {options.input}/{options.timeout} are specified
+          let options.background = 1
+          let options.input = 'foo'
+          Throws /None of client support/
+                \ Process.execute([], options)
+
+          let options.background = 1
+          let options.input = 0
+          let options.timeout = 100
+          Throws /None of client support/
+                \ Process.execute([], options)
+        End
+
         It returns {result.success: 1} when a command success
-          let args = ['true']
+          let args = ['sh', '-c', 'true']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 1)
           Assert Equals(result.status, 0)
-          Assert Equals(result.output, '')
         End
 
         It returns {result.success: 0} when a command fail
-          let args = ['false']
+          let args = ['sh', '-c', 'false']
           let result = Process.execute(args, options)
           Assert Equals(result.success, 0)
           Assert Equals(result.status, 1)
-          Assert Equals(result.output, '')
         End
 
         It executes command without spaces
