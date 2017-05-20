@@ -110,7 +110,7 @@ lines({str})	*Vital.Stream.lines()*
 	But this makes empty stream for empty string.
 
 from_dict({dict})	*Vital.Stream.from_dict()*
-	Shortcut for `s:Stream.from_list(map(items(dict), {a,b -> {"key": a, "value": b}}))` .
+	Shortcut for `s:Stream.from_list(map({_,item -> {"key": item[0], "value": item[1]}}))` .
 	Each element is `{"key": key, "value": value}` .
 
 from_list({list})	*Vital.Stream.from_list()*
@@ -366,7 +366,7 @@ Stream.distinct([{hashfunc}])
 	echo s:Stream.of(1,2,3,2,1).distinct().to_list()
 
 	" Output: ["a", "bb", "ccc"]
-	echo s:Stream.of('a', 'bb', 'ccc', 'ddd', 'ee').distinct({n -> len(n)}).to_list()
+	echo s:Stream.of('a', 'bb', 'ccc', 'ddd', 'ee').distinct({s -> len(s)}).to_list()
 <
 				*Vital.Stream-Stream.sorted()*
 Stream.sorted([{comparator}])
@@ -377,9 +377,6 @@ Stream.sorted([{comparator}])
 	echo s:Stream.of(2,1,3).sorted().to_list()
 
 	" Output: [3,2,1]
-	let by_desc = {n -> n[0] > n[1] ? -1 : n[0] ==# n[1] ? 0 : 1}
-	echo s:Stream.of(2,1,3).sorted(by_desc).to_list()
-	" Or
 	let l:ByDesc = {a,b -> a > b ? -1 : a ==# b ? 0 : 1}
 	echo s:Stream.of(2,1,3).sorted(l:ByDesc).to_list()
 <
@@ -548,7 +545,7 @@ Stream.to_dict({keymapper}, {valuemapper} [, {mergefunc}])
 				*Vital.Stream-Stream.group_by()*
 Stream.group_by({func})
 	Grouping elements of a stream with {func}. Shortcut for
-	`stream.to_dict(func, {n -> n}, {a,b -> a + b})` .
+	`stream.to_dict(func, {n -> [n]}, {a,b -> a + b})` .
 >
 	" Output: {'even': [2,4], 'odd': [1,3,5]}
 	echo s:Stream.of(1,2,3,4,5).group_by({n -> n % 2 == 0 ? "even" : "odd"})
