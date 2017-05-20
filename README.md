@@ -27,6 +27,7 @@ Module						 | Description
 [Data.Collection](doc/vital/Data/Collection.txt) | Utilities both for list and dict
 [Data.Counter](doc/vital/Data/Counter.txt) | Counter library to support convenient tallies
 [Data.Dict](doc/vital/Data/Dict.txt)		 | dictionary utilities library
+[Data.Either](doc/vital/Data/Either.txt)	 | either value library
 [Data.LazyList](doc/vital/Data/LazyList.txt)	 | lazy list including file io
 [Data.List](doc/vital/Data/List.txt)		 | list utilities library
 [Data.Optional](doc/vital/Data/Optional.txt)	 | optional value library

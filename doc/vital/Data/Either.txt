@@ -1,0 +1,236 @@
+*vital/Data/Either.txt*	Provide left/right value
+
+Maintainer: aiya000 <aiya000.develop@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Either-contents*
+
+INTRODUCTION			|Vital.Data.Either-introduction|
+TERM				|Vital.Data.Either-term|
+INTERFACE			|Vital.Data.Either-interface|
+  FUNCTIONS			  |Vital.Data.Either-functions|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Either-introduction*
+
+*Vital.Data.Either* is representation of left/right value. This is like the
+Either in Haskell. The "left value" means invalid value in most case. The
+"right value" means valid value in most case. But it can be used evenly.
+Either simply holds one of two different structures
+>
+	function! AuthFooAccount(account_name, account_password) abort
+	  " Send the information to somewhere.
+	  " Return some response as {right} value if the operation is succeed.
+	  " Otherwise, return {left} value.
+	endfunction
+
+	let password_or_error = E.null_to_left(get(g:, 'foo_password', v:null),
+	\	'foo_password is not found')
+	let response_or_error = E.bind(password_or_error,
+	\	{password -> AuthFooAccount('aiya000', password)})
+	call E.map(response_or_error,
+	\	{response -> execute('echo ' . string(response))})
+	" If all operation is succeed, the response is shown
+<
+The "either" has either "left value" or "right value". The "either" doesn't
+have both "left value" and "right value".
+
+The "either" follows behavior of "monad", "applicative", and "functor". For
+example, |Vital.Data.Either.join()| doesn't extract the either value to its
+mere value.
+>
+	let x = E.right(E.right(10))
+	echo E.join(x)  " Right(10)
+
+	let y = E.right(10)
+	echo E.join(y)  " An exception is thrown
+<
+
+
+==============================================================================
+TERM					*Vital.Data.Either-term*
+
+{either}				*Vital.Data.Either-term-either*
+	{either} is a left value or right value.
+
+{left}					*Vital.Data.Either-term-left*
+	{left} is an item of {either}.
+
+{right}					*Vital.Data.Either-term-right*
+	{right} is an item of {either}.
+
+
+
+==============================================================================
+INTERFACE				*Vital.Data.Either-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Either-functions*
+
+left({value})				*Vital.Data.Either.left()*
+	Create a {left} value.
+
+
+right({value})				*Vital.Data.Either.right()*
+	Create a {right} value.
+
+
+return({value})				*Vital.Data.Either.return()*
+	This is an alias of |Vital.Data.Either.right()| for monadic behavior.
+	The is like the Haskell's "return" function of Monad type class. It
+	represents identity element in Monad.
+
+
+is_left({either})			*Vital.Data.Either.is_left()*
+	If {either} is {left}, return 1. If {either} is {right}, Return 0.
+	Otherwise, the behavior is undefined.
+
+
+is_right({either})			*Vital.Data.Either.is_right()*
+	If {either} is {left}, return 1. If {either} is {right}, Return 0.
+	Otherwise, the behavior is undefined.
+
+is_either({value})			*Vital.Data.Either.is_either()*
+	If {value} is the {left} value or the {right} value, return 1.
+	Otherwise, return 0.
+
+
+from_left({default}, {either})		*Vital.Data.Either.from_left()*
+	If {either} is {left}, return the internal value of {either}. If
+	{either} is {right}, return {default}.
+
+
+from_right({default}, {either})		*Vital.Data.Either.from_right()*
+	If {either} is {right}, return the internal value of {either}. If
+	{either} is {left}, return {default}.
+
+
+unsafe_from_left({either})		*Vital.Data.Either.unsafe_from_left()*
+	If {either} is {left}, return the internal value of {left}. If {either}
+	is {right}, throw an exception with "vital: Data.Either:" prefix.
+
+
+unsafe_from_right({either})		*Vital.Data.Either.unsafe_from_right()*
+	If {either} is {right}, return the internal value of {right}. If
+	{either} is {left}, throw an exception with "vital: Data.Either:"
+	prefix.
+
+
+map({either}, {f})			*Vital.Data.Either.map()*
+	Map {f} to internal value of {either} if {either} is {right}. Return
+	{either} simply if {either} is {left}.
+
+	|Funcref| and |String| expression can be used as {f}.
+>
+	let either = E.right(10)
+	echo E.map(either, 'v:val + 1')  " Right(11)
+
+	let either = E.left(something)
+	echo E.map(either, 'v:val + 1')  " Left(something)
+<
+
+apply({either_func}, {either_values}...)	*Vital.Data.Either.apply()*
+	{either_func} is a function that is wrapped by
+	|Vital.Data.Either.right()| or some {left} value. {either_values} is a
+	value that is wrapped by |Vital.Data.Either.right()| or some {left}
+	value. If {either_func} is {left} value or {either_values} has {left}
+	value, return first left element. If {either_func} and all
+	{either_values} is {right}, extract {either_func} to its mere function,
+	extract {either_values} to its mere values, apply the mere value to
+	the mere function, and wrap the result by |Vital.Data.Either.right()|.
+	And return it.
+>
+	" Apply a right value to a right func
+	let either_func = E.right('v:val + 1')
+	let either_value = E.right(10)
+	echo E.apply(either_func, either_value)  " Right(11)
+
+	" Apply two right values to a right func
+	let either_func = {x, y -> x + y}
+	let either_value_x = E.right(10)
+	let either_value_y = E.right(20)
+	echo E.apply(either_func, either_value_x, either_value_y)
+
+	" Don't apply a right value to a "left" func
+	let either_func = E.left(something)
+	let either_value = E.right(10)
+	echo E.apply(either_func, either_value)  " Left(something)
+
+	" Don't apply a "left" value to a right func
+	let either_func = E.right({x -> x + 1})
+	let either_value = E.left(something)
+	echo E.apply(either_func, either_value)  " Left(something)
+
+	" Return first left if both is left
+	let either_func = E.left(something_x)
+	let either_value = E.left(something_y)
+	echo E.apply(either_func, either_value)  " Left(something_x)
+
+<
+join({either})				*Vital.Data.Either.join()*
+	Remove one if {either} is nested {either} value. But single {either}
+	value (not nested {either} value) cannot be applied to this. This
+	behavior depends "monad" behavior.
+>
+	let nested_either = E.right(E.right(10))
+	echo E.join(nested_either)  " Right(10)
+
+	let single_either = E.right(10)
+	echo E.join(single_either)  " an exception is thrown with prefix of 'vital: Data.Either:'
+<
+	If you extract {either} to mere value, I recommend to use
+	|Vital.Data.Either.from_left()| or |Vital.Data.Either.from_left()|
+	instead.
+
+
+bind({either}, {karrow})		*Vital.Data.Either.bind()*
+	Apply {karrow} to {either} if {either} is {right}. {karrow} is a "lift
+	function". "lift function" lift up a mere value to a {either} value.
+
+	Example for "lift function":
+>
+	function! Devide10(x)
+	  if x is 0
+	    return E.left('a:x must not be 0')
+	  else
+	    return E.right(10 / a:x)
+	  endif
+	endfunction
+<
+	The point is the argument value is a mere value meanwhile the return
+	value is {either} value.
+	("karrow" means "kleisli arrow")
+
+	Example for .bind()
+>
+	let either = E.right(2)
+	echo E.bind(either, function('Devide10'))  " Right(5)
+
+	let either = E.left(something)
+	echo E.bind(either, function('Devide10'))  " Left(something)
+<
+
+flat_map({either}, {f})			*Vital.Data.Either.flat_map()*
+	This is an alias of |Vital.Data.Either.bind()|. Please see
+	|Vital.Data.Either.bind()| about this.
+
+
+null_to_left({value}, {message})	*Vital.Data.Either.null_to_left()*
+	Lift |v:null| to {left} value, or pass {value} to {right} value.
+>
+	let dict = {'foo': 10}
+
+	echo E.null_to_left(get(dict, 'foo', v:null), 'error')
+	" Right(10)
+
+	echo E.null_to_left(get(dict, 'bar', v:null), 'error')
+	" Left('error')
+
+	echo E.null_to_left(get(dict, 'foo'), 'error')
+	" Right(0)
+<
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
