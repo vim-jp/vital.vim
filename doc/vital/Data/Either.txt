@@ -19,7 +19,21 @@ INTRODUCTION				*Vital.Data.Either-introduction*
 Either in Haskell. The "left value" means invalid value in most case. The
 "right value" means valid value in most case. But it can be used evenly.
 Either simply holds one of two different structures
+>
+	function! AuthFooAccount(account_name, account_password) abort
+	  " Send the information to somewhere.
+	  " Return some response as {right} value if the operation is succeed.
+	  " Otherwise, return {left} value.
+	endfunction
 
+	let password_or_error = E.null_to_left(get(g:, 'foo_password', v:null),
+	\	'foo_password is not found')
+	let response_or_error = E.bind(password_or_error,
+	\	{password -> AuthFooAccount('aiya000', password)})
+	call E.map(response_or_error,
+	\	{response -> execute('echo ' . string(response))})
+	" If all operation is succeed, the response is shown
+<
 The "either" has either "left value" or "right value". The "either" doesn't
 have both "left value" and "right value".
 
