@@ -349,7 +349,7 @@ Stream.drop_while({func})
 	Drops the first elements while {func} returns non-zero value. {func} is a
 	function of 1 arity.
 >
-	" Output: [42,1,2,3]
+	" Output: [42,4,5,6]
 	echo s:Stream.of(1,2,3,42,4,5,6).drop_while({n -> n < 10}).to_list()
 <
 				*Vital.Stream-Stream.distinct()*
