@@ -282,7 +282,7 @@ endfunction
 
 " Similar to Haskell's Prelude.all .
 function! s:all(f, xs) abort
-  return !s:any(printf('!(%s)', a:f), a:xs)
+  return empty(filter(s:map(a:xs, a:f), '!v:val'))
 endfunction
 
 " Similar to Haskell's Prelude.any .

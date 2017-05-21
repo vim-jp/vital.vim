@@ -366,11 +366,33 @@ Describe Data.List
   End
 
   Describe .all()
-    It returns true if all items in the list fulfill the condition.
+    Before all
+      function! Even(x) abort
+        return a:x % 2 == 0
+      endfunction
+
+      function! IsOver0(x) abort
+        return 0 < a:x
+      endfunction
+    End
+
+    After all
+      delfunction Even
+      delfunction IsOver0
+    End
+
+    It returns true if all items in the list fulfill the string expression.
       Assert True(List.all('v:val % 2 == 0', [2, 8, 4, 6]))
       Assert False(List.all('v:val % 2 == 0', [2, 8, 5, 6]))
       Assert True(List.all('0 < v:val', [2, 8, 4, 6]))
       Assert False(List.all('0 < v:val', [2, 0, 4, 6]))
+    End
+
+    It returns true if all items in the list fulfill the funcref.
+      Assert True(List.all(function('Even'), [2, 8, 4, 6]))
+      Assert False(List.all(function('Even'), [2, 8, 5, 6]))
+      Assert True(List.all(function('IsOver0'), [2, 8, 4, 6]))
+      Assert False(List.all(function('IsOver0'), [2, 0, 4, 6]))
     End
 
     It returns true if the list is empty.

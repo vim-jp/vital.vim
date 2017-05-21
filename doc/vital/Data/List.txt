@@ -368,13 +368,20 @@ drop_while({function}, {list})		*Vital.Data.List.drop_while()*
 	Data.List.dropWhile just for your info.
 
 
-all({expr}, {list})			*Vital.Data.List.all()*
+all({function}, {list})			*Vital.Data.List.all()*
 	Returns Number 1 if all the items in |List| {list} fulfill the
-	condition {expr}, zero otherwise.
+	condition {function}, zero otherwise.
 	If {list} is empty, this function returns 1.
 >
+	function! Even(x) abort
+	  return a:x % 2 == 0
+	endfunction
+
 	echo s:L.all('v:val % 2 == 0', [2, 8, 4, 6])
 	" 1
+	echo s:L.all(function('Even'), [2, 8, 4, 6])
+	" 1
+
 	echo s:L.all('v:val % 2 == 1', [2, 8, 4, 6])
 	" 0
 	echo s:L.all('v:val % 2 == 0', [2, 8, 5, 6])
