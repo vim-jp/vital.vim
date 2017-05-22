@@ -39,7 +39,7 @@ optional value.
 	  let data = DoHeavyProcess()
 	  let s:cache = O.some(data)
 	  return data
-	end
+	endfunction
 <
 
 
