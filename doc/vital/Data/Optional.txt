@@ -64,6 +64,21 @@ none()					*Vital.Data.Optional.none()*
 some({value})				*Vital.Data.Optional.some()*
 	Returns an optional value which contains {value} as valid value.
 
+new({value})				*Vital.Data.Optional.new()*
+	Same as some({value}) usually. If the given {value} is one of the
+	special values listed below, it returns none().
+
+	* |v:false|
+	* |v:none|
+	* |v:null|
+
+>
+	new(1) == some(1)
+	new(0) == some(0)
+	new(v:true) == some(v:true)
+	new(v:false) == none
+<
+
 is_optional({value})			*Vital.Data.Optional.is_optional()*
 	Returns {value} is an optional value.  It actually checks that {value}
 	is a |List| of 0 or 1 element.
