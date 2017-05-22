@@ -68,10 +68,10 @@ Random number generator			*Vital.Stream-example-rng*
 	  " drop(): the first number seems too small...
 	  " map(): limits to 0.0 <= val < 1.0
 	  " distinct(): gets rid of the same second decimal place of numbers
-	return s:Stream.iterate(seed, {n -> (48271 * n) % max})
-	             \.drop(1)
-	             \.map({n -> n / (max + 0.0)})
-	             \.distinct({n -> float2nr(round(n * 100))})
+	  return s:Stream.iterate(seed, {n -> (48271 * n) % max})
+	                \.drop(1)
+	                \.map({n -> n / (max + 0.0)})
+	                \.distinct({n -> float2nr(round(n * 100))})
 	endfunction
 
 	" echo 20 random numbers
