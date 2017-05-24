@@ -174,6 +174,11 @@ relative({reluri})
     let BASE_URI = 'http://example.com/foo/bar'
     let RELATIVE_URI = '../baz'
     echo s:URI.new(BASE_URI).relative(RELATIVE_URI).to_string()
+    " => 'http://example.com/baz'
+
+    let BASE_URI = 'http://example.com/foo/bar/'
+    let RELATIVE_URI = '../baz'
+    echo s:URI.new(BASE_URI).relative(RELATIVE_URI).to_string()
     " => 'http://example.com/foo/baz'
 <
 *Vital.Web.URI-URI.canonicalize()*
