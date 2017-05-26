@@ -54,6 +54,17 @@ function! s:map(xs, f) abort
   return result
 endfunction
 
+function! s:filter(xs, f) abort
+  let l:Call = s:_get_caller(a:f)
+  let result = []
+  for x in a:xs
+    if l:Call(a:f, [x])
+      call add(result, x)
+    endif
+  endfor
+  return result
+endfunction
+
 " Removes duplicates from a list.
 function! s:uniq(list) abort
   return s:uniq_by(a:list, 'v:val')

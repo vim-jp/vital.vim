@@ -155,6 +155,26 @@ Describe Data.List
     End
   End
 
+  Describe .filter()
+    Before all
+      function! Even(x) abort
+        return a:x % 2 is 0
+      endfunction
+    End
+
+    After all
+      delfunction Even
+    End
+
+    It takes elements that satisfies given the predicate as the string expression
+      Assert Equals(List.filter(range(0, 9), function('Even')), [0, 2, 4, 6, 8])
+    End
+
+    It takes elements that satisfies given the predicate as the funcref
+      Assert Equals(List.filter(range(0, 9), 'v:val % 2 is 0'), [0, 2, 4, 6, 8])
+    End
+  End
+
   Describe .uniq()
     It makes a list unique
       let a = ['vim', 'emacs', 'vim', 'vim']
