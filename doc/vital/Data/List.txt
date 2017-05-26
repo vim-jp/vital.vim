@@ -473,10 +473,21 @@ or({list})				*Vital.Data.List.or()*
 	your info.
 
 
-partition({expr}, {list})		*Vital.Data.List.partition()*
-	TODO
+partition({function}, {list})		*Vital.Data.List.partition()*
+	Gives a {function} as predicate. Takes a tuple. The tuple's first
+	field is elements that satisfies the predicate. The second field is
+	elements that doesn't satisfy the predicate.
 	Behaves like Haskell's Data.List.partition().
+>
+	function! Even(x) abort
+	  return a:x % 2 == 0
+	endfunction
 
+	s:L.partition(function('Even'), range(5))
+	" [[0, 2, 4], [1, 3]]
+	s:L.partition('v:val % 2 == 0', range(5))
+	" [[0, 2, 4], [1, 3]]
+<
 
 map_accum({expr}, {xs}, {init})		*Vital.Data.List.map_accum()*
 	This is similar to |map()| but the followings are different:

@@ -306,7 +306,15 @@ endfunction
 
 " Similar to Haskell's Data.List.partition .
 function! s:partition(f, xs) abort
-  return [filter(copy(a:xs), a:f), filter(copy(a:xs), '!(' . a:f . ')')]
+  let l:Call = s:_get_caller(a:f)
+  let satisfied = s:filter(a:xs, a:f)
+  let dissatisfied = []
+  for x in a:xs
+    if !l:Call(a:f, [x])
+      call add(dissatisfied, x)
+    endif
+  endfor
+  return [satisfied, dissatisfied]
 endfunction
 
 " Similar to Haskell's Prelude.all .

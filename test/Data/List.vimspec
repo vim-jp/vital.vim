@@ -380,8 +380,22 @@ Describe Data.List
   End
 
   Describe .partition()
-    It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate.
+    Before all
+      function! Even(x) abort
+        return a:x % 2 == 0
+      endfunction
+    End
+
+    After all
+      delfunction Even
+    End
+
+    It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate of the string expression.
       Assert Equals(List.partition('v:val % 2 == 0', range(5)), [[0, 2, 4], [1, 3]])
+    End
+
+    It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate of the funcref.
+      Assert Equals(List.partition(function('Even'), range(5)), [[0, 2, 4], [1, 3]])
     End
   End
 
