@@ -27,6 +27,10 @@ Describe Data.List
     function! IsNonEmpty(xs) abort
       return len(a:xs) > 0
     endfunction
+
+    function! Even(x) abort
+      return a:x % 2 is 0
+    endfunction
   End
 
   After all
@@ -36,6 +40,7 @@ Describe Data.List
     delfunction IsOver3
     delfunction IsUnder3
     delfunction IsNonEmpty
+    delfunction Even
   End
 
   Describe .pop()
@@ -156,16 +161,6 @@ Describe Data.List
   End
 
   Describe .filter()
-    Before all
-      function! Even(x) abort
-        return a:x % 2 is 0
-      endfunction
-    End
-
-    After all
-      delfunction Even
-    End
-
     It takes elements that satisfies given the predicate as the string expression
       Assert Equals(List.filter(range(0, 9), function('Even')), [0, 2, 4, 6, 8])
     End
@@ -380,16 +375,6 @@ Describe Data.List
   End
 
   Describe .partition()
-    Before all
-      function! Even(x) abort
-        return a:x % 2 == 0
-      endfunction
-    End
-
-    After all
-      delfunction Even
-    End
-
     It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate of the string expression.
       Assert Equals(List.partition('v:val % 2 == 0', range(5)), [[0, 2, 4], [1, 3]])
     End
@@ -401,17 +386,12 @@ Describe Data.List
 
   Describe .all()
     Before all
-      function! Even(x) abort
-        return a:x % 2 == 0
-      endfunction
-
       function! IsOver0(x) abort
         return 0 < a:x
       endfunction
     End
 
     After all
-      delfunction Even
       delfunction IsOver0
     End
 
@@ -665,15 +645,11 @@ Describe Data.List
 
   Describe .find()
     Before all
-      function! MyPredicate(x) abort
-        return a:x % 2 == 0
-      endfunction
-
-      function! MyPredicate2(x) abort
+      function! CanbeDevideBy10(x) abort
         return a:x % 10 == 0
       endfunction
 
-      function! MyPredicate3(x) abort
+      function! MatchByY(x) abort
         return a:x =~ 'y'
       endfunction
     End
@@ -686,17 +662,15 @@ Describe Data.List
       Assert Equals(List.find(['hi', 'yo'], -1, 'v:val =~ "y"'), 'yo')
     End
     It returns the value if found by funcref
-      Assert Equals(List.find([1, 2, 3], '*not-found*', function('MyPredicate')), 2)
-      Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', function('MyPredicate')), 2)
-      Assert Equals(List.find([1, 2, 3], '*not-found*', function('MyPredicate2')), '*not-found*')
-      Assert Equals(List.find([], '*not-found*', function('MyPredicate')), '*not-found*')
-
-      Assert Equals(List.find(['hi', 'yo'], -1, function('MyPredicate3')), 'yo')
+      Assert Equals(List.find([1, 2, 3], '*not-found*', function('Even')), 2)
+      Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', function('Even')), 2)
+      Assert Equals(List.find([1, 2, 3], '*not-found*', function('CanbeDevideBy10')), '*not-found*')
+      Assert Equals(List.find([], '*not-found*', function('Even')), '*not-found*')
+      Assert Equals(List.find(['hi', 'yo'], -1, function('MatchByY')), 'yo')
     End
     After all
-      delfunction MyPredicate
-      delfunction MyPredicate2
-      delfunction MyPredicate3
+      delfunction CanbeDevideBy10
+      delfunction MatchByY
     End
   End
 
@@ -773,21 +747,27 @@ Describe Data.List
     End
   End
 
-  function! My_predicate(a, b) abort
-      return a:a - a:b
-  endfunction
-
   Describe .binary_search()
+    Before all
+      function! MyPredicate(a, b) abort
+        return a:a - a:b
+      endfunction
+    End
+
+    After all
+      delfunction MyPredicate
+    End
+
     It search a list and return the index if success
       Assert Equals(List.binary_search([1, 3, 5, 7], 1), 0)
       Assert Equals(List.binary_search([1, 3, 5, 7], 3), 1)
       Assert Equals(List.binary_search([1, 3, 5, 7], 5), 2)
       Assert Equals(List.binary_search([1, 3, 5, 7], 7), 3)
 
-      Assert Equals(List.binary_search([1, 3, 5, 7], 1, 'My_predicate'), 0)
-      Assert Equals(List.binary_search([1, 3, 5, 7], 3, 'My_predicate'), 1)
-      Assert Equals(List.binary_search([1, 3, 5, 7], 5, 'My_predicate'), 2)
-      Assert Equals(List.binary_search([1, 3, 5, 7], 7, 'My_predicate'), 3)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 1, 'MyPredicate'), 0)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 3, 'MyPredicate'), 1)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 5, 'MyPredicate'), 2)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 7, 'MyPredicate'), 3)
 
       let f = {}
       function! f.func(a, b) dict abort
@@ -820,9 +800,9 @@ Describe Data.List
 
     It returns -1 if failed
       Assert Equals(List.binary_search([1, 3, 5, 7], 2), -1)
-      Assert Equals(List.binary_search([1, 3, 5, 7], 2, 'My_predicate'), -1)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 2, 'MyPredicate'), -1)
       Assert Equals(List.binary_search([], 1), -1)
-      Assert Equals(List.binary_search([], 1, 'My_predicate'), -1)
+      Assert Equals(List.binary_search([], 1, 'MyPredicate'), -1)
 
       let f = {}
       function! f.func(a, b) dict abort
