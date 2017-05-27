@@ -493,10 +493,31 @@ Describe Data.List
   End
 
   Describe .map_accum()
-    It is similar to map() but holds previous accumulator as well
+    Before all
+      function! MemoPlus(x, y) abort
+        return [a:x + a:y, a:y]
+      endfunction
+
+      function! SuccessivePlus(x, acc) abort
+        return [a:x + a:acc, a:acc + 1]
+      endfunction
+    End
+
+    After all
+      delfunction MemoPlus
+      delfunction SuccessivePlus
+    End
+
+    It is similar to map() but holds previous accumulator as well with given the string expression
       Assert Equals(List.map_accum('[v:val + v:memo, v:memo]', [1, 2, 3], 10), [11, 12, 13])
       Assert Equals(List.map_accum('[v:val + v:memo, v:memo + 1]', [1, 2, 3], 10), [11, 13, 15])
     End
+
+    It is similar to map() but holds previous accumulator as well with given the funcref
+      Assert Equals(List.map_accum(function('MemoPlus'), [1, 2, 3], 10), [11, 12, 13])
+      Assert Equals(List.map_accum(function('SuccessivePlus'), [1, 2, 3], 10), [11, 13, 15])
+    End
+
     " TODO test more details
   End
 

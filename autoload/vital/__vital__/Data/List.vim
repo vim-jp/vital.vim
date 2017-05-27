@@ -337,16 +337,15 @@ function! s:or(xs) abort
   return s:any('v:val', a:xs)
 endfunction
 
-function! s:map_accum(expr, xs, init) abort
-  let memo = []
-  let init = a:init
+function! s:map_accum(binary_f, xs, init) abort
+  let l:Call = s:_get_binary_caller_(a:binary_f)
+  let results = []
+  let acc = a:init
   for x in a:xs
-    let expr = substitute(a:expr, 'v:memo', init, 'g')
-    let expr = substitute(expr, 'v:val', x, 'g')
-    let [tmp, init] = eval(expr)
-    call add(memo, tmp)
+    let [result, acc] = l:Call(a:binary_f, [x, acc])
+    call add(results, result)
   endfor
-  return memo
+  return results
 endfunction
 
 " Similar to Haskell's Prelude.foldl .
@@ -610,6 +609,23 @@ function! s:_get_caller(f) abort
   return type(a:f) is type(function('function'))
   \        ? function('call')
   \        : function('s:_call_string_expr')
+endfunction
+
+" Takes the binary function of the funcref or the string expression.
+" if the binary function is the string expression, v:val and v:memo can be used in it.
+" Returns the caller function that is like call(), but it takes a tuple as an argument.
+function! s:_get_binary_caller_(binary_f) abort
+  return type(a:binary_f) is type(function('function'))
+  \        ? function('call')
+  \        : function('s:_call_binary_string_expr_val_memo')
+endfunction
+
+" This is similar to s:_call_two_argument_string_expr(),
+" but a:pair[0] is regarted as v:val, and a:pair[1] is regarted as v:memo.
+function! s:_call_binary_string_expr_val_memo(expr, pair) abort
+  let x = substitute(a:expr, 'v:memo', string(a:pair[1]), 'g')
+  let y = substitute(x, 'v:val', string(a:pair[0]), 'g')
+  return eval(y)
 endfunction
 
 " Applies the string expression to the head element of a:args.
