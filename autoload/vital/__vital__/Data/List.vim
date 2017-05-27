@@ -46,7 +46,7 @@ function! s:conj(xs, x) abort
 endfunction
 
 function! s:map(xs, f) abort
-  let l:Call = s:_get_caller(a:f)
+  let l:Call = s:_get_unary_caller(a:f)
   let result = []
   for x in a:xs
     call add(result, l:Call(a:f, [x]))
@@ -55,7 +55,7 @@ function! s:map(xs, f) abort
 endfunction
 
 function! s:filter(xs, f) abort
-  let l:Call = s:_get_caller(a:f)
+  let l:Call = s:_get_unary_caller(a:f)
   let result = []
   for x in a:xs
     if l:Call(a:f, [x])
@@ -72,7 +72,7 @@ endfunction
 
 " Removes duplicates from a list.
 function! s:uniq_by(list, f) abort
-  let l:Call  = s:_get_caller(a:f)
+  let l:Call  = s:_get_unary_caller(a:f)
   let applied = []
   let result  = []
   for x in a:list
@@ -150,7 +150,7 @@ function! s:sort_by(list, unary_f) abort
     " Doesn't return if the type of a:x and a:y is mismatched,
     " or the types is unexpected.
     function! s:_compare_with(x, y) abort closure
-      let l:Call = s:_get_caller(a:unary_f)
+      let l:Call = s:_get_unary_caller(a:unary_f)
       let x = l:Call(a:unary_f, [a:x])
       let y = l:Call(a:unary_f, [a:y])
 
@@ -168,7 +168,7 @@ function! s:sort_by(list, unary_f) abort
     "FIXME: This is a workaround of closure, this has not async safety for s:sort_by_compare_with_scope !
     let s:sort_by_compare_with_unary_func = a:unary_f
     function! s:_compare_with(x, y) abort
-      let l:Call = s:_get_caller(s:sort_by_compare_with_unary_func)
+      let l:Call = s:_get_unary_caller(s:sort_by_compare_with_unary_func)
       let x = l:Call(s:sort_by_compare_with_unary_func, [a:x])
       let y = l:Call(s:sort_by_compare_with_unary_func, [a:y])
 
@@ -267,7 +267,7 @@ endfunction
 
 " Similar to Haskell's Data.List.break .
 function! s:break(f, xs) abort
-  let l:Call = s:_get_caller(a:f)
+  let l:Call = s:_get_unary_caller(a:f)
   let first = []
   for x in a:xs
     if l:Call(a:f, [x])
@@ -280,7 +280,7 @@ endfunction
 
 " Similar to Haskell's Data.List.takeWhile .
 function! s:take_while(f, xs) abort
-  let l:Call = s:_get_caller(a:f)
+  let l:Call = s:_get_unary_caller(a:f)
   let result = []
   for x in a:xs
     if l:Call(a:f, [x])
@@ -293,7 +293,7 @@ endfunction
 
 " Similar to Haskell's Data.List.dropWhile .
 function! s:drop_while(f, xs) abort
-  let l:Call = s:_get_caller(a:f)
+  let l:Call = s:_get_unary_caller(a:f)
   let i = -1
   for x in a:xs
     if !l:Call(a:f, [x])
@@ -306,7 +306,7 @@ endfunction
 
 " Similar to Haskell's Data.List.partition .
 function! s:partition(f, xs) abort
-  let l:Call = s:_get_caller(a:f)
+  let l:Call = s:_get_unary_caller(a:f)
   let satisfied = s:filter(a:xs, a:f)
   let dissatisfied = []
   for x in a:xs
@@ -426,7 +426,7 @@ endfunction
 
 " Similar to Ruby's detect or Haskell's find.
 function! s:find(list, default, f) abort
-  let l:Call = s:_get_caller(a:f)
+  let l:Call = s:_get_unary_caller(a:f)
   for x in a:list
     if l:Call(a:f, [x])
       return x
@@ -593,7 +593,7 @@ endfunction
 
 " Takes the unary function of the funcref or the string expression.
 " Returns the caller function that is like call() .
-function! s:_get_caller(f) abort
+function! s:_get_unary_caller(f) abort
   return type(a:f) is type(function('function'))
   \        ? function('call')
   \        : function('s:_call_string_expr')
