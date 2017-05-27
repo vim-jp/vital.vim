@@ -351,22 +351,12 @@ endfunction
 " Similar to Haskell's Prelude.foldl .
 function! s:foldl(f, init, xs) abort
   "NOTE: The 'Call' should be named with l: for the conflict problem
-  let l:Call = type(a:f) is type(function('function'))
-  \              ? function('call')
-  \              : function('s:_call_two_argument_string_expr')
+  let l:Call = s:_get_binary_caller(a:f)
   let memo = a:init
   for x in a:xs
     let memo = l:Call(a:f, [memo, x])
   endfor
   return memo
-endfunction
-
-" Returns the result of that apply the two element list to the binary string expression.
-" The binary expression has 'v:memo' and 'v:val'.
-function! s:_call_two_argument_string_expr(expr, bi_arg) abort
-    let expr = substitute(a:expr, 'v:memo', string(a:bi_arg[0]), 'g')
-    let expr = substitute(expr, 'v:val', string(a:bi_arg[1]), 'g')
-    return eval(expr)
 endfunction
 
 " Similar to Haskell's Prelude.foldl1 .
@@ -380,9 +370,7 @@ endfunction
 " Similar to Haskell's Prelude.foldr .
 function! s:foldr(f, init, xs) abort
   "NOTE: The 'Call' should be named with l: for the conflict problem
-  let l:Call = type(a:f) is type(function('function'))
-  \              ? function('call')
-  \              : function('s:_call_two_argument_string_expr')
+  let l:Call = s:_get_binary_caller(a:f)
   return s:_foldr_internal(l:Call, a:f, a:init, a:xs)
 endfunction
 
@@ -614,13 +602,30 @@ endfunction
 " Takes the binary function of the funcref or the string expression.
 " if the binary function is the string expression, v:val and v:memo can be used in it.
 " Returns the caller function that is like call(), but it takes a tuple as an argument.
+function! s:_get_binary_caller(binary_f) abort
+  return type(a:binary_f) is type(function('function'))
+  \        ? function('call')
+  \        : function('s:_call_binary_string_expr')
+endfunction
+
+" Returns the result of that apply the two element list to the binary string expression.
+" The binary expression has 'v:memo' and 'v:val'.
+function! s:_call_binary_string_expr(expr, pair) abort
+    let expr = substitute(a:expr, 'v:memo', string(a:pair[0]), 'g')
+    let expr = substitute(expr, 'v:val', string(a:pair[1]), 'g')
+    return eval(expr)
+endfunction
+
+" This is similar to s:_get_binary_caller(),
+" but the behavior is different if a:binary_f is the string expression.
+" This uses s:_call_binary_string_expr_val_memo() .
 function! s:_get_binary_caller_(binary_f) abort
   return type(a:binary_f) is type(function('function'))
   \        ? function('call')
   \        : function('s:_call_binary_string_expr_val_memo')
 endfunction
 
-" This is similar to s:_call_two_argument_string_expr(),
+" This is similar to s:_call_binary_string_expr(),
 " but a:pair[0] is regarted as v:val, and a:pair[1] is regarted as v:memo.
 function! s:_call_binary_string_expr_val_memo(expr, pair) abort
   let x = substitute(a:expr, 'v:memo', string(a:pair[1]), 'g')
