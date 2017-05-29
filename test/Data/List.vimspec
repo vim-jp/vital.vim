@@ -678,17 +678,40 @@ Describe Data.List
   End
 
   Describe .find_index()
-    It returns the index if found
-      Assert Equals(List.find_index([1, 2, 3], 'v:val % 2 == 0'), 1)
-      Assert Equals(List.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"'), 0)
-      Assert Equals(List.find_index([1, 2, 3], 'v:val % 2 == 1', 1), 2)
-      Assert Equals(List.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"', -2), 2)
+    Before all
+      function! Odd(x) abort
+        return a:x % 2 == 1
+      endfunction
+
+      function! MatchByO(x) abort
+        return a:x =~# 'o'
+      endfunction
     End
+
+    After all
+      delfunction Odd
+      delfunction MatchByO
+    End
+
+    It returns the index if found with given the string expression
+      Assert Equals(List.find_index([1, 2, 3], 'v:val % 2 == 0'), 1)
+      Assert Equals(List.find_index([1, 2, 3], 'v:val % 2 == 1', 1), 2)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"'), 0)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"', -2), 2)
+    End
+
+    It returns the index if found with given the funcref
+      Assert Equals(List.find_index([1, 2, 3], function('Even')), 1)
+      Assert Equals(List.find_index([1, 2, 3], function('Odd'), 1), 2)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], function('MatchByO')), 0)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], function('MatchByO'), -2), 2)
+    End
+
     It returns -1 or default value if not found
       Assert Equals(List.find_index([], '1'), -1)
-      Assert Equals(List.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"'), -1)
       Assert Equals(List.find_index([], '1', 0, 999), 999)
-      Assert Equals(List.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"', 0, "not found"), "not found")
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"'), -1)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"', 0, 'not found'), 'not found')
     End
   End
 

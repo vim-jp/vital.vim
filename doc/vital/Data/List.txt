@@ -672,18 +672,32 @@ find({list}, {default}, {function})			 *Vital.Data.List.find()*
 
 
 					*Vital.Data.List.find_index()*
-find_index({list}, {expr} [, {start} [, {default}]])
-	Returns the lowest index in {list} where the given {expr} is
+find_index({list}, {function} [, {start} [, {default}]])
+	Returns the lowest index in {list} where the given {function} is
 	satisfied.
 	If you specify {start}, start looking at the item with index {start}
 	(may be negative for an item relative to the end).
-	{default} is returned when no item satisfies {expr}. If {default} is
-	omitted, -1 is used.
+	{default} is returned when no item satisfies {function}. If {default}
+	is omitted, -1 is used.
 >
-	echo s:L.find_index([0, 1, 2, 3], 'v:val%2 == 1')
+	function! Odd(x) abort
+	  return a:x % 2 == 1
+	endfunction
+
+	echo s:L.find_index([0, 1, 2, 3], 'v:val % 2 == 1')
+	" 1
+	echo s:L.find_index([0, 1, 2, 3], function('Odd'))
 	" 1
 	echo s:L.find_index([0, 1, 2, 3], 'v:val > 10')
 	" -1
+
+	echo s:L.find_index([0, 1, 2, 3], 'v:val % 2 == 1', 1)
+	" 2
+
+	let default_val = -10
+	let constant_false_expr = '0'
+	echo s:L.find_index([0, 1, 2, 3], constant_false_expr, 0, default_val)
+	" -10
 <
 
 					*Vital.Data.List.find_last_index()*
