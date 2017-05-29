@@ -651,10 +651,10 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 	endfor
 <
 
-find({list}, {default}, {expr})			 *Vital.Data.List.find()*
-	Returns the first value in {list} where the given {expr} is satisfied.
-	{default} is returned when no item satisfies {expr}. {expr} must be a
-	|String| or a |Funcref|.
+find({list}, {default}, {function})			 *Vital.Data.List.find()*
+	Returns the first value in {list} where the given {function} is
+	satisfied. {default} is returned when no item satisfies {function}.
+	{function} must be a |String| or a |Funcref|.
 >
 	function! MyPredicate(x)
 	  return a:x % 2 == 0

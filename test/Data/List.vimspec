@@ -653,6 +653,12 @@ Describe Data.List
         return a:x =~ 'y'
       endfunction
     End
+
+    After all
+      delfunction CanbeDevideBy10
+      delfunction MatchByY
+    End
+
     It returns the value if found by string expression
       Assert Equals(List.find([1, 2, 3], '*not-found*', 'v:val % 2 == 0'), 2)
       Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', 'v:val % 2 == 0'), 2)
@@ -661,16 +667,13 @@ Describe Data.List
 
       Assert Equals(List.find(['hi', 'yo'], -1, 'v:val =~ "y"'), 'yo')
     End
+
     It returns the value if found by funcref
       Assert Equals(List.find([1, 2, 3], '*not-found*', function('Even')), 2)
       Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', function('Even')), 2)
       Assert Equals(List.find([1, 2, 3], '*not-found*', function('CanbeDevideBy10')), '*not-found*')
       Assert Equals(List.find([], '*not-found*', function('Even')), '*not-found*')
       Assert Equals(List.find(['hi', 'yo'], -1, function('MatchByY')), 'yo')
-    End
-    After all
-      delfunction CanbeDevideBy10
-      delfunction MatchByY
     End
   End
 
