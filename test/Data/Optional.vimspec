@@ -22,30 +22,45 @@ Describe Data.Optional
 
   Describe .new()
     It returns valid optional value from usual arguments
-      let o = O.new(42)
-      Assert False(O.empty(o))
-      Assert True(O.exists(o))
+      if exists('v:null')
+        let o = O.new(42)
+        Assert False(O.empty(o))
+        Assert True(O.exists(o))
 
-      let o = O.new(42, 123)
-      Assert False(O.empty(o))
-      Assert True(O.exists(o))
+        let o = O.new(42, 123)
+        Assert False(O.empty(o))
+        Assert True(O.exists(o))
+      else
+        Throws /^vital: Data.Optional:/ O.new(123)
+
+        let o = O.new(42, 123)
+        Assert False(O.empty(o))
+        Assert True(O.exists(o))
+      endif
     End
 
     It returns invalid optional value from special arguments
-      let o = O.new(v:null)
-      Assert True(O.empty(o))
-      Assert False(O.exists(o))
-      Assert True(O.is_optional(o))
+      if exists('v:null')
+        let o = O.new(v:null)
+        Assert True(O.empty(o))
+        Assert False(O.exists(o))
+        Assert True(O.is_optional(o))
 
-      let o = O.new(123, 123)
-      Assert True(O.empty(o))
-      Assert False(O.exists(o))
-      Assert True(O.is_optional(o))
+        let o = O.new(123, 123)
+        Assert True(O.empty(o))
+        Assert False(O.exists(o))
+        Assert True(O.is_optional(o))
 
-      let o = O.new(v:null, 123)
-      Assert True(O.empty(o))
-      Assert False(O.exists(o))
-      Assert True(O.is_optional(o))
+        let o = O.new(v:null, 123)
+        Assert True(O.empty(o))
+        Assert False(O.exists(o))
+        Assert True(O.is_optional(o))
+      else
+        let o = O.new(123, 123)
+        Assert True(O.empty(o))
+        Assert False(O.exists(o))
+        Assert True(O.is_optional(o))
+      endif
     End
   End
 
