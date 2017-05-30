@@ -64,19 +64,21 @@ none()					*Vital.Data.Optional.none()*
 some({value})				*Vital.Data.Optional.some()*
 	Returns an optional value which contains {value} as valid value.
 
-new({value})				*Vital.Data.Optional.new()*
-	Same as some({value}) usually. If the given {value} is one of the
-	special values listed below, it returns none().
+new({value}, [{null}])				*Vital.Data.Optional.new()*
+	Same as some({value}) usually. If the given {value} is |v:null|, it
+	returns none().
 
-	* |v:false|
-	* |v:none|
-	* |v:null|
-
+	Old vim does not have v:null unfortunately. In that case, provide
+	any values at {null}. It's used instead of v:null.
 >
 	new(1) == some(1)
 	new(0) == some(0)
 	new(v:true) == some(v:true)
-	new(v:false) == none
+	new(v:false) == none()
+
+	new('hello', 'null') == some(1)
+	new('null', 'null') == none()
+	new(v:null, 'null') == none() " v:null is always none
 <
 
 is_optional({value})			*Vital.Data.Optional.is_optional()*
@@ -201,4 +203,4 @@ echo({optional}, [{highlight-group}])	*Vital.Data.Optional.echo()*
 
 
 ==============================================================================
-vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl:noet

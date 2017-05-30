@@ -20,6 +20,35 @@ Describe Data.Optional
     End
   End
 
+  Describe .new()
+    It returns valid optional value from usual arguments
+      let o = O.new(42)
+      Assert False(O.empty(o))
+      Assert True(O.exists(o))
+
+      let o = O.new(42, 123)
+      Assert False(O.empty(o))
+      Assert True(O.exists(o))
+    End
+
+    It returns invalid optional value from special arguments
+      let o = O.new(v:null)
+      Assert True(O.empty(o))
+      Assert False(O.exists(o))
+      Assert True(O.is_optional(o))
+
+      let o = O.new(123, 123)
+      Assert True(O.empty(o))
+      Assert False(O.exists(o))
+      Assert True(O.is_optional(o))
+
+      let o = O.new(v:null, 123)
+      Assert True(O.empty(o))
+      Assert False(O.exists(o))
+      Assert True(O.is_optional(o))
+    End
+  End
+
   Describe .is_optional()
     It checks the argument is an optional value
       let o = O.none()
