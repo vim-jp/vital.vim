@@ -74,7 +74,7 @@ new({value}, [{null}])				*Vital.Data.Optional.new()*
 	new(1) == some(1)
 	new(0) == some(0)
 	new(v:true) == some(v:true)
-	new(v:false) == none()
+	new(v:null) == none()
 
 	new('hello', 'null') == some(1)
 	new('null', 'null') == none()
