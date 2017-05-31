@@ -716,17 +716,35 @@ Describe Data.List
   End
 
   Describe .find_last_index()
-    It returns the index if found
-      Assert Equals(List.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0'), 3)
-      Assert Equals(List.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"'), 2)
-      Assert Equals(List.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0', 1), 1)
-      Assert Equals(List.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"', -2), 0)
+    Before all
+      function! MatchByO(x) abort
+        return a:x =~# 'o'
+      endfunction
     End
+
+    After all
+      delfunction MatchByO
+    End
+
+    It returns the index if found with given the string expressiovn
+      Assert Equals(List.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0'), 3)
+      Assert Equals(List.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0', 1), 1)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"'), 2)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"', -2), 0)
+    End
+
+    It returns the index if found with given the funcref
+      Assert Equals(List.find_last_index([1, 2, 3, 4], function('Even')), 3)
+      Assert Equals(List.find_last_index([1, 2, 3, 4], function('Even'), 1), 1)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], function('MatchByO')), 2)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], function('MatchByO'), -2), 0)
+    End
+
     It returns -1 or default value if not found
       Assert Equals(List.find_last_index([], '1'), -1)
-      Assert Equals(List.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"'), -1)
       Assert Equals(List.find_last_index([], '1', 0, 999), 999)
-      Assert Equals(List.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"', 0, "not found"), "not found")
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"'), -1)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"', 0, 'not found'), 'not found')
     End
   End
 

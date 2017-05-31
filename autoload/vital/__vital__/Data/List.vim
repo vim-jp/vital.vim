@@ -462,14 +462,22 @@ endfunction
 
 " Returns the index of the last element which satisfies the given expr.
 function! s:find_last_index(xs, f, ...) abort
-  let len = len(a:xs)
-  let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : len - 1
-  let default = a:0 > 1 ? a:2 : -1
-  if start >=# len || start < 0
+  let len_xs = len(a:xs)
+  let default = get(a:000, 1, -1)
+
+  let start = get(a:000, 0, len_xs - 1)
+  if start < 0
+    let start += len_xs
+  endif
+
+  if len_xs <= start
     return default
   endif
+
+  let l:Call = s:_get_unary_caller(a:f)
   for i in range(start, 0, -1)
-    if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
+    let x = a:xs[i]
+    if l:Call(a:f, [x])
       return i
     endif
   endfor

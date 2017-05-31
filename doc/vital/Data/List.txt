@@ -701,11 +701,17 @@ find_index({list}, {function} [, {start} [, {default}]])
 <
 
 					*Vital.Data.List.find_last_index()*
-find_last_index({list}, {expr} [, {start} [, {default}]])
+find_last_index({list}, {function} [, {start} [, {default}]])
 	Similar to find_index but this returns the highest index.
 	Traversing is done in reverse order.
 >
-	echo s:L.find_last_index([0, 1, 2, 3], 'v:val%2 == 1')
+	function! Odd(x) abort
+	  return a:x % 2 == 1
+	endfunction
+
+	echo s:L.find_last_index([0, 1, 2, 3], 'v:val % 2 == 1')
+	" 3
+	echo s:L.find_last_index([0, 1, 2, 3], function('Odd'))
 	" 3
 <
 
