@@ -3,6 +3,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:Option = s:V.import('Data.Optional')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Data.Optional']
+endfunction
+
 " Makes a dict from keys and values
 function! s:make(keys, values, ...) abort
   let dict = {}
@@ -93,6 +102,12 @@ endfunction
 
 function! s:foldr(f, init, dict) abort
   return s:_foldl(a:f, a:init, reverse(items(a:dict)))
+endfunction
+
+function! s:lookup(dict, key) abort
+	return has_key(a:dict, a:key)
+	\        ? s:Option.some(a:dict[a:key])
+	\        : s:Option.none()
 endfunction
 
 let &cpo = s:save_cpo

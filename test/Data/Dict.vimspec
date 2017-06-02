@@ -1,6 +1,7 @@
 Describe Data.Dict
   Before all
     let D = vital#vital#new().import('Data.Dict')
+    let O = vital#vital#new().import('Data.Optional')
   End
 
   Describe .make()
@@ -165,6 +166,15 @@ Describe Data.Dict
     It returns a value gotten from folding the keys and values in the dictionary using the given right-associative expr.
       Assert Equals(D.foldr('len(v:key) * abs(v:val) + v:memo', 0, {'hoge': 3, 'foo': -5, 'hehehe': 1, 'yahoo': 2}), 43)
       Assert Equals(D.foldr('v:memo - len(v:val)', 100, {'alice': '/1/2/3', 'bob': '/1/2/3/4', 'carol': '/1/2', 'dave': '/1'}), 80)
+    End
+  End
+
+  Describe .lookup()
+    It returns a just value if the dict has the key
+      Assert Equals(D.lookup({'ahoge': 10, 'bako': 20}, 'ahoge'), O.some(10))
+    End
+    It returns nothing if the dict hasn't the key
+      Assert Equals(D.lookup({'ahoge': 10, 'bako': 20}, 'gavriil'), O.none())
     End
   End
 End
