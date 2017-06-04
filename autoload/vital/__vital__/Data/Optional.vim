@@ -11,6 +11,20 @@ function! s:some(v) abort
   return [a:v]
 endfunction
 
+function! s:new(v, ...) abort
+  if exists('v:null')
+    return a:v == v:null || (a:0 > 0 && a:v == a:1)
+          \ ? s:none()
+          \ : s:some(a:v)
+  elseif a:0 > 0
+    return a:v == a:1
+          \ ? s:none()
+          \ : s:some(a:v)
+  else
+    throw 'vital: Data.Optional: both v:null and {null} are missing'
+  endif
+endfunction
+
 function! s:is_optional(v) abort
   return type(a:v) == s:ARRAY_TYPE && len(a:v) <= 1
 endfunction
