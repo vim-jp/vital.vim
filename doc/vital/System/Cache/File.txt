@@ -61,6 +61,11 @@ new([{options}])			*Vital.System.Cache.File.new()*
 	specified, it will throw an exception.
 	The 'cache_dir' will automatically be created if missing.
 
+hash({cache_dir}, {str})		*Vital.System.Cache.File.hash()*
+
+	Return a hash string of {str} in {cache_dir}.
+	It is used internally to distinguish.
+
 load({filename}[, {default}])		*Vital.System.Cache.File.load()*
 
 	Load a vim object from a {filename}. It uses |sandbox| and |eval| internally
