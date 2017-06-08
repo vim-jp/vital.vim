@@ -618,7 +618,8 @@ foldr1({function}, {xs})			*Vital.Data.List.foldr1()*
 <
 
 zip(...)				*Vital.Data.List.zip()*
-	TODO
+	Unifies lists in parallel. If the length of the lists is different,
+	adjusts for shorter list, longer list is sliced.
 	Behaves like python's zip().
 >
 	echo s:L.zip([1, 2, 3], [4, 5, 6])
