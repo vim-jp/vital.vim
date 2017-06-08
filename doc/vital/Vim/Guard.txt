@@ -124,6 +124,10 @@ is_local_variable_supported
 	Developers should not use this module to store/restore |local-variable|
 	when this constant is 0.
 
+			*Vital.Vim.Guard.is_third_argument_of_getreg_supported*
+is_third_argument_of_getreg_supported
+	1 or 0 to indicate whether the third argument of |getreg()| function.
+
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Vim.Guard-functions*
 
