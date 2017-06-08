@@ -28,6 +28,12 @@ is_supported({options})
 	Returns 0 if {options.timeout} is specified or {options.background}
 	is specified in Windows.
 
+				*Vital.System.Process.System.shellescape()*
+shellescape({string})
+	Return |shellescape| {string} when {string} contains whitespaces in
+	Windows. It is equal to |shellescape| in Unix/Linux.
+	It is used internally to make a command line from argument list.
+
 				*Vital.System.Process.System.execute()*
 execute({args}, {options})
 	Returns a result |Dictionary| which contains the following an extra
