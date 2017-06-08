@@ -37,7 +37,7 @@ function! s:obj.exec(string) dict abort
     for tkn in self.tokens
       let matched_text = matchstr(a:string[(idx):],'^' . tkn.regex)
       if ! empty(matched_text)
-        let best_tkn = s:token(tkn.label,matched_text,idx)
+        let best_tkn = s:_token(tkn.label,matched_text,idx)
         break
       endif
     endfor
@@ -59,7 +59,7 @@ function! s:lexer(patterns) abort
   return obj
 endfunction
 
-function! s:token(label,matched_text,col) abort
+function! s:_token(label,matched_text,col) abort
   let obj = {}
   let obj['label'] = a:label
   let obj['matched_text'] = a:matched_text
@@ -67,6 +67,7 @@ function! s:token(label,matched_text,col) abort
   return obj
 endfunction
 
+" Deprecated
 function! s:simple_parser(expr) abort
   echoerr 'vital: Text.Lexer: simple_parser(expr) is obsolete. Use Text.Parser.parser() instead.'
   let obj = { 'expr' : a:expr, 'idx' : 0, 'tokens' : [] }
