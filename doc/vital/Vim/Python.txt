@@ -87,7 +87,7 @@ set_major_version({version})		*Vital.Vim.Python.set_major_version()*
 	Calling this function does not make any sense in a Vim not compiled
 	with |+python|/|+python3|.
 
-exec_file({path}[, {version}])		*Vital.Vim.Python.exex_file()*
+exec_file({path}[, {version}])		*Vital.Vim.Python.exec_file()*
 
 	Return an executable |String| to execute a Python file {path} (|String|)
 	with a specified {version} of Python.
@@ -102,7 +102,7 @@ exec_file({path}[, {version}])		*Vital.Vim.Python.exex_file()*
 	execute Python.exec_file('your/python/file.py')
 <
 
-exec_code({code}[, {version}])		*Vital.Vim.Python.exex_code()*
+exec_code({code}[, {version}])		*Vital.Vim.Python.exec_code()*
 
 	Return an executable |String| to execute a Python {code} (|String| or |List|)
 	with a specified {version} of Python.
