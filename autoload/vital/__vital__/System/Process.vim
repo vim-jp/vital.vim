@@ -8,6 +8,7 @@ function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = a:V.import('Prelude')
   let s:String = a:V.import('Data.String')
+  call s:register('System.Process.Job')
   call s:register('System.Process.Vimproc')
   call s:register('System.Process.System')
 endfunction
@@ -18,6 +19,7 @@ function! s:_vital_depends() abort
         \ 'Data.String',
         \ 'System.Process.System',
         \ 'System.Process.Vimproc',
+        \ 'System.Process.Job',
         \]
 endfunction
 

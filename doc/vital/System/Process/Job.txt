@@ -1,0 +1,48 @@
+*vital/System/Process/Job.txt*	A Process client using job feature
+
+Maintainer: lambdalisue		<lambdalisue@hashnote.net>
+
+=============================================================================
+CONTENTS			*Vital.System.Process.Job-contents*
+
+Introduction			|Vital.System.Process.Job-introduction|
+Functions			|Vital.System.Process.Job-functions|
+
+
+=============================================================================
+INTRODUCTION			*Vital.System.Process.Job-introduction*
+
+*Vital.System.Process.Job* is a |Vital.System.Process| client which uses
+a job feature of Vim 8 and Neovim.
+It uses |Vital.System.Job| internally.
+
+
+=============================================================================
+FUNCTIONS			*Vital.System.Process.Job-functions*
+
+				*Vital.System.Process.Job.is_available()*
+is_available()
+	Returns 1 when
+
+	1. has('nvim') returns 1
+	2. exists('*job_start') returns 1
+
+				*Vital.System.Process.Job.is_supported()*
+is_supported({options})
+	Returns 0 if {options.background} is specified with {options.input}
+	or {options.timeout}.
+
+				*Vital.System.Process.Job.execute()*
+execute({args}, {options})
+	Returns a result |Dictionary| which contains the following extra
+	attributes.
+
+		"job"
+		An instance of |Vital.System.Job| used to execute the process.
+
+	See |Vital.System.Process.Client.execute()| for common attributes.
+
+
+=============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
+
