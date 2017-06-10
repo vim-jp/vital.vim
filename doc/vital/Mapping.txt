@@ -20,33 +20,33 @@ INTERFACE				*Vital.Mapping-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Mapping-functions*
 
-				*Mapping.execute_abbr_command()*
+				*Vital.Mapping.execute_abbr_command()*
 execute_abbr_command({mode}, {dict}, {lhs}, {rhs})
 	Execute `get_abbr_command(mode, dict, lhs, rhs)` result.
 	See |Mapping.get_abbr_command()|.
 
-				*Mapping.execute_map_command()*
+				*Vital.Mapping.execute_map_command()*
 execute_map_command({mode}, {dict}, {lhs}, {rhs})
 	Execute `get_map_command(mode, dict, lhs, rhs)` result.
 	See |Mapping.get_map_command()|.
 
-				*Mapping.execute_unmap_command()*
+				*Vital.Mapping.execute_unmap_command()*
 execute_unmap_command({mode}, {dict}, {lhs})
 	Execute `get_unmap_command(mode, dict, lhs)` result.
 	See |Mapping.get_unmap_command()|.
 
-				*Mapping.get_all_modes()*
+				*Vital.Mapping.get_all_modes()*
 get_all_modes()
 	Returns string which represents all mode characters ("noiclxs").
 	NOTE: "v" is not contained. Because "x" and "s" already mean "v".
 
-				*Mapping.get_all_modes_list()*
+				*Vital.Mapping.get_all_modes_list()*
 get_all_modes_list()
 	Returns |List| which represents all mode characters.
 	Same as `split(get_all_modes(), '\zs')` .
 	See |Mapping.get_all_modes()|.
 
-				*Mapping.get_abbr_command()*
+				*Vital.Mapping.get_abbr_command()*
 get_abbr_command({mode}, {dict}, {lhs}, {rhs})
 	Constructs |:abbreviate| command string.
 	{mode} is a character of mode.
@@ -55,7 +55,7 @@ get_abbr_command({mode}, {dict}, {lhs}, {rhs})
 	The options can be created by |Mapping.options_chars2dict()| or
 	|maparg()|'s return value when {dict} is non-zero.
 
-				*Mapping.get_map_command()*
+				*Vital.Mapping.get_map_command()*
 get_map_command({mode}, {dict}, {lhs}, {rhs})
 	Constructs |:map| command string.
 	{mode} is a character of mode.
@@ -64,7 +64,7 @@ get_map_command({mode}, {dict}, {lhs}, {rhs})
 	The options can be created by |Mapping.options_chars2dict()| or
 	|maparg()|'s return value when {dict} is non-zero.
 
-				*Mapping.get_unabbr_command()*
+				*Vital.Mapping.get_unabbr_command()*
 get_unabbr_command({mode}, {dict}, {lhs})
 	Constructs |:unabbreviate| command string.
 	{mode} is a character of mode.
@@ -73,7 +73,7 @@ get_unabbr_command({mode}, {dict}, {lhs})
 	The options can be created by |Mapping.options_chars2dict()| or
 	|maparg()|'s return value when {dict} is non-zero.
 
-				*Mapping.get_unmap_command()*
+				*Vital.Mapping.get_unmap_command()*
 get_unmap_command({mode}, {dict}, {lhs})
 	Constructs |:unabbreviate| command string.
 	{mode} is a character of mode.
@@ -82,7 +82,7 @@ get_unmap_command({mode}, {dict}, {lhs})
 	The options can be created by |Mapping.options_chars2dict()| or
 	|maparg()|'s return value when {dict} is non-zero.
 
-				*Mapping.options_chars2dict()*
+				*Vital.Mapping.options_chars2dict()*
 options_chars2dict({chars})
 	{chars} is a string which represents characters of options.
 	The return value is a |Dictionary| which is same as |maparg()|'s
@@ -108,7 +108,7 @@ options_chars2dict({chars})
 	  "nowait": 0,
 	}
 <
-				*Mapping.options_chars2raw()*
+				*Vital.Mapping.options_chars2raw()*
 options_chars2raw({chars})
 	Same as `options_dict2raw(options_chars2dict(chars))` .
 	See |Mapping.options_dict2raw()| and |Mapping.options_chars2dict()|.
@@ -116,14 +116,14 @@ options_chars2raw({chars})
 	Example: >
 	options_dict2chars('eb') = '<expr><buffer>'
 <
-				*Mapping.options_dict2chars()*
+				*Vital.Mapping.options_dict2chars()*
 options_dict2chars({dict})
 	Converts {dict} to characters of options.
 
 	Example: >
 	options_dict2chars({'expr': 1, 'buffer': 1}) = 'eb'
 <
-				*Mapping.options_dict2raw()*
+				*Vital.Mapping.options_dict2raw()*
 options_dict2raw({dict})
 	{dict} is a |Dictionary| which represents options.
 	See |Mapping.options_chars2dict()| for the options.
@@ -131,7 +131,7 @@ options_dict2raw({dict})
 	Example: >
 	options_dict2raw({'expr': 1, 'buffer': 1}) = '<expr><buffer>'
 <
-				*Mapping.is_mode_char()*
+				*Vital.Mapping.is_mode_char()*
 is_mode_char({char})
 	Returns non-zero if {char} is a character one of
 	"v", "n", "o", "i", "c", "l", "x", "s".
