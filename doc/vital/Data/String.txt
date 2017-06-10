@@ -139,6 +139,10 @@ dstring({expr})				*Vital.Data.String.dstring()*
 lines({str})				*Vital.Data.String.lines()*
 	Splits into list of strings of each lines of {str}.
 
+strchars({str})				*Vital.Data.String.strchars()*
+	Returns the number of characters in String {str}.
+	This is a polyfill of |strchars()| when it was not provided.
+
 contains_multibyte({str})	*Vital.Data.String.contains_multibyte()*
 	Return Number 1 if String {str} contains a multi-byte character,
 	otherwise zero.
