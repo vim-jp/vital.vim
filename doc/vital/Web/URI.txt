@@ -68,7 +68,11 @@ like_uri({str})				*Vital.Web.URI.like_uri()*
 
 					*Vital.Web.URI.new_default_pattern_set()*
 new_default_pattern_set()
-	Returns |Vital.Web.URI-PatternSet|.
+	Creates a new |Vital.Web.URI-PatternSet| object.
+
+					*Vital.Web.URI.clone_pattern_set()*
+clone_pattern_set({patternset})
+	Clones a |Vital.Web.URI-PatternSet| object.
 
 encode({str} [, {char-enc}])		*Vital.Web.URI.encode()*
 	Encodes {str} to Percent-encoding string.
@@ -144,70 +148,70 @@ is_path({str})
 is_query({str})
 is_fragment({str})
 
-    Returns non-zero value if {str} has right syntax
-    for each component. Returns zero otherwise.
+	Returns non-zero value if {str} has right syntax
+	for each component. Returns zero otherwise.
 
 *Vital.Web.URI-URI.clone()*
 clone()
 
-    This method clones a URI object itself. >
-    let s:URI = vital#{plugin-name}#new().import('Web.URI')
-    let uri = s:URI.new('http://example.com/')
-    let copyuri = uri.clone().relative('/a/b/c')
-    echo uri.to_string()
-    " => 'http://example.com/'
-    echo copyuri.to_string()
-    " => 'http://example.com/a/b/c'
+	This method clones a URI object itself. >
+	let s:URI = vital#{plugin-name}#new().import('Web.URI')
+	let uri = s:URI.new('http://example.com/')
+	let copyuri = uri.clone().relative('/a/b/c')
+	echo uri.to_string()
+	" => 'http://example.com/'
+	echo copyuri.to_string()
+	" => 'http://example.com/a/b/c'
 <
 *Vital.Web.URI-URI.relative()*
 relative({reluri})
 
-    This method ...
-    * Calculates a URI from
-    base URI and relative URI({reluri}).
-    * Changes the URI object itself (destructive).
-    * Returns the URI object itself.
-    * Calls |Vital.Web.URI-URI.relative()| implicitly.
+	This method ...
+	* Calculates a URI from
+	base URI and relative URI({reluri}).
+	* Changes the URI object itself (destructive).
+	* Returns the URI object itself.
+	* Calls |Vital.Web.URI-URI.relative()| implicitly.
 
-    Example: >
-    let s:URI = vital#{plugin-name}#new().import('Web.URI')
-    let BASE_URI = 'http://example.com/foo/bar'
-    let RELATIVE_URI = '../baz'
-    echo s:URI.new(BASE_URI).relative(RELATIVE_URI).to_string()
-    " => 'http://example.com/baz'
+	Example: >
+	let s:URI = vital#{plugin-name}#new().import('Web.URI')
+	let BASE_URI = 'http://example.com/foo/bar'
+	let RELATIVE_URI = '../baz'
+	echo s:URI.new(BASE_URI).relative(RELATIVE_URI).to_string()
+	" => 'http://example.com/baz'
 
-    let BASE_URI = 'http://example.com/foo/bar/'
-    let RELATIVE_URI = '../baz'
-    echo s:URI.new(BASE_URI).relative(RELATIVE_URI).to_string()
-    " => 'http://example.com/foo/baz'
+	let BASE_URI = 'http://example.com/foo/bar/'
+	let RELATIVE_URI = '../baz'
+	echo s:URI.new(BASE_URI).relative(RELATIVE_URI).to_string()
+	" => 'http://example.com/foo/baz'
 <
 *Vital.Web.URI-URI.canonicalize()*
 canonicalize()
 
-    This method ...
-    * Canonicalizes the URI.
-    * Changes the URI object itself (destructive).
-    * Returns the URI object itself.
+	This method ...
+	* Canonicalizes the URI.
+	* Changes the URI object itself (destructive).
+	* Returns the URI object itself.
 
-    See Web.URI.* modules for supported schemes.
-    For example, the following four URIs
-    becomes equivalent URI (http://example.com/).
-    * http://example.com
-    * http://example.com/
-    * http://example.com:/
-    * http://example.com:80/
+	See Web.URI.* modules for supported schemes.
+	For example, the following four URIs
+	becomes equivalent URI (http://example.com/).
+	* http://example.com
+	* http://example.com/
+	* http://example.com:/
+	* http://example.com:80/
 
-    Example: >
-    let s:URI = vital#{plugin-name}#new().import('Web.URI')
-    echo s:URI.new('http://example.com:80/').to_string()
-    " => 'http://example.com/'
+	Example: >
+	let s:URI = vital#{plugin-name}#new().import('Web.URI')
+	echo s:URI.new('http://example.com:80/').to_string()
+	" => 'http://example.com/'
 <
 *Vital.Web.URI-URI.default_port()*
 default_port()
 
-    This method returns the default port for current scheme.
-    (e.g.: 80 for "http" scheme)
-    See Web.URI.* modules for supported schemes.
+	This method returns the default port for current scheme.
+	(e.g.: 80 for "http" scheme)
+	See Web.URI.* modules for supported schemes.
 
 ------------------------------------------------------------------------------
 PATTERNSET OBJECT				*Vital.Web.URI-PatternSet*
@@ -232,28 +236,28 @@ According to RFC3986, URI allows
 but these characters often appears in ordinary text.
 This code lets the parser ignore these characters. >
 
-    let s:LoosePatternSet = s:URI.new_default_pattern_set()
+	let s:LoosePatternSet = s:URI.new_default_pattern_set()
 
-    " Remove "'", "(", ")" from default sub_delims().
-    function! s:LoosePatternSet.sub_delims() abort
-        return '[!$&*+,;=]'
-    endfunction
+	" Remove "'", "(", ")" from default sub_delims().
+	function! s:LoosePatternSet.sub_delims() abort
+	    return '[!$&*+,;=]'
+	endfunction
 
-    " Ignore trailing string after URI.
-    let NONE = []
-    let ret = URI.new_from_seq_string(
-    \               'http://example.com)', NONE, s:LoosePatternSet)
-    if ret isnot NONE
-        ...
-    endif
+	" Ignore trailing string after URI.
+	let NONE = []
+	let ret = URI.new_from_seq_string(
+	\               'http://example.com)', NONE, s:LoosePatternSet)
+	if ret isnot NONE
+	    ...
+	endif
 <
 
 get({component})			*Vital.Web.URI-PatternSet.get()*
 
-    Returns each component definition.
+	Returns each component definition.
 >
-    let s:PatternSet = s:URI.new_default_pattern_set()
-    echo s:PatternSet.get('scheme')
+	let s:PatternSet = s:URI.new_default_pattern_set()
+	echo s:PatternSet.get('scheme')
 <
 Listing all customizable components here (alphabetic order).
 NOTE: DON'T call these methods directly.
