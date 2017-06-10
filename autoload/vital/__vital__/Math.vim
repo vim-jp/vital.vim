@@ -3,8 +3,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let g:exsiting_variable = 1
-
 " TODO Simpler way?
 function! s:modulo(m, n) abort
   let d = a:m * a:n < 0 ? 1 : 0
