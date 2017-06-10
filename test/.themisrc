@@ -2,6 +2,9 @@ set encoding=utf-8
 
 call themis#option('recursive', 1)
 call themis#option('exclude', ['test/_testdata/', 'test/README.md'])
+if has('nvim') || v:version < 800
+  call themis#option('exclude', ['test/Promise.vimspec'])
+endif
 
 let g:Expect = themis#helper('expect')
 call themis#helper('command').with(themis#helper('assert')).with({'Expect': g:Expect})
