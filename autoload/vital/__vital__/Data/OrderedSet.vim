@@ -2,10 +2,6 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-function! s:version() abort
-  return '0.0.15'
-endfunction
-
 function! s:new(...) abort
   let obj = deepcopy(s:ordered_set)
   if a:0
