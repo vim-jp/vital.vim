@@ -1,0 +1,31 @@
+*vital/Web/URI/HTTPS.txt*		https scheme handler for Web.URI
+
+Maintainer: tyru <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Web.URI.HTTPS-contents*
+
+INTRODUCTION			|Vital.Web.URI.HTTPS-introduction|
+INTERFACE			|Vital.Web.URI.HTTPS-interface|
+  Functions			|Vital.Web.URI.HTTPS-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Web.URI.HTTPS-introduction*
+
+*Vital.Web.URI.HTTPS* is a https scheme handler for |Vital.Web.URI|.
+
+==============================================================================
+INTERFACE				*Vital.Web.URI.HTTPS-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Web.URI.HTTPS-functions*
+
+canonicalize({uri})		*Vital.Web.URI.HTTPS.canonicalize()*
+	This simply invokes |Vital.Web.URI.HTTP.canonicalize()| with a {uri}
+	argument.
+
+default_port()
+					*Vital.Web.URI.HTTPS.default_port()*
+	Returns a string of a default port of https scheme ("443").
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

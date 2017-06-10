@@ -1,0 +1,43 @@
+*vital/Web/URI/HTTP.txt*		http scheme handler for Web.URI
+
+Maintainer: tyru <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Web.URI.HTTP-contents*
+
+INTRODUCTION			|Vital.Web.URI.HTTP-introduction|
+INTERFACE			|Vital.Web.URI.HTTP-interface|
+  Functions			|Vital.Web.URI.HTTP-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Web.URI.HTTP-introduction*
+
+*Vital.Web.URI.HTTP* is a http scheme handler for |Vital.Web.URI|.
+
+==============================================================================
+INTERFACE				*Vital.Web.URI.HTTP-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Web.URI.HTTP-functions*
+
+canonicalize({uri})		*Vital.Web.URI.HTTP.canonicalize()*
+	Canonicalizes {uri}. {uri} is a |Vital.Web.URI-URI| object.
+
+	* Set '/' to its path if its path is empty
+	* If its port is the same as a default port of http scheme (80),
+	  make the URI's port empty
+
+	For example, the following four URIs are equivalent:
+	* http://example.com
+	* http://example.com/
+	* http://example.com:/
+	* http://example.com:80/
+	This function canonicalizes them to http://example.com/ .
+
+	ref. https://tools.ietf.org/html/rfc3986#section-6.2.3
+
+default_port()
+					*Vital.Web.URI.HTTP.default_port()*
+	Returns a string of a default port of http scheme ("80").
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
