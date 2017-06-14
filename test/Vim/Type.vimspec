@@ -1,0 +1,300 @@
+Describe Vim.Type
+  Before all
+    let T = vital#vital#import('Vim.Type')
+  End
+
+  Describe .types
+    It has .number
+      Assert Equals(T.types.number, type(0))
+    End
+    It has .string
+      Assert Equals(T.types.string, type(''))
+    End
+    It has .func
+      Assert Equals(T.types.func, type(function('type')))
+    End
+    It has .list
+      Assert Equals(T.types.list, type([]))
+    End
+    It has .dict
+      Assert Equals(T.types.dict, type({}))
+    End
+    It has .float
+      Assert Equals(T.types.float, type(0.0))
+    End
+    if 800 <= v:version
+      It has .bool
+        Assert Equals(T.types.bool, type(v:true))
+      End
+      It has .none
+        Assert Equals(T.types.none, type(v:none))
+      End
+      It has .job
+        Assert Equals(T.types.job, type(test_null_job()))
+      End
+      It has .channel
+        Assert Equals(T.types.channel, type(test_null_channel()))
+      End
+    endif
+    It is locked
+      Assert True(islocked('T.types'))
+    End
+  End
+
+  Describe .type_names
+    It can get name of "number"
+      Assert Equals(T.type_names[type(0)], 'number')
+    End
+    It can get name of "string"
+      Assert Equals(T.type_names[type('')], 'string')
+    End
+    It can get name of "func"
+      Assert Equals(T.type_names[type(function('type'))], 'func')
+    End
+    It can get name of "list"
+      Assert Equals(T.type_names[type([])], 'list')
+    End
+    It can get name of "dict"
+      Assert Equals(T.type_names[type({})], 'dict')
+    End
+    It can get name of "float"
+      Assert Equals(T.type_names[type(0.0)], 'float')
+    End
+    if 800 <= v:version
+      It can get name of "bool"
+        Assert Equals(T.type_names[type(v:true)], 'bool')
+      End
+      It can get name of "none"
+        Assert Equals(T.type_names[type(v:none)], 'none')
+      End
+      It can get name of "job"
+        Assert Equals(T.type_names[type(test_null_job())], 'job')
+      End
+      It can get name of "channel"
+        Assert Equals(T.type_names[type(test_null_channel())], 'channel')
+      End
+    endif
+    It is locked
+      Assert True(islocked('T.type_names'))
+    End
+  End
+
+  Describe .is_number()
+    Context when {value} is a Number
+      It returns TRUE
+        Assert True(T.is_number(0))
+        Assert True(T.is_number(10))
+        Assert True(T.is_number(-99999999))
+      End
+    End
+    Context when {value} is not a Number
+      It returns FALSE
+        Assert False(T.is_number(10.0))
+        Assert False(T.is_number([]))
+      End
+    End
+  End
+
+  Describe .is_string()
+    Context when {value} is a String
+      It returns TRUE
+        Assert True(T.is_string(''))
+        Assert True(T.is_string('foo text'))
+        Assert True(T.is_string('10'))
+      End
+    End
+    Context when {value} is not a String
+      It returns FALSE
+        Assert False(T.is_string(10))
+        Assert False(T.is_string(function('type')))
+      End
+    End
+  End
+
+  Describe .is_func()
+    Context when {value} is a Funcref
+      It returns TRUE
+        Assert True(T.is_func(function('type')))
+      End
+    End
+    Context when {value} is not a Funcref
+      It returns FALSE
+        Assert False(T.is_func('type'))
+        Assert False(T.is_func([]))
+      End
+    End
+  End
+
+  Describe .is_list()
+    Context when {value} is a List
+      It returns TRUE
+        Assert True(T.is_list([]))
+        Assert True(T.is_list([1, 2, 3]))
+      End
+    End
+    Context when {value} is not a List
+      It returns FALSE
+        Assert False(T.is_list('[]'))
+        Assert False(T.is_list({}))
+      End
+    End
+  End
+
+  Describe .is_dict()
+    Context when {value} is a Dictionary
+      It returns TRUE
+        Assert True(T.is_dict({}))
+        Assert True(T.is_dict({'foo': 'bar'}))
+      End
+    End
+    Context when {value} is not a Dictionary
+      It returns FALSE
+        Assert False(T.is_dict('{}'))
+        Assert False(T.is_dict([]))
+      End
+    End
+  End
+
+  Describe .is_float()
+    Context when {value} is a Float
+      It returns TRUE
+        Assert True(T.is_float(0.0))
+        Assert True(T.is_float(-999.999))
+        Assert True(T.is_float(0.0 / 0.0))
+      End
+    End
+    Context when {value} is not a Float
+      It returns FALSE
+        Assert False(T.is_float(10))
+        Assert False(T.is_float([10.0]))
+      End
+    End
+  End
+
+  if 800 <= v:version
+    Describe .is_bool()
+      Context when {value} is v:false or v:true
+        It returns TRUE
+          Assert True(T.is_bool(v:false))
+          Assert True(T.is_bool(v:true))
+        End
+      End
+      Context when {value} is not v:false or v:true
+        It returns FALSE
+          Assert False(T.is_bool(0))
+          Assert False(T.is_bool(1))
+        End
+      End
+    End
+
+    Describe .is_none()
+      Context when {value} is v:null or v:none
+        It returns TRUE
+          Assert True(T.is_none(v:null))
+          Assert True(T.is_none(v:none))
+        End
+      End
+      Context when {value} is not v:null or v:none
+        It returns FALSE
+          Assert False(T.is_none(v:false))
+          Assert False(T.is_none(0))
+        End
+      End
+    End
+
+    Describe .is_job()
+      Context when {value} is a Job
+        It returns TRUE
+          Assert True(T.is_job(test_null_job()))
+        End
+      End
+      Context when {value} is not a Job
+        It returns FALSE
+          Assert False(T.is_job('echo "hello"'))
+          Assert False(T.is_job({}))
+        End
+      End
+    End
+
+    Describe .is_channel()
+      Context when {value} is a channel
+        It returns TRUE
+          Assert True(T.is_channel(test_null_channel()))
+        End
+      End
+      Context when {value} is not a channel
+        It returns FALSE
+          Assert False(T.is_channel(''))
+          Assert False(T.is_channel([]))
+        End
+      End
+    End
+  endif
+
+  Describe .is_numeric()
+    Context when {value} is a Number
+      It returns TRUE
+        Assert True(T.is_numeric(0))
+        Assert True(T.is_numeric(10))
+        Assert True(T.is_numeric(-99999999))
+      End
+    End
+    Context when {value} is a Float
+      It returns TRUE
+        Assert True(T.is_numeric(0.0))
+        Assert True(T.is_numeric(-999.999))
+        Assert True(T.is_numeric(0.0 / 0.0))
+      End
+    End
+    Context when {value} is not a Number or a Float
+      It returns FALSE
+        Assert False(T.is_numeric('10'))
+        Assert False(T.is_numeric([10]))
+      End
+    End
+  End
+
+  if 800 <= v:version
+    Describe .is_special()
+      Context when {value} is a Special value
+        It returns TRUE
+          Assert True(T.is_special(v:false))
+          Assert True(T.is_special(v:true))
+          Assert True(T.is_special(v:null))
+          Assert True(T.is_special(v:none))
+        End
+      End
+      Context when {value} is not a Special value
+        It returns FALSE
+          Assert False(T.is_special(1))
+          Assert False(T.is_special(0))
+        End
+      End
+    End
+  endif
+
+  Describe .is_predicate()
+    Context when {value} is a predicate
+      It returns TRUE
+        Assert True(T.is_predicate(10))
+        Assert True(T.is_predicate('10'))
+        if 800 <= v:version
+          Assert True(T.is_predicate(v:true))
+          Assert True(T.is_predicate(v:none))
+        endif
+      End
+    End
+    Context when {value} is not a predicate
+      It returns FALSE
+        Assert False(T.is_predicate(function('type')))
+        Assert False(T.is_predicate([10]))
+        Assert False(T.is_predicate({'value': 10}))
+        Assert False(T.is_predicate(1.0))
+        if 800 <= v:version
+          Assert False(T.is_predicate(test_null_job()))
+          Assert False(T.is_predicate(test_null_channel()))
+        endif
+      End
+    End
+  End
+End

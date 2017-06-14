@@ -1,0 +1,135 @@
+*vital/Vim/Type.txt*	Check variable types.
+
+Maintainer: thinca <thinca+vim@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Vim.Type-contents*
+
+INTRODUCTION			|Vital.Vim.Type-introduction|
+INTERFACE			|Vital.Vim.Type-interface|
+  CONSTANTS			  |Vital.Vim.Type-constants|
+  FUNCTIONS			  |Vital.Vim.Type-functions|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Vim.Type-introduction*
+
+*Vital.Vim.Type* is a module to check type of variables.
+>
+	:let s:T = vital#{plugin-name}#import('Vim.Type')
+<
+
+
+==============================================================================
+INTERFACE				*Vital.Vim.Type-interface*
+
+------------------------------------------------------------------------------
+CONSTANTS				*Vital.Vim.Type-constants*
+
+types					*Vital.Vim.Type-types*
+	A dictionary that has the results of |type()| function.
+	This is useful in older versions without |v:t_TYPE| variables.
+
+	number: 0
+	string: 1
+	func: 2
+	list: 3
+	dict: 4
+	float: 5
+	bool: 6
+	none: 7
+	job: 8
+	channel: 9
+>
+	:let s:t = s:T.types
+
+	:let foo_t = type(foo)
+	:if foo_t == s:t.string
+	  " ...
+	:elseif foo_t == s:t.list
+	  " ...
+	:endif
+
+type_names				*Vital.Vim.Type-type_names*
+	A dictionary that maps from type value to type name.
+
+	0: number
+	1: string
+	2: func
+	3: list
+	4: dict
+	5: float
+	6: bool
+	7: none
+	8: job
+	9: channel
+>
+	:echo s:T.type_names[type('')]
+	string
+<
+
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Vim.Type-functions*
+
+is_number({value})			*Vital.Vim.Type.is_number()*
+	Returns TRUE if {value} is a |Number|, FALSE otherwise.
+
+is_string({value})			*Vital.Vim.Type.is_string()*
+	Returns TRUE if {value} is a String (|expr-string|), FALSE otherwise.
+
+is_func({value})			*Vital.Vim.Type.is_funcref()*
+	Returns TRUE if {value} is a |Funcref|, FALSE otherwise.
+
+is_list({value})			*Vital.Vim.Type.is_list()*
+	Returns TRUE if {value} is a |List|, FALSE otherwise.
+
+is_dict({value})			*Vital.Vim.Type.is_dict()*
+	Returns TRUE if {value} is a |Dictionary|, FALSE otherwise.
+
+is_float({value})			*Vital.Vim.Type.is_float()*
+	Returns TRUE if {value} is a |Float|, FALSE otherwise.
+
+is_bool({value})			*Vital.Vim.Type.is_bool()*
+	Returns TRUE if {value} is |v:false| or |v:true|, FALSE otherwise.
+
+is_none({value})			*Vital.Vim.Type.is_none()*
+	Returns TRUE if {value} is |v:null| or |v:none|, FALSE otherwise.
+
+is_job({value})				*Vital.Vim.Type.is_job()*
+	Returns TRUE if {value} is a |Job|, FALSE otherwise.
+
+is_channel({value})			*Vital.Vim.Type.is_channel()*
+	Returns TRUE if {value} is a |Channel|, FALSE otherwise.
+
+is_numeric({value})			*Vital.Vim.Type.is_numeric()*
+	Returns TRUE if {value} is a |Number| or a |Float|, FALSE otherwise.
+	Examples: >
+	:echo s:T.is_numeric(123)
+	1
+	:echo s:T.is_numeric(1.23)
+	1
+	:echo s:T.is_numeric("hoge")
+	0
+
+is_special({value})			*Vital.Vim.Type.is_special()*
+	Returns TRUE if {value} is a |Special|, FALSE otherwise.  In other
+	words, {value} is |v:false|, |v:true|, |v:none|, or |v:null|.
+
+is_predicate({value})			*Vital.Vim.Type.is_predicate()*
+	Returns TRUE if {value} can be used as predicate, FALSE otherwise.
+	In other words, this returns TRUE if {value} can use as argument of
+	|:if|.
+	Examples: >
+	function! s:foo(val) abort
+	  if !s:T.is_predicate(a:val)
+	    return 'invalid'
+	  endif
+	  return v:val ? 'true' : 'false'
+	endfunction
+
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl
