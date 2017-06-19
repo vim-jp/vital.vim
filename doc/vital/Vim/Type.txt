@@ -42,14 +42,14 @@ types					*Vital.Vim.Type-types*
 	job: 8
 	channel: 9
 >
-	:let s:t = s:T.types
+	let s:t = s:T.types
 
-	:let foo_t = type(foo)
-	:if foo_t == s:t.string
+	let foo_t = type(foo)
+	if foo_t == s:t.string
 	  " ...
-	:elseif foo_t == s:t.list
+	elseif foo_t == s:t.list
 	  " ...
-	:endif
+	endif
 
 type_names				*Vital.Vim.Type-type_names*
 	A dictionary that maps from type value to type name.
