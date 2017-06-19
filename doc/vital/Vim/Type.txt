@@ -73,36 +73,6 @@ type_names				*Vital.Vim.Type-type_names*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Vim.Type-functions*
 
-is_number({value})			*Vital.Vim.Type.is_number()*
-	Returns TRUE if {value} is a |Number|, FALSE otherwise.
-
-is_string({value})			*Vital.Vim.Type.is_string()*
-	Returns TRUE if {value} is a String (|expr-string|), FALSE otherwise.
-
-is_func({value})			*Vital.Vim.Type.is_funcref()*
-	Returns TRUE if {value} is a |Funcref|, FALSE otherwise.
-
-is_list({value})			*Vital.Vim.Type.is_list()*
-	Returns TRUE if {value} is a |List|, FALSE otherwise.
-
-is_dict({value})			*Vital.Vim.Type.is_dict()*
-	Returns TRUE if {value} is a |Dictionary|, FALSE otherwise.
-
-is_float({value})			*Vital.Vim.Type.is_float()*
-	Returns TRUE if {value} is a |Float|, FALSE otherwise.
-
-is_bool({value})			*Vital.Vim.Type.is_bool()*
-	Returns TRUE if {value} is |v:false| or |v:true|, FALSE otherwise.
-
-is_none({value})			*Vital.Vim.Type.is_none()*
-	Returns TRUE if {value} is |v:null| or |v:none|, FALSE otherwise.
-
-is_job({value})				*Vital.Vim.Type.is_job()*
-	Returns TRUE if {value} is a |Job|, FALSE otherwise.
-
-is_channel({value})			*Vital.Vim.Type.is_channel()*
-	Returns TRUE if {value} is a |Channel|, FALSE otherwise.
-
 is_numeric({value})			*Vital.Vim.Type.is_numeric()*
 	Returns TRUE if {value} is a |Number| or a |Float|, FALSE otherwise.
 	Examples: >

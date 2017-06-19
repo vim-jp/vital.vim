@@ -32,46 +32,6 @@ function! s:_vital_created(module) abort
 endfunction
 
 
-function! s:is_number(value) abort
-  return type(a:value) == s:types.number
-endfunction
-
-function! s:is_string(value) abort
-  return type(a:value) == s:types.string
-endfunction
-
-function! s:is_func(value) abort
-  return type(a:value) == s:types.func
-endfunction
-
-function! s:is_list(value) abort
-  return type(a:value) == s:types.list
-endfunction
-
-function! s:is_dict(value) abort
-  return type(a:value) == s:types.dict
-endfunction
-
-function! s:is_float(value) abort
-  return type(a:value) == s:types.float
-endfunction
-
-function! s:is_bool(value) abort
-  return type(a:value) == s:types.bool
-endfunction
-
-function! s:is_none(value) abort
-  return type(a:value) == s:types.none
-endfunction
-
-function! s:is_job(value) abort
-  return type(a:value) == s:types.job
-endfunction
-
-function! s:is_channel(value) abort
-  return type(a:value) == s:types.channel
-endfunction
-
 function! s:is_numeric(value) abort
   let t = type(a:value)
   return t == s:types.number || t == s:types.float
