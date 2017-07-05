@@ -8,7 +8,7 @@ build:
       - REVIEWDOG_GITHUB_API_TOKEN=$$REVIEWDOG_GITHUB_API_TOKEN
     commands:
       - go get -d -v ./scripts
-      - go get -u github.com/client9/misspell/cmd/misspell
+      - curl -L https://git.io/misspell | sh
       - reviewdog -ci=droneio
     when:
       event: pull_request
