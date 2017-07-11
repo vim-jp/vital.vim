@@ -12,6 +12,7 @@ matrix:
     - os: linux
       env: VIM_VERSION=master
     - os: osx
+      osx_image: xcode8.3
 
 addons:
   apt:
