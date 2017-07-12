@@ -1,4 +1,6 @@
 language: generic
+rvm:
+  - 2.4.1
 sudo: false
 git:
   depth: 10
