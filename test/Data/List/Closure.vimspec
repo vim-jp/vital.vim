@@ -363,6 +363,39 @@ Describe Data.List.Closure
       Assert Equals(ListCl.find(['hi', 'yo'], -1, match_by_y), 'yo')
     End
   End
+
+  Describe .find_index()
+    Before all
+      function! Even(x) abort
+        return a:x % 2 is 0
+      endfunction
+
+      function! Odd(x) abort
+        return a:x % 2 is 1
+      endfunction
+
+      function! MatchByO(x) abort
+        return a:x =~# 'o'
+      endfunction
+    End
+
+    After all
+      delfunction Even
+      delfunction Odd
+      delfunction MatchByO
+    End
+
+    It returns the index if found with given the callable
+      let even       = Closure.from_funcname('*Even')
+      let odd        = Closure.from_funcname('*Odd')
+      let match_by_o = Closure.from_funcname('*MatchByO')
+
+      Assert Equals(ListCl.find_index([1, 2, 3], even), 1)
+      Assert Equals(ListCl.find_index([1, 2, 3], odd, 1), 2)
+      Assert Equals(ListCl.find_index(['hoge', 'fuga', 'piyo'], match_by_o), 0)
+      Assert Equals(ListCl.find_index(['hoge', 'fuga', 'piyo'], match_by_o, -2), 2)
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et

@@ -183,6 +183,15 @@ function! s:find(xs, default, callable) abort
   endtry
 endfunction
 
+function! s:find_index(xs, callable, ...) abort
+  let s:unary_closure_func = a:callable
+  try
+    return call(s:List.find_index, [a:xs, function('s:_provide_unary_callable')] + a:000)
+  finally
+    unlet s:unary_closure_func
+  endtry
+endfunction
+
 
 " Notice:
 " This is not job safe.
