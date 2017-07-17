@@ -329,6 +329,40 @@ Describe Data.List.Closure
       Assert Equals(ListCl.map_accum(successive_plus, [1, 2, 3], 10), [11, 13, 15])
     End
   End
+
+  Describe .find()
+    Before all
+      function! Even(x) abort
+        return a:x % 2 is 0
+      endfunction
+
+      function! CanbeDevideBy10(x) abort
+        return a:x % 10 == 0
+      endfunction
+
+      function! MatchByY(x) abort
+        return a:x =~ 'y'
+      endfunction
+    End
+
+    After all
+      delfunction Even
+      delfunction CanbeDevideBy10
+      delfunction MatchByY
+    End
+
+    It returns the value if found by given callable
+      let even                = Closure.from_funcname('*Even')
+      let can_be_devided_by_0 = Closure.from_funcname('*CanbeDevideBy10')
+      let match_by_y          = Closure.from_funcname('*MatchByY')
+
+      Assert Equals(ListCl.find([1, 2, 3], '*not-found*', even), 2)
+      Assert Equals(ListCl.find([1, 2, 3, 1, 2, 3], '*not-found*', even), 2)
+      Assert Equals(ListCl.find([1, 2, 3], '*not-found*', can_be_devided_by_0), '*not-found*')
+      Assert Equals(ListCl.find([], '*not-found*', even), '*not-found*')
+      Assert Equals(ListCl.find(['hi', 'yo'], -1, match_by_y), 'yo')
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
