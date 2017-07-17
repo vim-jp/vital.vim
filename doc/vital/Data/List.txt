@@ -775,9 +775,9 @@ group_by({list}, {function})		*Vital.Data.List.group_by()*
 <
 
 			      		*Vital.Data.List.binary_search()*
-binary_search({list}, {expr}, [{func}, [{dict}]])
+binary_search({list}, {target}, [{func}, [{dict}]])
 	Returns the index in {list} where the item has a value equal to
-	{expr} by binary search.  {list} must be sorted.  If {expr} is not
+	{target} by binary search.  {list} must be sorted.  If {target} is not
 	found, it returns -1.
 	When {func} is given, it is used to check the lhs of {func} is less
 	than the rhs of {func}.  {func} is the same as |sort()| of {func}.
