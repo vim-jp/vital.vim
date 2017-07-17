@@ -463,6 +463,35 @@ Describe Data.List.Closure
       Assert Equals(ListCl.find_indices(['hoge', 'fuga', 'piyo'], match_by_x), [])
     End
   End
+
+  Describe .group_by()
+    Before all
+      function! Head(xs) abort
+        return a:xs[0]
+      endfunction
+
+      function! ReversedPredicate(x) abort
+        return a:x % 2 == 0 ? 'aa'
+        \                   : '1.0'
+      endfunction
+    End
+
+    After all
+      delfunction Head
+      delfunction ReversedPredicate
+    End
+
+    It returns grouped dictionary with a given callable
+      let len                = Closure.from_funcname('*len')
+      let head               = Closure.from_funcname('*Head')
+      let reversed_predicate = Closure.from_funcname('*ReversedPredicate')
+
+      Assert Equals(ListCl.group_by([], len), {})
+      Assert Equals(ListCl.group_by(['a', 'b', 'ab', 'bc'], len), {'1': ['a', 'b'], '2': ['ab', 'bc']})
+      Assert Equals(ListCl.group_by(['a', 'b', 'ab', 'bc'], head), {'a': ['a', 'ab'], 'b': ['b', 'bc']})
+      Assert Equals(ListCl.group_by(range(4), reversed_predicate), {'aa': [0, 2], '1.0': [1, 3]})
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
