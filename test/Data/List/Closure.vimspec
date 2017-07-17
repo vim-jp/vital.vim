@@ -287,6 +287,23 @@ Describe Data.List.Closure
       Assert True(ListCl.any(is_under_0, [2, 0, 4, 6]))
     End
   End
+
+  Describe .partition()
+    Before all
+      function! Even(x) abort
+        return a:x % 2 is 0
+      endfunction
+    End
+
+    After all
+      delfunction Even
+    End
+
+    It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate of the callable
+      let even = Closure.from_funcname('*Even')
+      Assert Equals(ListCl.partition(even, range(5)), [[0, 2, 4], [1, 3]])
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
