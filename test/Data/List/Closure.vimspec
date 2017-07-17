@@ -423,6 +423,46 @@ Describe Data.List.Closure
       Assert Equals(ListCl.find_last_index(['hoge', 'fuga', 'piyo'], match_by_o, -2), 0)
     End
   End
+
+  Describe .find_indices()
+    Before all
+      function! Odd(x) abort
+        return a:x % 2 is 1
+      endfunction
+
+      function! MatchByO(x) abort
+        return a:x =~# 'o'
+      endfunction
+
+      function! MatchByX(x) abort
+        return a:x =~# 'x'
+      endfunction
+
+      function! ConstTrue(_) abort
+        return 1
+      endfunction
+    End
+
+    After all
+      delfunction Odd
+      delfunction MatchByO
+      delfunction MatchByX
+      delfunction ConstTrue
+    End
+
+    It returns index list if found with given the callable
+      let odd        = Closure.from_funcname('*Odd')
+      let match_by_o = Closure.from_funcname('*MatchByO')
+      let const_true = Closure.from_funcname('*ConstTrue')
+      let match_by_x = Closure.from_funcname('*MatchByX')
+
+      Assert Equals(ListCl.find_indices([1, 2, 3], odd), [0, 2])
+      Assert Equals(ListCl.find_indices(['hoge', 'fuga', 'piyo'], match_by_o), [0, 2])
+      Assert Equals(ListCl.find_indices([1, 2, 3], odd, 1), [2])
+      Assert Equals(ListCl.find_indices([], const_true), [])
+      Assert Equals(ListCl.find_indices(['hoge', 'fuga', 'piyo'], match_by_x), [])
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et

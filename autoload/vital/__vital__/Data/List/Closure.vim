@@ -201,6 +201,15 @@ function! s:find_last_index(xs, callable, ...) abort
   endtry
 endfunction
 
+function! s:find_indices(xs, callable, ...) abort
+  let s:unary_closure_func = a:callable
+  try
+    return call(s:List.find_indices, [a:xs, function('s:_provide_unary_callable')] + a:000)
+  finally
+    unlet s:unary_closure_func
+  endtry
+endfunction
+
 
 " Notice:
 " This is not job safe.
