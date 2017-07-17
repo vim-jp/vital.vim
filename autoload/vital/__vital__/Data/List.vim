@@ -486,14 +486,23 @@ endfunction
 
 " Similar to find_index but returns the list of indices satisfying the given expr.
 function! s:find_indices(xs, f, ...) abort
-  let len = len(a:xs)
-  let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : 0
-  let result = []
-  if start >=# len || start < 0
-    return result
+  let len_xs = len(a:xs)
+
+  let start = get(a:000, 0, 0)
+  " Emulate list[-n]
+  if start < 0
+    let start += len_xs
   endif
-  for i in range(start, len - 1)
-    if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
+
+  if len_xs <= start
+    return []
+  endif
+
+  let l:Call = s:_get_unary_caller(a:f)
+  let result = []
+  for i in range(start, len_xs - 1)
+    let x = a:xs[i]
+    if l:Call(a:f, [x])
       call add(result, i)
     endif
   endfor

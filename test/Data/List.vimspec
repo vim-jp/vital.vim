@@ -743,12 +743,40 @@ Describe Data.List
   End
 
   Describe .find_indices()
-    It returns index list if found
+    Before all
+      function! MatchByO(x) abort
+        return a:x =~# 'o'
+      endfunction
+
+      function! MatchByX(x) abort
+        return a:x =~# 'x'
+      endfunction
+
+      function! ConstTrue(_) abort
+        return 1
+      endfunction
+    End
+
+    After all
+      delfunction MatchByO
+      delfunction MatchByX
+      delfunction ConstTrue
+    End
+
+    It returns index list if found with given the string expression
       Assert Equals(List.find_indices([1, 2, 3], 'v:val % 2 == 1'), [0, 2])
-      Assert Equals(List.find_indices(["hoge", "fuga", "piyo"], 'v:val =~# "o"'), [0, 2])
+      Assert Equals(List.find_indices(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"'), [0, 2])
       Assert Equals(List.find_indices([1, 2, 3], 'v:val % 2 == 1', 1), [2])
       Assert Equals(List.find_indices([], '1'), [])
-      Assert Equals(List.find_indices(["hoge", "fuga", "piyo"], 'v:val =~# "x"'), [])
+      Assert Equals(List.find_indices(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"'), [])
+    End
+
+    It returns index list if found with given the funcref
+      Assert Equals(List.find_indices([1, 2, 3], function('Odd')), [0, 2])
+      Assert Equals(List.find_indices(['hoge', 'fuga', 'piyo'], function('MatchByO')), [0, 2])
+      Assert Equals(List.find_indices([1, 2, 3], function('Odd'), 1), [2])
+      Assert Equals(List.find_indices([], function('ConstTrue')), [])
+      Assert Equals(List.find_indices(['hoge', 'fuga', 'piyo'], function('MatchByX')), [])
     End
   End
 

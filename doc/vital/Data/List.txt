@@ -717,13 +717,20 @@ find_last_index({list}, {function} [, {start} [, {default}]])
 <
 
 					*Vital.Data.List.find_indices()*
-find_indices({list}, {expr} [, {start}])
+find_indices({list}, {function} [, {start}])
 	Similar to find_index but this returns all of indices specifying
-	{expr}.
+	{function}.
 	When no indices found, empty list is returned.
 >
-	echo s:L.find_indices([0, 1, 2, 3], 'v:val%2 == 1')
+	function! Odd(x) abort
+	  return a:x % 2 == 1
+	endfunction
+
+	echo s:L.find_indices([0, 1, 2, 3], 'v:val % 2 == 1')
 	" [1, 3]
+	echo s:L.find_indices([0, 1, 2, 3], function('Odd'))
+	" [1, 3]
+
 	echo s:L.find_indices([0, 1, 2, 3], 'v:val > 10')
 	" []
 <
