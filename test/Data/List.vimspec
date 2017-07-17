@@ -31,6 +31,10 @@ Describe Data.List
     function! Even(x) abort
       return a:x % 2 is 0
     endfunction
+
+    function! Odd(x) abort
+      return a:x % 2 is 1
+    endfunction
   End
 
   After all
@@ -416,17 +420,12 @@ Describe Data.List
 
   Describe .any()
     Before all
-      function! Odd(x) abort
-        return a:x % 2 == 1
-      endfunction
-
       function! IsUnder0(x) abort
         return 0 >= a:x
       endfunction
     End
 
     After all
-      delfunction Odd
       delfunction IsUnder0
     End
 
@@ -679,17 +678,12 @@ Describe Data.List
 
   Describe .find_index()
     Before all
-      function! Odd(x) abort
-        return a:x % 2 == 1
-      endfunction
-
       function! MatchByO(x) abort
         return a:x =~# 'o'
       endfunction
     End
 
     After all
-      delfunction Odd
       delfunction MatchByO
     End
 
