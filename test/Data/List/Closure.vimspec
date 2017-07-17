@@ -304,6 +304,31 @@ Describe Data.List.Closure
       Assert Equals(ListCl.partition(even, range(5)), [[0, 2, 4], [1, 3]])
     End
   End
+
+  Describe .map_accum()
+    Before all
+      function! MemoPlus(x, y) abort
+        return [a:x + a:y, a:y]
+      endfunction
+
+      function! SuccessivePlus(x, acc) abort
+        return [a:x + a:acc, a:acc + 1]
+      endfunction
+    End
+
+    After all
+      delfunction MemoPlus
+      delfunction SuccessivePlus
+    End
+
+    It is similar to map() but holds previous accumulator as well with a given callable
+      let memo_plus       = Closure.from_funcname('*MemoPlus')
+      let successive_plus = Closure.from_funcname('*SuccessivePlus')
+
+      Assert Equals(ListCl.map_accum(memo_plus, [1, 2, 3], 10), [11, 12, 13])
+      Assert Equals(ListCl.map_accum(successive_plus, [1, 2, 3], 10), [11, 13, 15])
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et

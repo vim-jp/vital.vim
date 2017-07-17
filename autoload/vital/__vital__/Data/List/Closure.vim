@@ -165,6 +165,15 @@ function! s:partition(callable, xs) abort
   endtry
 endfunction
 
+function! s:map_accum(callable, xs, init) abort
+  let s:binary_closure_func = a:callable
+  try
+    return s:List.map_accum(function('s:_provide_binary_callable'), a:xs, a:init)
+  finally
+    unlet s:binary_closure_func
+  endtry
+endfunction
+
 
 " Notice:
 " This is not job safe.
