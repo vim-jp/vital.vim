@@ -260,6 +260,33 @@ Describe Data.List.Closure
       Assert False(ListCl.all(is_over_0, [2, 0, 4, 6]))
     End
   End
+
+  Describe .any()
+    Before all
+      function! IsUnder0(x) abort
+        return 0 >= a:x
+      endfunction
+
+      function! Odd(x) abort
+        return a:x % 2 is 1
+      endfunction
+    End
+
+    After all
+      delfunction IsUnder0
+      delfunction Odd
+    End
+
+    It returns true if at least one item in the list fulfills the callable.
+      let odd        = Closure.from_funcname('*Odd')
+      let is_under_0 = Closure.from_funcname('*IsUnder0')
+
+      Assert False(ListCl.any(odd, [2, 8, 4, 6]))
+      Assert True(ListCl.any(odd, [2, 8, 5, 6]))
+      Assert False(ListCl.any(is_under_0, [2, 8, 4, 6]))
+      Assert True(ListCl.any(is_under_0, [2, 0, 4, 6]))
+    End
+  End
 End
 
 " vim:ts=2:sw=2:et
