@@ -219,6 +219,15 @@ function! s:group_by(xs, callable) abort
   endtry
 endfunction
 
+function! s:binary_search(xs, target, callable) abort
+  let s:binary_closure_func = a:callable
+  try
+    return s:List.binary_search(a:xs, a:target, function('s:_provide_binary_callable'))
+  finally
+    unlet s:binary_closure_func
+  endtry
+endfunction
+
 
 " Notice:
 " This is not job safe.
