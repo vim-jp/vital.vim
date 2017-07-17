@@ -761,12 +761,15 @@ intersect({list1}, {list2})		*Vital.Data.List.intersect()*
 	" []
 <
 
-group_by({list}, {expr})		*Vital.Data.List.group_by()*
-	Returns a |Dictionary| grouped by the result of {expr}.
-	"v:val" can be used in {expr}.
+group_by({list}, {function})		*Vital.Data.List.group_by()*
+	Returns a |Dictionary| grouped by the result of {function}.
+	"v:val" can be used in {function} if {function} is a string expression.
 >
 	echo s:L.group_by(['a', 'b', 'ab'], 'len(v:val)')
 	" {'1': ['a', 'b'], '2': ['ab']}
+	echo s:L.group_by(['a', 'b', 'ab'], function('len'))
+	" {'1': ['a', 'b'], '2': ['ab']}
+
 	echo s:L.group_by(['a', 'b', 'ab'], 'v:val[0]')
 	" {'a': ['a', 'ab'], 'b': ['b']}
 <

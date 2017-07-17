@@ -529,17 +529,19 @@ endfunction
 " Similar to Ruby's group_by.
 function! s:group_by(xs, f) abort
   let result = {}
-  let list = map(copy(a:xs), printf('[v:val, %s]', a:f))
-  for x in list
-    let Val = x[0]
-    let key = type(x[1]) !=# type('') ? string(x[1]) : x[1]
+  let l:Call = s:_get_unary_caller(a:f)
+
+  for l:X in a:xs
+    let key = l:Call(a:f, [l:X])
+    let key = type(key) isnot type('') ? string(key) : key
+
     if has_key(result, key)
-      call add(result[key], Val)
+      call add(result[key], l:X)
     else
-      let result[key] = [Val]
+      let result[key] = [l:X]
     endif
-    unlet Val
   endfor
+
   return result
 endfunction
 

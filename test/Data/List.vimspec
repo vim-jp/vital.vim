@@ -805,11 +805,34 @@ Describe Data.List
   End
 
   Describe .group_by()
-    It returns grouped dictionary
+    Before all
+      function! Head(xs) abort
+        return a:xs[0]
+      endfunction
+
+      function! ReversedPredicate(x) abort
+        return a:x % 2 == 0 ? 'aa'
+        \                   : '1.0'
+      endfunction
+    End
+
+    After all
+      delfunction Head
+      delfunction ReversedPredicate
+    End
+
+    It returns grouped dictionary with a given string expression
       Assert Equals(List.group_by([], 'len(v:val)'), {})
       Assert Equals(List.group_by(['a', 'b', 'ab', 'bc'], 'len(v:val)'), {'1': ['a', 'b'], '2': ['ab', 'bc']})
       Assert Equals(List.group_by(['a', 'b', 'ab', 'bc'], 'v:val[0]'), {'a': ['a', 'ab'], 'b': ['b', 'bc']})
       Assert Equals(List.group_by(range(4), 'v:val % 2 == 0 ? "aa" : 1.0'), {'aa': [0, 2], '1.0': [1, 3]})
+    End
+
+    It returns grouped dictionary with a given funcref
+      Assert Equals(List.group_by([], function('len')), {})
+      Assert Equals(List.group_by(['a', 'b', 'ab', 'bc'], function('len')), {'1': ['a', 'b'], '2': ['ab', 'bc']})
+      Assert Equals(List.group_by(['a', 'b', 'ab', 'bc'], function('Head')), {'a': ['a', 'ab'], 'b': ['b', 'bc']})
+      Assert Equals(List.group_by(range(4), function('ReversedPredicate')), {'aa': [0, 2], '1.0': [1, 3]})
     End
   End
 
