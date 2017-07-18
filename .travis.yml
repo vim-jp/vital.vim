@@ -1,5 +1,7 @@
 language: generic
 dist: trusty
+rvm:
+  - 2.4.1
 sudo: false
 git:
   depth: 10
@@ -15,8 +17,10 @@ matrix:
     - os: linux
       env: VIM_VERSION=nvim
     - os: osx
+      osx_image: xcode8.3
     - os: osx
       env: VIM_VERSION=nvim
+      osx_image: xcode8.3
 
 addons:
   apt:

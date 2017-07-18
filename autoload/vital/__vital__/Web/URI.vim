@@ -202,7 +202,7 @@ function! s:_eat_hier_part(rest, pattern_set) abort
     let port = authority.port
     " path
     let [path, rest] = s:_eat_path_abempty(rest, a:pattern_set)
-  elseif rest =~# ':'
+  elseif rest =~# '^:'
     let rest = rest[1:]
     let userinfo = ''
     let host = ''

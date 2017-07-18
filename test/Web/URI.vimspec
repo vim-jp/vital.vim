@@ -238,6 +238,12 @@ Describe Web.URI
         Assert Equals([uri, origuri, rest], expected)
       endfor
     End
+
+    It doesn't accept invalid URIs
+      let NONE = []
+      let ret = URI.new_from_seq_string('foo bar: baz', NONE)
+      Assert ret is NONE
+    End
   End
 
   Describe .new_default_pattern_set()
