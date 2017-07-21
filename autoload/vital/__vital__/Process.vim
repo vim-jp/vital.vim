@@ -136,7 +136,7 @@ function! s:system(str, ...) abort
   let args = [command] + args
   if background && (use_vimproc || !s:is_windows)
     if has('nvim')
-      throw "vital: Process: neovim's system() doesn't support background(&) process (cmdline:" . a:str . ')'
+      throw "vital: Process: neovim's system() doesn't support background(&) process (cmdline:" . string(a:str) . ')'
     endif
     let args[0] = args[0] . ' &'
   endif
