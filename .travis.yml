@@ -32,9 +32,9 @@ addons:
       - vim
       - python-dev
       - python3-dev
-      - ruby-dev
       - liblua5.1-0-dev
       - lua5.1
+      - libruby
       # For Neovim
       - autoconf
       - automake
