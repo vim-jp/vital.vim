@@ -30,7 +30,6 @@ else
 			cd /tmp/vim
 			./configure --prefix="${HOME}/vim" --with-features=huge \
 				--enable-pythoninterp --enable-python3interp \
-        --enable-rubyinterp \
 				--enable-luainterp --enable-fail-if-missing
 			make -j2
 			make install
@@ -38,7 +37,7 @@ else
 		osx)
 			brew update
 			brew upgrade
-			brew install lua python ruby
+			brew install lua python
 			brew install vim --with-lua
 			;;
 		*)
