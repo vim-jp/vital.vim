@@ -37,7 +37,7 @@ else
 		osx)
 			brew update
 			brew upgrade
-			brew install lua python
+			brew install lua python ruby
 			brew install vim --with-lua
 			;;
 		*)
