@@ -243,6 +243,8 @@ Describe System.Job
         Assert Compare(reltimefloat(delta), '<', 2.0)
         " Kill the process
         call job.stop()
+        " Wait a bit to make sure that Job is terminated
+        sleep 1
         Assert Equals(job.status(), 'dead')
       End
     End
