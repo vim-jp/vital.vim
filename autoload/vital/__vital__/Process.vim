@@ -153,8 +153,14 @@ function! s:get_last_status() abort
 endfunction
 
 if s:is_windows
-  function! s:shellescape(command) abort
-    return substitute(a:command, '[&()[\]{}^=;!''+,`~]', '^\0', 'g')
+  function! s:shellescape(...) abort
+    try
+      let shellslash = &shellslash
+      set noshellslash
+      return call('shellescape', a:000)
+    finally
+      let &shellslash = shellslash
+    endtry
   endfunction
 else
   function! s:shellescape(...) abort
