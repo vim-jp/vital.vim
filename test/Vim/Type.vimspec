@@ -1,0 +1,148 @@
+Describe Vim.Type
+  Before all
+    let T = vital#vital#import('Vim.Type')
+  End
+
+  Describe .types
+    It has .number
+      Assert Equals(T.types.number, type(0))
+    End
+    It has .string
+      Assert Equals(T.types.string, type(''))
+    End
+    It has .func
+      Assert Equals(T.types.func, type(function('type')))
+    End
+    It has .list
+      Assert Equals(T.types.list, type([]))
+    End
+    It has .dict
+      Assert Equals(T.types.dict, type({}))
+    End
+    It has .float
+      Assert Equals(T.types.float, type(0.0))
+    End
+    if 800 <= v:version
+      It has .bool
+        Assert Equals(T.types.bool, type(v:true))
+      End
+      It has .none
+        Assert Equals(T.types.none, type(v:none))
+      End
+      It has .job
+        Assert Equals(T.types.job, type(test_null_job()))
+      End
+      It has .channel
+        Assert Equals(T.types.channel, type(test_null_channel()))
+      End
+    endif
+    It is locked
+      Assert True(islocked('T.types'))
+    End
+  End
+
+  Describe .type_names
+    It can get name of "number"
+      Assert Equals(T.type_names[type(0)], 'number')
+    End
+    It can get name of "string"
+      Assert Equals(T.type_names[type('')], 'string')
+    End
+    It can get name of "func"
+      Assert Equals(T.type_names[type(function('type'))], 'func')
+    End
+    It can get name of "list"
+      Assert Equals(T.type_names[type([])], 'list')
+    End
+    It can get name of "dict"
+      Assert Equals(T.type_names[type({})], 'dict')
+    End
+    It can get name of "float"
+      Assert Equals(T.type_names[type(0.0)], 'float')
+    End
+    if 800 <= v:version
+      It can get name of "bool"
+        Assert Equals(T.type_names[type(v:true)], 'bool')
+      End
+      It can get name of "none"
+        Assert Equals(T.type_names[type(v:none)], 'none')
+      End
+      It can get name of "job"
+        Assert Equals(T.type_names[type(test_null_job())], 'job')
+      End
+      It can get name of "channel"
+        Assert Equals(T.type_names[type(test_null_channel())], 'channel')
+      End
+    endif
+    It is locked
+      Assert True(islocked('T.type_names'))
+    End
+  End
+
+  Describe .is_numeric()
+    Context when {value} is a Number
+      It returns TRUE
+        Assert True(T.is_numeric(0))
+        Assert True(T.is_numeric(10))
+        Assert True(T.is_numeric(-99999999))
+      End
+    End
+    Context when {value} is a Float
+      It returns TRUE
+        Assert True(T.is_numeric(0.0))
+        Assert True(T.is_numeric(-999.999))
+        Assert True(T.is_numeric(0.0 / 0.0))
+      End
+    End
+    Context when {value} is not a Number or a Float
+      It returns FALSE
+        Assert False(T.is_numeric('10'))
+        Assert False(T.is_numeric([10]))
+      End
+    End
+  End
+
+  if 800 <= v:version
+    Describe .is_special()
+      Context when {value} is a Special value
+        It returns TRUE
+          Assert True(T.is_special(v:false))
+          Assert True(T.is_special(v:true))
+          Assert True(T.is_special(v:null))
+          Assert True(T.is_special(v:none))
+        End
+      End
+      Context when {value} is not a Special value
+        It returns FALSE
+          Assert False(T.is_special(1))
+          Assert False(T.is_special(0))
+        End
+      End
+    End
+  endif
+
+  Describe .is_predicate()
+    Context when {value} is a predicate
+      It returns TRUE
+        Assert True(T.is_predicate(10))
+        Assert True(T.is_predicate('10'))
+        if 800 <= v:version
+          Assert True(T.is_predicate(v:true))
+          Assert True(T.is_predicate(v:none))
+        endif
+      End
+    End
+    Context when {value} is not a predicate
+      It returns FALSE
+        Assert False(T.is_predicate(function('type')))
+        Assert False(T.is_predicate([10]))
+        Assert False(T.is_predicate({'value': 10}))
+        Assert False(T.is_predicate(1.0))
+        if 800 <= v:version
+          Assert False(T.is_predicate(test_null_job()))
+          Assert False(T.is_predicate(test_null_channel()))
+        endif
+      End
+    End
+  End
+End
