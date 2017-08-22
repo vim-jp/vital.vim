@@ -3,7 +3,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:bitwise = vital#vital#new().import('Bitwise')
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:bitwise = s:V.import('Bitwise')
+endfunction
+
+function! s:_vita_depends() abort
+  return ['Bitwise']
+endfunction
+
 let s:shift = [
       \ 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
       \ 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
@@ -93,6 +101,11 @@ function! s:encode(data) abort
   return s:_bytes2str(l:bytes)
 endfunction
 
+function! s:_leftrotate(x, c) abort
+  let l:x = and(a:x, 0xFFFFFFFF)
+  return and(or(s:bitwise.lshift(l:x, a:c), s:bitwise.rshift(l:x, (32-a:c))), 0xFFFFFFFF)
+endfunction
+
 function! s:_bytes2str(bytes) abort
   return join(map(a:bytes, 'printf(''%02x'', v:val)'), '')
 endfunction
@@ -111,11 +124,6 @@ function! s:_bytes2int32(bytes) abort
         \ or(s:bitwise.lshift(a:bytes[1], 8),
         \ a:bytes[0])))
 endfunc
-
-function! s:_leftrotate(x, c) abort
-  let l:x = and(a:x, 0xFFFFFFFF)
-  return and(or(s:bitwise.lshift(l:x, a:c), s:bitwise.rshift(l:x, (32-a:c))), 0xFFFFFFFF)
-endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
