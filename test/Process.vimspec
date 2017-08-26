@@ -8,7 +8,11 @@ Describe Process
   Describe .system()
     It runs an external command and returns the stdout
       " assuming you have echo command
-      Assert Equals(Process.system('echo 1234'), "1234\n")
+      if IS_WINDOWS
+        Assert Equals(Process.system('echo 1234'), "1234 \n")
+      else
+        Assert Equals(Process.system('echo 1234'), "1234\n")
+      endif
       Assert Equals(Process.get_last_status(), 0)
     End
   End
