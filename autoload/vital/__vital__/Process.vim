@@ -22,34 +22,23 @@ let s:TYPE_LIST = type([])
 let s:TYPE_STRING = type('')
 
 function! s:spawn(expr, ...) abort
-  let shellslash = 0
-  if s:is_windows
-    let shellslash = &l:shellslash
-    setlocal noshellslash
+  if type(a:expr) is s:TYPE_LIST
+    let special = 1
+    let cmdline = join(map(a:expr, 's:shellescape(v:val, special)'), ' ')
+  elseif type(a:expr) is s:TYPE_STRING
+    let cmdline = a:expr
+    if a:0 && a:1
+      " for :! command
+      let cmdline = substitute(cmdline, '\([!%#]\|<[^<>]\+>\)', '\\\1', 'g')
+    endif
+  else
+    throw 'vital: Process: invalid argument (value type:' . type(a:expr) . ')'
   endif
-  try
-    if type(a:expr) is s:TYPE_LIST
-      let special = 1
-      let cmdline = join(map(a:expr, 'shellescape(v:val, special)'), ' ')
-    elseif type(a:expr) is s:TYPE_STRING
-      let cmdline = a:expr
-      if a:0 && a:1
-        " for :! command
-        let cmdline = substitute(cmdline, '\([!%#]\|<[^<>]\+>\)', '\\\1', 'g')
-      endif
-    else
-      throw 'vital: Process: invalid argument (value type:' . type(a:expr) . ')'
-    endif
-    if s:is_windows
-      silent execute '!start' cmdline
-    else
-      silent execute '!' cmdline '&'
-    endif
-  finally
-    if s:is_windows
-      let &l:shellslash = shellslash
-    endif
-  endtry
+  if s:is_windows
+    silent execute '!start' cmdline
+  else
+    silent execute '!' cmdline '&'
+  endif
   return ''
 endfunction
 
