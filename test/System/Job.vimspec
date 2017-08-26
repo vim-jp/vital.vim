@@ -1,0 +1,252 @@
+Describe System.Job
+  Before
+    if !has('nvim') && !has('patch-8.0.0027')
+        Skip This Vim does not support System.Job
+    endif
+
+    let Path = vital#vital#import('System.Filepath')
+    let Job = vital#vital#import('System.Job')
+    let root = Path.realpath('test/_testdata/System/Job')
+    let stream = { '_stdout': '', '_stderr': '', '_exitval': v:null }
+    function! stream.on_stdout(job, msg, event) abort
+      " job   -- job_id
+      " msg   -- data buffered (List)
+      " event -- 'stdout'
+      let self._stdout .= join(a:msg, "\n")
+    endfunction
+    function! stream.on_stderr(job, msg, event) abort
+      " job   -- job_id
+      " msg   -- data buffered (List)
+      " event -- 'stderr'
+      let self._stderr .= join(a:msg, "\n")
+    endfunction
+    function! stream.on_exit(job, msg, event) abort
+      " job   -- job_id
+      " msg   -- exit status
+      " event -- 'exit'
+      let self._exitval = a:msg
+      let self._stdout_on_exit = copy(self._stdout)
+      let self._stderr_on_exit = copy(self._stderr)
+    endfunction
+  End
+
+  Describe .start({args}[, {options}])
+    It starts a job with {args} and return a job instance
+      let script = Path.join(root, 'echo_stdout.py')
+      let args = ['python', script]
+      let job = Job.start(args)
+      Assert KeyExists(job, 'args')
+      Assert KeyExists(job, 'status')
+      Assert KeyExists(job, 'wait')
+      Assert KeyExists(job, 'send')
+      Assert KeyExists(job, 'stop')
+    End
+
+    It throws an exception when {args} is not a List instance
+      Throws /Argument requires to be a List instance/ Job.start('python')
+    End
+
+    It throws an exception when {args} is an empty list
+      Throws /Argument vector must have at least one item/ Job.start([])
+    End
+
+    It throws an exception when a first item of {args} is not executable
+      Throws /"foo" is not an executable/ Job.start(['foo'])
+    End
+
+    Describe on_stdout(job, msg, event) callback
+      It is called when there is data to be read in stdout
+        let options = deepcopy(stream)
+        let script = Path.join(root, 'echo_stdout.py')
+        let args = ['python', script]
+        let job = Job.start(args, options)
+        let status = job.wait(5000)
+        Assert Equals(status, 0)
+        Assert Equals(job._stdout, "Hello World\n")
+      End
+    End
+
+    Describe on_stderr(job, msg, event) callback
+      It is called when there is data to be read in stderr
+        let options = deepcopy(stream)
+        let script = Path.join(root, 'echo_stderr.py')
+        let args = ['python', script]
+        let job = Job.start(args, options)
+        let status = job.wait(5000)
+        Assert Equals(status, 0)
+        Assert Equals(job._stderr, "Hello World\n")
+      End
+    End
+
+    Describe on_exit(job, msg, event) callback
+      It is called when the process has terminated
+        let options = deepcopy(stream)
+        let script = Path.join(root, 'exitval.py')
+        let args = ['python', script, 0]
+        let job = Job.start(args, options)
+        Assert Equals(job.wait(), 0)
+        Assert Equals(job._exitval, 0)
+
+        let args = ['python', script, 1]
+        let job = Job.start(args, options)
+        Assert Equals(job.wait(), 1)
+        Assert Equals(job._exitval, 1)
+
+        let args = ['python', script, 2]
+        let job = Job.start(args, options)
+        Assert Equals(job.wait(), 2)
+        Assert Equals(job._exitval, 2)
+      End
+
+      It is called when there is no buffered data
+        " NOTE:
+        " Vim 8 call 'exit_cb' even there is buffered data remain.
+        " Without reading channel on 'exit_cb', this test should fail on Vim 8
+        " if the {repeat} is large enough (depends on PC's spec I guess)
+        let nrepeat = 1000000
+        let options = deepcopy(stream)
+        let script = Path.join(root, 'mass.py')
+        let args = ['python', script, nrepeat]
+        let job = Job.start(args, options)
+        Assert Equals(job.wait(), 0)
+        Assert Equals(job._exitval, 0)
+        Assert Equals(len(split(job._stdout, '\n')), nrepeat)
+        Assert Equals(len(split(job._stderr, '\n')), nrepeat)
+        Assert Equals(len(split(job._stdout_on_exit, '\n')), nrepeat)
+        Assert Equals(len(split(job._stderr_on_exit, '\n')), nrepeat)
+      End
+    End
+  End
+
+  Describe A job instance
+    Describe id()
+      It returns a unique number for individual process
+        let script = Path.join(root, 'infinity_loop.py')
+        let args = ['python', script]
+        let job1 = Job.start(args)
+        let job2 = Job.start(args)
+        Assert IsNumber(job1.id())
+        Assert IsNumber(job2.id())
+        Assert NotEqual(job1.id(), job2.id())
+        call job1.stop()
+        call job2.stop()
+      End
+    End
+
+    Describe .status()
+      It returns 'run' and 'dead' when the job alive or dead respectively
+        let script = Path.join(root, 'infinity_loop.py')
+        let args = ['python', script]
+        let job = Job.start(args)
+        Assert Equals(job.status(), 'run')
+        call job.stop()
+        Assert Equals(job.status(), 'dead')
+      End
+    End
+
+    Describe .send({data})
+      It sends {data} to the job process
+        let options = deepcopy(stream)
+        let script = Path.join(root, 'input.py')
+        let args = ['python', script]
+        let job = Job.start(args, options)
+        call job.send("lambdalisue\n")
+        call job.wait()
+        Assert Equals(job.status(), 'dead')
+        Assert Equals(job._stdout,
+              \ "Please input your name: Hello lambdalisue\n",
+              \)
+      End
+
+      It sends {data} (List) to the job process
+        let options = deepcopy(stream)
+        let script = Path.join(root, 'read.py')
+        let args = ['python', script]
+        let job = Job.start(args, options)
+
+        call job.send(['abc', "123\n456", ''])
+        call job.send(['.', ''])
+        call job.wait()
+        Assert Equals(job.status(), 'dead')
+        if has('nvim')
+            Assert Equals(job._stdout, join([
+                \ 'read:',
+                \ 'abc',
+                \ '123<NUL>456',
+                \ '',
+                \ '',
+                \], "\n"))
+        else
+            " Vim cannot send \0
+            Assert Equals(job._stdout, join([
+                \ 'read:',
+                \ 'abc',
+                \ '123456',
+                \ '',
+                \ '',
+                \], "\n"))
+        endif
+      End
+    End
+
+    Describe .stop()
+      It stop a job which is running
+        let script = Path.join(root, 'infinity_loop.py')
+        let args = ['python', script]
+        let job = Job.start(args)
+        Assert Equals(job.status(), 'run')
+        call job.stop()
+        Assert Equals(job.status(), 'dead')
+        " The following should not raise exception
+        call job.stop()
+      End
+    End
+
+    Describe .wait([{timeout}])
+      It waits a job to terminate
+        let script = Path.join(root, '2sec.py')
+        let args = ['python', script]
+        let job = Job.start(args)
+        let start = reltime()
+        let status = job.wait()
+        let delta = reltime(start)
+        Assert Equals(status, 0)
+        Assert Equals(job.status(), 'dead')
+        Assert Compare(reltimefloat(delta), '>', 2.0)
+      End
+
+      It returns an exit status when the job has terminated
+        let script = Path.join(root, 'exitval.py')
+        let args = ['python', script, 0]
+        let job = Job.start(args)
+        Assert Equals(job.wait(), 0)
+
+        let args = ['python', script, 1]
+        let job = Job.start(args)
+        Assert Equals(job.wait(), 1)
+
+        let args = ['python', script, 2]
+        let job = Job.start(args)
+        Assert Equals(job.wait(), 2)
+      End
+
+      It returns -1 when the job did not terminate within {timeout}
+        let script = Path.join(root, 'infinity_loop.py')
+        let args = ['python', script]
+        let job = Job.start(args)
+        let start = reltime()
+        let status = job.wait(1000)
+        let delta = reltime(start)
+        Assert Equals(status, -1)
+        Assert Equals(job.status(), 'run')
+        Assert Compare(reltimefloat(delta), '>', 1.0)
+        Assert Compare(reltimefloat(delta), '<', 2.0)
+        " Kill the process
+        call job.stop()
+        " Wait a bit to make sure that Job is terminated
+        sleep 1
+        Assert Equals(job.status(), 'dead')
+      End
+    End
+  End
+End
