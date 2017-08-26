@@ -1,15 +1,32 @@
-
-scriptencoding utf-8
-
 Describe Process
   Before all
-    let Process = vital#vital#new().import('Process')
+    let Vital = vital#vital#new()
+    let Process = Vital.import('Process')
+    let IS_WINDOWS = has('win16') || has('win32') || has('win64') || has('win95')
   End
 
   Describe .system()
     It runs an external command and returns the stdout
       " assuming you have echo command
       Assert Equals(Process.system('echo 1234'), "1234\n")
+      Assert Equals(Process.get_last_status(), 0)
+    End
+  End
+
+  Describe .shellescape()
+    Before
+      let ss = &shellslash
+      set noshellslash
+    End
+
+    After
+      let &shellslash = ss
+    End
+
+    It escapes shell input
+      let have = Process.shellescape("foo 'bar'")
+      let want = IS_WINDOWS ? '"foo ''bar''"' : "'foo '\\''bar'\\'''"
+      Assert Equals(have, want)
     End
   End
 End
