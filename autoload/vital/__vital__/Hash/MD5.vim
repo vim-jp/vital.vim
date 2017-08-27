@@ -39,7 +39,7 @@ let s:table = [
       \ ]
 
 
-function! s:encode(data) abort
+function! s:sum(data) abort
   let l:a0 = 0x67452301
   let l:b0 = 0xefcdab89
   let l:c0 = 0x98badcfe
@@ -66,16 +66,16 @@ function! s:encode(data) abort
       let l:F = 0
       let l:g = 0
       if 0 <= l:i && l:i <= 15
-        let l:F = or(and(l:B, l:C), and(invert(l:B), l:D))
+        let l:F = s:bitwise.or(s:bitwise.and(l:B, l:C), s:bitwise.and(s:bitwise.invert(l:B), l:D))
         let l:g = l:i
       elseif 16 <= l:i && l:i <= 31
-        let l:F = or(and(l:B, l:D), and(invert(l:D), l:C))
+        let l:F = s:bitwise.or(s:bitwise.and(l:B, l:D), s:bitwise.and(s:bitwise.invert(l:D), l:C))
         let l:g = fmod((5 * l:i) + 1, 16)
       elseif 32 <= l:i && l:i <= 47
-        let l:F = xor(l:B, xor(l:C, l:D))
+        let l:F = s:bitwise.xor(l:B, s:bitwise.xor(l:C, l:D))
         let l:g = fmod((3 * l:i) + 5, 16)
       elseif 48 <= l:i  && l:i <= 63
-        let l:F = xor(l:C, or(l:B, invert(l:D)))
+        let l:F = s:bitwise.xor(l:C, s:bitwise.or(l:B, s:bitwise.invert(l:D)))
         let l:g = fmod(7 * l:i, 16)
       endif
 
@@ -103,7 +103,7 @@ endfunction
 
 function! s:_leftrotate(x, c) abort
   let l:x = and(a:x, 0xFFFFFFFF)
-  return and(or(s:bitwise.lshift(l:x, a:c), s:bitwise.rshift(l:x, (32-a:c))), 0xFFFFFFFF)
+  return s:bitwise.and(s:bitwise.or(s:bitwise.lshift(l:x, a:c), s:bitwise.rshift(l:x, (32-a:c))), 0xFFFFFFFF)
 endfunction
 
 function! s:_bytes2str(bytes) abort
@@ -115,7 +115,7 @@ function! s:_str2bytes(str) abort
 endfunction
 
 function! s:_int2bytes(bits, int) abort
-  return map(range(a:bits), 'and(s:bitwise.rshift(a:int, v:val * 8), 0xff)')
+  return map(range(a:bits), 's:bitwise.and(s:bitwise.rshift(a:int, v:val * 8), 0xff)')
 endfunction
 
 function! s:_bytes2int32(bytes) abort
