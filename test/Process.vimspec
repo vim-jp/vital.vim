@@ -8,7 +8,7 @@ Describe Process
   Describe .system()
     It runs an external command and returns the stdout
       " assuming you have echo command
-      if IS_WINDOWS && &shell =~# '\<cmd\(\.exe\)\?$'
+      if IS_WINDOWS && &shell =~# '\<cmd\(\.exe\)\?$' && !Process.has_vimproc()
         Assert Equals(Process.system('echo 1234'), "1234 \n")
       else
         Assert Equals(Process.system('echo 1234'), "1234\n")
