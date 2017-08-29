@@ -54,8 +54,8 @@ function! s:sum(data) abort
 
   call extend(l:padded, s:_int2bytes(8, l:orig_len))
 
-  for chunk_i in range(0, len(l:padded)-1, 64)
-    let l:chunk = l:padded[chunk_i:chunk_i+63]
+  for l:chunk_i in range(0, len(l:padded)-1, 64)
+    let l:chunk = l:padded[l:chunk_i : l:chunk_i + 63]
     let l:M = map(range(16), 's:_bytes2int32(l:chunk[(v:val*4):(v:val*4)+3])')
     let l:A = l:a0
     let l:B = l:b0
