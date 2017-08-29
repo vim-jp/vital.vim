@@ -8,7 +8,7 @@ function! s:_vital_loaded(V) abort
   let s:bitwise = s:V.import('Bitwise')
 endfunction
 
-function! s:_vita_depends() abort
+function! s:_vital_depends() abort
   return ['Bitwise']
 endfunction
 
@@ -102,7 +102,7 @@ function! s:sum(data) abort
 endfunction
 
 function! s:_leftrotate(x, c) abort
-  let l:x = and(a:x, 0xFFFFFFFF)
+  let l:x = s:bitwise.and(a:x, 0xFFFFFFFF)
   return s:bitwise.and(s:bitwise.or(s:bitwise.lshift(l:x, a:c), s:bitwise.rshift(l:x, (32-a:c))), 0xFFFFFFFF)
 endfunction
 
