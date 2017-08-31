@@ -52,10 +52,17 @@ function! s:sum(data) abort
     call add(l:padded, 0)
   endwhile
 
-  call extend(l:padded, s:_int2bytes(8, l:orig_len))
+
+  if has('num_64')
+    call extend(l:padded, s:_int2bytes(64, l:orig_len))
+  else
+    call extend(l:padded, s:_int2bytes(32, l:orig_len))
+    call extend(l:padded, [0, 0, 0, 0])
+  endif
 
   for l:chunk_i in range(0, len(l:padded)-1, 64)
     let l:chunk = l:padded[l:chunk_i : l:chunk_i + 63]
+
     let l:M = map(range(16), 's:_bytes2int32(l:chunk[(v:val*4):(v:val*4)+3])')
     let l:A = l:a0
     let l:B = l:b0
@@ -93,10 +100,10 @@ function! s:sum(data) abort
   endfor
 
   let l:bytes = []
-  call extend(l:bytes, s:_int2bytes(4, l:a0))
-  call extend(l:bytes, s:_int2bytes(4, l:b0))
-  call extend(l:bytes, s:_int2bytes(4, l:c0))
-  call extend(l:bytes, s:_int2bytes(4, l:d0))
+  call extend(l:bytes, s:_int2bytes(32, l:a0))
+  call extend(l:bytes, s:_int2bytes(32, l:b0))
+  call extend(l:bytes, s:_int2bytes(32, l:c0))
+  call extend(l:bytes, s:_int2bytes(32, l:d0))
 
   return s:_bytes2str(l:bytes)
 endfunction
@@ -115,7 +122,7 @@ function! s:_str2bytes(str) abort
 endfunction
 
 function! s:_int2bytes(bits, int) abort
-  return map(range(a:bits), 's:bitwise.and(s:bitwise.rshift(a:int, v:val * 8), 0xff)')
+  return map(range(a:bits / 8), 's:bitwise.and(s:bitwise.rshift(a:int, v:val * 8), 0xff)')
 endfunction
 
 function! s:_bytes2int32(bytes) abort
