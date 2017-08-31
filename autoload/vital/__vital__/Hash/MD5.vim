@@ -53,7 +53,7 @@ function! s:sum(data) abort
   endwhile
 
 
-  if has('num_64')
+  if has('num64')
     call extend(l:padded, s:_int2bytes(64, l:orig_len))
   else
     call extend(l:padded, s:_int2bytes(32, l:orig_len))
