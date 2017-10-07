@@ -43,7 +43,7 @@ This library's interface is inspired by OptionParser in Ruby.
   let s:parser = s:O.new()
 
   " user-defined option completion (see :help :command-completion-customlist)
-  "   Note: optlead is *NOT* arglead (when '--baz=h', 'h' is optlead.)
+  "   Note: optlead is NOT arglead (when '--baz=h', 'h' is optlead.)
   function! CompleteBazOption(optlead, cmdline, cursorpos)
     return filter(['sushi', 'yakiniku', 'yakitori'],
             \ 'a:optlead == "" ? 1 : (v:val =~# a:optlead)')
