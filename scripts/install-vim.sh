@@ -14,9 +14,7 @@ case "${TRAVIS_OS_NAME}" in
 		;;
 	osx)
 		brew update
-		brew upgrade
-		brew install lua python ruby
-		brew install vim --with-lua
+		brew install macvim --with-lua
 		;;
 	*)
 		echo "Unknown value of \${TRAVIS_OS_NAME}: ${TRAVIS_OS_NAME}"
