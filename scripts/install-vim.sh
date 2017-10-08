@@ -13,8 +13,7 @@ case "${TRAVIS_OS_NAME}" in
 		make install
 		;;
 	osx)
-		brew update
-		brew install macvim --with-lua
+		brew install macvim --with-override-system-vim --with-lua
 		;;
 	*)
 		echo "Unknown value of \${TRAVIS_OS_NAME}: ${TRAVIS_OS_NAME}"
