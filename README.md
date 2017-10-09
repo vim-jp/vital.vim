@@ -37,6 +37,7 @@ Module						 | Description
 [Database.SQLite](doc/vital/Database/SQLite.txt) | sqlite utilities library
 [DateTime](doc/vital/DateTime.txt)		 | date and time library
 [Experimental.Functor](doc/vital/Experimental/Functor.txt) | Utilities for functor
+[Hash.MD5](doc/vital/Hash/MD5.txt) | MD5 encoding
 [Interpreter.Brainf__k](doc/vital/Interpreter/Brainf__k.txt) | Brainf\*\*k interpreter
 [Locale.Message](doc/vital/Locale/Message.txt)	 | very simple message localization library
 [Lua.Prelude](doc/vital/Lua/Prelude.txt)	 | crucial functions for lua integration
