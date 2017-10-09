@@ -13,6 +13,7 @@ case "${TRAVIS_OS_NAME}" in
 		make install
 		;;
 	osx)
+		brew update
 		brew install macvim --with-override-system-vim --with-lua
 		;;
 	*)
