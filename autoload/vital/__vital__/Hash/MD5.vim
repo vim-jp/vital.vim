@@ -130,7 +130,7 @@ function! s:_bytes2int32(bytes) abort
         \ or(s:bitwise.lshift(a:bytes[2], 16),
         \ or(s:bitwise.lshift(a:bytes[1], 8),
         \ a:bytes[0])))
-endfunc
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

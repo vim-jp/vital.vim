@@ -9,7 +9,7 @@ function! s:suite.after()
   unlet! s:MD5
 endfunction
 
-func! s:suite.encode() abort
+function! s:suite.encode() abort
    call s:assert.equal(s:MD5.sum(''), 'd41d8cd98f00b204e9800998ecf8427e')
    call s:assert.equal(s:MD5.sum('a'), '0cc175b9c0f1b6a831c399e269772661')
    call s:assert.equal(s:MD5.sum('abc'), '900150983cd24fb0d6963f7d28e17f72')
