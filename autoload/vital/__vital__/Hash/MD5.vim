@@ -126,9 +126,9 @@ function! s:_int2bytes(bits, int) abort
 endfunction
 
 function! s:_bytes2int32(bytes) abort
-  return  or(s:bitwise.lshift(a:bytes[3], 24), 
-        \ or(s:bitwise.lshift(a:bytes[2], 16),
-        \ or(s:bitwise.lshift(a:bytes[1], 8),
+  return  s:bitwise.or(s:bitwise.lshift(a:bytes[3], 24), 
+        \ s:bitwise.or(s:bitwise.lshift(a:bytes[2], 16),
+        \ s:bitwise.or(s:bitwise.lshift(a:bytes[1], 8),
         \ a:bytes[0])))
 endfunction
 
