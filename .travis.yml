@@ -27,7 +27,7 @@ addons:
       - ruby-dev
 
 install:
-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then rvm reset; fi
+  - rvm reset
   - bash scripts/install-vim.sh
   - export PATH=$HOME/vim/bin:$PATH
 

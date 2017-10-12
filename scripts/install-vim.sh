@@ -13,6 +13,7 @@ case "${TRAVIS_OS_NAME}" in
 		make install
 		;;
 	osx)
+		export HOMEBREW_NO_AUTO_UPDATE=1
 		brew update
 		brew install macvim --with-override-system-vim --with-lua
 		;;
