@@ -1,0 +1,27 @@
+*vital/Hash/MD5.txt*		md5 utilities library.
+
+Maintainer: nicwest   <oss@nic-west.com>
+
+==============================================================================
+CONTENTS				*Vital.Hash.MD5-contents*
+
+INTRODUCTION		                |Vital.Hash.MD5-introduction|
+INTERFACE		                |Vital.Hash.MD5-interface|
+  Functions                             |Vital.Hash.MD5-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Hash.MD5-introduction*
+
+*Vital.Hash.MD5* is a MD5 Utilities Library.
+It provides a single function to return the MD5 sum of a given string as hex
+
+==============================================================================
+INTERFACE				*Vital.Hash.MD5-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Hash.MD5-functions*
+
+sum({str})				*Vital.Hash.MD5.sum()*
+	Return MD5 hashed string from {str}.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
