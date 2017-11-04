@@ -264,4 +264,16 @@ Describe System.Filepath
       End
     endif
   End
+
+  Describe .path_separate()
+    if s:is_windows
+      It should split ';'
+        Assert Equals(['C:\WINDOWS\SYSTEM32', 'C:\WINDOWS'], FP.path_separate('C:\WINDOWS\SYSTEM32;C:\WINDOWS'))
+      End
+    else
+      It should split ':'
+        Assert Equals(['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin'], FP.path_separate('/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'))
+      End
+    endif
+  End
 End

@@ -109,6 +109,12 @@ contains({path}, {base})	*Vital.System.Filepath.contains()*
 	contains('/foo/hoge/buz', '/foo/bar') == 0
 <
 
+path_separate({path})	*Vital.System.Filepath.path_separate()*
+	Return splited path array of string by OS related path separator.
+>
+	path_separate('C:\WINDOWS\SYSTEM32;C:\WINDOWS') == ['C:\WINDOWS\SYSTEM32', 'C:\WINDOWS'] " If it's Windows.
+	path_separate('/usr/local/bin:/usr/bin:/bin') == ['/usr/local/bin', '/usr/bin', '/bin'] " If it's Linux and Unix.
+<
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
