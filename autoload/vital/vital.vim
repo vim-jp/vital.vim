@@ -273,15 +273,20 @@ function! s:_sid(path, filter_pattern) abort
   return 0
 endfunction
 
-function! s:_redir(cmd) abort
-  let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
-  set verbose=0 verbosefile=
-  redir => res
-    silent! execute a:cmd
-  redir END
-  let [&verbose, &verbosefile] = [save_verbose, save_verbosefile]
-  return res
-endfunction
+" A bug of execute() is fixed in Vim 8.0.0264
+if has('patch-8.0.0264')
+  let s:_redir = function('execute')
+else
+  function! s:_redir(cmd) abort
+    let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
+    set verbose=0 verbosefile=
+    redir => res
+      silent! execute a:cmd
+    redir END
+    let [&verbose, &verbosefile] = [save_verbose, save_verbosefile]
+    return res
+  endfunction
+endif
 
 if filereadable(expand('<sfile>:r') . '.VIM') " is case-insensitive or not
   let s:_unify_path_cache = {}
