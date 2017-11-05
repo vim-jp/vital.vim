@@ -263,7 +263,7 @@ function! s:_sid(path, filter_pattern) abort
   if has_key(s:cache_sid, unified_path)
     return s:cache_sid[unified_path]
   endif
-  for line in filter(split(s:_redir(':scriptnames'), "\n"), 'v:val =~# a:filter_pattern')
+  for line in filter(split(s:_execute(':scriptnames'), "\n"), 'v:val =~# a:filter_pattern')
     let [_, sid, path; __] = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
     if s:_unify_path(path) is# unified_path
       let s:cache_sid[unified_path] = sid
@@ -275,9 +275,9 @@ endfunction
 
 " A bug of execute() is fixed in Vim 8.0.0264
 if has('patch-8.0.0264')
-  let s:_redir = function('execute')
+  let s:_execute = function('execute')
 else
-  function! s:_redir(cmd) abort
+  function! s:_execute(cmd) abort
     let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
     set verbose=0 verbosefile=
     redir => res
@@ -312,7 +312,7 @@ endif
 " copied and modified from Vim.ScriptLocal
 let s:SNR = join(map(range(len("\<SNR>")), '"[\\x" . printf("%0x", char2nr("\<SNR>"[v:val])) . "]"'), '')
 function! s:sid2sfuncs(sid) abort
-  let fs = split(s:_redir(printf(':function /^%s%s_', s:SNR, a:sid)), "\n")
+  let fs = split(s:_execute(printf(':function /^%s%s_', s:SNR, a:sid)), "\n")
   let r = {}
   let pattern = printf('\m^function\s<SNR>%d_\zs\w\{-}\ze(', a:sid)
   for fname in map(fs, 'matchstr(v:val, pattern)')
