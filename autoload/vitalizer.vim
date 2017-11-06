@@ -552,7 +552,7 @@ function! vitalizer#command(args) abort
   if empty(args)
     call insert(options, '--help')
   else
-    let to = fnamemodify(args[0], ':p')
+    let to = fnamemodify(expand(args[0]), ':p')
     let modules = args[1 :]
   endif
   let hash = ''
