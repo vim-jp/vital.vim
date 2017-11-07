@@ -95,6 +95,11 @@ function! s:split(path) abort
   return split(a:path, s:path_sep_pattern)
 endfunction
 
+" Split the path with environment's path separator.
+function! s:path_separate(path) abort
+  return split(a:path, s:path_separator)
+endfunction
+
 " Join the paths.
 " join('foo', 'bar')            => 'foo/bar'
 " join('foo/', 'bar')           => 'foo/bar'
