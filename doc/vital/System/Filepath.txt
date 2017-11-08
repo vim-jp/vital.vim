@@ -26,7 +26,9 @@ separator()			*Vital.System.Filepath.separator()*
 
 path_separator()		*Vital.System.Filepath.path_separator()*
 	Return OS related path separator as string.
-
+>
+	split('/path/to/file', s:F.path_separator()) == ['path', 'to', 'file']
+<
 path_extensions()		*Vital.System.Filepath.path_extensions()*
 	Return OS related path extensions as array of string.
 
