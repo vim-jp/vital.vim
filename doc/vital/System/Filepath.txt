@@ -26,22 +26,6 @@ separator()			*Vital.System.Filepath.separator()*
 	This returns "/" on non-Windows, or Windows and |'shellslash'| is on.
 	This returns "\" on Windows and |'shellslash'| is off.
 
-	Note that splitting raw path given by user results in unexpected
-	result: >
-	" on Windows and shellslash is on
-	set shellslash
-	" path was given by user
-	let path = 'c:\Windows\system32'
-	" output: ['c:\Windows\system32']
-	echo split(path, s:F.separator())
-<
-	To handle this, path string must be normalized by
-	|Vital.System.Filepath.realpath()|.
-	It normalizes directory separators of an arbitrary path depending on
-	current OS and |'shellslash'| value: >
-	" output: ['c:', 'Windows', 'system32']
-	echo split(s:F.realpath(path), s:F.separator())
-<
 path_separator()		*Vital.System.Filepath.path_separator()*
 	Return OS related path separator as string.
 	This returns ";" on Windows.
@@ -113,8 +97,6 @@ realpath({path})		*Vital.System.Filepath.realpath()*
 	In windows, it call |Vital.System.Filepath.unixpath()| when the
 	Vim is compiled with '+shellslash' and |shellslash| is specified.
 	Otherwise it call |Vim.System.Filepath.winpath()| internally.
-
-	See also: |Vital.System.Filepath.separator()|
 
 is_root_directory({path})	*Vital.System.Filepath.is_root_directory()*
 	Return 1 if the given {path} points to the root directory, otherwise
