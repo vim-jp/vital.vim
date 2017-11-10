@@ -30,6 +30,8 @@ path_separator()		*Vital.System.Filepath.path_separator()*
 	Return OS related path separator as string.
 	This returns ";" on Windows.
 	Otherwise this returns ":".
+
+	You can get list of each filepath of $PATH by:
 >
 	split($PATH, s:F.path_separator())
 <
