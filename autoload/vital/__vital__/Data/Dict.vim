@@ -3,12 +3,20 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:t = a:V.import('Vim.Type').types
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Vim.Type']
+endfunction
+
 " Makes a dict from keys and values
 function! s:make(keys, values, ...) abort
   let dict = {}
   let fill = a:0 ? a:1 : 0
   for i in range(len(a:keys))
-    let key = type(a:keys[i]) == type('') ? a:keys[i] : string(a:keys[i])
+    let key = type(a:keys[i]) == s:t.string ? a:keys[i] : string(a:keys[i])
     if key ==# ''
       throw "vital: Data.Dict: Can't use an empty string for key."
     endif
