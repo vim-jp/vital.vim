@@ -23,11 +23,17 @@ FUNCTIONS				*Vital.System.Filepath-functions*
 
 separator()			*Vital.System.Filepath.separator()*
 	Return OS related directory separator as string.
+	This returns "/" on non-Windows, or Windows and |'shellslash'| is on.
+	This returns "\" on Windows and |'shellslash'| is off.
 
 path_separator()		*Vital.System.Filepath.path_separator()*
 	Return OS related path separator as string.
+	This returns ";" on Windows.
+	Otherwise this returns ":".
+
+	You can get list of each filepath of $PATH by:
 >
-	split('/path/to/file', s:F.path_separator()) == ['path', 'to', 'file']
+	split($PATH, s:F.path_separator())
 <
 path_extensions()		*Vital.System.Filepath.path_extensions()*
 	Return OS related path extensions as array of string.
