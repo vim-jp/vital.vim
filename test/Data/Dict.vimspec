@@ -3,6 +3,50 @@ Describe Data.Dict
     let D = vital#vital#new().import('Data.Dict')
   End
 
+  Describe .from_list()
+    Context with a list like [key, value, key, value]
+      It makes a new dictionary
+        let list = ['one', 1, 'two', 2]
+        Assert Equals(D.from_list(list), {'one': 1, 'two': 2})
+      End
+    End
+
+    Context with a list like [[key, value], [key, value]]
+      It makes a new dictionary
+        let list = [['one', 1], ['two', 2]]
+        Assert Equals(D.from_list(list), {'one': 1, 'two': 2})
+      End
+    End
+
+    Context with a list like [key, value, [key, value]]
+      It makes a new dictionary
+        let list = ['one', 1, ['two', 2], 'three', [3]]
+        Assert Equals(D.from_list(list), {'one': 1, 'two': 2, 'three': [3]})
+      End
+    End
+
+    Context when length of a list which have key-value pair is wrong
+      It throws an error
+        let list = [['key']]
+        Throws /^vital: Data.Dict:/ D.from_list(list)
+      End
+    End
+
+    Context when there is no value corresponding to the key
+      It throws an error
+        let list = ['key1', 'value1', 'key2']
+        Throws /^vital: Data.Dict:/ D.from_list(list)
+      End
+    End
+
+    Context when key is not string or number
+      It throws an error
+        let list = [0.0, 'value1']
+        Throws /^vital: Data.Dict:/ D.from_list(list)
+      End
+    End
+  End
+
   Describe .make()
     It makes a new dictionary from keys and values
       Assert Equals(D.make(['one', 'two', 'three'], [1, 2, 3]), {'one': 1, 'two': 2, 'three': 3})

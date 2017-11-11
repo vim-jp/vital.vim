@@ -21,6 +21,13 @@ INTERFACE				*Vital.Data.Dict-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Data.Dict-functions*
 
+from_list({key-value-list})		*Vital.Data.Dict.from_list()*
+	Makes a dictionary from {key-value-list}.
+	{key-value-list} is one of following forms: >
+	[key, value, key, value]
+<	or >
+	[[key, value], [key, value]]
+
 make({keys}, {values} [, {fill}])	*Vital.Data.Dict.make()*
 	Makes a dictionary from {keys} and {values}.
 	If the length of {keys} is less than {values}, tails of {values} are
