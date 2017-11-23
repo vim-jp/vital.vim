@@ -382,7 +382,8 @@ function! s:autoloadablize_data(module_name, raw_module, plugin_name) abort
   endfor
   return {
   \   'autoload_import': s:autoload_import(a:plugin_name, a:module_name),
-  \   'funcdict': string(funcdict)
+  \   'funcdict': string(funcdict),
+  \   'plugin_name': a:plugin_name,
   \ }
 endfunction
 

@@ -548,4 +548,14 @@ Describe vital
     End
 
   End
+
+  Describe vital#_vital#function
+    It Ok
+      Assert Equals(vital#_vital#function('function'), function('function'))
+    End
+
+    It ignores error
+      Assert Equals(vital#_vital#function('not_found'), 0)
+    End
+  End
 End
