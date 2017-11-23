@@ -183,11 +183,11 @@ let s:Vital._import = s:_function('s:_import')
 " s:_get_module() returns module object wihch has all script local functions.
 function! s:_get_module(name) abort dict
   let funcname = s:_import_func_name(self.plugin_name(), a:name)
-  if s:_exists_autoload_func_with_source(funcname)
+  try
     return call(funcname, [])
-  else
+  catch /^Vim\%((\a\+)\)\?:E117/
     return s:_get_builtin_module(a:name)
-  endif
+  endtry
 endfunction
 
 function! s:_get_builtin_module(name) abort
@@ -234,22 +234,6 @@ endfunction
 
 function! s:_dot_to_sharp(name) abort
   return substitute(a:name, '\.', '#', 'g')
-endfunction
-
-" It will sources autoload file if a given func is not already defined.
-function! s:_exists_autoload_func_with_source(funcname) abort
-  if exists('*' . a:funcname)
-    " Return true if a given func is already defined
-    return 1
-  endif
-  " source a file which may include a given func definition and try again.
-  let path = 'autoload/' . substitute(substitute(a:funcname, '#[^#]*$', '.vim', ''), '#', '/', 'g')
-  call s:_runtime(path)
-  return exists('*' . a:funcname)
-endfunction
-
-function! s:_runtime(path) abort
-  execute 'runtime' fnameescape(a:path)
 endfunction
 
 function! s:_source(path) abort
