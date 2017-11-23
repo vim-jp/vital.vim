@@ -5,5 +5,5 @@ function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
 execute join(['function! ${autoload_import}() abort', printf("return map(${funcdict}, \"vital#_${plugin_name}#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
-delfunction! s:_SID
+delfunction s:_SID
 " ___vital___
