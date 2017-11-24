@@ -3,8 +3,11 @@ clone_depth: 10
 environment:
   matrix:
     - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim74/oldest/win64/
+      THEMIS_PROFILE: vim-profile-win-v7.4.txt
     - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim80/oldest/win64/
+      THEMIS_PROFILE: vim-profile-win-v8.0.txt
     - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/latest/win64/
+      THEMIS_PROFILE: vim-profile-win-latest.txt
     # To test with latest official Vim binary, uncomment below line.
     #- VIM_URL: http://vim-jp.org/redirects/vim/vim-win32-installer/latest/x64/
 install:
@@ -26,6 +29,14 @@ build: off
 test_script:
   - '%THEMIS_VIM% --version'
   - '%TEMP%\vim-themis\bin\themis.bat --runtimepath %TEMP%\vimproc --exclude ConcurrentProcess --reporter dot'
+after_test:
+  - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
+  - pip install codecov
+  - pip install covimerage
+  - covimerage write_coverage %THEMIS_PROFILE%
+  - coverage xml
+  - codecov -f coverage.xml
+
 deploy: off
 notifications:
   - provider: Webhook
