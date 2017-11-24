@@ -15,6 +15,11 @@ call themis#option('runtimepath', g:testplugin_root)
 call themis#option('runtimepath', g:cyclic_module_root)
 call themis#option('runtimepath', g:symlinkplugin_root)
 
+if $THEMIS_PROFILE !=# ''
+  execute 'profile' 'start' $THEMIS_PROFILE
+  profile! file ./autoload/*
+endif
+
 " Show environmental information for debugging
 if $CI !=# ''
   call themis#log('***********************************************************')
