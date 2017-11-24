@@ -35,7 +35,7 @@ after_test:
   - pip install covimerage
   - covimerage write_coverage %THEMIS_PROFILE%
   - coverage xml
-  - codecov
+  - codecov -f coverage.xml
 
 deploy: off
 notifications:
