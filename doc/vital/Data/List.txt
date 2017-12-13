@@ -224,10 +224,9 @@ sort({list}, {function})			*Vital.Data.List.sort()*
 	" ['apple', 'orange', 'banana', 'pineapple']
 <
 	Notice:
-	If you use {function} as |String| expression or
-	|Vital.Data.Closure-term-closure|, this function gives up job safety
-	(thread safety). It may not work correctly. Please use lambda
-	expression or partial applying of function if it can be used.
+	If you use {function} as |String| expression, this function gives up
+	job safety (thread safety). It may not work correctly. Please use
+	lambda expression or partial applying of function if it can be used.
 
 sort_by({list}, {function})			*Vital.Data.List.sort_by()*
 	Returns a sorted |List| with key in |List| {list}.
@@ -242,9 +241,6 @@ sort_by({list}, {function})			*Vital.Data.List.sort_by()*
 	" [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}]
 
 	echo s:L.sort_by(copy(list), function('Lookup'))
-	" [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}]
-
-	echo s:L.sort_by(copy(list), Closure.from_funcname('*Lookup'))
 	" [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}]
 <
 
@@ -530,10 +526,6 @@ foldl({function}, {init}, {xs})		*Vital.Data.List.foldl()*
 	" 55 := 1+2+3+4+5+6+7+8+9+10
 
 	echo s:L.foldl(function('Plus'), 0, range(1, 10))
-	" 55
-
-	let plus = Closure.from_funcref(function('Plus'))
-	echo s:L.foldl(plus, 0, range(1, 10))
 	" 55
 
 	echo s:L.foldl(function('Pair'), 0, [1, 2])

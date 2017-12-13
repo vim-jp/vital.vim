@@ -19,6 +19,15 @@ INTRODUCTION				*Vital.Data.List.Closure-introduction*
 	let s:V  = vital#{plugin-name}#new()
 	let s:C  = s:V.import('Data.Closure')
 	let s:LC = s:V.import('Data.List.Closure')
+
+	function! Plus(x, y) abort
+	  return a:x + a:y
+	endfunction
+
+	let plus = s:C.from_funcref(function('Plus'))
+	echo s:LC.foldr(plus, 0, range(1, 10))
+	" 55
+
 <
 Notice:
 This module doesn't have the job safety. I recommend to use |Data.List|
