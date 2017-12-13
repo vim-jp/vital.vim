@@ -585,15 +585,11 @@ foldr({function}, {init}, {xs})		*Vital.Data.List.foldr()*
 	echo s:L.foldr(function('Plus'), 0, range(1, 10))
 	" 55
 
-	let plus = Closure.from_funcref(function('Plus'))
-	echo s:L.foldr(plus, 0, range(1, 10))
-	" 55
-
 	echo s:L.foldr('v:memo + v:val', 20, range(1, 10))
 	" 75
 
 	echo s:L.foldr(function('Pair'), [], [1, 2])
-	" [[[], 2], 1]
+	" [1, [2, []]]
 <
 
 foldr1({function}, {xs})			*Vital.Data.List.foldr1()*
