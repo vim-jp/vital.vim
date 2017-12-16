@@ -4,7 +4,6 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:LOADER_FILES = [
-\   'autoload/vital.vim',
 \   'autoload/vital/vital.vim',
 \   'autoload/vital/_vital.vim',
 \ ]
