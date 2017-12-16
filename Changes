@@ -1,3 +1,8 @@
+c680503cd8e48f7b1c21903ed14ffe75cb56c3f4
+	Modules: *
+	The obsolete file "autoload/vital.vim" is no longer installed
+	and "vital#of()" is no longer available.
+	Please use "vital#{plugin}#new()" instead.
 73c929cdec441673d6df6ffa3cb450346dd5f0c4
 	Modules: ProcessManager, Deprecated.ProcessManager
 	Rename ProcessManager to Deprecated.ProcessManager which is going to be removed

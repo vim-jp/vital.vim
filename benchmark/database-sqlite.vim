@@ -1,7 +1,7 @@
 " 1. make sure you don't have a.db on the current dir
 " 2. run this (quickrun is handy)
 " 3. remove a.db later on
-let s:S = vital#of('vital').import('Database.SQLite')
+let s:S = vital#vital#new().import('Database.SQLite')
 call s:S.debug_mode_to(0)
 let t = reltime()
 call s:S.query_rawdata(
