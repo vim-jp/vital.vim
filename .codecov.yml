@@ -2,9 +2,10 @@ coverage:
   status:
     project:
       default:
-        target: 0%
+        threshold: 1%
     patch:
       default:
-        target: 0%
+        threshold: 1%
 
+# This does not work: https://github.com/codecov/support/issues/260
 comment: false
