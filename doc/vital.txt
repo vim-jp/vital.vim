@@ -92,11 +92,6 @@ INTERFACE				*Vital-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS 				*Vital-functions*
 
-vital#of({plugin-name})				*vital#of()*
-	Creates a new Vital object(|Vital-Vital-object|).
-	This function is deprecated. Please use |vital#{plugin-name}#new()|
-	instead. vital#{plugin-name}#new() is faster than vital#of.
-
 vital#{plugin-name}#new()			*vital#{plugin-name}#new()*
 	Creates a new Vital object(|Vital-Vital-object|).
 	If you just want to use |Vital-Vital.import()|, You can use
