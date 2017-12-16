@@ -17,7 +17,6 @@ let s:NOOP = function('s:noop')
 
 " Internal APIs
 
-" TODO: v:null or 0, which should the default result value be ?
 let s:PROMISE = {
       \ '_state': s:PENDING,
       \ '_children': [],
@@ -222,7 +221,7 @@ function! s:reject(reason) abort
 endfunction
 
 function! s:is_available() abort
-  return !has('nvim') && v:version >= 800
+  return has('nvim') || v:version >= 800
 endfunction
 
 function! s:is_promise(maybe_promise) abort
