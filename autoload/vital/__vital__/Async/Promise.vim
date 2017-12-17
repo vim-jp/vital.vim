@@ -43,7 +43,7 @@ function! s:_invoke_callback(settled, promise, callback, result) abort
     endtry
 
     if type(a:result) == s:DICT_T && a:promise == a:result
-      call s:_reject(a:promise, 'vital:Promise: Cannot resolve/reject a promise with itself')
+      call s:_reject(a:promise, 'vital: Async.Promise: Cannot resolve/reject a promise with itself')
       return
     endif
   else
@@ -74,7 +74,7 @@ function! s:_publish(promise) abort
     elseif settled == s:REJECTED
       let CB = a:promise._rejections[i]
     else
-      throw 'vital:Promise: Cannot publish a pending promise'
+      throw 'vital: Async.Promise: Cannot publish a pending promise'
     endif
     let child = a:promise._children[i]
     if type(child) != s:NULL_T
@@ -118,7 +118,7 @@ endfunction
 function! s:_resolve(promise, value) abort
   if s:is_promise(a:value)
     if a:promise == a:value
-      call s:_reject(a:promise, 'vital:Promise: Cannot resolve a promise with itself')
+      call s:_reject(a:promise, 'vital: Async.Promise: Cannot resolve a promise with itself')
     else
       call s:_handle_thenable(a:promise, a:value)
     endif
