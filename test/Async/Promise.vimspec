@@ -23,15 +23,44 @@ Describe Async.Promise
   Describe .then()
     It calls its callback after synchronized resolution
       let s:done = 0
-      call P.new({resolve -> resolve(42)}).then({r -> execute('let s:done = ' . r)})
+      call P.new({resolve -> resolve(42)})
+        \.then({r -> execute('let s:done = ' . r)})
+        \.catch({-> execute('let s:done = -1')})
       call A.equals(s:done, 42)
     End
 
     It calls its callback after asynchronized resolution
       let s:done = 0
-      call P.new({resolve -> timer_start(50, resolve)}).then({-> execute('let s:done = 42')})
+      call P.new({resolve -> timer_start(50, resolve)})
+        \.then({-> execute('let s:done = 42')})
+        \.catch({-> execute('let s:done = -1')})
       sleep 100m
-      let done = s:done
+      call A.equals(s:done, 42)
+    End
+  End
+
+  Describe .catch()
+    It calls its callback after synchronized rejection
+      let s:done = 0
+      call P.new({_, reject -> reject(42)})
+        \.then({-> execute('let s:done = 1')})
+        \.catch({r -> execute('let s:done = ' . r)})
+      call A.equals(s:done, 42)
+    End
+
+    It calls its callback after asynchronized rejection
+      let s:done = 0
+      call P.new({_, reject -> timer_start(50, reject)})
+        \.then({-> execute('let s:done = 1')})
+        \.catch({-> execute('let s:done = 42')})
+      sleep 100m
+      call A.equals(s:done, 42)
+    End
+
+    It is called when an exceptioin is thrown in upstream
+      let s:done = 0
+      call P.new({-> execute('throw 42')})
+        \.catch({r -> execute('let s:done = ' . r)})
       call A.equals(s:done, 42)
     End
   End
