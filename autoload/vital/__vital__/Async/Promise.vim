@@ -46,7 +46,7 @@ function! s:_invoke_callback(settled, promise, callback, result) abort
       let success = 0
     endtry
 
-    if type(a:result) == s:DICT_T && a:promise == a:result
+    if s:is_promise(a:result) && a:promise._vital_promise == a:result._vital_promise
       call s:_reject(a:promise, 'vital: Async.Promise: Cannot resolve/reject a promise with itself')
       return
     endif
@@ -108,7 +108,7 @@ function! s:_handle_thenable(promise, thenable) abort
   if a:thenable._state == s:FULFILLED
     call s:_fulfill(a:promise, a:thenable._result)
   elseif a:thenable._state == s:REJECTED
-    call s:reject(a:promise, a:thenable._result)
+    call s:_reject(a:promise, a:thenable._result)
   else
     call s:_subscribe(
           \ a:thenable,
@@ -200,8 +200,8 @@ function! s:new(resolver) abort
   try
     if a:resolver != s:NOOP
       call a:resolver(
-        \ {Value -> s:_resolve(promise, Value)},
-        \ {Reason -> s:_reject(promise, Reason)},
+        \ {... -> s:_resolve(promise, get(a:000, 0, v:null))},
+        \ {... -> s:_reject(promise, get(a:000, 0, v:null))},
       \ )
     endif
   catch
@@ -215,18 +215,18 @@ function! s:all(promises) abort
 endfunction
 
 function! s:race(promises) abort
-  return s:new({resolve, reject -> s:_race(resolve, reject, a:promise)})
+  return s:new({resolve, reject -> s:_race(resolve, reject, a:promises)})
 endfunction
 
-function! s:resolve(value) abort
+function! s:resolve(...) abort
   let promise = s:new(s:NOOP)
-  call s:_resolve(promise, a:value)
+  call s:_resolve(promise, a:0 > 0 ? a:1 : v:null)
   return promise
 endfunction
 
-function! s:reject(reason) abort
+function! s:reject(...) abort
   let promise = s:new(s:NOOP)
-  call s:_reject(promise, a:reason)
+  call s:_reject(promise, a:0 > 0 ? a:1 : v:null)
   return promise
 endfunction
 
@@ -258,8 +258,8 @@ endfunction
 let s:PROMISE.then = function('s:_promise_then')
 
 " .catch() is just a syntax sugar of .then()
-function! s:_promise_catch(on_rejected) dict abort
-  return self.then(v:null, a:on_rejected)
+function! s:_promise_catch(...) dict abort
+  return self.then(v:null, get(a:000, 0, v:null))
 endfunction
 let s:PROMISE.catch = function('s:_promise_catch')
 

@@ -1,0 +1,554 @@
+function! s:resolver(resolve, reject) abort
+  call a:resolve('ok')
+endfunction
+
+function! s:rejector(resolve, reject) abort
+  call a:reject('error')
+endfunction
+
+Describe Async.Promise
+  Before all
+    let P = vital#vital#import('Async.Promise')
+
+    " Constants
+    let PENDING = 0
+    let FULFILLED = 1
+    let REJECTED = 2
+
+    " Utilities
+    let Wait = {ms -> P.new({res -> timer_start(ms, res)})}
+    let ThrowAfter = {ms -> P.new({_, rej -> timer_start(ms, rej)})}
+  End
+
+  Describe .new()
+    It should create a Promise object with proper state
+      let p = P.new({resolve -> resolve(0)})
+      Assert Equals(p._state, FULFILLED)
+      Assert HasKey(p, '_vital_promise')
+
+      let p = P.new({_, reject -> reject(0)})
+      Assert Equals(p._state, REJECTED)
+      Assert HasKey(p, '_vital_promise')
+
+      let l = l:
+      call P.new({resolve -> resolve()}).then({x -> extend(l, {'done' : x})})
+      " :Assert Equal() does not support v:null by themis.vim
+      Assert True(done == v:null, 'Actual: ' . string(done))
+
+      unlet done
+      call P.new({_, reject -> reject()}).catch({x -> extend(l, {'done' : x})})
+      " :Assert Equal() does not support v:null by themis.vim
+      Assert True(done == v:null, 'Actual: ' . string(done))
+    End
+
+    It should create a rejected Promise object when an exception was thrown
+      let l = l:
+      let p = P.new({-> execute('throw "ERROR"')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Equals(err, 'ERROR')
+
+      let p = P.new({-> execute('echom {}')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Match(err, '^Vim(echomsg):E731:')
+    End
+
+    It should do nothing when calling resolve()/reject() after resolved
+      let l = l:
+
+      let p = P.new({resolve -> resolve(42) || resolve(99)})
+      Assert Equals(p._state, FULFILLED)
+      call p.then({v -> extend(l, {'done' : v})})
+      Assert Equals(done, 42)
+
+      let p = P.new({resolve, reject -> resolve(52) || reject(99)})
+      Assert Equals(p._state, FULFILLED)
+      call p.then({v -> extend(l, {'done' : v})})
+      Assert Equals(done, 52)
+    End
+
+    It should do nothing when calling resolve()/reject() after rejected
+      let l = l:
+
+      let p = P.new({resolve, reject -> reject(42) || resolve(99)})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({v -> extend(l, {'done' : v})})
+      Assert Equals(done, 42)
+
+      let p = P.new({_, reject -> reject(52) || reject(99)})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({v -> extend(l, {'done' : v})})
+      Assert Equals(done, 52)
+    End
+
+    It should ignore thrown exception when the Promise is already settled
+      let l = l:
+      call P.new({resolve -> resolve('ok') || execute('throw "HELLO"')}).then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'ok')
+      call P.new({_, reject -> reject('error') || execute('throw "HELLO"')}).catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'error')
+    End
+
+    It should be pending when neither resolve() nor reject() is called
+      let l = l:
+      let done = 0
+      let p = P.new({-> 42})
+      Assert Equals(p._state, PENDING)
+      let p = p.then({-> extend(l, {'done' : 1})})
+      Assert Equals(p._state, PENDING)
+      Assert Equals(done, 0)
+    End
+
+    It can take funcref as constructor
+      let l = l:
+      call P.new(function('s:resolver')).then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'ok')
+      call P.new(function('s:rejector')).catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'error')
+    End
+
+    It should assimilate when fulfilled Promise is given to resolve()
+      let p = P.new({resolve -> resolve(P.resolve('ok'))})
+      Assert Equals(p._state, FULFILLED)
+      let l = l:
+      call p.then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'ok')
+    End
+
+    It should not create resolved Promise with rejected Promise
+      let p = P.new({resolve -> resolve(P.reject('error'))})
+      Assert Equals(p._state, REJECTED)
+      let l = l:
+      call p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'error')
+    End
+  End
+
+  Describe .then()
+    It should call its callback after synchronized resolution
+      let l = l:
+      let p = P.new({resolve -> resolve(42)})
+      " Different from ES6 Promise
+      Assert Equals(p._state, FULFILLED)
+      let p = p.then({r -> extend(l, {'done' : r})})
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It should call its callback after asynchronized resolution
+      let l = l:
+      let p = Wait(50).then({-> extend(l, {'done' : 42})})
+      sleep 100m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It should be chainable
+      let l = l:
+      let p = P.resolve(42).then({r -> P.resolve(r + 42)}).then({r -> extend(l, {'done' : r})})
+      Assert Equals(done, 84)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It should be chainable asynchronously
+      let l = l:
+      let p = Wait(50).then({-> Wait(50)}).then({-> extend(l, {'done' : 42})})
+      Assert Equals(p._state, PENDING)
+      sleep 200m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It should resolve with funcref directly
+      let l = l:
+      let p = P.resolve(50).then(Wait).then({-> extend(l, {'done' : 42})})
+      Assert Equals(p._state, PENDING)
+      sleep 100m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It should not resolve multiple times
+      let l = l:
+      let p = P.resolve(42)
+      let p2 = p.then({v -> extend(l, {'done' : v + 10})})
+      Assert Equals(done, 52)
+      Assert Equals(p2._state, FULFILLED)
+      let p2 = p.then({v -> extend(l, {'done' : v + 20})})
+      Assert Equals(done, 62)
+      Assert Equals(p2._state, FULFILLED)
+    End
+
+    It should not resolve multiple times asynchronously
+      let l = l:
+      let done = 100
+      let p1 = Wait(50).then({-> 100})
+      let p2 = p1.then({v -> extend(l, {'done' : l.done + v})})
+      let p3 = p1.then({v -> extend(l, {'done' : l.done + v})})
+      for p in [p1, p2, p3]
+        Assert Equals(p._state, PENDING)
+      endfor
+      sleep 100m
+      for p in [p1, p2, p3]
+        Assert Equals(p._state, FULFILLED)
+      endfor
+      Assert Equals(done, 300)
+    End
+
+    It should reject Promise when an exception was thrown
+      let l = l:
+
+      let p = P.resolve(42).then({-> execute('throw "ERROR"')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Equals(err, 'ERROR')
+
+      let p = P.resolve(42).then({-> execute('echom {}')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Match(err, '^Vim(echomsg):E731:')
+    End
+
+    It can omit all parameters
+      let l = l:
+      call P.resolve(42).then().then().then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 42)
+    End
+
+    It should stop chain as soon as Promise is rejected
+      let p = P.resolve(42).then({x -> x + 1}).then({x -> execute('throw x')}).then({x -> x + 1})
+      Assert Equals(p._state, REJECTED)
+      let l = l:
+      call p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 43)
+    End
+  End
+
+  Describe .catch()
+    It calls its callback after synchronized rejection
+      let l = l:
+      let p = P.new({_, reject -> reject(42)}).catch({r -> extend(l, {'done' : r})})
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It calls its callback after asynchronized rejection
+      let l = l:
+      let p = ThrowAfter(50)
+        \.then({-> extend(l, {'done' : 1})})
+        \.catch({-> extend(l, {'done' : 42})})
+      sleep 100m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It is called when an exceptioin is thrown in upstream
+      let l = l:
+      let p = P.new({-> execute('throw 42')})
+        \.catch({r -> extend(l, {'done' : r})})
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It resolves thenable object
+      let l = l:
+      let p = P.reject(42).catch({r -> P.resolve(r + 42)}).then({r -> extend(l, {'done' : r})})
+      Assert Equals(done, 84)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It resolves thenable object asynchronously
+      let l = l:
+      let p = ThrowAfter(50).catch({-> ThrowAfter(50)}).catch({-> extend(l, {'done' : 42})})
+      Assert Equals(p._state, PENDING)
+      sleep 200m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It resolves by funcref directly
+      let l = l:
+      let p = P.reject(50).catch(Wait).then({-> extend(l, {'done' : 42})})
+      Assert Equals(p._state, PENDING)
+      sleep 100m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It should not resolve the same rejected promise multiple times
+      let l = l:
+      let p = P.reject(42)
+      let p2 = p.catch({v -> extend(l, {'done' : v + 10})})
+      Assert Equals(done, 52)
+      Assert Equals(p2._state, FULFILLED)
+      let p2 = p.catch({v -> extend(l, {'done' : v + 20})})
+      Assert Equals(done, 62)
+      Assert Equals(p2._state, FULFILLED)
+    End
+
+    It should not resolve the same rejected promise multiple times asynchronously
+      let l = l:
+      let done = 100
+      let p1 = ThrowAfter(50)
+      let p2 = p1.catch({v -> extend(l, {'done' : l.done + 100})})
+      let p3 = p1.catch({v -> extend(l, {'done' : l.done + 100})})
+      for p in [p1, p2, p3]
+        Assert Equals(p._state, PENDING)
+      endfor
+      sleep 100m
+      Assert Equals(p1._state, REJECTED)
+      for p in [p2, p3]
+        Assert Equals(p._state, FULFILLED)
+      endfor
+      Assert Equals(done, 300)
+    End
+
+    It should reject Promise when an exception was thrown
+      let l = l:
+
+      let p = P.reject(42).catch({-> execute('throw "ERROR"')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Equals(err, 'ERROR')
+
+      let p = P.reject(42).catch({-> execute('echom {}')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Match(err, '^Vim(echomsg):E731:')
+    End
+
+    It should pass through the exception when all parameters are omitted
+      let l = l:
+      let p = P.reject(42).catch().catch()
+      Assert Equals(p._state, REJECTED)
+      let p = p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 42)
+    End
+
+    It can take rejection handler at 2nd parameter
+      let l = l:
+      let p = P.reject(42).then({x -> extend(l, {'done' : 'resolve'})}, {x -> extend(l, {'done' : 'reject'})})
+      Assert Equals(p._state, FULFILLED)
+      Assert Equals(done, 'reject')
+    End
+  End
+
+  Describe .all()
+    It should wait all and resolve with all the resolved values as array
+      let l = l:
+      let p1 = Wait(10).then({-> 10})
+      let p2 = Wait(200).then({-> 20})
+      let p3 = Wait(100).then({-> 30})
+      let done = []
+      let p4 = P.all([p1, p2, p3]).then({a -> extend(l, {'done' : a})})
+      sleep 100m
+      Assert Equals(done, [])
+      Assert Equals(p4._state, PENDING)
+      sleep 200m
+      Assert Equals(len(done), 3)
+      Assert Equals(done[0], 10)
+      Assert Equals(done[1], 20)
+      Assert Equals(done[2], 30)
+      Assert Equals(p4._state, FULFILLED)
+    End
+
+    It should reject promise immediately when one of children was rejected
+      let l = l:
+      let done = 0
+      let p1 = Wait(10).then({ -> execute('throw 1') })
+      let p2 = Wait(200)
+      let p3 = P.all([p1, p2]).catch({r -> extend(l, {'done' : r})})
+      sleep 100m
+      Assert Equals(done, 1)
+      Assert Equals(p3._state, FULFILLED)
+    End
+
+    It should create a pending Promise when given array is empty
+      let l = l:
+      let p = P.all([]).then({-> extend(l, {'done' : 1})})
+      Assert Equals(p._state, FULFILLED)
+      Assert Equals(done, 1)
+    End
+
+    It should work where filfilled and pending Promises are mixed
+      let l = l:
+      let p1 = P.resolve('a')
+      let p2 = Wait(30).then({-> 'b'})
+      let p3 = Wait(10).then({-> 'c'})
+      let p = P.all([p1, p2, p3])
+      Assert Equals(p._state, PENDING)
+      call p.then({a -> extend(l, {'done' : a})})
+      sleep 100m
+      Assert Equals(len(done), 3)
+      Assert Equals(done[0], 'a')
+      Assert Equals(done[1], 'b')
+      Assert Equals(done[2], 'c')
+    End
+  End
+
+  Describe .race()
+    It should make a promise resolving after first of children resolved
+      let l = l:
+      let p1 = Wait(10).then({-> 42})
+      let p2 = Wait(200).then({-> 21})
+      let p4 = P.race([p1, p2]).then({x -> extend(l, {'done' : x})})
+      sleep 100m
+      Assert Equals(done, 42)
+      Assert Equals(p4._state, FULFILLED)
+    End
+
+    It should reject promise immediately when first child was rejected
+      let l = l:
+      let done = 0
+      let p1 = Wait(10).then({ -> execute('throw 1') })
+      let p2 = Wait(200)
+      let p3 = P.race([p1, p2]).catch({r -> extend(l, {'done' : r})})
+      sleep 100m
+      Assert Equals(done, 1)
+      Assert Equals(p3._state, FULFILLED)
+    End
+
+    It should resolve promise even if succeeding promise is rejected
+      let p1 = Wait(10)
+      let p2 = ThrowAfter(200)
+      let p3 = P.race([p1, p2])
+      sleep 100m
+      Assert Equals(p3._state, FULFILLED)
+    End
+
+    It should create a pending Promise when given array is empty
+      let p = P.race([])
+      Assert Equals(p._state, PENDING)
+    End
+
+    It should work where filfilled and pending Promises are mixed
+      let p1 = Wait(10).then({-> 'a'})
+      let p2 = P.resolve('b')
+      let p3 = Wait(50).then({-> 'c'})
+      let p = P.race([p1, p2, p3])
+      Assert Equals(p._state, FULFILLED)
+      let l = l:
+      call p.then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'b')
+    End
+  End
+
+  Describe .resolve()
+    It should create resolved Promise with given non-Promise value
+      let l = l:
+      " TODO: Test v:null, v:true and v:false. They are not supported by themis.vim yet.
+      for v in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], []]
+        let p = P.resolve(v)
+        Assert Equals(p._state, FULFILLED)
+        call p.then({x -> extend(l, {'done' : x})})
+        Assert Equals(done, v)
+        unlet done
+        unlet v
+      endfor
+    End
+
+    It should create resolved Promise with given Promise value
+      for p in [P.resolve(P.resolve(42)), P.resolve(P.resolve(P.resolve(P.resolve(42))))]
+        Assert Equals(p._state, FULFILLED)
+        let l = l:
+        call p.then({x -> extend(l, {'done' : x})})
+        Assert Equals(done, 42)
+      endfor
+    End
+
+    It should create rejected Promise with rejected Promise value
+      let p = P.resolve(P.reject(42))
+      Assert Equals(p._state, REJECTED)
+      let l = l:
+      call p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 42)
+    End
+
+    It should create pending Promise with pending Promise
+      let p = P.resolve(P.new({-> 42}))
+      Assert Equals(p._state, PENDING)
+    End
+
+    It can omit parameter
+      let l = l:
+      call P.resolve().then({x -> extend(l, {'done': x})})
+      " :Assert Equal() does not support v:null by themis.vim
+      Assert True(done == v:null, 'Actual: ' . string(done))
+    End
+
+    It should wait for given pending Promise being resolved
+      let l = l:
+      let p = P.resolve(Wait(30).then({-> 42}))
+      Assert Equals(p._state, PENDING)
+      call p.then({x -> extend(l, {'done' : x})})
+      sleep 100m
+      Assert Equals(done, 42)
+    End
+
+    It should wait for given pending Promise being rejected
+      let l = l:
+      let p = P.resolve(Wait(30).then({-> execute('throw "error"')}))
+      Assert Equals(p._state, PENDING)
+      sleep 100m
+      Assert Equals(p._state, REJECTED)
+      call p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'error')
+    End
+  End
+
+  Describe .reject()
+    It should create rejected Promise with non-Promise value
+      let l = l:
+      " TODO: Test v:null, v:true and v:false. They are not supported by themis.vim yet.
+      for v in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], []]
+        let p = P.reject(v)
+        Assert Equals(p._state, REJECTED)
+        call p.catch({x -> extend(l, {'done' : x})})
+        Assert Equals(done, v)
+        unlet done
+        unlet v
+      endfor
+    End
+
+    It should create rejected Promise with resolved Promise
+      let p = P.reject(P.resolve(42))
+      Assert Equals(p._state, REJECTED)
+    End
+
+    It should create rejected Promise with rejected Promise
+      for p in [P.reject(P.reject(42)), P.reject(P.reject(P.reject(P.reject(42))))]
+        Assert Equals(p._state, REJECTED)
+      endfor
+    End
+
+    It should create rejected Promise with pending Promise
+      let p = P.reject(P.new({-> 42}))
+      Assert Equals(p._state, REJECTED)
+    End
+
+    It can omit parameter
+      let l = l:
+      call P.reject().catch({x -> extend(l, {'done': x})})
+      " :Assert Equal() does not support v:null by themis.vim
+      Assert True(done == v:null, 'Actual: ' . string(done))
+    End
+  End
+
+  Describe .is_available()
+    It should return true on Vim8 or Neovim
+      Assert True(P.is_available())
+    End
+  End
+
+  Describe is_promise()
+    It should return a given value is Promise instance or not
+      Assert True(P.is_promise(P.resolve(42)))
+      Assert False(P.is_promise({}))
+      Assert False(P.is_promise(v:null))
+      Assert False(P.is_promise(42))
+    End
+  End
+End
+
+" vim:et ts=2 sts=2 sw=2 tw=0:
