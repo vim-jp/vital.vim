@@ -11,7 +11,7 @@ let s:REJECTED = 2
 let s:DICT_T = type({})
 let s:NULL_T = type(v:null)
 
-function! s:noop() abort
+function! s:noop(resolve, reject) abort
 endfunction
 let s:NOOP = function('s:noop')
 
@@ -101,16 +101,16 @@ function! s:_subscribe(parent, child, on_fulfilled, on_rejected) abort
 endfunction
 
 function! s:_handle_thenable(promise, thenable) abort
-  if thenable._state == s:FULFILLED
-    call s:fulfill(a:promise, a:thenable._result)
-  elseif thenable._state == s:REJECTED
+  if a:thenable._state == s:FULFILLED
+    call s:_fulfill(a:promise, a:thenable._result)
+  elseif a:thenable._state == s:REJECTED
     call s:reject(a:promise, a:thenable._result)
   else
     call s:_subscribe(
           \ a:thenable,
           \ v:null,
-          \ {Val -> s:_resolve(a:promise, Val)},
-          \ {Reason -> s:_reject(a:promise, Reason)},
+          \ {result -> s:_resolve(a:promise, result)},
+          \ {reason -> s:_reject(a:promise, reason)},
         \ )
   endif
 endfunction
@@ -184,12 +184,12 @@ endfunction
 
 " Public APIs
 
-function! s:new(Resolver) abort
+function! s:new(resolver) abort
   let promise = deepcopy(s:PROMISE)
   let promise._vital_promise = s:_next_id()
   try
-    if a:Resolver != s:NOOP
-      call a:Resolver(
+    if a:resolver != s:NOOP
+      call a:resolver(
         \ {Value -> s:_resolve(promise, Value)},
         \ {Reason -> s:_reject(promise, Reason)},
       \ )
@@ -201,11 +201,11 @@ function! s:new(Resolver) abort
 endfunction
 
 function! s:all(promises) abort
-  return s:new({Resolve, Reject -> s:_all(Resolve, Reject, a:promises)})
+  return s:new({resolve, reject -> s:_all(resolve, reject, a:promises)})
 endfunction
 
 function! s:race(promises) abort
-  return s:new({Resolve, Reject -> s:_race(Resolve, Reject, a:promise)})
+  return s:new({resolve, reject -> s:_race(resolve, reject, a:promise)})
 endfunction
 
 function! s:resolve(value) abort
