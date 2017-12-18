@@ -3,7 +3,7 @@
 #
 build:
   lint:
-    image: haya14busa/lint-vital.vim:0.9.4
+    image: haya14busa/lint-vital.vim:0.9.5
     environment:
       - REVIEWDOG_GITHUB_API_TOKEN=$$REVIEWDOG_GITHUB_API_TOKEN
     commands:
