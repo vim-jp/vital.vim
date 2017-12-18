@@ -152,6 +152,21 @@ Describe Async.Promise
       Assert Equals(done, 42)
     End
   End
+
+  Describe .is_available()
+    It should return true on Vim8 or Neovim
+      Assert True(P.is_available())
+    End
+  End
+
+  Describe is_promise()
+    It should return a given value is Promise instance or not
+      Assert True(P.is_promise(P.resolve(42)))
+      Assert False(P.is_promise({}))
+      Assert False(P.is_promise(v:null))
+      Assert False(P.is_promise(42))
+    End
+  End
 End
 
 " vim:et ts=2 sts=2 sw=2 tw=0:
