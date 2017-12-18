@@ -205,7 +205,7 @@ function! s:all(promises) abort
 endfunction
 
 function! s:race(promises) abort
-  return s:new({resolve, reject -> s:_race(resolve, reject, a:promise)})
+  return s:new({resolve, reject -> s:_race(resolve, reject, a:promises)})
 endfunction
 
 function! s:resolve(value) abort
