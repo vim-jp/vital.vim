@@ -11,8 +11,12 @@ let s:REJECTED = 2
 let s:DICT_T = type({})
 let s:NULL_T = type(v:null)
 
+" @vimlint(EVL103, 1, a:resolve)
+" @vimlint(EVL103, 1, a:reject)
 function! s:noop(resolve, reject) abort
 endfunction
+" @vimlint(EVL103, 0, a:resolve)
+" @vimlint(EVL103, 0, a:reject)
 let s:NOOP = function('s:noop')
 
 " Internal APIs
