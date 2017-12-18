@@ -76,15 +76,15 @@ Describe Async.Promise
   Describe .all()
     It should make a promise resolving after all children resolved
       let l = l:
-      let p1 = Wait(50)
-      let p2 = Wait(150)
+      let p1 = Wait(10)
+      let p2 = Wait(200)
       let p3 = Wait(100)
       let done = 0
       let p4 = P.all([p1, p2, p3]).then({-> extend(l, {'done' : 1})})
-      sleep 100m
+      sleep 150m
       Assert Equals(done, 0)
       Assert Equals(p4._state, PENDING)
-      sleep 100m
+      sleep 150m
       Assert Equals(done, 1)
       Assert Equals(p4._state, FULFILLED)
     End
@@ -92,8 +92,8 @@ Describe Async.Promise
     It should reject promise immediately when one of children was rejected
       let l = l:
       let done = 0
-      let p1 = Wait(50).then({ -> execute('throw 1') })
-      let p2 = Wait(150)
+      let p1 = Wait(10).then({ -> execute('throw 1') })
+      let p2 = Wait(200)
       let p3 = P.all([p1, p2]).catch({r -> extend(l, {'done' : r})})
       sleep 100m
       Assert Equals(done, 1)
@@ -104,8 +104,8 @@ Describe Async.Promise
   Describe .race()
     It should make a promise resolving after first of children resolved
       let l = l:
-      let p1 = Wait(50)
-      let p2 = Wait(150)
+      let p1 = Wait(10)
+      let p2 = Wait(200)
       let done = 0
       let p4 = P.race([p1, p2]).then({-> extend(l, {'done' : 1})})
       sleep 100m
@@ -116,8 +116,8 @@ Describe Async.Promise
     It should reject promise immediately when first child was rejected
       let l = l:
       let done = 0
-      let p1 = Wait(50).then({ -> execute('throw 1') })
-      let p2 = Wait(150)
+      let p1 = Wait(10).then({ -> execute('throw 1') })
+      let p2 = Wait(200)
       let p3 = P.race([p1, p2]).catch({r -> extend(l, {'done' : r})})
       sleep 100m
       Assert Equals(done, 1)
@@ -125,8 +125,8 @@ Describe Async.Promise
     End
 
     It should resolve promise even if succeeding promise is rejected
-      let p1 = Wait(50)
-      let p2 = ThrowAfter(70)
+      let p1 = Wait(10)
+      let p2 = ThrowAfter(200)
       let p3 = P.race([p1, p2])
       sleep 100m
       Assert Equals(p3._state, FULFILLED)
