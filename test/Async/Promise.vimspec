@@ -242,22 +242,42 @@ Describe Async.Promise
   End
 
   Describe .resolve()
-    It creates resolved promise
+    It creates resolved Promise with given non-Promise value
       let l = l:
       let p = P.resolve(42)
       Assert Equals(p._state, FULFILLED)
       call p.then({v -> extend(l, {'done' : v})})
       Assert Equals(done, 42)
     End
+
+    It creates resolved Promise with given Promise value
+      let p = P.resolve(P.resolve(42))
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It creates rejected Promise with rejected Promise value
+      let p = P.resolve(P.reject(42))
+      Assert Equals(p._state, REJECTED)
+    End
   End
 
   Describe .reject()
-    It creates rejected promise
+    It creates rejected Promise with non-Promise value
       let l = l:
       let p = P.reject(42)
       Assert Equals(p._state, REJECTED)
       call p.catch({v -> extend(l, {'done' : v})})
       Assert Equals(done, 42)
+    End
+
+    It creates rejected Promise with resolved Promise
+      let p = P.reject(P.resolve(42))
+      Assert Equals(p._state, REJECTED)
+    End
+
+    It creates rejected Promise with rejected Promise
+      let p = P.reject(P.reject(42))
+      Assert Equals(p._state, REJECTED)
     End
   End
 

@@ -46,7 +46,7 @@ function! s:_invoke_callback(settled, promise, callback, result) abort
       let success = 0
     endtry
 
-    if type(a:result) == s:DICT_T && a:promise == a:result
+    if s:is_promise(a:result) && a:promise._vital_promise == a:result._vital_promise
       call s:_reject(a:promise, 'vital: Async.Promise: Cannot resolve/reject a promise with itself')
       return
     endif
@@ -108,7 +108,7 @@ function! s:_handle_thenable(promise, thenable) abort
   if a:thenable._state == s:FULFILLED
     call s:_fulfill(a:promise, a:thenable._result)
   elseif a:thenable._state == s:REJECTED
-    call s:reject(a:promise, a:thenable._result)
+    call s:_reject(a:promise, a:thenable._result)
   else
     call s:_subscribe(
           \ a:thenable,
