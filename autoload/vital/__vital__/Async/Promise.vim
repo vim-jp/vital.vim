@@ -45,11 +45,6 @@ function! s:_invoke_callback(settled, promise, callback, result) abort
       let err = v:exception
       let success = 0
     endtry
-
-    if s:is_promise(a:result) && a:promise._vital_promise == a:result._vital_promise
-      call s:_reject(a:promise, 'vital: Async.Promise: Cannot resolve/reject a promise with itself')
-      return
-    endif
   else
     let value = a:result
   endif
@@ -121,11 +116,7 @@ endfunction
 
 function! s:_resolve(promise, value) abort
   if s:is_promise(a:value)
-    if a:promise == a:value
-      call s:_reject(a:promise, 'vital: Async.Promise: Cannot resolve a promise with itself')
-    else
-      call s:_handle_thenable(a:promise, a:value)
-    endif
+    call s:_handle_thenable(a:promise, a:value)
   else
     call s:_fulfill(a:promise, a:value)
   endif
