@@ -244,12 +244,14 @@ Describe Async.Promise
   Describe .resolve()
     It creates resolved Promise with given non-Promise value
       let l = l:
-      for v in [42, 'foo', {'foo': 42}, {}, v:null, v:true, v:false, v:none]
+      " TODO: Test v:null, v:true and v:false. They are not supported by themis.vim yet.
+      for v in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], []]
         let p = P.resolve(v)
         Assert Equals(p._state, FULFILLED)
-        call p.then({v -> extend(l, {'done' : v})})
+        call p.then({x -> extend(l, {'done' : x})})
         Assert Equals(done, v)
-        unlet l:done
+        unlet done
+        unlet v
       endfor
     End
 
@@ -267,12 +269,14 @@ Describe Async.Promise
   Describe .reject()
     It creates rejected Promise with non-Promise value
       let l = l:
-      for v in [42, 'foo', {'foo': 42}, {}, v:null, v:true, v:false, v:none]
+      " TODO: Test v:null, v:true and v:false. They are not supported by themis.vim yet.
+      for v in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], []]
         let p = P.reject(v)
         Assert Equals(p._state, REJECTED)
-        call p.catch({v -> extend(l, {'done' : v})})
+        call p.catch({x -> extend(l, {'done' : x})})
         Assert Equals(done, v)
-        unlet l:done
+        unlet done
+        unlet v
       endfor
     End
 
