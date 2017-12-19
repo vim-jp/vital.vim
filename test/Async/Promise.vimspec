@@ -32,7 +32,10 @@ Describe Async.Promise
   Describe .then()
     It calls its callback after synchronized resolution
       let l = l:
-      let p = P.new({resolve -> resolve(42)}).then({r -> extend(l, {'done' : r})})
+      let p = P.new({resolve -> resolve(42)})
+      " Different from ES6 Promise
+      Assert Equals(p._state, FULFILLED)
+      let p = p.then({r -> extend(l, {'done' : r})})
       Assert Equals(done, 42)
       Assert Equals(p._state, FULFILLED)
     End
@@ -43,6 +46,58 @@ Describe Async.Promise
       sleep 100m
       Assert Equals(done, 42)
       Assert Equals(p._state, FULFILLED)
+    End
+
+    It resolves thenable object
+      let l = l:
+      let p = P.resolve(42).then({r -> P.resolve(r + 42)}).then({r -> extend(l, {'done' : r})})
+      Assert Equals(done, 84)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It resolves thenable object asynchronously
+      let l = l:
+      let p = Wait(50).then({-> Wait(50)}).then({-> extend(l, {'done' : 42})})
+      Assert Equals(p._state, PENDING)
+      sleep 200m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It resolves by funcref directly
+      let l = l:
+      let p = P.resolve(50).then(Wait).then({-> extend(l, {'done' : 42})})
+      Assert Equals(p._state, PENDING)
+      sleep 100m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It can resolve the same promise more than once
+      let l = l:
+      let p = P.resolve(42)
+      let p2 = p.then({v -> extend(l, {'done' : v + 10})})
+      Assert Equals(done, 52)
+      Assert Equals(p2._state, FULFILLED)
+      let p2 = p.then({v -> extend(l, {'done' : v + 20})})
+      Assert Equals(done, 62)
+      Assert Equals(p2._state, FULFILLED)
+    End
+
+    It can resolve the same promise more than once asynchronously
+      let l = l:
+      let done = 100
+      let p1 = Wait(50).then({-> 100})
+      let p2 = p1.then({v -> extend(l, {'done' : l.done + v})})
+      let p3 = p1.then({v -> extend(l, {'done' : l.done + v})})
+      for p in [p1, p2, p3]
+        Assert Equals(p._state, PENDING)
+      endfor
+      sleep 100m
+      for p in [p1, p2, p3]
+        Assert Equals(p._state, FULFILLED)
+      endfor
+      Assert Equals(done, 300)
     End
   End
 
@@ -70,6 +125,59 @@ Describe Async.Promise
         \.catch({r -> extend(l, {'done' : r})})
       Assert Equals(done, 42)
       Assert Equals(p._state, FULFILLED)
+    End
+
+    It resolves thenable object
+      let l = l:
+      let p = P.reject(42).catch({r -> P.resolve(r + 42)}).then({r -> extend(l, {'done' : r})})
+      Assert Equals(done, 84)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It resolves thenable object asynchronously
+      let l = l:
+      let p = ThrowAfter(50).catch({-> ThrowAfter(50)}).catch({-> extend(l, {'done' : 42})})
+      Assert Equals(p._state, PENDING)
+      sleep 200m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It resolves by funcref directly
+      let l = l:
+      let p = P.reject(50).catch(Wait).then({-> extend(l, {'done' : 42})})
+      Assert Equals(p._state, PENDING)
+      sleep 100m
+      Assert Equals(done, 42)
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It can resolve the same rejected promise more than once
+      let l = l:
+      let p = P.reject(42)
+      let p2 = p.catch({v -> extend(l, {'done' : v + 10})})
+      Assert Equals(done, 52)
+      Assert Equals(p2._state, FULFILLED)
+      let p2 = p.catch({v -> extend(l, {'done' : v + 20})})
+      Assert Equals(done, 62)
+      Assert Equals(p2._state, FULFILLED)
+    End
+
+    It can resolve the same rejected promise more than once asynchronously
+      let l = l:
+      let done = 100
+      let p1 = ThrowAfter(50)
+      let p2 = p1.catch({v -> extend(l, {'done' : l.done + 100})})
+      let p3 = p1.catch({v -> extend(l, {'done' : l.done + 100})})
+      for p in [p1, p2, p3]
+        Assert Equals(p._state, PENDING)
+      endfor
+      sleep 100m
+      Assert Equals(p1._state, REJECTED)
+      for p in [p2, p3]
+        Assert Equals(p._state, FULFILLED)
+      endfor
+      Assert Equals(done, 300)
     End
   End
 
