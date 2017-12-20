@@ -159,6 +159,12 @@ Describe Async.Promise
       call p.catch({msg -> extend(l, {'err': msg})})
       Assert Match(err, '^Vim(echomsg):E731:')
     End
+
+    It can omit all parameters
+      let l = l:
+      call P.resolve(42).then().then().then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 42)
+    End
   End
 
   Describe .catch()
@@ -252,6 +258,14 @@ Describe Async.Promise
       Assert Equals(p._state, REJECTED)
       call p.catch({msg -> extend(l, {'err': msg})})
       Assert Match(err, '^Vim(echomsg):E731:')
+    End
+
+    It should pass through the exception when parameter is omitted
+      let l = l:
+      let p = P.reject(42).catch().catch()
+      Assert Equals(p._state, REJECTED)
+      let p = p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 42)
     End
   End
 

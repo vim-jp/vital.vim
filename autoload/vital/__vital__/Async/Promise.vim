@@ -249,8 +249,8 @@ endfunction
 let s:PROMISE.then = function('s:_promise_then')
 
 " .catch() is just a syntax sugar of .then()
-function! s:_promise_catch(on_rejected) dict abort
-  return self.then(v:null, a:on_rejected)
+function! s:_promise_catch(...) dict abort
+  return self.then(v:null, get(a:000, 0, v:null))
 endfunction
 let s:PROMISE.catch = function('s:_promise_catch')
 
