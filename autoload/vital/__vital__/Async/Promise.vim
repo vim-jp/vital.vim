@@ -209,15 +209,15 @@ function! s:race(promises) abort
   return s:new({resolve, reject -> s:_race(resolve, reject, a:promises)})
 endfunction
 
-function! s:resolve(value) abort
+function! s:resolve(...) abort
   let promise = s:new(s:NOOP)
-  call s:_resolve(promise, a:value)
+  call s:_resolve(promise, a:0 > 0 ? a:1 : v:null)
   return promise
 endfunction
 
-function! s:reject(reason) abort
+function! s:reject(...) abort
   let promise = s:new(s:NOOP)
-  call s:_reject(promise, a:reason)
+  call s:_reject(promise, a:0 > 0 ? a:1 : v:null)
   return promise
 endfunction
 

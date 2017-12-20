@@ -355,6 +355,13 @@ Describe Async.Promise
       let p = P.resolve(P.new({-> 42}))
       Assert Equals(p._state, PENDING)
     End
+
+    It can omit parameter
+      let l = l:
+      call P.resolve().then({x -> extend(l, {'done': x})})
+      " :Assert Equal() does not support v:null
+      Assert True(done == v:null, 'Actual: ' . string(done))
+    End
   End
 
   Describe .reject()
@@ -384,6 +391,13 @@ Describe Async.Promise
     It should create rejected Promise with pending Promise
       let p = P.reject(P.new({-> 42}))
       Assert Equals(p._state, REJECTED)
+    End
+
+    It can omit parameter
+      let l = l:
+      call P.reject().catch({x -> extend(l, {'done': x})})
+      " :Assert Equal() does not support v:null
+      Assert True(done == v:null, 'Actual: ' . string(done))
     End
   End
 
