@@ -1,3 +1,11 @@
+function! s:resolver(resolve, reject) abort
+  call a:resolve('ok')
+endfunction
+
+function! s:rejector(resolve, reject) abort
+  call a:reject('error')
+endfunction
+
 Describe Async.Promise
   Before all
     let P = vital#vital#import('Async.Promise')
@@ -72,6 +80,14 @@ Describe Async.Promise
       let p = p.then({-> extend(l, {'done' : 1})})
       Assert Equals(p._state, PENDING)
       Assert Equals(done, 0)
+    End
+
+    It can take funcref as constructor
+      let l = l:
+      call P.new(function('s:resolver')).then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'ok')
+      call P.new(function('s:rejector')).catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'error')
     End
   End
 
