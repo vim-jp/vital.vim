@@ -13,7 +13,7 @@ Describe Async.Promise
   End
 
   Describe .new()
-    It creates a promise object with proper state
+    It should create a Promise object with proper state
       let p = P.new({resolve -> resolve(0)})
       Assert Equals(p._state, FULFILLED)
       Assert HasKey(p, '_vital_promise')
@@ -23,14 +23,22 @@ Describe Async.Promise
       Assert HasKey(p, '_vital_promise')
     End
 
-    It creates rejected promise object when an exception was thrown
-      let p = P.new({_, reject -> execute('throw "error"')})
+    It should create a rejected Promise object when an exception was thrown
+      let l = l:
+      let p = P.new({-> execute('throw "ERROR"')})
       Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Equals(err, 'ERROR')
+
+      let p = P.new({-> execute('echom {}')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Match(err, '^Vim(echomsg):E731:')
     End
   End
 
   Describe .then()
-    It calls its callback after synchronized resolution
+    It should call its callback after synchronized resolution
       let l = l:
       let p = P.new({resolve -> resolve(42)})
       " Different from ES6 Promise
@@ -40,7 +48,7 @@ Describe Async.Promise
       Assert Equals(p._state, FULFILLED)
     End
 
-    It calls its callback after asynchronized resolution
+    It should call its callback after asynchronized resolution
       let l = l:
       let p = Wait(50).then({-> extend(l, {'done' : 42})})
       sleep 100m
@@ -48,14 +56,14 @@ Describe Async.Promise
       Assert Equals(p._state, FULFILLED)
     End
 
-    It resolves thenable object
+    It should be chainable
       let l = l:
       let p = P.resolve(42).then({r -> P.resolve(r + 42)}).then({r -> extend(l, {'done' : r})})
       Assert Equals(done, 84)
       Assert Equals(p._state, FULFILLED)
     End
 
-    It resolves thenable object asynchronously
+    It should be chainable asynchronously
       let l = l:
       let p = Wait(50).then({-> Wait(50)}).then({-> extend(l, {'done' : 42})})
       Assert Equals(p._state, PENDING)
@@ -64,7 +72,7 @@ Describe Async.Promise
       Assert Equals(p._state, FULFILLED)
     End
 
-    It resolves by funcref directly
+    It should resolve with funcref directly
       let l = l:
       let p = P.resolve(50).then(Wait).then({-> extend(l, {'done' : 42})})
       Assert Equals(p._state, PENDING)
@@ -73,7 +81,7 @@ Describe Async.Promise
       Assert Equals(p._state, FULFILLED)
     End
 
-    It can resolve the same promise more than once
+    It should resolve the same Promise more than once
       let l = l:
       let p = P.resolve(42)
       let p2 = p.then({v -> extend(l, {'done' : v + 10})})
@@ -84,7 +92,7 @@ Describe Async.Promise
       Assert Equals(p2._state, FULFILLED)
     End
 
-    It can resolve the same promise more than once asynchronously
+    It should resolve the same Promise more than once asynchronously
       let l = l:
       let done = 100
       let p1 = Wait(50).then({-> 100})
@@ -98,6 +106,20 @@ Describe Async.Promise
         Assert Equals(p._state, FULFILLED)
       endfor
       Assert Equals(done, 300)
+    End
+
+    It should reject Promise when an exception was thrown
+      let l = l:
+
+      let p = P.resolve(42).then({-> execute('throw "ERROR"')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Equals(err, 'ERROR')
+
+      let p = P.resolve(42).then({-> execute('echom {}')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Match(err, '^Vim(echomsg):E731:')
     End
   End
 
@@ -179,6 +201,20 @@ Describe Async.Promise
       endfor
       Assert Equals(done, 300)
     End
+
+    It should reject Promise when an exception was thrown
+      let l = l:
+
+      let p = P.reject(42).catch({-> execute('throw "ERROR"')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Equals(err, 'ERROR')
+
+      let p = P.reject(42).catch({-> execute('echom {}')})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({msg -> extend(l, {'err': msg})})
+      Assert Match(err, '^Vim(echomsg):E731:')
+    End
   End
 
   Describe .all()
@@ -242,7 +278,7 @@ Describe Async.Promise
   End
 
   Describe .resolve()
-    It creates resolved Promise with given non-Promise value
+    It should create resolved Promise with given non-Promise value
       let l = l:
       " TODO: Test v:null, v:true and v:false. They are not supported by themis.vim yet.
       for v in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], []]
@@ -255,19 +291,19 @@ Describe Async.Promise
       endfor
     End
 
-    It creates resolved Promise with given Promise value
+    It should create resolved Promise with given Promise value
       let p = P.resolve(P.resolve(42))
       Assert Equals(p._state, FULFILLED)
     End
 
-    It creates rejected Promise with rejected Promise value
+    It should create rejected Promise with rejected Promise value
       let p = P.resolve(P.reject(42))
       Assert Equals(p._state, REJECTED)
     End
   End
 
   Describe .reject()
-    It creates rejected Promise with non-Promise value
+    It should create rejected Promise with non-Promise value
       let l = l:
       " TODO: Test v:null, v:true and v:false. They are not supported by themis.vim yet.
       for v in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], []]
@@ -280,12 +316,12 @@ Describe Async.Promise
       endfor
     End
 
-    It creates rejected Promise with resolved Promise
+    It should create rejected Promise with resolved Promise
       let p = P.reject(P.resolve(42))
       Assert Equals(p._state, REJECTED)
     End
 
-    It creates rejected Promise with rejected Promise
+    It should create rejected Promise with rejected Promise
       let p = P.reject(P.reject(42))
       Assert Equals(p._state, REJECTED)
     End
