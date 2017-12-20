@@ -260,12 +260,19 @@ Describe Async.Promise
       Assert Match(err, '^Vim(echomsg):E731:')
     End
 
-    It should pass through the exception when parameter is omitted
+    It should pass through the exception when all parameters are omitted
       let l = l:
       let p = P.reject(42).catch().catch()
       Assert Equals(p._state, REJECTED)
       let p = p.catch({x -> extend(l, {'done' : x})})
       Assert Equals(done, 42)
+    End
+
+    It can take rejection handler at 2nd parameter
+      let l = l:
+      let p = P.reject(42).then({x -> extend(l, {'done' : 'resolve'})}, {x -> extend(l, {'done' : 'reject'})})
+      Assert Equals(p._state, FULFILLED)
+      Assert Equals(done, 'reject')
     End
   End
 
