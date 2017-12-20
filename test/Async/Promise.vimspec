@@ -82,6 +82,14 @@ Describe Async.Promise
       Assert Equals(done, 52)
     End
 
+    It should ignore thrown exception when the Promise is already settled
+      let l = l:
+      call P.new({resolve -> resolve('ok') || execute('throw "HELLO"')}).then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'ok')
+      call P.new({_, reject -> reject('error') || execute('throw "HELLO"')}).catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'error')
+    End
+
     It should be pending when neither resolve() nor reject() is called
       let l = l:
       let done = 0
@@ -467,6 +475,25 @@ Describe Async.Promise
       call P.resolve().then({x -> extend(l, {'done': x})})
       " :Assert Equal() does not support v:null by themis.vim
       Assert True(done == v:null, 'Actual: ' . string(done))
+    End
+
+    It should wait for given pending Promise being resolved
+      let l = l:
+      let p = P.resolve(Wait(30).then({-> 42}))
+      Assert Equals(p._state, PENDING)
+      call p.then({x -> extend(l, {'done' : x})})
+      sleep 100m
+      Assert Equals(done, 42)
+    End
+
+    It should wait for given pending Promise being rejected
+      let l = l:
+      let p = P.resolve(Wait(30).then({-> execute('throw "error"')}))
+      Assert Equals(p._state, PENDING)
+      sleep 100m
+      Assert Equals(p._state, REJECTED)
+      call p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'error')
     End
   End
 
