@@ -63,6 +63,16 @@ Describe Async.Promise
       call p.catch({v -> extend(l, {'done' : v})})
       Assert Equals(done, 52)
     End
+
+    It should be pending when neither resolve() nor reject() is called
+      let l = l:
+      let done = 0
+      let p = P.new({-> 42})
+      Assert Equals(p._state, PENDING)
+      let p = p.then({-> extend(l, {'done' : 1})})
+      Assert Equals(p._state, PENDING)
+      Assert Equals(done, 0)
+    End
   End
 
   Describe .then()
@@ -328,6 +338,11 @@ Describe Async.Promise
       let p = P.resolve(P.reject(42))
       Assert Equals(p._state, REJECTED)
     End
+
+    It should create pending Promise with pending Promise
+      let p = P.resolve(P.new({-> 42}))
+      Assert Equals(p._state, PENDING)
+    End
   End
 
   Describe .reject()
@@ -351,6 +366,11 @@ Describe Async.Promise
 
     It should create rejected Promise with rejected Promise
       let p = P.reject(P.reject(42))
+      Assert Equals(p._state, REJECTED)
+    End
+
+    It should create rejected Promise with pending Promise
+      let p = P.reject(P.new({-> 42}))
       Assert Equals(p._state, REJECTED)
     End
   End
