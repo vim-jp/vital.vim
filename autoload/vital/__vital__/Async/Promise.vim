@@ -146,28 +146,29 @@ function! s:_reject(promise, reason) abort
   call s:_publish(a:promise)
 endfunction
 
+function! s:_resolve_one(index, value) dict abort
+  let self.done[a:index] = a:value
+  let self.resolved += 1
+  if self.resolved == self.total
+    call self.resolve(self.done)
+  endif
+endfunction
+
 function! s:_all(resolve, reject, promises) abort
   let total = len(a:promises)
-  let fulfiller = {
+  let wait_group = {
         \ 'done': repeat([v:null], total),
         \ 'resolve': a:resolve,
         \ 'resolved': 0,
         \ 'total': total,
+        \ 'notify_done': function('s:_resolve_one'),
         \ }
-
-  function! fulfiller.fullfill(index, value) abort dict
-    let self.done[a:index] = a:value
-    let self.resolved += 1
-    if self.resolved == self.total
-      call self.resolve(self.done)
-    endif
-  endfunction
 
   " 'for' statement is not available here because iteration variable is captured into lambda
   " expression by **reference**.
   call map(
         \ copy(a:promises),
-        \ {i, p -> p.then({V -> fulfiller.fullfill(i, V)}, a:reject)},
+        \ {i, p -> p.then({v -> wait_group.notify_done(i, v)}, a:reject)},
       \ )
 endfunction
 
@@ -223,7 +224,7 @@ function! s:is_promise(maybe_promise) abort
   return type(a:maybe_promise) == s:DICT_T && has_key(a:maybe_promise, '_vital_promise')
 endfunction
 
-function! s:PROMISE.then(...) abort dict
+function! s:_promise_then(...) dict abort
   let parent = self
   let state = parent._state
   let child = s:new(s:NOOP)
@@ -240,10 +241,12 @@ function! s:PROMISE.then(...) abort dict
   endif
   return child
 endfunction
+let s:PROMISE.then = function('s:_promise_then')
 
 " .catch() is just a syntax sugar of .then()
-function! s:PROMISE.catch(on_rejected) abort
+function! s:_promise_catch(on_rejected) dict abort
   return self.then(v:null, a:on_rejected)
 endfunction
+let s:PROMISE.catch = function('s:_promise_catch')
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:
