@@ -29,6 +29,16 @@ Describe Async.Promise
       let p = P.new({_, reject -> reject(0)})
       Assert Equals(p._state, REJECTED)
       Assert HasKey(p, '_vital_promise')
+
+      let l = l:
+      call P.new({resolve -> resolve()}).then({x -> extend(l, {'done' : x})})
+      " :Assert Equal() does not support v:null by themis.vim
+      Assert True(done == v:null, 'Actual: ' . string(done))
+
+      unlet done
+      call P.new({_, reject -> reject()}).catch({x -> extend(l, {'done' : x})})
+      " :Assert Equal() does not support v:null by themis.vim
+      Assert True(done == v:null, 'Actual: ' . string(done))
     End
 
     It should create a rejected Promise object when an exception was thrown
@@ -196,6 +206,14 @@ Describe Async.Promise
       let l = l:
       call P.resolve(42).then().then().then({x -> extend(l, {'done' : x})})
       Assert Equals(done, 42)
+    End
+
+    It should stop chain as soon as Promise is rejected
+      let p = P.resolve(42).then({x -> x + 1}).then({x -> execute('throw x')}).then({x -> x + 1})
+      Assert Equals(p._state, REJECTED)
+      let l = l:
+      call p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 43)
     End
   End
 
@@ -421,7 +439,7 @@ Describe Async.Promise
     It can omit parameter
       let l = l:
       call P.resolve().then({x -> extend(l, {'done': x})})
-      " :Assert Equal() does not support v:null
+      " :Assert Equal() does not support v:null by themis.vim
       Assert True(done == v:null, 'Actual: ' . string(done))
     End
   End
@@ -459,7 +477,7 @@ Describe Async.Promise
     It can omit parameter
       let l = l:
       call P.reject().catch({x -> extend(l, {'done': x})})
-      " :Assert Equal() does not support v:null
+      " :Assert Equal() does not support v:null by themis.vim
       Assert True(done == v:null, 'Actual: ' . string(done))
     End
   End

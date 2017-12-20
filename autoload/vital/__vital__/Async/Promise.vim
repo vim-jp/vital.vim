@@ -191,8 +191,8 @@ function! s:new(resolver) abort
   try
     if a:resolver != s:NOOP
       call a:resolver(
-        \ {Value -> s:_resolve(promise, Value)},
-        \ {Reason -> s:_reject(promise, Reason)},
+        \ {... -> s:_resolve(promise, get(a:000, 0, v:null))},
+        \ {... -> s:_reject(promise, get(a:000, 0, v:null))},
       \ )
     endif
   catch
