@@ -89,6 +89,22 @@ Describe Async.Promise
       call P.new(function('s:rejector')).catch({x -> extend(l, {'done' : x})})
       Assert Equals(done, 'error')
     End
+
+    It should assimilate when fulfilled Promise is given to resolve()
+      let p = P.new({resolve -> resolve(P.resolve('ok'))})
+      Assert Equals(p._state, FULFILLED)
+      let l = l:
+      call p.then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'ok')
+    End
+
+    It should not create resolved Promise with rejected Promise
+      let p = P.new({resolve -> resolve(P.reject('error'))})
+      Assert Equals(p._state, REJECTED)
+      let l = l:
+      call p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'error')
+    End
   End
 
   Describe .then()
@@ -135,7 +151,7 @@ Describe Async.Promise
       Assert Equals(p._state, FULFILLED)
     End
 
-    It should resolve the same Promise more than once
+    It should not resolve multiple times
       let l = l:
       let p = P.resolve(42)
       let p2 = p.then({v -> extend(l, {'done' : v + 10})})
@@ -146,7 +162,7 @@ Describe Async.Promise
       Assert Equals(p2._state, FULFILLED)
     End
 
-    It should resolve the same Promise more than once asynchronously
+    It should not resolve multiple times asynchronously
       let l = l:
       let done = 100
       let p1 = Wait(50).then({-> 100})
@@ -234,7 +250,7 @@ Describe Async.Promise
       Assert Equals(p._state, FULFILLED)
     End
 
-    It can resolve the same rejected promise more than once
+    It should not resolve the same rejected promise multiple times
       let l = l:
       let p = P.reject(42)
       let p2 = p.catch({v -> extend(l, {'done' : v + 10})})
@@ -245,7 +261,7 @@ Describe Async.Promise
       Assert Equals(p2._state, FULFILLED)
     End
 
-    It can resolve the same rejected promise more than once asynchronously
+    It should not resolve the same rejected promise multiple times asynchronously
       let l = l:
       let done = 100
       let p1 = ThrowAfter(50)
@@ -293,18 +309,21 @@ Describe Async.Promise
   End
 
   Describe .all()
-    It should make a promise resolving after all children resolved
+    It should wait all and resolve with all the resolved values as array
       let l = l:
-      let p1 = Wait(10)
-      let p2 = Wait(200)
-      let p3 = Wait(100)
-      let done = 0
-      let p4 = P.all([p1, p2, p3]).then({-> extend(l, {'done' : 1})})
+      let p1 = Wait(10).then({-> 10})
+      let p2 = Wait(200).then({-> 20})
+      let p3 = Wait(100).then({-> 30})
+      let done = []
+      let p4 = P.all([p1, p2, p3]).then({a -> extend(l, {'done' : a})})
       sleep 100m
-      Assert Equals(done, 0)
+      Assert Equals(done, [])
       Assert Equals(p4._state, PENDING)
       sleep 200m
-      Assert Equals(done, 1)
+      Assert Equals(len(done), 3)
+      Assert Equals(done[0], 10)
+      Assert Equals(done[1], 20)
+      Assert Equals(done[2], 30)
       Assert Equals(p4._state, FULFILLED)
     End
 
@@ -330,12 +349,11 @@ Describe Async.Promise
   Describe .race()
     It should make a promise resolving after first of children resolved
       let l = l:
-      let p1 = Wait(10)
-      let p2 = Wait(200)
-      let done = 0
-      let p4 = P.race([p1, p2]).then({-> extend(l, {'done' : 1})})
+      let p1 = Wait(10).then({-> 42})
+      let p2 = Wait(200).then({-> 21})
+      let p4 = P.race([p1, p2]).then({x -> extend(l, {'done' : x})})
       sleep 100m
-      Assert Equals(done, 1)
+      Assert Equals(done, 42)
       Assert Equals(p4._state, FULFILLED)
     End
 
@@ -379,13 +397,20 @@ Describe Async.Promise
     End
 
     It should create resolved Promise with given Promise value
-      let p = P.resolve(P.resolve(42))
-      Assert Equals(p._state, FULFILLED)
+      for p in [P.resolve(P.resolve(42)), P.resolve(P.resolve(P.resolve(P.resolve(42))))]
+        Assert Equals(p._state, FULFILLED)
+        let l = l:
+        call p.then({x -> extend(l, {'done' : x})})
+        Assert Equals(done, 42)
+      endfor
     End
 
     It should create rejected Promise with rejected Promise value
       let p = P.resolve(P.reject(42))
       Assert Equals(p._state, REJECTED)
+      let l = l:
+      call p.catch({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 42)
     End
 
     It should create pending Promise with pending Promise
@@ -421,8 +446,9 @@ Describe Async.Promise
     End
 
     It should create rejected Promise with rejected Promise
-      let p = P.reject(P.reject(42))
-      Assert Equals(p._state, REJECTED)
+      for p in [P.reject(P.reject(42)), P.reject(P.reject(P.reject(P.reject(42))))]
+        Assert Equals(p._state, REJECTED)
+      endfor
     End
 
     It should create rejected Promise with pending Promise
