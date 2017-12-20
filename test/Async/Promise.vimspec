@@ -263,10 +263,10 @@ Describe Async.Promise
       let p3 = Wait(100)
       let done = 0
       let p4 = P.all([p1, p2, p3]).then({-> extend(l, {'done' : 1})})
-      sleep 150m
+      sleep 100m
       Assert Equals(done, 0)
       Assert Equals(p4._state, PENDING)
-      sleep 150m
+      sleep 200m
       Assert Equals(done, 1)
       Assert Equals(p4._state, FULFILLED)
     End
