@@ -156,6 +156,11 @@ endfunction
 
 function! s:_all(resolve, reject, promises) abort
   let total = len(a:promises)
+  if total == 0
+    call a:resolve([])
+    return
+  endif
+
   let wait_group = {
         \ 'done': repeat([v:null], total),
         \ 'resolve': a:resolve,
