@@ -362,6 +362,21 @@ Describe Async.Promise
       Assert Equals(p._state, FULFILLED)
       Assert Equals(done, 1)
     End
+
+    It should work where filfilled and pending Promises are mixed
+      let l = l:
+      let p1 = P.resolve('a')
+      let p2 = Wait(30).then({-> 'b'})
+      let p3 = Wait(10).then({-> 'c'})
+      let p = P.all([p1, p2, p3])
+      Assert Equals(p._state, PENDING)
+      call p.then({a -> extend(l, {'done' : a})})
+      sleep 100m
+      Assert Equals(len(done), 3)
+      Assert Equals(done[0], 'a')
+      Assert Equals(done[1], 'b')
+      Assert Equals(done[2], 'c')
+    End
   End
 
   Describe .race()
@@ -397,6 +412,17 @@ Describe Async.Promise
     It should create a pending Promise when given array is empty
       let p = P.race([])
       Assert Equals(p._state, PENDING)
+    End
+
+    It should work where filfilled and pending Promises are mixed
+      let p1 = Wait(10).then({-> 'a'})
+      let p2 = P.resolve('b')
+      let p3 = Wait(50).then({-> 'c'})
+      let p = P.race([p1, p2, p3])
+      Assert Equals(p._state, FULFILLED)
+      let l = l:
+      call p.then({x -> extend(l, {'done' : x})})
+      Assert Equals(done, 'b')
     End
   End
 
