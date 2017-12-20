@@ -281,6 +281,13 @@ Describe Async.Promise
       Assert Equals(done, 1)
       Assert Equals(p3._state, FULFILLED)
     End
+
+    It should create a pending Promise when given array is empty
+      let l = l:
+      let p = P.all([]).then({-> extend(l, {'done' : 1})})
+      Assert Equals(p._state, FULFILLED)
+      Assert Equals(done, 1)
+    End
   End
 
   Describe .race()
@@ -312,6 +319,11 @@ Describe Async.Promise
       let p3 = P.race([p1, p2])
       sleep 100m
       Assert Equals(p3._state, FULFILLED)
+    End
+
+    It should create a pending Promise when given array is empty
+      let p = P.race([])
+      Assert Equals(p._state, PENDING)
     End
   End
 
