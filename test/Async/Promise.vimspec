@@ -35,6 +35,34 @@ Describe Async.Promise
       call p.catch({msg -> extend(l, {'err': msg})})
       Assert Match(err, '^Vim(echomsg):E731:')
     End
+
+    It should do nothing when calling resolve()/reject() after resolved
+      let l = l:
+
+      let p = P.new({resolve -> resolve(42) || resolve(99)})
+      Assert Equals(p._state, FULFILLED)
+      call p.then({v -> extend(l, {'done' : v})})
+      Assert Equals(done, 42)
+
+      let p = P.new({resolve, reject -> resolve(52) || reject(99)})
+      Assert Equals(p._state, FULFILLED)
+      call p.then({v -> extend(l, {'done' : v})})
+      Assert Equals(done, 52)
+    End
+
+    It should do nothing when calling resolve()/reject() after rejected
+      let l = l:
+
+      let p = P.new({resolve, reject -> reject(42) || resolve(99)})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({v -> extend(l, {'done' : v})})
+      Assert Equals(done, 42)
+
+      let p = P.new({_, reject -> reject(52) || reject(99)})
+      Assert Equals(p._state, REJECTED)
+      call p.catch({v -> extend(l, {'done' : v})})
+      Assert Equals(done, 52)
+    End
   End
 
   Describe .then()
