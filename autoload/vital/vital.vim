@@ -184,7 +184,9 @@ let s:Vital._import = s:_function('s:_import')
 function! s:_get_module(name) abort dict
   let funcname = s:_import_func_name(self.plugin_name(), a:name)
   try
-    return call(funcname, [])
+    " Avoid Vim's bug: https://github.com/vim/vim/pull/2483
+    let ret = call(funcname, [])
+    return ret
   catch /^Vim\%((\a\+)\)\?:E117/
     return s:_get_builtin_module(a:name)
   endtry
