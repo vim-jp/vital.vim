@@ -281,7 +281,9 @@ endfunction
 " Returns false if failure.
 function! s:mkdir_nothrow(...) abort
   try
-    return call('mkdir', a:000)
+    " Avoid Vim's bug: https://github.com/vim/vim/pull/2483
+    let ret = call('mkdir', a:000)
+    return ret
   catch
     return 0
   endtry

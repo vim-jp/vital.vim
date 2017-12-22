@@ -370,7 +370,9 @@ endfunction
 
 function! s:_function_exists(name) abort
   try
-    return s:_is_funcname(a:name) && exists('*' . a:name)
+    " Avoid Vim's bug: https://github.com/vim/vim/pull/2483
+    let ret = s:_is_funcname(a:name) && exists('*' . a:name)
+    return ret
   catch
   endtry
   return 0

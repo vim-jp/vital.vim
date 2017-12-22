@@ -55,7 +55,9 @@ endfunction
 
 function! s:git_checkout(hash) abort
   try
-    return s:git('checkout ' . a:hash)
+    " Avoid Vim's bug: https://github.com/vim/vim/pull/2483
+    let ret = s:git('checkout ' . a:hash)
+    return ret
   catch
     throw "vitalizer: 'git checkout' failed: " . v:exception
   endtry
