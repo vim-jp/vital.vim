@@ -22,12 +22,12 @@ let s:NOOP = function('s:noop')
 " Internal APIs
 
 let s:PROMISE = {
-      \ '_state': s:PENDING,
-      \ '_children': [],
-      \ '_fulfillments': [],
-      \ '_rejections': [],
-      \ '_result': v:null,
-      \ }
+    \   '_state': s:PENDING,
+    \   '_children': [],
+    \   '_fulfillments': [],
+    \   '_rejections': [],
+    \   '_result': v:null,
+    \ }
 
 let s:id = -1
 function! s:_next_id() abort
@@ -106,19 +106,20 @@ function! s:_handle_thenable(promise, thenable) abort
     call s:_reject(a:promise, a:thenable._result)
   else
     call s:_subscribe(
-          \ a:thenable,
-          \ v:null,
-          \ {result -> s:_resolve(a:promise, result)},
-          \ {reason -> s:_reject(a:promise, reason)},
-        \ )
+         \   a:thenable,
+         \   v:null,
+         \   function('s:_resolve', [a:promise]),
+         \   function('s:_reject', [a:promise]),
+         \ )
   endif
 endfunction
 
-function! s:_resolve(promise, value) abort
-  if s:is_promise(a:value)
-    call s:_handle_thenable(a:promise, a:value)
+function! s:_resolve(promise, ...) abort
+  let result = a:0 > 0 ? a:1 : v:null
+  if s:is_promise(result)
+    call s:_handle_thenable(a:promise, result)
   else
-    call s:_fulfill(a:promise, a:value)
+    call s:_fulfill(a:promise, result)
   endif
 endfunction
 
@@ -133,11 +134,11 @@ function! s:_fulfill(promise, value) abort
   endif
 endfunction
 
-function! s:_reject(promise, reason) abort
+function! s:_reject(promise, ...) abort
   if a:promise._state != s:PENDING
     return
   endif
-  let a:promise._result = a:reason
+  let a:promise._result = a:0 > 0 ? a:1 : v:null
   let a:promise._state = s:REJECTED
   call timer_start(0, function('s:_publish', [a:promise]))
 endfunction
@@ -150,7 +151,7 @@ function! s:_resolve_one(index, value) dict abort
   endif
 endfunction
 
-function! s:_all(resolve, reject, promises) abort
+function! s:_all(promises, resolve, reject) abort
   let total = len(a:promises)
   if total == 0
     call a:resolve([])
@@ -158,22 +159,22 @@ function! s:_all(resolve, reject, promises) abort
   endif
 
   let wait_group = {
-        \ 'done': repeat([v:null], total),
-        \ 'resolve': a:resolve,
-        \ 'resolved': 0,
-        \ 'total': total,
-        \ 'notify_done': function('s:_resolve_one'),
-        \ }
+      \   'done': repeat([v:null], total),
+      \   'resolve': a:resolve,
+      \   'resolved': 0,
+      \   'total': total,
+      \   'notify_done': function('s:_resolve_one'),
+      \ }
 
   " 'for' statement is not available here because iteration variable is captured into lambda
   " expression by **reference**.
   call map(
-        \ copy(a:promises),
-        \ {i, p -> p.then({v -> wait_group.notify_done(i, v)}, a:reject)},
-      \ )
+       \   copy(a:promises),
+       \   {i, p -> p.then({v -> wait_group.notify_done(i, v)}, a:reject)},
+       \ )
 endfunction
 
-function! s:_race(resolve, reject, promises) abort
+function! s:_race(promises, resolve, reject) abort
   for p in a:promises
     call p.then(a:resolve, a:reject)
   endfor
@@ -187,8 +188,8 @@ function! s:new(resolver) abort
   try
     if a:resolver != s:NOOP
       call a:resolver(
-        \ {... -> s:_resolve(promise, get(a:000, 0, v:null))},
-        \ {... -> s:_reject(promise, get(a:000, 0, v:null))},
+      \   function('s:_resolve', [promise]),
+      \   function('s:_reject', [promise]),
       \ )
     endif
   catch
@@ -198,11 +199,11 @@ function! s:new(resolver) abort
 endfunction
 
 function! s:all(promises) abort
-  return s:new({resolve, reject -> s:_all(resolve, reject, a:promises)})
+  return s:new(function('s:_all', [a:promises]))
 endfunction
 
 function! s:race(promises) abort
-  return s:new({resolve, reject -> s:_race(resolve, reject, a:promises)})
+  return s:new(function('s:_race', [a:promises]))
 endfunction
 
 function! s:resolve(...) abort
