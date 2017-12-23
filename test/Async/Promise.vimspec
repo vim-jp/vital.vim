@@ -294,7 +294,7 @@ Describe Async.Promise
       let l = l:
       let p = ThrowAfter(50).catch({-> ThrowAfter(50)}).catch({-> extend(l, {'done' : 42})})
       Assert Equals(p._state, PENDING)
-      sleep 200m
+      call s:wait_has_key(l, 'done')
       Assert Equals(done, 42)
       Assert Equals(p._state, FULFILLED)
     End
@@ -303,7 +303,7 @@ Describe Async.Promise
       let l = l:
       let p = P.reject(50).catch(Wait).then({-> extend(l, {'done' : 42})})
       Assert Equals(p._state, PENDING)
-      sleep 100m
+      call s:wait_has_key(l, 'done')
       Assert Equals(done, 42)
       Assert Equals(p._state, FULFILLED)
     End
@@ -326,12 +326,13 @@ Describe Async.Promise
       let l = l:
       let done = 100
       let p1 = ThrowAfter(50)
-      let p2 = p1.catch({v -> extend(l, {'done' : l.done + 100})})
-      let p3 = p1.catch({v -> extend(l, {'done' : l.done + 100})})
+      let p2 = p1.catch({v -> extend(l, {'done' : l.done + 100, 'ok1' : v:true})})
+      let p3 = p1.catch({v -> extend(l, {'done' : l.done + 100, 'ok2' : v:true})})
       for p in [p1, p2, p3]
         Assert Equals(p._state, PENDING)
       endfor
-      sleep 100m
+      call s:wait_has_key(l, 'ok1')
+      call s:wait_has_key(l, 'ok2')
       Assert Equals(p1._state, REJECTED)
       for p in [p2, p3]
         Assert Equals(p._state, FULFILLED)
@@ -379,29 +380,29 @@ Describe Async.Promise
       let l = l:
       let p1 = Wait(10).then({-> 10})
       let p2 = Wait(200).then({-> 20})
-      let p3 = Wait(100).then({-> 30})
-      let done = []
-      let p4 = P.all([p1, p2, p3]).then({a -> extend(l, {'done' : a})})
-      sleep 100m
-      Assert Equals(done, [])
+      let p3 = Wait(100).then({-> extend(l, {'ongoing' : v:true})}).then({-> 30})
+      let result = []
+      let p4 = P.all([p1, p2, p3]).then({a -> extend(l, {'result' : a, 'done' : v:true})})
+      call s:wait_has_key(l, 'ongoing')
+      Assert Equals(result, [])
       Assert Equals(p4._state, PENDING)
-      sleep 200m
-      Assert Equals(len(done), 3)
-      Assert Equals(done[0], 10)
-      Assert Equals(done[1], 20)
-      Assert Equals(done[2], 30)
+      call s:wait_has_key(l, 'done')
+      Assert Equals(len(result), 3)
+      Assert Equals(result[0], 10)
+      Assert Equals(result[1], 20)
+      Assert Equals(result[2], 30)
       Assert Equals(p4._state, FULFILLED)
     End
 
     It should reject promise immediately when one of children was rejected
       let l = l:
-      let done = 0
       let p1 = Wait(10).then({ -> execute('throw 1') })
       let p2 = Wait(200)
       let p3 = P.all([p1, p2]).catch({r -> extend(l, {'done' : r})})
-      sleep 100m
+      call s:wait_has_key(l, 'done')
       Assert Equals(done, 1)
       Assert Equals(p3._state, FULFILLED)
+      Assert Equals(p2._state, PENDING)
     End
 
     It should create a pending Promise when given array is empty
@@ -420,7 +421,7 @@ Describe Async.Promise
       let p = P.all([p1, p2, p3])
       Assert Equals(p._state, PENDING)
       call p.then({a -> extend(l, {'done' : a})})
-      sleep 100m
+      call s:wait_has_key(l, 'done')
       Assert Equals(len(done), 3)
       Assert Equals(done[0], 'a')
       Assert Equals(done[1], 'b')
@@ -434,28 +435,33 @@ Describe Async.Promise
       let p1 = Wait(10).then({-> 42})
       let p2 = Wait(200).then({-> 21})
       let p4 = P.race([p1, p2]).then({x -> extend(l, {'done' : x})})
-      sleep 100m
+      call s:wait_has_key(l, 'done')
       Assert Equals(done, 42)
       Assert Equals(p4._state, FULFILLED)
+      Assert Equals(p2._state, PENDING)
     End
 
     It should reject promise immediately when first child was rejected
       let l = l:
-      let done = 0
       let p1 = Wait(10).then({ -> execute('throw 1') })
       let p2 = Wait(200)
       let p3 = P.race([p1, p2]).catch({r -> extend(l, {'done' : r})})
-      sleep 100m
+      call s:wait_has_key(l, 'done')
       Assert Equals(done, 1)
+      Assert Equals(p1._state, REJECTED)
+      Assert Equals(p2._state, PENDING)
       Assert Equals(p3._state, FULFILLED)
     End
 
     It should resolve promise even if succeeding promise is rejected
-      let p1 = Wait(10)
+      let l = l:
+      let p1 = Wait(10).then({-> 42})
       let p2 = ThrowAfter(200)
-      let p3 = P.race([p1, p2])
-      sleep 100m
+      let p3 = P.race([p1, p2]).then({x -> extend(l, {'done' : x})})
+      call s:wait_has_key(l, 'done')
+      Assert Equals(done, 42)
       Assert Equals(p3._state, FULFILLED)
+      Assert Equals(p2._state, PENDING)
     End
 
     It should create a pending Promise when given array is empty
