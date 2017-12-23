@@ -41,25 +41,25 @@ function! s:_invoke_callback(settled, promise, callback, result, ...) abort
   let success = 1
   if has_callback
     try
-      let value = a:callback(a:result)
+      let Result = a:callback(a:result)
     catch
-      let err = v:exception
+      let Err = v:exception
       let success = 0
     endtry
   else
-    let value = a:result
+    let Result = a:result
   endif
 
   if a:promise._state != s:PENDING
     " Do nothing
   elseif has_callback && success
-    call s:_resolve(a:promise, value)
+    call s:_resolve(a:promise, Result)
   elseif !success
-    call s:_reject(a:promise, err)
+    call s:_reject(a:promise, Err)
   elseif a:settled == s:FULFILLED
-    call s:_fulfill(a:promise, value)
+    call s:_fulfill(a:promise, Result)
   elseif a:settled == s:REJECTED
-    call s:_reject(a:promise, value)
+    call s:_reject(a:promise, Result)
   endif
 endfunction
 
@@ -71,17 +71,17 @@ function! s:_publish(promise, ...) abort
   endif
   for i in range(len(a:promise._children))
     if settled == s:FULFILLED
-      let CB = a:promise._fulfillments[i]
+      let l:CB = a:promise._fulfillments[i]
     elseif settled == s:REJECTED
-      let CB = a:promise._rejections[i]
+      let l:CB = a:promise._rejections[i]
     else
       throw 'vital: Async.Promise: Cannot publish a pending promise'
     endif
     let child = a:promise._children[i]
     if type(child) != s:NULL_T
-      call s:_invoke_callback(settled, child, CB, a:promise._result)
+      call s:_invoke_callback(settled, child, l:CB, a:promise._result)
     else
-      call CB(a:promise._result)
+      call l:CB(a:promise._result)
     endif
   endfor
   let a:promise._children = []
@@ -115,11 +115,11 @@ function! s:_handle_thenable(promise, thenable) abort
 endfunction
 
 function! s:_resolve(promise, ...) abort
-  let result = a:0 > 0 ? a:1 : v:null
-  if s:is_promise(result)
-    call s:_handle_thenable(a:promise, result)
+  let Result = a:0 > 0 ? a:1 : v:null
+  if s:is_promise(Result)
+    call s:_handle_thenable(a:promise, Result)
   else
-    call s:_fulfill(a:promise, result)
+    call s:_fulfill(a:promise, Result)
   endif
 endfunction
 
