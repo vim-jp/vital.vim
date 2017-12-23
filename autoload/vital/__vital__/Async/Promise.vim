@@ -35,7 +35,8 @@ function! s:_next_id() abort
   return s:id
 endfunction
 
-function! s:_invoke_callback(settled, promise, callback, result) abort
+" ... is added to use this function as a callback of timer_start()
+function! s:_invoke_callback(settled, promise, callback, result, ...) abort
   let has_callback = type(a:callback) != s:NULL_T
   let success = 1
   if has_callback
@@ -62,7 +63,8 @@ function! s:_invoke_callback(settled, promise, callback, result) abort
   endif
 endfunction
 
-function! s:_publish(promise) abort
+" ... is added to use this function as a callback of timer_start()
+function! s:_publish(promise, ...) abort
   let settled = a:promise._state
   if empty(a:promise._children)
     return
@@ -93,9 +95,7 @@ function! s:_subscribe(parent, child, on_fulfilled, on_rejected) abort
   let a:parent._fulfillments += [ a:on_fulfilled ]
   let a:parent._rejections += [ a:on_rejected ]
   if is_empty && a:parent._state > s:PENDING
-    " In ECMAScript spec, this callback must be called asynchronously, but Vim script does not have
-    " asynchronous function such as setTimeout(). So call the callback synchronously here.
-    call s:_publish(a:parent)
+    call timer_start(0, function('s:_publish', [a:parent]))
   endif
 endfunction
 
@@ -129,9 +129,7 @@ function! s:_fulfill(promise, value) abort
   let a:promise._result = a:value
   let a:promise._state = s:FULFILLED
   if !empty(a:promise._children)
-    " In ECMAScript spec, this callback must be called asynchronously but Vim script does not have
-    " asynchronous function such as setTimeout(). So call the callback synchronously here.
-    call s:_publish(a:promise)
+    call timer_start(0, function('s:_publish', [a:promise]))
   endif
 endfunction
 
@@ -141,9 +139,7 @@ function! s:_reject(promise, reason) abort
   endif
   let a:promise._result = a:reason
   let a:promise._state = s:REJECTED
-  " In ECMAScript spec, this callback must be called asynchronously, but Vim script does not have
-  " asynchronous function such as setTimeout(). So call the callback synchronously here.
-  call s:_publish(a:promise)
+  call timer_start(0, function('s:_publish', [a:promise]))
 endfunction
 
 function! s:_resolve_one(index, value) dict abort
@@ -233,16 +229,14 @@ function! s:_promise_then(...) dict abort
   let parent = self
   let state = parent._state
   let child = s:new(s:NOOP)
+  let Res = get(a:000, 0, v:null)
+  let Rej = get(a:000, 1, v:null)
   if state == s:FULFILLED
-    " In ECMAScript spec, this callback must be called asynchronously, but Vim script does not have
-    " asynchronous function such as setTimeout(). So call the callback synchronously here.
-    call s:_invoke_callback(state, child, get(a:000, 0, v:null), parent._result)
+    call timer_start(0, function('s:_invoke_callback', [state, child, Res, parent._result]))
   elseif state == s:REJECTED
-    " In ECMAScript spec, this callback must be called asynchronously, but Vim script does not have
-    " asynchronous function such as setTimeout(). So call the callback synchronously here.
-    call s:_invoke_callback(state, child, get(a:000, 1, v:null), parent._result)
+    call timer_start(0, function('s:_invoke_callback', [state, child, Rej, parent._result]))
   else
-    call s:_subscribe(parent, child, get(a:000, 0, v:null), get(a:000, 1, v:null))
+    call s:_subscribe(parent, child, Res, Rej)
   endif
   return child
 endfunction
