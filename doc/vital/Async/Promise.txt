@@ -322,11 +322,11 @@ race({promises})			*Vital.Async.Promise.race()*
 PROMISE OBJECT				*Vital.Async.Promise-Promise*
 
 Promise object represents the eventual completion or failure of an
-asynchronous operation. It represents one of followings:
+asynchronous operation. It represents one of following states:
 
-- has not done yet
-- has completed successfully
-- has failed with an error
+- Operation has not done yet
+- Operation has completed successfully
+- Operation has failed with an error
 
 {promise}.then([{onResolved} [, {onRejected}]])
 					*Vital.Async.Promise-Promise.then*
@@ -369,7 +369,7 @@ asynchronous operation. It represents one of followings:
 <
 	{onResolved} and {onRejected} can be |v:null|.
 
-{promise}.catch([{onRejected}])
+{promise}.catch([{onRejected}])		*Vital.Async.Promise-Promise.catch*
 
 	It is a shortcut function of calling .then() where first argument is
 	|v:null|.
