@@ -1,0 +1,408 @@
+*vital/Async/Promise.txt*	an asynchronous operation like ES6 Promise
+
+Maintainer: rhysd <lin90162@yahoo.co.jp>
+
+==============================================================================
+CONTENTS				*Vital.Async.Promise-contents*
+
+INTRODUCTION			|Vital.Async.Promise-introduction|
+REQUIREMENTS			|Vital.Async.Promise-requirements|
+EXAMPLE				|Vital.Async.Promise-example|
+FUNCTIONS			|Vital.Async.Promise-functions|
+PROMISE OBJECT			|Vital.Async.Promise-Promise|
+
+
+
+==============================================================================
+INTRODUCTION				*Vital.Async.Promise-introduction*
+
+*Vital.Async.Promise* is a library to represent the eventual completion or
+failure of an asynchronous operation. APIs are aligned to ES6 Promise. If you
+already know them, you can start to use this library easily.
+
+Instead of callbacks, Promise provides:
+
+- a guarantee that all operations are asynchronous. Functions given to .then()
+  method or .catch() method is executed on next tick (or later) using
+  |timer_start()|.
+- chaining asynchronous operations. Chained operation's order is sequentially
+  run and the order is guaranteed.
+- persistent error handling using .catch() method. Please be careful of
+  floating Promise. All Promise should have .catch() call not to squash an
+  exception.
+- flow control such as awaiting all Promise objects completed or selecting
+  the fastest one of Promises objects.
+
+If you know the detail of APIs, documents for ES6 Promise at Mozilla Developer
+Network and ECMA-262 specs would be great.
+
+Mozilla Developer Network:
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises
+
+ECMA-262:
+https://www.ecma-international.org/publications/standards/Ecma-262.htm
+
+
+
+==============================================================================
+REQUIREMENTS				*Vital.Async.Promise-requirements*
+
+|Vital.Async.Promise| requires Vim 8.0 or later. Neovim is also supported.
+
+
+
+==============================================================================
+EXAMPLE					*Vital.Async.Promise-example*
+
+Before explaining the detail of APIs, let's see actual examples.
+
+(1) Timer
+>
+  let s:Promise = vital#vital#import('Async.Promise')
+
+  function! s:wait(ms)
+    return s:Promise.new({resolve -> timer_start(a:ms)})
+  endfunction
+
+  call s:wait(500).then({-> execute('echo "After 500ms"', '')})
+<
+
+  One of most simple asynchronous operation is a timer. It calls a specified
+  callback when exceeding the timeout. "s:Promise.new" creates a new Promise
+  object with given callback. In the callback, function "resolve" (and
+  "reject" if needed) is passed. When asynchronous operation is done (in this
+  case, when timer is expired), call "resolve" on success or call "reject" on
+  failure.
+
+
+(2) Next tick
+>
+  function! s:next_tick()
+    return s:Promise.new({resolve -> timer_start(0, resolve)})
+  endfunction
+
+  call s:next_tick()
+    \.then({-> 'Execute lower priority tasks'})
+    \.catch({err -> execute('echom ' . string(err), '')})
+<
+  By giving 0 to |timer_start()| as timeout, it waits for "next tick". It's the
+  first time when Vim waits input. It means that Vim gives higher priority to
+  user input and executes the script (in callback of |timer_start()|) after.
+
+
+(3) Job
+
+>
+  let s:Promise = vital#vital#import('Async.Promise')
+
+  function! s:read_to_buf(buf, chan) abort
+    for part in ['err', 'out']
+      let out = ''
+      while ch_status(a:chan, {'part' : part}) ==# 'buffered'
+        let out .= ch_read(a:chan, {'part' : part}) . "\n"
+      endwhile
+      let a:buf[part] = out
+    endfor
+  endfunction
+
+  function! s:sh(...) abort
+    let cmd = join(a:000, ' ')
+    let buf = {}
+    return s:Promise.new({resolve, reject -> job_start(cmd, {
+                \   'close_cb' : {ch ->
+                \     s:read_to_buf(buf, ch)
+                \   },
+                \   'exit_cb' : {ch, code ->
+                \     code ? reject(buf.err) : resolve(buf.out)
+                \   },
+                \ })})
+  endfunction
+<
+  |job| is a feature to run shell commands asynchronously. But it is a bit
+  hard to use because it requires callback. By wrapping it with Promise, it
+  makes further easier to use shell commands and handle errors
+  asynchronously.
+
+  s:read_to_buf() is just a helper which reads all outputs from job into a
+  buffer. So it's not so important.
+
+  Important part is "return ..." in s:sh(). It creates a Promise which starts
+  a job and resolves when the given command has done. It calls resolve() when
+  the command finished successfully with output from stdout, and calls
+  reject() when the command failed with output from stderr.
+
+  "ls -l" can be executed as following:
+>
+  call s:sh('ls', '-l')
+    \.then({out -> execute('echom ' . string('Output: ' . out), '')})
+    \.catch({err -> execute('echom ' . string('Error: ' . err), '')})
+<
+  As more complex example, following code clones 4 repositories and shows a
+  message when all of them has completed. When one of them fails, it shows an
+  error message without waiting other operations.
+
+>
+  call s:Promise.all([
+  \  s:sh('git', 'clone', 'https://github.com/thinca/vim-quickrun.git'),
+  \  s:sh('git', 'clone', 'https://github.com/tyru/open-browser-github.git'),
+  \  s:sh('git', 'clone', 'https://github.com/easymotion/vim-easymotion.git'),
+  \  s:sh('git', 'clone', 'https://github.com/rhysd/clever-f.vim.git'),
+  \]
+  \)
+    \.then({-> exeute('echom "All repositories were successfully cloned!"', '')})
+    \.catch({err -> execute('echom "Failed to clone: " . ' string(err), '')})
+<
+  s:Promise.all(...) awaits all given promises have completed, or one of them
+  has failed.
+
+
+(4) Timeout
+
+  Let's see how Promise realizes timeout easily.
+
+>
+  call s:Promise.race([
+  \   s:sh('git', 'clone', 'https://github.com/vim/vim.git').then({-> v:false}),
+  \   s:wait(10000).then({-> v:true}),
+  \]).then({timed_out -> execute(timed_out ? 'Timeout!' : 'Cloned!', '')})
+<
+  s:sh() and s:wait() are explained above. And .race() awaits one of given
+  Promise objects has finished.
+
+  The .race() awaits either s:sh(...) or s:wait(...) has completed or failed.
+  It means that it clones Vim repository from GitHub via git command, but if
+  it exceeds 10 seconds, it does not wait the clone operation anymore.
+
+  By adding .then() and giving the result value (v:false or v:true here), you
+  can know whether the asynchronous operation was timed out or not in
+  succeeding .then() method. The parameter "timed_out" represents it.
+
+
+(5) REST API call
+
+  At last, let's see how Promise handles API call with |job| and curl
+  command. Here, we utilize encodeURIComponent() function in |Vital.Web.HTTP|
+  module to encode a query string.
+>
+  let s:HTTP = vital#vital#import('Web.HTTP')
+
+  function! s:github_issues(query) abort
+      let q = s:HTTP.encodeURIComponent(a:query)
+      let url = 'https://api.github.com/search/issues?q=' . q
+      return s:sh('curl', url)
+             \.then({data -> json_decode(data)})
+             \.then({res -> has_key(res, 'items') ?
+               \ items :
+               \ execute('throw ' . string(res.message))})
+  endfunction
+
+  call s:github_issues('repo:vim/vim sort:reactions-+1')
+    \.then({issues -> execute('echom ' . string(issues[0].url), '')})
+    \.catch({err -> execute('echom ' . string('ERROR: ' . err), '')})
+<
+  In this example, it searches the issue in Vim repository on GitHub which
+  gained the most :+1: reactions.
+
+  In s:github_issues(), it calls GitHub Issue Search API using curl command
+  and s:sh() function explained above. And it decodes the returned JSON by
+  |json_decode| and checks the content. If the curl command failed or API
+  returned failure response, the Promise value will be rejected. The rejection
+  will be caught in .catch() method at the last line and an error message will
+  be shown.
+
+
+
+==============================================================================
+FUNCTIONS				*Vital.Async.Promise-functions*
+
+new({executor})				*Vital.Async.Promise.new()*
+
+	Creates a new Promise object with given {executor}.
+
+	{executor} is a |Funcref| which represents how to create a Promise
+	object. It is called _synchronously_. It receives two functions as
+	parameters. First parameter is "resolve". It accepts one or zero
+	argument. By calling it in {executor}, new() returns a fulfilled
+	Promise object. Second parameter is "reject". It also accepts one or
+	zero argument. By calling it in {executor}, new() returns rejected
+	Promise object.
+>
+	  " Fulfilled Promise object with 42
+	  Promise.new({resolve -> resolve(42)})
+
+	  " Rejected Promise object with 'ERROR!'
+	  Promise.new({_, reject -> reject('ERROR!')})
+	  Promise.new({-> execute('throw "ERROR!"')})
+<
+	When other Promise object is passed to "resolve" or "reject" function
+	call, new() returns a pending Promise object which awaits until the
+	given other Promise object has finished.
+
+	If an exception is thrown in {executor}, new() returns a rejected
+	Promise object with the exception.
+
+	Calling "resolve" or "reject" more than once does not affect.
+
+	If "resolve" or "reject" is called with no argument, it resolves a
+	Promise object with |v:null|.
+>
+	  Promise.new({resolve -> resolve()}).then({x -> execute('echo ' . x)})
+	  " It outputs 'v:null'
+<
+resolve([{value}])			*Vital.Async.Promise.resolve()*
+
+	Creates a fulfilled Promise object.
+	It is a helper function equivalent to calling "resolve" immediately in
+	new():
+>
+	  " Followings are equivalent
+	  Promise.resolve(42)
+	  Promise.new({resolve -> resolve(42)})
+<
+	If {value} is a Promise object, it resolves/rejects with a value which
+	given Promise object resolves/rejects with.
+>
+	  Promise.resolve(Promise.resolve(42))
+	  \.then({x -> execute('echo ' . x)})
+	  " Outputs '42'
+
+	  Promise.resolve(Promise.reject('ERROR!'))
+	  \.catch({reason -> execute('echo ' . reason)})
+	  " Outputs 'ERROR!'
+<
+reject([{value}])			*Vital.Async.Promise.reject()*
+
+	Creates a rejected Promise object.
+	It is a helper function equivalent to calling "reject" immediately in
+	new():
+>
+	  " Followings are equivalent
+	  Promise.reject('Rejected!')
+	  Promise.new({_, reject -> reject('Rejected!')})
+<
+all({promises})				*Vital.Async.Promise.all()*
+
+	Creates a Promise object which awaits until all of {promises} has
+	completed. It resolves the Promise object with an array of results of
+	{promises} as following:
+>
+	  Promise.all([Promise.resolve(1), Promise.resolve('foo')])
+	  \.then({arr -> execute('echo ' . string(arr))})
+	  " It shows [1, 'foo']
+<
+	If one of them is rejected, it does not await for other
+	Promise objects and the Promise object is rejected immediately.
+
+>
+	  Promise.all([Promise.resolve(1), Promise.reject('ERROR!')])
+	  \.catch({err -> execute('echo ' . string(err))})
+	  " It shows 'ERROR!'
+<
+	If an empty list is given, it is equivalent to Promise.resolve([]).
+
+race({promises})			*Vital.Async.Promise.race()*
+
+	Creates a Promise object which resolves or rejects as soon as one of
+	{promises} resolves or rejects.
+>
+	  Promise.race([
+	  \  Promise.new({resolve -> timer_start(50, {-> resolve('first')})}),
+	  \  Promise.new({resolve -> timer_start(100, {-> resolve('second')})}),
+	  \])
+	  \.then({v -> execute('echo ' . v)})
+	  " It outputs 'first'
+
+	  Promise.race([
+	  \  Promise.new({resolve -> timer_start(50, {-> execute('throw "ERROR!"')})}),
+	  \  Promise.new({resolve -> timer_start(100, {-> resolve('second')})}),
+	  \])
+	  \.then({v -> execute('echo ' . v)})
+	  \.catch({e -> execute('echo ' . e)})
+	  " It outputs 'ERROR!'
+<
+	If {promises} is an empty list, the returned Promise object will never
+	be resolved or rejected.
+
+is_promise({value})			*Vital.Async.Promise.is_promise()*
+
+	Returns TRUE when {value} is a Promise object. Otherwise, returns
+	FALSE.
+
+is_available()				*Vital.Async.Promise.is_available()*
+
+	Returns TRUE when requirements for using |Vital.Async.Promise| are
+	met. Please look at |Vital.Async.Promise-requirements| to know the
+	detail of the requirements.
+	Otherwise, returns FALSE.
+>
+	  if Promise.is_available()
+	    " Asynchronous operations using Promise
+	  else
+	    " Fallback into synchronous operations
+	  endif
+<
+
+
+==============================================================================
+PROMISE OBJECT				*Vital.Async.Promise-Promise*
+
+Promise object represents the eventual completion or failure of an
+asynchronous operation. It represents one of following states:
+
+- Operation has not done yet
+- Operation has completed successfully
+- Operation has failed with an error
+
+{promise}.then([{onResolved} [, {onRejected}]])
+					*Vital.Async.Promise-Promise.then()*
+
+	Creates a new Promise object which is resolved/rejected after
+	{promise} is resolved or rejected. {onResolved} and {onRejected} must
+	be |Funcref| and they are guaranteed to be called __asynchronously__.
+>
+	  echo 'hi'
+	  Promise.new({resolve -> execute('echo "halo"') || resolve(42)})
+	  \.then({-> execute('echo "bye"')}, {-> execute('echo "ah"')})
+	  echo 'yo'
+<
+	Above script following following:
+>
+	  hi
+	  halo
+	  yo
+	  bye
+<
+	If {onResolved} is specified, it is called after {promise} is
+	resolved. When {onResolved} returns non-Promise value, the returned
+	Promise object from .then() is resolved with it.
+	When {onResolved} returns a Promise object, the returned Promise
+	object awaits until the Promise object has finished.
+
+	If {onRejected} is specified, it is called after {promise} is
+	rejected. When {onRejected} returns non-Promise value, the returned
+	Promise object from .then() is resolved with it.
+	When {onResolved} returns a Promise object, the returned Promise
+	object awaits until the Promise object has finished.
+
+	When an exception is thrown in {onResolved} or {onRejected}, the
+	returned Promise object from .then() will be rejected with the
+	exception.
+>
+	  " Both followings create a rejected Promise value asynchronously
+	  Promise.resolve(42).then({-> execute('throw "ERROR!"')})
+	  Promise.resolve(42).then({-> Promise.reject('ERROR!')})
+<
+	{onResolved} and {onRejected} can be |v:null|.
+
+{promise}.catch([{onRejected}])		*Vital.Async.Promise-Promise.catch()*
+
+	It is a shortcut function of calling .then() where first argument is
+	|v:null|.
+>
+	  " Followings are equal
+	  Promise.reject('ERROR').then(v:null, {e -> execute('echo ' . e)})
+	  Promise.reject('ERROR').catch({e -> execute('echo ' . e)})
+<
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
