@@ -144,11 +144,11 @@ function! s:_reject(promise, ...) abort
   call timer_start(0, function('s:_publish', [a:promise]))
 endfunction
 
-function! s:_resolve_one(index, value) dict abort
-  let self.done[a:index] = a:value
-  let self.resolved += 1
-  if self.resolved == self.total
-    call self.resolve(self.done)
+function! s:_notify_done(wg, index, value) abort
+  let a:wg.done[a:index] = a:value
+  let a:wg.resolved += 1
+  if a:wg.resolved == a:wg.total
+    call a:wg.resolve(a:wg.done)
   endif
 endfunction
 
@@ -164,14 +164,13 @@ function! s:_all(promises, resolve, reject) abort
       \   'resolve': a:resolve,
       \   'resolved': 0,
       \   'total': total,
-      \   'notify_done': function('s:_resolve_one'),
       \ }
 
   " 'for' statement is not available here because iteration variable is captured into lambda
   " expression by **reference**.
   call map(
        \   copy(a:promises),
-       \   {i, p -> p.then({v -> wait_group.notify_done(i, v)}, a:reject)},
+       \   {i, p -> p.then({v -> s:_notify_done(wait_group, i, v)}, a:reject)},
        \ )
 endfunction
 
