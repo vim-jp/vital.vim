@@ -39,6 +39,7 @@ endfunction
 function! s:_invoke_callback(settled, promise, callback, result, ...) abort
   let has_callback = type(a:callback) != s:NULL_T
   let success = 1
+  let Err = v:null
   if has_callback
     try
       let Result = a:callback(a:result)
