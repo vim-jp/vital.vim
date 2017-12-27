@@ -92,31 +92,27 @@ Before explaining the detail of APIs, let's see actual examples.
 
 
 (3) Job
-
 >
   let s:Promise = vital#vital#import('Async.Promise')
 
-  function! s:read_to_buf(buf, chan) abort
-    for part in ['err', 'out']
-      let out = ''
-      while ch_status(a:chan, {'part' : part}) ==# 'buffered'
-        let out .= ch_read(a:chan, {'part' : part}) . "\n"
-      endwhile
-      let a:buf[part] = out
-    endfor
+  function! s:read(chan, part) abort
+    let out = ''
+    while ch_status(a:chan, {'part' : a:part}) =~# 'open\|buffered'
+      let out .= ch_read(a:chan, {'part' : a:part}) . "\n"
+    endwhile
+    return out
   endfunction
 
   function! s:sh(...) abort
     let cmd = join(a:000, ' ')
     let buf = {}
     return s:Promise.new({resolve, reject -> job_start(cmd, {
-                \   'close_cb' : {ch ->
-                \     s:read_to_buf(buf, ch)
-                \   },
-                \   'exit_cb' : {ch, code ->
-                \     code ? reject(buf.err) : resolve(buf.out)
-                \   },
-                \ })})
+    \   'drop' : 'never',
+    \   'close_cb' : {ch -> 'do nothing'},
+    \   'exit_cb' : {ch, code ->
+    \     code ? reject(s:read(ch, 'err')) : resolve(s:read(ch, 'out'))
+    \   },
+    \ })})
   endfunction
 <
   |job| is a feature to run shell commands asynchronously. But it is a bit
@@ -124,7 +120,7 @@ Before explaining the detail of APIs, let's see actual examples.
   makes further easier to use shell commands and handle errors
   asynchronously.
 
-  s:read_to_buf() is just a helper which reads all outputs from job into a
+  s:read() is just a helper fnction which reads all outputs from job into a
   buffer. So it's not so important.
 
   Important part is "return ..." in s:sh(). It creates a Promise which starts
@@ -135,8 +131,8 @@ Before explaining the detail of APIs, let's see actual examples.
   "ls -l" can be executed as following:
 >
   call s:sh('ls', '-l')
-    \.then({out -> execute('echom ' . string('Output: ' . out), '')})
-    \.catch({err -> execute('echom ' . string('Error: ' . err), '')})
+        \.then({out -> execute('echo "Output: " . out', '')})
+        \.catch({err -> execute('echo "Error: " . err', '')})
 <
   As more complex example, following code clones 4 repositories and shows a
   message when all of them has completed. When one of them fails, it shows an
