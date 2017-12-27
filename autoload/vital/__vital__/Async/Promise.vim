@@ -39,16 +39,16 @@ endfunction
 function! s:_invoke_callback(settled, promise, callback, result, ...) abort
   let has_callback = type(a:callback) != s:NULL_T
   let success = 1
-  let Err = v:null
+  let err = v:null
   if has_callback
     try
-      let Result = a:callback(a:result)
+      let l:Result = a:callback(a:result)
     catch
-      let Err = v:exception
+      let err = v:exception
       let success = 0
     endtry
   else
-    let Result = a:result
+    let l:Result = a:result
   endif
 
   if a:promise._state != s:PENDING
@@ -56,7 +56,7 @@ function! s:_invoke_callback(settled, promise, callback, result, ...) abort
   elseif has_callback && success
     call s:_resolve(a:promise, Result)
   elseif !success
-    call s:_reject(a:promise, Err)
+    call s:_reject(a:promise, err)
   elseif a:settled == s:FULFILLED
     call s:_fulfill(a:promise, Result)
   elseif a:settled == s:REJECTED
@@ -116,7 +116,7 @@ function! s:_handle_thenable(promise, thenable) abort
 endfunction
 
 function! s:_resolve(promise, ...) abort
-  let Result = a:0 > 0 ? a:1 : v:null
+  let l:Result = a:0 > 0 ? a:1 : v:null
   if s:is_promise(Result)
     call s:_handle_thenable(a:promise, Result)
   else
@@ -230,8 +230,8 @@ function! s:_promise_then(...) dict abort
   let parent = self
   let state = parent._state
   let child = s:new(s:NOOP)
-  let Res = get(a:000, 0, v:null)
-  let Rej = get(a:000, 1, v:null)
+  let l:Res = get(a:000, 0, v:null)
+  let l:Rej = get(a:000, 1, v:null)
   if state == s:FULFILLED
     call timer_start(0, function('s:_invoke_callback', [state, child, Res, parent._result]))
   elseif state == s:REJECTED
