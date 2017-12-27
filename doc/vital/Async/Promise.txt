@@ -48,7 +48,8 @@ https://www.ecma-international.org/publications/standards/Ecma-262.htm
 ==============================================================================
 REQUIREMENTS				*Vital.Async.Promise-requirements*
 
-|Vital.Async.Promise| requires Vim 8.0 or later. Neovim is also supported.
+|Vital.Async.Promise| requires |lambda| and |timers| features.
+So Vim 8.0 or later is required. Recent version of Neovim also supports them.
 
 
 

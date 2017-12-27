@@ -223,7 +223,7 @@ function! s:reject(...) abort
 endfunction
 
 function! s:is_available() abort
-  return has('nvim') || v:version >= 800
+  return has('lambda') && has('timers')
 endfunction
 
 function! s:is_promise(maybe_promise) abort
