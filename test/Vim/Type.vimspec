@@ -145,4 +145,52 @@ Describe Vim.Type
       End
     End
   End
+
+  Describe .is_comparable()
+    Before each
+      let vals = [0, '', function('type'), [], {}, 0.0]
+      if 800 <= v:version
+        let vals += [v:false, v:null, test_null_job(), test_null_channel()]
+      endif
+
+      let true_group = []
+      let false_group = []
+      for l:V1 in vals
+        for l:V2 in vals
+          try
+            let _ = V1 == V2
+            let true_group += [[V1, V2]]
+          catch
+            let false_group += [[V1, V2]]
+          endtry
+          unlet V2
+        endfor
+        unlet V1
+      endfor
+    End
+
+    Context when {value1} and {value2} can be compared by ==
+      It returns TRUE
+        for [l:V1, l:V2] in true_group
+          let tname1 = T.type_names[type(V1)]
+          let tname2 = T.type_names[type(V2)]
+          let msg = printf('%s and %s is comparable', tname1, tname2)
+          Assert True(T.is_comparable(V1, V2), msg)
+          unlet V1 V2
+        endfor
+      End
+    End
+
+    Context when {value1} and {value2} can not be compared by ==
+      It returns FALSE
+        for [l:V1, l:V2] in false_group
+          let tname1 = T.type_names[type(V1)]
+          let tname2 = T.type_names[type(V2)]
+          let msg = printf('%s and %s is not comparable', tname1, tname2)
+          Assert False(T.is_comparable(V1, V2), msg)
+          unlet V1 V2
+        endfor
+      End
+    End
+  End
 End

@@ -99,6 +99,10 @@ is_predicate({value})			*Vital.Vim.Type.is_predicate()*
 	  return v:val ? 'true' : 'false'
 	endfunction
 
+is_comparable({value1}, {value2})	*Vital.Vim.Type.is_comparable()*
+	Returns TRUE if {value1} and {value2} can be compared by |expr-==|,
+	FALSE otherwise.
+
 
 
 ==============================================================================
