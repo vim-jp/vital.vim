@@ -67,16 +67,20 @@ endfunction
 " ... is added to use this function as a callback of timer_start()
 function! s:_publish(promise, ...) abort
   let settled = a:promise._state
+  if settled == s:PENDING
+    throw 'vital: Async.Promise: Cannot publish a pending promise'
+  endif
+
   if empty(a:promise._children)
     return
   endif
+
   for i in range(len(a:promise._children))
     if settled == s:FULFILLED
       let l:CB = a:promise._fulfillments[i]
-    elseif settled == s:REJECTED
-      let l:CB = a:promise._rejections[i]
     else
-      throw 'vital: Async.Promise: Cannot publish a pending promise'
+      " When rejected
+      let l:CB = a:promise._rejections[i]
     endif
     let child = a:promise._children[i]
     if type(child) != s:NULL_T
@@ -85,6 +89,7 @@ function! s:_publish(promise, ...) abort
       call l:CB(a:promise._result)
     endif
   endfor
+
   let a:promise._children = []
   let a:promise._fulfillments = []
   let a:promise._rejections = []
@@ -145,10 +150,10 @@ function! s:_reject(promise, ...) abort
 endfunction
 
 function! s:_notify_done(wg, index, value) abort
-  let a:wg.done[a:index] = a:value
-  let a:wg.resolved += 1
-  if a:wg.resolved == a:wg.total
-    call a:wg.resolve(a:wg.done)
+  let a:wg.results[a:index] = a:value
+  let a:wg.remaining -= 1
+  if a:wg.remaining == 0
+    call a:wg.resolve(a:wg.results)
   endif
 endfunction
 
@@ -160,10 +165,9 @@ function! s:_all(promises, resolve, reject) abort
   endif
 
   let wait_group = {
-      \   'done': repeat([v:null], total),
+      \   'results': repeat([v:null], total),
       \   'resolve': a:resolve,
-      \   'resolved': 0,
-      \   'total': total,
+      \   'remaining': total,
       \ }
 
   " 'for' statement is not available here because iteration variable is captured into lambda
@@ -230,8 +234,8 @@ function! s:_promise_then(...) dict abort
   let parent = self
   let state = parent._state
   let child = s:new(s:NOOP)
-  let l:Res = get(a:000, 0, v:null)
-  let l:Rej = get(a:000, 1, v:null)
+  let l:Res = a:0 > 0 ? a:1 : v:null
+  let l:Rej = a:0 > 1 ? a:2 : v:null
   if state == s:FULFILLED
     call timer_start(0, function('s:_invoke_callback', [state, child, Res, parent._result]))
   elseif state == s:REJECTED
@@ -245,7 +249,7 @@ let s:PROMISE.then = function('s:_promise_then')
 
 " .catch() is just a syntax sugar of .then()
 function! s:_promise_catch(...) dict abort
-  return self.then(v:null, get(a:000, 0, v:null))
+  return self.then(v:null, a:0 > 0 ? a:1 : v:null)
 endfunction
 let s:PROMISE.catch = function('s:_promise_catch')
 
