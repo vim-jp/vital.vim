@@ -384,8 +384,10 @@ asynchronous operation. It represents one of following states:
 	object awaits until the Promise object has finished.
 
 	When an exception is thrown in {onResolved} or {onRejected}, the
-	returned Promise object from .then() will be rejected with the
-	exception.
+	returned Promise object from .then() will be rejected with an
+	exception object.
+	Please read |Vital.Async.Promise-objects-Exception| to know an
+	exception object.
 >
 	  " Both followings create a rejected Promise value asynchronously
 	  call Promise.resolve(42).then({-> execute('throw "ERROR!"')})
@@ -399,8 +401,35 @@ asynchronous operation. It represents one of following states:
 	|v:null|.
 >
 	  " Followings are equal
-	  call Promise.reject('ERROR').then(v:null, {e -> execute('echo e', '')})
-	  call Promise.reject('ERROR').catch({e -> execute('echo e', '')})
+	  call Promise.reject('ERROR').then(v:null, {msg -> execute('echo msg', '')})
+	  call Promise.reject('ERROR').catch({msg -> execute('echo msg', '')})
 <
+
+------------------------------------------------------------------------------
+Exception Object			*Vital.Async.Promise-objects-Exception*
+
+Exception object represents an exception of Vim script. Since Vim script's
+|v:exception| is a |String| value and a stack trace of the exception is
+separated to |v:throwpoint| variable, it does not fit to Promise API.
+So we need to define our own exception object. It is passed to {onRejected}
+parameter of .then() or .catch() method.
+
+Example:
+>
+  call Promise.new({-> execute('throw "ERROR!"')})
+    \.catch({ex -> execute('echo ex', '')})
+  " Output:
+  " {'exception': 'ERROR!', 'throwpoint': '...'}
+
+  call Promise.new({-> 42 == []})
+    \.catch({ex -> execute('echo ex', '')})
+  " Output:
+  " {'exception': 'Vim(return):E691: ...', 'throwpoint': '...'}
+<
+Exception object has two fields; "exception" and "throwpoint".
+"exception" is a error message. It's corresponding to |v:exception|. And
+"throwpoint" is a stack trace of caught exception. It's corresponding to
+|v:throwpoint|. And
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

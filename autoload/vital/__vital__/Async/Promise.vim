@@ -96,13 +96,9 @@ function! s:_publish(promise, ...) abort
 endfunction
 
 function! s:_subscribe(parent, child, on_fulfilled, on_rejected) abort
-  let is_empty = empty(a:parent._children)
   let a:parent._children += [ a:child ]
   let a:parent._fulfillments += [ a:on_fulfilled ]
   let a:parent._rejections += [ a:on_rejected ]
-  if is_empty && a:parent._state > s:PENDING
-    call timer_start(0, function('s:_publish', [a:parent]))
-  endif
 endfunction
 
 function! s:_handle_thenable(promise, thenable) abort
