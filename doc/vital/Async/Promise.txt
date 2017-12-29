@@ -9,7 +9,9 @@ INTRODUCTION			|Vital.Async.Promise-introduction|
 REQUIREMENTS			|Vital.Async.Promise-requirements|
 EXAMPLE				|Vital.Async.Promise-example|
 FUNCTIONS			|Vital.Async.Promise-functions|
-PROMISE OBJECT			|Vital.Async.Promise-Promise|
+OBJECTS				|Vital.Async.Promise-objects|
+  Promise Object		|Vital.Async.Promise-objects-Promise|
+  Exception Object		|Vital.Async.Promise-objects-Exception|
 
 
 
@@ -343,7 +345,10 @@ is_available()				*Vital.Async.Promise.is_available()*
 
 
 ==============================================================================
-PROMISE OBJECT				*Vital.Async.Promise-Promise*
+OBJECTS					*Vital.Async.Promise-objects*
+
+------------------------------------------------------------------------------
+Promise Object				*Vital.Async.Promise-objects-Promise*
 
 Promise object represents the eventual completion or failure of an
 asynchronous operation. It represents one of following states:

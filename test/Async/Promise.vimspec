@@ -1,10 +1,13 @@
 function! s:wait_has_key(obj, name) abort
+  " if has_key(a:obj, a:name)
+  "   throw printf('s:wait_has_key(): Key "%s" is already in object %s', a:name, a:obj)
+  " endif
   let i = 0
   while i < 500
+    sleep 10m
     if has_key(a:obj, a:name)
       return
     endif
-    sleep 10m
     let i += 1
   endwhile
   throw 's:wait_has_key(): After 5000ms, ' . string(a:obj) . ' did not have key ' . a:name
@@ -65,16 +68,22 @@ Describe Async.Promise
       let l = l:
       let p = P.new({-> execute('throw "ERROR"')})
       Assert Equals(p._state, REJECTED)
-      call p.catch({msg -> extend(l, {'err': msg})})
+      call p.catch({exc -> extend(l, {'err': exc})})
       call s:wait_has_key(l, 'err')
-      Assert Equals(err, 'ERROR')
+      Assert HasKey(err, 'exception')
+      Assert HasKey(err, 'throwpoint')
+      Assert Equals(err.exception, 'ERROR')
+      Assert NotEmpty(err.throwpoint)
       unlet err
 
       let p = P.new({-> execute('echom {}')})
       Assert Equals(p._state, REJECTED)
-      call p.catch({msg -> extend(l, {'err': msg})})
+      call p.catch({exc -> extend(l, {'err': exc})})
       call s:wait_has_key(l, 'err')
-      Assert Match(err, '^Vim(echomsg):E731:')
+      Assert HasKey(err, 'exception')
+      Assert HasKey(err, 'throwpoint')
+      Assert Match(err.exception, '^Vim(echomsg):E731:')
+      Assert NotEmpty(err.throwpoint)
     End
 
     It should do nothing when calling resolve()/reject() after resolved
@@ -243,17 +252,21 @@ Describe Async.Promise
       let l = l:
 
       let p = P.resolve(42).then({-> execute('throw "ERROR"')})
-      call p.catch({msg -> extend(l, {'err': msg})})
+      call p.catch({exc -> extend(l, {'err': exc})})
       call s:wait_has_key(l, 'err')
       Assert Equals(p._state, REJECTED)
-      Assert Equals(err, 'ERROR')
+      Assert HasKey(err, 'exception')
+      Assert HasKey(err, 'throwpoint')
+      Assert Equals(err.exception, 'ERROR')
       unlet err
 
       let p = P.resolve(42).then({-> execute('echom {}')})
-      call p.catch({msg -> extend(l, {'err': msg})})
+      call p.catch({exc -> extend(l, {'err': exc})})
       call s:wait_has_key(l, 'err')
       Assert Equals(p._state, REJECTED)
-      Assert Match(err, '^Vim(echomsg):E731:')
+      Assert HasKey(err, 'exception')
+      Assert HasKey(err, 'throwpoint')
+      Assert Match(err.exception, '^Vim(echomsg):E731:')
     End
 
     It can omit all parameters
@@ -269,7 +282,7 @@ Describe Async.Promise
       call p.catch({x -> extend(l, {'reason' : x})})
       call s:wait_has_key(l, 'reason')
       Assert Equals(p._state, REJECTED)
-      Assert Equals(reason, 43)
+      Assert Equals(reason.exception, 43)
     End
 
     It can take rejection handler at 2nd parameter
@@ -302,7 +315,7 @@ Describe Async.Promise
       let p = P.new({-> execute('throw 42')})
         \.catch({r -> extend(l, {'reason' : r})})
       call s:wait_has_key(l, 'reason')
-      Assert Equals(reason, 42)
+      Assert Equals(reason.exception, 42)
       Assert Equals(p._state, FULFILLED)
     End
 
@@ -368,17 +381,21 @@ Describe Async.Promise
       let l = l:
 
       let p = P.reject(42).catch({-> execute('throw "ERROR"')})
-      call p.catch({msg -> extend(l, {'reason': msg})})
+      call p.catch({exc -> extend(l, {'reason': exc})})
       call s:wait_has_key(l, 'reason')
       Assert Equals(p._state, REJECTED)
-      Assert Equals(reason, 'ERROR')
+      Assert HasKey(reason, 'exception')
+      Assert HasKey(reason, 'throwpoint')
+      Assert Equals(reason.exception, 'ERROR')
       unlet reason
 
       let p = P.reject(42).catch({-> execute('echom {}')})
-      call p.catch({msg -> extend(l, {'reason': msg})})
+      call p.catch({exc -> extend(l, {'reason': exc})})
       call s:wait_has_key(l, 'reason')
       Assert Equals(p._state, REJECTED)
-      Assert Match(reason, '^Vim(echomsg):E731:')
+      Assert HasKey(reason, 'exception')
+      Assert HasKey(reason, 'throwpoint')
+      Assert Match(reason.exception, '^Vim(echomsg):E731:')
     End
 
     It should pass through the exception when all parameters are omitted
@@ -410,13 +427,13 @@ Describe Async.Promise
       Assert Equals(p4._state, FULFILLED)
     End
 
-    It should reject promise immediately when one of children was rejected
+    It should reject Promise immediately when one of children was rejected
       let l = l:
       let p1 = Wait(10).then({ -> execute('throw 1') })
       let p2 = Wait(200)
       let p3 = P.all([p1, p2]).catch({r -> extend(l, {'reason' : r})})
       call s:wait_has_key(l, 'reason')
-      Assert Equals(reason, 1)
+      Assert Equals(reason.exception, 1)
       Assert Equals(p3._state, FULFILLED)
       Assert Equals(p2._state, PENDING)
     End
@@ -463,7 +480,7 @@ Describe Async.Promise
       let p2 = Wait(200)
       let p3 = P.race([p1, p2]).catch({r -> extend(l, {'reason' : r})})
       call s:wait_has_key(l, 'reason')
-      Assert Equals(reason, 1)
+      Assert Equals(reason.exception, 1)
       Assert Equals(p1._state, REJECTED)
       Assert Equals(p2._state, PENDING)
       Assert Equals(p3._state, FULFILLED)
@@ -567,7 +584,7 @@ Describe Async.Promise
       call p.catch({x -> extend(l, {'reason' : x})})
       call s:wait_has_key(l, 'reason')
       Assert Equals(p._state, REJECTED)
-      Assert Equals(reason, 'error')
+      Assert Equals(reason.exception, 'error')
     End
   End
 

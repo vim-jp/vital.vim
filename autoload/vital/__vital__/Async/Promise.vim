@@ -44,7 +44,10 @@ function! s:_invoke_callback(settled, promise, callback, result, ...) abort
     try
       let l:Result = a:callback(a:result)
     catch
-      let err = v:exception
+      let err = {
+      \   'exception' : v:exception,
+      \   'throwpoint' : v:throwpoint,
+      \ }
       let success = 0
     endtry
   else
@@ -193,7 +196,10 @@ function! s:new(resolver) abort
       \ )
     endif
   catch
-    call s:_reject(promise, v:exception)
+    call s:_reject(promise, {
+    \   'exception' : v:exception,
+    \   'throwpoint' : v:throwpoint,
+    \ })
   endtry
   return promise
 endfunction
