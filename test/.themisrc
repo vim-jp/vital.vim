@@ -1,5 +1,7 @@
 set encoding=utf-8
 
+let s:is_windows = has('win16') || has('win32') || has('win64')
+
 call themis#option('recursive', 1)
 call themis#option('exclude', ['test/_testdata/', 'test/README.md'])
 
@@ -17,13 +19,13 @@ call themis#option('runtimepath', g:symlinkplugin_root)
 
 if $THEMIS_PROFILE !=# ''
   execute 'profile' 'start' $THEMIS_PROFILE
-  profile! file ./autoload/*
+  execute 'profile! file' s:is_windows ? '.\autoload\*' : './autoload/*'
 endif
 
 " Show environmental information for debugging
 if $CI !=# ''
   call themis#log('***********************************************************')
-  if has('win16') || has('win32') || has('win64')
+  if s:is_windows
     call themis#log('Code page:      ' . substitute(system('chcp'), '\D', '', 'g'))
   endif
   call themis#log('$LANG:          ' . $LANG)
