@@ -19,7 +19,9 @@ call themis#option('runtimepath', g:symlinkplugin_root)
 
 if $THEMIS_PROFILE !=# ''
   execute 'profile' 'start' $THEMIS_PROFILE
-  execute 'profile! file' s:is_windows ? '.\autoload\*' : './autoload/*'
+  execute 'profile! file' (s:is_windows && has('nvim-0.2.2'))
+        \ ? '.\autoload\*'
+        \ : './autoload/*'
 endif
 
 " Show environmental information for debugging
