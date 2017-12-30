@@ -22,20 +22,30 @@ Describe Vim.Type
     It has .float
       Assert Equals(T.types.float, type(0.0))
     End
-    if 800 <= v:version
-      It has .bool
-        Assert Equals(T.types.bool, type(v:true))
-      End
-      It has .none
-        Assert Equals(T.types.none, type(v:none))
-      End
-      It has .job
-        Assert Equals(T.types.job, type(test_null_job()))
-      End
-      It has .channel
-        Assert Equals(T.types.channel, type(test_null_channel()))
-      End
-    endif
+    It has .bool
+      if !exists('v:true')
+        Skip This Vim does not have v:true/v:false
+      endif
+      Assert Equals(T.types.bool, type(v:true))
+    End
+    It has .none
+      if !exists('v:none')
+        Skip This Vim does not have v:none
+      endif
+      Assert Equals(T.types.none, type(v:none))
+    End
+    It has .job
+      if !exists('*test_null_job')
+        Skip This Vim does not have Vim's job feature
+      endif
+      Assert Equals(T.types.job, type(test_null_job()))
+    End
+    It has .channel
+      if !exists('*test_null_channel')
+        Skip This Vim does not have Vim's channel feature
+      endif
+      Assert Equals(T.types.channel, type(test_null_channel()))
+    End
     It is locked
       Assert True(islocked('T.types'))
     End
@@ -60,20 +70,30 @@ Describe Vim.Type
     It can get name of "float"
       Assert Equals(T.type_names[type(0.0)], 'float')
     End
-    if 800 <= v:version
-      It can get name of "bool"
-        Assert Equals(T.type_names[type(v:true)], 'bool')
-      End
-      It can get name of "none"
-        Assert Equals(T.type_names[type(v:none)], 'none')
-      End
-      It can get name of "job"
-        Assert Equals(T.type_names[type(test_null_job())], 'job')
-      End
-      It can get name of "channel"
-        Assert Equals(T.type_names[type(test_null_channel())], 'channel')
-      End
-    endif
+    It can get name of "bool"
+      if !exists('v:true')
+        Skip This Vim does not have v:true/v:false
+      endif
+      Assert Equals(T.type_names[type(v:true)], 'bool')
+    End
+    It can get name of "none"
+      if !exists('v:none')
+        Skip This Vim does not have v:none
+      endif
+      Assert Equals(T.type_names[type(v:none)], 'none')
+    End
+    It can get name of "job"
+      if !exists('*test_null_job')
+        Skip This Vim does not have Vim's job feature
+      endif
+      Assert Equals(T.type_names[type(test_null_job())], 'job')
+    End
+    It can get name of "channel"
+      if !exists('*test_null_channel')
+        Skip This Vim does not have Vim's channel feature
+      endif
+      Assert Equals(T.type_names[type(test_null_channel())], 'channel')
+    End
     It is locked
       Assert True(islocked('T.type_names'))
     End
@@ -109,7 +129,9 @@ Describe Vim.Type
           Assert True(T.is_special(v:false))
           Assert True(T.is_special(v:true))
           Assert True(T.is_special(v:null))
-          Assert True(T.is_special(v:none))
+          if exists('v:none')
+            Assert True(T.is_special(v:none))
+          endif
         End
       End
       Context when {value} is not a Special value
@@ -128,7 +150,9 @@ Describe Vim.Type
         Assert True(T.is_predicate('10'))
         if 800 <= v:version
           Assert True(T.is_predicate(v:true))
-          Assert True(T.is_predicate(v:none))
+          if exists('v:none')
+            Assert True(T.is_predicate(v:none))
+          endif
         endif
       End
     End
@@ -139,8 +163,12 @@ Describe Vim.Type
         Assert False(T.is_predicate({'value': 10}))
         Assert False(T.is_predicate(1.0))
         if 800 <= v:version
-          Assert False(T.is_predicate(test_null_job()))
-          Assert False(T.is_predicate(test_null_channel()))
+          if exists('*test_null_job')
+            Assert False(T.is_predicate(test_null_job()))
+          endif
+          if exists('*test_null_channel')
+            Assert False(T.is_predicate(test_null_channel()))
+          endif
         endif
       End
     End
@@ -150,7 +178,13 @@ Describe Vim.Type
     Before each
       let vals = [0, '', function('type'), [], {}, 0.0]
       if 800 <= v:version
-        let vals += [v:false, v:null, test_null_job(), test_null_channel()]
+        let vals += [v:false, v:null]
+        if exists('*test_null_job')
+          let vals += [test_null_job()]
+        endif
+        if exists('*test_null_channel')
+          let vals += [test_null_channel()]
+        endif
       endif
 
       let true_group = []
