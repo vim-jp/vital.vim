@@ -17,6 +17,26 @@ If you are a Vim user who doesn't make Vim plugins, please ignore this page.
 
 If you are a Vim plugin author, please check this out.
 
+## Handling libraries in Vim WAS hard
+
+Since Vim script has no built-in module systems, using external libraries had been troublesome.
+
+* If you decide to include the libraries in your plugin repository:
+  You are responsible for updating the libraries by yourself. *sigh*
+  You have to ensure the updated libraries would not spoil your plugin. *super tedious*
+* If you want the plugin users to install the dependent libraries: 
+  The users will receive additional steps to get worked with your plugin. *not easy*
+  Even worse, they may fail to install the dependencies properly. *a bad dream*
+
+## What vital.vim does for this problem
+
+**vital.vim** will embed libraries into your plugin repository and thus your plugin users need not install them separately.
+Additionally, **vital.vim** can also resolve the dependency according to the declaration on **vital modules**.
+
+Concretely, **vital.vim** resolves the dependencies among **vital modules** by its module bundler called **vitalizer**.
+**vitalizer** can bundle necessary modules only and can update an existing bundle.
+On updating, **vitalizer** shows any breaking changes to help you migrate to the new version of **vital modules**.
+
 ## What vital.vim provides
 
 Module						 | Description
