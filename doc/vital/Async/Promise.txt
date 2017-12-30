@@ -51,7 +51,8 @@ https://www.ecma-international.org/publications/standards/Ecma-262.htm
 REQUIREMENTS				*Vital.Async.Promise-requirements*
 
 |Vital.Async.Promise| requires |lambda| and |timers| features.
-So Vim 8.0 or later is required. Recent version of Neovim also supports them.
+So Vim 8.0 or later is required. The recent version of Neovim also supports
+them.
 
 
 
@@ -74,13 +75,15 @@ Before explaining the detail of APIs, let's see actual examples.
   One of most simple asynchronous operation is a timer. It calls a specified
   callback when exceeding the timeout. "s:Promise.new" creates a new Promise
   object with given callback. In the callback, function "resolve" (and
-  "reject" if needed) is passed. When asynchronous operation is done (in this
-  case, when timer is expired), call "resolve" on success or call "reject" on
-  failure.
+  "reject" if needed) is passed. When the asynchronous operation is done (in
+  this case, when the timer is expired), call "resolve" on success or call
+  "reject" on failure.
 
 
 (2) Next tick				*Vital.Async.Promise-example-next-tick*
 >
+  let s:Promise = vital#vital#import('Async.Promise')
+
   function! s:next_tick()
     return s:Promise.new({resolve -> timer_start(0, resolve)})
   endfunction
@@ -90,8 +93,9 @@ Before explaining the detail of APIs, let's see actual examples.
     \.catch({err -> execute('echom err', '')})
 <
   By giving 0 to |timer_start()| as timeout, it waits for "next tick". It's the
-  first time when Vim waits input. It means that Vim gives higher priority to
-  user input and executes the script (in callback of |timer_start()|) after.
+  first time when Vim waits for input. It means that Vim gives higher priority
+  to user input and executes the script (in the callback of |timer_start()|)
+  after.
 
 
 (3) Job				*Vital.Async.Promise-example-job*
@@ -99,16 +103,15 @@ Before explaining the detail of APIs, let's see actual examples.
   let s:Promise = vital#vital#import('Async.Promise')
 
   function! s:read(chan, part) abort
-    let out = ''
+    let out = []
     while ch_status(a:chan, {'part' : a:part}) =~# 'open\|buffered'
-      let out .= ch_read(a:chan, {'part' : a:part}) . "\n"
+      call add(out, ch_read(a:chan, {'part' : a:part}))
     endwhile
-    return out
+    return join(out, "\n")
   endfunction
 
   function! s:sh(...) abort
     let cmd = join(a:000, ' ')
-    let buf = {}
     return s:Promise.new({resolve, reject -> job_start(cmd, {
     \   'drop' : 'never',
     \   'close_cb' : {ch -> 'do nothing'},
@@ -118,28 +121,27 @@ Before explaining the detail of APIs, let's see actual examples.
     \ })})
   endfunction
 <
-  |job| is a feature to run shell commands asynchronously. But it is a bit
-  hard to use because it requires callback. By wrapping it with Promise, it
-  makes further easier to use shell commands and handle errors
-  asynchronously.
+  |job| is a feature to run commands asynchronously. But it is a bit hard to use
+  because it requires a callback. By wrapping it with Promise, it makes
+  further easier to use commands and handle errors asynchronously.
 
-  s:read() is just a helper fnction which reads all outputs from job into a
-  buffer. So it's not so important.
+  s:read() is just a helper function which reads all output of channel from
+  the job. So it's not so important.
 
   Important part is "return ..." in s:sh(). It creates a Promise which starts
   a job and resolves when the given command has done. It calls resolve() when
-  the command finished successfully with output from stdout, and calls
-  reject() when the command failed with output from stderr.
+  the command finished successfully with an output from stdout, and calls
+  reject() when the command failed with an output from stderr.
 
-  "ls -l" can be executed as following:
+  "ls -l" can be executed as follows:
 >
   call s:sh('ls', '-l')
         \.then({out -> execute('echo "Output: " . out', '')})
         \.catch({err -> execute('echo "Error: " . err', '')})
 <
-  As more complex example, following code clones 4 repositories and shows a
-  message when all of them has completed. When one of them fails, it shows an
-  error message without waiting other operations.
+  As the more complex example, following code clones 4 repositories and shows
+  a message when all of them has completed. When one of them fails, it shows
+  an error message without waiting for other operations.
 >
   call s:Promise.all([
   \  s:sh('git', 'clone', 'https://github.com/thinca/vim-quickrun.git'),
@@ -159,6 +161,8 @@ Before explaining the detail of APIs, let's see actual examples.
 
   Let's see how Promise realizes timeout easily.
 >
+  let s:Promise = vital#vital#import('Async.Promise')
+
   call s:Promise.race([
   \   s:sh('git', 'clone', 'https://github.com/vim/vim.git').then({-> v:false}),
   \   s:wait(10000).then({-> v:true}),
@@ -167,11 +171,11 @@ Before explaining the detail of APIs, let's see actual examples.
   \})
 <
   s:sh() and s:wait() are explained above. And .race() awaits one of given
-  Promise objects has finished.
+  Promise objects have finished.
 
   The .race() awaits either s:sh(...) or s:wait(...) has completed or failed.
   It means that it clones Vim repository from GitHub via git command, but if
-  it exceeds 10 seconds, it does not wait the clone operation anymore.
+  it exceeds 10 seconds, it does not wait for the clone operation anymore.
 
   By adding .then() and giving the result value (v:false or v:true here), you
   can know whether the asynchronous operation was timed out or not in
@@ -181,8 +185,8 @@ Before explaining the detail of APIs, let's see actual examples.
 (5) REST API call			*Vital.Async.Promise-example-rest-api*
 
   At last, let's see how Promise handles API call with |job| and curl
-  command. Here, we utilize encodeURIComponent() function in |Vital.Web.HTTP|
-  module to encode a query string.
+  command. Here, we utilize previous "s:sh" function and encodeURIComponent()
+  function in |Vital.Web.HTTP| module to encode a query string.
 >
   let s:HTTP = vital#vital#import('Web.HTTP')
 
@@ -221,22 +225,22 @@ new({executor})				*Vital.Async.Promise.new()*
 
 	{executor} is a |Funcref| which represents how to create a Promise
 	object. It is called _synchronously_. It receives two functions as
-	parameters. First parameter is "resolve". It accepts one or zero
-	argument. By calling it in {executor}, new() returns a fulfilled
-	Promise object. Second parameter is "reject". It also accepts one or
-	zero argument. By calling it in {executor}, new() returns rejected
+	parameters. The first parameter is "resolve". It accepts one or zero
+	argument. By calling it in {executor}, new() returns a resolved
+	Promise object. The second parameter is "reject". It also accepts one
+	or zero argument. By calling it in {executor}, new() returns rejected
 	Promise object.
 >
-	  " Fulfilled Promise object with 42
+	  " Resolved Promise object with 42
 	  let p = Promise.new({resolve -> resolve(42)})
 
 	  " Rejected Promise object with 'ERROR!'
 	  let p = Promise.new({_, reject -> reject('ERROR!')})
 	  let p = Promise.new({-> execute('throw "ERROR!"')})
 <
-	When other Promise object is passed to "resolve" or "reject" function
-	call, new() returns a pending Promise object which awaits until the
-	given other Promise object has finished.
+	When another Promise object is passed to "resolve" or "reject"
+	function call, new() returns a pending Promise object which awaits
+	until the given other Promise object has finished.
 
 	If an exception is thrown in {executor}, new() returns a rejected
 	Promise object with the exception.
@@ -252,7 +256,7 @@ new({executor})				*Vital.Async.Promise.new()*
 <
 resolve([{value}])			*Vital.Async.Promise.resolve()*
 
-	Creates a fulfilled Promise object.
+	Creates a resolved Promise object.
 	It is a helper function equivalent to calling "resolve" immediately in
 	new():
 >
@@ -283,16 +287,16 @@ reject([{value}])			*Vital.Async.Promise.reject()*
 <
 all({promises})				*Vital.Async.Promise.all()*
 
-	Creates a Promise object which awaits until all of {promises} has
-	completed. It resolves the Promise object with an array of results of
-	{promises} as following:
+	Creates a Promise object which awaits all of {promises} has completed.
+	It resolves the Promise object with a list of results of {promises} as
+	following:
 >
 	  call Promise.all([Promise.resolve(1), Promise.resolve('foo')])
 	  \.then({arr -> execute('echo arr', '')})
 	  " It shows [1, 'foo']
 <
-	If one of them is rejected, it does not await for other
-	Promise objects and the Promise object is rejected immediately.
+	If one of them is rejected, it does not await other Promise objects
+	and the Promise object is rejected immediately.
 
 >
 	  call Promise.all([Promise.resolve(1), Promise.reject('ERROR!')])
@@ -357,19 +361,19 @@ asynchronous operation. It represents one of following states:
 - Operation has completed successfully
 - Operation has failed with an error
 
-{promise}.then([{onResolved} [, {onRejected}]])
 					*Vital.Async.Promise-Promise.then()*
+{promise}.then([{onResolved} [, {onRejected}]])
 
 	Creates a new Promise object which is resolved/rejected after
 	{promise} is resolved or rejected. {onResolved} and {onRejected} must
 	be |Funcref| and they are guaranteed to be called __asynchronously__.
 >
 	  echo 'hi'
-	  call Promise.new({resolve -> execute('echo "halo"', '') || resolve(42)})
+	  call Promise.new({resolve -> execute('echo "halo" | call resolve(42)', '')})
 	  \.then({-> execute('echo "bye"', '')}, {-> execute('echo "ah"', '')})
 	  echo 'yo'
 <
-	Above script following following:
+	Above script outputs messages as following:
 >
 	  hi
 	  halo
@@ -385,7 +389,7 @@ asynchronous operation. It represents one of following states:
 	If {onRejected} is specified, it is called after {promise} is
 	rejected. When {onRejected} returns non-Promise value, the returned
 	Promise object from .then() is resolved with it.
-	When {onResolved} returns a Promise object, the returned Promise
+	When {onRejected} returns a Promise object, the returned Promise
 	object awaits until the Promise object has finished.
 
 	When an exception is thrown in {onResolved} or {onRejected}, the
@@ -402,8 +406,8 @@ asynchronous operation. It represents one of following states:
 
 {promise}.catch([{onRejected}])		*Vital.Async.Promise-Promise.catch()*
 
-	It is a shortcut function of calling .then() where first argument is
-	|v:null|.
+	It is a shortcut function of calling .then() where the first argument
+	is |v:null|.
 >
 	  " Followings are equal
 	  call Promise.reject('ERROR').then(v:null, {msg -> execute('echo msg', '')})
@@ -415,7 +419,7 @@ Exception Object			*Vital.Async.Promise-objects-Exception*
 
 Exception object represents an exception of Vim script. Since Vim script's
 |v:exception| is a |String| value and a stack trace of the exception is
-separated to |v:throwpoint| variable, it does not fit to Promise API.
+separated to |v:throwpoint| variable, it does not fit Promise API.
 So we need to define our own exception object. It is passed to {onRejected}
 parameter of .then() or .catch() method.
 
@@ -432,9 +436,9 @@ Example:
   " {'exception': 'Vim(return):E691: ...', 'throwpoint': '...'}
 <
 Exception object has two fields; "exception" and "throwpoint".
-"exception" is a error message. It's corresponding to |v:exception|. And
-"throwpoint" is a stack trace of caught exception. It's corresponding to
-|v:throwpoint|. And
+"exception" is an error message. It's corresponding to |v:exception|. And
+"throwpoint" is a stack trace of the caught exception. It's corresponding to
+|v:throwpoint|.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
