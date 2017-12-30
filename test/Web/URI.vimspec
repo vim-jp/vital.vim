@@ -342,11 +342,17 @@ Describe Web.URI
 
       Context is empty
         Before
+          if has('nvim')
+            Skip Neovim does not support modifing 'encoding' option
+          endif
           let cp932 = iconv('あいうえお', 'utf-8', 'cp932')
           let encoding = &encoding
           set encoding=cp932
         End
         After
+          if has('nvim')
+            return
+          endif
           let &encoding = encoding
         End
 
@@ -405,11 +411,18 @@ Describe Web.URI
 
       Context is empty
         Before
+          if has('nvim')
+            Skip Neovim does not support modifing 'encoding' option
+            return
+          endif
           let cp932 = iconv('あいうえお', 'utf-8', 'cp932')
           let encoding = &encoding
           set encoding=cp932
         End
         After
+          if has('nvim')
+            return
+          endif
           let &encoding = encoding
         End
 
