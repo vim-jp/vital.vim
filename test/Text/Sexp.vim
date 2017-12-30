@@ -4,14 +4,20 @@ let s:suite = themis#suite('Text.Sexp')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
+  if has('nvim')
+    return
+  endif
   let s:S = vital#vital#new().import('Text.Sexp')
 endfunction
 
 function! s:suite.after()
-  unlet! s:S
+  silent! unlet! s:S
 endfunction
 
 function! s:suite.parse()
+  if has('nvim')
+    call s:assert.skip('Vital.Text.Sexp: Neovim lua interpreter is not completed yet so skip')
+  endif
   if !has('lua') || !exists('*luaeval')
     call s:assert.skip('Vital.Text.Sexp: any function call needs if_lua')
   endif
