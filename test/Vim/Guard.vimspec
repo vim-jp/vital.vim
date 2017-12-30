@@ -174,7 +174,7 @@ Describe Vim.Guard
         Assert Equals(getreg('b'), 'hogehoge')
       End
       It restore a RAW value of the expression register when assigned
-        " NOTE: 
+        " NOTE:
         " '=' could not be used in setreg() before Vim 7.4.243
         " https://github.com/vim/vim/commit/5a50c2255c447838d08d3b4895a3be3a41cd8eda
         let @= = '100 + 100 + 100'
@@ -213,7 +213,7 @@ Describe Vim.Guard
       Assert Equals(environment.name, '$PATH')
       Assert Equals(environment.value, $PATH)
     End
-    if !s:is_windows
+    if !s:is_windows && !has('nvim')
       It returns an environment variable instance of {name} even it is an empty string
         let $_VITAL_VIM_GUARD_EMPTY = ''
         let environment = sf._new_environment('$_VITAL_VIM_GUARD_EMPTY')
