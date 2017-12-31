@@ -9,7 +9,6 @@ let s:FULFILLED = 1
 let s:REJECTED = 2
 
 let s:DICT_T = type({})
-let s:NULL_T = type(v:null)
 
 " @vimlint(EVL103, 1, a:resolve)
 " @vimlint(EVL103, 1, a:reject)
@@ -37,7 +36,7 @@ endfunction
 
 " ... is added to use this function as a callback of timer_start()
 function! s:_invoke_callback(settled, promise, callback, result, ...) abort
-  let has_callback = type(a:callback) != s:NULL_T
+  let has_callback = a:callback isnot v:null
   let success = 1
   let err = v:null
   if has_callback
@@ -86,7 +85,7 @@ function! s:_publish(promise, ...) abort
       let l:CB = a:promise._rejections[i]
     endif
     let child = a:promise._children[i]
-    if type(child) != s:NULL_T
+    if child isnot v:null
       call s:_invoke_callback(settled, child, l:CB, a:promise._result)
     else
       call l:CB(a:promise._result)
