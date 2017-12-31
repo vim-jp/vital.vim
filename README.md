@@ -4,38 +4,30 @@
 
 A comprehensive Vim utility functions for Vim plugins.
 
-This is like a plugin which has both aspects of
-[Bundler](http://gembundler.com/) and [jQuery](http://jquery.com/) at the same
-time.
+## Requirements
 
 Modules in vital.vim basically support Vim 7.4 or later. And some modules have stricter requirements and additional dependencies.
 Please read the docs of each module before using them.
 
-## Targets of this plugin
-
-If you are a Vim user who doesn't make Vim plugins, please ignore this page.
-
-If you are a Vim plugin author, please check this out.
-
 ## Handling libraries in Vim WAS hard
 
-Since Vim script has no built-in module systems, using external libraries had been troublesome.
+Since Vim script has no built-in module system, using external libraries had been troublesome.
 
-* If you decide to include the libraries in your plugin repository:
+* If you decide to include the libraries in your plugin repository by copy&paste manually:
   You are responsible for updating the libraries by yourself. *sigh*
-  You have to ensure the updated libraries would not spoil your plugin. *super tedious*
+  You have to find backward-incompatible changes that can break your plugin from every changes between the previous version you installed in the past. *super tedious*
 * If you want the plugin users to install the dependent libraries: 
   The users will receive additional steps to get worked with your plugin. *not easy*
   Even worse, they may fail to install the dependencies properly. *a bad dream*
 
-## What vital.vim does for this problem
+## What vital.vim does for the problems
 
-**vital.vim** will embed libraries into your plugin repository and thus your plugin users need not install them separately.
-Additionally, **vital.vim** can also resolve the dependency according to the declaration on **vital modules**.
+**vital.vim** will embed libraries into your plugin repository and thus your plugin users don't need to install them separately.
+Additionally, **vital.vim** can also resolve the dependencies according to the declaration on **vital modules**.
 
-Concretely, **vital.vim** resolves the dependencies among **vital modules** by its module bundler called **vitalizer**.
-**vitalizer** can bundle necessary modules only and can update an existing bundle.
-On updating, **vitalizer** shows any breaking changes to help you migrate to the new version of **vital modules**.
+Concretely, **vital.vim** resolves the dependencies among **vital modules** by the module bundler called **vitalizer**.
+**vitalizer** can bundle only necessary modules and can update an existing bundle.
+On updating the modules, **vitalizer** shows any breaking changes to help you migrate to the new version of **vital modules**.
 
 ## What vital.vim provides
 
