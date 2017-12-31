@@ -16,8 +16,8 @@ Since Vim script has no built-in module system, using external libraries had bee
 * If you decide to include the libraries in your plugin repository by copy&paste manually:
   You are responsible for updating the libraries by yourself. *sigh*
   You have to find backward-incompatible changes that can break your plugin from every changes between the previous version you installed in the past. *super tedious*
-* If you want the plugin users to install the dependent libraries: 
-  The users will receive additional steps to get worked with your plugin. *not easy*
+* If you want the plugin users to install the dependent libraries:
+  The users will receive additional steps to get it working with your plugin. *not easy*
   Even worse, they may fail to install the dependencies properly. *a bad dream*
 
 ## What vital.vim does for the problems
