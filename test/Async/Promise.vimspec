@@ -1,7 +1,4 @@
 function! s:wait_has_key(obj, name) abort
-  " if has_key(a:obj, a:name)
-  "   throw printf('s:wait_has_key(): Key "%s" is already in object %s', a:name, a:obj)
-  " endif
   let i = 0
   while i < 500
     sleep 10m
@@ -54,14 +51,12 @@ Describe Async.Promise
       let l = l:
       call P.new({resolve -> resolve()}).then({x -> extend(l, {'result' : x})})
       call s:wait_has_key(l, 'result')
-      " :Assert Equal() does not support v:null by themis.vim
-      Assert True(result == v:null, 'Actual: ' . string(result))
+      Assert Equals(result, v:null)
 
       unlet result
       call P.new({_, reject -> reject()}).catch({x -> extend(l, {'result' : x})})
       call s:wait_has_key(l, 'result')
-      " :Assert Equal() does not support v:null by themis.vim
-      Assert True(result == v:null, 'Actual: ' . string(result))
+      Assert Equals(result, v:null)
     End
 
     It should create a rejected Promise object when an exception was thrown
@@ -173,238 +168,240 @@ Describe Async.Promise
     End
   End
 
-  Describe .then()
-    It should call its callback asynchronously
-      let l = l:
-      for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty')]
-        let p = P.new({resolve -> resolve(Val)})
+  Describe Promise object
+    Describe .then()
+      It should call its callback asynchronously
+        let l = l:
+        for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty')]
+          let p = P.new({resolve -> resolve(Val)})
+          Assert Equals(p._state, FULFILLED)
+          let p2 = p.then({x -> x}).then({r -> extend(l, {'Result' : r})})
+          Assert False(exists('l:Result'))
+          call s:wait_has_key(l, 'Result')
+          Assert Equals(Result, Val)
+          Assert Equals(p2._state, FULFILLED)
+          unlet l:Result
+          unlet l:Val
+        endfor
+      End
+
+      It should be chainable
+        let l = l:
+        let p = P.resolve(42).then({r -> P.resolve(r + 42)}).then({r -> extend(l, {'result' : r})})
+        call s:wait_has_key(l, 'result')
+        Assert Equals(result, 84)
         Assert Equals(p._state, FULFILLED)
-        let p2 = p.then({x -> x}).then({r -> extend(l, {'Result' : r})})
-        Assert False(exists('l:Result'))
-        call s:wait_has_key(l, 'Result')
-        Assert Equals(Result, Val)
-        Assert Equals(p2._state, FULFILLED)
-        unlet l:Result
-        unlet l:Val
-      endfor
-    End
+      End
 
-    It should be chainable
-      let l = l:
-      let p = P.resolve(42).then({r -> P.resolve(r + 42)}).then({r -> extend(l, {'result' : r})})
-      call s:wait_has_key(l, 'result')
-      Assert Equals(result, 84)
-      Assert Equals(p._state, FULFILLED)
-    End
-
-    It should be chainable asynchronously
-      let l = l:
-      let p = Wait(50).then({-> Wait(50)}).then({-> extend(l, {'result' : 42})})
-      Assert Equals(p._state, PENDING)
-      call s:wait_has_key(l, 'result')
-      Assert Equals(result, 42)
-      Assert Equals(p._state, FULFILLED)
-    End
-
-    It should resolve with funcref directly
-      let l = l:
-      let p = P.resolve(50).then(Wait).then({-> extend(l, {'result' : 42})})
-      Assert Equals(p._state, PENDING)
-      call s:wait_has_key(l, 'result')
-      Assert Equals(result, 42)
-      Assert Equals(p._state, FULFILLED)
-    End
-
-    It should accept to resolve multiple times
-      let l = l:
-      let p = P.resolve(42)
-
-      let p2 = p.then({v -> extend(l, {'value' : v + 10})})
-      call s:wait_has_key(l, 'value')
-      Assert Equals(value, 52)
-      Assert Equals(p2._state, FULFILLED)
-      unlet value
-
-      let p2 = p.then({v -> extend(l, {'value' : v + 20})})
-      call s:wait_has_key(l, 'value')
-      Assert Equals(value, 62)
-      Assert Equals(p2._state, FULFILLED)
-    End
-
-    It should accept to resolve multiple times asynchronously
-      let l = l:
-      let value = 100
-      let p1 = Wait(50).then({-> 100})
-      let p2 = p1.then({v -> extend(l, {'value' : l.value + v, 'ok1': v:true})})
-      let p3 = p1.then({v -> extend(l, {'value' : l.value + v, 'ok2': v:true})})
-      for p in [p1, p2, p3]
+      It should be chainable asynchronously
+        let l = l:
+        let p = Wait(50).then({-> Wait(50)}).then({-> extend(l, {'result' : 42})})
         Assert Equals(p._state, PENDING)
-      endfor
-      call s:wait_has_key(l, 'ok1')
-      call s:wait_has_key(l, 'ok2')
-      for p in [p1, p2, p3]
+        call s:wait_has_key(l, 'result')
+        Assert Equals(result, 42)
         Assert Equals(p._state, FULFILLED)
-      endfor
-      Assert Equals(value, 300)
-    End
+      End
 
-    It should reject Promise when an exception was thrown
-      let l = l:
+      It should resolve with funcref directly
+        let l = l:
+        let p = P.resolve(50).then(Wait).then({-> extend(l, {'result' : 42})})
+        Assert Equals(p._state, PENDING)
+        call s:wait_has_key(l, 'result')
+        Assert Equals(result, 42)
+        Assert Equals(p._state, FULFILLED)
+      End
 
-      let p = P.resolve(42).then({-> execute('throw "ERROR"')})
-      call p.catch({exc -> extend(l, {'err': exc})})
-      call s:wait_has_key(l, 'err')
-      Assert Equals(p._state, REJECTED)
-      Assert HasKey(err, 'exception')
-      Assert HasKey(err, 'throwpoint')
-      Assert Equals(err.exception, 'ERROR')
-      unlet err
+      It should accept to resolve multiple times
+        let l = l:
+        let p = P.resolve(42)
 
-      let p = P.resolve(42).then({-> execute('echom {}')})
-      call p.catch({exc -> extend(l, {'err': exc})})
-      call s:wait_has_key(l, 'err')
-      Assert Equals(p._state, REJECTED)
-      Assert HasKey(err, 'exception')
-      Assert HasKey(err, 'throwpoint')
-      Assert Match(err.exception, '^Vim(echomsg):E731:')
-    End
+        let p2 = p.then({v -> extend(l, {'value' : v + 10})})
+        call s:wait_has_key(l, 'value')
+        Assert Equals(value, 52)
+        Assert Equals(p2._state, FULFILLED)
+        unlet value
 
-    It can omit all parameters
-      let l = l:
-      call P.resolve(42).then().then().then({x -> extend(l, {'result' : x})})
-      call s:wait_has_key(l, 'result')
-      Assert Equals(result, 42)
-    End
+        let p2 = p.then({v -> extend(l, {'value' : v + 20})})
+        call s:wait_has_key(l, 'value')
+        Assert Equals(value, 62)
+        Assert Equals(p2._state, FULFILLED)
+      End
 
-    It should stop chain as soon as Promise is rejected
-      let p = P.resolve(42).then({x -> x + 1}).then({x -> execute('throw x')}).then({x -> x + 1})
-      let l = l:
-      call p.catch({x -> extend(l, {'reason' : x})})
-      call s:wait_has_key(l, 'reason')
-      Assert Equals(p._state, REJECTED)
-      Assert Equals(reason.exception, 43)
-    End
+      It should accept to resolve multiple times asynchronously
+        let l = l:
+        let value = 100
+        let p1 = Wait(50).then({-> 100})
+        let p2 = p1.then({v -> extend(l, {'value' : l.value + v, 'ok1': v:true})})
+        let p3 = p1.then({v -> extend(l, {'value' : l.value + v, 'ok2': v:true})})
+        for p in [p1, p2, p3]
+          Assert Equals(p._state, PENDING)
+        endfor
+        call s:wait_has_key(l, 'ok1')
+        call s:wait_has_key(l, 'ok2')
+        for p in [p1, p2, p3]
+          Assert Equals(p._state, FULFILLED)
+        endfor
+        Assert Equals(value, 300)
+      End
 
-    It can take rejection handler at 2nd parameter
-      let l = l:
-      let p = P.reject(42).then({x -> extend(l, {'did' : 'resolve'})}, {x -> extend(l, {'did' : 'reject'})})
-      call s:wait_has_key(l, 'did')
-      Assert Equals(p._state, FULFILLED)
-      Assert Equals(did, 'reject')
-    End
-  End
+      It should reject Promise when an exception was thrown
+        let l = l:
 
-  Describe .catch()
-    It calls its callback asynchronously
-      let l = l:
-      for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty')]
-        let p = P.new({_, reject -> reject(Val)})
-        let p2 = p.then({-> extend(l, {'Result' : 'Error: resolved to .then'})}).catch({v -> extend(l, {'Result' : v})})
-        Assert False(exists('l:Result'))
-        call s:wait_has_key(l, 'Result')
-        Assert Equals(Result, Val)
+        let p = P.resolve(42).then({-> execute('throw "ERROR"')})
+        call p.catch({exc -> extend(l, {'err': exc})})
+        call s:wait_has_key(l, 'err')
         Assert Equals(p._state, REJECTED)
-        Assert Equals(p2._state, FULFILLED)
-        unlet l:Val
-        unlet l:Result
-      endfor
-    End
+        Assert HasKey(err, 'exception')
+        Assert HasKey(err, 'throwpoint')
+        Assert Equals(err.exception, 'ERROR')
+        unlet err
 
-    It is called when an exceptioin is thrown in upstream
-      let l = l:
-      let p = P.new({-> execute('throw 42')})
-        \.catch({r -> extend(l, {'reason' : r})})
-      call s:wait_has_key(l, 'reason')
-      Assert Equals(reason.exception, 42)
-      Assert Equals(p._state, FULFILLED)
-    End
+        let p = P.resolve(42).then({-> execute('echom {}')})
+        call p.catch({exc -> extend(l, {'err': exc})})
+        call s:wait_has_key(l, 'err')
+        Assert Equals(p._state, REJECTED)
+        Assert HasKey(err, 'exception')
+        Assert HasKey(err, 'throwpoint')
+        Assert Match(err.exception, '^Vim(echomsg):E731:')
+      End
 
-    It resolves thenable object
-      let l = l:
-      let p = P.reject(42).catch({r -> P.resolve(r + 42)}).then({r -> extend(l, {'reason' : r})})
-      call s:wait_has_key(l, 'reason')
-      Assert Equals(reason, 84)
-      Assert Equals(p._state, FULFILLED)
-    End
+      It can omit all parameters
+        let l = l:
+        call P.resolve(42).then().then().then({x -> extend(l, {'result' : x})})
+        call s:wait_has_key(l, 'result')
+        Assert Equals(result, 42)
+      End
 
-    It resolves thenable object asynchronously
-      let l = l:
-      let p = RejectAfter(50).catch({-> RejectAfter(50)}).catch({-> extend(l, {'reason' : 42})})
-      Assert Equals(p._state, PENDING)
-      call s:wait_has_key(l, 'reason')
-      Assert Equals(reason, 42)
-      Assert Equals(p._state, FULFILLED)
-    End
+      It should stop chain as soon as Promise is rejected
+        let p = P.resolve(42).then({x -> x + 1}).then({x -> execute('throw x')}).then({x -> x + 1})
+        let l = l:
+        call p.catch({x -> extend(l, {'reason' : x})})
+        call s:wait_has_key(l, 'reason')
+        Assert Equals(p._state, REJECTED)
+        Assert Equals(reason.exception, 43)
+      End
 
-    It resolves by funcref directly
-      let l = l:
-      let p = P.reject(50).catch(Wait).then({-> extend(l, {'result' : 42})})
-      Assert Equals(p._state, PENDING)
-      call s:wait_has_key(l, 'result')
-      Assert Equals(result, 42)
-      Assert Equals(p._state, FULFILLED)
-    End
-
-    It should resolve the same rejected promise multiple times
-      let l = l:
-      let p = P.reject(42)
-      let p2 = p.catch({v -> extend(l, {'value' : v + 10})})
-      call s:wait_has_key(l, 'value')
-      Assert Equals(value, 52)
-      Assert Equals(p2._state, FULFILLED)
-      unlet value
-      let p2 = p.catch({v -> extend(l, {'value' : v + 20})})
-      call s:wait_has_key(l, 'value')
-      Assert Equals(value, 62)
-      Assert Equals(p2._state, FULFILLED)
-    End
-
-    It should resolve the same rejected promise multiple times asynchronously
-      let l = l:
-      let value = 100
-      let p1 = RejectAfter(50)
-      let p2 = p1.catch({v -> extend(l, {'value' : l.value + 100, 'ok1' : v:true})})
-      let p3 = p1.catch({v -> extend(l, {'value' : l.value + 100, 'ok2' : v:true})})
-      for p in [p1, p2, p3]
-        Assert Equals(p._state, PENDING)
-      endfor
-      call s:wait_has_key(l, 'ok1')
-      call s:wait_has_key(l, 'ok2')
-      Assert Equals(p1._state, REJECTED)
-      for p in [p2, p3]
+      It can take rejection handler at 2nd parameter
+        let l = l:
+        let p = P.reject(42).then({x -> extend(l, {'did' : 'resolve'})}, {x -> extend(l, {'did' : 'reject'})})
+        call s:wait_has_key(l, 'did')
         Assert Equals(p._state, FULFILLED)
-      endfor
-      Assert Equals(value, 300)
+        Assert Equals(did, 'reject')
+      End
     End
 
-    It should reject Promise when an exception was thrown
-      let l = l:
+    Describe .catch()
+      It calls its callback asynchronously
+        let l = l:
+        for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty')]
+          let p = P.new({_, reject -> reject(Val)})
+          let p2 = p.then({-> extend(l, {'Result' : 'Error: resolved to .then'})}).catch({v -> extend(l, {'Result' : v})})
+          Assert False(exists('l:Result'))
+          call s:wait_has_key(l, 'Result')
+          Assert Equals(Result, Val)
+          Assert Equals(p._state, REJECTED)
+          Assert Equals(p2._state, FULFILLED)
+          unlet l:Val
+          unlet l:Result
+        endfor
+      End
 
-      let p = P.reject(42).catch({-> execute('throw "ERROR"')})
-      call p.catch({exc -> extend(l, {'reason': exc})})
-      call s:wait_has_key(l, 'reason')
-      Assert Equals(p._state, REJECTED)
-      Assert HasKey(reason, 'exception')
-      Assert HasKey(reason, 'throwpoint')
-      Assert Equals(reason.exception, 'ERROR')
-      unlet reason
+      It is called when an exceptioin is thrown in upstream
+        let l = l:
+        let p = P.new({-> execute('throw 42')})
+          \.catch({r -> extend(l, {'reason' : r})})
+        call s:wait_has_key(l, 'reason')
+        Assert Equals(reason.exception, 42)
+        Assert Equals(p._state, FULFILLED)
+      End
 
-      let p = P.reject(42).catch({-> execute('echom {}')})
-      call p.catch({exc -> extend(l, {'reason': exc})})
-      call s:wait_has_key(l, 'reason')
-      Assert Equals(p._state, REJECTED)
-      Assert HasKey(reason, 'exception')
-      Assert HasKey(reason, 'throwpoint')
-      Assert Match(reason.exception, '^Vim(echomsg):E731:')
-    End
+      It resolves thenable object
+        let l = l:
+        let p = P.reject(42).catch({r -> P.resolve(r + 42)}).then({r -> extend(l, {'reason' : r})})
+        call s:wait_has_key(l, 'reason')
+        Assert Equals(reason, 84)
+        Assert Equals(p._state, FULFILLED)
+      End
 
-    It should pass through the exception when all parameters are omitted
-      let l = l:
-      let p = P.reject(42).catch().catch()
-      call p.catch({x -> extend(l, {'reason' : x})})
-      call s:wait_has_key(l, 'reason')
-      Assert Equals(p._state, REJECTED)
-      Assert Equals(reason, 42)
+      It resolves thenable object asynchronously
+        let l = l:
+        let p = RejectAfter(50).catch({-> RejectAfter(50)}).catch({-> extend(l, {'reason' : 42})})
+        Assert Equals(p._state, PENDING)
+        call s:wait_has_key(l, 'reason')
+        Assert Equals(reason, 42)
+        Assert Equals(p._state, FULFILLED)
+      End
+
+      It resolves by funcref directly
+        let l = l:
+        let p = P.reject(50).catch(Wait).then({-> extend(l, {'result' : 42})})
+        Assert Equals(p._state, PENDING)
+        call s:wait_has_key(l, 'result')
+        Assert Equals(result, 42)
+        Assert Equals(p._state, FULFILLED)
+      End
+
+      It should resolve the same rejected promise multiple times
+        let l = l:
+        let p = P.reject(42)
+        let p2 = p.catch({v -> extend(l, {'value' : v + 10})})
+        call s:wait_has_key(l, 'value')
+        Assert Equals(value, 52)
+        Assert Equals(p2._state, FULFILLED)
+        unlet value
+        let p2 = p.catch({v -> extend(l, {'value' : v + 20})})
+        call s:wait_has_key(l, 'value')
+        Assert Equals(value, 62)
+        Assert Equals(p2._state, FULFILLED)
+      End
+
+      It should resolve the same rejected promise multiple times asynchronously
+        let l = l:
+        let value = 100
+        let p1 = RejectAfter(50)
+        let p2 = p1.catch({v -> extend(l, {'value' : l.value + 100, 'ok1' : v:true})})
+        let p3 = p1.catch({v -> extend(l, {'value' : l.value + 100, 'ok2' : v:true})})
+        for p in [p1, p2, p3]
+          Assert Equals(p._state, PENDING)
+        endfor
+        call s:wait_has_key(l, 'ok1')
+        call s:wait_has_key(l, 'ok2')
+        Assert Equals(p1._state, REJECTED)
+        for p in [p2, p3]
+          Assert Equals(p._state, FULFILLED)
+        endfor
+        Assert Equals(value, 300)
+      End
+
+      It should reject Promise when an exception was thrown
+        let l = l:
+
+        let p = P.reject(42).catch({-> execute('throw "ERROR"')})
+        call p.catch({exc -> extend(l, {'reason': exc})})
+        call s:wait_has_key(l, 'reason')
+        Assert Equals(p._state, REJECTED)
+        Assert HasKey(reason, 'exception')
+        Assert HasKey(reason, 'throwpoint')
+        Assert Equals(reason.exception, 'ERROR')
+        unlet reason
+
+        let p = P.reject(42).catch({-> execute('echom {}')})
+        call p.catch({exc -> extend(l, {'reason': exc})})
+        call s:wait_has_key(l, 'reason')
+        Assert Equals(p._state, REJECTED)
+        Assert HasKey(reason, 'exception')
+        Assert HasKey(reason, 'throwpoint')
+        Assert Match(reason.exception, '^Vim(echomsg):E731:')
+      End
+
+      It should pass through the exception when all parameters are omitted
+        let l = l:
+        let p = P.reject(42).catch().catch()
+        call p.catch({x -> extend(l, {'reason' : x})})
+        call s:wait_has_key(l, 'reason')
+        Assert Equals(p._state, REJECTED)
+        Assert Equals(reason, 42)
+      End
     End
   End
 
@@ -519,8 +516,7 @@ Describe Async.Promise
   Describe .resolve()
     It should create resolved Promise with given non-Promise value
       let l = l:
-      " TODO: Test v:null, v:true and v:false. They are not supported by themis.vim yet.
-      for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty')]
+      for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty'), v:null, v:true]
         let p = P.resolve(Val)
         Assert Equals(p._state, FULFILLED)
         call p.then({x -> extend(l, {'Result' : x})}).catch({x -> extend(l, {'Result' : x})})
@@ -564,8 +560,7 @@ Describe Async.Promise
       let l = l:
       call P.resolve().then({x -> extend(l, {'result': x})})
       call s:wait_has_key(l, 'result')
-      " :Assert Equal() does not support v:null by themis.vim
-      Assert True(result == v:null, 'Actual: ' . string(result))
+      Assert Equals(result, v:null)
     End
 
     It should wait for given pending Promise being resolved
@@ -591,8 +586,7 @@ Describe Async.Promise
   Describe .reject()
     It should create rejected Promise with non-Promise value
       let l = l:
-      " TODO: Test v:null, v:true and v:false. They are not supported by themis.vim yet.
-      for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty')]
+      for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty'), v:null, v:true]
         let p = P.reject(Val)
         Assert Equals(p._state, REJECTED)
         call p.then({-> extend(l, {'Result' : 'Error: resolve to .then()'})}).catch({x -> extend(l, {'Result' : x})})
@@ -617,6 +611,15 @@ Describe Async.Promise
     It should create rejected Promise with pending Promise
       let p = P.reject(P.new({-> 42}))
       Assert Equals(p._state, REJECTED)
+    End
+
+    It should create rejected Promise with resolved Promise
+      let l = l:
+      let p = P.reject(P.resolve(42))
+      Assert Equals(p._state, REJECTED)
+      call p.catch({x -> x}).then({x -> extend(l, {'result' : x})})
+      call s:wait_has_key(l, 'result')
+      Assert Equals(result, 42)
     End
 
     It can omit parameter
