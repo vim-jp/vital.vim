@@ -1,0 +1,68 @@
+function! s:xml(...) abort
+  return join(['<?xml version="1.0" encoding="UTF-8"?>'] + a:000, "\n")
+endfunction
+
+Describe Web.XML
+  Before all
+    let X = vital#vital#import('Web.XML')
+  End
+
+  Describe .parse()
+    It parses an XML element
+      let s = s:xml('<test/>')
+      let doc = X.parse(s)
+      Assert Equal(doc.name, 'test')
+      Assert HasKey(doc, 'childNodes')
+      Assert Equal(len(doc.childNodes()), 0)
+      Assert Equal(len(doc.attr), 0)
+    End
+
+    It parses nested XML elements
+      let s = s:xml('<parent><child/></parent>')
+      let doc = X.parse(s)
+      Assert Equal(doc.name, 'parent')
+      let children = doc.childNodes()
+      Assert Equal(len(children), 1)
+      Assert Equal(children[0].name, 'child')
+      Assert Equal(len(children[0].childNodes()), 0)
+    End
+
+    It parses attributes of an XML element
+      let s = s:xml('<elem a="foo" b=''bar'' c="" d='''' e f = "piyo" g=baz />')
+      let doc = X.parse(s)
+      Assert Equal(doc.attr, {
+            \  'a': 'foo',
+            \  'b': 'bar',
+            \  'c': '',
+            \  'd': '',
+            \  'e': '',
+            \  'f': 'piyo',
+            \  'g': 'baz',
+            \ })
+    End
+
+    It parses comments
+      let s = s:xml(
+            \   '<--! comment -->',
+            \   '<--! ',
+            \   'comment',
+            \   ' -->',
+            \   '<test/>',
+            \   '<--! comment2 -->',
+            \ )
+      let doc = X.parse(s)
+      Assert Equals(doc.name, 'test')
+      Assert Equals(len(doc.childNodes()), 0)
+    End
+
+    It raises an error on empty document
+      let s = s:xml()
+      Throws /^vital: Web.XML: Parse Error$/ X.parse(s)
+    End
+
+    It raises an error when tag not closing
+      let s = s:xml('<foo')
+      Throws /^vital: Web.XML: Parse Error$/ X.parse(s)
+    End
+  End
+End
