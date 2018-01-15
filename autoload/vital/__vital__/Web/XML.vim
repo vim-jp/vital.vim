@@ -15,6 +15,9 @@ endfunction
 let s:__template = { 'name': '', 'attr': {}, 'child': [] }
 
 function! s:decodeEntityReference(str) abort
+  if a:str ==# ''
+    return a:str
+  endif
   let str = a:str
   let str = substitute(str, '&gt;', '>', 'g')
   let str = substitute(str, '&lt;', '<', 'g')
@@ -29,6 +32,9 @@ function! s:decodeEntityReference(str) abort
 endfunction
 
 function! s:encodeEntityReference(str) abort
+  if a:str ==# ''
+    return a:str
+  endif
   let str = a:str
   let str = substitute(str, '&', '\&amp;', 'g')
   let str = substitute(str, '>', '\&gt;', 'g')
@@ -209,9 +215,7 @@ function! s:__parse_tree(ctx, top) abort
     let tag_name = m[3]
     let attrs = m[4]
 
-    if m[1] !=# ''
-      let content .= s:decodeEntityReference(m[1])
-    endif
+    let content .= s:decodeEntityReference(m[1])
 
     if is_end_tag
       " closing tag: pop from stack and continue at upper level
@@ -244,7 +248,7 @@ function! s:__parse_tree(ctx, top) abort
       endif
       let name = attr_match[1]
       let value = attr_match[2] !=# '' ? attr_match[2] : attr_match[3] !=# '' ? attr_match[3] : attr_match[4] !=# '' ? attr_match[4] : ''
-      let node.attr[name] = value ==# '' ? '' : s:decodeEntityReference(value)
+      let node.attr[name] = s:decodeEntityReference(value)
       let attrs = attrs[stridx(attrs, attr_match[0]) + len(attr_match[0]):]
     endwhile
 
