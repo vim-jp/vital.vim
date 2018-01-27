@@ -254,4 +254,30 @@ function! s:_promise_catch(...) dict abort
 endfunction
 let s:PROMISE.catch = function('s:_promise_catch')
 
+function! s:_on_finally(CB, parent, Result) abort
+  call a:CB()
+  if a:parent._state == s:FULFILLED
+    return a:Result
+  else " REJECTED
+    return s:reject(a:Result)
+  endif
+endfunction
+function! s:_promise_finally(...) dict abort
+  let parent = self
+  let state = parent._state
+  let child = s:new(s:NOOP)
+  if a:0 == 0
+    let l:CB = v:null
+  else
+    let l:CB = function('s:_on_finally', [a:1, parent])
+  endif
+  if state != s:PENDING
+    call timer_start(0, function('s:_invoke_callback', [state, child, CB, parent._result]))
+  else
+    call s:_subscribe(parent, child, CB, CB)
+  endif
+  return child
+endfunction
+let s:PROMISE.finally = function('s:_promise_finally')
+
 " vim:set et ts=2 sts=2 sw=2 tw=0:
