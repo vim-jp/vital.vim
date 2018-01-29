@@ -7,7 +7,7 @@ function! s:wait_has_key(obj, name) abort
     endif
     let i += 1
   endwhile
-  throw 's:wait_has_key(): After 5000ms, ' . string(a:obj) . ' did not have key ' . a:name
+  throw printf("s:wait_has_key(): After 5000ms, the given object does not have key '%s': %s", a:name, a:obj)
 endfunction
 
 function! s:resolver(resolve, reject) abort
@@ -401,6 +401,79 @@ Describe Async.Promise
         call s:wait_has_key(l, 'reason')
         Assert Equals(p._state, REJECTED)
         Assert Equals(reason, 42)
+      End
+    End
+
+    Describe .finally()
+      It should call its callback and propagate its parent's value when resolved
+        let l = l:
+        for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty')]
+          let p = P.resolve(l:Val).finally({-> extend(l, {'On_resolved': Val})})
+          call p.then({x -> extend(l, {'Result': x})})
+          call s:wait_has_key(l, 'Result')
+          Assert HasKey(l, 'On_resolved')
+          Assert Equals(p._state, FULFILLED)
+          Assert Equals(Result, Val)
+          Assert Equals(l.On_resolved, Val)
+          unlet l:Val
+          unlet l:On_resolved
+          unlet l:Result
+        endfor
+      End
+
+      It should call its callback and propagate its parent's value when rejected
+        let l = l:
+        for l:Val in [42, 'foo', {'foo': 42}, {}, [1, 2, 3], [], function('empty')]
+          let p = P.reject(l:Val).finally({-> extend(l, {'On_rejected': Val})})
+          call p.catch({x -> extend(l, {'Err': x})})
+          call s:wait_has_key(l, 'Err')
+          Assert HasKey(l, 'On_rejected')
+          Assert Equals(p._state, REJECTED)
+          Assert Equals(Err, Val)
+          Assert Equals(l.On_rejected, Val)
+          unlet l:Val
+          unlet l:On_rejected
+          unlet l:Err
+        endfor
+      End
+
+      It should just propagates a resolved value when no argument given
+        let l = l:
+        let p = P.resolve(42).finally()
+        call p.then({x -> extend(l, {'result': x})})
+        call s:wait_has_key(l, 'result')
+        Assert Equals(p._state, FULFILLED)
+        Assert Equals(l.result, 42)
+      End
+
+      It should just propagates a rejected value when no argument given
+        let l = l:
+        let p = P.reject('ERROR!').finally()
+        call p.catch({x -> extend(l, {'err': x})})
+        call s:wait_has_key(l, 'err')
+        Assert Equals(p._state, REJECTED)
+        Assert Equals(l.err, 'ERROR!')
+      End
+
+      It should not pass parent's result to its callback
+        let l = l:
+        let p = P.resolve(42).finally({x -> extend(l, {'on_finally': x})})
+        call p.catch({e -> extend(l, {'err': e})})
+        call s:wait_has_key(l, 'err')
+        Assert Equals(p._state, REJECTED)
+        Assert KeyNotExists(l, 'on_finally')
+        Assert HasKey(err, 'throwpoint')
+        Assert Equals(stridx(err.exception, 'Vim(call):E119:'), 0, err.exception)
+      End
+
+      It should return rejected promise when an exception is thrown in its callback
+        let l = l:
+        let p = P.resolve(42).finally({-> execute('throw "Exception in onFinally"')})
+        call p.catch({e -> extend(l, {'err': e})})
+        call s:wait_has_key(l, 'err')
+        Assert Equals(p._state, REJECTED)
+        Assert HasKey(err, 'throwpoint')
+        Assert Equals(err.exception, 'Exception in onFinally')
       End
     End
   End

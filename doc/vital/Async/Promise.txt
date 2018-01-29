@@ -413,6 +413,36 @@ asynchronous operation. It represents one of following states:
 	  call Promise.reject('ERROR').then(v:null, {msg -> execute('echo msg', '')})
 	  call Promise.reject('ERROR').catch({msg -> execute('echo msg', '')})
 <
+{promise}.finally([{onFinally}])	*Vital.Async.Promise-Promise.finally()*
+
+	It returns a Promise and the passed callback is called once the
+	promise is settled, whether fulfilled or rejected.
+	This provides a way for code that must be executed once the promise
+	has been dealt with to be run whether it was fulfilled successfully or
+	rejected. {onFinally} is a |Funcref| which has no parameter.
+>
+	  " Both followings echo 'on finally'
+	  call Promise.resolve(42).finally({-> execute('echo "on finally"', '')})
+	  call Promise.reject('ERROR!').finally({-> execute('echo "on finally"', '')})
+<
+	|:throw| in the {onFinally} callback will reject the new promise with
+	the thrown error.
+
+	Unlike passing the callback to both 1st and 2nd parameters of
+	.then(), it propagates its receiver's result.
+>
+	  " Following echoes 42
+	  call Promise.resolve(42)
+	    \.finally({-> v:null})
+	    \.then({x -> execute('echo x', '')})
+<
+	Note:
+	As an above code, .finally() is different from .then() in terms of
+	the resolved/rejected value. `Promise.resolve(42).finally()` resolves
+	with 42, but `Promise.resolve(42).then({-> v:null}, {-> v:null})`
+	resolves with v:null.
+
+
 
 ------------------------------------------------------------------------------
 Exception Object			*Vital.Async.Promise-objects-Exception*
