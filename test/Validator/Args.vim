@@ -33,6 +33,23 @@ function! s:suite.__of__()
     endif
   endfunction
 
+  function! of.of_should_not_validate_if_disabled() abort
+    let [A, T] = [s:A, s:T]
+
+    " disabled
+    let v = A.of('func()', 0).type(T.STRING)
+    try
+      Assert Equals(v.validate([42]), [42])
+    catch
+      Assert 0, 'should not throw'
+    endtry
+
+    " enabled
+    let v = A.of('func()', 1).type(T.STRING)
+    Throws /^func(): invalid type arguments were given (expected: String, got: Number)/
+    \ v.validate([42])
+  endfunction
+
   function! of.no_check()
     let A = s:A
     call A.of('test()').validate([])

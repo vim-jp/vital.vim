@@ -32,12 +32,16 @@ function! s:_vital_created(module) abort
 endfunction
 
 
-function! s:of(prefix) abort
+function! s:of(prefix, ...) abort
   if type(a:prefix) isnot s:TYPE.STRING
     throw 'vital: Validator.Args: of(): expected String argument ' .
     \     'but got ' . s:TYPES[type(a:prefix)]
   endif
-  let validator = {'_prefix': a:prefix, '_asserts': {}}
+  let validator = {
+  \ '_prefix': a:prefix,
+  \ '_asserts': {},
+  \ '_enable': !!get(a:000, 0, 1),
+  \}
   function! validator.type(...) abort
     call s:_check_type_args(a:000)
     for index in keys(self._asserts)
@@ -58,6 +62,9 @@ function! s:of(prefix) abort
     return self
   endfunction
   function! validator.validate(args) abort
+    if !self._enable
+      return a:args
+    endif
     if type(a:args) isnot s:TYPE.LIST
       throw 'vital: Validator.Args: Validator.validate(): expected List argument ' .
       \     'but got ' . s:TYPES[type(a:args)]

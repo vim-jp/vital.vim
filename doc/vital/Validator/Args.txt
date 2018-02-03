@@ -108,11 +108,23 @@ INTERFACE				*Vital.Validator.Args-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Validator.Args-functions*
 
-of({prefix})					*Vital.Validator.Args.empty()*
+of({prefix} [, {enable}])				*Vital.Validator.Args.empty()*
 	Creates validator of a function. {prefix} is a prefix of a thrown
 	exception message. see |Vital.Validator.Args-exceptions| for the
 	examples of thrown exception messages.
+	If {enable} was given and zero, this module does not perform any
+	validations. It is useful to switch in debug/production environment.
+>
+	" Validates arguments if 'g:myplugin#enable_debug' is non-zero.
+	" Otherwise this does not validate arguments.
+	let func_args = s:Validator.of('func()', g:myplugin#enable_debug)
+	                          \.type(s:TYPE.NUMBER)
+	function! s:func(...) abort
+	  let [n] = s:func_args.validate(a:000)
 
+	  " ...
+	endfunction
+<
 ------------------------------------------------------------------------------
 TYPES				*Vital.Validator.Args-types*
 
