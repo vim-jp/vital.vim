@@ -190,12 +190,24 @@ function! s:trim(str) abort
   return matchstr(a:str,'^\s*\zs.\{-}\ze\s*$')
 endfunction
 
+function! s:strip(str) abort
+  return matchstr(a:str,'^[[:space:]]*\zs.\{-}\ze[[:space:]]*$')
+endfunction
+
 function! s:trim_start(str) abort
   return matchstr(a:str,'^\s*\zs.\{-}$')
 endfunction
 
+function! s:strip_start(str) abort
+  return matchstr(a:str,'^[[:space:]]*\zs.\{-}$')
+endfunction
+
 function! s:trim_end(str) abort
   return matchstr(a:str,'^.\{-}\ze\s*$')
+endfunction
+
+function! s:strip_end(str) abort
+  return matchstr(a:str,'^.\{-}\ze[[:space:]]*$')
 endfunction
 
 function! s:wrap(str,...) abort
