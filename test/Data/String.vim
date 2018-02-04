@@ -22,6 +22,12 @@ function! s:suite.trim()
   call s:assert.equals(s:String.trim('   hello  world !     '), 'hello  world !')
   call s:assert.equals(s:String.trim(''), '')
   call s:assert.equals(s:String.trim('  '), '')
+  " trim() does not trim control characters between 0x09-0x0d including LF, CR
+  for n in range(0x09, 0x0d)
+    let c = nr2char(n)
+    call s:assert.equals(s:String.trim(c . "hello" . c), c . "hello" . c, printf('trim 0x%02x (without SPC(0x20))', n))
+    call s:assert.equals(s:String.trim(c . "  hello  " . c), c . "  hello  " . c, printf('trim 0x%02x (with SPC(0x20))', n))
+  endfor
 endfunction
 
 function! s:suite.trim_start()
@@ -34,6 +40,12 @@ function! s:suite.trim_start()
   call s:assert.equals(s:String.trim_start('   hello  world !     '), 'hello  world !     ')
   call s:assert.equals(s:String.trim(''), '')
   call s:assert.equals(s:String.trim('  '), '')
+  " trim() does not trim control characters between 0x09-0x0d including LF, CR
+  for n in range(0x09, 0x0d)
+    let c = nr2char(n)
+    call s:assert.equals(s:String.trim(c . "hello"), c . "hello", printf('trim 0x%02x (without SPC(0x20))', n))
+    call s:assert.equals(s:String.trim(c . "  hello"), c . "  hello", printf('trim 0x%02x (with SPC(0x20))', n))
+  endfor
 endfunction
 
 function! s:suite.trim_end()
@@ -46,6 +58,12 @@ function! s:suite.trim_end()
   call s:assert.equals(s:String.trim_end('   hello  world !     '), '   hello  world !')
   call s:assert.equals(s:String.trim(''), '')
   call s:assert.equals(s:String.trim('  '), '')
+  " trim() does not trim control characters between 0x09-0x0d including LF, CR
+  for n in range(0x09, 0x0d)
+    let c = nr2char(n)
+    call s:assert.equals(s:String.trim("hello" . c), "hello" . c, printf('trim 0x%02x (without SPC(0x20))', n))
+    call s:assert.equals(s:String.trim("hello  " . c), "hello  " . c, printf('trim 0x%02x (with SPC(0x20))', n))
+  endfor
 endfunction
 
 function! s:suite.wrap()
