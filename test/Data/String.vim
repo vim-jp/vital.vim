@@ -30,14 +30,14 @@ function! s:trim(method) abort
   call s:assert.equals(s:String[a:method]('   hello  world !     '), 'hello  world !')
   call s:assert.equals(s:String[a:method](''), '')
   call s:assert.equals(s:String[a:method]('  '), '')
-  if a:method is 'trim'
+  if a:method is# 'trim'
     " trim() does not trim control characters between 0x0a-0x0d including LF, CR
     for n in range(0x0a, 0x0d)
       let c = nr2char(n)
       call s:assert.equals(s:String[a:method](c . 'hello' . c), c . 'hello' . c, printf('trim 0x%02x (without SPC(0x20))', n))
       call s:assert.equals(s:String[a:method](c . '  hello  ' . c), c . '  hello  ' . c, printf('trim 0x%02x (with SPC(0x20))', n))
     endfor
-  elseif a:method is 'strip'
+  elseif a:method is# 'strip'
     " strip() trims control characters between 0x0a-0x0d including LF, CR
     for n in range(0x0a, 0x0d)
       let c = nr2char(n)
@@ -67,14 +67,14 @@ function! s:trim_start(method) abort
   call s:assert.equals(s:String[a:method]('   hello  world !     '), 'hello  world !     ')
   call s:assert.equals(s:String[a:method](''), '')
   call s:assert.equals(s:String[a:method]('  '), '')
-  if a:method is 'trim_start'
+  if a:method is# 'trim_start'
     " trim_start() does not trim control characters between 0x0a-0x0d including LF, CR
     for n in range(0x0a, 0x0d)
       let c = nr2char(n)
       call s:assert.equals(s:String[a:method](c . 'hello' . c), c . 'hello' . c, printf('trim_start 0x%02x (without SPC(0x20))', n))
       call s:assert.equals(s:String[a:method](c . '  hello  ' . c), c . '  hello  ' . c, printf('trim_start 0x%02x (with SPC(0x20))', n))
     endfor
-  elseif a:method is 'strip_start'
+  elseif a:method is# 'strip_start'
     " strip_start() trims control characters between 0x0a-0x0d including LF, CR
     for n in range(0x0a, 0x0d)
       let c = nr2char(n)
@@ -104,14 +104,14 @@ function! s:trim_end(method) abort
   call s:assert.equals(s:String[a:method]('   hello  world !     '), '   hello  world !')
   call s:assert.equals(s:String[a:method](''), '')
   call s:assert.equals(s:String[a:method]('  '), '')
-  if a:method is 'trim_end'
+  if a:method is# 'trim_end'
     " trim_end() does not trim control characters between 0x0a-0x0d including LF, CR
     for n in range(0x0a, 0x0d)
       let c = nr2char(n)
       call s:assert.equals(s:String[a:method](c . 'hello' . c), c . 'hello' . c, printf('trim_end 0x%02x (without SPC(0x20))', n))
       call s:assert.equals(s:String[a:method](c . '  hello  ' . c), c . '  hello  ' . c, printf('trim_end 0x%02x (with SPC(0x20))', n))
     endfor
-  elseif a:method is 'strip_end'
+  elseif a:method is# 'strip_end'
     " strip_end() does not trim control characters between 0x0a-0x0d including LF, CR
     for n in range(0x0a, 0x0d)
       let c = nr2char(n)
