@@ -187,26 +187,14 @@ function! s:_split_by_wcswidth(body, x) abort
 endfunction
 
 function! s:trim(str) abort
-  return matchstr(a:str,'^[[:blank:]]*\zs.\{-}\ze[[:blank:]]*$')
-endfunction
-
-function! s:strip(str) abort
   return matchstr(a:str,'^[[:space:]]*\zs.\{-}\ze[[:space:]]*$')
 endfunction
 
 function! s:trim_start(str) abort
-  return matchstr(a:str,'^[[:blank:]]*\zs.\{-}$')
-endfunction
-
-function! s:strip_start(str) abort
   return matchstr(a:str,'^[[:space:]]*\zs.\{-}$')
 endfunction
 
 function! s:trim_end(str) abort
-  return matchstr(a:str,'^.\{-}\ze[[:blank:]]*$')
-endfunction
-
-function! s:strip_end(str) abort
   return matchstr(a:str,'^.\{-}\ze[[:space:]]*$')
 endfunction
 
