@@ -1,3 +1,9 @@
+eda83ccae4654265ef118569dcae39fd30d3c0d5
+	Modules: Data.String
+	trim(), trim_start(), trim_end() were changed to remove [:space:] characters ([ \t\r\n\v\f]).
+	Before, the functions removed only [:blank:] characters ([ \t]).
+	If you want the previous behavior, replace code like:
+		String.trim(str) -> matchstr(str, '^\s*\zs.{-}\ze\s*$')
 c680503cd8e48f7b1c21903ed14ffe75cb56c3f4
 	Modules: *
 	The obsolete file "autoload/vital.vim" is no longer installed
