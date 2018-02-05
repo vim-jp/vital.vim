@@ -1,5 +1,6 @@
 eda83ccae4654265ef118569dcae39fd30d3c0d5
 	Modules: Data.String
+	Ref: https://github.com/vim-jp/vital.vim/pull/575
 	trim(), trim_start(), trim_end() were changed to remove [:space:] characters ([ \t\r\n\v\f]).
 	Before, the functions removed only [:blank:] characters ([ \t]).
 	If you want the previous behavior, replace code like:
