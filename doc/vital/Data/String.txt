@@ -95,13 +95,13 @@ chomp({str}) 				*Vital.Data.String.chomp()*
 	Removes last \r,\n,\r\n from {str}.
 
 trim({str})	                	*Vital.Data.String.trim()*
-	Returns |String| removed spaces (|[:blank:]|) from the beginning and end of a {str}.
+	Returns |String| removed spaces (|[:space:]|) from the beginning and end of a {str}.
 
 trim_start({str})			*Vital.Data.String.trim_start()*
-	Returns |String| removed spaces (|[:blank:]|) from the beginning of a {str}.
+	Returns |String| removed spaces (|[:space:]|) from the beginning of a {str}.
 
 trim_end({str})				*Vital.Data.String.trim_end()*
-	Returns |String| removed spaces (|[:blank:]|) from the end of a {str}.
+	Returns |String| removed spaces (|[:space:]|) from the end of a {str}.
 
 wrap({str} [, {columns}])		*Vital.Data.String.wrap()*
 	Returns |String| wrapped to fit to |columns| width.
