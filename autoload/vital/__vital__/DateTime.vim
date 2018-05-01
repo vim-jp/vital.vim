@@ -799,7 +799,7 @@ if has('win16') || has('win32') || has('win64')
   function! s:_default_tz() abort
     let hm = map(split(strftime('%H %M', 0), ' '), 'str2nr(v:val)')
     if str2nr(strftime('%Y', 0)) != 1970
-      let tz_sec = s:SECONDS_OF_DAY - hm[0] * s:SECONDS_OF_HOUR + hm[1] * s:NUM_SECONDS
+      let tz_sec = s:SECONDS_OF_DAY - hm[0] * s:SECONDS_OF_HOUR - hm[1] * s:NUM_SECONDS
       return printf('-%02d%02d', tz_sec / s:SECONDS_OF_HOUR, (tz_sec / s:NUM_SECONDS) % s:NUM_MINUTES)
     endif
     return printf('+%02d%02d', hm[0], hm[1])
