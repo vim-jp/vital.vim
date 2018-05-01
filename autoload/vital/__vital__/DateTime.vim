@@ -797,12 +797,11 @@ endfunction
 " TODO Use Prelude.is_windows() to avoid duplicate
 if has('win16') || has('win32') || has('win64')
   function! s:_default_tz() abort
-    let l:item = split(strftime('%c', 0), ' ')
-    let l:hms = map(split(l:item[1], '[^0-9]'), 'str2nr(v:val)')
-    let l:tz_sec = l:hms[0] * 60 * 60 + l:hms[1] * 60
-    if l:item[0] !~# '^1970'
-      let l:tz_sec = 60 * 60 * 24 - l:tz_sec
-      return printf('-%02d%02d', l:tz_sec / 60 / 60, (l:tz_sec / 60) % 60)
+    let l:hms = map(split(strftime('%H %M', 0), ' '), 'str2nr(v:val)')
+    let l:tz_sec = l:hms[0] * s:NUM_SECONDS * s:NUM_MINUTES + l:hms[1] * s:NUM_SECONDS
+    if str2nr(strftime('%Y', 0)) != 1970
+      let l:tz_sec = s:NUM_SECONDS * s:NUM_MINUTES * s:NUM_HOURS - l:tz_sec
+      return printf('-%02d%02d', l:tz_sec / s:NUM_SECONDS / s:NUM_MINUTES, (l:tz_sec / s:NUM_SECONDS) % s:NUM_MINUTES)
     endif
     return printf('+%02d%02d', l:hms[0], l:hms[1])
   endfunction
