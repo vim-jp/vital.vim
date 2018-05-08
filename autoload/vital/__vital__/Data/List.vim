@@ -81,6 +81,7 @@ function! s:uniq_by(list, f) abort
       call add(result, x)
       call add(applied, y)
     endif
+    unlet x y
   endfor
   return result
 endfunction
@@ -335,7 +336,9 @@ function! s:foldl(f, init, xs) abort
   let l:Call = s:_get_binary_caller(a:f)
   let memo = a:init
   for x in a:xs
-    let memo = l:Call(a:f, [memo, x])
+    let memo_new = l:Call(a:f, [memo, x])
+    unlet memo
+    let memo = memo_new
   endfor
   return memo
 endfunction
@@ -513,8 +516,9 @@ function! s:group_by(xs, f) abort
   let l:Call = s:_get_unary_caller(a:f)
 
   for l:X in a:xs
-    let key = l:Call(a:f, [l:X])
-    let key = type(key) isnot type('') ? string(key) : key
+    let a_key = l:Call(a:f, [l:X])
+    let key = type(a_key) isnot type('') ? string(a_key) : a_key
+    unlet a_key
 
     if has_key(result, key)
       call add(result[key], l:X)
