@@ -608,10 +608,15 @@ Describe Data.List
     End
 
     It sorts list with given the string expression
-      let list = ['pineapple', 'orange', 'banana', 'apple']
-
       Assert Equals(List.sort([3, 1, 2], 'a:a - a:b'), [1, 2, 3])
-      Assert Equals(List.sort(copy(list), 'len(a:a)-len(a:b)'), ['apple', 'orange', 'banana', 'pineapple'])
+      if v:version > 704 || v:version == 704 && has('patch358')
+        " sort() is stable after 7.4.358
+        let list = ['pineapple', 'orange', 'banana', 'apple']
+        Assert Equals(List.sort(copy(list), 'len(a:a)-len(a:b)'), ['apple', 'orange', 'banana', 'pineapple'])
+      else
+        let list = ['pineapple', 'banana', 'apple']
+        Assert Equals(List.sort(copy(list), 'len(a:a)-len(a:b)'), ['apple', 'banana', 'pineapple'])
+      endif
     End
 
     It sorts list with given the funcref
