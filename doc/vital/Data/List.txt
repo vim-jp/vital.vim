@@ -6,6 +6,7 @@ Maintainer: ujihisa <ujihisa at gmail com>
 CONTENTS				*Vital.Data.List-contents*
 
 INTRODUCTION			|Vital.Data.List-introduction|
+TERM				|Vital.Data.List.term|
 INTERFACE			|Vital.Data.List-interface|
   Functions			  |Vital.Data.List-functions|
 
@@ -37,6 +38,12 @@ manipulate |List|.
 <
 
 ==============================================================================
+TERM					*Vital.Data.List-term*
+
+{function}				*Vital.Data.List-term-function*
+	|Funcref| or |String|(as expression)
+
+==============================================================================
 INTERFACE				*Vital.Data.List-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Data.List-functions*
@@ -45,16 +52,20 @@ pop({list})				*Vital.Data.List.pop()*
 	Removes the last element from |List| {list} and returns the element,
 	as if the {list} is a stack.
 
+
 push({list}, {val})			*Vital.Data.List.push()*
 	Appends {val} to the end of |List| {list} and returns the list itself,
 	as if the {list} is a stack.
 
+
 shift({list})				*Vital.Data.List.shift()*
 	Removes the first element from |List| {list} and returns the element.
+
 
 unshift({list}, {val})			*Vital.Data.List.unshift()*
 	Inserts {val} to the head of |List| {list} and returns the list
 	itself.
+
 
 cons({val}, {list})			*Vital.Data.List.cons()*
 	Makes new |List| which first item is {val} and the rest of items are
@@ -71,6 +82,18 @@ cons({val}, {list})			*Vital.Data.List.cons()*
 	" ERROR: E745
 <
 
+uncons({list})			*Vital.Data.List.uncons()*
+	Returns a pair of a head element and tail elements. {list} must not be
+	empty list.
+>
+	echo s:L.uncons([1,2,3,4,5])
+	" [1, [2,3,4,5]]
+	echo s:L.uncons([1])
+	" [1, []]
+	echo s:L.uncons([])
+	" ERROR: vital: Data.List: ...
+
+
 conj({list}, {val})			*Vital.Data.List.conj()*
 	Makes new |List| which first items are |List| {list} and the final
 	item is {val}.
@@ -86,6 +109,47 @@ conj({list}, {val})			*Vital.Data.List.conj()*
 	" ERROR: E745
 <
 
+map({list}, {function})			*Vital.Data.List.map()*
+	Generalized map(). The followings are different of |map()|:
+	* Don't require taking the index as the argument
+	   (See the section of 'If {expr2} is a Funcref...' in |map()|)
+	* Don't require copying
+	   (See the section of 'The operation is done in-place' in |map()|)
+	* Remove v:key support
+>
+	function! Succ(x) abort
+	  return a:x + 1
+	endfunction
+
+	echo s:L.map(range(0, 4), function('Even'))
+	" [1, 2, 3, 4, 5]
+	echo s:L.map(range(0, 4), 'v:val % 2 is 0')
+	" [1, 2, 3, 4, 5]
+<
+	But this maybe slower than builtin |map()|.
+
+
+filter({list}, {function})		*Vital.Data.List.filter()*
+	Generalized filter(). The followings are different of |filter()|:
+	* Don't require taking the index as the argument
+	   (See the section of 'If {expr2} is a Funcref...' in |filter()|)
+	* Don't require copying
+	   (See the section of 'The operation is done in-place' in |filter()|)
+	* Remove v:key support
+>
+	function! Even(x) abort
+	  return a:x % 2 is 0
+	endfunction
+
+	let xs = range(0, 9)
+	echo s:L.filter(xs, function('Even'))
+	" [0, 2, 4, 6, 8]
+	echo s:L.filter(xs, 'v:val % 2 is 0')
+	" [0, 2, 4, 6, 8]
+<
+	But this maybe slower than buildin |filter()|.
+
+
 uniq({list})			*Vital.Data.List.uniq()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In
 	particular, it keeps only the first occurrence of each element.
@@ -94,10 +158,10 @@ uniq({list})			*Vital.Data.List.uniq()*
 	uniq(['vim', 'emacs', 'vim', 'vim']) == ['vim', 'emacs']
 <
 
-uniq_by({list}, {str})			*Vital.Data.List.uniq_by()*
+uniq_by({list}, {function})			*Vital.Data.List.uniq_by()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In
 	particular, it keeps only the first occurrence of each element.  The
-	uniqueness is judged with the value {str} to which a formula is
+	uniqueness is judged with the value {function} to which a formula is
 	applied.
 	See also: |Vital.Data.List.uniq()|
 >
@@ -109,6 +173,7 @@ uniq_by({list}, {str})			*Vital.Data.List.uniq_by()*
 clear({list})				*Vital.Data.List.clear()*
 	Removes all the items of |List| {list}.  Returns the empty list.
 
+
 concat({list})				*Vital.Data.List.concat()*
 	Concatenates |List| {list} of lists.
 >
@@ -117,6 +182,7 @@ concat({list})				*Vital.Data.List.concat()*
 <
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
+
 
 flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 	Take each {list} elements in |List| {list} into a new {list}
@@ -130,14 +196,15 @@ flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 	echo s:L.flatten([[['a']], [[['b']], 'c']], 2)
 	" ['a', ['b'], 'c']
 <
-sort({list}, {expr})			*Vital.Data.List.sort()*
-	Sorts the items in |List| {list} in-place.  Returns {list}.  {expr}
-	must be a |String| or a |Funcref|.  When {expr} is a |Funcref|, this
-	function returns the same result as |sort()|.  When {expr} is a
-	|String|, this function uses {expr} to compare items.  Inside {expr}
-	a:a and a:b have the value of the current items.  The evaluating
-	result of {expr} must have zero if they are equal, 1 or bigger if a:a
-	sorts after the a:b, -1 or smaller if a:a sorts before a:b.
+
+sort({list}, {function})			*Vital.Data.List.sort()*
+	Sorts the items in |List| {list} in-place.  Returns {list}. When
+	{function} is a |Funcref|, this function returns the same result as
+	|sort()|. When {function} is a |String|expression, this function uses
+	{function} to compare items.  Inside {function} a:a and a:b have the
+	value of the current items.  The evaluating result of {function} must
+	have zero if they are equal, 1 or bigger if a:a sorts after the a:b,
+	-1 or smaller if a:a sorts before a:b.
 >
 	function! MyCompare(i1, i2)
 	  return a:i1 ==
@@ -156,50 +223,81 @@ sort({list}, {expr})			*Vital.Data.List.sort()*
 	echo s:L.sort(copy(list), 'len(a:a)-len(a:b)')
 	" ['apple', 'orange', 'banana', 'pineapple']
 <
-sort_by({list}, {expr})			*Vital.Data.List.sort_by()*
-	Returns a sorted |List| with key in |List| {list}.
+	Notice:
+	If you use {function} as |String| expression, this function gives up
+	job safety (thread safety). It may not work correctly. Please use
+	lambda expression or partial applying of function if it can be used.
 
-max_by({list}, {expr})			*Vital.Data.List.max_by()*
-	Returns a maximum value in {list} through given {expr}.
+sort_by({list}, {function})			*Vital.Data.List.sort_by()*
+	Returns a sorted |List| with key in |List| {list}.
+>
+	function! Lookup(x)
+	  return a:x.field
+	endfunction
+
+	let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
+
+	echo s:L.sort_by(copy(list), 'v:val.field')
+	" [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}]
+
+	echo s:L.sort_by(copy(list), function('Lookup'))
+	" [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}]
+<
+
+
+max_by({list}, {function})			*Vital.Data.List.max_by()*
+	Returns a maximum value in {list} through given {function}.
 	Returns 0 if {list} is empty.
-	"v:val" can be used in {expr}.
+	"v:val" can be used in {function} if {function} is string expression.
 >
 	echo s:L.max_by(['pineapple','orange','banana','apple'], 'len(v:val)')
 	" pineapple
-	echo s:L.max_by([20, -50, -15, 30], 'abs(v:val)')
+	echo s:L.max_by([20, -50, -15, 30], function('abs'))
 	" -50
 <
 
-min_by({list}, {expr})			*Vital.Data.List.min_by()*
-	Returns a minimum value in |List| {list} through given {expr}.
+min_by({list}, {function})			*Vital.Data.List.min_by()*
+	Returns a minimum value in |List| {list} through given {function}.
 	Returns 0 if {list} is empty.
-	"v:val" can be used in {expr}.
+	"v:val" can be used in {function} if {function} is string expression.
 >
 	echo s:L.min_by(['pineapple','orange','banana','apple'], 'len(v:val)')
 	" apple
-	echo s:L.min_by([20, -50, -15, 30], 'abs(v:val)')
+	echo s:L.min_by([20, -50, -15, 30], function('abs'))
 	" -15
 <
+
 char_range({from}, {to})		*Vital.Data.List.char_range()*
 	Returns a |List| of letters from {from} to {to}.
 
+
 has({list}, {value})			*Vital.Data.List.has()*
 	Returns Number 1 if {value} is in |List| {list}, otherwise zero.
+
 
 has_index({list}, {index})		*Vital.Data.List.has_index()*
 	Returns Number 1 if can point to {index} for |List| {list}, otherwise
 	zero.  If {index} is negative Number, this function returns zero.
 
-span({expr}, {list})			*Vital.Data.List.span()*
+
+span({function}, {list})			*Vital.Data.List.span()*
 	Returns a list of two lists where concatenation of them is
-	equal to {list}, all the items of the first list satisfy {expr} and
-	the first item of the second list does not satisfy {expr}.
-	Inside {expr} |v:val| has the value of the current item.
+	equal to {list}, all the items of the first list satisfy {function} and
+	the first item of the second list does not satisfy {function}.
+	If {function} is the string expression, |v:val| has the value of the
+	current item.
 >
-	echo s:L.span("v:val==1", [1, 2])
-	" [[1], [2]]
+	function! Under5(x) abort
+	  return a:x < 5
+	endfunction
+
 	echo s:L.span('v:val < 5', [1, 3, 5, 2])
 	" [[1, 3], [5, 2]]
+	echo s:L.span(function('Under5'), [1, 3, 5, 2])
+	" [[1, 3], [5, 2]]
+
+	echo s:L.span('v:val==1', [1, 2])
+	" [[1], [2]]
 	echo s:L.span('v:val > 3', [1, 2, 3, 4, 5])
 	" [[], [1, 2, 3, 4, 5]]
 	echo s:L.span('v:val < 3', [1, 2, 3, 4, 5])
@@ -208,16 +306,25 @@ span({expr}, {list})			*Vital.Data.List.span()*
 	If you know Haskell, this span() is like Haskell's Data.List.span just
 	for your info.
 
-break({expr}, {list})			*Vital.Data.List.break()*
+
+break({function}, {list})			*Vital.Data.List.break()*
 	Returns a list of two lists where concatenation of them is
 	equal to {list}, all the items of the first list do not satisfy
-	{expr} and the first item of the second list satisfies {expr}.
-	Inside {expr} |v:val| has the value of the current item.
+	{function} and the first item of the second list satisfies {function}.
+	If {function} is the string expression,|v:val| has the value of the
+	current item.
 >
-	echo s:L.break("v:val==1", [1, 2])
-	" [[], [1, 2]]
+	function! Is5(x) abort
+	  return a:x < 5
+	endfunction
+
 	echo s:L.break('v:val == 5', [1, 3, 5, 2])
 	" [[1, 3], [5, 2]]
+	echo s:L.break(function('Is5'), [1, 3, 5, 2])
+	" [[1, 3], [5, 2]]
+
+	echo s:L.break("v:val==1", [1, 2])
+	" [[], [1, 2]]
 	echo s:L.break('v:val > 3', [1, 2, 3, 4, 5])
 	" [[1, 2, 3], [4, 5]]
 	echo s:L.break('v:val < 3', [1, 2, 3, 4, 5])
@@ -226,15 +333,24 @@ break({expr}, {list})			*Vital.Data.List.break()*
 	If you know Haskell, this break() is like Haskell's Data.List.break
 	just for your info.
 
-take_while({expr}, {list})		*Vital.Data.List.take_while()*
+
+take_while({function}, {list})		*Vital.Data.List.take_while()*
 	Returns a list which is from the beginning of the given {list} to an
-	element that all of them satisfies given expression {expr}.
-	Inside {expr} |v:val| has the value of the current item.
+	element that all of them satisfies given expression {function}.
+	If {function} is the string expression,|v:val| has the value of the
+	current item.
 >
-	echo s:L.take_while("v:val==1", [1, 2])
-	" [1]
+	function! Under5(x) abort
+	  return a:x < 5
+	endfunction
+
 	echo s:L.take_while('v:val < 5', [1, 3, 5, 2])
 	" [1, 3]
+	echo s:L.take_while(function('Under5'), [1, 3, 5, 2])
+	" [1, 3]
+
+	echo s:L.take_while('v:val == 1', [1, 2])
+	" [1]
 	echo s:L.take_while('v:val > 3', [1, 2, 3, 4, 5])
 	" []
 	echo s:L.take_while('v:val < 3', [1, 2, 3, 4, 5])
@@ -243,14 +359,23 @@ take_while({expr}, {list})		*Vital.Data.List.take_while()*
 	If you know Haskell, this take_while() is like Haskell's
 	Data.List.takeWhile just for your info.
 
-drop_while({expr}, {list})		*Vital.Data.List.drop_while()*
+
+drop_while({function}, {list})		*Vital.Data.List.drop_while()*
 	Returns the suffix remaining after |Vital.Data.List.take_while()|.
-	Inside {expr} |v:val| has the value of the current item.
+	If {function} is the string expression,|v:val| has the value of the
+	current item.
 >
-	echo s:L.drop_while("v:val==1", [1, 2])
-	" [2]
+	function! Under5(x) abort
+	  return a:x < 5
+	endfunction
+
 	echo s:L.drop_while('v:val < 5', [1, 3, 5, 2])
 	" [5, 2]
+	echo s:L.drop_while(function('Under5'), [1, 3, 5, 2])
+	" [5, 2]
+
+	echo s:L.drop_while("v:val==1", [1, 2])
+	" [2]
 	echo s:L.drop_while('v:val > 3', [1, 2, 3, 4, 5])
 	" [1, 2, 3, 4, 5]
 	echo s:L.drop_while('v:val < 3', [1, 2, 3, 4, 5])
@@ -259,13 +384,21 @@ drop_while({expr}, {list})		*Vital.Data.List.drop_while()*
 	If you know Haskell, this drop_while() is like Haskell's
 	Data.List.dropWhile just for your info.
 
-all({expr}, {list})			*Vital.Data.List.all()*
+
+all({function}, {list})			*Vital.Data.List.all()*
 	Returns Number 1 if all the items in |List| {list} fulfill the
-	condition {expr}, zero otherwise.
+	condition {function}, zero otherwise.
 	If {list} is empty, this function returns 1.
 >
+	function! Even(x) abort
+	  return a:x % 2 == 0
+	endfunction
+
 	echo s:L.all('v:val % 2 == 0', [2, 8, 4, 6])
 	" 1
+	echo s:L.all(function('Even'), [2, 8, 4, 6])
+	" 1
+
 	echo s:L.all('v:val % 2 == 1', [2, 8, 4, 6])
 	" 0
 	echo s:L.all('v:val % 2 == 0', [2, 8, 5, 6])
@@ -278,13 +411,21 @@ all({expr}, {list})			*Vital.Data.List.all()*
 	If you know Haskell, this all() is like Haskell's Prelude.all just for
 	your info.
 
-any({expr}, {list})			*Vital.Data.List.any()*
+
+any({function}, {list})			*Vital.Data.List.any()*
 	Returns Number 1 if at least one item in |List| {list} fulfills the
-	condition {expr}, zero otherwise.  If {list} is empty, this function
-	returns 0.
+	condition {function}, zero otherwise.  If {list} is empty, this
+	function returns 0.
 >
+	function! Even(x) abort
+	  return a:x % 2 == 0
+	endfunction
+
 	echo s:L.any('v:val % 2 == 0', [2, 8, 4, 6])
 	" 1
+	echo s:L.any(function('Even'), [2, 8, 4, 6])
+	" 1
+
 	echo s:L.any('v:val % 2 == 1', [2, 8, 4, 6])
 	" 0
 	echo s:L.any('v:val % 2 == 0', [2, 8, 5, 6])
@@ -296,6 +437,7 @@ any({expr}, {list})			*Vital.Data.List.any()*
 <
 	If you know Haskell, this any() is like Haskell's Prelude.any just for
 	your info.
+
 
 and({list})				*Vital.Data.List.and()*
 	Returns Number 1 if all the items of |List| {list} are non-zero
@@ -311,6 +453,7 @@ and({list})				*Vital.Data.List.and()*
 	If you know Haskell, this and() is like Haskell's Prelude.and just for
 	your info.
 
+
 or({list})				*Vital.Data.List.or()*
 	Returns Number 1 if at least one item in List {list} is non-zero,
 	zero otherwise.  If {list} is empty, this function returns 0.
@@ -325,78 +468,145 @@ or({list})				*Vital.Data.List.or()*
 	If you know Haskell, this or() is like Haskell's Prelude.or just for
 	your info.
 
-partition({expr}, {list})		*Vital.Data.List.partition()*
-	TODO
-	Behaves like Haskell's Data.List.partition().
 
-map_accum({expr}, {xs}, {init})		*Vital.Data.List.map_accum()*
+partition({function}, {list})		*Vital.Data.List.partition()*
+	Gives a {function} as predicate. Takes a tuple. The tuple's first
+	field is elements that satisfies the predicate. The second field is
+	elements that doesn't satisfy the predicate.
+	Behaves like Haskell's Data.List.partition().
+>
+	function! Even(x) abort
+	  return a:x % 2 == 0
+	endfunction
+
+	s:L.partition(function('Even'), range(5))
+	" [[0, 2, 4], [1, 3]]
+	s:L.partition('v:val % 2 == 0', range(5))
+	" [[0, 2, 4], [1, 3]]
+<
+
+map_accum({function}, {xs}, {init})		*Vital.Data.List.map_accum()*
 	This is similar to |map()| but the followings are different:
 	* it doesn't destroy {xs}
 	* it holds previous accumulator
 	* you also have to specify initial accumulator value
-	* you also have to let {expr} return the next accumulator value
+	* you also have to let {function} return the next accumulator value
 >
-	List.map_accum('[v:val + v:memo, v:memo]', [1, 2, 3], 10)
-	"=> [11, 12, 13]
+	function! Plus(x, y) abort
+	  return [a:x + a:y, a:y]
+	endfunction
 
-	List.map_accum('[v:val + v:memo, v:memo + 1]', [1, 2, 3], 10)
-	"=> [11, 13, 15]
+	echo s:L.map_accum('[v:val + v:memo, v:memo]', [1, 2, 3], 10)
+	" [11, 12, 13]
+	echo s:L.map_accum(function('Plus'), [1, 2, 3], 10)
+	" [11, 12, 13]
+
+	echo s:L.map_accum('[v:val + v:memo, v:memo + 1]', [1, 2, 3], 10)
+	" [11, 13, 15]
 <
 
-foldl({f}, {init}, {xs})		*Vital.Data.List.foldl()*
-	Reduces the list {xs} using the binary operator {f}, from left to
-	right. The starting value of the reduction (typically the
+foldl({function}, {init}, {xs})		*Vital.Data.List.foldl()*
+	Reduces the list {xs} using the binary operator {function}, from left
+	to right. The starting value of the reduction (typically the
 	left-identity of the operator) is {init}.
+	Behaves like Haskell's Data.List.foldl().
 
 	foldl(f, z, [x1, x2, ..., xn]) ==
 	  f(... f(f(z, x1), x2) ..., xn)
-
-	Examples:
 >
+	function! Plus(x, y) abort
+	  return a:x + a:y
+	endfunction
+
+	function! Pair(x, y) abort
+	  return [a:x, a:y]
+	endfunction
+
 	echo s:L.foldl('v:memo + v:val', 0, range(1, 10))
 	" 55 := 1+2+3+4+5+6+7+8+9+10
 
-	echo s:L.foldl('v:memo + v:val', 20, range(1, 10))
-	" 75 := 20 + 1+2+3+4+5+6+7+8+9+10
+	echo s:L.foldl(function('Plus'), 0, range(1, 10))
+	" 55
 
-	echo s:L.foldl('[v:memo, v:val]', [], [1, 2])
-	" [[[], 1], 2]
+	echo s:L.foldl(function('Pair'), 0, [1, 2])
+	" [[0, 1], 2]
 <
 	See also: foldl1, foldr, foldr1
 	If you know Haskell, this foldl() is like Haskell's Data.List.foldl
 	just for your info.
 
-foldl1({f}, {xs})			*Vital.Data.List.foldl1()*
-	TODO
+
+foldl1({function}, {xs})			*Vital.Data.List.foldl1()*
+	Sames |Data.List.foldl()|, but doesn't take the initial value. Takes
+	the first element from {xs} as the initial value.
 	Behaves like Haskell's Data.List.foldl1().
 >
+	function! Plus(x, y) abort
+	  return a:x + a:y
+	endfunction
+
+	function! Pair(x, y) abort
+	  return [a:x, a:y]
+	endfunction
+
 	echo s:L.foldl1('v:memo + v:val', range(1, 10))
 	" 55
-	echo s:L.foldl1('[v:memo, v:val]', [1, 2])
-	" [1, 2]
+	echo s:L.foldl1(function('Plus'), range(1, 10))
+	" 55
+	echo s:L.foldl1(function('Pair'), [0, 1, 2])
+	" [[0, 1], 2]
 <
-foldr({f}, {init}, {xs})		*Vital.Data.List.foldr()*
-	TODO
+
+foldr({function}, {init}, {xs})		*Vital.Data.List.foldr()*
+	Reduces the list {xs} using the binary operator {function}, from right
+	to left. The starting value of the reduction (typically the
+	right-identity of the operator) is {init}.
 	Behaves like Haskell's Data.List.foldr().
 >
-	echo s:L.foldr('v:memo + v:val', 0, range(1, 10))
+	function! Plus(x, y) abort
+	  return a:x + a:y
+	endfunction
+
+	function! Pair(x, y) abort
+	  return [a:x, a:y]
+	endfunction
+
+	echo s:L.foldr('v:val + v:memo', 0, range(1, 10))
 	" 55
-	echo s:L.foldr('v:memo + v:val', 20, range(1, 10))
-	" 75
-	echo s:L.foldr('[v:memo, v:val]', [], [1, 2])
-	" [[[], 2], 1]
+
+	echo s:L.foldr(function('Plus'), 0, range(1, 10))
+	" 55
+
+	echo s:L.foldr(function('Pair'), [], [1, 2])
+	" [1, [2, []]]
 <
-foldr1({f}, {xs})			*Vital.Data.List.foldr1()*
-	TODO
+
+foldr1({function}, {xs})			*Vital.Data.List.foldr1()*
+	Sames |Data.List.foldr()|, but doesn't take the initial value. Takes
+	the last element from {xs} as the initial value.
 	Behaves like Haskell's Data.List.foldr1().
 >
-	echo s:L.foldr1('v:memo + v:val', range(1, 10))
+	function! Plus(x, y) abort
+	  return a:x + a:y
+	endfunction
+
+	function! Pair(x, y) abort
+	  return [a:x, a:y]
+	endfunction
+
+	echo s:L.foldr1('v:val + v:memo', range(1, 10))
 	" 55
-	echo s:L.foldr1('[v:memo, v:val]', [1, 2])
-	" [1, 2]
+
+	echo s:L.foldr1(function('Plus'), range(1, 10))
+	" 55
+
+	echo s:L.foldr1(function('Pair'), [1, 2, []])
+	" [1, [2, []]]
 <
+
 zip(...)				*Vital.Data.List.zip()*
-	TODO
+	Unifies lists in parallel. If the length of the lists is different,
+	adjusts for shorter list, longer list is sliced.
 	Behaves like python's zip().
 >
 	echo s:L.zip([1, 2, 3], [4, 5, 6])
@@ -404,6 +614,7 @@ zip(...)				*Vital.Data.List.zip()*
 	echo s:L.zip([1, 2, 3], [4, 5, 6], [7, 8, 9])
 	" [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 <
+
 with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 	Returns {list} with index. {offset} means the base of index.
 	If you specify {offset}, index starts with {offset}.
@@ -427,10 +638,11 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 		echo idx.': '.line
 	endfor
 <
-find({list}, {default}, {expr})			 *Vital.Data.List.find()*
-	Returns the first value in {list} where the given {expr} is satisfied.
-	{default} is returned when no item satisfies {expr}. {expr} must be a
-	|String| or a |Funcref|.
+
+find({list}, {default}, {function})			 *Vital.Data.List.find()*
+	Returns the first value in {list} where the given {function} is
+	satisfied. {default} is returned when no item satisfies {function}.
+	{function} must be a |String| or a |Funcref|.
 >
 	function! MyPredicate(x)
 	  return a:x % 2 == 0
@@ -446,39 +658,70 @@ find({list}, {default}, {expr})			 *Vital.Data.List.find()*
 	If you know Haskell, this find() is like Haskell's Data.List.find
 	just for your info.
 
+
 					*Vital.Data.List.find_index()*
-find_index({list}, {expr} [, {start} [, {default}]])
-	Returns the lowest index in {list} where the given {expr} is
+find_index({list}, {function} [, {start} [, {default}]])
+	Returns the lowest index in {list} where the given {function} is
 	satisfied.
 	If you specify {start}, start looking at the item with index {start}
 	(may be negative for an item relative to the end).
-	{default} is returned when no item satisfies {expr}. If {default} is
-	omitted, -1 is used.
+	{default} is returned when no item satisfies {function}. If {default}
+	is omitted, -1 is used.
 >
-	echo s:L.find_index([0, 1, 2, 3], 'v:val%2 == 1')
+	function! Odd(x) abort
+	  return a:x % 2 == 1
+	endfunction
+
+	echo s:L.find_index([0, 1, 2, 3], 'v:val % 2 == 1')
+	" 1
+	echo s:L.find_index([0, 1, 2, 3], function('Odd'))
 	" 1
 	echo s:L.find_index([0, 1, 2, 3], 'v:val > 10')
 	" -1
+
+	echo s:L.find_index([0, 1, 2, 3], 'v:val % 2 == 1', 1)
+	" 2
+
+	let default_val = -10
+	let constant_false_expr = '0'
+	echo s:L.find_index([0, 1, 2, 3], constant_false_expr, 0, default_val)
+	" -10
 <
+
 					*Vital.Data.List.find_last_index()*
-find_last_index({list}, {expr} [, {start} [, {default}]])
+find_last_index({list}, {function} [, {start} [, {default}]])
 	Similar to find_index but this returns the highest index.
 	Traversing is done in reverse order.
 >
-	echo s:L.find_last_index([0, 1, 2, 3], 'v:val%2 == 1')
+	function! Odd(x) abort
+	  return a:x % 2 == 1
+	endfunction
+
+	echo s:L.find_last_index([0, 1, 2, 3], 'v:val % 2 == 1')
+	" 3
+	echo s:L.find_last_index([0, 1, 2, 3], function('Odd'))
 	" 3
 <
+
 					*Vital.Data.List.find_indices()*
-find_indices({list}, {expr} [, {start}])
+find_indices({list}, {function} [, {start}])
 	Similar to find_index but this returns all of indices specifying
-	{expr}.
+	{function}.
 	When no indices found, empty list is returned.
 >
-	echo s:L.find_indices([0, 1, 2, 3], 'v:val%2 == 1')
+	function! Odd(x) abort
+	  return a:x % 2 == 1
+	endfunction
+
+	echo s:L.find_indices([0, 1, 2, 3], 'v:val % 2 == 1')
 	" [1, 3]
+	echo s:L.find_indices([0, 1, 2, 3], function('Odd'))
+	" [1, 3]
+
 	echo s:L.find_indices([0, 1, 2, 3], 'v:val > 10')
 	" []
 <
+
 has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	Returns non-zero if a:list1 and a:list2 have a common item, otherwise
 	zero.
@@ -489,6 +732,7 @@ has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	" 1
 	echo s:L.has_common_items(['a'], ['b', 'c'])
 	" 0
+
 
 intersect({list1}, {list2})		*Vital.Data.List.intersect()*
 	Returns a |List| of common items between {list1} and {list2}, and it's
@@ -503,19 +747,24 @@ intersect({list1}, {list2})		*Vital.Data.List.intersect()*
 	echo s:L.intersect(['a'], ['b', 'c'])
 	" []
 <
-group_by({list}, {expr})		*Vital.Data.List.group_by()*
-	Returns a |Dictionary| grouped by the result of {expr}.
-	"v:val" can be used in {expr}.
+
+group_by({list}, {function})		*Vital.Data.List.group_by()*
+	Returns a |Dictionary| grouped by the result of {function}.
+	"v:val" can be used in {function} if {function} is a string expression.
 >
 	echo s:L.group_by(['a', 'b', 'ab'], 'len(v:val)')
 	" {'1': ['a', 'b'], '2': ['ab']}
+	echo s:L.group_by(['a', 'b', 'ab'], function('len'))
+	" {'1': ['a', 'b'], '2': ['ab']}
+
 	echo s:L.group_by(['a', 'b', 'ab'], 'v:val[0]')
 	" {'a': ['a', 'ab'], 'b': ['b']}
 <
+
 			      		*Vital.Data.List.binary_search()*
-binary_search({list}, {expr}, [{func}, [{dict}]])
+binary_search({list}, {target}, [{func}, [{dict}]])
 	Returns the index in {list} where the item has a value equal to
-	{expr} by binary search.  {list} must be sorted.  If {expr} is not
+	{target} by binary search.  {list} must be sorted.  If {target} is not
 	found, it returns -1.
 	When {func} is given, it is used to check the lhs of {func} is less
 	than the rhs of {func}.  {func} is the same as |sort()| of {func}.
@@ -548,6 +797,7 @@ binary_search({list}, {expr}, [{func}, [{dict}]])
 	echo s:L.binary_search(['a', 'aa', 'aaa'], 'vivi', CompareByLength.func, CompareByLength)
 	" -1
 <
+
 product({lists})			*Vital.Data.List.product()*
 	Returns Cartesian product of elements in the {lists}.
 >
@@ -556,6 +806,7 @@ product({lists})			*Vital.Data.List.product()*
 	echo s:L.product([range(2), range(2), range(2)])
 	" [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]]
 <
+
 permutations({list} [, {r}])	      	*Vital.Data.List.permutations()*
 	Returns successive {r} length permutations of elements in the {list}.
 	If {r} is not specified, then {r} defaults to the length of the {list}
@@ -566,6 +817,7 @@ permutations({list} [, {r}])	      	*Vital.Data.List.permutations()*
 	echo s:L.permutations([1, 2, 3], 2)
 	" [[1, 2] , [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
 <
+
 combinations({list}, {r})	      	*Vital.Data.List.combinations()*
 	Returns successive {r} length combinations of elements in the {list}.
 >

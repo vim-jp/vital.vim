@@ -1,6 +1,50 @@
 Describe Data.List
   Before all
-    let List = vital#vital#new().import('Data.List')
+    let V = vital#vital#new()
+    let List = V.import('Data.List')
+    let Closure = V.import('Data.Closure')
+
+    function! Plus(x, y) abort
+      return a:x + a:y
+    endfunction
+
+    function! Pair(x, y) abort
+      return [a:x, a:y]
+    endfunction
+
+    function! IsUnder5(x) abort
+      return a:x < 5
+    endfunction
+
+    function! IsOver3(x) abort
+      return a:x > 3
+    endfunction
+
+    function! IsUnder3(x) abort
+      return a:x < 3
+    endfunction
+
+    function! IsNonEmpty(xs) abort
+      return len(a:xs) > 0
+    endfunction
+
+    function! Even(x) abort
+      return a:x % 2 is 0
+    endfunction
+
+    function! Odd(x) abort
+      return a:x % 2 is 1
+    endfunction
+  End
+
+  After all
+    delfunction Plus
+    delfunction Pair
+    delfunction IsUnder5
+    delfunction IsOver3
+    delfunction IsUnder3
+    delfunction IsNonEmpty
+    delfunction Even
   End
 
   Describe .pop()
@@ -75,6 +119,17 @@ Describe Data.List
     End
   End
 
+  Describe .uncons()
+    It returns a pair of a head element and tail elements
+      Assert Equals(List.uncons([1,2,3,4,5]), [1, [2,3,4,5]])
+      Assert Equals(List.uncons([1]), [1, []])
+    End
+
+    It throws an exception if empty list is given
+      Throws /^vital: Data.List:/ List.uncons([])
+    End
+  End
+
   Describe .conj()
     It makes new list which last items are {val} and the preceding items remain {list}.
       let a = []
@@ -86,6 +141,36 @@ Describe Data.List
       Assert Equals(List.conj([2, 3], 1), [2, 3, 1])
       Assert Equals(List.conj([], 1), [1])
       Assert Equals(List.conj([2, 3], [1]), [2, 3, [1]])
+    End
+  End
+
+  Describe .map()
+    Before all
+      function! Succ(x) abort
+        return a:x + 1
+      endfunction
+    End
+
+    After all
+      delfunction Succ
+    End
+
+    It maps given string expression to a list
+      Assert Equals(List.map([1, 2, 3], 'v:val + 1'), [2, 3, 4])
+    End
+
+    It maps given funcref to a list without indice
+      Assert Equals(List.map([1, 2, 3], function('Succ')), [2, 3, 4])
+    End
+  End
+
+  Describe .filter()
+    It takes elements that satisfies given the predicate as the string expression
+      Assert Equals(List.filter(range(0, 9), function('Even')), [0, 2, 4, 6, 8])
+    End
+
+    It takes elements that satisfies given the predicate as the funcref
+      Assert Equals(List.filter(range(0, 9), 'v:val % 2 is 0'), [0, 2, 4, 6, 8])
     End
   End
 
@@ -104,12 +189,25 @@ Describe Data.List
   End
 
   Describe .uniq_by()
-    It makes a list unique based on given expression
+    It makes a list unique based on given string expression
       Assert Equals(
       \ List.uniq_by([
       \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
       \     ],
       \     'tolower(v:val)'
+      \   ),
+      \ [
+      \   'vim', 'emacs', 'gVim'
+      \ ]
+      \ )
+    End
+
+    It makes a list unique based on given funcref
+      Assert Equals(
+      \ List.uniq_by([
+      \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
+      \     ],
+      \     function('tolower')
       \   ),
       \ [
       \   'vim', 'emacs', 'gVim'
@@ -139,43 +237,81 @@ Describe Data.List
   End
 
   Describe .max_by()
-    It returns a maximum value in the list through the given expr.
+    It returns 0 if the list is empty.
+      Assert Equals(List.max_by([], 'v:val'), 0)
+    End
+
+    It returns a maximum value in the non empty list through the given string expr
       Assert Equals(List.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'hehehe')
       Assert Equals(List.max_by([20, -50, -15, 30], 'abs(v:val)'), -50)
     End
-    It returns 0 if the list is empty.
-      Assert Equals(List.max_by([], 'v:val'), 0)
+
+    It returns a maximum value in the non empty list through the given funcref
+      Assert Equals(List.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], function('len')), 'hehehe')
+      Assert Equals(List.max_by([20, -50, -15, 30], function('abs')), -50)
     End
   End
 
   Describe .min_by()
-    It returns a minimum value in the list through the given expr.
+    It returns 0 if the list is empty.
+      Assert Equals(List.min_by([], 'v:val'), 0)
+    End
+
+    It returns a minimum value in the non empty list through the given string expr
       Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'foo')
       Assert Equals(List.min_by([20, -50, -15, 30], 'abs(v:val)'), -15)
     End
-    It returns 0 if the list is empty.
-      Assert Equals(List.min_by([], 'v:val'), 0)
+
+    It returns a minimum value in the non empty list through the given funcref
+      Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], function('len')), 'foo')
+      Assert Equals(List.min_by([20, -50, -15, 30], function('abs')), -15)
     End
   End
 
   Describe .span()
-    It splits a list into two lists. The former is until the given condition doesn't satisfy.
+    It splits a list into two lists with given string expression. The former is until the given condition doesn't satisfy.
       Assert Equals(List.span('v:val < 5', [1, 3, 5, 2]), [[1, 3], [5, 2]])
       Assert Equals(List.span('v:val > 3', [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
       Assert Equals(List.span('v:val < 3', [1, 2, 3, 4, 5]), [[1, 2], [3, 4, 5]])
     End
 
+    It splits a list into two lists with given funcref. The former is until the given condition doesn't satisfy.
+      Assert Equals(List.span(function('IsUnder5'), [1, 3, 5, 2]), [[1, 3], [5, 2]])
+      Assert Equals(List.span(function('IsOver3'), [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
+      Assert Equals(List.span(function('IsUnder3'), [1, 2, 3, 4, 5]), [[1, 2], [3, 4, 5]])
+    End
+
     It of course handles list of list.
+      let is_non_empty = Closure.from_funcname('*IsNonEmpty')
+
       Assert Equals(List.span('len(v:val) > 0', [[1], [2, 3], [], [4]]),
+            \ [[[1], [2, 3]], [[], [4]]])
+      Assert Equals(List.span(function('IsNonEmpty'), [[1], [2, 3], [], [4]]),
             \ [[[1], [2, 3]], [[], [4]]])
     End
   End
 
   Describe .break()
-    It splits a list into two lists. The latter is from the given condition satisfies.
+    Before all
+      function! Is5(x) abort
+        return a:x is 5
+      endfunction
+    End
+
+    After all
+      delfunction Is5
+    End
+
+    It splits a list into two lists. The latter is from the given string expression satisfies.
       Assert Equals(List.break('v:val == 5', [1, 3, 5, 2]), [[1, 3], [5, 2]])
       Assert Equals(List.break('v:val > 3', [1, 2, 3, 4, 5]), [[1, 2, 3], [4, 5]])
       Assert Equals(List.break('v:val < 3', [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
+    End
+
+    It splits a list into two lists. The latter is from the given funcref satisfies.
+      Assert Equals(List.break(function('Is5'), [1, 3, 5, 2]), [[1, 3], [5, 2]])
+      Assert Equals(List.break(function('IsOver3'), [1, 2, 3, 4, 5]), [[1, 2, 3], [4, 5]])
+      Assert Equals(List.break(function('IsUnder3'), [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
     End
 
     It of course handles list of list.
@@ -185,43 +321,96 @@ Describe Data.List
   End
 
   Describe .take_while()
-    It creates a list from another one, it inspects the original list and takes from its elements to the moment when the condition fails, then it stops processing
+    It takes elements while an element satisfies given the string expression
       Assert Equals(List.take_while('v:val < 5', [1, 3, 5, 2]), [1, 3])
       Assert Equals(List.take_while('v:val > 3', [1, 2, 3, 4, 5]), [])
       Assert Equals(List.take_while('v:val < 3', [1, 2, 3, 4, 5]), [1, 2])
     End
 
+    It takes elements while an element satisfies given the funcref
+      Assert Equals(List.take_while(function('IsUnder5'), [1, 3, 5, 2]), [1, 3])
+      Assert Equals(List.take_while(function('IsOver3'), [1, 2, 3, 4, 5]), [])
+      Assert Equals(List.take_while(function('IsUnder3'), [1, 2, 3, 4, 5]), [1, 2])
+    End
+
     It of course handles list of list.
       Assert Equals(List.take_while('len(v:val) > 0', [[1], [2, 3], [], [4]]),
+            \ [[1], [2, 3]])
+      Assert Equals(List.take_while(function('IsNonEmpty'), [[1], [2, 3], [], [4]]),
             \ [[1], [2, 3]])
     End
   End
 
   Describe .drop_while()
-    It creates a list from another one, it inspects the original list and drops from its elements to the moment when the condition fails, then it stops processing
+    Before all
+      function! Is3(x) abort
+        return a:x is 3
+      endfunction
+    End
+
+    After all
+      delfunction Is3
+    End
+
+    It drops elements while an element satisfies given the string expression
       Assert Equals(List.drop_while('v:val < 5', [1, 3, 5, 2]), [5, 2])
       Assert Equals(List.drop_while('v:val > 3', [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
       Assert Equals(List.drop_while('v:val < 3', [1, 2, 3, 4, 5]), [3, 4, 5])
+      Assert Equals(List.drop_while('v:val is 3', [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+    End
+
+    It drops elements while an element satisfies given the funcref
+      Assert Equals(List.drop_while(function('IsUnder5'), [1, 3, 5, 2]), [5, 2])
+      Assert Equals(List.drop_while(function('IsOver3'), [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+      Assert Equals(List.drop_while(function('IsUnder3'), [1, 2, 3, 4, 5]), [3, 4, 5])
+      Assert Equals(List.drop_while(function('Is3'), [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+    End
+
+    It do nothing if empty list is given
+      Assert Equals(List.drop_while('v:val is 1', []), [])
     End
 
     It of course handles list of list.
       Assert Equals(List.drop_while('len(v:val) > 0', [[1], [2, 3], [], [4]]),
             \ [[], [4]])
+      Assert Equals(List.drop_while(function('IsNonEmpty'), [[1], [2, 3], [], [4]]),
+            \ [[], [4]])
     End
   End
 
   Describe .partition()
-    It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate.
+    It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate of the string expression.
       Assert Equals(List.partition('v:val % 2 == 0', range(5)), [[0, 2, 4], [1, 3]])
+    End
+
+    It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate of the funcref.
+      Assert Equals(List.partition(function('Even'), range(5)), [[0, 2, 4], [1, 3]])
     End
   End
 
   Describe .all()
-    It returns true if all items in the list fulfill the condition.
+    Before all
+      function! IsOver0(x) abort
+        return 0 < a:x
+      endfunction
+    End
+
+    After all
+      delfunction IsOver0
+    End
+
+    It returns true if all items in the list fulfill the string expression.
       Assert True(List.all('v:val % 2 == 0', [2, 8, 4, 6]))
       Assert False(List.all('v:val % 2 == 0', [2, 8, 5, 6]))
       Assert True(List.all('0 < v:val', [2, 8, 4, 6]))
       Assert False(List.all('0 < v:val', [2, 0, 4, 6]))
+    End
+
+    It returns true if all items in the list fulfill the funcref.
+      Assert True(List.all(function('Even'), [2, 8, 4, 6]))
+      Assert False(List.all(function('Even'), [2, 8, 5, 6]))
+      Assert True(List.all(function('IsOver0'), [2, 8, 4, 6]))
+      Assert False(List.all(function('IsOver0'), [2, 0, 4, 6]))
     End
 
     It returns true if the list is empty.
@@ -230,11 +419,28 @@ Describe Data.List
   End
 
   Describe .any()
-    It returns true if at least one item in the list fulfills the condition.
+    Before all
+      function! IsUnder0(x) abort
+        return 0 >= a:x
+      endfunction
+    End
+
+    After all
+      delfunction IsUnder0
+    End
+
+    It returns true if at least one item in the list fulfills the string expression.
       Assert False(List.any('v:val % 2 == 1', [2, 8, 4, 6]))
       Assert True(List.any('v:val % 2 == 1', [2, 8, 5, 6]))
       Assert False(List.any('0 >= v:val', [2, 8, 4, 6]))
       Assert True(List.any('0 >= v:val', [2, 0, 4, 6]))
+    End
+
+    It returns true if at least one item in the list fulfills the funcref.
+      Assert False(List.any(function('Odd'), [2, 8, 4, 6]))
+      Assert True(List.any(function('Odd'), [2, 8, 5, 6]))
+      Assert False(List.any(function('IsUnder0'), [2, 8, 4, 6]))
+      Assert True(List.any(function('IsUnder0'), [2, 0, 4, 6]))
     End
 
     It returns false if the list is empty.
@@ -266,17 +472,43 @@ Describe Data.List
   End
 
   Describe .map_accum()
-    It is similar to map() but holds previous accumulator as well
+    Before all
+      function! MemoPlus(x, y) abort
+        return [a:x + a:y, a:y]
+      endfunction
+
+      function! SuccessivePlus(x, acc) abort
+        return [a:x + a:acc, a:acc + 1]
+      endfunction
+    End
+
+    After all
+      delfunction MemoPlus
+      delfunction SuccessivePlus
+    End
+
+    It is similar to map() but holds previous accumulator as well with given the string expression
       Assert Equals(List.map_accum('[v:val + v:memo, v:memo]', [1, 2, 3], 10), [11, 12, 13])
       Assert Equals(List.map_accum('[v:val + v:memo, v:memo + 1]', [1, 2, 3], 10), [11, 13, 15])
     End
+
+    It is similar to map() but holds previous accumulator as well with given the funcref
+      Assert Equals(List.map_accum(function('MemoPlus'), [1, 2, 3], 10), [11, 12, 13])
+      Assert Equals(List.map_accum(function('SuccessivePlus'), [1, 2, 3], 10), [11, 13, 15])
+    End
+
     " TODO test more details
   End
 
   Describe .foldl()
-    It folds a list from left
+    It folds a list from left with string expression
       Assert Equals(List.foldl('v:memo + v:val', 0, range(1, 10)), 55)
-      Assert Equals(List.foldl('[v:memo, v:val]', [], [1, 2]), [[[], 1], 2])
+      Assert Equals(List.foldl('[v:memo, v:val]', 0, [1, 2]), [[0, 1], 2])
+    End
+
+    It folds a list from left with funcref
+      Assert Equals(List.foldl(function('Plus'), 0, range(1, 10)), 55)
+      Assert Equals(List.foldl(function('Pair'), 0, [1, 2]), [[0, 1], 2])
     End
 
     It does nothing if the list is empty
@@ -285,9 +517,14 @@ Describe Data.List
   End
 
   Describe .foldl1()
-    It folds a list from left
+    It folds a list from left with string expression
       Assert Equals(List.foldl1('v:memo + v:val', range(1, 10)), 55)
-      Assert Equals(List.foldl1('[v:memo, v:val]', [1, 2]), [1, 2])
+      Assert Equals(List.foldl1('[v:memo, v:val]', [0, 1, 2]), [[0, 1], 2])
+    End
+
+    It folds a list from left with funcref
+      Assert Equals(List.foldl1(function('Plus'), range(1, 10)), 55)
+      Assert Equals(List.foldl1(function('Pair'), [0, 1, 2]), [[0, 1], 2])
     End
 
     It causes an error when the list is empty
@@ -296,9 +533,14 @@ Describe Data.List
   End
 
   Describe .foldr()
-    It folds a list from right
+    It folds a list from right with string expression
       Assert Equals(List.foldr('v:memo + v:val', 0, range(1, 10)), 55)
-      Assert Equals(List.foldr('[v:memo, v:val]', [], [1, 2]), [[[], 2], 1])
+      Assert Equals(List.foldr('[v:memo, v:val]', 3, [1, 2]), [1, [2, 3]])
+    End
+
+    It folds a list from right with funcref
+      Assert Equals(List.foldr(function('Plus'), 0, range(1, 10)), 55)
+      Assert Equals(List.foldr(function('Pair'), 3, [1, 2]), [1, [2, 3]])
     End
 
     It does nothing if the list is empty
@@ -307,9 +549,14 @@ Describe Data.List
   End
 
   Describe .foldr1()
-    It folds a list from left
-      Assert Equals(List.foldr1('v:memo + v:val', range(1, 10)), 55)
-      Assert Equals(List.foldr1('[v:memo, v:val]', [1, 2]), [2, 1])
+    It folds a list from right with string expression
+      Assert Equals(List.foldr1('v:memo + v:val', range(0, 10)), 55)
+      Assert Equals(List.foldr1('[v:memo, v:val]', [0, 1, 2]), [0, [1, 2]])
+    End
+
+    It folds a list from right with funcref
+      Assert Equals(List.foldr1(function('Plus'), range(0, 10)), 55)
+      Assert Equals(List.foldr1(function('Pair'), [0, 1, 2]), [0, [1, 2]])
     End
 
     It causes an error when the list is empty
@@ -347,20 +594,75 @@ Describe Data.List
     End
   End
 
+  Describe .sort()
+    Before all
+      function! MyCompare(i1, i2)
+        return a:i1 == a:i2 ? 0
+        \    : a:i1 >  a:i2 ? 1
+        \                   : -1
+      endfunction
+    End
+
+    After all
+      delfunction MyCompare
+    End
+
+    It sorts list with given the string expression
+      Assert Equals(List.sort([3, 1, 2], 'a:a - a:b'), [1, 2, 3])
+      if v:version > 704 || v:version == 704 && has('patch358')
+        " sort() is stable after 7.4.358
+        let list = ['pineapple', 'orange', 'banana', 'apple']
+        Assert Equals(List.sort(copy(list), 'len(a:a)-len(a:b)'), ['apple', 'orange', 'banana', 'pineapple'])
+      else
+        let list = ['pineapple', 'banana', 'apple']
+        Assert Equals(List.sort(copy(list), 'len(a:a)-len(a:b)'), ['apple', 'banana', 'pineapple'])
+      endif
+    End
+
+    It sorts list with given the funcref
+      let list = ['pineapple', 'orange', 'banana', 'apple']
+      Assert Equals(List.sort(copy(list), function('MyCompare')), ['apple', 'banana', 'orange', 'pineapple'])
+    End
+  End
+
+  Describe .sort_by()
+    Before all
+      function! Lookup(x)
+        return a:x.field
+      endfunction
+    End
+
+    After all
+      delfunction Lookup
+    End
+
+    It sorts list with given the string expression
+      let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
+      Assert Equals(List.sort_by(copy(list), 'v:val.field'), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
+    End
+
+    It sorts list with given the funcref
+      let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
+      Assert Equals(List.sort_by(copy(list), function('Lookup')), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
+    End
+  End
+
   Describe .find()
     Before all
-      function! MyPredicate(x) abort
-        return a:x % 2 == 0
-      endfunction
-
-      function! MyPredicate2(x) abort
+      function! CanbeDevideBy10(x) abort
         return a:x % 10 == 0
       endfunction
 
-      function! MyPredicate3(x) abort
+      function! MatchByY(x) abort
         return a:x =~ 'y'
       endfunction
     End
+
+    After all
+      delfunction CanbeDevideBy10
+      delfunction MatchByY
+    End
+
     It returns the value if found by string expression
       Assert Equals(List.find([1, 2, 3], '*not-found*', 'v:val % 2 == 0'), 2)
       Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', 'v:val % 2 == 0'), 2)
@@ -369,58 +671,117 @@ Describe Data.List
 
       Assert Equals(List.find(['hi', 'yo'], -1, 'v:val =~ "y"'), 'yo')
     End
-    It returns the value if found by funcref
-      Assert Equals(List.find([1, 2, 3], '*not-found*', function('MyPredicate')), 2)
-      Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', function('MyPredicate')), 2)
-      Assert Equals(List.find([1, 2, 3], '*not-found*', function('MyPredicate2')), '*not-found*')
-      Assert Equals(List.find([], '*not-found*', function('MyPredicate')), '*not-found*')
 
-      Assert Equals(List.find(['hi', 'yo'], -1, function('MyPredicate3')), 'yo')
-    End
-    After all
-      delfunction MyPredicate
-      delfunction MyPredicate2
-      delfunction MyPredicate3
+    It returns the value if found by funcref
+      Assert Equals(List.find([1, 2, 3], '*not-found*', function('Even')), 2)
+      Assert Equals(List.find([1, 2, 3, 1, 2, 3], '*not-found*', function('Even')), 2)
+      Assert Equals(List.find([1, 2, 3], '*not-found*', function('CanbeDevideBy10')), '*not-found*')
+      Assert Equals(List.find([], '*not-found*', function('Even')), '*not-found*')
+      Assert Equals(List.find(['hi', 'yo'], -1, function('MatchByY')), 'yo')
     End
   End
 
   Describe .find_index()
-    It returns the index if found
-      Assert Equals(List.find_index([1, 2, 3], 'v:val % 2 == 0'), 1)
-      Assert Equals(List.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"'), 0)
-      Assert Equals(List.find_index([1, 2, 3], 'v:val % 2 == 1', 1), 2)
-      Assert Equals(List.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"', -2), 2)
+    Before all
+      function! MatchByO(x) abort
+        return a:x =~# 'o'
+      endfunction
     End
+
+    After all
+      delfunction MatchByO
+    End
+
+    It returns the index if found with given the string expression
+      Assert Equals(List.find_index([1, 2, 3], 'v:val % 2 == 0'), 1)
+      Assert Equals(List.find_index([1, 2, 3], 'v:val % 2 == 1', 1), 2)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"'), 0)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"', -2), 2)
+    End
+
+    It returns the index if found with given the funcref
+      Assert Equals(List.find_index([1, 2, 3], function('Even')), 1)
+      Assert Equals(List.find_index([1, 2, 3], function('Odd'), 1), 2)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], function('MatchByO')), 0)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], function('MatchByO'), -2), 2)
+    End
+
     It returns -1 or default value if not found
       Assert Equals(List.find_index([], '1'), -1)
-      Assert Equals(List.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"'), -1)
       Assert Equals(List.find_index([], '1', 0, 999), 999)
-      Assert Equals(List.find_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"', 0, "not found"), "not found")
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"'), -1)
+      Assert Equals(List.find_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"', 0, 'not found'), 'not found')
     End
   End
 
   Describe .find_last_index()
-    It returns the index if found
-      Assert Equals(List.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0'), 3)
-      Assert Equals(List.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"'), 2)
-      Assert Equals(List.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0', 1), 1)
-      Assert Equals(List.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "o"', -2), 0)
+    Before all
+      function! MatchByO(x) abort
+        return a:x =~# 'o'
+      endfunction
     End
+
+    After all
+      delfunction MatchByO
+    End
+
+    It returns the index if found with given the string expressiovn
+      Assert Equals(List.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0'), 3)
+      Assert Equals(List.find_last_index([1, 2, 3, 4], 'v:val % 2 == 0', 1), 1)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"'), 2)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"', -2), 0)
+    End
+
+    It returns the index if found with given the funcref
+      Assert Equals(List.find_last_index([1, 2, 3, 4], function('Even')), 3)
+      Assert Equals(List.find_last_index([1, 2, 3, 4], function('Even'), 1), 1)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], function('MatchByO')), 2)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], function('MatchByO'), -2), 0)
+    End
+
     It returns -1 or default value if not found
       Assert Equals(List.find_last_index([], '1'), -1)
-      Assert Equals(List.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"'), -1)
       Assert Equals(List.find_last_index([], '1', 0, 999), 999)
-      Assert Equals(List.find_last_index(["hoge", "fuga", "piyo"], 'v:val =~# "x"', 0, "not found"), "not found")
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"'), -1)
+      Assert Equals(List.find_last_index(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"', 0, 'not found'), 'not found')
     End
   End
 
   Describe .find_indices()
-    It returns index list if found
+    Before all
+      function! MatchByO(x) abort
+        return a:x =~# 'o'
+      endfunction
+
+      function! MatchByX(x) abort
+        return a:x =~# 'x'
+      endfunction
+
+      function! ConstTrue(_) abort
+        return 1
+      endfunction
+    End
+
+    After all
+      delfunction MatchByO
+      delfunction MatchByX
+      delfunction ConstTrue
+    End
+
+    It returns index list if found with given the string expression
       Assert Equals(List.find_indices([1, 2, 3], 'v:val % 2 == 1'), [0, 2])
-      Assert Equals(List.find_indices(["hoge", "fuga", "piyo"], 'v:val =~# "o"'), [0, 2])
+      Assert Equals(List.find_indices(['hoge', 'fuga', 'piyo'], 'v:val =~# "o"'), [0, 2])
       Assert Equals(List.find_indices([1, 2, 3], 'v:val % 2 == 1', 1), [2])
       Assert Equals(List.find_indices([], '1'), [])
-      Assert Equals(List.find_indices(["hoge", "fuga", "piyo"], 'v:val =~# "x"'), [])
+      Assert Equals(List.find_indices(['hoge', 'fuga', 'piyo'], 'v:val =~# "x"'), [])
+    End
+
+    It returns index list if found with given the funcref
+      Assert Equals(List.find_indices([1, 2, 3], function('Odd')), [0, 2])
+      Assert Equals(List.find_indices(['hoge', 'fuga', 'piyo'], function('MatchByO')), [0, 2])
+      Assert Equals(List.find_indices([1, 2, 3], function('Odd'), 1), [2])
+      Assert Equals(List.find_indices([], function('ConstTrue')), [])
+      Assert Equals(List.find_indices(['hoge', 'fuga', 'piyo'], function('MatchByX')), [])
     End
   End
 
@@ -449,29 +810,58 @@ Describe Data.List
   End
 
   Describe .group_by()
-    It returns grouped dictionary
+    Before all
+      function! Head(xs) abort
+        return a:xs[0]
+      endfunction
+
+      function! ReversedPredicate(x) abort
+        return a:x % 2 == 0 ? 'aa'
+        \                   : '1.0'
+      endfunction
+    End
+
+    After all
+      delfunction Head
+      delfunction ReversedPredicate
+    End
+
+    It returns grouped dictionary with a given string expression
       Assert Equals(List.group_by([], 'len(v:val)'), {})
       Assert Equals(List.group_by(['a', 'b', 'ab', 'bc'], 'len(v:val)'), {'1': ['a', 'b'], '2': ['ab', 'bc']})
       Assert Equals(List.group_by(['a', 'b', 'ab', 'bc'], 'v:val[0]'), {'a': ['a', 'ab'], 'b': ['b', 'bc']})
       Assert Equals(List.group_by(range(4), 'v:val % 2 == 0 ? "aa" : 1.0'), {'aa': [0, 2], '1.0': [1, 3]})
     End
+
+    It returns grouped dictionary with a given funcref
+      Assert Equals(List.group_by([], function('len')), {})
+      Assert Equals(List.group_by(['a', 'b', 'ab', 'bc'], function('len')), {'1': ['a', 'b'], '2': ['ab', 'bc']})
+      Assert Equals(List.group_by(['a', 'b', 'ab', 'bc'], function('Head')), {'a': ['a', 'ab'], 'b': ['b', 'bc']})
+      Assert Equals(List.group_by(range(4), function('ReversedPredicate')), {'aa': [0, 2], '1.0': [1, 3]})
+    End
   End
 
-  function! My_predicate(a, b) abort
-      return a:a - a:b
-  endfunction
-
   Describe .binary_search()
+    Before all
+      function! MyPredicate(a, b) abort
+        return a:a - a:b
+      endfunction
+    End
+
+    After all
+      delfunction MyPredicate
+    End
+
     It search a list and return the index if success
       Assert Equals(List.binary_search([1, 3, 5, 7], 1), 0)
       Assert Equals(List.binary_search([1, 3, 5, 7], 3), 1)
       Assert Equals(List.binary_search([1, 3, 5, 7], 5), 2)
       Assert Equals(List.binary_search([1, 3, 5, 7], 7), 3)
 
-      Assert Equals(List.binary_search([1, 3, 5, 7], 1, 'My_predicate'), 0)
-      Assert Equals(List.binary_search([1, 3, 5, 7], 3, 'My_predicate'), 1)
-      Assert Equals(List.binary_search([1, 3, 5, 7], 5, 'My_predicate'), 2)
-      Assert Equals(List.binary_search([1, 3, 5, 7], 7, 'My_predicate'), 3)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 1, 'MyPredicate'), 0)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 3, 'MyPredicate'), 1)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 5, 'MyPredicate'), 2)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 7, 'MyPredicate'), 3)
 
       let f = {}
       function! f.func(a, b) dict abort
@@ -504,9 +894,9 @@ Describe Data.List
 
     It returns -1 if failed
       Assert Equals(List.binary_search([1, 3, 5, 7], 2), -1)
-      Assert Equals(List.binary_search([1, 3, 5, 7], 2, 'My_predicate'), -1)
+      Assert Equals(List.binary_search([1, 3, 5, 7], 2, 'MyPredicate'), -1)
       Assert Equals(List.binary_search([], 1), -1)
-      Assert Equals(List.binary_search([], 1, 'My_predicate'), -1)
+      Assert Equals(List.binary_search([], 1, 'MyPredicate'), -1)
 
       let f = {}
       function! f.func(a, b) dict abort
@@ -551,3 +941,4 @@ Describe Data.List
 
 End
 
+" vim:set et ts=2 sts=2 sw=2 tw=0:
