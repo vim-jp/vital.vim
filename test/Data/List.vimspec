@@ -646,6 +646,9 @@ Describe Data.List
     It sorts list with given the string expression
       let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
       Assert Equals(List.sort_by(copy(list), 'v:val.field'), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
+
+      let list = [[3, 1], [5, 2], [3, 3], [1, 4], [2, 5]]
+      Assert Equals(List.sort_by(copy(list), 'v:val[0]'), [[1, 4], [2, 5], [3, 1], [3, 3], [5, 2]])
     End
 
     It sorts list with given the funcref
