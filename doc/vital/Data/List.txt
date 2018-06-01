@@ -614,6 +614,14 @@ zip(...)				*Vital.Data.List.zip()*
 	echo s:L.zip([1, 2, 3], [4, 5, 6], [7, 8, 9])
 	" [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 <
+zip_fill({list}, {list}, {elem})	*Vital.Data.List.zip_fill()*
+	Similar to |Vital.Data.List.zip()|, but goes until the longer one.
+>
+	echo s:L.zip_fill([1, 2, 3, 10, 20], [4, 5, 6], 100)
+	" [[1, 4], [2, 5], [3, 6], [10, 100], [20, 100]]
+	echo s:L.zip_fill([1, 2, 3], [4, 5, 6, 10, 20], 200)
+	" [[1, 4], [2, 5], [3, 6], [200, 10], [200, 20]]
+<
 
 with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 	Returns {list} with index. {offset} means the base of index.
