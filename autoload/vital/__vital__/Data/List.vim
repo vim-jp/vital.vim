@@ -370,14 +370,6 @@ function! s:_foldr_internal(call, f, state, xs) abort
   return a:call(a:f, [y, s:_foldr_internal(a:call, a:f, a:state, ys)])
 endfunction
 
-" Returns the result of that apply a:memo and a:val to the binary string expression.
-" The binary expression has 'v:memo' and 'v:val'.
-function! s:_call_expr_memo_val(expr, memo, val) abort
-  let expr = substitute(a:expr, 'v:memo', string(a:memo), 'g')
-  let expr = substitute(expr, 'v:val', string(a:val), 'g')
-  return eval(expr)
-endfunction
-
 " Similar to Haskell's Prelude.fold11 .
 function! s:foldr1(f, xs) abort
   if len(a:xs) == 0
@@ -652,21 +644,6 @@ endfunction
 " Returns the result.
 function! s:_call_string_expr(expr, args) abort
   return map([a:args[0]], a:expr)[0]
-endfunction
-
-" Composes two function
-function! s:_compose(g, f) abort
-  return s:Closure.compose([a:g, a:f])
-endfunction
-
-" The identity function
-function! s:_id(x) abort
-  return a:x
-endfunction
-
-" The function of the '!' operator
-function! s:_not(x) abort
-  return !a:x
 endfunction
 
 let &cpo = s:save_cpo
