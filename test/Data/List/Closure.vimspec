@@ -143,11 +143,11 @@ Describe Data.List.Closure
 
   Describe .span()
     It returns a minimum value in the non empty list through the given the callable
-      let len = Closure.from_funcname('*len')
-      let abs = Closure.from_funcname('*abs')
+      let is_over_3 = Closure.from_funcname('*IsOver3')
+      let is_under_5 = Closure.from_funcname('*IsUnder5')
 
-      Assert Equals(ListCl.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], len), 'foo')
-      Assert Equals(ListCl.min_by([20, -50, -15, 30], abs), -15)
+      Assert Equals(ListCl.span(is_over_3, [1, 3, 5, 2]), [[], [1, 3, 5, 2]])
+      Assert Equals(ListCl.span(is_under_5, [1, 3, 5, 2]), [[1, 3], [5, 2]])
     End
   End
 
