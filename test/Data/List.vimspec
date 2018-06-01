@@ -572,6 +572,13 @@ Describe Data.List
     End
   End
 
+  Describe .zip_fill()
+    It fills a wanting list by a specified element
+      Assert Equals(List.zip_fill([1, 2, 3, 10, 20], [4, 5, 6], 100), [[1, 4], [2, 5], [3, 6], [10, 100], [20, 100]])
+      Assert Equals(List.zip_fill([1, 2, 3], [4, 5, 6, 10, 20], 200), [[1, 4], [2, 5], [3, 6], [200, 10], [200, 20]])
+    End
+  End
+
   Describe .with_index()
     It returns list with index
       Assert Equals(List.with_index(['a', 'b', 'c']), [['a', 0], ['b', 1], ['c', 2]])
