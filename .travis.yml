@@ -17,6 +17,7 @@ matrix:
       env:
         - VIM_VERSION=master
         - THEMIS_PROFILE=vim-profile-master.txt
+        - RUN_LINT=true
     - os: osx
       osx_image: xcode8.3
       env:
@@ -41,7 +42,9 @@ install:
   - export PATH=$HOME/vim/bin:$PATH
     # Install https://github.com/Vimjas/covimerage
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then brew install python3 ; fi
-  - pip3 install covimerage --user
+  - pip3 install --user --upgrade pip
+  - pip3 install --user --upgrade setuptools
+  - pip3 install --user covimerage
 
 before_script:
   - git clone --depth 1 --branch v1.5.4 --single-branch https://github.com/thinca/vim-themis /tmp/vim-themis
@@ -56,6 +59,7 @@ script:
   # - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
   - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
   - ruby scripts/check-changelog.rb
+  - if [[ "${RUN_LINT}" == "true" ]] ; then bash scripts/run-lint.sh ; fi
 
 after_success:
   - covimerage write_coverage $THEMIS_PROFILE
