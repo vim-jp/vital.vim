@@ -59,7 +59,7 @@ script:
   # - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
   - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
   - ruby scripts/check-changelog.rb
-  - if [[ "${RUN_LINT}" == "true" ]] ; then bash scripts/run-lint.sh ; fi
+  - if [[ "${RUN_LINT}" == "true" ]] ; then bash scripts/run-lint-on-ci.sh ; fi
 
 after_success:
   - covimerage write_coverage $THEMIS_PROFILE

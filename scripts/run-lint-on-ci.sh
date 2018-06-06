@@ -1,11 +1,16 @@
 #!/bin/bash
 
+if [[ "$TRAVIS" != "true" ]]; then
+  echo "This script is intended to be run on Travis CI" 1>&2
+  exit 1
+fi
+
 set -ev
 
 REVIEWDOG_VERSION=0.9.9
 VINT_VERSION=0.3.18
 
-mkdir -p ~/bin/ && export export PATH="~/bin/:$PATH"
+mkdir -p ~/bin/ && export PATH="~/bin/:$PATH"
 
 # Install https://github.com/haya14busa/reviewdog
 curl -fSL \
