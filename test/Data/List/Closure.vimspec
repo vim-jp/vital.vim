@@ -327,7 +327,7 @@ Describe Data.List.Closure
 
   Describe .find()
     Before all
-      function! CanbeDevideBy10(x) abort
+      function! CanbeDivideBy10(x) abort
         return a:x % 10 == 0
       endfunction
 
@@ -337,18 +337,18 @@ Describe Data.List.Closure
     End
 
     After all
-      delfunction CanbeDevideBy10
+      delfunction CanbeDivideBy10
       delfunction MatchByY
     End
 
     It returns the value if found by given callable
       let even                = Closure.from_funcname('*Even')
-      let can_be_devided_by_0 = Closure.from_funcname('*CanbeDevideBy10')
+      let can_be_divided_by_0 = Closure.from_funcname('*CanbeDivideBy10')
       let match_by_y          = Closure.from_funcname('*MatchByY')
 
       Assert Equals(ListCl.find([1, 2, 3], '*not-found*', even), 2)
       Assert Equals(ListCl.find([1, 2, 3, 1, 2, 3], '*not-found*', even), 2)
-      Assert Equals(ListCl.find([1, 2, 3], '*not-found*', can_be_devided_by_0), '*not-found*')
+      Assert Equals(ListCl.find([1, 2, 3], '*not-found*', can_be_divided_by_0), '*not-found*')
       Assert Equals(ListCl.find([], '*not-found*', even), '*not-found*')
       Assert Equals(ListCl.find(['hi', 'yo'], -1, match_by_y), 'yo')
     End
