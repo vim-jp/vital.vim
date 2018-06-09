@@ -156,8 +156,8 @@ function! s:_compare_with(x, y) abort
   \    : type_pair ==# s:__list_pair ? s:_list_comparator(x, y)
   \    : type_pair ==# s:__dict_pair ? 1
   \    : type_pair ==# s:__function_pair
-  \       ? execute('throw "vital: Data.List: sort_by() cannot compare a function and a function"', 1)
-  \       : execute(printf("throw 'vital: Data.List: sort_by() cannot compare %s and %s'", string(x), string(y)), 1)
+  \       ? execute('throw "vital: Data.List: sort_by() cannot compare a function and a function"')
+  \       : execute(printf("throw 'vital: Data.List: sort_by() cannot compare %s and %s'", string(x), string(y)))
 endfunction
 
 " The basic comparator for Number and String
