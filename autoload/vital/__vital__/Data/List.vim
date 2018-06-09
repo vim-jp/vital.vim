@@ -3,15 +3,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V) abort
-  let s:Closure = a:V.import('Data.Closure')
-endfunction
-
-function! s:_vital_depends() abort
-  return ['Data.Closure']
-endfunction
-
-
 function! s:pop(list) abort
   return remove(a:list, -1)
 endfunction
