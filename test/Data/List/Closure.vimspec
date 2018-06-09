@@ -1,0 +1,485 @@
+Describe Data.List.Closure
+  Before all
+    let V = vital#vital#new()
+    let Closure = V.import('Data.Closure')
+    let ListCl = V.import('Data.List.Closure')
+
+    function! Plus(x, y) abort
+      return a:x + a:y
+    endfunction
+
+    function! Pair(x, y) abort
+      return [a:x, a:y]
+    endfunction
+
+    function! IsOver3(x) abort
+      return a:x > 3
+    endfunction
+
+    function! IsUnder3(x) abort
+      return a:x < 3
+    endfunction
+
+    function! IsUnder5(x) abort
+      return a:x < 5
+    endfunction
+
+    function! Even(x) abort
+      return a:x % 2 is 0
+    endfunction
+
+    function! Odd(x) abort
+      return a:x % 2 is 1
+    endfunction
+
+    function! MatchByO(x) abort
+      return a:x =~# 'o'
+    endfunction
+  End
+
+  After all
+    delfunction Plus
+    delfunction Pair
+    delfunction IsOver3
+    delfunction IsUnder3
+    delfunction IsUnder5
+    delfunction Even
+    delfunction Odd
+    delfunction MatchByO
+  End
+
+  Describe .map()
+    Before all
+      function! Succ(x) abort
+        return a:x + 1
+      endfunction
+    End
+
+    After all
+      delfunction Succ
+    End
+
+    It maps given the callable to a list without indice
+      let succ = Closure.from_funcref(function('Succ'))
+      Assert Equals(ListCl.map([1, 2, 3], succ), [2, 3, 4])
+    End
+  End
+
+  Describe .foldl()
+    It folds a list from left with the callable
+      let plus = Closure.from_funcname('*Plus')
+      let pair = Closure.from_funcname('*Pair')
+
+      Assert Equals(ListCl.foldl(plus, 0, range(1, 10)), 55)
+      Assert Equals(ListCl.foldl(pair, 0, [1, 2]), [[0, 1], 2])
+    End
+  End
+
+  Describe .foldl1()
+    It folds a list from left with the callable
+      let plus = Closure.from_funcname('*Plus')
+      let pair = Closure.from_funcname('*Pair')
+
+      Assert Equals(ListCl.foldl1(plus,  range(0, 10)), 55)
+      Assert Equals(ListCl.foldl1(pair,  [0, 1, 2]), [[0, 1], 2])
+    End
+  End
+
+  Describe .foldr()
+    It folds a list from right with the callable
+      let plus = Closure.from_funcname('*Plus')
+      let pair = Closure.from_funcname('*Pair')
+
+      Assert Equals(ListCl.foldr(plus, 0, range(1, 10)), 55)
+      Assert Equals(ListCl.foldr(pair, 3, [1, 2]), [1, [2, 3]])
+    End
+  End
+
+  Describe .foldr1()
+    It folds a list from right with the callable
+      let plus = Closure.from_funcname('*Plus')
+      let pair = Closure.from_funcname('*Pair')
+
+      Assert Equals(ListCl.foldr1(plus, range(0, 10)), 55)
+      Assert Equals(ListCl.foldr1(pair, [0, 1, 2]), [0, [1, 2]])
+    End
+  End
+
+  Describe .uniq_by()
+    It makes a list unique based on given the callable
+      let tolower_ = Closure.from_funcref(function('tolower'))
+      Assert Equals(
+      \ ListCl.uniq_by([
+      \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
+      \     ],
+      \     tolower_
+      \   ),
+      \ [
+      \   'vim', 'emacs', 'gVim'
+      \ ]
+      \ )
+    End
+  End
+
+  Describe .max_by()
+    It returns a maximum value in the non empty list through the given the callable
+      let len = Closure.from_funcname('*len')
+      let abs = Closure.from_funcname('*abs')
+
+      Assert Equals(ListCl.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], len), 'hehehe')
+      Assert Equals(ListCl.max_by([20, -50, -15, 30], abs), -50)
+    End
+  End
+
+  Describe .min_by()
+    It returns a minimum value in the non empty list through the given the callable
+      let len = Closure.from_funcname('*len')
+      let abs = Closure.from_funcname('*abs')
+
+      Assert Equals(ListCl.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], len), 'foo')
+      Assert Equals(ListCl.min_by([20, -50, -15, 30], abs), -15)
+    End
+  End
+
+  Describe .span()
+    It returns a minimum value in the non empty list through the given the callable
+      let is_over_3 = Closure.from_funcname('*IsOver3')
+      let is_under_5 = Closure.from_funcname('*IsUnder5')
+
+      Assert Equals(ListCl.span(is_over_3, [1, 3, 5, 2]), [[], [1, 3, 5, 2]])
+      Assert Equals(ListCl.span(is_under_5, [1, 3, 5, 2]), [[1, 3], [5, 2]])
+    End
+  End
+
+  Describe .break()
+    Before all
+      function! Is5(x) abort
+        return a:x is 5
+      endfunction
+    End
+
+    After all
+      delfunction Is5
+    End
+
+    It splits a list into two lists. The latter is from the given callable satisfies.
+      let is_5       = Closure.from_funcname('*Is5')
+      let is_over_3  = Closure.from_funcname('*IsOver3')
+      let is_under_3 = Closure.from_funcname('*IsUnder3')
+
+      Assert Equals(ListCl.break(is_5, [1, 3, 5, 2]), [[1, 3], [5, 2]])
+      Assert Equals(ListCl.break(is_over_3, [1, 2, 3, 4, 5]), [[1, 2, 3], [4, 5]])
+      Assert Equals(ListCl.break(is_under_3, [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
+    End
+  End
+
+  Describe .take_while()
+    It takes elements while an element satisfies given the callable
+      let is_under_5 = Closure.from_funcname('*IsUnder5')
+      let is_over_3  = Closure.from_funcname('*IsOver3')
+      let is_under_3 = Closure.from_funcname('*IsUnder3')
+
+      Assert Equals(ListCl.take_while(is_under_5, [1, 3, 5, 2]), [1, 3])
+      Assert Equals(ListCl.take_while(is_over_3, [1, 2, 3, 4, 5]), [])
+      Assert Equals(ListCl.take_while(is_under_3, [1, 2, 3, 4, 5]), [1, 2])
+    End
+  End
+
+  Describe .drop_while()
+    Before all
+      function! Is3(x) abort
+        return a:x is 3
+      endfunction
+    End
+
+    After all
+      delfunction Is3
+    End
+
+    It drops elements while an element satisfies given the callable
+      let is_under_5 = Closure.from_funcname('*IsUnder5')
+      let is_over_3  = Closure.from_funcname('*IsOver3')
+      let is_under_3 = Closure.from_funcname('*IsUnder3')
+      let is_3       = Closure.from_funcname('*Is3')
+
+      Assert Equals(ListCl.drop_while(is_under_5, [1, 3, 5, 2]), [5, 2])
+      Assert Equals(ListCl.drop_while(is_over_3, [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+      Assert Equals(ListCl.drop_while(is_under_3, [1, 2, 3, 4, 5]), [3, 4, 5])
+      Assert Equals(ListCl.drop_while(is_3, [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+    End
+  End
+
+  Describe .sort()
+    Before all
+      function! MyCompare(i1, i2)
+        return a:i1 == a:i2 ? 0
+        \    : a:i1 >  a:i2 ? 1
+        \                   : -1
+      endfunction
+    End
+
+    After all
+      delfunction MyCompare
+    End
+
+    It sorts list with given the callable
+      let my_compare = Closure.from_funcname('*MyCompare')
+
+      let list = ['pineapple', 'orange', 'banana', 'apple']
+      Assert Equals(ListCl.sort(copy(list), my_compare), ['apple', 'banana', 'orange', 'pineapple'])
+    End
+  End
+
+  Describe .sort_by()
+    Before all
+      function! Lookup(x)
+        return a:x.field
+      endfunction
+    End
+
+    After all
+      delfunction Lookup
+    End
+
+    It sorts list with given the callable
+      let lookup = Closure.from_funcname('*Lookup')
+
+      let list = [{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}]
+      Assert Equals(ListCl.sort_by(copy(list), lookup), [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}])
+    End
+  End
+
+  Describe .all()
+    Before all
+      function! IsOver0(x) abort
+        return 0 < a:x
+      endfunction
+    End
+
+    After all
+      delfunction IsOver0
+    End
+
+    It returns true if all items in the list fulfill the callable
+      let even      = Closure.from_funcname('*Even')
+      let is_over_0 = Closure.from_funcname('*IsOver0')
+
+      Assert True(ListCl.all(even, [2, 8, 4, 6]))
+      Assert False(ListCl.all(even, [2, 8, 5, 6]))
+      Assert True(ListCl.all(is_over_0, [2, 8, 4, 6]))
+      Assert False(ListCl.all(is_over_0, [2, 0, 4, 6]))
+    End
+  End
+
+  Describe .any()
+    Before all
+      function! IsUnder0(x) abort
+        return 0 >= a:x
+      endfunction
+    End
+
+    After all
+      delfunction IsUnder0
+    End
+
+    It returns true if at least one item in the list fulfills the callable.
+      let odd        = Closure.from_funcname('*Odd')
+      let is_under_0 = Closure.from_funcname('*IsUnder0')
+
+      Assert False(ListCl.any(odd, [2, 8, 4, 6]))
+      Assert True(ListCl.any(odd, [2, 8, 5, 6]))
+      Assert False(ListCl.any(is_under_0, [2, 8, 4, 6]))
+      Assert True(ListCl.any(is_under_0, [2, 0, 4, 6]))
+    End
+  End
+
+  Describe .partition()
+    It takes a predicate a list and returns the pair of lists of elements which do and do not satisfy the predicate of the callable
+      let even = Closure.from_funcname('*Even')
+      Assert Equals(ListCl.partition(even, range(5)), [[0, 2, 4], [1, 3]])
+    End
+  End
+
+  Describe .map_accum()
+    Before all
+      function! MemoPlus(x, y) abort
+        return [a:x + a:y, a:y]
+      endfunction
+
+      function! SuccessivePlus(x, acc) abort
+        return [a:x + a:acc, a:acc + 1]
+      endfunction
+    End
+
+    After all
+      delfunction MemoPlus
+      delfunction SuccessivePlus
+    End
+
+    It is similar to map() but holds previous accumulator as well with a given callable
+      let memo_plus       = Closure.from_funcname('*MemoPlus')
+      let successive_plus = Closure.from_funcname('*SuccessivePlus')
+
+      Assert Equals(ListCl.map_accum(memo_plus, [1, 2, 3], 10), [11, 12, 13])
+      Assert Equals(ListCl.map_accum(successive_plus, [1, 2, 3], 10), [11, 13, 15])
+    End
+  End
+
+  Describe .find()
+    Before all
+      function! CanbeDivideBy10(x) abort
+        return a:x % 10 == 0
+      endfunction
+
+      function! MatchByY(x) abort
+        return a:x =~ 'y'
+      endfunction
+    End
+
+    After all
+      delfunction CanbeDivideBy10
+      delfunction MatchByY
+    End
+
+    It returns the value if found by given callable
+      let even                = Closure.from_funcname('*Even')
+      let can_be_divided_by_0 = Closure.from_funcname('*CanbeDivideBy10')
+      let match_by_y          = Closure.from_funcname('*MatchByY')
+
+      Assert Equals(ListCl.find([1, 2, 3], '*not-found*', even), 2)
+      Assert Equals(ListCl.find([1, 2, 3, 1, 2, 3], '*not-found*', even), 2)
+      Assert Equals(ListCl.find([1, 2, 3], '*not-found*', can_be_divided_by_0), '*not-found*')
+      Assert Equals(ListCl.find([], '*not-found*', even), '*not-found*')
+      Assert Equals(ListCl.find(['hi', 'yo'], -1, match_by_y), 'yo')
+    End
+  End
+
+  Describe .find_index()
+    It returns the index if found with given the callable
+      let even       = Closure.from_funcname('*Even')
+      let odd        = Closure.from_funcname('*Odd')
+      let match_by_o = Closure.from_funcname('*MatchByO')
+
+      Assert Equals(ListCl.find_index([1, 2, 3], even), 1)
+      Assert Equals(ListCl.find_index([1, 2, 3], odd, 1), 2)
+      Assert Equals(ListCl.find_index(['hoge', 'fuga', 'piyo'], match_by_o), 0)
+      Assert Equals(ListCl.find_index(['hoge', 'fuga', 'piyo'], match_by_o, -2), 2)
+    End
+  End
+
+  Describe .find_last_index()
+    It returns the index if found with given the callable
+      let even       = Closure.from_funcname('*Even')
+      let match_by_o = Closure.from_funcname('*MatchByO')
+
+      Assert Equals(ListCl.find_last_index([1, 2, 3, 4], even), 3)
+      Assert Equals(ListCl.find_last_index([1, 2, 3, 4], even, 1), 1)
+      Assert Equals(ListCl.find_last_index(['hoge', 'fuga', 'piyo'], match_by_o), 2)
+      Assert Equals(ListCl.find_last_index(['hoge', 'fuga', 'piyo'], match_by_o, -2), 0)
+    End
+  End
+
+  Describe .find_indices()
+    Before all
+      function! MatchByX(x) abort
+        return a:x =~# 'x'
+      endfunction
+
+      function! ConstTrue(_) abort
+        return 1
+      endfunction
+    End
+
+    After all
+      delfunction MatchByX
+      delfunction ConstTrue
+    End
+
+    It returns index list if found with given the callable
+      let odd        = Closure.from_funcname('*Odd')
+      let match_by_o = Closure.from_funcname('*MatchByO')
+      let const_true = Closure.from_funcname('*ConstTrue')
+      let match_by_x = Closure.from_funcname('*MatchByX')
+
+      Assert Equals(ListCl.find_indices([1, 2, 3], odd), [0, 2])
+      Assert Equals(ListCl.find_indices(['hoge', 'fuga', 'piyo'], match_by_o), [0, 2])
+      Assert Equals(ListCl.find_indices([1, 2, 3], odd, 1), [2])
+      Assert Equals(ListCl.find_indices([], const_true), [])
+      Assert Equals(ListCl.find_indices(['hoge', 'fuga', 'piyo'], match_by_x), [])
+    End
+  End
+
+  Describe .group_by()
+    Before all
+      function! Head(xs) abort
+        return a:xs[0]
+      endfunction
+
+      function! ReversedPredicate(x) abort
+        return a:x % 2 == 0 ? 'aa'
+        \                   : '1.0'
+      endfunction
+    End
+
+    After all
+      delfunction Head
+      delfunction ReversedPredicate
+    End
+
+    It returns grouped dictionary with a given callable
+      let len                = Closure.from_funcname('*len')
+      let head               = Closure.from_funcname('*Head')
+      let reversed_predicate = Closure.from_funcname('*ReversedPredicate')
+
+      Assert Equals(ListCl.group_by([], len), {})
+      Assert Equals(ListCl.group_by(['a', 'b', 'ab', 'bc'], len), {'1': ['a', 'b'], '2': ['ab', 'bc']})
+      Assert Equals(ListCl.group_by(['a', 'b', 'ab', 'bc'], head), {'a': ['a', 'ab'], 'b': ['b', 'bc']})
+      Assert Equals(ListCl.group_by(range(4), reversed_predicate), {'aa': [0, 2], '1.0': [1, 3]})
+    End
+  End
+
+  Describe .binary_search()
+    Before all
+      function! MyPredicate(a, b) abort
+        return a:a - a:b
+      endfunction
+    End
+
+    After all
+      delfunction MyPredicate
+    End
+
+    It search a list and return the index if success
+      let my_predicate = Closure.from_funcname('*MyPredicate')
+
+      Assert Equals(ListCl.binary_search([1, 3, 5, 7], 1, my_predicate), 0)
+      Assert Equals(ListCl.binary_search([1, 3, 5, 7], 3, my_predicate), 1)
+      Assert Equals(ListCl.binary_search([1, 3, 5, 7], 5, my_predicate), 2)
+      Assert Equals(ListCl.binary_search([1, 3, 5, 7], 7, my_predicate), 3)
+
+      let f = {}
+      function! f.func(a, b) dict abort
+        return a:a - a:b
+      endfunction
+      let f_func = Closure.from_method(f, 'func')
+
+      Assert Equals(ListCl.binary_search([1, 3, 5, 7], 1, f_func), 0)
+      Assert Equals(ListCl.binary_search([1, 3, 5, 7], 3, f_func), 1)
+      Assert Equals(ListCl.binary_search([1, 3, 5, 7], 5, f_func), 2)
+      Assert Equals(ListCl.binary_search([1, 3, 5, 7], 7, f_func), 3)
+
+      function! f.bylength(a, b) dict abort
+        return len(a:a) - len(a:b)
+      endfunction
+      let f_bylength = Closure.from_method(f, 'bylength')
+
+      Assert Equals(ListCl.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'a',     f_bylength), 0)
+      Assert Equals(ListCl.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'aa',    f_bylength), 1)
+      Assert Equals(ListCl.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'aaa',   f_bylength), 2)
+      Assert Equals(ListCl.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'aaaa',  f_bylength), 3)
+      Assert Equals(ListCl.binary_search(['a', 'aa', 'aaa', 'aaaa'], 'aaaaa', f_bylength), -1)
+    End
+  End
+End
+
+" vim:ts=2:sw=2:et
