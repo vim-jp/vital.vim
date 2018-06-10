@@ -101,6 +101,8 @@ Describe Locale.Message
       Assert Equals(m.get('hello'), 'ciao')
       call m.load('en')
       Assert Equals(m.get('hello'), 'Hello')
+      call m.load('es') " does not exist
+      Assert Equals(m.get('hello'), 'hello')
     End
   End
 
