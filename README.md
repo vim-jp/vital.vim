@@ -51,6 +51,7 @@ Module						 | Description
 [Data.OrderedSet](doc/vital/Data/OrderedSet.txt)| ordered collection library
 [Data.Set](doc/vital/Data/Set.txt)		 | set and frozenset data structure ported from python
 [Data.String](doc/vital/Data/String.txt)	 | string utilities library
+[Data.String.Interpolation](doc/vital/Data/String/Interpolation.txt)		 | build string with ${}
 [Data.Tree](doc/vital/Data/Tree.txt)		 | tree utilities library
 [Database.SQLite](doc/vital/Database/SQLite.txt) | sqlite utilities library
 [DateTime](doc/vital/DateTime.txt)		 | date and time library
