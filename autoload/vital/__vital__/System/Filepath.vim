@@ -8,14 +8,14 @@ set cpo&vim
 
 function! s:to_slash(path) abort
   if has('win32') || has('win64')
-    return substitute(a:path, '\', '/', 'g')
+    return tr(a:path, '\', '/')
   endif
   return a:path
 endfunction
 
 function! s:from_slash(path) abort
   if has('win32') || has('win64')
-    return substitute(a:path, '/', '\', 'g')
+    return tr(a:path, '/', '\')
   endif
   return a:path
 endfunction
