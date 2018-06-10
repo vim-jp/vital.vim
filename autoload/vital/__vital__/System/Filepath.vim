@@ -6,6 +6,20 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:to_slash(path) abort
+  if has('win32') || has('win64')
+    return substitute(a:path, '\', '/', 'g')
+  endif
+  return a:path
+endfunction
+
+function! s:from_slash(path) abort
+  if has('win32') || has('win64')
+    return substitute(a:path, '/', '\', 'g')
+  endif
+  return a:path
+endfunction
+
 let s:path_sep_pattern = (exists('+shellslash') ? '[\\/]' : '/') . '\+'
 let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 let s:is_cygwin = has('win32unix')
