@@ -183,7 +183,6 @@ LINKS					*Vital-links*
   |vital/Hash/MD5.txt|	        MD5 encoding.
   |vital/Interpreter/Brainf__k.txt|	Brainf**k interpreter
   |vital/Locale/Message.txt|	very simple message localization library.
-  |vital/Lua/Prelude.txt|	crucial functions for lua integration
   |vital/Mapping.txt|		Utilities for mapping.
   |vital/Math.txt|		Mathematical functions
   |vital/OptionParser.txt|	Option parser library for Vim.

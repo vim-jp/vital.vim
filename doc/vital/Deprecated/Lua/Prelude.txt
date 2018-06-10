@@ -3,28 +3,28 @@
 Maintainer: ujihisa <ujihisa at gmail com>
 
 ==============================================================================
-CONTENTS				*Vital.Lua.Prelude-contents*
+CONTENTS				*Vital.Deprecated.Lua.Prelude-contents*
 
-INTRODUCTION			|Vital.Lua.Prelude-introduction|
-  USAGE				|Vital.Lua.Prelude-usage|
-INTERFACE			|Vital.Lua.Prelude-interface|
-  Functions			  |Vital.Lua.Prelude-functions|
+INTRODUCTION			|Vital.Deprecated.Lua.Prelude-introduction|
+  USAGE				|Vital.Deprecated.Lua.Prelude-usage|
+INTERFACE			|Vital.Deprecated.Lua.Prelude-interface|
+  Functions			  |Vital.Deprecated.Lua.Prelude-functions|
 
 ==============================================================================
-INTRODUCTION				*Vital.Lua.Prelude-introduction*
+INTRODUCTION				*Vital.Deprecated.Lua.Prelude-introduction*
 
-*Vital.Lua.Prelude* provides
+*Vital.Deprecated.Lua.Prelude* provides
 
 * common way to make your own function available both from Vim script and from
   Lua.
 * automatic loading of corresponding files; this loads a Lua file
   autoload/foo.lua when you use a Vim script file autoload/foo.vim which both
   can be used from Lua/Vim.
-* useful functions defined in Lua.Prelude, like from_lua() and to_lua().
+* useful functions defined in Deprecated.Lua.Prelude, like from_lua() and to_lua().
 * easy way to call Lua function from Vim script.
 
 ==============================================================================
-USAGE					*Vital.Lua.Prelude-usage*
+USAGE					*Vital.Deprecated.Lua.Prelude-usage*
 
 When you write function "f" it can be used from both (vim or lua) code. You
 can write bridge function below:
@@ -32,8 +32,8 @@ can write bridge function below:
 sample.vim
 >
 	let s:V = vital#sample#new()
-	let s:P = s:V.import('Lua.Prelude')
-        " s:LuaP is namespace of Vital.Lua.Prelude
+	let s:P = s:V.import('Deprecated.Lua.Prelude')
+        " s:LuaP is namespace of Vital.Deprecated.Lua.Prelude
 	let s:LuaP = s:P.lua_namespace()
         " s:sfile will be namespace
 	let s:sfile = expand('<sfile>:p')
@@ -51,7 +51,7 @@ sample.vim
 sample.lua
 >
 	local public = {lua = {}, vim = {}}
-	-- You can call Vital.Lua.Prelude functions via table P
+	-- You can call Vital.Deprecated.Lua.Prelude functions via table P
 	local P = _G[vim.eval('s:LuaP')].lua
 
 	function public.lua.f(x, y)
@@ -69,17 +69,17 @@ sample.lua
 <
 
 ==============================================================================
-INTERFACE				*Vital.Lua.Prelude-interface*
+INTERFACE				*Vital.Deprecated.Lua.Prelude-interface*
 ------------------------------------------------------------------------------
-FUNCTIONS				*Vital.Lua.Prelude-functions*
+FUNCTIONS				*Vital.Deprecated.Lua.Prelude-functions*
 
-luafile_of({sfile})			      *Vital.Lua.Prelude.luafile_of()*
+luafile_of({sfile})			      *Vital.Deprecated.Lua.Prelude.luafile_of()*
 
 	Only as a vim interface; Lua script can't call this function directly.
 	Convert vim script filename to lua script filename. Lua script file
 	must be placed on the same directory of vim script file.
 
-map({list}, {f})				     *Vital.Lua.Prelude.map()*
+map({list}, {f})				     *Vital.Deprecated.Lua.Prelude.map()*
 
 	Only as a lua interface; Vim script can't call this function directly.
 >
@@ -87,12 +87,12 @@ map({list}, {f})				     *Vital.Lua.Prelude.map()*
 	# == {11, 21, 31}
 <
 
-to_lua({vobj})					  *Vital.Lua.Prelude.to_lua()*
+to_lua({vobj})					  *Vital.Deprecated.Lua.Prelude.to_lua()*
 
 	Only as a lua interface; Vim script can't call this function directly.
 	TODO
 
-from_lua({lobj})				*Vital.Lua.Prelude.from_lua()*
+from_lua({lobj})				*Vital.Deprecated.Lua.Prelude.from_lua()*
 
 	Only as a lua interface; Vim script can't call this function directly.
 	TODO

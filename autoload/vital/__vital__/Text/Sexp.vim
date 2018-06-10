@@ -8,7 +8,7 @@ let s:sfile = expand('<sfile>:p')
 
 function! s:_vital_loaded(V) abort
   let s:V = a:V
-  let s:P = s:V.import('Lua.Prelude')
+  let s:P = s:V.import('Deprecated.Lua.Prelude')
   let s:LuaP = s:P.lua_namespace()
 
   if exists('*luaeval')
@@ -19,7 +19,7 @@ endfunction
 
 function! s:_vital_depends() abort
   return {
-  \   'modules': ['Lua.Prelude'],
+  \   'modules': ['Deprecated.Lua.Prelude'],
   \   'files': ['./Sexp.lua'],
   \ }
 endfunction
