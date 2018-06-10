@@ -34,3 +34,9 @@ go get -d -v ./scripts
 
 # Run reviewdog.
 reviewdog -reporter=github-pr-check
+
+# Check tag name conflicts
+vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
+
+# Validate changelog
+ruby scripts/check-changelog.rb

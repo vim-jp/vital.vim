@@ -4,6 +4,9 @@ set -ev
 
 case "${TRAVIS_OS_NAME}" in
 	linux)
+		if [[ "${VIM_VERSION}" == "" ]]; then
+			exit
+		fi
 		git clone --depth 1 --branch "${VIM_VERSION}" https://github.com/vim/vim /tmp/vim
 		cd /tmp/vim
 		./configure --prefix="${HOME}/vim" --with-features=huge \
