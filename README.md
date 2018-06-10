@@ -90,6 +90,7 @@ Module						 | Description
 [Vim.ScriptLocal](doc/vital/Vim/ScriptLocal.txt) | Get script-local things
 [Vim.Search](doc/vital/Vim/Search.txt)		 | Vim's \[I like function
 [Vim.ViewTracer](doc/vital/Vim/ViewTracer.txt) | Trace window and tabpage
+[Vim.WindowLayout](doc/vital/Vim/WindowLayout.txt)		 | lays out windows declaratively
 [Web.HTML](doc/vital/Web/HTML.txt)		 | HTML parser written in pure Vim script
 [Web.HTTP](doc/vital/Web/HTTP.txt)		 | simple HTTP client library
 [Web.JSON](doc/vital/Web/JSON.txt)		 | JSON parser written in pure Vim script
