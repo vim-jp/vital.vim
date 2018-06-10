@@ -10,7 +10,7 @@ function! s:_vital_loaded(V) abort
   let s:Prelude = s:V.import('Prelude')
 
   if has('lua')
-    let s:P = s:V.import('Lua.Prelude')
+    let s:P = s:V.import('Deprecated.Lua.Prelude')
     let s:LuaP = s:P.lua_namespace()
 
     execute printf('lua vital_context = "%s"', escape(s:sfile, '\'))
@@ -20,7 +20,7 @@ endfunction
 
 function! s:_vital_depends() abort
   return ['Prelude']
-  \    + (has('lua') ? ['Lua.Prelude'] : [])
+  \    + (has('lua') ? ['Deprecated.Lua.Prelude'] : [])
 endfunction
 
 function! s:run(bfcode) abort

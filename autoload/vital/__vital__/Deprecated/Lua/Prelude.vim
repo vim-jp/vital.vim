@@ -1,4 +1,4 @@
-" Lua.Prelude
+" Deprecated.Lua.Prelude
 " Author: Tatsuhiro Ujihisa
 "
 "

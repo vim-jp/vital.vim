@@ -59,7 +59,6 @@ Module						 | Description
 [Hash.MD5](doc/vital/Hash/MD5.txt) | MD5 encoding
 [Interpreter.Brainf__k](doc/vital/Interpreter/Brainf__k.txt) | Brainf\*\*k interpreter
 [Locale.Message](doc/vital/Locale/Message.txt)	 | very simple message localization library
-[Lua.Prelude](doc/vital/Lua/Prelude.txt)	 | crucial functions for lua integration
 [Mapping](doc/vital/Mapping.txt)		 | Utilities for mapping
 [Math](doc/vital/Math.txt)			 | Mathematical functions
 [OptionParser](doc/vital/OptionParser.txt)	 | Option parser library for Vim
