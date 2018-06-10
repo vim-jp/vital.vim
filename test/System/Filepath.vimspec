@@ -21,22 +21,11 @@ Describe System.Filepath
 
   Describe .from_slash()
     It converts \ to / only when it's necessary
-      Assert Equals('a/b', FP.from_slash('a/b'))
       if has('win32') || has('win64')
         Assert Equals('a\b', FP.from_slash('a/b'))
       else
         Assert Equals('a/b', FP.from_slash('a/b'))
       endif
-    End
-  End
-
-  Describe .to_slash() and .from_slash()
-    It always returns original value
-      for l:path in ['aaa/bbb', 'aaa\bbb', 'uioj:zxkjqpa/asdlj\qoui;j28sjlkdf kljweqfd djakf:']
-        Assert Equals(
-              \ l:path,
-              \ FP.from_slash(FP.to_slash(l:path)))
-      endfor
     End
   End
 
