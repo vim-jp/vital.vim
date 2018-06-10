@@ -49,7 +49,9 @@ Module						 | Description
 [Data.List.Closure](doc/vital/Data/List.txt)	 | Data.List provider for Data.Closure
 [Data.Optional](doc/vital/Data/Optional.txt)	 | optional value library
 [Data.OrderedSet](doc/vital/Data/OrderedSet.txt)| ordered collection library
+[Data.Set](doc/vital/Data/Set.txt)		 | set and frozenset data structure ported from python
 [Data.String](doc/vital/Data/String.txt)	 | string utilities library
+[Data.String.Interpolation](doc/vital/Data/String/Interpolation.txt)		 | build string with ${}
 [Data.Tree](doc/vital/Data/Tree.txt)		 | tree utilities library
 [Database.SQLite](doc/vital/Database/SQLite.txt) | sqlite utilities library
 [DateTime](doc/vital/DateTime.txt)		 | date and time library
@@ -88,6 +90,7 @@ Module						 | Description
 [Vim.ScriptLocal](doc/vital/Vim/ScriptLocal.txt) | Get script-local things
 [Vim.Search](doc/vital/Vim/Search.txt)		 | Vim's \[I like function
 [Vim.ViewTracer](doc/vital/Vim/ViewTracer.txt) | Trace window and tabpage
+[Vim.WindowLayout](doc/vital/Vim/WindowLayout.txt)		 | lays out windows declaratively
 [Web.HTML](doc/vital/Web/HTML.txt)		 | HTML parser written in pure Vim script
 [Web.HTTP](doc/vital/Web/HTTP.txt)		 | simple HTTP client library
 [Web.JSON](doc/vital/Web/JSON.txt)		 | JSON parser written in pure Vim script
