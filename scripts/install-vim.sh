@@ -8,14 +8,14 @@ case "${TRAVIS_OS_NAME}" in
 		cd /tmp/vim
 		./configure --prefix="${HOME}/vim" --with-features=huge \
 			--enable-perlinterp --enable-pythoninterp --enable-python3interp \
-			--enable-rubyinterp --enable-luainterp --enable-fail-if-missing
+			--enable-rubyinterp --enable-fail-if-missing
 		make -j2
 		make install
 		;;
 	osx)
 		export HOMEBREW_NO_AUTO_UPDATE=1
 		brew update
-		brew install macvim --with-override-system-vim --with-lua
+		brew install macvim --with-override-system-vim
 		;;
 	*)
 		echo "Unknown value of \${TRAVIS_OS_NAME}: ${TRAVIS_OS_NAME}"
