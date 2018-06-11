@@ -6,7 +6,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-if has('win32') || has('win64')
+let s:path_sep_pattern = (exists('+shellslash') ? '[\\/]' : '/') . '\+'
+let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
+let s:is_cygwin = has('win32unix')
+let s:is_mac = !s:is_windows && !s:is_cygwin
+      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
+      \   (!isdirectory('/proc') && executable('sw_vers')))
+let s:is_case_tolerant = filereadable(expand('<sfile>:r') . '.VIM')
+
+if s:is_windows
   function! s:to_slash(path) abort
     return tr(a:path, '\', '/')
   endfunction
@@ -16,7 +24,7 @@ else
   endfunction
 endif
 
-if has('win32') || has('win64')
+if s:is_windows
   function! s:from_slash(path) abort
     return tr(a:path, '/', '\')
   endfunction
@@ -26,13 +34,6 @@ else
   endfunction
 endif
 
-let s:path_sep_pattern = (exists('+shellslash') ? '[\\/]' : '/') . '\+'
-let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
-let s:is_cygwin = has('win32unix')
-let s:is_mac = !s:is_windows && !s:is_cygwin
-      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
-      \   (!isdirectory('/proc') && executable('sw_vers')))
-let s:is_case_tolerant = filereadable(expand('<sfile>:r') . '.VIM')
 
 " Get the directory separator.
 function! s:separator() abort
