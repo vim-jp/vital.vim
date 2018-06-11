@@ -1,4 +1,4 @@
-*vital/Deprecated.Text.Sexp.txt*		S-Expression parser.
+*vital/Deprecated/Text/Sexp.txt*		S-Expression parser.
 
 Maintainer: ujihisa <ujihisa at gmail com>
 
