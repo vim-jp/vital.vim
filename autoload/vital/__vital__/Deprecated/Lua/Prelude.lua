@@ -82,7 +82,7 @@ end
 
 -- only for lua
 function public.lua.rest(array, index)
-  -- TODO Text.Sexp also has one
+  -- TODO Deprecated.Text.Sexp also has one
   index = index or 2
   local rest = {}
   for i = index, #array do
@@ -93,7 +93,7 @@ end
 
 -- only for lua
 function public.lua.cons(x, xs)
-  -- TODO Text.Sexp also has one
+  -- TODO Deprecated.Text.Sexp also has one
   local memo = {x}
   for _, v in ipairs(xs) do
     table.insert(memo, v)
