@@ -9,9 +9,8 @@ case "${TRAVIS_OS_NAME}" in
 		fi
 		git clone --depth 1 --branch "${VIM_VERSION}" https://github.com/vim/vim /tmp/vim
 		cd /tmp/vim
-		./configure --prefix="${HOME}/vim" --with-features=huge \
-			--enable-perlinterp --enable-pythoninterp --enable-python3interp \
-			--enable-rubyinterp --enable-fail-if-missing
+		./configure --prefix="${HOME}/vim" --with-features=huge --enable-pythoninterp \
+			--enable-python3interp --enable-fail-if-missing
 		make -j2
 		make install
 		;;
