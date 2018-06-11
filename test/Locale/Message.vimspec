@@ -5,6 +5,12 @@ let s:text_path = 'test/Locale/MessageText/%s.txt'
 Describe Locale.Message
   Before all
     let M = vital#vital#new().import('Locale.Message')
+    try
+      language message ja_JP.UTF-8
+      let ja_available = 1
+    catch /^Vim\%((\a\+)\)\=:E197/
+      let ja_available = 0
+    endtry
   End
 
   Before each
@@ -13,17 +19,17 @@ Describe Locale.Message
 
   Describe .get_lang()
     It returns current language of message
-      try
+      if ja_available
         language message ja_JP.UTF-8
         Assert Equals(M.get_lang(), 'ja')
-      catch /^Vim\%((\a\+)\)\=:E197/
+      else
         try
           language message en_US.UTF-8
           Assert Equals(M.get_lang(), 'en')
         catch /^Vim\%((\a\+)\)\=:E197/
           Skip Need ja_JP.UTF-8 or en_US.UTF-8 in your system locale
         endtry
-      endtry
+      endif
     End
     It returns 'en' if current language is 'C'
       language message C
@@ -41,17 +47,17 @@ Describe Locale.Message
 
   Describe .get()
     Before each
-      try
+      if ja_available
         language message ja_JP.UTF-8
         let self.m = M.new(s:text_path)
-      catch /^Vim\%((\a\+)\)\=:E197/
+      else
         try
           language message en_US.UTF-8
           let self.m = M.new(s:text_path)
         catch /^Vim\%((\a\+)\)\=:E197/
           Skip Need ja_JP.UTF-8 or en_US.UTF-8 in your system locale
         endtry
-      endtry
+      endif
     End
     It returns translated text if it exists
       if M.get_lang() == 'ja'
@@ -67,17 +73,17 @@ Describe Locale.Message
 
   Describe ._()
     Before each
-      try
+      if ja_available
         language message ja_JP.UTF-8
         let self.m = M.new(s:text_path)
-      catch /^Vim\%((\a\+)\)\=:E197/
+      else
         try
           language message en_US.UTF-8
           let self.m = M.new(s:text_path)
         catch /^Vim\%((\a\+)\)\=:E197/
           Skip Need ja_JP.UTF-8 or en_US.UTF-8 in your system locale
         endtry
-      endtry
+      endif
     End
     It can use like `get()`
       if M.get_lang() == 'ja'
