@@ -8,6 +8,27 @@ Describe System.Filepath
     let is_case_sensitive_file_system = !(isdirectory(tolower(g:root)) && isdirectory(toupper(g:root)))
   End
 
+  Describe .to_slash()
+    It converts / to \ only when it's necessary
+      Assert Equals('a/b', FP.to_slash('a/b'))
+      if has('win32') || has('win64')
+        Assert Equals('a/b', FP.to_slash('a\b'))
+      else
+        Assert Equals('a\b', FP.to_slash('a\b'))
+      endif
+    End
+  End
+
+  Describe .from_slash()
+    It converts \ to / only when it's necessary
+      if has('win32') || has('win64')
+        Assert Equals('a\b', FP.from_slash('a/b'))
+      else
+        Assert Equals('a/b', FP.from_slash('a/b'))
+      endif
+    End
+  End
+
   Describe .is_absolute()
     if !s:is_windows
       It returns TRUE if {path} is an absolute path

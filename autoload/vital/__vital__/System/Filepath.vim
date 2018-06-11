@@ -14,6 +14,27 @@ let s:is_mac = !s:is_windows && !s:is_cygwin
       \   (!isdirectory('/proc') && executable('sw_vers')))
 let s:is_case_tolerant = filereadable(expand('<sfile>:r') . '.VIM')
 
+if s:is_windows
+  function! s:to_slash(path) abort
+    return tr(a:path, '\', '/')
+  endfunction
+else
+  function! s:to_slash(path) abort
+    return a:path
+  endfunction
+endif
+
+if s:is_windows
+  function! s:from_slash(path) abort
+    return tr(a:path, '/', '\')
+  endfunction
+else
+  function! s:from_slash(path) abort
+    return a:path
+  endfunction
+endif
+
+
 " Get the directory separator.
 function! s:separator() abort
   return fnamemodify('.', ':p')[-1 :]

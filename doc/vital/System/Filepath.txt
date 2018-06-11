@@ -21,6 +21,29 @@ INTERFACE				*Vital.System.Filepath-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.System.Filepath-functions*
 
+to_slash({path})			*Vital.System.Filepath.to_slash()*
+	Use when you quote path string for scripting languages, without
+	worrying about the runtime operating system is if windows or not.
+
+	e.g.
+>
+	let code = printf(
+	  \ '(neoclojure-init "%s")',
+	  \ shellescape(s:F.to_slash(path)))
+	..
+	let path = s:F.from_slash(
+	  \ s:get_path_like_string_from_something())
+<
+
+	This function intentionally ignores 'shellslash' option, so that you
+	can simply use this function for path string not only from Vim but
+	also from others, such as environment vars, problem output, or really
+	anything.
+	See also: |Vital.System.Filepath.from_slash()|
+
+from_slash({path})			*Vital.System.Filepath.from_slash()*
+	This is opposite to |Vital.System.Filepath.to_slash()|. See its doc.
+
 separator()			*Vital.System.Filepath.separator()*
 	Return OS related directory separator as string.
 	This returns "/" on non-Windows, or Windows and |'shellslash'| is on.
