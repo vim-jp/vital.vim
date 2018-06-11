@@ -11,7 +11,7 @@ let s:path_sep_pattern = (exists('+shellslash') ? '[\\/]' : '/') . '\+'
 " This is tricky. has('win32') is actually enough, and you don't need
 " has('win16') || has('win32') || has('win64') || has('win95')
 " to tell if it's windows. 
-" * has('win16') does not exist.
+" * has('win16') does not exist; it's been removed in the past.
 " * has('win32') is 1 not only on 32bit windows but also on 64bit windows
 " * has('win32') also covers both has('win64') and has('win95')
 let s:is_windows = has('win32')
