@@ -2,8 +2,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! s:_vital_loaded(V) abort
-  let s:V = a:V
-  let s:S = s:V.import('Data.String')
+  let s:S = a:V.import('Data.String')
 endfunction
 
 function! s:_vital_depends() abort
