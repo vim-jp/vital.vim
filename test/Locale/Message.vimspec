@@ -7,9 +7,14 @@ Describe Locale.Message
     let M = vital#vital#new().import('Locale.Message')
     try
       language message ja_JP.UTF-8
-      let ja_available = 1
+      let language_available = 'ja'
     catch /^Vim\%((\a\+)\)\=:E197/
-      let ja_available = 0
+      try
+        language message en_US.UTF-8
+        let language_available = 'en'
+      catch /^Vim\%((\a\+)\)\=:E197/
+        let language_available = ''
+      endtry
     endtry
   End
 
@@ -19,16 +24,14 @@ Describe Locale.Message
 
   Describe .get_lang()
     It returns current language of message
-      if ja_available
+      if language_available == 'ja'
         language message ja_JP.UTF-8
         Assert Equals(M.get_lang(), 'ja')
+      elseif language_available == 'en'
+        language message en_US.UTF-8
+        Assert Equals(M.get_lang(), 'en')
       else
-        try
-          language message en_US.UTF-8
-          Assert Equals(M.get_lang(), 'en')
-        catch /^Vim\%((\a\+)\)\=:E197/
-          Skip Need ja_JP.UTF-8 or en_US.UTF-8 in your system locale
-        endtry
+        Skip Need ja_JP.UTF-8 or en_US.UTF-8 in your system locale
       endif
     End
     It returns 'en' if current language is 'C'
@@ -47,16 +50,14 @@ Describe Locale.Message
 
   Describe .get()
     Before each
-      if ja_available
+      if language_available == 'ja'
         language message ja_JP.UTF-8
         let self.m = M.new(s:text_path)
+      elseif language_available == 'en'
+        language message en_US.UTF-8
+        let self.m = M.new(s:text_path)
       else
-        try
-          language message en_US.UTF-8
-          let self.m = M.new(s:text_path)
-        catch /^Vim\%((\a\+)\)\=:E197/
-          Skip Need ja_JP.UTF-8 or en_US.UTF-8 in your system locale
-        endtry
+        Skip Need ja_JP.UTF-8 or en_US.UTF-8 in your system locale
       endif
     End
     It returns translated text if it exists
@@ -73,16 +74,14 @@ Describe Locale.Message
 
   Describe ._()
     Before each
-      if ja_available
+      if language_available == 'ja'
         language message ja_JP.UTF-8
         let self.m = M.new(s:text_path)
+      elseif language_available == 'en'
+        language message en_US.UTF-8
+        let self.m = M.new(s:text_path)
       else
-        try
-          language message en_US.UTF-8
-          let self.m = M.new(s:text_path)
-        catch /^Vim\%((\a\+)\)\=:E197/
-          Skip Need ja_JP.UTF-8 or en_US.UTF-8 in your system locale
-        endtry
+        Skip Need ja_JP.UTF-8 or en_US.UTF-8 in your system locale
       endif
     End
     It can use like `get()`
