@@ -140,7 +140,7 @@ Describe Prelude
 
   Describe .is_windows()
     It is true only when the platform is MS Windows
-      Assert Equals(P.is_windows(), has('win16') || has('win32') || has('win64'))
+      Assert Equals(P.is_windows(), has('win32'))
     End
   End
 
