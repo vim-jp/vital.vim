@@ -77,7 +77,6 @@ Module						 | Description
 [Text.LTSV](doc/vital/Text/LTSV.txt)		 | LTSV library
 [Text.Lexer](doc/vital/Text/Lexer.txt)		 | lexer library
 [Text.Parser](doc/vital/Text/Parser.txt)	 | parser library
-[Deprecated.Text.Sexp](doc/vital/Deprecated/Text/Sexp.txt)	         | S-Expression parser
 [Text.TOML](doc/vital/Text/TOML.txt)		 | TOML library
 [Text.Table](doc/vital/Text/Table.txt)		 | Character table library
 [Vim.BufferManager](doc/vital/Vim/BufferManager.txt)  | buffer manager
