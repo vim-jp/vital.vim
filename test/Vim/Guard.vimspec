@@ -1,7 +1,7 @@
 let s:V = vital#vital#new()
 let s:P = s:V.import('System.Filepath')
 let s:S = s:V.import('Vim.ScriptLocal')
-let s:is_windows = has('win16') || has('win32') || has('win64')
+let s:is_windows = has('win32')
 
 Describe Vim.Guard
   Before
