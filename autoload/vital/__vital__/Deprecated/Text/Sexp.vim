@@ -1,4 +1,4 @@
-" Text.Sexp
+" Deprecated.Text.Sexp
 " Author: Tatsuhiro Ujihisa
 
 let s:save_cpo = &cpo
@@ -30,7 +30,7 @@ function! s:parse(sexp) abort
     " return luaeval('vital_text_sexp.parse(_A)', a:sexp)
     " return luaeval('vital_text_sexp.parse(vital_text_sexp.parse(_A))', a:sexp)
   else
-    throw 'vital: Text.Sexp: any function call needs if_lua'
+    throw 'vital: Deprecated.Text.Sexp: any function call needs if_lua'
   endif
 endfunction
 

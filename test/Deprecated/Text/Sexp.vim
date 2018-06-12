@@ -1,10 +1,10 @@
 scriptencoding utf-8
 
-let s:suite = themis#suite('Text.Sexp')
+let s:suite = themis#suite('Deprecated.Text.Sexp')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before()
-  let s:S = vital#vital#new().import('Text.Sexp')
+  let s:S = vital#vital#new().import('Deprecated.Text.Sexp')
 endfunction
 
 function! s:suite.after()
@@ -13,7 +13,7 @@ endfunction
 
 function! s:suite.parse()
   if !has('lua') || !exists('*luaeval')
-    call s:assert.skip('Vital.Text.Sexp: any function call needs if_lua')
+    call s:assert.skip('Vital.Deprecated.Text.Sexp: any function call needs if_lua')
   endif
   call s:assert.equals(
         \ s:S.parse('(a b c)'),
