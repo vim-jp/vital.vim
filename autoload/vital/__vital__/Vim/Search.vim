@@ -1,6 +1,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:S = s:V.import('Data.String')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Data.String']
+endfunction
+
 " [I wrapper
 " known issue: it messes undo tree slightly
 function! s:finddef(str) abort
@@ -14,7 +23,7 @@ function! s:finddef(str) abort
     redir END
 
     " tokenizing phase
-    let lines = s:_lines(result)
+    let lines = s:S.lines(result)
     let tokens = []
     for line in lines
       if line =~# '^\s*\d'
@@ -43,12 +52,6 @@ function! s:finddef(str) abort
     silent! undo
     call setpos('.', before)
   endtry
-endfunction
-
-" just for now
-" TODO move this to Data.String
-function! s:_lines(str) abort
-  return split(a:str, '\r\?\n')
 endfunction
 
 let &cpo = s:save_cpo
