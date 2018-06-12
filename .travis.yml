@@ -17,24 +17,22 @@ matrix:
       env:
         - VIM_VERSION=master
         - THEMIS_PROFILE=vim-profile-master.txt
-        - RUN_LINT=true
     - os: osx
       osx_image: xcode8.3
       env:
         - THEMIS_PROFILE=vim-profile-osx.txt
+    - os: linux
+      env:
+        - RUN_LINT=true
 
 addons:
   apt:
     packages:
       - language-pack-ja
       - vim
-      - libperl-dev
       - python-dev
       - python3-dev
       - python3-pip
-      - liblua5.1-0-dev
-      - lua5.1
-      - ruby-dev
 
 install:
   - rvm reset
@@ -55,16 +53,14 @@ script:
   - uname -a
   - which -a vim
   - vim --cmd version --cmd quit
-  - vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
-  # - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --reporter dot
-  - /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
-  - ruby scripts/check-changelog.rb
+  - |
+    if [[ "${RUN_LINT}" != "true" ]]; then
+        /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
+    fi
   - if [[ "${RUN_LINT}" == "true" ]] ; then bash scripts/run-lint-on-ci.sh ; fi
 
 after_success:
-  - covimerage write_coverage $THEMIS_PROFILE
-  - coverage xml
-  - bash <(curl -s https://codecov.io/bash)
+  - bash scripts/coverage.sh
 
 notifications:
   webhooks:
