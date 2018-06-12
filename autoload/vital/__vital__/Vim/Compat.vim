@@ -67,7 +67,7 @@ else
     if r
       return r
     endif
-    if has('win32') || has('win64')
+    if has('win32') " This means any versions of windows https://github.com/vim-jp/vital.vim/wiki/Coding-Rule#how-to-check-if-the-runtime-os-is-windows
       silent! execute '!type ' . shellescape(f) '>>' . shellescape(a:fname)
     else
       silent! execute '!cat ' . shellescape(f) '>>' . shellescape(a:fname)
