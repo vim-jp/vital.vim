@@ -209,7 +209,6 @@ LINKS					*Vital-links*
   |vital/Text/LTSV.txt|		LTSV library.
   |vital/Text/Lexer.txt|	lexer library.
   |vital/Text/Parser.txt|	parser library.
-  |vital/Deprecated/Text/Sexp.txt|		S-Expression parser.
   |vital/Text/TOML.txt|		TOML library.
   |vital/Text/Table.txt|	Character table library.
   |vital/Vim/Buffer.txt|	Vim's buffer related stuff in general.
