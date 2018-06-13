@@ -15,7 +15,7 @@ let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
-let s:is_case_tolerant = filereadable(expand('<sfile>:r') . '.VIM')
+let s:is_case_tolerant = s:is_windows
 
 if s:is_windows
   function! s:to_slash(path) abort
