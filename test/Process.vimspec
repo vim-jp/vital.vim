@@ -2,7 +2,7 @@ Describe Process
   Before all
     let Vital = vital#vital#new()
     let Process = Vital.import('Process')
-    let IS_WINDOWS = has('win16') || has('win32') || has('win64') || has('win95')
+    let IS_WINDOWS = has('win32')
   End
 
   Describe .system()

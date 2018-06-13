@@ -794,8 +794,7 @@ function! s:_split_format(format) abort
   return res
 endfunction
 
-" TODO Use Prelude.is_windows() to avoid duplicate
-if has('win16') || has('win32') || has('win64')
+if has('win32') " This means any versions of windows https://github.com/vim-jp/vital.vim/wiki/Coding-Rule#how-to-check-if-the-runtime-os-is-windows
   function! s:_default_tz() abort
     let hm = map(split(strftime('%H %M', 0), ' '), 'str2nr(v:val)')
     if str2nr(strftime('%Y', 0)) != 1970

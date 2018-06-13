@@ -1,5 +1,5 @@
 let s:V = vital#vital#new()
-let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
+let s:is_windows = has('win32')
 
 Describe System.Filepath
   Before all
@@ -11,7 +11,7 @@ Describe System.Filepath
   Describe .to_slash()
     It converts / to \ only when it's necessary
       Assert Equals('a/b', FP.to_slash('a/b'))
-      if has('win32') || has('win64')
+      if s:is_windows
         Assert Equals('a/b', FP.to_slash('a\b'))
       else
         Assert Equals('a\b', FP.to_slash('a\b'))
@@ -21,7 +21,7 @@ Describe System.Filepath
 
   Describe .from_slash()
     It converts \ to / only when it's necessary
-      if has('win32') || has('win64')
+      if s:is_windows
         Assert Equals('a\b', FP.from_slash('a/b'))
       else
         Assert Equals('a/b', FP.from_slash('a/b'))

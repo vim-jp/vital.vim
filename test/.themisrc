@@ -26,7 +26,7 @@ endif
 " Show environmental information for debugging
 if $CI !=# ''
   call themis#log('***********************************************************')
-  if has('win16') || has('win32') || has('win64')
+  if has('win32')
     call themis#log('Code page:      ' . substitute(system('chcp'), '\D', '', 'g'))
   endif
   call themis#log('$LANG:          ' . $LANG)
