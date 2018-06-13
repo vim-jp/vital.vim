@@ -1,3 +1,6 @@
+b471130d09ac4779544c5719a140798fe6924b67
+	Modules: Lua.Prelude
+	Rename Lua.Prelude to Deprecated.Lua.Prelude which is going to be removed
 eda83ccae4654265ef118569dcae39fd30d3c0d5
 	Modules: Data.String
 	Ref: https://github.com/vim-jp/vital.vim/pull/575
