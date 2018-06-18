@@ -1,3 +1,6 @@
+1a595b4d77d518b1cb60b36d1eac7cfde61d94f9
+	Modules: Deprecated.ProcessManager
+	Remove completely
 1c4b7773fcc6b00a62f78b8f5788a2d22e92131f
 	Modules: Text.Sexp
 	Rename Text.Sexp to Deprecated.Text.Sexp which is going to be removed
