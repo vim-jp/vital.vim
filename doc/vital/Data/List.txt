@@ -52,19 +52,27 @@ pop({list})				*Vital.Data.List.pop()*
 	Removes the last element from |List| {list} and returns the element,
 	as if the {list} is a stack.
 
+	Destructive. This modifies {list}.
+
 
 push({list}, {val})			*Vital.Data.List.push()*
 	Appends {val} to the end of |List| {list} and returns the list itself,
 	as if the {list} is a stack.
 
+	Destructive. This modifies {list}.
+
 
 shift({list})				*Vital.Data.List.shift()*
 	Removes the first element from |List| {list} and returns the element.
+
+	Destructive. This modifies {list}.
 
 
 unshift({list}, {val})			*Vital.Data.List.unshift()*
 	Inserts {val} to the head of |List| {list} and returns the list
 	itself.
+
+	Destructive. This modifies {list}.
 
 
 cons({val}, {list})			*Vital.Data.List.cons()*
@@ -82,6 +90,8 @@ cons({val}, {list})			*Vital.Data.List.cons()*
 	" ERROR: E745
 <
 
+	Non-destructive. This does not modify {list}.
+
 uncons({list})			*Vital.Data.List.uncons()*
 	Returns a pair of a head element and tail elements. {list} must not be
 	empty list.
@@ -92,7 +102,9 @@ uncons({list})			*Vital.Data.List.uncons()*
 	" [1, []]
 	echo s:L.uncons([])
 	" ERROR: vital: Data.List: ...
+<
 
+	Non-destructive. This does not modify {list}.
 
 conj({list}, {val})			*Vital.Data.List.conj()*
 	Makes new |List| which first items are |List| {list} and the final
@@ -109,6 +121,8 @@ conj({list}, {val})			*Vital.Data.List.conj()*
 	" ERROR: E745
 <
 
+	Non-destructive. This does not modify {list}.
+
 map({list}, {function})			*Vital.Data.List.map()*
 	Generalized map(). The followings are different of |map()|:
 	* Don't require taking the index as the argument
@@ -116,6 +130,7 @@ map({list}, {function})			*Vital.Data.List.map()*
 	* Don't require copying
 	   (See the section of 'The operation is done in-place' in |map()|)
 	* Remove v:key support
+	* Don't modify {list} itself.
 >
 	function! Succ(x) abort
 	  return a:x + 1
@@ -128,6 +143,8 @@ map({list}, {function})			*Vital.Data.List.map()*
 <
 	But this maybe slower than builtin |map()|.
 
+	Non-destructive. This does not modify {list}.
+
 
 filter({list}, {function})		*Vital.Data.List.filter()*
 	Generalized filter(). The followings are different of |filter()|:
@@ -136,6 +153,7 @@ filter({list}, {function})		*Vital.Data.List.filter()*
 	* Don't require copying
 	   (See the section of 'The operation is done in-place' in |filter()|)
 	* Remove v:key support
+	* Don't modify {list} itself.
 >
 	function! Even(x) abort
 	  return a:x % 2 is 0
@@ -149,6 +167,8 @@ filter({list}, {function})		*Vital.Data.List.filter()*
 <
 	But this maybe slower than buildin |filter()|.
 
+	Non-destructive. This does not modify {list}.
+
 
 uniq({list})			*Vital.Data.List.uniq()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In
@@ -157,6 +177,8 @@ uniq({list})			*Vital.Data.List.uniq()*
 >
 	uniq(['vim', 'emacs', 'vim', 'vim']) == ['vim', 'emacs']
 <
+
+	Non-destructive. This does not modify {list}.
 
 uniq_by({list}, {function})			*Vital.Data.List.uniq_by()*
 	Removes duplicate elements from |List| {list}, nondestructively.  In
@@ -170,8 +192,12 @@ uniq_by({list}, {function})			*Vital.Data.List.uniq_by()*
 	\ 'tolower(v:val)') == ['vim', 'emacs', 'gVim']
 <
 
+	Non-destructive. This does not modify {list}.
+
 clear({list})				*Vital.Data.List.clear()*
 	Removes all the items of |List| {list}.  Returns the empty list.
+
+	Destructive. This modifies {list}.
 
 
 concat({list})				*Vital.Data.List.concat()*
@@ -182,6 +208,8 @@ concat({list})				*Vital.Data.List.concat()*
 <
 	This is similar to |Vital.Data.List.flatten()| but this doesn't
 	flatten recursively.
+
+	Non-destructive. This does not modify {list}.
 
 
 flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
@@ -196,6 +224,8 @@ flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 	echo s:L.flatten([[['a']], [[['b']], 'c']], 2)
 	" ['a', ['b'], 'c']
 <
+
+	Non-destructive. This does not modify {list}.
 
 sort({list}, {function})			*Vital.Data.List.sort()*
 	Sorts the items in |List| {list} in-place.  Returns {list}. When
@@ -228,6 +258,8 @@ sort({list}, {function})			*Vital.Data.List.sort()*
 	job safety (thread safety). It may not work correctly. Please use
 	lambda expression or partial applying of function if it can be used.
 
+	Destructive. This modifies {list}.
+
 sort_by({list}, {function})			*Vital.Data.List.sort_by()*
 	Returns a sorted |List| with key in |List| {list}.
 >
@@ -244,6 +276,8 @@ sort_by({list}, {function})			*Vital.Data.List.sort_by()*
 	" [{'field': 'apple'}, {'field': 'banana'}, {'field': 'orange'}, {'field': 'pineapple'}]
 <
 
+	Non-destructive. This does not modify {list}.
+
 
 max_by({list}, {function})			*Vital.Data.List.max_by()*
 	Returns a maximum value in {list} through given {function}.
@@ -256,6 +290,8 @@ max_by({list}, {function})			*Vital.Data.List.max_by()*
 	" -50
 <
 
+	Non-destructive. This does not modify {list}.
+
 min_by({list}, {function})			*Vital.Data.List.min_by()*
 	Returns a minimum value in |List| {list} through given {function}.
 	Returns 0 if {list} is empty.
@@ -267,6 +303,8 @@ min_by({list}, {function})			*Vital.Data.List.min_by()*
 	" -15
 <
 
+	Non-destructive. This does not modify {list}.
+
 char_range({from}, {to})		*Vital.Data.List.char_range()*
 	Returns a |List| of letters from {from} to {to}.
 
@@ -274,10 +312,14 @@ char_range({from}, {to})		*Vital.Data.List.char_range()*
 has({list}, {value})			*Vital.Data.List.has()*
 	Returns Number 1 if {value} is in |List| {list}, otherwise zero.
 
+	Non-destructive. This does not modify {list}.
+
 
 has_index({list}, {index})		*Vital.Data.List.has_index()*
 	Returns Number 1 if can point to {index} for |List| {list}, otherwise
 	zero.  If {index} is negative Number, this function returns zero.
+
+	Non-destructive. This does not modify {list}.
 
 
 span({function}, {list})			*Vital.Data.List.span()*
@@ -306,6 +348,8 @@ span({function}, {list})			*Vital.Data.List.span()*
 	If you know Haskell, this span() is like Haskell's Data.List.span just
 	for your info.
 
+	Non-destructive. This does not modify {list}.
+
 
 break({function}, {list})			*Vital.Data.List.break()*
 	Returns a list of two lists where concatenation of them is
@@ -333,6 +377,8 @@ break({function}, {list})			*Vital.Data.List.break()*
 	If you know Haskell, this break() is like Haskell's Data.List.break
 	just for your info.
 
+	Non-destructive. This does not modify {list}.
+
 
 take_while({function}, {list})		*Vital.Data.List.take_while()*
 	Returns a list which is from the beginning of the given {list} to an
@@ -359,6 +405,8 @@ take_while({function}, {list})		*Vital.Data.List.take_while()*
 	If you know Haskell, this take_while() is like Haskell's
 	Data.List.takeWhile just for your info.
 
+	Non-destructive. This does not modify {list}.
+
 
 drop_while({function}, {list})		*Vital.Data.List.drop_while()*
 	Returns the suffix remaining after |Vital.Data.List.take_while()|.
@@ -383,6 +431,8 @@ drop_while({function}, {list})		*Vital.Data.List.drop_while()*
 <
 	If you know Haskell, this drop_while() is like Haskell's
 	Data.List.dropWhile just for your info.
+
+	Non-destructive. This does not modify {list}.
 
 
 all({function}, {list})			*Vital.Data.List.all()*
@@ -411,6 +461,8 @@ all({function}, {list})			*Vital.Data.List.all()*
 	If you know Haskell, this all() is like Haskell's Prelude.all just for
 	your info.
 
+	Non-destructive. This does not modify {list}.
+
 
 any({function}, {list})			*Vital.Data.List.any()*
 	Returns Number 1 if at least one item in |List| {list} fulfills the
@@ -438,6 +490,8 @@ any({function}, {list})			*Vital.Data.List.any()*
 	If you know Haskell, this any() is like Haskell's Prelude.any just for
 	your info.
 
+	Non-destructive. This does not modify {list}.
+
 
 and({list})				*Vital.Data.List.and()*
 	Returns Number 1 if all the items of |List| {list} are non-zero
@@ -453,6 +507,8 @@ and({list})				*Vital.Data.List.and()*
 	If you know Haskell, this and() is like Haskell's Prelude.and just for
 	your info.
 
+	Non-destructive. This does not modify {list}.
+
 
 or({list})				*Vital.Data.List.or()*
 	Returns Number 1 if at least one item in List {list} is non-zero,
@@ -467,6 +523,8 @@ or({list})				*Vital.Data.List.or()*
 <
 	If you know Haskell, this or() is like Haskell's Prelude.or just for
 	your info.
+
+	Non-destructive. This does not modify {list}.
 
 
 partition({function}, {list})		*Vital.Data.List.partition()*
@@ -484,6 +542,8 @@ partition({function}, {list})		*Vital.Data.List.partition()*
 	s:L.partition('v:val % 2 == 0', range(5))
 	" [[0, 2, 4], [1, 3]]
 <
+
+	Non-destructive. This does not modify {list}.
 
 map_accum({function}, {xs}, {init})		*Vital.Data.List.map_accum()*
 	This is similar to |map()| but the followings are different:
@@ -504,6 +564,8 @@ map_accum({function}, {xs}, {init})		*Vital.Data.List.map_accum()*
 	echo s:L.map_accum('[v:val + v:memo, v:memo + 1]', [1, 2, 3], 10)
 	" [11, 13, 15]
 <
+
+	Non-destructive. This does not modify {xs}.
 
 foldl({function}, {init}, {xs})		*Vital.Data.List.foldl()*
 	Reduces the list {xs} using the binary operator {function}, from left
@@ -535,6 +597,8 @@ foldl({function}, {init}, {xs})		*Vital.Data.List.foldl()*
 	If you know Haskell, this foldl() is like Haskell's Data.List.foldl
 	just for your info.
 
+	Non-destructive. This does not modify {xs}.
+
 
 foldl1({function}, {xs})			*Vital.Data.List.foldl1()*
 	Sames |Data.List.foldl()|, but doesn't take the initial value. Takes
@@ -556,6 +620,8 @@ foldl1({function}, {xs})			*Vital.Data.List.foldl1()*
 	echo s:L.foldl1(function('Pair'), [0, 1, 2])
 	" [[0, 1], 2]
 <
+
+	Non-destructive. This does not modify {xs}.
 
 foldr({function}, {init}, {xs})		*Vital.Data.List.foldr()*
 	Reduces the list {xs} using the binary operator {function}, from right
@@ -581,6 +647,8 @@ foldr({function}, {init}, {xs})		*Vital.Data.List.foldr()*
 	" [1, [2, []]]
 <
 
+	Non-destructive. This does not modify {xs}.
+
 foldr1({function}, {xs})			*Vital.Data.List.foldr1()*
 	Sames |Data.List.foldr()|, but doesn't take the initial value. Takes
 	the last element from {xs} as the initial value.
@@ -604,6 +672,8 @@ foldr1({function}, {xs})			*Vital.Data.List.foldr1()*
 	" [1, [2, []]]
 <
 
+	Non-destructive. This does not modify {xs}.
+
 zip(...)				*Vital.Data.List.zip()*
 	Unifies lists in parallel. If the length of the lists is different,
 	adjusts for shorter list, longer list is sliced.
@@ -614,6 +684,9 @@ zip(...)				*Vital.Data.List.zip()*
 	echo s:L.zip([1, 2, 3], [4, 5, 6], [7, 8, 9])
 	" [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 <
+
+	Non-destructive. This does not modify {xs}.
+
 zip_fill({list}, {list}, {elem})	*Vital.Data.List.zip_fill()*
 	Similar to |Vital.Data.List.zip()|, but goes until the longer one.
 >
@@ -622,6 +695,8 @@ zip_fill({list}, {list}, {elem})	*Vital.Data.List.zip_fill()*
 	echo s:L.zip_fill([1, 2, 3], [4, 5, 6, 10, 20], 200)
 	" [[1, 4], [2, 5], [3, 6], [200, 10], [200, 20]]
 <
+
+	Non-destructive. This does not modify {xs}.
 
 with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 	Returns {list} with index. {offset} means the base of index.
@@ -647,6 +722,8 @@ with_index({list} [, {offset}])		*Vital.Data.List.with_index()*
 	endfor
 <
 
+	Non-destructive. This does not modify {xs}.
+
 find({list}, {default}, {function})			 *Vital.Data.List.find()*
 	Returns the first value in {list} where the given {function} is
 	satisfied. {default} is returned when no item satisfies {function}.
@@ -665,6 +742,8 @@ find({list}, {default}, {function})			 *Vital.Data.List.find()*
 <
 	If you know Haskell, this find() is like Haskell's Data.List.find
 	just for your info.
+
+	Non-destructive. This does not modify {xs}.
 
 
 					*Vital.Data.List.find_index()*
@@ -696,6 +775,8 @@ find_index({list}, {function} [, {start} [, {default}]])
 	" -10
 <
 
+	Non-destructive. This does not modify {xs}.
+
 					*Vital.Data.List.find_last_index()*
 find_last_index({list}, {function} [, {start} [, {default}]])
 	Similar to find_index but this returns the highest index.
@@ -710,6 +791,8 @@ find_last_index({list}, {function} [, {start} [, {default}]])
 	echo s:L.find_last_index([0, 1, 2, 3], function('Odd'))
 	" 3
 <
+
+	Non-destructive. This does not modify {xs}.
 
 					*Vital.Data.List.find_indices()*
 find_indices({list}, {function} [, {start}])
@@ -737,6 +820,8 @@ find_indices({list}, {function} [, {start}])
 	" [3]
 <
 
+	Non-destructive. This does not modify {xs}.
+
 has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	Returns non-zero if a:list1 and a:list2 have a common item, otherwise
 	zero.
@@ -747,6 +832,9 @@ has_common_items({list1}, {list2})	*Vital.Data.List.has_common_items()*
 	" 1
 	echo s:L.has_common_items(['a'], ['b', 'c'])
 	" 0
+<
+
+	Non-destructive. This does not modify {xs}.
 
 
 intersect({list1}, {list2})		*Vital.Data.List.intersect()*
@@ -763,6 +851,8 @@ intersect({list1}, {list2})		*Vital.Data.List.intersect()*
 	" []
 <
 
+	Non-destructive. This does not modify {xs}.
+
 group_by({list}, {function})		*Vital.Data.List.group_by()*
 	Returns a |Dictionary| grouped by the result of {function}.
 	"v:val" can be used in {function} if {function} is a string expression.
@@ -775,6 +865,8 @@ group_by({list}, {function})		*Vital.Data.List.group_by()*
 	echo s:L.group_by(['a', 'b', 'ab'], 'v:val[0]')
 	" {'a': ['a', 'ab'], 'b': ['b']}
 <
+
+	Non-destructive. This does not modify {xs}.
 
 			      		*Vital.Data.List.binary_search()*
 binary_search({list}, {target}, [{func}, [{dict}]])
@@ -813,6 +905,8 @@ binary_search({list}, {target}, [{func}, [{dict}]])
 	" -1
 <
 
+	Non-destructive. This does not modify {xs}.
+
 product({lists})			*Vital.Data.List.product()*
 	Returns Cartesian product of elements in the {lists}.
 >
@@ -821,6 +915,8 @@ product({lists})			*Vital.Data.List.product()*
 	echo s:L.product([range(2), range(2), range(2)])
 	" [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]]
 <
+
+	Non-destructive. This does not modify {xs}.
 
 permutations({list} [, {r}])	      	*Vital.Data.List.permutations()*
 	Returns successive {r} length permutations of elements in the {list}.
@@ -833,6 +929,8 @@ permutations({list} [, {r}])	      	*Vital.Data.List.permutations()*
 	" [[1, 2] , [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
 <
 
+	Non-destructive. This does not modify {xs}.
+
 combinations({list}, {r})	      	*Vital.Data.List.combinations()*
 	Returns successive {r} length combinations of elements in the {list}.
 >
@@ -841,6 +939,8 @@ combinations({list}, {r})	      	*Vital.Data.List.combinations()*
 	echo s:L.combinations([5, 2, 3, 1], 3)
 	" [[5, 2, 3], [5, 2, 1], [5, 3, 1], [2, 3, 1]]
 <
+
+	Non-destructive. This does not modify {xs}.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
