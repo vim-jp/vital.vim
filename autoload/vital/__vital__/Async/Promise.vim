@@ -10,6 +10,14 @@ let s:REJECTED = 2
 
 let s:DICT_T = type({})
 
+let s:TIMEOUT_ERROR = 'vital: Async.Promise: Timeout'
+let s:DEFAULT_WAIT_INTERVAL = 30
+
+function! s:_vital_created(module) abort
+  let a:module.TimeoutError = s:TIMEOUT_ERROR
+  lockvar a:module.TimeoutError
+endfunction
+
 " @vimlint(EVL103, 1, a:resolve)
 " @vimlint(EVL103, 1, a:reject)
 function! s:noop(resolve, reject) abort
@@ -229,6 +237,29 @@ endfunction
 
 function! s:is_promise(maybe_promise) abort
   return type(a:maybe_promise) == s:DICT_T && has_key(a:maybe_promise, '_vital_promise')
+endfunction
+
+function! s:wait(promise, ...) abort
+  if a:0 && type(a:1) is# v:t_number
+    let t = a:1
+    let i = s:DEFAULT_WAIT_INTERVAL . 'm'
+  else
+    let o = a:0 ? a:1 : {}
+    let t = get(o, 'timeout', v:null)
+    let i = get(o, 'interval', s:DEFAULT_WAIT_INTERVAL) . 'm'
+  endif
+  let s = reltime()
+  while a:promise._state is# s:PENDING
+    if (t isnot# v:null && reltimefloat(reltime(s)) * 1000 > t)
+      return [v:null, s:TIMEOUT_ERROR]
+    endif
+    execute 'sleep' i
+  endwhile
+  if a:promise._state is# s:FULFILLED
+    return [a:promise._result, v:null]
+  else
+    return [v:null, a:promise._result]
+  endif
 endfunction
 
 function! s:_promise_then(...) dict abort
