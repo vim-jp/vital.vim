@@ -498,7 +498,12 @@ function! s:clients.curl.request(settings) abort
   if has_key(a:settings, 'gzipDecompress') && a:settings.gzipDecompress
     let command .= ' --compressed '
   endif
-  let command .= ' -L -s -k -X ' . a:settings.method
+  let command .= ' -L -s -k '
+  if a:settings.method ==? 'HEAD'
+    let command .= '--head'
+  else
+    let command .= '-X ' . a:settings.method
+  endif
   let command .= ' --max-redirs ' . a:settings.maxRedirect
   let command .= s:_make_header_args(a:settings.headers, '-H ', quote)
   let timeout = get(a:settings, 'timeout', '')
@@ -543,7 +548,7 @@ function! s:clients.curl.request(settings) abort
   else
     let responses = [[[], '']]
   endif
-  if has_output_file
+  if has_output_file || a:settings.method ==? 'HEAD'
     let content = ''
   else
     let content = s:_readfile(output_file)
