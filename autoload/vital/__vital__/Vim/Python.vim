@@ -34,32 +34,36 @@ function! s:is_python2_enabled() abort
   if exists('s:is_python2_enabled')
     return s:is_python2_enabled
   endif
-  if !has('python')
-    let s:is_python2_enabled = 0
-  else
-    try
+  try
+    if !has('python')
+      let s:is_python2_enabled = 0
+    else
       python 0
       let s:is_python2_enabled = 1
-    catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\)/
-      let s:is_python2_enabled = 0
-    endtry
-  endif
+    endif
+  catch /^Vim(python)/
+    let s:is_python2_enabled = 0
+  catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\)/
+    let s:is_python2_enabled = 0
+  endtry
   return s:is_python2_enabled
 endfunction
 function! s:is_python3_enabled() abort
   if exists('s:is_python3_enabled')
     return s:is_python3_enabled
   endif
-  if !has('python3')
-    let s:is_python3_enabled = 0
-  else
-    try
+  try
+    if !has('python3')
+      let s:is_python3_enabled = 0
+    else
       python3 0
       let s:is_python3_enabled = 1
-    catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\)/
-      let s:is_python3_enabled = 0
-    endtry
-  endif
+    endif
+  catch /^Vim(python3)/
+    let s:is_python3_enabled = 0
+  catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\)/
+    let s:is_python3_enabled = 0
+  endtry
   return s:is_python3_enabled
 endfunction
 
