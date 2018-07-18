@@ -709,12 +709,88 @@ Describe Async.Promise
     End
   End
 
-  Describe is_promise()
+  Describe .is_promise()
     It should return a given value is Promise instance or not
       Assert True(P.is_promise(P.resolve(42)))
       Assert False(P.is_promise({}))
       Assert False(P.is_promise(v:null))
       Assert False(P.is_promise(42))
+    End
+  End
+
+  Describe .wait()
+    It waits until a given promise has resolved and returns a result
+      let p = Wait(30).then({ -> 'resolved' })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      Assert Equals(P.wait(p), ['resolved', v:null])
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 30)
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1000)
+    End
+
+    It throws an exception when a given promise has rejected
+      let p = Wait(30).then({ -> P.reject('rejected') })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      Assert Equals(P.wait(p), [v:null, 'rejected'])
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 30)
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1000)
+
+      let p = Wait(30).then({ -> P.reject({ 'exception': 'rejected' }) })
+      Assert Equals(P.wait(p), [v:null, { 'exception': 'rejected' }])
+
+      let p = Wait(30).then({ -> P.reject(['foo', 'bar']) })
+      Assert Equals(P.wait(p), [v:null, ['foo', 'bar']])
+    End
+
+    It waits until a given timeout and returns Async.Promise.TimeoutError
+      let p = Wait(1000).then({ -> 'resolved' })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      Assert Equals(P.wait(p, { 'timeout': 30 }), [v:null, P.TimeoutError])
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 30)
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1000)
+    End
+
+    It waits until a given timeout and returns Async.Promise.TimeoutError (type 2)
+      let p = Wait(1000).then({ -> 'resolved' })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      Assert Equals(P.wait(p, 30), [v:null, P.TimeoutError])
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 30)
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1000)
+    End
+
+    It waits at least the interval milliseconds (interval > epoch)
+      let p = Wait(200).then({ -> 'resolved' })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      Assert Equals(P.wait(p, { 'interval': 1000 }), ['resolved', v:null])
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 2000)
+
+      let p = Wait(200).then({ -> P.reject('rejected') })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      Assert Equals(P.wait(p, { 'interval': 1000 }), [v:null, 'rejected'])
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 2000)
+    End
+
+    It waits at least the interval milliseconds (interval < epoch)
+      let p = Wait(1000).then({ -> 'resolved' })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      Assert Equals(P.wait(p, { 'interval': 200 }), ['resolved', v:null])
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1200)
+
+      let p = Wait(1000).then({ -> P.reject('rejected') })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      Assert Equals(P.wait(p, { 'interval': 200 }), [v:null, 'rejected'])
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
+      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1200)
     End
   End
 End

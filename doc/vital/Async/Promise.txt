@@ -8,6 +8,7 @@ CONTENTS				*Vital.Async.Promise-contents*
 INTRODUCTION			|Vital.Async.Promise-introduction|
 REQUIREMENTS			|Vital.Async.Promise-requirements|
 EXAMPLE				|Vital.Async.Promise-example|
+CONSTANTS			|Vital.Async.Promise-constants|
 FUNCTIONS			|Vital.Async.Promise-functions|
 OBJECTS				|Vital.Async.Promise-objects|
   Promise Object		|Vital.Async.Promise-objects-Promise|
@@ -217,6 +218,15 @@ Before explaining the detail of APIs, let's see actual examples.
 
 
 ==============================================================================
+CONSTANTS				*Vital.Async.Promise-constants*
+
+TimeoutError				*Vital.Async.Promise.TimeoutError*
+
+	An exception message string returned as {error} in a result list of
+	the |Vital.Async.Promise.wait()| function when timeout has reached.
+
+
+==============================================================================
 FUNCTIONS				*Vital.Async.Promise-functions*
 
 new({executor})				*Vital.Async.Promise.new()*
@@ -327,6 +337,46 @@ race({promises})			*Vital.Async.Promise.race()*
 <
 	If {promises} is an empty list, the returned Promise object will never
 	be resolved or rejected.
+
+wait({promise}[, {options}])		*Vital.Async.Promise.wait()*
+
+	Waits synchronously until a given {promise} has become resolved and
+	returns a [{result}, {error}] list.
+
+	The {result} is a {value} passed to |Vital.Async.Promise.resolve()|
+	when a given {promise} has resolved. Otherwise it is |v:null|.
+
+	The {error} is a {value} passed to |Vital.Async.Promise.reject()| 
+	when a given {promise} has rejected or |Async.Promise.TimeoutError|
+	when a given {timeout} has passed. Otherwise it is |v:null|.
+	
+	The following {options} are available
+
+	"timeout"	Timeout in milliseconds. When timeout, the function
+			returns a [|v:null||, |Async.Promise.TimeoutError|]
+			list.
+			When it is |v:null|, the function waits a given
+			{promise} for ever.
+			Default: v:null
+	"interval"	Interval delay of an internal loop in milliseconds.
+			Default: 30
+>
+	let [result, error] = Promise.wait(p, { 'timeout': 1000 })
+
+	if error ==# Promise.TimeoutError
+	  echo 'Timeout!'
+	elseif error isnot# v:null
+	  echoerr "Failed:" . string(error)
+	else
+	  echo "Success:" . string(result)
+	endif
+<
+	For convenience, users can directly specify the "timeout" in the
+	second argument like
+>
+	call Promise.wait(p, 1000)
+	" Is equivalent to call Promise.wait(p, {'timeout': 1000})
+>
 
 is_promise({value})			*Vital.Async.Promise.is_promise()*
 
