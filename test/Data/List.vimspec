@@ -958,6 +958,77 @@ Describe Data.List
     End
   End
 
+  Describe Non-destructive functions
+    It returns passed array
+      let list = [
+            \ {'func': 'cons', 'args': [1, [1, 2, 3]], 'list_arg_pos': 1},
+            \ {'func': 'uncons', 'args': [[1, 2, 3]], 'list_arg_pos': 0},
+            \ {'func': 'conj', 'args': [[1, 2, 3], 1], 'list_arg_pos': 0},
+            \ {'func': 'map', 'args': [[1, 2, 3], function('Even')], 'list_arg_pos': 0},
+            \ {'func': 'filter', 'args': [[1, 2, 3], function('Even')], 'list_arg_pos': 0},
+            \ {'func': 'uniq', 'args': [[1, 2, 3]], 'list_arg_pos': 0},
+            \ {'func': 'uniq_by', 'args': [[1, 2, 3], function('tolower')], 'list_arg_pos': 0},
+            \ {'func': 'concat', 'args': [[[1], [2, 3]]], 'list_arg_pos': 0},
+            \ {'func': 'flatten', 'args': [[1, 2, 3]], 'list_arg_pos': 0},
+            \ {'func': 'sort_by', 'args': [[{'field': 'pineapple'}, {'field': 'orange'}, {'field': 'banana'}, {'field': 'apple'}], 'v:val.field'], 'list_arg_pos': 0},
+            \ {'func': 'max_by', 'args': [['pineapple','orange','banana','apple'], 'len(v:val)'], 'list_arg_pos': 0},
+            \ {'func': 'min_by', 'args': [['pineapple','orange','banana','apple'], 'len(v:val)'], 'list_arg_pos': 0},
+            \ {'func': 'has', 'args': [[1, 2, 3], 3], 'list_arg_pos': 0},
+            \ {'func': 'has_index', 'args': [[1, 2, 3], 3], 'list_arg_pos': 0},
+            \ {'func': 'span', 'args': ['v:val < 5', [1, 2, 3]], 'list_arg_pos': 1},
+            \ {'func': 'break', 'args': ['v:val==1', [1, 2, 3]], 'list_arg_pos': 1},
+            \ {'func': 'take_while', 'args': ['v:val < 5', [1, 2, 3]], 'list_arg_pos': 1},
+            \ {'func': 'drop_while', 'args': ['v:val < 5', [1, 2, 3]], 'list_arg_pos': 1},
+            \ {'func': 'all', 'args': ['v:val % 2 == 0', [1, 2, 3]], 'list_arg_pos': 1},
+            \ {'func': 'any', 'args': ['v:val % 2 == 0', [1, 2, 3]], 'list_arg_pos': 1},
+            \ {'func': 'and', 'args': [[1, 2, 3, 1]], 'list_arg_pos': 0},
+            \ {'func': 'or', 'args': [[1, 2, 3, 1]], 'list_arg_pos': 0},
+            \ {'func': 'partition', 'args': [function('Even'), [1, 2, 3]], 'list_arg_pos': 1},
+            \ {'func': 'map_accum', 'args': ['[v:val + v:memo, v:memo]', [1, 2, 3], 1], 'list_arg_pos': 1},
+            \ {'func': 'foldl', 'args': ['v:memo + v:val', 0, [1, 2]], 'list_arg_pos': 2},
+            \ {'func': 'foldl1', 'args': ['v:memo + v:val', [1, 2]], 'list_arg_pos': 1},
+            \ {'func': 'foldr', 'args': [function('Pair'), [], [1, 2]], 'list_arg_pos': 2},
+            \ {'func': 'foldr1', 'args': [function('Pair'), [1, 2]], 'list_arg_pos': 1},
+            \ {'func': 'zip', 'args': [[1, 2, 3], [4, 5, 6]], 'list_arg_pos': 0},
+            \ {'func': 'zip_fill', 'args': [[1, 2, 3, 10, 20], [4, 5, 6], 100], 'list_arg_pos': 0},
+            \ {'func': 'with_index', 'args': [['a', 'b', 'c']], 'list_arg_pos': 0},
+            \ {'func': 'find', 'args': [[1, 2, 3, 1, 2, 3], '*not-found*', 'v:val % 2 == 0'], 'list_arg_pos': 0},
+            \ {'func': 'find_index', 'args': [[1, 2, 3, 1, 2, 3], 'v:val % 2 == 0'], 'list_arg_pos': 0},
+            \ {'func': 'find_last_index', 'args': [[1, 2, 3, 1, 2, 3], 'v:val % 2 == 0'], 'list_arg_pos': 0},
+            \ {'func': 'find_indices', 'args': [[1, 2, 3, 1, 2, 3], 'v:val % 2 == 0'], 'list_arg_pos': 0},
+            \ {'func': 'has_common_items', 'args': [['a', 'b', 'c'], ['b', 'c']], 'list_arg_pos': 0},
+            \ {'func': 'intersect', 'args': [['a', 'b', 'c'], ['b', 'c']], 'list_arg_pos': 0},
+            \ {'func': 'group_by', 'args': [['a', 'b', 'ab'], 'len(v:val)'], 'list_arg_pos': 0},
+            \ {'func': 'binary_search', 'args': [[1, 3, 5, 7], 3], 'list_arg_pos': 0},
+            \ {'func': 'product', 'args': [[[1, 2], [4, 5]]], 'list_arg_pos': 0},
+            \ {'func': 'permutations', 'args': [[1, 2, 3]], 'list_arg_pos': 0},
+            \ {'func': 'combinations', 'args': [[1, 2, 3], 2], 'list_arg_pos': 0},
+            \ ]
+      for dataset in list
+        let passing_array = copy(dataset.args[dataset.list_arg_pos])
+        call call(List[dataset.func], dataset.args)
+        Assert Equals(dataset.args[dataset.list_arg_pos], passing_array)
+      endfor
+    End
+  End
+
+  Describe Destructive functions
+    It does not returns passed array
+      let list = [
+            \ {'func': 'pop', 'args': [[1, 2, 3]], 'list_arg_pos': 0},
+            \ {'func': 'push', 'args': [[1, 2, 3], 4], 'list_arg_pos': 0},
+            \ {'func': 'shift', 'args': [[1, 2, 3]], 'list_arg_pos': 0},
+            \ {'func': 'unshift', 'args': [[1, 2, 3], 4], 'list_arg_pos': 0},
+            \ {'func': 'clear', 'args': [[1, 2, 3]], 'list_arg_pos': 0},
+            \ {'func': 'sort', 'args': [[3, 2, 1], 'a:a - a:b'], 'list_arg_pos': 0},
+            \ ]
+      for dataset in list
+        let passing_array = copy(dataset.args[dataset.list_arg_pos])
+        call call(List[dataset.func], dataset.args)
+        Assert NotEquals(dataset.args[dataset.list_arg_pos], passing_array)
+      endfor
+    End
+  End
 End
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:
