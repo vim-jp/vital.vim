@@ -41,7 +41,7 @@ request({method}, {url} [, {settings}])
 		URL of a server.
 
 	"method"	Default: "GET"
-		HTTP Method.
+		HTTP Method, such as GET, HEAD, POST, PUT, DELETE, or PATCH.
 
 	"param"		Default: (None)
 		GET parameters.  This is a string or a dictionary.
