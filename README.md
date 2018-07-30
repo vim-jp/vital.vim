@@ -194,20 +194,6 @@ The badge uses [Shields.io](http://shields.io/) so you can customize the looks a
 * [API Reference (in Japanese)](http://d.hatena.ne.jp/kanno_kanno/20120107/1325949855)
 * [Let's use vital.vim (in Japanese)](http://qiita.com/rbtnn/items/deb569ebc94d5172a5e5)
 
-## Authors
-
-* ![](https://secure.gravatar.com/avatar/3b83f8f7a25019f3ee01791df024bf3c)
-  [thinca](http://github.com/thinca)
-* ![](https://secure.gravatar.com/avatar/5fdf83c448b8503add52517c7de0e3cc)
-  [tyru](http://github.com/tyru)
-* ![](https://secure.gravatar.com/avatar/d9d0ceb387e3b6de5c4562af78e8a910)
-  [ujihisa](http://github.com/ujihisa) (Tatsuhiro Ujihisa)
-* ![](https://avatars1.githubusercontent.com/u/546312?v=3&s=80)
-  [lambdalisue](https://github.com/lambdalisue)
-* ![](https://avatars2.githubusercontent.com/u/4897842?s=60&v=4)
-  [aiya000](http://github.com/aiya000)
-* ... and lots more <https://github.com/vim-jp/vital.vim/graphs/contributors>
-
 ## License
 
 [NYSL](http://www.kmonos.net/nysl/index.en.html)
