@@ -33,7 +33,7 @@ after_test:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - pip install codecov
   - pip install covimerage
-  - covimerage write_coverage %THEMIS_PROFILE%
+  - covimerage write-coverage %THEMIS_PROFILE%
   - coverage xml
   - codecov -f coverage.xml
 
