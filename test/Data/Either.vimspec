@@ -157,6 +157,26 @@ Describe Data.Either
     End
   End
 
+  Describe .bimap()
+    Before all
+      function! AppendD(x) abort
+        return a:x . 'D'
+      endfunction
+    End
+
+    After all
+      delfunction AppendD
+    End
+
+    It maps a left function to a left value, a right function to a right value.
+      Assert Equals(Either.bimap(Either.left(0), function('Succ'), function('AppendD')), Either.left(1))
+      Assert Equals(Either.bimap(Either.left(0), 'v:val + 1', 'v:val . "D"'), Either.left(1))
+
+      Assert Equals(Either.bimap(Either.right(':'), function('Succ'), function('AppendD')), Either.right(':D'))
+      Assert Equals(Either.bimap(Either.right(':'), 'v:val + 1', 'v:val . "D"'), Either.right(':D'))
+    End
+  End
+
   Describe .apply()
     Before all
       function! Plus(x, y) abort
