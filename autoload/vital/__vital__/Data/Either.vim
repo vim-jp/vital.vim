@@ -76,6 +76,20 @@ function! s:map(either, f) abort
   return s:right(internal_)
 endfunction
 
+function! s:bimap(either, f, g) abort
+  if s:is_left(a:either)
+    let internal = s:unsafe_from_left(a:either)
+    let result = s:_get_caller_for(a:f)(a:f, [internal])
+    return s:left(result)
+  elseif s:is_right(a:either)
+    let internal = s:unsafe_from_right(a:either)
+    let result = s:_get_caller_for(a:g)(a:g, [internal])
+    return s:right(result)
+  else
+    throw 'vital: Data.Either: bimap() got an argument that is not an either value'
+  endif
+endfunction
+
 function! s:apply(either_func, ...) abort
   if s:is_left(a:either_func)
     return a:either_func
