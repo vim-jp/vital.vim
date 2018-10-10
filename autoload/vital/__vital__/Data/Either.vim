@@ -76,6 +76,16 @@ function! s:map(either, f) abort
   return s:right(internal_)
 endfunction
 
+function! s:map_left(either, f) abort
+  if s:is_right(a:either)
+    return a:either
+  endif
+  let internal  = s:unsafe_from_left(a:either)
+  let internal_ = s:_get_caller_for(a:f)(a:f, [internal])
+
+  return s:left(internal_)
+endfunction
+
 function! s:bimap(either, f, g) abort
   if s:is_left(a:either)
     let internal = s:unsafe_from_left(a:either)
