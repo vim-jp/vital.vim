@@ -157,6 +157,18 @@ Describe Data.Either
     End
   End
 
+  Describe .map_left()
+    It maps content to a left value
+      Assert Equals(Either.map_left(Either.left(10), function('Succ')), Either.left(11))
+      Assert Equals(Either.map_left(Either.left(10), 'v:val + 1'), Either.left(11))
+    End
+
+    It doesn't map content to a right value
+      Assert Equals(Either.map_left(Either.right(0), function('Succ')), Either.right(0))
+      Assert Equals(Either.map_left(Either.right(0), 'v:val + 1'), Either.right(0))
+    End
+  End
+
   Describe .bimap()
     Before all
       function! AppendD(x) abort
