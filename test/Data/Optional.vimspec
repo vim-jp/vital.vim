@@ -96,14 +96,24 @@ Describe Data.Optional
   End
 
   Describe .get_or()
-    It returns the content of optional value
-      let o = O.some(42)
-      Assert Equals(O.get_or(o, -1), 42)
+    Before all
+      function! Negative1() abort
+        return -1
+      endfunction
     End
 
-    It returns the second argument as alternative if the first argument is invalid
+    After all
+      delfunction Negative1
+    End
+
+    It returns the content of optional value
+      let o = O.some(42)
+      Assert Equals(O.get_or(o, function('Negative1')), 42)
+    End
+
+    It returns the second argument result as alternative if the first argument is invalid
       let o = O.none()
-      Assert Equals(O.get_or(o, -1), -1)
+      Assert Equals(O.get_or(o, function('Negative1')), -1)
     End
   End
 

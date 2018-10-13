@@ -108,7 +108,11 @@ get({optional})				*Vital.Data.Optional.get()*
 
 get_or({optional}, {alternative})	*Vital.Data.Optional.get_or()*
 	Returns a contained value in {optional}.  If {optional} is an invalid
-	value, it returns {alternative} instead.
+	value, it returns the {alternative}'s value instead.
+>
+	echo O.get_or(O.new(10), { -> -1 }) " 10
+	echo O.get_or(O.none(),  { -> -1 }) " -1
+<
 
 get_unsafe({optional})			*Vital.Data.Optional.get_unsafe()*
 	Returns a contained value in {optional}.  If {optional} is an invalid
