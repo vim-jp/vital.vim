@@ -63,7 +63,7 @@ function! s:get_unsafe(o) abort
 endfunction
 
 function! s:get_or(o, alt) abort
-  return get(a:o, 0, a:alt)
+  return get(a:o, 0, a:alt())
 endfunction
 
 function! s:has(o, type) abort

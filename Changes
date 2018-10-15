@@ -1,3 +1,7 @@
+3d60a4ce079fd0d4e123cbcea787a1769cab7572
+	Modules: Data.Optional
+	Data.Optional.get_or will expect a function as {alternative}.
+	It was expecting a value as {alternative}.
 1a595b4d77d518b1cb60b36d1eac7cfde61d94f9
 	Modules: Deprecated.ProcessManager
 	Remove completely
