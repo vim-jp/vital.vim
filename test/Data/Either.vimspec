@@ -1,7 +1,20 @@
 Describe Data.Either
   Before all
-    let Either   = vital#vital#import('Data.Either')
+    let Either = vital#vital#import('Data.Either')
     let s:Either = Either
+
+    function! Succ(x) abort
+      return a:x + 1
+    endfunction
+
+    function! LiftSucc(x) abort
+      return s:Either.return(a:x + 1)
+    endfunction
+  End
+
+  After all
+    delfunction Succ
+    delfunction LiftSucc
   End
 
   Describe .left()
@@ -133,16 +146,6 @@ Describe Data.Either
   End
 
   Describe .map()
-    Before all
-      function! Succ(x) abort
-        return a:x + 1
-      endfunction
-    End
-
-    After all
-      delfunction Succ
-    End
-
     It maps content to a right value
       Assert Equals(Either.map(Either.right(10), function('Succ')), Either.right(11))
       Assert Equals(Either.map(Either.right(10), 'v:val + 1'), Either.right(11))
@@ -154,12 +157,40 @@ Describe Data.Either
     End
   End
 
+  Describe .map_left()
+    It maps content to a left value
+      Assert Equals(Either.map_left(Either.left(10), function('Succ')), Either.left(11))
+      Assert Equals(Either.map_left(Either.left(10), 'v:val + 1'), Either.left(11))
+    End
+
+    It doesn't map content to a right value
+      Assert Equals(Either.map_left(Either.right(0), function('Succ')), Either.right(0))
+      Assert Equals(Either.map_left(Either.right(0), 'v:val + 1'), Either.right(0))
+    End
+  End
+
+  Describe .bimap()
+    Before all
+      function! AppendD(x) abort
+        return a:x . 'D'
+      endfunction
+    End
+
+    After all
+      delfunction AppendD
+    End
+
+    It maps a left function to a left value, a right function to a right value.
+      Assert Equals(Either.bimap(Either.left(0), function('Succ'), function('AppendD')), Either.left(1))
+      Assert Equals(Either.bimap(Either.left(0), 'v:val + 1', 'v:val . "D"'), Either.left(1))
+
+      Assert Equals(Either.bimap(Either.right(':'), function('Succ'), function('AppendD')), Either.right(':D'))
+      Assert Equals(Either.bimap(Either.right(':'), 'v:val + 1', 'v:val . "D"'), Either.right(':D'))
+    End
+  End
+
   Describe .apply()
     Before all
-      function! Succ(x) abort
-        return a:x + 1
-      endfunction
-
       function! Plus(x, y) abort
         return a:x + a:y
       endfunction
@@ -170,7 +201,6 @@ Describe Data.Either
     End
 
     After all
-      delfunction Succ
       delfunction Plus
     End
 
@@ -237,16 +267,6 @@ Describe Data.Either
   End
 
   Describe .bind()
-    Before all
-      function! LiftSucc(x) abort
-        return s:Either.return(a:x + 1)
-      endfunction
-    End
-
-    After all
-      delfunction LiftSucc
-    End
-
     It applies a lift function to a right value
       let right = Either.right(10)
       Assert Equals(Either.bind(right, function('LiftSucc')), Either.right(11))
@@ -259,16 +279,6 @@ Describe Data.Either
   End
 
   Describe .flat_map()
-    Before all
-      function! LiftSucc(x) abort
-        return s:Either.return(a:x + 1)
-      endfunction
-    End
-
-    After all
-      delfunction LiftSucc
-    End
-
     It is same as .bind()
       let left  = Either.left(10)
       let right = Either.right(20)
@@ -311,19 +321,13 @@ Describe Data.Either
 
   Describe as monad
     Before all
-      "TODO: Use quickcheck after quickcheck library is created
-
-      function! LiftSuccOfEither(x) abort
-        return s:Either.return(a:x + 1)
-      endfunction
-
-      function! LiftToStringOfEither(x) abort
+      function! LiftToString(x) abort
         return s:Either.return(string(a:x))
       endfunction
 
       function! TestLeftIdLaw(m) abort
-        let result_left  = a:m.bind(a:m.return(10), function('LiftSuccOfEither'))
-        let result_right = LiftSuccOfEither(10)
+        let result_left  = a:m.bind(a:m.return(10), function('LiftSucc'))
+        let result_right = LiftSucc(10)
         return result_left ==# result_right
       endfunction
 
@@ -342,12 +346,12 @@ Describe Data.Either
       function! TestAssocLaw(m) abort
         let s:m = a:m
         function! s:fg(x) abort
-          let l:mval = LiftSuccOfEither(a:x)
-          return s:m.bind(l:mval, function('LiftToStringOfEither'))
+          let l:mval = LiftSucc(a:x)
+          return s:m.bind(l:mval, function('LiftToString'))
         endfunction
 
         let mval = a:m.return(10)
-        let result_left  = a:m.bind(a:m.bind(mval, function('LiftSuccOfEither')), function('LiftToStringOfEither'))
+        let result_left  = a:m.bind(a:m.bind(mval, function('LiftSucc')), function('LiftToString'))
         let result_right = a:m.bind(mval, function('s:fg'))
 
         return result_left ==# result_right
@@ -355,8 +359,7 @@ Describe Data.Either
     End
 
     After all
-      delfunction LiftSuccOfEither
-      delfunction LiftToStringOfEither
+      delfunction LiftToString
       delfunction TestLeftIdLaw
       delfunction TestRightIdLaw
       delfunction TestAssocLaw

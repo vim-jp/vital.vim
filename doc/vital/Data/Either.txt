@@ -131,6 +131,28 @@ map({either}, {f})			*Vital.Data.Either.map()*
 	echo E.map(either, 'v:val + 1')  " Left(something)
 <
 
+map_left({either}, {f})			*Vital.Data.Either.map_left()*
+	Simular to |Vital.Data.Either.map()|, but map {f} to {left}.
+>
+	let either = E.left(10)
+	echo E.map_left(either, 'v:val + 1')  " left(11)
+
+	let either = E.left(something)
+	echo E.map_left(either, 'v:val + 1')  " Left(something)
+<
+
+bimap({either}, {f}, {g})		*Vital.Data.Either.bimap()*
+	Map {f} if {either} is {left}, or map {g} if {either} is {right}.
+
+	|Funcref| and |String| expression can be used as {f} and {g}.
+>
+	let either = E.left(0)
+	echo E.bimap(either, {x -> x + 1}, {y -> y . 'D'}) " Left(1)
+
+	let either = E.right(':')
+	echo E.bimap(either, {x -> x + 1}, {y -> y . 'D'}) " Right(':D')
+<
+
 apply({either_func}, {either_values}...)	*Vital.Data.Either.apply()*
 	{either_func} is a function that is wrapped by
 	|Vital.Data.Either.right()| or some {left} value. {either_values} is a
