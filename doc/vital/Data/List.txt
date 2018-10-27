@@ -230,7 +230,7 @@ flatten({list} [, {limit}])		*Vital.Data.List.flatten()*
 sort({list}, {function})			*Vital.Data.List.sort()*
 	Sorts the items in |List| {list} in-place.  Returns {list}. When
 	{function} is a |Funcref|, this function returns the same result as
-	|sort()|. When {function} is a |String|expression, this function uses
+	|sort()|. When {function} is a |String| expression, this function uses
 	{function} to compare items.  Inside {function} a:a and a:b have the
 	value of the current items.  The evaluating result of {function} must
 	have zero if they are equal, 1 or bigger if a:a sorts after the a:b,
