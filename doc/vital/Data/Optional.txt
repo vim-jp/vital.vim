@@ -40,6 +40,23 @@ optional value.
 	  let s:cache = O.some(data)
 	  return data
 	endfunction
+
+
+	function! GetInput()
+		" Returns O.some(an input),
+		" or returns O.none() if <C-c>
+	endfunction
+
+	function! GetCommandIfExists(arg)
+		" Returns the detail if `arg` is an existent command
+	endfunction
+
+	" Show the command detail with an input
+	O.map(GetInput(), { input ->
+		\ O.map(GetCommandIfExists(input), { command ->
+			\ execute('echo ' . command)
+		\ }
+	\ })
 <
 
 
