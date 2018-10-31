@@ -331,6 +331,20 @@ Describe Data.Optional
     End
   End
 
+  Describe .last()
+    It finds the last {some} from a list of optional values
+      Assert Equal(
+        \ O.last([O.none(), O.some('sugar'), O.some('sweet'), O.none()]),
+        \ O.some('sweet')
+      \ )
+    End
+
+    It returns {none} if no {some} is found
+      Assert Equal(O.last([O.none()]), O.none())
+      Assert Equal(O.last([]), O.none())
+    End
+  End
+
   Describe .echo()
     It throws no exception
       call O.echo(O.some(42))
