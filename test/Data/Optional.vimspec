@@ -306,43 +306,50 @@ Describe Data.Optional
   End
 
   Describe .flatten()
-    It returns flattened optional value
-      let o = O.none()
-      let result = O.flatten(o)
-      Assert True(O.is_optional(result))
-      Assert True(O.empty(result))
+    It removes a nest from an optional value by default
+      Assert Equal(
+        \ O.flatten(O.some(O.some(O.some(10)))),
+        \ O.some(O.some(10)))
 
-      let o = O.some(42)
-      let result = O.flatten(o)
-      Assert True(O.is_optional(result))
-      Assert True(O.exists(result))
-      Assert Equals(O.get(result), 42)
+      Assert Equal(
+        \ O.flatten(O.some(O.some(10))),
+        \ O.some(10))
 
-      let o = O.some(O.some(O.some(42)))
-      let result = O.flatten(o)
-      Assert True(O.is_optional(result))
-      Assert True(O.exists(result))
-      Assert Equals(O.get(result), 42)
+      Assert Equal(
+        \ O.flatten(O.some(O.none())),
+        \ O.none())
 
-      let o = O.some(O.some(O.some(O.none())))
-      let result = O.flatten(o)
-      Assert True(O.is_optional(result))
-      Assert True(O.empty(result))
+      Assert Equal(
+        \ O.flatten(O.none()),
+        \ O.none())
     End
 
-    It can flatten optional value with specified limit
-      let o = O.some(O.some(O.some(O.some(42))))
-      let result = O.flatten(o, 2)
-      Assert True(O.is_optional(result))
-      Assert True(O.is_optional(O.get(result)))
-      Assert True(!O.is_optional(O.get(O.get(result))))
-      Assert Equals(O.get(O.get(result)), 42)
+    It fully removes nests from an optional value with 0
+      Assert Equals(
+        \ O.flatten(O.none(), 0),
+        \ O.none())
 
-      let o = O.some(O.some(O.some(42)))
-      let result = O.flatten(o, 1000)
-      Assert True(O.is_optional(result))
-      Assert True(!O.is_optional(O.get(result)))
-      Assert Equals(O.get(result), 42)
+      Assert Equals(
+        \ O.flatten(O.some(42), 0),
+        \ O.some(42))
+
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(42))), 0),
+        \ O.some(42))
+
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(O.none()))), 0),
+        \ O.none())
+    End
+
+    It removes nests from an optional value with specified limit
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(O.some(42)))), 2),
+        \ O.some(O.some(42)))
+
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(42))), 1000),
+        \ O.some(42))
     End
   End
 

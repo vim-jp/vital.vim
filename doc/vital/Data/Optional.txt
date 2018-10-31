@@ -194,9 +194,33 @@ bind({func}, {args}...)			*Vital.Data.Optional.bind()*
 <
 
 flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
-	Flattens a nested optional value.  For example, it flattens
-	some(some(some(42))) to some(42), some(some(none)) to none.  {limit}
-	is a depth of nest which it flattens.
+	Flattens a nested from optional values by default.
+>
+	echo O.flatten(O.some(O.some(10)))
+		\ == O.some(10)
+	echo O.flatten(O.some(O.none()))
+		\ == O.none()
+	echo O.flatten(O.none())
+		\ == O.none()
+
+	echo O.flatten(O.some(O.some(O.some(10))))
+		\ == O.some(O.some(10))
+<
+	Or flattens nests with a specified limit.
+>
+	echo O.flatten(O.some(O.some(O.some(42))), 2)
+		\ == O.some(42)
+<
+	Or fully flattens nests if 0 is specified for the limit.
+>
+	echo O.flatten(O.none(), 0)
+		\ == O.none()
+
+	echo O.flatten(O.some(O.some(O.some(10))), 0)
+		\ == O.some(O.some(10))
+	echo O.flatten(O.some(O.none()), 0)
+		\ == O.none()
+<
 
 echo({optional}, [{highlight-group}])	*Vital.Data.Optional.echo()*
 	Displays an optional value like |:echo|. The format is "Some(...)" or

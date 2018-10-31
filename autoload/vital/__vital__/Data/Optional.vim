@@ -112,19 +112,37 @@ function! s:bind(f, ...) abort
   return call(a:f, map(copy(a:000), 'v:val[0]'))
 endfunction
 
-function! s:flatten(o, ...) abort
-  if (a:0 > 0 && a:1 == 0)
-        \ || !s:is_optional(a:o)
-        \ || empty(a:o)
-        \ || !s:is_optional(a:o[0])
-    return a:o
+let s:FLATTEN_DEFAULT_LIMIT = 1 | lockvar s:FLATTEN_DEFAULT_LIMIT
+
+function! s:flatten(x, ...) abort
+  let limit = get(a:000, 0, s:FLATTEN_DEFAULT_LIMIT)
+
+  if limit is 0
+    return s:_flatten_fully(a:x)
   endif
 
-  if a:0 > 0
-    return s:flatten(a:o[0], a:1 - 1)
-  else
-    return s:flatten(a:o[0])
+  return s:_flatten_with_limit(a:x, limit)
+endfunction
+
+" Returns true for O.some({non optional}).
+" Otherwies, returns false.
+" (Returns false for O.none().)
+function! s:_has_a_nest(x) abort
+  return  s:exists(a:x) && !s:is_optional(s:get(a:x))
+endfunction
+
+function! s:_flatten_with_limit(x, limit) abort
+  if s:empty(a:x) || s:_has_a_nest(a:x) || (a:limit <= 0)
+    return a:x
   endif
+  return s:_flatten_with_limit(s:get(a:x), a:limit - 1)
+endfunction
+
+function! s:_flatten_fully(x) abort
+  if s:empty(a:x) || s:_has_a_nest(a:x)
+    return a:x
+  endif
+  return s:_flatten_fully(s:get(a:x))
 endfunction
 
 function! s:_echo(msg, hl) abort
