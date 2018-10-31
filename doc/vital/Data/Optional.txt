@@ -247,7 +247,17 @@ flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
 <
 
 first({optional_list})			*Vital.Data.Optional.first()*
-	Finds a first {some}
+	Finds a first {some}, or {none} if no {some} is found.
+>
+	echo O.first([O.none(), O.some('sugar'), O.some('sweat'), O.none()])
+	" O.some('sugar')
+
+	echo O.first([O.none()])
+	" O.none()
+
+	echo O.first([])
+	" O.none()
+<
 
 echo({optional}, [{highlight-group}])	*Vital.Data.Optional.echo()*
 	Displays an optional value like |:echo|. The format is "Some(...)" or
