@@ -317,6 +317,20 @@ Describe Data.Optional
     End
   End
 
+  Describe .first()
+    It finds the first {some} from a list of optional values
+      Assert Equal(
+        \ O.first([O.none(), O.some('sugar'), O.some('sweet'), O.none()]),
+        \ O.some('sugar')
+      \ )
+    End
+
+    It returns {none} if no {some} is found
+      Assert Equal(O.first([O.none()]), O.none())
+      Assert Equal(O.first([]), O.none())
+    End
+  End
+
   Describe .echo()
     It throws no exception
       call O.echo(O.some(42))
