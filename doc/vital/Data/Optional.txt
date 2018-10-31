@@ -259,6 +259,19 @@ first({optional_list})			*Vital.Data.Optional.first()*
 	" O.none()
 <
 
+last({optional_list})			*Vital.Data.Optional.last()*
+	Finds a last {some}, or {none} if no {some} is found.
+>
+	echo O.last([O.none(), O.some('sugar'), O.some('sweat'), O.none()])
+	" O.some('sweat')
+
+	echo O.last([O.none()])
+	" O.none()
+
+	echo O.last([])
+	" O.none()
+<
+
 echo({optional}, [{highlight-group}])	*Vital.Data.Optional.echo()*
 	Displays an optional value like |:echo|. The format is "Some(...)" or
 	"None".  If {highlight-group} is specified, it displays a value
