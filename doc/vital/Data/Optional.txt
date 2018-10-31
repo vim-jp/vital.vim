@@ -67,6 +67,12 @@ TERM					*Vital.Data.Optional-term*
 	{optional} is a optional value.  It is a |List| of 0 or 1 element
 	actually.
 
+{none}					*Vital.Data.Optional-term-none*
+	An optional value as invalid value.
+
+{some}					*Vital.Data.Optional-term-some*
+	An optional value which contains a value as valid value.
+
 
 
 ==============================================================================
@@ -76,10 +82,11 @@ INTERFACE				*Vital.Data.Optional-interface*
 FUNCTIONS				*Vital.Data.Optional-functions*
 
 none()					*Vital.Data.Optional.none()*
-	Returns an optional value as invalid value.
+	Returns a optional value as invalid value ({none}).
 
 some({value})				*Vital.Data.Optional.some()*
-	Returns an optional value which contains {value} as valid value.
+	Returns an optional value which contains {value} as valid value
+	({some}).
 
 new({value}, [{null}])				*Vital.Data.Optional.new()*
 	Same as some({value}) usually. If the given {value} is |v:null|, it
@@ -238,6 +245,9 @@ flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
 	echo O.flatten(O.some(O.none()), 0)
 		\ == O.none()
 <
+
+first({optional_list})			*Vital.Data.Optional.first()*
+	Finds a first {some}
 
 echo({optional}, [{highlight-group}])	*Vital.Data.Optional.echo()*
 	Displays an optional value like |:echo|. The format is "Some(...)" or
