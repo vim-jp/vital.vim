@@ -159,6 +159,15 @@ function! s:_flatten_fully(x) abort
   return s:_flatten_fully(s:get(a:x))
 endfunction
 
+function! s:first(xs) abort
+    for x in a:xs
+      if s:exists(x)
+        return x
+      endif
+    endfor
+    return s:none()
+endfunction
+
 function! s:_echo(x) abort
   if s:empty(a:x)
     echo 'None'
