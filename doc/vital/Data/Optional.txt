@@ -82,7 +82,7 @@ INTERFACE				*Vital.Data.Optional-interface*
 FUNCTIONS				*Vital.Data.Optional-functions*
 
 none()					*Vital.Data.Optional.none()*
-	Returns a optional value as invalid value ({none}).
+	Returns an optional value as invalid value ({none}).
 
 some({value})				*Vital.Data.Optional.some()*
 	Returns an optional value which contains {value} as valid value
