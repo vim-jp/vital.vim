@@ -298,12 +298,6 @@ Describe Data.Either
   End
 
   Describe .null_to_left()
-    It doesn't support Vim7.4 or faster
-      if !exists('v:null')
-        Throws /^vital: Data.Either:/ Either.null_to_left(10, 'error')
-      endif
-    End
-
     It returns a left value with the error message if v:null is given
       if exists('v:null')
         let errMsg = 'error'

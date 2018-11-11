@@ -6,7 +6,7 @@ A comprehensive Vim utility functions for Vim plugins.
 
 ## Requirements
 
-Modules in vital.vim basically support Vim 7.4 or later. And some modules have stricter requirements and additional dependencies.
+Modules in vital.vim basically support Vim 8.0 or later. And some modules have stricter requirements and additional dependencies.
 Please read the docs of each module before using them.
 
 ## Handling libraries in Vim WAS hard

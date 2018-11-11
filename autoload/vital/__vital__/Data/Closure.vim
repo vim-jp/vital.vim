@@ -16,9 +16,6 @@ let s:OPERATOR_LIST = [
 \  '||', '&&',
 \]
 
-let s:is_binding_supported =
-\   704 <= v:version || (v:version == 703 && has('patch560'))
-
 let s:closures = {}
 let s:mark_to_sweep = {}
 let s:current_function_id = 0
@@ -258,7 +255,7 @@ function! s:is_callable(expr) abort
 endfunction
 
 function! s:is_binding_supported() abort
-  return s:is_binding_supported
+  return 1
 endfunction
 
 function! s:sweep_functions() abort
@@ -345,9 +342,6 @@ function! s:_chain(...) dict abort
 endfunction
 
 function! s:_move(l, binding) abort
-  if !s:is_binding_supported
-    return
-  endif
   call filter(a:l, 'v:key ==# "self"')
   call extend(a:l, filter(copy(a:binding), 'v:key !=# "self"'))
 endfunction

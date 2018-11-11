@@ -2,8 +2,6 @@ version: '{build}'
 clone_depth: 10
 environment:
   matrix:
-    - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim74/oldest/win64/
-      THEMIS_PROFILE: vim-profile-win-v7.4.txt
     - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/vim80/oldest/win64/
       THEMIS_PROFILE: vim-profile-win-v8.0.txt
     - VIM_URL: http://vim-jp.org/redirects/koron/vim-kaoriya/latest/win64/
