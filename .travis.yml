@@ -11,6 +11,10 @@ matrix:
         - THEMIS_PROFILE=vim-profile-v8.0.txt
     - os: linux
       env:
+        - VIM_VERSION=v8.1.0005
+        - THEMIS_PROFILE=vim-profile-v8.1.txt
+    - os: linux
+      env:
         - VIM_VERSION=master
         - THEMIS_PROFILE=vim-profile-master.txt
     - os: osx
