@@ -288,7 +288,10 @@ Describe Data.Optional
         \ O.none())
     End
 
-    It fully removes nests from {optional} with 0
+    It removes nests from {optional} with specified limit
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(O.some(42)))), 2),
+        \ O.some(O.some(42)))
       Assert Equals(
         \ O.flatten(O.none(), 0),
         \ O.none())
@@ -305,11 +308,33 @@ Describe Data.Optional
         \ O.flatten(O.some(O.some(O.some(O.none()))), 0),
         \ O.none())
     End
+  End
 
-    It removes nests from {optional} with specified limit
+  Describe .flat_map()
+    Before all
+      function! Pure(x) abort
+        let O = vital#vital#new().import('Data.Optional')
+        return O.some(a:x)
+      endfunction
+    End
+
+    After all
+      delfunction Pure
+    End
+
+    It is simular to .bind()
       Assert Equals(
-        \ O.flatten(O.some(O.some(O.some(O.some(42)))), 2),
-        \ O.some(O.some(42)))
+        \ O.bind('Pure', O.some(10)),
+        \ O.some(10))
+    End
+  End
+
+  Describe .flatten()
+    It returns flattened optional value
+      let o = O.none()
+      let result = O.flatten(o)
+      Assert True(O.is_optional(result))
+      Assert True(O.empty(result))
 
       Assert Equals(
         \ O.flatten(O.some(O.some(O.some(42))), 1000),

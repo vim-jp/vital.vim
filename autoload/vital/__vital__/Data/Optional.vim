@@ -159,6 +159,10 @@ function! s:_flatten_fully(x) abort
   return s:_flatten_fully(s:get(a:x))
 endfunction
 
+function! s:flat_map(f, x) abort
+  return s:bind(a:f, a:x)
+endfunction
+
 function! s:first(xs) abort
     for x in a:xs
       if s:exists(x)

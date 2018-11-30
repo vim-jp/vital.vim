@@ -217,6 +217,9 @@ bind({func}, {args}...)			*Vital.Data.Optional.bind()*
 	echo O.empty(result) " returns 1 because 10 / 0 occurs an error
 <
 
+flat_map({func}, {arg})		*vital.Data.Optional.flat_map()*
+	Simular to |vital.Data.Optional.bind()| for the single argument.
+
 flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
 	Flattens a nested from optional values by default.
 >
@@ -245,6 +248,8 @@ flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
 	echo O.flatten(O.some(O.none()), 0)
 		\ == O.none()
 <
+
+
 
 first({optional_list})			*Vital.Data.Optional.first()*
 	Finds a first {some}, or {none} if no {some} is found.
