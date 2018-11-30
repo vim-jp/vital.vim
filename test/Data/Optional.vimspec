@@ -342,6 +342,28 @@ Describe Data.Optional
     End
   End
 
+  Describe .optional()
+    Before all
+      function! Smile() abort
+        return "=)"
+      endfunction
+    End
+
+    After all
+      delfunction Smile
+    End
+
+    It extracts {optional}
+      Assert Equals(
+        \ O.optional(O.some(10), function('string'), function('Smile')),
+        \ "10")
+
+      Assert Equals(
+        \ O.optional(O.none(), function('string'), function('Smile')),
+        \ "=)")
+    End
+  End
+
   Describe .first()
     It finds the first {some} from a list of optional values
       Assert Equal(

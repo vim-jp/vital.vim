@@ -249,7 +249,24 @@ flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
 		\ == O.none()
 <
 
+optional({optional}, {if_some}, {if_none})
+					*vital.Data.Optional.optional()*
+	Extracts {optional}. if the {optional} is a {some}, this maps {if_some}
+	to the {some}. if the {optional} is a {none}, this returns {if_none}'s
+	result.
+>
+	echo O.optional(O.some(10),
+	  \ { x -> string(x) },
+	  \ { -> "=)" }
+	\ )
+	" 10
 
+	echo O.optional(O.none(),
+	  \ { x -> string(x) },
+	  \ { -> "=)" }
+	\ )
+	" =)
+<
 
 first({optional_list})			*Vital.Data.Optional.first()*
 	Finds a first {some}, or {none} if no {some} is found.
