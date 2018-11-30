@@ -1,14 +1,28 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:ARRAY_TYPE = type([])
+" NOTE: These are verbose to avoid key's unintentional confliction ;(
+let s:SOME_KEY = 'vital_data_optional_some' | lockvar s:SOME_KEY
+let s:NONE_KEY = 'vital_data_optional_none' | lockvar s:NONE_KEY
+
+function! s:_require_optional(...) abort
+  for x in a:000
+    if !s:is_optional(x)
+      throw printf('vital: Data.Optional: Not an optional value `%s`', string(x))
+    endif
+  endfor
+endfunction
+
+function! s:_require_optionals(xs) abort
+  call call(function('s:_require_optional'), a:xs)
+endfunction
 
 function! s:none() abort
-  return []
+  return {s:NONE_KEY: {}}
 endfunction
 
 function! s:some(v) abort
-  return [a:v]
+  return {s:SOME_KEY: a:v}
 endfunction
 
 function! s:new(v, ...) abort
@@ -21,95 +35,89 @@ function! s:new(v, ...) abort
           \ ? s:none()
           \ : s:some(a:v)
   else
-    throw 'vital: Data.Optional: both v:null and {null} are missing'
+      throw 'vital: Data.Optional: both v:null and {null} are missing'
   endif
 endfunction
 
 function! s:is_optional(v) abort
-  return type(a:v) == s:ARRAY_TYPE && len(a:v) <= 1
+  return s:empty(a:v) || s:exists(a:v)
 endfunction
 
 function! s:empty(o) abort
-  return empty(a:o)
+  return (type(a:o) is type({})) && has_key(a:o, s:NONE_KEY)
 endfunction
 
 function! s:exists(o) abort
-  return !empty(a:o)
+  return (type(a:o) is type({})) && has_key(a:o, s:SOME_KEY)
 endfunction
 
 function! s:set(o, v) abort
-  if empty(a:o)
-    call add(a:o, a:v)
-  else
-    let a:o[0] = a:v
+  if s:empty(a:o)
+    unlet a:o[s:NONE_KEY]
   endif
+  let a:o[s:SOME_KEY] = a:v
 endfunction
 
 function! s:unset(o) abort
-  if !empty(a:o)
-    unlet! a:o[0]
+  if s:exists(a:o)
+    unlet a:o[s:SOME_KEY]
   endif
+  let a:o[s:NONE_KEY] = {}
 endfunction
 
 function! s:get(o) abort
-  if empty(a:o)
+  if s:empty(a:o)
     throw 'vital: Data.Optional: An empty Data.Optional value'
   endif
-  return a:o[0]
+  return a:o[s:SOME_KEY]
 endfunction
 
 function! s:get_unsafe(o) abort
-  return a:o[0]
+  return a:o[s:SOME_KEY]
 endfunction
 
 function! s:get_or(o, alt) abort
-  return get(a:o, 0, a:alt())
+  return get(a:o, s:SOME_KEY, a:alt())
 endfunction
 
 function! s:has(o, type) abort
-  if empty(a:o)
-    return 0
-  else
-    return type(a:o[0]) == a:type
-  endif
-endfunction
-
-function! s:_valid_args(args) abort
-  for Arg in a:args
-    if !s:is_optional(Arg)
-      throw 'vital: Data.Optional: Non-optional argument'
-    endif
-    unlet Arg
-  endfor
-
-  for Arg in a:args
-    if empty(Arg)
-      return 0
-    endif
-    unlet Arg
-  endfor
-
-  return 1
+  return !s:empty(a:o) && (type(a:o[s:SOME_KEY]) is a:type)
 endfunction
 
 function! s:apply(f, ...) abort
-  if !s:_valid_args(a:000)
-    return s:none()
-  endif
+  call s:_require_optionals(a:000)
+  let args = []
 
-  return s:some(call(a:f, map(copy(a:000), 'v:val[0]')))
+  for x in a:000
+    if s:empty(x)
+      return s:none()
+    endif
+    call add(args, s:get(x))
+  endfor
+
+  return s:some(call(a:f, args))
 endfunction
 
 function! s:map(x, f) abort
-  return s:apply(a:f, a:x)
+  if s:empty(a:x)
+    return s:none()
+  endif
+  let naked_result = call(a:f, [s:get(a:x)])
+  return s:some(naked_result)
 endfunction
 
 function! s:bind(f, ...) abort
-  if !s:_valid_args(a:000)
-    return s:none()
-  endif
+  call s:_require_optionals(a:000)
+  let args = []
 
-  return call(a:f, map(copy(a:000), 'v:val[0]'))
+  for x in a:000
+    if s:empty(x)
+      return s:none()
+    endif
+    call add(args, s:get(x))
+  endfor
+
+  return call(a:f, args)
 endfunction
 
 let s:FLATTEN_DEFAULT_LIMIT = 1 | lockvar s:FLATTEN_DEFAULT_LIMIT
@@ -124,11 +132,11 @@ function! s:flatten(x, ...) abort
   return s:_flatten_with_limit(a:x, limit)
 endfunction
 
-" Returns true for O.some({non optional}).
+" Returns true for some({non optional}).
 " Otherwies, returns false.
-" (Returns false for O.none().)
+" (Returns false for none().)
 function! s:_has_a_nest(x) abort
-  return  s:exists(a:x) && !s:is_optional(s:get(a:x))
+  return s:exists(a:x) && !s:is_optional(s:get(a:x))
 endfunction
 
 function! s:_flatten_with_limit(x, limit) abort
@@ -145,26 +153,20 @@ function! s:_flatten_fully(x) abort
   return s:_flatten_fully(s:get(a:x))
 endfunction
 
-function! s:_echo(msg, hl) abort
-  if empty(a:hl)
-    echo a:msg
-  else
-    execute 'echohl' a:hl[0]
-    echo a:msg
-    echohl None
+function! s:_echo(x) abort
+  if s:empty(a:x)
+    echo 'None'
+    return
   endif
+  echo 'Some (' . s:get(a:x) . ')'
 endfunction
 
 function! s:echo(o, ...) abort
-  if !s:is_optional(a:o)
-    throw 'vital: Data.Optional: Not an optional value'
-  endif
+  call s:_require_optional(a:o)
 
-  if empty(a:o)
-    call s:_echo('None', a:000)
-  else
-    call s:_echo('Some(' . string(a:o[0]) . ')', a:000)
-  endif
+  execute 'echohl' get(a:000, 0, 'None')
+  call s:map(a:o, function('s:_echo'))
+  echohl None
 endfunction
 
 let &cpo = s:save_cpo
