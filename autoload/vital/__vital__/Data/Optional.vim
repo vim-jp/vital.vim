@@ -10,6 +10,7 @@ function! s:_require_optional(...) abort
     if !s:is_optional(x)
       throw printf('vital: Data.Optional: Not an optional value `%s`', string(x))
     endif
+    unlet x
   endfor
 endfunction
 
@@ -18,11 +19,15 @@ function! s:_require_optionals(xs) abort
 endfunction
 
 function! s:none() abort
-  return {s:NONE_KEY: {}}
+  let none = {}
+  let none[s:NONE_KEY] = {}
+  return none
 endfunction
 
 function! s:some(v) abort
-  return {s:SOME_KEY: a:v}
+  let some = {}
+  let some[s:SOME_KEY] = a:v
+  return some
 endfunction
 
 function! s:new(v, ...) abort
@@ -93,6 +98,7 @@ function! s:apply(f, ...) abort
       return s:none()
     endif
     call add(args, s:get(x))
+    unlet x
   endfor
 
   return s:some(call(a:f, args))
