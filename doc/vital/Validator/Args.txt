@@ -108,7 +108,7 @@ INTERFACE				*Vital.Validator.Args-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Validator.Args-functions*
 
-of({prefix} [, {enable}])				*Vital.Validator.Args.empty()*
+of({prefix} [, {enable}])				*Vital.Validator.Args.of()*
 	Creates validator of a function. {prefix} is a prefix of a thrown
 	exception message. see |Vital.Validator.Args-exceptions| for the
 	examples of thrown exception messages.
