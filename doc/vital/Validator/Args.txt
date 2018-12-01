@@ -131,7 +131,7 @@ TYPES				*Vital.Validator.Args-types*
 TYPE.NUMBER		*Vital.Validator.Args-type-NUMBER*
 	A |Number| argument.
 
-TYPE.STRING		*Vital.Validator.Args-type-String*
+TYPE.STRING		*Vital.Validator.Args-type-STRING*
 	A |String| argument.
 
 TYPE.FUNC		*Vital.Validator.Args-type-FUNC*
