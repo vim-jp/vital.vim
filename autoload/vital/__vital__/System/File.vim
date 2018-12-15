@@ -17,10 +17,6 @@ let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
-" As of 7.4.122, the system()'s 1st argument is converted internally by Vim.
-" Note that Patch 7.4.122 does not convert system()'s 2nd argument and
-" return-value. We must convert them manually.
-let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 
 " Open a file.
 function! s:open(filename) abort
@@ -29,9 +25,6 @@ function! s:open(filename) abort
   " Detect desktop environment.
   if s:is_windows
     " For URI only.
-    if s:need_trans
-      let filename = iconv(filename, &encoding, 'char')
-    endif
     " Note:
     "   # and % required to be escaped (:help cmdline-special)
     silent execute printf(
@@ -117,11 +110,6 @@ elseif s:is_windows
     let dest = substitute(dest, '[/\\]\+', '\', 'g')
     " src must not have trailing '\'.
     let src  = substitute(src, '\\$', '', 'g')
-    " All characters must be encoded to system encoding.
-    if s:need_trans
-      let src  = iconv(src, &encoding, 'char')
-      let dest = iconv(dest, &encoding, 'char')
-    endif
     let cmd_exe = (&shell =~? 'cmd\.exe$' ? '' : 'cmd /c ')
     call system(cmd_exe . 'move /y ' . src  . ' ' . dest)
     return !v:shell_error
@@ -289,50 +277,14 @@ endfunction
 
 
 " Delete a file/directory.
-if has('patch-7.4.1128')
-  function! s:rmdir(path, ...) abort
-    let flags = a:0 ? a:1 : ''
-    let delete_flags = flags =~# 'r' ? 'rf' : 'd'
-    let result = delete(a:path, delete_flags)
-    if result == -1
-      throw 'vital: System.File: rmdir(): cannot delete "' . a:path . '"'
-    endif
-  endfunction
-
-elseif s:is_unix
-  function! s:rmdir(path, ...) abort
-    let flags = a:0 ? a:1 : ''
-    let cmd = flags =~# 'r' ? 'rm -rf' : 'rmdir'
-    let ret = system(cmd . ' ' . shellescape(a:path))
-    if v:shell_error
-      let ret = iconv(ret, 'char', &encoding)
-      throw 'vital: System.File: rmdir(): ' . substitute(ret, '\n', '', 'g')
-    endif
-  endfunction
-
-elseif s:is_windows
-  function! s:rmdir(path, ...) abort
-    let flags = a:0 ? a:1 : ''
-    if &shell =~? 'sh$'
-      let cmd = flags =~# 'r' ? 'rm -rf' : 'rmdir'
-      let ret = system(cmd . ' ' . shellescape(a:path))
-    else
-      " 'f' flag does not make sense.
-      let cmd = 'rmdir /Q'
-      let cmd .= flags =~# 'r' ? ' /S' : ''
-      let ret = system(cmd . ' "' . a:path . '"')
-    endif
-    if v:shell_error
-      let ret = iconv(ret, 'char', &encoding)
-      throw 'vital: System.File: rmdir(): ' . substitute(ret, '\n', '', 'g')
-    endif
-  endfunction
-
-else
-  function! s:rmdir(...) abort
-    throw 'vital: System.File: rmdir(): your platform is not supported'
-  endfunction
-endif
+function! s:rmdir(path, ...) abort
+  let flags = a:0 ? a:1 : ''
+  let delete_flags = flags =~# 'r' ? 'rf' : 'd'
+  let result = delete(a:path, delete_flags)
+  if result == -1
+    throw 'vital: System.File: rmdir(): cannot delete "' . a:path . '"'
+  endif
+endfunction
 
 
 let &cpo = s:save_cpo

@@ -33,9 +33,6 @@ This module traces them.
 	call T.jump(handle)
 <
 
-Requirement:
-- Vim 7.3.893 or later
-
 
 
 ==============================================================================
