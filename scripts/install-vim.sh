@@ -16,6 +16,7 @@ case "${TRAVIS_OS_NAME}" in
 		;;
 	osx)
 		brew install macvim
+		brew uninstall ruby
 		# Instead of --with-override-system-vim, manually link the executable because
 		# it prevents MacVim installation with a bottle.
 		ln -sf "$(brew --prefix macvim)/bin/mvim" "/usr/local/bin/vim"
