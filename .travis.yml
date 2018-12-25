@@ -36,7 +36,7 @@ addons:
 
 install:
   - rvm reset
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then export DYNAMIC_RUBY_DLL=/Users/travis/.rvm/rubies/ruby-2.3.3/lib/libruby.2.3.3.dylib ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then export DYNAMIC_RUBY_DLL=/Users/travis/.rvm/rubies/ruby-2.3.3/lib/libruby.2.3.0.dylib ; fi
   - bash scripts/install-vim.sh
   - export PATH=$HOME/vim/bin:$PATH
     # Install https://github.com/Vimjas/covimerage
