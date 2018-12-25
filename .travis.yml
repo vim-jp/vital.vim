@@ -36,6 +36,7 @@ addons:
 
 install:
   - rvm reset
+  - rvm info
   - bash scripts/install-vim.sh
   - export PATH=$HOME/vim/bin:$PATH
     # Install https://github.com/Vimjas/covimerage
