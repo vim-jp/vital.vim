@@ -15,7 +15,7 @@ case "${TRAVIS_OS_NAME}" in
 		make install
 		;;
 	osx)
-		curl -q http://vim-jp.org/redirects/splhack/macvim-kaoriya/latest/ | grep location= | sed -e 's/^[^"]\+"\([^"]\+\)".*/\1/' | xargs curl -L -o MacVim.dmg
+		curl -q http://vim-jp.org/redirects/splhack/macvim-kaoriya/latest/ | grep location= | gsed -e 's/^[^"]\+"\([^"]\+\)".*/\1/' | xargs curl -L -o MacVim.dmg
 		hdiutil mount MacVim.dmg
 		df | grep Vim | awk '{print $9}' | xargs cd && installer -pkg MacVim.pkg -target /
 		# Instead of --with-override-system-vim, manually link the executable because
