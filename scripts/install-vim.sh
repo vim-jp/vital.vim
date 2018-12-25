@@ -22,7 +22,6 @@ case "${TRAVIS_OS_NAME}" in
 		# Instead of --with-override-system-vim, manually link the executable because
 		# it prevents MacVim installation with a bottle.
 		ln -sf "/Applications/MacVim.app/Contents/MacOS/Vim" "/usr/local/bin/vim"
-		hdiutil detach $installer_dir
 		;;
 	*)
 		echo "Unknown value of \${TRAVIS_OS_NAME}: ${TRAVIS_OS_NAME}"
