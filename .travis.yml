@@ -21,6 +21,7 @@ matrix:
       osx_image: xcode8.3
       env:
         - THEMIS_PROFILE=vim-profile-osx.txt
+        - DYNAMIC_RUBY_DLL=/Users/travis/.rvm/rubies/ruby-2.3.0/lib/libruby.2.3.0.dylib
     - os: linux
       env:
         - RUN_LINT=true
