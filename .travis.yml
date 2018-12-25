@@ -40,11 +40,7 @@ install:
   - bash scripts/install-vim.sh
   - export PATH=$HOME/vim/bin:$PATH
     # Install https://github.com/Vimjas/covimerage
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then
-        brew install upgrade
-        brew install python3
-    fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then brew upgrade python3 ; fi
   - pip3 install --user --upgrade pip
   - pip3 install --user --upgrade setuptools
   - pip3 install --user covimerage
