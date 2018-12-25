@@ -15,12 +15,14 @@ case "${TRAVIS_OS_NAME}" in
 		make install
 		;;
 	osx)
-		curl -q http://vim-jp.org/redirects/splhack/macvim-kaoriya/latest/ | grep location= | gsed -e 's/^[^"]\+"\([^"]\+\)".*/\1/' | xargs curl -L -o MacVim.dmg
+		curl -q http://vim-jp.org/redirects/splhack/macvim-kaoriya/latest/ | grep location= | sed -E 's/^[^"]+"([^"]+)".*/\1/g' | xargs curl -L -o MacVim.dmg
 		hdiutil mount MacVim.dmg
-		df | grep Vim | awk '{print $9}' | xargs cd && installer -pkg MacVim.pkg -target /
+		installer_dir='/Volumes/MacVim*'
+		(cd $installer_dir && cp -r MacVim.app /Applications/)
 		# Instead of --with-override-system-vim, manually link the executable because
 		# it prevents MacVim installation with a bottle.
-		ln -sf "/Applications/MacVim.app/Contents/MacOS/bin/mvim" "/usr/local/bin/vim"
+		ln -sf "/Applications/MacVim.app/Contents/MacOS/Vim" "/usr/local/bin/vim"
+		hdiutil detach $installer_dir
 		;;
 	*)
 		echo "Unknown value of \${TRAVIS_OS_NAME}: ${TRAVIS_OS_NAME}"
