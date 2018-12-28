@@ -13,7 +13,7 @@ let s:sfile = tr(expand('<sfile>:p'), '\', '/')
 function! s:_vital_loaded(V) abort
   if exists('*luaeval')
     execute printf('lua vital_context = "%s"', s:sfile)
-    call luaeval('dofile(_A)', s:luafile_of(s:sfile))
+    call luaeval('0,dofile(_A)', s:luafile_of(s:sfile))
   endif
 endfunction
 
