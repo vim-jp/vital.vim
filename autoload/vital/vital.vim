@@ -167,7 +167,8 @@ let s:Vital._import = function('s:_import')
 
 function! s:format_throwpoint(throwpoint) abort
   let funcs = []
-  for line in split(a:throwpoint, '\.\.')
+  let stack = matchstr(a:throwpoint, '^function \zs.*\ze, line \d\+$')
+  for line in split(stack, '\.\.')
     let m = matchlist(line, '^\%(<SNR>\(\d\+\)_\)\?\(.\+\)\[\(\d\+\)\]$')
     if empty(m)
       call add(funcs, line)
@@ -185,9 +186,12 @@ function! s:format_throwpoint(throwpoint) abort
 endfunction
 
 function! s:get_file_by_func_name(name) abort
-  redir => body
-  silent execute 'verbose function' a:name
-  redir END
+  try
+    redir => body
+    silent execute 'verbose function' a:name
+  finally
+    redir END
+  endtry
   let lines = split(body, "\n")
   let signature = matchstr(lines[0], '^\s*\zs.*')
   let file = matchstr(lines[1], '^\t\%(Last set from\|.\{-}:\)\s*\zs.*$')
