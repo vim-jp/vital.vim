@@ -13,7 +13,7 @@ function! s:_vital_loaded(V) abort
 
   if exists('*luaeval')
     execute printf('lua vital_context = "%s"', escape(s:sfile, '\'))
-    call luaeval('dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
+    call luaeval('0,dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
   endif
 endfunction
 
