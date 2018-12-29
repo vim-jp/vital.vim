@@ -158,7 +158,7 @@ function! s:_import(name) abort dict
       call module._vital_loaded(vital#{s:plugin_name}#new())
     catch
       unlet s:loaded[a:name]
-      throw 'vital: fail to call ._vital_loaded(): ' . v:exception
+      throw 'vital: fail to call ._vital_loaded(): ' . v:exception . "\nat " . v:throwpoint
     endtry
   endif
   return copy(s:loaded[a:name])
