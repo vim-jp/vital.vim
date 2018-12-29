@@ -71,13 +71,13 @@ Describe Async.Promise
       Assert NotEmpty(err.throwpoint)
       unlet err
 
-      let p = P.new({-> execute('echom {}')})
+      let p = P.new({-> execute('echom dummy')})
       Assert Equals(p._state, REJECTED)
       call p.catch({exc -> extend(l, {'err': exc})})
       call s:wait_has_key(l, 'err')
       Assert HasKey(err, 'exception')
       Assert HasKey(err, 'throwpoint')
-      Assert Match(err.exception, '^Vim(echomsg):E731:')
+      Assert Match(err.exception, '^Vim(echomsg):E121:')
       Assert NotEmpty(err.throwpoint)
     End
 
@@ -256,13 +256,13 @@ Describe Async.Promise
         Assert Equals(err.exception, 'ERROR')
         unlet err
 
-        let p = P.resolve(42).then({-> execute('echom {}')})
+        let p = P.resolve(42).then({-> execute('echom dummy')})
         call p.catch({exc -> extend(l, {'err': exc})})
         call s:wait_has_key(l, 'err')
         Assert Equals(p._state, REJECTED)
         Assert HasKey(err, 'exception')
         Assert HasKey(err, 'throwpoint')
-        Assert Match(err.exception, '^Vim(echomsg):E731:')
+        Assert Match(err.exception, '^Vim(echomsg):E121:')
       End
 
       It can omit all parameters
@@ -385,13 +385,13 @@ Describe Async.Promise
         Assert Equals(reason.exception, 'ERROR')
         unlet reason
 
-        let p = P.reject(42).catch({-> execute('echom {}')})
+        let p = P.reject(42).catch({-> execute('echom dummy')})
         call p.catch({exc -> extend(l, {'reason': exc})})
         call s:wait_has_key(l, 'reason')
         Assert Equals(p._state, REJECTED)
         Assert HasKey(reason, 'exception')
         Assert HasKey(reason, 'throwpoint')
-        Assert Match(reason.exception, '^Vim(echomsg):E731:')
+        Assert Match(reason.exception, '^Vim(echomsg):E121:')
       End
 
       It should pass through the exception when all parameters are omitted
