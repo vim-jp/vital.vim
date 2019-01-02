@@ -18,7 +18,7 @@ matrix:
         - VIM_VERSION=master
         - THEMIS_PROFILE=vim-profile-master.txt
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env:
         - THEMIS_PROFILE=vim-profile-osx.txt
     - os: linux
@@ -39,7 +39,6 @@ install:
   - bash scripts/install-vim.sh
   - export PATH=$HOME/vim/bin:$PATH
     # Install https://github.com/Vimjas/covimerage
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then brew install python3 ; fi
   - pip3 install --user --upgrade pip
   - pip3 install --user --upgrade setuptools
   - pip3 install --user covimerage
