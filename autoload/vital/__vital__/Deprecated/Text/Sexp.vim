@@ -13,7 +13,11 @@ function! s:_vital_loaded(V) abort
 
   if exists('*luaeval')
     execute printf('lua vital_context = "%s"', escape(s:sfile, '\'))
-    call luaeval('0,dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
+    if has('patch-8.1.0672')
+      call luaeval('nil,dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
+    else
+      call luaeval('0,dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
+    endif
   endif
 endfunction
 
