@@ -784,7 +784,7 @@ Describe Async.Promise
       Assert Equals(P.wait(p, { 'interval': 200 }), ['resolved', v:null])
       Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
       if has('mac')
-        " TODO: I know this is a terrible IDEA, but it this assert makes osx test fails.
+        " TODO: I know this is a terrible IDEA, but this assert makes osx test fails.
         " Let's disable until we figure out why and how.
       else
         Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1200)
@@ -796,7 +796,7 @@ Describe Async.Promise
       Assert Equals(P.wait(p, { 'interval': 200 }), [v:null, 'rejected'])
       Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
       if has('mac')
-        " TODO: I know this is a terrible IDEA, but it this assert makes osx test fails.
+        " TODO: I know this is a terrible IDEA, but this assert makes osx test fails.
         " Let's disable until we figure out why and how.
       else
         Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1200)
