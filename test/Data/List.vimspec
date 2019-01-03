@@ -50,7 +50,10 @@ Describe Data.List
   Describe .new()
     It createa a new list with calling given {f} for {size} times.
       Assert Equals(List.new(3, { i -> i * 2 }), [0, 2, 4])
+      Assert Equals(List.new(3, 'v:val * 2'), [0, 2, 4])
       Assert Equals(List.new(4, { -> 'hello' }), ['hello', 'hello', 'hello', 'hello'])
+      Assert Equals(List.new(4, '"hello"'), ['hello', 'hello', 'hello', 'hello'])
+      Assert Equals(List.new(5, 3), [3, 3, 3, 3, 3])
     End
 
     It causes an error when the list is empty

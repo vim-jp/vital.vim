@@ -60,7 +60,7 @@ new({size}, {f})			*Vital.Data.List.new()*
 <
 	Basically this function is equivalent to the following one line.
 >
-	new(size, f) == map(range(0, size - 1), f)
+	new(size, f) == map(range(a:size), a:f)
 <
 
 
