@@ -3,6 +3,10 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:new(size, f) abort
+  return map(range(0, a:size - 1), a:f)
+endfunction
+
 function! s:pop(list) abort
   return remove(a:list, -1)
 endfunction

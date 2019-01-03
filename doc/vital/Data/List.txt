@@ -48,6 +48,22 @@ INTERFACE				*Vital.Data.List-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Data.List-functions*
 
+new({size}, {f})			*Vital.Data.List.new()*
+	Create a new |List| with given arguments. The given |Funcref| {f} is
+	called for {size} times with index.
+>
+	s:L.new(3, { i -> i * 2 })
+	"=> [0, 2, 4]
+
+	s:L.new(4, { -> 'hello' })
+	"=> ['hello', 'hello', 'hello', 'hello']
+<
+	Basically this function is equivalent to the following one line.
+>
+	new(size, f) == map(range(0, size - 1), f)
+<
+
+
 pop({list})				*Vital.Data.List.pop()*
 	Removes the last element from |List| {list} and returns the element,
 	as if the {list} is a stack.

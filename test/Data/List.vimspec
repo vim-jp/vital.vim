@@ -47,6 +47,17 @@ Describe Data.List
     delfunction Even
   End
 
+  Describe .new()
+    It createa a new list with calling given {f} for {size} times.
+      Assert Equals(List.new(3, { i -> i * 2 }), [0, 2, 4])
+      Assert Equals(List.new(4, { -> 'hello' }), ['hello', 'hello', 'hello', 'hello'])
+    End
+
+    It causes an error when the list is empty
+      Throw /^Vim(\w*):E727:/ List.new(-1, { -> 3 })
+    End
+  End
+
   Describe .pop()
     It removes the last element from a list and returns that element
       let a = [1,2,3]
