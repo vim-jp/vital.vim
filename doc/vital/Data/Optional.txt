@@ -40,6 +40,23 @@ optional value.
 	  let s:cache = O.some(data)
 	  return data
 	endfunction
+
+
+	function! GetInput()
+		" Returns O.some(an input),
+		" or returns O.none() if <C-c>
+	endfunction
+
+	function! GetCommandIfExists(arg)
+		" Returns the detail if `arg` is an existent command
+	endfunction
+
+	" Show the command detail with an input
+	O.map(GetInput(), { input ->
+		\ O.map(GetCommandIfExists(input), { command ->
+			\ execute('echo ' . command)
+		\ }
+	\ })
 <
 
 
@@ -50,6 +67,12 @@ TERM					*Vital.Data.Optional-term*
 	{optional} is a optional value.  It is a |List| of 0 or 1 element
 	actually.
 
+{none}					*Vital.Data.Optional-term-none*
+	An optional value as invalid value.
+
+{some}					*Vital.Data.Optional-term-some*
+	An optional value which contains a value as valid value.
+
 
 
 ==============================================================================
@@ -59,10 +82,11 @@ INTERFACE				*Vital.Data.Optional-interface*
 FUNCTIONS				*Vital.Data.Optional-functions*
 
 none()					*Vital.Data.Optional.none()*
-	Returns an optional value as invalid value.
+	Returns an optional value as invalid value ({none}).
 
 some({value})				*Vital.Data.Optional.some()*
-	Returns an optional value which contains {value} as valid value.
+	Returns an optional value which contains {value} as valid value
+	({some}).
 
 new({value}, [{null}])				*Vital.Data.Optional.new()*
 	Same as some({value}) usually. If the given {value} is |v:null|, it
@@ -193,6 +217,9 @@ bind({func}, {args}...)			*Vital.Data.Optional.bind()*
 	echo O.empty(result) " returns 1 because 10 / 0 occurs an error
 <
 
+flat_map({func}, {arg})		*vital.Data.Optional.flat_map()*
+	Simular to |vital.Data.Optional.bind()| for the single argument.
+
 flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
 	Flattens a nested from optional values by default.
 >
@@ -220,6 +247,51 @@ flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
 		\ == O.some(O.some(10))
 	echo O.flatten(O.some(O.none()), 0)
 		\ == O.none()
+<
+
+optional({optional}, {if_some}, {if_none})
+					*vital.Data.Optional.optional()*
+	Extracts {optional}. if the {optional} is a {some}, this maps {if_some}
+	to the {some}. if the {optional} is a {none}, this returns {if_none}'s
+	result.
+>
+	echo O.optional(O.some(10),
+	  \ { x -> string(x) },
+	  \ { -> "=)" }
+	\ )
+	" 10
+
+	echo O.optional(O.none(),
+	  \ { x -> string(x) },
+	  \ { -> "=)" }
+	\ )
+	" =)
+<
+
+first({optional_list})			*Vital.Data.Optional.first()*
+	Finds a first {some}, or {none} if no {some} is found.
+>
+	echo O.first([O.none(), O.some('sugar'), O.some('sweat'), O.none()])
+	" O.some('sugar')
+
+	echo O.first([O.none()])
+	" O.none()
+
+	echo O.first([])
+	" O.none()
+<
+
+last({optional_list})			*Vital.Data.Optional.last()*
+	Finds a last {some}, or {none} if no {some} is found.
+>
+	echo O.last([O.none(), O.some('sugar'), O.some('sweat'), O.none()])
+	" O.some('sweat')
+
+	echo O.last([O.none()])
+	" O.none()
+
+	echo O.last([])
+	" O.none()
 <
 
 echo({optional}, [{highlight-group}])	*Vital.Data.Optional.echo()*

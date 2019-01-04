@@ -159,6 +159,27 @@ function! s:_flatten_fully(x) abort
   return s:_flatten_fully(s:get(a:x))
 endfunction
 
+function! s:flat_map(f, x) abort
+  return s:bind(a:f, a:x)
+endfunction
+
+function! s:optional(x, f, g) abort
+  return s:get_or(s:map(a:x, a:f), a:g)
+endfunction
+
+function! s:first(xs) abort
+    for x in a:xs
+      if s:exists(x)
+        return x
+      endif
+    endfor
+    return s:none()
+endfunction
+
+function! s:last(xs) abort
+    return s:first(reverse(copy(a:xs)))
+endfunction
+
 function! s:_echo(x) abort
   if s:empty(a:x)
     echo 'None'

@@ -288,7 +288,10 @@ Describe Data.Optional
         \ O.none())
     End
 
-    It fully removes nests from {optional} with 0
+    It removes nests from {optional} with specified limit
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(O.some(42)))), 2),
+        \ O.some(O.some(42)))
       Assert Equals(
         \ O.flatten(O.none(), 0),
         \ O.none())
@@ -305,15 +308,87 @@ Describe Data.Optional
         \ O.flatten(O.some(O.some(O.some(O.none()))), 0),
         \ O.none())
     End
+  End
 
-    It removes nests from {optional} with specified limit
+  Describe .flat_map()
+    Before all
+      function! Pure(x) abort
+        let O = vital#vital#new().import('Data.Optional')
+        return O.some(a:x)
+      endfunction
+    End
+
+    After all
+      delfunction Pure
+    End
+
+    It is simular to .bind()
       Assert Equals(
-        \ O.flatten(O.some(O.some(O.some(O.some(42)))), 2),
-        \ O.some(O.some(42)))
+        \ O.bind('Pure', O.some(10)),
+        \ O.some(10))
+    End
+  End
+
+  Describe .flatten()
+    It returns flattened optional value
+      let o = O.none()
+      let result = O.flatten(o)
+      Assert True(O.is_optional(result))
+      Assert True(O.empty(result))
 
       Assert Equals(
         \ O.flatten(O.some(O.some(O.some(42))), 1000),
         \ O.some(42))
+    End
+  End
+
+  Describe .optional()
+    Before all
+      function! Smile() abort
+        return "=)"
+      endfunction
+    End
+
+    After all
+      delfunction Smile
+    End
+
+    It extracts {optional}
+      Assert Equals(
+        \ O.optional(O.some(10), function('string'), function('Smile')),
+        \ "10")
+
+      Assert Equals(
+        \ O.optional(O.none(), function('string'), function('Smile')),
+        \ "=)")
+    End
+  End
+
+  Describe .first()
+    It finds the first {some} from a list of optional values
+      Assert Equal(
+        \ O.first([O.none(), O.some('sugar'), O.some('sweet'), O.none()]),
+        \ O.some('sugar')
+      \ )
+    End
+
+    It returns {none} if no {some} is found
+      Assert Equal(O.first([O.none()]), O.none())
+      Assert Equal(O.first([]), O.none())
+    End
+  End
+
+  Describe .last()
+    It finds the last {some} from a list of optional values
+      Assert Equal(
+        \ O.last([O.none(), O.some('sugar'), O.some('sweet'), O.none()]),
+        \ O.some('sweet')
+      \ )
+    End
+
+    It returns {none} if no {some} is found
+      Assert Equal(O.last([O.none()]), O.none())
+      Assert Equal(O.last([]), O.none())
     End
   End
 
