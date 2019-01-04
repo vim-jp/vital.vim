@@ -13,7 +13,11 @@ let s:sfile = tr(expand('<sfile>:p'), '\', '/')
 function! s:_vital_loaded(V) abort
   if exists('*luaeval')
     execute printf('lua vital_context = "%s"', s:sfile)
-    call luaeval('dofile(_A)', s:luafile_of(s:sfile))
+    if has('patch-8.1.0672')
+      call luaeval('nil,dofile(_A)', s:luafile_of(s:sfile))
+    else
+      call luaeval('0,dofile(_A)', s:luafile_of(s:sfile))
+    endif
   endif
 endfunction
 

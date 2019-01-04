@@ -87,11 +87,6 @@ function! s:execute(args, options) abort
             \ cmdline
             \)
     endif
-    if v:version < 704 || (v:version == 704 && !has('patch122'))
-      " {cmdline} of system() before Vim 7.4.122 is not converted so convert
-      " it manually from &encoding to 'char'
-      let cmdline = s:String.iconv(cmdline, &encoding, 'char')
-    endif
     let args = [cmdline] + (s:Prelude.is_string(a:options.input) ? [a:options.input] : [])
     let output = call('system', args)
     if s:Prelude.is_windows()
@@ -100,13 +95,10 @@ function! s:execute(args, options) abort
       let output = substitute(output, '\s\n$', '\n', '')
     endif
     " NOTE:
-    " Vim 7.4 always return exit_status:0 for background process so mimic
-    let status = a:options.background ? 0 : v:shell_error
-    " NOTE:
     " status, output are COMMON information
     " cmdline is an EXTRA information
     return {
-          \ 'status': status,
+          \ 'status': v:shell_error,
           \ 'output': output,
           \ 'cmdline': cmdline,
           \}

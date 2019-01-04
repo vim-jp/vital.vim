@@ -361,79 +361,73 @@ Describe Vim.Python
   End
 
   Describe .eval_expr()
-    if v:version >= 704 || (v:version == 703 && has('patch601'))
-      Before
-        let expr = [
-              \ 'max(',
-              \ '  sys.version_info[0],',
-              \ '  0',
-              \ ')',
-              \]
+    Before
+      let expr = [
+            \ 'max(',
+            \ '  sys.version_info[0],',
+            \ '  0',
+            \ ')',
+            \]
+    End
+    if s:is_python2_enabled && s:is_python3_enabled
+      It evaluate a python expr when 0 is specified [+python/+python3]
+        Assert Equals(Python.eval_expr(expr, 0), 2)
       End
-      if s:is_python2_enabled && s:is_python3_enabled
-        It evaluate a python expr when 0 is specified [+python/+python3]
-          Assert Equals(Python.eval_expr(expr, 0), 2)
-        End
-        It executes a python code when 2 is specified [+python/+python3]
-          Assert Equals(Python.eval_expr(expr, 2), 2)
-        End
-        It execute a python code when 3 is specified [+python/+python3]
-          Assert Equals(Python.eval_expr(expr, 3), 3)
-        End
-        It throws an exception if value which is not 0, 2, or 3 is specified
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
-        End
-      elseif s:is_python2_enabled
-        It evaluate a python expr when 0 is specified [+python/-python3]
-          Assert Equals(Python.eval_expr(expr, 0), 2)
-        End
-        It execute a python code when 2 is specified [+python/-python3]
-          Assert Equals(Python.eval_expr(expr, 2), 2)
-        End
-        It throws an exception if 3 is specified [+python/-python3]
-          Throw /+python3 is required/ Python.eval_expr(expr, 3)
-        End
-        It throws an exception if value which is not 0, 2, or 3 is specified
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
-        End
-      elseif s:is_python3_enabled
-        It evaluate a python expr when 0 is specified [-python/+python3]
-          Assert Equals(Python.eval_expr(expr, 0), 3)
-        End
-        It throws an exception if 2 is specified [-python/+python3]
-          Throw /+python is required/ Python.eval_expr(expr, 2)
-        End
-        It executes a python code when 3 is specified [-python/+python3]
-          Assert Equals(Python.eval_expr(expr, 3), 3)
-        End
-        It throws an exception if value which is not 0, 2, or 3 is specified
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
-        End
-      else
-        It throws an exception if 0 is specified [-python/-python3]
-          Throw /+python and\/or +python3 is required/ Python.eval_expr(expr, 0)
-        End
-        It throws an exception if 2 is specified [-python/-python3]
-          Throw /+python is required/ Python.eval_expr(expr, 2)
-        End
-        It throws an exception if 3 is specified [-python/-python3]
-          Throw /+python3 is required/ Python.eval_expr(expr, 3)
-        End
-        It throws an exception if value which is not 0, 2, or 3 is specified
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
-          Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
-        End
-      endif
+      It executes a python code when 2 is specified [+python/+python3]
+        Assert Equals(Python.eval_expr(expr, 2), 2)
+      End
+      It execute a python code when 3 is specified [+python/+python3]
+        Assert Equals(Python.eval_expr(expr, 3), 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
+      End
+    elseif s:is_python2_enabled
+      It evaluate a python expr when 0 is specified [+python/-python3]
+        Assert Equals(Python.eval_expr(expr, 0), 2)
+      End
+      It execute a python code when 2 is specified [+python/-python3]
+        Assert Equals(Python.eval_expr(expr, 2), 2)
+      End
+      It throws an exception if 3 is specified [+python/-python3]
+        Throw /+python3 is required/ Python.eval_expr(expr, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
+      End
+    elseif s:is_python3_enabled
+      It evaluate a python expr when 0 is specified [-python/+python3]
+        Assert Equals(Python.eval_expr(expr, 0), 3)
+      End
+      It throws an exception if 2 is specified [-python/+python3]
+        Throw /+python is required/ Python.eval_expr(expr, 2)
+      End
+      It executes a python code when 3 is specified [-python/+python3]
+        Assert Equals(Python.eval_expr(expr, 3), 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
+      End
     else
-      It throws an exception in Vim 7.3.600 or earlier
-        Throw /eval_expr() requires Vim 7\.3\.601 or later/ Python.eval_expr('')
+      It throws an exception if 0 is specified [-python/-python3]
+        Throw /+python and\/or +python3 is required/ Python.eval_expr(expr, 0)
+      End
+      It throws an exception if 2 is specified [-python/-python3]
+        Throw /+python is required/ Python.eval_expr(expr, 2)
+      End
+      It throws an exception if 3 is specified [-python/-python3]
+        Throw /+python3 is required/ Python.eval_expr(expr, 3)
+      End
+      It throws an exception if value which is not 0, 2, or 3 is specified
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, 1)
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '2')
+        Throw /"version" requires to be 0, 2, or 3/ Python.eval_expr(expr, '3')
       End
     endif
   End

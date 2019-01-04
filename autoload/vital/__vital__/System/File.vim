@@ -17,10 +17,6 @@ let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
-" As of 7.4.122, the system()'s 1st argument is converted internally by Vim.
-" Note that Patch 7.4.122 does not convert system()'s 2nd argument and
-" return-value. We must convert them manually.
-let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 
 " Open a file.
 function! s:open(filename) abort
@@ -29,9 +25,6 @@ function! s:open(filename) abort
   " Detect desktop environment.
   if s:is_windows
     " For URI only.
-    if s:need_trans
-      let filename = iconv(filename, &encoding, 'char')
-    endif
     " Note:
     "   # and % required to be escaped (:help cmdline-special)
     silent execute printf(
@@ -117,13 +110,6 @@ elseif s:is_windows
     let dest = substitute(dest, '[/\\]\+', '\', 'g')
     " src must not have trailing '\'.
     let src  = substitute(src, '\\$', '', 'g')
-
-    " All characters must be encoded to system encoding.
-    if s:need_trans
-      let src  = iconv(src, &encoding, 'char')
-      let dest = iconv(dest, &encoding, 'char')
-    endif
-
     let cmd_exe = (&shell =~? 'cmd\.exe$' ? '' : 'cmd /c ')
     call system(cmd_exe . 'move /y "' . src  . '" "' . dest . '"')
     return !v:shell_error
@@ -164,16 +150,8 @@ elseif s:is_windows
     if !s:_has_copy_dir_exe()
       return 0
     endif
-    let [src, dest] = [a:src, a:dest]
-    let src  = s:_shellescape_robocopy(src)
-    let dest = s:_shellescape_robocopy(dest)
-
-    " All characters must be encoded to system encoding.
-    if s:need_trans
-      let src  = iconv(src, &encoding, 'char')
-      let dest = iconv(dest, &encoding, 'char')
-    endif
-
+    let src  = s:_shellescape_robocopy(a:src)
+    let dest = s:_shellescape_robocopy(a:dest)
     call system('robocopy /e "' . src . '" "' . dest . '"')
     return v:shell_error <# 8
   endfunction
@@ -266,13 +244,6 @@ elseif s:is_windows
     let [src, dest] = [a:src, a:dest]
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
-
-    " All characters must be encoded to system encoding.
-    if s:need_trans
-      let src  = iconv(src, &encoding, 'char')
-      let dest = iconv(dest, &encoding, 'char')
-    endif
-
     let cmd_exe = (&shell =~? 'cmd\.exe$' ? '' : 'cmd /c ')
     call system(cmd_exe . 'copy /y "' . src . '" "' . dest . '"')
     return !v:shell_error
@@ -306,47 +277,14 @@ endfunction
 
 
 " Delete a file/directory.
-if has('patch-7.4.1128')
-  function! s:rmdir(path, ...) abort
-    let flags = a:0 ? a:1 : ''
-    let delete_flags = flags =~# 'r' ? 'rf' : 'd'
-    let result = delete(a:path, delete_flags)
-    if result == -1
-      throw 'vital: System.File: rmdir(): cannot delete "' . a:path . '"'
-    endif
-  endfunction
-
-elseif s:is_unix
-  function! s:rmdir(path, ...) abort
-    let flags = a:0 ? a:1 : ''
-    let cmd = flags =~# 'r' ? 'rm -rf' : 'rmdir'
-    let ret = system(cmd . ' ' . shellescape(a:path))
-    if v:shell_error
-      let ret = iconv(ret, 'char', &encoding)
-      throw 'vital: System.File: rmdir(): ' . substitute(ret, '\n', '', 'g')
-    endif
-  endfunction
-
-elseif s:is_windows
-  function! s:rmdir(path, ...) abort
-    let path = a:path
-    let flags = a:0 ? a:1 : ''
-    " All characters must be encoded to system encoding.
-    if s:need_trans
-      let path  = iconv(path, &encoding, 'char')
-    endif
-
-    " 'f' flag does not make sense.
-    let cmd = 'rmdir /Q'
-    let cmd .= flags =~# 'r' ? ' /S' : ''
-    call system(cmd . ' "' . path . '"')
-    return !v:shell_error
-  endfunction
-else
-  function! s:rmdir(...) abort
-    throw 'vital: System.File: rmdir(): your platform is not supported'
-  endfunction
-endif
+function! s:rmdir(path, ...) abort
+  let flags = a:0 ? a:1 : ''
+  let delete_flags = flags =~# 'r' ? 'rf' : 'd'
+  let result = delete(a:path, delete_flags)
+  if result == -1
+    throw 'vital: System.File: rmdir(): cannot delete "' . a:path . '"'
+  endif
+endfunction
 
 
 let &cpo = s:save_cpo

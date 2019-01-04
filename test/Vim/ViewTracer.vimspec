@@ -10,9 +10,6 @@ Describe Vim.ViewTracer
   End
 
   Before
-    if !(703 < v:version || (v:version == 703 && has('patch893')))
-      Skip Vim.ViewTracer requires Vim 7.3.893 or later
-    endif
     call s:clear_tab_and_windows()
   End
 

@@ -1,13 +1,3 @@
-" Skip vital.vimspec for Vim 7.3 on Windows (APPVEYOR environment) because of
-" mysterious error in that environment.
-" Note that it only occurs in environment described above and it's only
-" related with :Vitalize, so I, haya14busa, assume the error won't occur in
-" the user environment.
-" ref: https://github.com/vim-jp/vital.vim/pull/415#issuecomment-207368559
-if exists('$APPVEYOR') && v:version < 704
-  finish
-endif
-
 Describe vital
 
   Before all

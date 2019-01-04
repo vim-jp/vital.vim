@@ -4,24 +4,25 @@ Describe Data.Optional
   End
 
   Describe .none()
-    It returns invalid optional value
+    It returns {none}
       let o = O.none()
+      Assert True(O.is_optional(o))
       Assert True(O.empty(o))
       Assert False(O.exists(o))
-      Assert True(O.is_optional(o))
     End
   End
 
   Describe .some()
-    It returns valid optional value from the argument
+    It returns {some} from the argument
       let o = O.some(42)
+      Assert True(O.is_optional(o))
       Assert False(O.empty(o))
       Assert True(O.exists(o))
     End
   End
 
   Describe .new()
-    It returns valid optional value from usual arguments
+    It returns {some} from usual arguments
       if exists('v:null')
         let o = O.new(42)
         Assert False(O.empty(o))
@@ -39,7 +40,7 @@ Describe Data.Optional
       endif
     End
 
-    It returns invalid optional value from special arguments
+    It returns {none} from special arguments
       if exists('v:null')
         let o = O.new(v:null)
         Assert True(O.empty(o))
@@ -65,33 +66,30 @@ Describe Data.Optional
   End
 
   Describe .is_optional()
-    It checks the argument is an optional value
-      let o = O.none()
-      let o2 = O.some(42)
-
-      Assert True(O.is_optional(o))
-      Assert True(O.is_optional(o2))
+    It checks the argument is {some} or {none}
+      Assert True(O.is_optional(O.none()))
+      Assert True(O.is_optional(O.some(42)))
       Assert False(O.is_optional(42))
     End
   End
 
   Describe .empty()
-    It checks the optional value is invalid
-      let o = O.none()
-      let o2 = O.some(42)
+    It returns true for {none}
+      Assert True(O.empty(O.none()))
+    End
 
-      Assert True(O.empty(o))
-      Assert False(O.empty(o2))
+    It returns false for {some}
+      Assert False(O.empty(O.some(42)))
     End
   End
 
   Describe .exists()
-    It checks the optional value is valid
-      let o = O.none()
-      let o2 = O.some(42)
+    It returns true for {some}
+      Assert True(O.exists(O.some(42)))
+    End
 
-      Assert False(O.exists(o))
-      Assert True(O.exists(o2))
+    It returns false for {none}
+      Assert False(O.exists(O.none()))
     End
   End
 
@@ -106,60 +104,54 @@ Describe Data.Optional
       delfunction Negative1
     End
 
-    It returns the content of optional value
-      let o = O.some(42)
-      Assert Equals(O.get_or(o, function('Negative1')), 42)
+    It returns the content of {some}
+      Assert Equals(O.get_or(O.some(42), function('Negative1')), 42)
     End
 
-    It returns the second argument result as alternative if the first argument is invalid
-      let o = O.none()
-      Assert Equals(O.get_or(o, function('Negative1')), -1)
+    It returns the alternative of {none}
+      Assert Equals(O.get_or(O.none(), function('Negative1')), -1)
     End
   End
 
   Describe .get()
-    It returns the content of optional value
-      let o = O.some(42)
-      Assert Equals(O.get(o), 42)
+    It returns the content of {some}
+      Assert Equals(O.get(O.some(42)), 42)
     End
 
-    It throws an exception if the value is invalid
-      let o = O.none()
-      Throws /^vital: Data.Optional:/ O.get(o)
+    It throws an exception if the value is {none}
+      Throws /^vital: Data.Optional:/ O.get(O.none())
     End
   End
 
   Describe .get_unsafe()
-    It accesses to the content of optional value directly
-      let o = O.some(42)
-      Assert Equals(O.get_unsafe(o), 42)
+    It accesses to the content of {some} directly
+      Assert Equals(O.get_unsafe(O.some(42)), 42)
     End
 
-    It causes internal error
-      let o = O.none()
-      Throws /.*/ O.get_usafe(o)
+    It causes internal error with {none}
+      Throws /.*/ O.get_usafe(O.none())
     End
   End
 
   Describe .set()
-    It sets a value to the optional value
+    It sets a value to {optional}
       let o = O.none()
       call O.set(o, 42)
 
       Assert True(O.exists(o))
-      Assert Equals(O.get(o), 42)
+      Assert Equals(o, O.some(42))
     End
   End
 
   Describe .unset()
-    It removes a value from the optional value
+    It replaces the inside of {some} by {none}
       let o = O.some(42)
       call O.unset(o)
 
       Assert True(O.empty(o))
     End
 
-    It does nothing when the optional value is already invalid
+    It does nothing for {none}
       let o = O.none()
       call O.unset(o)
 
@@ -168,181 +160,160 @@ Describe Data.Optional
   End
 
   Describe .has()
-    It checks the type of content of the value
-      let o1 = O.some(42)
-      let o2 = O.some("aaa")
-      let o3 = O.some(3.14)
+    It checks the type of {some}'s value is the specified type
+      let int = O.some(42)
+      let str = O.some('aaa')
+      let float = O.some(3.14)
 
-      Assert True(O.has(o1, type(0)))
-      Assert True(O.has(o2, type('')))
-      Assert True(O.has(o3, type(1.0)))
+      Assert True(O.has(int, type(0)))
+      Assert True(O.has(str, type('')))
+      Assert True(O.has(float, type(1.0)))
 
-      Assert False(O.has(o1, type('')))
-      Assert False(O.has(o2, type(1.0)))
-      Assert False(O.has(o3, type(0)))
-    End
-  End
-
-  Describe .apply()
-    Before all
-      function! TestFunc(...)
-        return 1
-      endfunction
-    End
-
-    It applies optional values to the function if all values are valid
-      let o1 = O.some(42)
-      let o2 = O.some("aaa")
-      let o3 = O.some(3.14)
-
-      let result1 = O.apply('TestFunc', o1, o2, o3)
-      Assert True(O.exists(result1))
-      Assert Equals(O.get(result1), 1)
-
-      let result2 = O.apply('TestFunc', O.apply('TestFunc', o1, o2), O.apply('TestFunc', o3))
-      Assert True(O.exists(result2))
-      Assert Equals(O.get(result2), 1)
-    End
-
-    It doesn't apply optional values to the function if any value is invalid
-      let o1 = O.some(42)
-      let o3 = O.some(3.14)
-
-      let result = O.apply('TestFunc', o1, O.none(), o3, O.none())
-      Assert True(O.empty(result))
-    End
-
-    It throws an exception when non-optional value is passed
-      Throws /^vital: Data.Optional:/ O.apply('TestFunc', O.some(42), O.none(), "non-optional value")
+      Assert False(O.has(int, type('')))
+      Assert False(O.has(str, type(1.0)))
+      Assert False(O.has(float, type(0)))
     End
   End
 
   Describe .map()
     Before all
-      function! Succ(x)
+      function! Succ(x) abort
         return a:x + 1
       endfunction
-
-      function! Append(x)
-        return 'It is ' . a:x 
-      endfunction
-
-      function! SayPoi(x)
-        return {'say': a:x.say . 'poi'}
-      endfunction
-    End
-
-    It maps content of Optional if Optional has an element
-      Assert Equal(O.map(O.some(1), function('Succ')), O.some(2))
-      Assert Equal(O.map(O.some('me'), function('Append')), O.some('It is me'))
-      Assert Equal(O.map(O.some({'say': 'hi'}), function('SayPoi')), O.some({'say': 'hipoi'}))
-    End
-
-    It does nothing if Optional doesn't have element
-      Assert Equal(O.map(O.none(), function('Succ')), O.none())
-      Assert Equal(O.map(O.none(), function('Append')), O.none())
-      Assert Equal(O.map(O.none(), function('SayPoi')), O.none())
     End
 
     After all
       delfunction Succ
-      delfunction Append
-      delfunction SayPoi
+    End
+
+    It applies {some} to the function
+      Assert Equal(
+        \ O.map(O.some(1), function('Succ')),
+        \ O.some(2))
+    End
+
+    It doesn't apply {none} to the function
+      Assert Equal(
+        \ O.map(O.none(), function('Succ')),
+        \ O.none())
+    End
+  End
+
+  Describe .apply()
+    Before all
+      function! Plus(x, y) abort
+        return a:x + a:y
+      endfunction
+    End
+
+    After all
+      delfunction Plus
+    End
+
+    It applies one or more {some} with no {none} to the function
+      Assert Equals(
+        \ O.apply('Plus', O.some(10), O.some(20)),
+        \ O.some(30))
+    End
+
+    It doesn't apply one or more {none} to the function
+      Assert Equals(
+        \ O.apply('Plus', O.some(42), O.none()),
+        \ O.none())
+    End
+
+    It throws an exception when non-optional value is passed
+      Throws /^vital: Data.Optional:/ O.apply('Plus', O.some(42), "non-optional value")
     End
   End
 
   Describe .bind()
     Before all
-      function! Div(a, b)
-        " Note:
-        " This is workaround because 'O' is defined in outer 'Before all'
-        " and it can't be referred here.
+      function! Pure(x) abort
         let O = vital#vital#new().import('Data.Optional')
+        return O.some(a:x)
+      endfunction
 
-        if a:b == 0
-          return O.none()
-        else
-          return O.some(a:a / a:b)
-        endif
+      function! SafeDiv(a, b) abort
+        let O = vital#vital#new().import('Data.Optional')
+        return (a:b == 0)
+          \ ? O.none()
+          \ : O.some(a:a / a:b)
       endfunction
     End
 
-    It applies optional values to monadic function if all values are valid
-      let x = O.some(42)
-      let y = O.some(21)
-      let z = O.some(0)
-
-      let result = O.bind('Div', x, y)
-      Assert True(O.exists(result))
-      Assert Equals(O.get(result), 42 / 21)
-
-      let result = O.bind('Div', x, z)
-      Assert True(O.empty(result))
-
-      let result = O.bind('Div', O.bind('Div', x, O.some(2)), y)
-      Assert True(O.exists(result))
-      Assert Equals(O.get(result), 42 / 2 / 21)
+    After all
+      delfunction Pure
+      delfunction SafeDiv
+      unlet O
     End
 
-    It doesn't apply optional values to the function if any value is invalid
-      let x = O.some(42)
+    It applies one or more {some} with no {none} to the monadic function
+      Assert Equals(
+        \ O.bind('Pure', O.some(42)),
+        \ O.some(42))
 
-      let result = O.bind('Div', x, O.none())
-      Assert True(O.empty(result))
+      Assert Equals(
+        \ O.bind('SafeDiv', O.some(10), O.some(5)),
+        \ O.some(2))
+    End
 
-      let result = O.bind('Div', O.some(42), O.none())
-      Assert True(O.empty(result))
-
-      let result = O.bind('Div', O.bind('Div', x, O.some(2)), O.none())
-      Assert True(O.empty(result))
-
-      let result = O.bind('Div', O.bind('Div', O.none(), O.some(2)), x)
-      Assert True(O.empty(result))
+    It doesn't apply one or more {none} to the function
+      Assert Equals(
+        \ O.bind('Pure', O.none()),
+        \ O.none())
     End
 
     It throws an exception when non-optional value is passed
-      Throws /^vital: Data.Optional:/ O.bind('Div', O.some(42), O.none(), "non-optional value")
+      Throws /^vital: Data.Optional:/ O.bind('SafeDiv', O.some(42), O.none(), "non-optional value")
     End
   End
 
   Describe .flatten()
-    It returns flattened optional value
-      let o = O.none()
-      let result = O.flatten(o)
-      Assert True(O.is_optional(result))
-      Assert True(O.empty(result))
+    It removes a nest from {optional} by default
+      Assert Equal(
+        \ O.flatten(O.some(O.some(O.some(10)))),
+        \ O.some(O.some(10)))
 
-      let o = O.some(42)
-      let result = O.flatten(o)
-      Assert True(O.is_optional(result))
-      Assert True(O.exists(result))
-      Assert Equals(O.get(result), 42)
+      Assert Equal(
+        \ O.flatten(O.some(O.some(10))),
+        \ O.some(10))
 
-      let o = O.some(O.some(O.some(42)))
-      let result = O.flatten(o)
-      Assert True(O.is_optional(result))
-      Assert True(O.exists(result))
-      Assert Equals(O.get(result), 42)
+      Assert Equal(
+        \ O.flatten(O.some(O.none())),
+        \ O.none())
 
-      let o = O.some(O.some(O.some(O.none())))
-      let result = O.flatten(o)
-      Assert True(O.is_optional(result))
-      Assert True(O.empty(result))
+      Assert Equal(
+        \ O.flatten(O.none()),
+        \ O.none())
     End
 
-    It can flatten optional value with specified limit
-      let o = O.some(O.some(O.some(O.some(42))))
-      let result = O.flatten(o, 2)
-      Assert True(O.is_optional(result))
-      Assert True(O.is_optional(O.get(result)))
-      Assert True(!O.is_optional(O.get(O.get(result))))
-      Assert Equals(O.get(O.get(result)), 42)
+    It fully removes nests from {optional} with 0
+      Assert Equals(
+        \ O.flatten(O.none(), 0),
+        \ O.none())
 
-      let o = O.some(O.some(O.some(42)))
-      let result = O.flatten(o, 1000)
-      Assert True(O.is_optional(result))
-      Assert True(!O.is_optional(O.get(result)))
-      Assert Equals(O.get(result), 42)
+      Assert Equals(
+        \ O.flatten(O.some(42), 0),
+        \ O.some(42))
+
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(42))), 0),
+        \ O.some(42))
+
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(O.none()))), 0),
+        \ O.none())
+    End
+
+    It removes nests from {optional} with specified limit
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(O.some(42)))), 2),
+        \ O.some(O.some(42)))
+
+      Assert Equals(
+        \ O.flatten(O.some(O.some(O.some(42))), 1000),
+        \ O.some(42))
     End
   End
 

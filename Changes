@@ -1,3 +1,7 @@
+4fc7b6ea0ca8d7f1da1b08e49268e721901f55d9
+	Modules: Data.Optional
+	Data.Optional.flatten will extract only once.
+	The origin moves to .deep_flatten().
 3d60a4ce079fd0d4e123cbcea787a1769cab7572
 	Modules: Data.Optional
 	Data.Optional.get_or will expect a function as {alternative}.
