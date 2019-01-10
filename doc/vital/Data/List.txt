@@ -49,7 +49,7 @@ INTERFACE				*Vital.Data.List-interface*
 FUNCTIONS				*Vital.Data.List-functions*
 
 new({size}, {f})			*Vital.Data.List.new()*
-	Create a new |List| with given arguments. The given |Funcref| {f} is
+	Creates a new |List| with given arguments. The given |Funcref| {f} is
 	called for {size} times with index.
 >
 	s:L.new(3, { i -> i * 2 })
