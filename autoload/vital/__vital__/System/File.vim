@@ -111,7 +111,7 @@ elseif s:is_windows
     " src must not have trailing '\'.
     let src  = substitute(src, '\\$', '', 'g')
     let cmd_exe = (&shell =~? 'cmd\.exe$' ? '' : 'cmd /c ')
-    call system(cmd_exe . 'move /y ' . src  . ' ' . dest)
+    call system(cmd_exe . 'move /y "' . src  . '" "' . dest . '"')
     return !v:shell_error
   endfunction
 else
@@ -152,7 +152,7 @@ elseif s:is_windows
     endif
     let src  = s:_shellescape_robocopy(a:src)
     let dest = s:_shellescape_robocopy(a:dest)
-    call system('robocopy /e ' . src . ' ' . dest)
+    call system('robocopy /e "' . src . '" "' . dest . '"')
     return v:shell_error <# 8
   endfunction
   function! s:_shellescape_robocopy(path) abort
@@ -245,7 +245,7 @@ elseif s:is_windows
     let src  = substitute(src, '/', '\', 'g')
     let dest = substitute(dest, '/', '\', 'g')
     let cmd_exe = (&shell =~? 'cmd\.exe$' ? '' : 'cmd /c ')
-    call system(cmd_exe . 'copy /y ' . src . ' ' . dest)
+    call system(cmd_exe . 'copy /y "' . src . '" "' . dest . '"')
     return !v:shell_error
   endfunction
 else
