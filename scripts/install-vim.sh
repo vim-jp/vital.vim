@@ -15,8 +15,6 @@ case "${TRAVIS_OS_NAME}" in
 		make install
 		;;
 	osx)
-		brew update
-		brew install macvim
 		# Instead of --with-override-system-vim, manually link the executable because
 		# it prevents MacVim installation with a bottle.
 		ln -fs "$(brew --prefix macvim)/bin/mvim" "/usr/local/bin/vim"
