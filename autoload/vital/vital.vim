@@ -195,11 +195,7 @@ function! s:_get_file_by_func_name(name) abort
   let lines = split(body, "\n")
   let signature = matchstr(lines[0], '^\s*\zs.*')
   let file = matchstr(lines[1], '^\t\%(Last set from\|.\{-}:\)\s*\zs.*$')
-  let file = substitute(file, '[/\\]\+', '/', 'g')
-  " let arguments = split(matchstr(signature, '(\zs.*\ze)'), '\s*,\s*')
-  " let has_extra_arguments = get(arguments, -1, '') ==# '...'
-  " let arity = len(arguments) - (has_extra_arguments ? 1 : 0)
-  return file
+  return substitute(file, '[/\\]\+', '/', 'g')
 endfunction
 
 " s:_get_module() returns module object wihch has all script local functions.
