@@ -158,14 +158,14 @@ function! s:_import(name) abort dict
       call module._vital_loaded(vital#{s:plugin_name}#new())
     catch
       unlet s:loaded[a:name]
-      throw 'vital: fail to call ._vital_loaded(): ' . v:exception . " from:\n" . s:format_throwpoint(v:throwpoint)
+      throw 'vital: fail to call ._vital_loaded(): ' . v:exception . " from:\n" . s:_format_throwpoint(v:throwpoint)
     endtry
   endif
   return copy(s:loaded[a:name])
 endfunction
 let s:Vital._import = function('s:_import')
 
-function! s:format_throwpoint(throwpoint) abort
+function! s:_format_throwpoint(throwpoint) abort
   let funcs = []
   let stack = matchstr(a:throwpoint, '^function \zs.*\ze, line \d\+$')
   for line in split(stack, '\.\.')
@@ -179,13 +179,13 @@ function! s:format_throwpoint(throwpoint) abort
     if !empty(sid)
       let name = printf('<SNR>%d_%s', sid, name)
     endif
-    let file = s:get_file_by_func_name(name)
+    let file = s:_get_file_by_func_name(name)
     call add(funcs, printf('function %s(...)%s Line:%d (%s)', name, attr, lnum, file))
   endfor
   return join(funcs, "\n")
 endfunction
 
-function! s:get_file_by_func_name(name) abort
+function! s:_get_file_by_func_name(name) abort
   try
     redir => body
     silent execute 'verbose function' a:name
