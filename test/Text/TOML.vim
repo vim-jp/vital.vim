@@ -108,6 +108,16 @@ function! s:suite.__parse__()
 
       call s:assert.same(data.hoge, 'The quick brown fox jumps over the lazy dog.')
     endfunction
+
+    function! multiline_basic_strings.includes_escaped_character()
+      let data = s:TOML.parse(join([
+      \ 'hoge = """\',
+      \ 'delimiter = ''\"""''\',
+      \ '"""',
+      \], "\n"))
+
+      call s:assert.same(data.hoge, 'delimiter = ''"""''')
+    endfunction
   endfunction
 
   function! parse.literal_string()
