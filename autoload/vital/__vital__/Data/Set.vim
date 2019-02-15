@@ -228,7 +228,7 @@ endfunction
 function! s:set.remove(e) abort
   try
     unlet self._data[self._hash(a:e)]
-  catch /^Vim\%((\a\+)\)\?:E716/
+  catch /^Vim\%((\a\+)\)\?:E716:/
     call s:_throw('the element is not a member')
   endtry
 endfunction
@@ -247,7 +247,7 @@ endfunction
 function! s:set.pop() abort
   try
     let k = keys(self._data)[0]
-  catch /^Vim\%((\a\+)\)\?:E684/
+  catch /^Vim\%((\a\+)\)\?:E684:/
     call s:_throw('set is empty')
   endtry
   let v = self._data[k]
