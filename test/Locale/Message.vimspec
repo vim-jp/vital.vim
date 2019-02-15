@@ -8,11 +8,11 @@ Describe Locale.Message
     try
       language message ja_JP.UTF-8
       let language_available = 'ja'
-    catch /^Vim\%((\a\+)\)\=:E197/
+    catch /^Vim\%((\a\+)\)\=:E197:/
       try
         language message en_US.UTF-8
         let language_available = 'en'
-      catch /^Vim\%((\a\+)\)\=:E197/
+      catch /^Vim\%((\a\+)\)\=:E197:/
         let language_available = ''
       endtry
     endtry
