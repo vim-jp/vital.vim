@@ -62,7 +62,7 @@ before_script:
 script:
   - uname -a
   - which -a vim
-  - vim --cmd version --cmd quit
+  - vim --version
   - |
     if [[ "${RUN_LINT}" != "true" ]]; then
         /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
