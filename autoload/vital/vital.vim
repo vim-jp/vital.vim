@@ -170,7 +170,7 @@ function! s:_get_module(name) abort dict
   let funcname = s:_import_func_name(self.plugin_name(), a:name)
   try
     return call(funcname, [])
-  catch /^Vim\%((\a\+)\)\?:E117/
+  catch /^Vim\%((\a\+)\)\?:E117:/
     return s:_get_builtin_module(a:name)
   endtry
 endfunction

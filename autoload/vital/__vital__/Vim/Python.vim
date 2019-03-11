@@ -41,9 +41,9 @@ function! s:is_python2_enabled() abort
       python 0
       let s:is_python2_enabled = 1
     endif
-  catch /^Vim(python)/
+  catch /^Vim(python):/
     let s:is_python2_enabled = 0
-  catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\)/
+  catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\):/
     let s:is_python2_enabled = 0
   endtry
   return s:is_python2_enabled
@@ -59,9 +59,9 @@ function! s:is_python3_enabled() abort
       python3 0
       let s:is_python3_enabled = 1
     endif
-  catch /^Vim(python3)/
+  catch /^Vim(python3):/
     let s:is_python3_enabled = 0
-  catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\)/
+  catch /^Vim\%((\a\+)\)\=:\%(E263\|E264\|E887\):/
     let s:is_python3_enabled = 0
   endtry
   return s:is_python3_enabled

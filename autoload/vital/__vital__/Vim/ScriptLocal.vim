@@ -35,7 +35,7 @@ endfunction
 function! s:_source(path) abort
   try
     execute ':source' fnameescape(a:path)
-  catch /^Vim\%((\a\+)\)\=:E121/
+  catch /^Vim\%((\a\+)\)\=:E121:/
     " NOTE: workaround for `E121: Undefined variable: s:save_cpo`
     execute ':source' fnameescape(a:path)
   endtry
