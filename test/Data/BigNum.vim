@@ -111,11 +111,18 @@ function! s:suite.div() abort
   call s:assert.equals(s:BigNum.div(123, -123), s:BigNum.from_num(-1))
   call s:assert.equals(s:BigNum.div(-123, 123), s:BigNum.from_num(-1))
   call s:assert.equals(s:BigNum.div(-123, -123), s:BigNum.from_num(1))
+  call s:assert.equals(s:BigNum.div(100000000, 1), s:BigNum.from_num(100000000))
+  call s:assert.equals(s:BigNum.div(100000000, -1), s:BigNum.from_num(-100000000))
   " bignum / int32 -> int32
   call s:assert.equals(s:BigNum.div('10000001000000', 1000000), s:BigNum.from_num(10000001))
   call s:assert.equals(s:BigNum.div('-10000001000000', 1000000), s:BigNum.from_num(-10000001))
   call s:assert.equals(s:BigNum.div('-10000001000000', -1000000), s:BigNum.from_num(10000001))
+  call s:assert.equals(s:BigNum.div('1000000010000000', 10000000), s:BigNum.from_num(100000001))
+  call s:assert.equals(s:BigNum.div('100000000100000000', 100000000), s:BigNum.from_num(1000000001))
   " bignum / int32 -> bignum
+  call s:assert.equals(s:BigNum.div('1000000000', 1), s:BigNum.from_string('1000000000'))
+  call s:assert.equals(s:BigNum.div('10000000000', 1), s:BigNum.from_string('10000000000'))
+  call s:assert.equals(s:BigNum.div('100000000000', 1), s:BigNum.from_string('100000000000'))
   call s:assert.equals(s:BigNum.div('123123123123123', 123), s:BigNum.from_string('1001001001001'))
   call s:assert.equals(s:BigNum.div('-123123123123123', 123), s:BigNum.from_string('-1001001001001'))
   call s:assert.equals(s:BigNum.div('123123123123123', -123), s:BigNum.from_string('-1001001001001'))
@@ -125,6 +132,9 @@ function! s:suite.div() abort
   call s:assert.equals(s:BigNum.div('-12345678901234567890', '1234567890123456789'), s:BigNum.from_num(-10))
   call s:assert.equals(s:BigNum.div('-12345678901234567890', '-1234567890123456789'), s:BigNum.from_num(10))
   " bignum / bignum -> bignum
+  call s:assert.equals(s:BigNum.div('10000000001000000000', '1000000000'), s:BigNum.from_string('10000000001'))
+  call s:assert.equals(s:BigNum.div('1000000000010000000000', '10000000000'), s:BigNum.from_string('100000000001'))
+  call s:assert.equals(s:BigNum.div('100000000000100000000000', '100000000000'), s:BigNum.from_string('1000000000001'))
   call s:assert.equals(s:BigNum.div('519920419074760465703', '22801763489'), s:BigNum.from_string('22801763527'))
   call s:assert.equals(s:BigNum.div('-1522605027922533360535618378132637429718068114961380688657908494580122963258952897654000350692006139', '37975227936943673922808872755445627854565536638199'), s:BigNum.from_string('-40094690950920881030683735292761468389214899724061'))
 endfunction

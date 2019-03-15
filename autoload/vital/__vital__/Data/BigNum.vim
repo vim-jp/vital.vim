@@ -260,9 +260,11 @@ function! s:div_mod(a,b) abort
   let l:part_divisor = l:divisor.num[0] + 1
   for i in range(l:extend_nodes_len+1)
     let l:part_dividend_idx = len(l:dividend.num) - l:divisor_len - l:extend_nodes_len + i
-    if l:part_dividend_idx == 0
+    if l:part_dividend_idx < 0
+      continue
+    elseif l:part_dividend_idx == 0
       let l:part_dividend = l:dividend.num[0]
-    else " l:part_dividend_idx == 1
+    else " l:part_dividend_idx > 1
       let l:part_dividend = l:dividend.num[0] * s:_NODE_MAX_NUM + l:dividend.num[1]
     endif
 
