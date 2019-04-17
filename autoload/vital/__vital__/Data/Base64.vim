@@ -1,4 +1,5 @@
 " Utilities for Base64.
+" RFC 4648 http://tools.ietf.org/html/rfc4648.html
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -61,10 +62,10 @@ function! s:_b64decode(b64, table, pad) abort
     call add(bytes, n % 0x100)
   endfor
   if a:b64[-1] == a:pad
-    unlet a:b64[-1]
+    unlet bytes[-1]
   endif
   if a:b64[-2] == a:pad
-    unlet a:b64[-1]
+    unlet bytes[-1]
   endif
   return bytes
 endfunction
