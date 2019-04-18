@@ -50,10 +50,7 @@ function! s:_b32encode(bytes, table, pad) abort
         endfor
       endif
     endif
-    for fivebit in split(bitstring, '.....\zs')
-      call execute('let fivebitnum = 0b' . fivebit)
-      call add(b32, a:table[fivebitnum])
-    endfor
+    call map(split(bitstring, '.....\zs'),'add(b32, a:table[str2nr(v:val, 2)])')
   endfor
   if 0 != len(b32) % 8
     let padlen = 8 - (len(b32) % 8)
@@ -101,7 +98,7 @@ function! s:_b32decode(b32, table, pad) abort
 endfunction
 
 function! s:_binstr2bytes(str) abort
-  return map(range(len(a:str)/2), 'eval("0x".a:str[v:val*2 : v:val*2+1])')
+  return map(range(len(a:str)/2), 'str2nr(a:str[v:val*2 : v:val*2+1], 16)')
 endfunction
 
 function! s:_str2bytes(str) abort
