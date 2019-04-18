@@ -1,0 +1,59 @@
+Describe Data.Base32
+  Before all
+    let B = vital#vital#new().import('Data.Base32')
+  End
+
+  Describe .encode()
+    It encode string to base32 encoded string.
+      Assert Equals(B.encode("hello, world!"), 'NBSWY3DPFQQHO33SNRSCC===')
+    End
+    It encode string RFC Test Vector 1.
+      Assert Equals(B.encode("f"     ), 'MY======'        )
+    End
+    It encode string RFC Test Vector 2.
+      Assert Equals(B.encode("fo"    ), 'MZXQ===='        )
+    End
+    It encode string RFC Test Vector 3.
+      Assert Equals(B.encode("foo"   ), 'MZXW6==='        )
+    End
+    It encode string RFC Test Vector 4.
+      Assert Equals(B.encode("foob"  ), 'MZXW6YQ='        )
+    End
+    It encode string RFC Test Vector 5.
+      Assert Equals(B.encode("fooba" ), 'MZXW6YTB'        )
+    End
+    It encode string RFC Test Vector 6.
+      Assert Equals(B.encode("foobar"), 'MZXW6YTBOI======')
+    End
+  End
+
+  Describe .encodebin()
+    It encode string encoded as hex to base32 encoded string.
+      Assert Equals(B.encodebin('68656c6c6f2c20776f726c6421'), 'NBSWY3DPFQQHO33SNRSCC===')
+    End
+  End
+
+  Describe .decode()
+    It decode base32 encoded string to string.
+      Assert Equals(B.decode("NBSWY3DPFQQHO33SNRSCC==="), 'hello, world!')
+    End
+    It decode string RFC Test Vector 1.
+      Assert Equals(B.decode("MY======"        ), 'f'     )
+    End
+    It decode string RFC Test Vector 2.
+      Assert Equals(B.decode("MZXQ===="        ), 'fo'    )
+    End
+    It decode string RFC Test Vector 3.
+      Assert Equals(B.decode("MZXW6==="        ), 'foo'   )
+    End
+    It decode string RFC Test Vector 4.
+      Assert Equals(B.decode("MZXW6YQ="        ), 'foob'  )
+    End
+    It decode string RFC Test Vector 5.
+      Assert Equals(B.decode("MZXW6YTB"        ), 'fooba' )
+    End
+    It decode string RFC Test Vector 6.
+      Assert Equals(B.decode("MZXW6YTBOI======"), 'foobar')
+    End
+  End
+End
