@@ -1,0 +1,372 @@
+" Utilities for SHA1.
+" RFC 3174 https://tools.ietf.org/html/rfc3174
+"
+" original github vim-scripts/sha1.vim
+"
+" sha1 digest calculator
+" This is a port of rfc3174 sha1 function.
+" http://www.ietf.org/rfc/rfc3174.txt
+" Last Change:  2010-02-13
+" Maintainer:   Yukihiro Nakadaira <yukihiro.nakadaira@gmail.com>
+" Original Copyright:
+" Copyright (C) The Internet Society (2001).  All Rights Reserved.
+"
+" This document and translations of it may be copied and furnished to
+" others, and derivative works that comment on or otherwise explain it
+" or assist in its implementation may be prepared, copied, published
+" and distributed, in whole or in part, without restriction of any
+" kind, provided that the above copyright notice and this paragraph are
+" included on all such copies and derivative works.  However, this
+" document itself may not be modified in any way, such as by removing
+" the copyright notice or references to the Internet Society or other
+" Internet organizations, except as needed for the purpose of
+" developing Internet standards in which case the procedures for
+" copyrights defined in the Internet Standards process must be
+" followed, or as required to translate it into languages other than
+" English.
+"
+" The limited permissions granted above are perpetual and will not be
+" revoked by the Internet Society or its successors or assigns.
+"
+" This document and the information contained herein is provided on an
+" "AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
+" TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+" BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+" HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+" MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+let s:save_cpo = &cpo
+set cpo&vim
+
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:bitwise = s:V.import('Bitwise')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Bitwise']
+endfunction
+
+function! s:sum(data) abort
+  let bytes = s:_str2bytes(a:data)
+  return s:sum_raw(bytes)
+endfunction
+
+function! s:sum_raw(bytes) abort
+  return s:_bytes2str(s:digest_raw(a:bytes))
+endfunction
+
+function! s:digest(data) abort
+  let bytes = s:_str2bytes(a:data)
+  return s:digest_raw(bytes)
+endfunction
+
+function! s:digest_raw(bytes) abort
+  let sha = deepcopy(s:sha1context, 1)
+  let digest = repeat([0], s:sha1hashsize)
+
+  call sha.init()
+
+  let err = sha.input(a:bytes)
+  if err
+    throw printf('vital: Hash.SHA1: input Error %d', err)
+  endif
+
+  let err = sha.result(digest)
+  if err
+    throw printf('vital: Hash.SHA1: result Error %d', err)
+  endif
+
+  return digest
+endfunction
+
+" enum
+let s:success     = 0
+" null as 1 / not affect
+let s:input_long  = 2 " input data too long
+let s:state_error = 3 " called Input after Result
+
+" define
+let s:sha1hashsize  = 20 " byte = 160bit (20*8)
+let s:sha1blocksize = 64
+
+" struct
+let s:sha1context = {
+      \ 'intermediatehash'   : repeat([0], s:sha1hashsize / 4),
+      \ 'length'             : {
+      \   'low'  : 0,
+      \   'high' : 0,
+      \ },
+      \ 'messageblock'       : {
+      \   'index' : 0,
+      \   'data'  : repeat([0], s:sha1blocksize),
+      \ },
+      \ 'Computed'           : 0,
+      \ 'Corrupted'          : 0,
+      \}
+
+function! s:sha1circular_shift(bits, word) abort
+  return s:bitwise.or(s:bitwise.lshift32(a:word, a:bits), s:bitwise.rshift32(a:word, 32 - a:bits))
+endfunction
+
+function! s:sha1context.init() dict abort
+  let self.length.low           = 0
+  let self.length.high          = 0
+  let self.messageblock.index   = 0
+
+  let self.intermediatehash[0]  = 0x67452301
+  let self.intermediatehash[1]  = 0xEFCDAB89
+  let self.intermediatehash[2]  = 0x98BADCFE
+  let self.intermediatehash[3]  = 0x10325476
+  let self.intermediatehash[4]  = 0xC3D2E1F0
+
+  let self.Computed  = 0
+  let self.Corrupted = 0
+endfunction
+
+function! s:sha1context.result(digest) dict abort
+  if self.Corrupted
+    return self.Corrupted
+  endif
+
+  if !self.Computed
+    call self.padding()
+    for i in range(s:sha1blocksize)
+      " message may be sensitive, clear it out
+      let self.messageblock.data[i] = 0
+    endfor
+    let self.length.low  = 0      " and clear length
+    let self.length.high = 0
+    let self.Computed = 1
+  endif
+
+  for i in range(s:sha1hashsize)
+    let a:digest[i] = s:_uint8(
+          \   s:bitwise.rshift32(
+          \     self.intermediatehash[s:bitwise.rshift32(i, 2)],
+          \     8 * (3 - s:bitwise.and(i, 0x03))
+          \   )
+          \ )
+  endfor
+
+  return s:success
+endfunction
+
+function! s:sha1context.input(bytes) dict abort
+  if !len(a:bytes)
+    return s:success
+  endif
+
+  if self.Computed
+    let self.Corrupted = s:state_error
+    return s:state_error
+  endif
+
+  " size set and check
+  let self.Corrupted = self.length.sizeset(a:bytes)
+
+  if self.Corrupted
+    return self.Corrupted
+  endif
+
+  for x in a:bytes
+    if self.Corrupted
+      break
+    endif
+    call self.messageblock.push(s:_uint8(x))
+
+    if self.messageblock.index == s:sha1blocksize
+      call self.process()
+    endif
+  endfor
+
+  return s:success
+endfunction
+
+function! s:sha1context.process() dict abort
+  " Constants defined in SHA-1
+  let K = [
+        \ 0x5A827999,
+        \ 0x6ED9EBA1,
+        \ 0x8F1BBCDC,
+        \ 0xCA62C1D6
+        \ ]
+  let t = 0                         " Loop counter
+  let temp = 0                      " Temporary word value
+  let W = repeat([0], 80)           " Word sequence
+  let [A, B, C, D, E] = [0, 0, 0, 0, 0] " Word buffers
+
+  "
+  "  Initialize the first 16 words in the array W
+  "
+  for t in range(16)
+    let W[t] = s:bitwise.lshift32(self.messageblock.data[t * 4], 24)
+    let W[t] = s:bitwise.or(W[t], s:bitwise.lshift32(self.messageblock.data[t * 4 + 1], 16))
+    let W[t] = s:bitwise.or(W[t], s:bitwise.lshift32(self.messageblock.data[t * 4 + 2], 8))
+    let W[t] = s:bitwise.or(W[t], self.messageblock.data[t * 4 + 3])
+  endfor
+
+  for t in range(16, 79)
+    let W[t] = s:sha1circular_shift(1, s:bitwise.xor(s:bitwise.xor(s:bitwise.xor(W[t-3], W[t-8]), W[t-14]), W[t-16]))
+  endfor
+
+  let A = self.intermediatehash[0]
+  let B = self.intermediatehash[1]
+  let C = self.intermediatehash[2]
+  let D = self.intermediatehash[3]
+  let E = self.intermediatehash[4]
+
+  for t in range(20)
+    let temp = s:sha1circular_shift(5,A) +
+          \ s:bitwise.or(s:bitwise.and(B, C), s:bitwise.and(s:bitwise.invert(B), D)) +
+          \ E + W[t] + K[0]
+    let E = D
+    let D = C
+    let C = s:sha1circular_shift(30,B)
+    let B = A
+    let A = temp
+  endfor
+
+  for t in range(20, 39)
+    let temp = s:sha1circular_shift(5,A) + s:bitwise.xor(s:bitwise.xor(B, C), D) + E + W[t] + K[1]
+    let E = D
+    let D = C
+    let C = s:sha1circular_shift(30,B)
+    let B = A
+    let A = temp
+  endfor
+
+  for t in range(40, 59)
+    let temp = s:sha1circular_shift(5,A) +
+          \ s:bitwise.or(s:bitwise.or(s:bitwise.and(B, C), s:bitwise.and(B, D)), s:bitwise.and(C, D)) +
+          \ E + W[t] + K[2]
+    let E = D
+    let D = C
+    let C = s:sha1circular_shift(30,B)
+    let B = A
+    let A = temp
+  endfor
+
+  for t in range(60, 79)
+    let temp = s:sha1circular_shift(5,A) +
+          \ s:bitwise.xor(s:bitwise.xor(B, C), D) + E + W[t] + K[3]
+    let E = D
+    let D = C
+    let C = s:sha1circular_shift(30,B)
+    let B = A
+    let A = temp
+  endfor
+
+  let self.intermediatehash[0] += A
+  let self.intermediatehash[1] += B
+  let self.intermediatehash[2] += C
+  let self.intermediatehash[3] += D
+  let self.intermediatehash[4] += E
+
+  let self.messageblock.index = 0
+endfunction
+
+function! s:sha1context.padding() dict abort
+  "
+  "  Check to see if the current message block is too small to hold
+  "  the initial padding bits and length.  If so, we will pad the
+  "  block, process it, and then continue padding into a second
+  "  block.
+  "
+  if self.messageblock.index > 55  " >= s:sha1blocksize - 8
+    call self.messageblock.push(0x80)
+    while self.messageblock.index < s:sha1blocksize
+      call self.messageblock.push(0x00)
+    endwhile
+
+    call self.process()
+
+    while self.messageblock.index < 56 " < s:sha1blocksize - 8
+      call self.messageblock.push(0x00)
+    endwhile
+  else
+    call self.messageblock.push(0x80)
+    while self.messageblock.index < 56 " < s:sha1blocksize - 8
+      call self.messageblock.push(0x00)
+    endwhile
+  endif
+
+  "
+  "  Store the message length as the last 8 octets
+  "
+  " as data[-8]..data[-1]
+  let self.messageblock.data[56] = s:_uint8(s:bitwise.rshift32(self.length.high, 24))
+  let self.messageblock.data[57] = s:_uint8(s:bitwise.rshift32(self.length.high, 16))
+  let self.messageblock.data[58] = s:_uint8(s:bitwise.rshift32(self.length.high,  8))
+  let self.messageblock.data[59] = s:_uint8(                   self.length.high     )
+  let self.messageblock.data[60] = s:_uint8(s:bitwise.rshift32(self.length.low , 24))
+  let self.messageblock.data[61] = s:_uint8(s:bitwise.rshift32(self.length.low , 16))
+  let self.messageblock.data[62] = s:_uint8(s:bitwise.rshift32(self.length.low ,  8))
+  let self.messageblock.data[63] = s:_uint8(                   self.length.low      )
+
+  call self.process()
+endfunction
+
+" message block method
+function! s:sha1context.messageblock.push(data) dict abort
+  let self.data[self.index] = a:data
+  let self.index += 1
+endfunction
+
+" data length method
+function! s:sha1context.length.sizeset(data) dict abort
+  " length as 64bit value  bit length(not byte)
+  " if has('num64')
+    " system support max 2^64 - 1 item
+    " need shift 64bit
+    " 64bit work
+    " 1. len(data)    = 0x0hhhhhhh   llllllll
+    " 2. bitlen       = 0xhhhhhhhl 0xlllllll0 (high,low display) << 3/* 8
+    " 3.a low mask    =            0xlllllll0 and(x,0xffffffff)
+    " 3.b high shift  =            0xhhhhhhhl >> 32
+  " else
+    " system support max 2^32 - 1 item
+    " work only shift 32bit
+    " 32bit work
+    " 1. len(data)    = 0xllllllll
+    "(2. bitlen       = 0xlllllll0 << 3/* 8)
+    " 3.a low mask    = 0xlllllll0 << 3/* 8, and(x,0xffffffff)
+    " 3.b high shift  = 0x0000000l >> (32 - 3)
+  " endif
+  " 32/64bit work use shift
+  let self.high = s:_uint32(s:bitwise.rshift(len(a:data), 32 - 3))
+  let self.low  = s:_uint32(s:bitwise.lshift(len(a:data),      3))
+
+  " SHA1 2^64 - 1 overflow check
+  " 0xh0000000 is not 0, then overflow it(byte data are Vim List;it can contains 2^64 - 1 item)
+  if (has('num64') && (0 != s:_uint32(s:bitwise.rshift(len(a:data), 32 + (32 - 3)))))
+    let self.high = 0
+    let self.low  = 0
+    return s:input_long
+  endif
+  return s:success
+endfunction
+
+"---------------------------------------------------------------------
+" misc
+
+function! s:_uint8(n) abort
+  return s:bitwise.and(a:n, 0xFF)
+endfunction
+
+function! s:_uint32(n) abort
+  return s:bitwise.and(a:n, 0xFFFFFFFF)
+endfunction
+
+function! s:_str2bytes(str) abort
+  return map(range(len(a:str)), 'char2nr(a:str[v:val])')
+endfunction
+
+function! s:_bytes2str(bytes) abort
+  return join(map(a:bytes, 'printf(''%02x'', v:val)'), '')
+endfunction
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
+
+" vim:set et ts=2 sts=2 sw=2 tw=0:
