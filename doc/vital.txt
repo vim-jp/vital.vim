@@ -186,6 +186,7 @@ LINKS					*Vital-links*
   |vital/DateTime.txt|		date and time library.
   |vital/Experimental/Functor.txt|	Utilities for functor.
   |vital/Hash/MD5.txt|	        MD5 encoding.
+  |vital/Hash/SHA1.txt|	        SHA1 encoding.
   |vital/Interpreter/Brainf__k.txt|	Brainf**k interpreter
   |vital/Locale/Message.txt|	very simple message localization library.
   |vital/Mapping.txt|		Utilities for mapping.
