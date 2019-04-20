@@ -34,12 +34,22 @@ function! s:suite.encode() abort
          \ s:TEST3,
          \ s:TEST4
          \ ]
+   " original result
+   " let s:resultarray = [
+   "      \ "a9993e364706816aba3e25717850c26c9cd0d89d",
+   "      \ "84983e441c3bd26ebaae4aa1f95129e5e54670f1",
+   "      \ "34aa973cd4c4daa4f61eeb2bdbad27316534016f",
+   "      \ "dea356a2cddd90c7a7ecedc5ebb563934f460452"
+   "      \ ]
+
+   " other SHA1 test site generate result
    let s:resultarray = [
          \ "a9993e364706816aba3e25717850c26c9cd0d89d",
          \ "84983e441c3bd26ebaae4aa1f95129e5e54670f1",
-         \ "34aa973cd4c4daa4f61eeb2bdbad27316534016f",
-         \ "dea356a2cddd90c7a7ecedc5ebb563934f460452"
-         \ ]
+         \ "86f7e437faa5a7fce15d1ddcb9eaeaea377667b8",
+         \ "e0c094e867ef46c350ef54a7f59dd60bed92ae83"
+         \]
+
    call s:assert.equal(s:SHA1.sum(s:testarray[0]),s:resultarray[0])
    call s:assert.equal(s:SHA1.sum(s:testarray[1]),s:resultarray[1])
    call s:assert.equal(s:SHA1.sum(s:testarray[2]),s:resultarray[2])
