@@ -58,7 +58,7 @@ function! s:digest_raw(bytes) abort
   let l:c0 = 0x98badcfe
   let l:d0 = 0x10325476
 
-  let l:padded = a:bytes
+  let l:padded = copy(a:bytes)
   let l:orig_len = len(l:padded) * 8
   call add(l:padded, 0x80)
   while fmod(len(l:padded), 64) != 56
