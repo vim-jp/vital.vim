@@ -106,7 +106,7 @@ let s:sha1context = {
       \ 'Corrupted'          : 0,
       \}
 
-function! s:sha1circular_shift(bits, word) abort
+function! s:_sha1circular_shift(bits, word) abort
   return s:bitwise.or(s:bitwise.lshift32(a:word, a:bits), s:bitwise.rshift32(a:word, 32 - a:bits))
 endfunction
 
@@ -208,7 +208,7 @@ function! s:sha1context.process() dict abort
   endfor
 
   for t in range(16, 79)
-    let W[t] = s:sha1circular_shift(1, s:bitwise.xor(s:bitwise.xor(s:bitwise.xor(W[t-3], W[t-8]), W[t-14]), W[t-16]))
+    let W[t] = s:_sha1circular_shift(1, s:bitwise.xor(s:bitwise.xor(s:bitwise.xor(W[t-3], W[t-8]), W[t-14]), W[t-16]))
   endfor
 
   let A = self.intermediatehash[0]
@@ -218,42 +218,42 @@ function! s:sha1context.process() dict abort
   let E = self.intermediatehash[4]
 
   for t in range(20)
-    let temp = s:sha1circular_shift(5,A) +
+    let temp = s:_sha1circular_shift(5,A) +
           \ s:bitwise.or(s:bitwise.and(B, C), s:bitwise.and(s:bitwise.invert(B), D)) +
           \ E + W[t] + K[0]
     let E = D
     let D = C
-    let C = s:sha1circular_shift(30,B)
+    let C = s:_sha1circular_shift(30,B)
     let B = A
     let A = temp
   endfor
 
   for t in range(20, 39)
-    let temp = s:sha1circular_shift(5,A) + s:bitwise.xor(s:bitwise.xor(B, C), D) + E + W[t] + K[1]
+    let temp = s:_sha1circular_shift(5,A) + s:bitwise.xor(s:bitwise.xor(B, C), D) + E + W[t] + K[1]
     let E = D
     let D = C
-    let C = s:sha1circular_shift(30,B)
+    let C = s:_sha1circular_shift(30,B)
     let B = A
     let A = temp
   endfor
 
   for t in range(40, 59)
-    let temp = s:sha1circular_shift(5,A) +
+    let temp = s:_sha1circular_shift(5,A) +
           \ s:bitwise.or(s:bitwise.or(s:bitwise.and(B, C), s:bitwise.and(B, D)), s:bitwise.and(C, D)) +
           \ E + W[t] + K[2]
     let E = D
     let D = C
-    let C = s:sha1circular_shift(30,B)
+    let C = s:_sha1circular_shift(30,B)
     let B = A
     let A = temp
   endfor
 
   for t in range(60, 79)
-    let temp = s:sha1circular_shift(5,A) +
+    let temp = s:_sha1circular_shift(5,A) +
           \ s:bitwise.xor(s:bitwise.xor(B, C), D) + E + W[t] + K[3]
     let E = D
     let D = C
-    let C = s:sha1circular_shift(30,B)
+    let C = s:_sha1circular_shift(30,B)
     let B = A
     let A = temp
   endfor
