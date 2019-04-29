@@ -71,7 +71,7 @@ function! s:_b64decode(b64, table, pad) abort
 endfunction
 
 function! s:_binstr2bytes(str) abort
-  return map(range(len(a:str)/2), 'eval("0x".a:str[v:val*2 : v:val*2+1])')
+  return map(range(len(a:str)/2), 'str2nr(a:str[v:val*2 : v:val*2+1], 16)')
 endfunction
 
 function! s:_str2bytes(str) abort
