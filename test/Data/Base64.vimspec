@@ -7,6 +7,27 @@ Describe Data.Base64
     It encode string to base64 encoded string.
       Assert Equals(B.encode("hello, world!"), 'aGVsbG8sIHdvcmxkIQ==')
     End
+    It encode string RFC Test Vector 1.
+      Assert Equals(B.encode(""      ) , ''        )
+    End
+    It encode string RFC Test Vector 2.
+      Assert Equals(B.encode("f"     ) , 'Zg=='    )
+    End
+    It encode string RFC Test Vector 3.
+      Assert Equals(B.encode("fo"    ) , 'Zm8='    )
+    End
+    It encode string RFC Test Vector 4.
+      Assert Equals(B.encode("foo"   ) , 'Zm9v'    )
+    End
+    It encode string RFC Test Vector 5.
+      Assert Equals(B.encode("foob"  ) , 'Zm9vYg==')
+    End
+    It encode string RFC Test Vector 6.
+      Assert Equals(B.encode("fooba" ) , 'Zm9vYmE=')
+    End
+    It encode string RFC Test Vector 7.
+      Assert Equals(B.encode("foobar") , 'Zm9vYmFy')
+    End
   End
 
   Describe .encodebin()
@@ -18,6 +39,28 @@ Describe Data.Base64
   Describe .decode()
     It decode base64 encoded string to string.
       Assert Equals(B.decode("aGVsbG8sIHdvcmxkIQ=="), 'hello, world!')
+    End
+    " curently "" decode not work
+    " It decode string RFC Test Vector 1.
+    "   Assert Equals(B.decode(""        ), ''      )
+    " End
+    It decode string RFC Test Vector 2.
+      Assert Equals(B.decode("Zg=="    ), 'f'     )
+    End
+    It decode string RFC Test Vector 3.
+      Assert Equals(B.decode("Zm8="    ), 'fo'    )
+    End
+    It decode string RFC Test Vector 4.
+      Assert Equals(B.decode("Zm9v"    ), 'foo'   )
+    End
+    It decode string RFC Test Vector 5.
+      Assert Equals(B.decode("Zm9vYg=="), 'foob'  )
+    End
+    It decode string RFC Test Vector 6.
+      Assert Equals(B.decode("Zm9vYmE="), 'fooba' )
+    End
+    It decode string RFC Test Vector 7.
+      Assert Equals(B.decode("Zm9vYmFy"), 'foobar')
     End
   End
 End
