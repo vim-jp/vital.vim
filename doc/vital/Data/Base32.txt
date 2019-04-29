@@ -1,0 +1,37 @@
+*vital/Data/Base32.txt*		base32 utilities library.
+
+Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Base32-contents*
+
+INTRODUCTION			|Vital.Data.Base32-introduction|
+INTERFACE			|Vital.Data.Base32-interface|
+  Functions			  |Vital.Data.Base32-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Base32-introduction*
+
+*Vital.Data.Base32* is Base32 Utilities Library.
+It provides base32 converter.
+
+==============================================================================
+INTERFACE				*Vital.Data.Base32-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Base32-functions*
+
+Same as |Vital.Data.Base64-functions|.
+
+encode({str})				*Vital.Data.Base32.encode()*
+	Return base32 encoded string from {str}.
+
+encodebin({str})			*Vital.Data.Base32.encodebin()*
+	Return base32 encoded string from {str}. {str} is hex encoded string
+	figured as bytes.
+
+decode({str})				*Vital.Data.Base32.decode()*
+	Return decoded string from {str} that's base32 encoded.
+	{str} are case insensitive.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
