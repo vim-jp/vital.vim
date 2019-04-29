@@ -13,7 +13,8 @@ INTERFACE		                |Vital.Hash.MD5-interface|
 INTRODUCTION				*Vital.Hash.MD5-introduction*
 
 *Vital.Hash.MD5* is a MD5 Utilities Library.
-It provides a single function to return the MD5 sum of a given string as hex
+It provides functions to return the MD5 sum/digest of a given string as
+hex/bytes list.
 
 ==============================================================================
 INTERFACE				*Vital.Hash.MD5-interface*
@@ -21,7 +22,12 @@ INTERFACE				*Vital.Hash.MD5-interface*
 FUNCTIONS				*Vital.Hash.MD5-functions*
 
 sum({str})				*Vital.Hash.MD5.sum()*
-	Return MD5 hashed string from {str}.
+sum_raw({bytes})			*Vital.Hash.MD5.sum_raw()*
+	Return MD5 hashed string from {str} or raw {bytes} list.
+
+digest({str})				*Vital.Hash.MD5.digest()*
+digest_raw({bytes})			*Vital.Hash.MD5.digest_raw()*
+	Return MD5 hashed bytes list from {str} or raw {bytes} list.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

@@ -38,14 +38,27 @@ let s:table = [
       \ 0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391,
       \ ]
 
-
 function! s:sum(data) abort
+  let bytes = s:_str2bytes(a:data)
+  return s:sum_raw(bytes)
+endfunction
+
+function! s:sum_raw(bytes) abort
+  return s:_bytes2str(s:digest_raw(a:bytes))
+endfunction
+
+function! s:digest(data) abort
+  let bytes = s:_str2bytes(a:data)
+  return s:digest_raw(bytes)
+endfunction
+
+function! s:digest_raw(bytes) abort
   let l:a0 = 0x67452301
   let l:b0 = 0xefcdab89
   let l:c0 = 0x98badcfe
   let l:d0 = 0x10325476
 
-  let l:padded = s:_str2bytes(a:data)
+  let l:padded = copy(a:bytes)
   let l:orig_len = len(l:padded) * 8
   call add(l:padded, 0x80)
   while fmod(len(l:padded), 64) != 56
@@ -105,7 +118,7 @@ function! s:sum(data) abort
   call extend(l:bytes, s:_int2bytes(32, l:c0))
   call extend(l:bytes, s:_int2bytes(32, l:d0))
 
-  return s:_bytes2str(l:bytes)
+  return l:bytes
 endfunction
 
 function! s:_leftrotate(x, c) abort
