@@ -54,4 +54,24 @@ function! s:suite.encode() abort
    call s:assert.equal(s:SHA1.sum(s:testarray[1]),s:resultarray[1])
    call s:assert.equal(s:SHA1.sum(s:testarray[2]),s:resultarray[2])
    call s:assert.equal(s:SHA1.sum(s:testarray[3]),s:resultarray[3])
+
+
+   " Exxtend Interface test
+   " test data
+   let exttest_string       = 'abc'
+   let exttest_bytelist     = [0x61, 0x62, 0x63]
+   let exttest_hashstring   = 'a9993e364706816aba3e25717850c26c9cd0d89d'
+   let exttest_hashbytelist = [
+         \ 0xa9, 0x99, 0x3e, 0x36, 0x47, 0x06, 0x81, 0x6a, 0xba, 0x3e,
+         \ 0x25, 0x71, 0x78, 0x50, 0xc2, 0x6c, 0x9c, 0xd0, 0xd8, 0x9d
+         \]
+
+   " test sum        input string   output hashstring
+   call s:assert.equal(s:SHA1.sum(exttest_string),         exttest_hashstring)
+   " test sum_raw    input bytelist output hashstring
+   call s:assert.equal(s:SHA1.sum_raw(exttest_bytelist),   exttest_hashstring)
+   " test digest     input string   output hash byte list
+   call s:assert.equal(s:SHA1.digest(exttest_string),      exttest_hashbytelist)
+   " test digest_raw input bytelist output hash byte list
+   call s:assert.equal(s:SHA1.digest_raw(exttest_bytelist),exttest_hashbytelist)
 endfunction
