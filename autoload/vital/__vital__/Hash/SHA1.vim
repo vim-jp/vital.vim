@@ -62,12 +62,13 @@ function! s:digest(data) abort
 endfunction
 
 function! s:digest_raw(bytes) abort
+  let bytes = copy(a:bytes)
   let sha = deepcopy(s:sha1context, 1)
   let digest = repeat([0], s:sha1hashsize)
 
   call sha.init()
 
-  let err = sha.input(a:bytes)
+  let err = sha.input(bytes)
   if err
     throw printf('vital: Hash.SHA1: input Error %d', err)
   endif
