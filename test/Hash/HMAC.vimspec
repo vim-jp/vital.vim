@@ -146,6 +146,12 @@ Describe Hash.HMAC
     " digest-96 =     0x4c1a03424b55e07fe7f27be1
   End
 
+  Describe .new()
+    It argument count over 2
+      Throws /^vital: Hash.HMAC:/ HMAC.new('a', 'a', 'a')
+    End
+  End
+
   Describe .key()
     It constructer argument check
       let hmacmd5 = HMAC.new(MD5, test_case_md5[0].key)
@@ -168,6 +174,11 @@ Describe Hash.HMAC
       call hmacmd5.hash(MD5)
       call hmacmd5.key(test_case_md5[0].key)
       Assert Equals(test_case_md5[0].digest_str, hmacmd5.hmac(test_case_md5[0].data))
+    End
+
+    It invalid value
+      let hmacmd5 = HMAC.new()
+      Throws /^vital: Hash.HMAC:/ hmacmd5.key({})
     End
   End
 
@@ -194,6 +205,15 @@ Describe Hash.HMAC
       call hmacmd5.hash(MD5)
       call hmacmd5.key(test_case_md5[0].key)
       Assert Equals(test_case_md5[0].digest_str, hmacmd5.hmac(test_case_md5[0].data))
+    End
+
+    It invalid value
+      let hmacmd5 = HMAC.new()
+      Throws /^vital: Hash.HMAC:/ hmacmd5.hash([])
+      let hmacmd5 = HMAC.new()
+      Throws /^vital: Hash.HMAC:/ hmacmd5.hash({})
+      let hmacmd5 = HMAC.new()
+      Throws /^vital: Hash.HMAC:/ hmacmd5.hash({ 'digest_raw': 0 })
     End
   End
 
@@ -238,6 +258,13 @@ Describe Hash.HMAC
       let hmacmd5 = HMAC.new()
       Throws /^vital: Hash.HMAC:/ hmacmd5.calc(test_case_md5[0].data)
     End
+
+    It invalid value
+      let hmacmd5 = HMAC.new()
+      call hmacmd5.hash(MD5)
+      call hmacmd5.key(test_case_md5[0].key)
+      Throws /^vital: Hash.HMAC:/ hmacmd5.calc({})
+    End
   End
 
   Describe .hmac()
@@ -280,6 +307,13 @@ Describe Hash.HMAC
     It no set algo and key do not work
       let hmacmd5 = HMAC.new()
       Throws /^vital: Hash.HMAC:/ hmacmd5.hmac(test_case_md5[0].data)
+    End
+
+    It invalid value
+      let hmacmd5 = HMAC.new()
+      call hmacmd5.hash(MD5)
+      call hmacmd5.key(test_case_md5[0].key)
+      Throws /^vital: Hash.HMAC:/ hmacmd5.hmac({})
     End
   End
 End
