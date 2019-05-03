@@ -1,39 +1,9 @@
 " Utilities for SHA1.
-" RFC 3174 https://tools.ietf.org/html/rfc3174
-"
-" original github vim-scripts/sha1.vim
-"
-" sha1 digest calculator
-" This is a port of rfc3174 sha1 function.
-" http://www.ietf.org/rfc/rfc3174.txt
-" Last Change:  2010-02-13
-" Maintainer:   Yukihiro Nakadaira <yukihiro.nakadaira@gmail.com>
-" Original Copyright:
-" Copyright (C) The Internet Society (2001).  All Rights Reserved.
-"
-" This document and translations of it may be copied and furnished to
-" others, and derivative works that comment on or otherwise explain it
-" or assist in its implementation may be prepared, copied, published
-" and distributed, in whole or in part, without restriction of any
-" kind, provided that the above copyright notice and this paragraph are
-" included on all such copies and derivative works.  However, this
-" document itself may not be modified in any way, such as by removing
-" the copyright notice or references to the Internet Society or other
-" Internet organizations, except as needed for the purpose of
-" developing Internet standards in which case the procedures for
-" copyrights defined in the Internet Standards process must be
-" followed, or as required to translate it into languages other than
-" English.
-"
-" The limited permissions granted above are perpetual and will not be
-" revoked by the Internet Society or its successors or assigns.
-"
-" This document and the information contained herein is provided on an
-" "AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
-" TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
-" BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
-" HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
-" MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+" Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
+" License CC0
+" Code:
+"   based on RFC 3174 Refeerence implementation. https://tools.ietf.org/html/rfc3174
+"   based on Vim implementation vim-scripts/sha1.vim (Licensed)
 
 let s:save_cpo = &cpo
 set cpo&vim
