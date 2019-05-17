@@ -76,8 +76,8 @@ function! s:HMAC.calc(data) abort
     let key = hash.digest_raw(key)
   endif
 
-  let ipad = s:List.new(64,0)
-  let opad = s:List.new(64,0)
+  let ipad = s:List.new(64, {-> 0})
+  let opad = s:List.new(64, {-> 0})
 
   for i in range(len(key))
     let ipad[i] = key[i]
