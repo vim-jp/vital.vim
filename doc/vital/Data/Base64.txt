@@ -27,8 +27,14 @@ encodebin({str})			*Vital.Data.Base64.encodebin()*
 	Return base64 encoded string from {str}. {str} is hex encoded string
 	figured as bytes.
 
+encodebytes({bytes})			*Vital.Data.Base64.encodebytes()*
+	Return base64 encoded string from {bytes}.
+
 decode({str})				*Vital.Data.Base64.decode()*
 	Return decoded string from {str} that's base64 encoded.
+
+decoderaw({str})			*Vital.Data.Base64.decoderaw()*
+	Return decoded bytes-list from {str} that's base64 encoded.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
