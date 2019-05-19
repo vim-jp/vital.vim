@@ -23,7 +23,7 @@ function! s:sum(data) abort
 endfunction
 
 function! s:sum_raw(bytes) abort
-  return s:_bytes2str(s:digest_raw(a:bytes))
+  return s:_bytes2binstr(s:digest_raw(a:bytes))
 endfunction
 
 function! s:digest(data) abort
@@ -333,8 +333,8 @@ function! s:_str2bytes(str) abort
   return map(range(len(a:str)), 'char2nr(a:str[v:val])')
 endfunction
 
-function! s:_bytes2str(bytes) abort
-  return join(map(a:bytes, 'printf(''%02x'', v:val)'), '')
+function! s:_bytes2binstr(bytes) abort
+  return join(map(copy(a:bytes), 'printf(''%02x'', v:val)'), '')
 endfunction
 
 let &cpo = s:save_cpo
