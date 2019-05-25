@@ -4,6 +4,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:bitwise = s:V.import('Bitwise')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Bitwise']
+endfunction
+
 function! s:encode(data) abort
   let b32 = s:_b32encode(s:_str2bytes(a:data), s:standard_table, '=')
   return join(b32, '')
@@ -30,12 +39,12 @@ function! s:_b32encode(bytes, table, pad) abort
   let b32 = []
   for i in range(0, len(a:bytes) - 1, 5)
     if 5 <= ((len(a:bytes) - 1) - i)
-      let n = a:bytes[i]               * 0x100000000
-            \ + get(a:bytes, i + 1, 0) *   0x1000000
-            \ + get(a:bytes, i + 2, 0) *     0x10000
-            \ + get(a:bytes, i + 3, 0) *       0x100
-            \ + get(a:bytes, i + 4, 0)
-      let bitstring = printf('%040b',n)
+      let bitstring = ''
+            \ . printf('%08b',     a:bytes[i]        )
+            \ . printf('%08b', get(a:bytes, i + 1, 0))
+            \ . printf('%08b', get(a:bytes, i + 2, 0))
+            \ . printf('%08b', get(a:bytes, i + 3, 0))
+            \ . printf('%08b', get(a:bytes, i + 4, 0))
     else
       let length = len(a:bytes) - i
       let n = a:bytes[i]
@@ -68,19 +77,53 @@ function! s:_b32decode(b32, table, pad) abort
   endfor
   let bytes = []
   for i in range(0, (len(a:b32) - 1), 8)
-    let n = a2i[a:b32[i]]                                     * 0x800000000
-          \ + a2i[a:b32[i + 1]]                               *  0x40000000
-          \ + (a:b32[i + 2] == a:pad ? 0 : a2i[a:b32[i + 2]]) *   0x2000000
-          \ + (a:b32[i + 3] == a:pad ? 0 : a2i[a:b32[i + 3]]) *    0x100000
-          \ + (a:b32[i + 4] == a:pad ? 0 : a2i[a:b32[i + 4]]) *      0x8000
-          \ + (a:b32[i + 5] == a:pad ? 0 : a2i[a:b32[i + 5]]) *       0x400
-          \ + (a:b32[i + 6] == a:pad ? 0 : a2i[a:b32[i + 6]]) *        0x20
+    "              1         2         3
+    "    0123456789012345678901234567890123456789
+    "    |------||------||------||------||------|
+    "  0 +---+
+    "  1      +---+
+    "  2           +---+
+    "  3                +---+
+    "  4                     +---+
+    "  5                          +---+
+    "  6                               +---+
+    "  7                                    +---+
+    "
+    " high 1byte
+    "
+    "    01234567
+    "    |------|
+    "  0 +---+
+    "  1      +--
+    "
+    " low  4byte
+    "              1         2         3
+    "            89012345678901234567890123456789
+    "            |------||------||------||------|
+    "  1         -+
+    "  2           +---+
+    "  3                +---+
+    "  4                     +---+
+    "  5                          +---+
+    "  6                               +---+
+    "  7                                    +---+
+    let n_hi = s:bitwise.or(
+          \ s:bitwise.and(s:bitwise.lshift(a2i[a:b32[i]], 3), 0b11111000),
+          \ s:bitwise.and(s:bitwise.rshift(a2i[a:b32[i + 1]], 2), 0b00000111)
+          \ )
+
+    let n_lo = s:bitwise.and(a2i[a:b32[i + 1]], 0b11)         * 0x40000000
+          \ + (a:b32[i + 2] == a:pad ? 0 : a2i[a:b32[i + 2]]) *  0x2000000
+          \ + (a:b32[i + 3] == a:pad ? 0 : a2i[a:b32[i + 3]])*   0x100000
+          \ + (a:b32[i + 4] == a:pad ? 0 : a2i[a:b32[i + 4]])*     0x8000
+          \ + (a:b32[i + 5] == a:pad ? 0 : a2i[a:b32[i + 5]])*      0x400
+          \ + (a:b32[i + 6] == a:pad ? 0 : a2i[a:b32[i + 6]])*       0x20
           \ + (a:b32[i + 7] == a:pad ? 0 : a2i[a:b32[i + 7]])
-    call add(bytes, n / 0x100000000        )
-    call add(bytes, n /   0x1000000 % 0x100)
-    call add(bytes, n /     0x10000 % 0x100)
-    call add(bytes, n /       0x100 % 0x100)
-    call add(bytes, n               % 0x100)
+    call add(bytes, n_hi                    )
+    call add(bytes, n_lo / 0x1000000 % 0x100)
+    call add(bytes, n_lo /   0x10000 % 0x100)
+    call add(bytes, n_lo /     0x100 % 0x100)
+    call add(bytes, n_lo             % 0x100)
   endfor
   if a:b32[-1] == a:pad
     unlet bytes[-1]
