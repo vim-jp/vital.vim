@@ -108,16 +108,16 @@ function! s:_b32decode(b32, table, pad) abort
     "  6                               +---+
     "  7                                    +---+
     let n_hi = s:bitwise.or(
-          \ s:bitwise.and(s:bitwise.lshift(a2i[a:b32[i]], 3), 0b11111000),
-          \ s:bitwise.and(s:bitwise.rshift(a2i[a:b32[i + 1]], 2), 0b00000111)
+          \ s:bitwise.and(s:bitwise.lshift(a2i[a:b32[i]], 3),     0xf8),
+          \ s:bitwise.and(s:bitwise.rshift(a2i[a:b32[i + 1]], 2), 0x07)
           \ )
 
-    let n_lo = s:bitwise.and(a2i[a:b32[i + 1]], 0b11)         * 0x40000000
+    let n_lo = s:bitwise.and(a2i[a:b32[i + 1]], 0x03)         * 0x40000000
           \ + (a:b32[i + 2] == a:pad ? 0 : a2i[a:b32[i + 2]]) *  0x2000000
-          \ + (a:b32[i + 3] == a:pad ? 0 : a2i[a:b32[i + 3]])*   0x100000
-          \ + (a:b32[i + 4] == a:pad ? 0 : a2i[a:b32[i + 4]])*     0x8000
-          \ + (a:b32[i + 5] == a:pad ? 0 : a2i[a:b32[i + 5]])*      0x400
-          \ + (a:b32[i + 6] == a:pad ? 0 : a2i[a:b32[i + 6]])*       0x20
+          \ + (a:b32[i + 3] == a:pad ? 0 : a2i[a:b32[i + 3]]) *   0x100000
+          \ + (a:b32[i + 4] == a:pad ? 0 : a2i[a:b32[i + 4]]) *     0x8000
+          \ + (a:b32[i + 5] == a:pad ? 0 : a2i[a:b32[i + 5]]) *      0x400
+          \ + (a:b32[i + 6] == a:pad ? 0 : a2i[a:b32[i + 6]]) *       0x20
           \ + (a:b32[i + 7] == a:pad ? 0 : a2i[a:b32[i + 7]])
     call add(bytes, n_hi                    )
     call add(bytes, n_lo / 0x1000000 % 0x100)
