@@ -41,6 +41,7 @@ types					*Vital.Vim.Type-types*
 	none: 7
 	job: 8
 	channel: 9
+	blob: 10
 >
 	let s:t = s:T.types
 
@@ -54,16 +55,17 @@ types					*Vital.Vim.Type-types*
 type_names				*Vital.Vim.Type-type_names*
 	A dictionary that maps from type value to type name.
 
-	0: number
-	1: string
-	2: func
-	3: list
-	4: dict
-	5: float
-	6: bool
-	7: none
-	8: job
-	9: channel
+	 0: number
+	 1: string
+	 2: func
+	 3: list
+	 4: dict
+	 5: float
+	 6: bool
+	 7: none
+	 8: job
+	 9: channel
+	10: blob
 >
 	:echo s:T.type_names[type('')]
 	string

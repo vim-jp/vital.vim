@@ -36,6 +36,11 @@ Describe Vim.Type
         Assert Equals(T.types.channel, type(test_null_channel()))
       End
     endif
+    if has('patch-8.1.0735')
+      It has .blob
+        Assert Equals(T.types.blob, type(0z00))
+      End
+    endif
     It is locked
       Assert True(islocked('T.types'))
     End
@@ -72,6 +77,11 @@ Describe Vim.Type
       End
       It can get name of "channel"
         Assert Equals(T.type_names[type(test_null_channel())], 'channel')
+      End
+    endif
+    if has('patch-8.1.0735')
+      It can get name of "blob"
+        Assert Equals(T.type_names[type(0z00)], 'blob')
       End
     endif
     It is locked
@@ -151,6 +161,9 @@ Describe Vim.Type
       let vals = [0, '', function('type'), [], {}, 0.0]
       if 800 <= v:version
         let vals += [v:false, v:null, test_null_job(), test_null_channel()]
+      endif
+      if has('patch-8.1.0735')
+        let vals += [0z00]
       endif
 
       let true_group = []
