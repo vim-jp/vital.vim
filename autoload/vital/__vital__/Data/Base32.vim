@@ -107,7 +107,7 @@ function! s:_b32decode(b32, table, pad) abort
     "  5                          +---+
     "  6                               +---+
     "  7                                    +---+
-        let n_hi = s:bitwise.or(
+    let n_hi = s:bitwise.or(
           \ s:bitwise.and(s:bitwise.lshift(a2i[a:b32[i]], 3),     0xf8),
           \ s:bitwise.and(s:bitwise.rshift(a2i[a:b32[i + 1]], 2), 0x07)
           \ )
