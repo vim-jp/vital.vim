@@ -16,6 +16,11 @@ INTRODUCTION				*Vital.Hash.SHA1-introduction*
 It provides functions to return the SHA1 sum/digest of a given string as
 hex/bytes list.
 
+The algorithm was ported to Vim script by Yukihiro Nakadaira and this module is
+imported from the implementation.
+
+https://github.com/vim-scripts/sha1.vim
+
 ==============================================================================
 INTERFACE				*Vital.Hash.SHA1-interface*
 ------------------------------------------------------------------------------
