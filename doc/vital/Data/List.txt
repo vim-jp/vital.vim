@@ -152,9 +152,9 @@ map({list}, {function})			*Vital.Data.List.map()*
 	  return a:x + 1
 	endfunction
 
-	echo s:L.map(range(0, 4), function('Even'))
+	echo s:L.map(range(0, 4), function('Succ'))
 	" [1, 2, 3, 4, 5]
-	echo s:L.map(range(0, 4), 'v:val % 2 is 0')
+	echo s:L.map(range(0, 4), 'v:val + 1')
 	" [1, 2, 3, 4, 5]
 <
 	But this maybe slower than builtin |map()|.
