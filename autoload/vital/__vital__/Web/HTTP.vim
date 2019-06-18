@@ -295,6 +295,10 @@ function! s:clients.python.available(settings) abort
 endfunction
 
 function! s:clients.python.request(settings) abort
+  if has_key(a:settings, 'unixSocket')
+    throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
+  endif
+
   " TODO: retry, outputFile
   let responses = []
   python << endpython
@@ -485,6 +489,9 @@ endfunction
 function! s:clients.curl.request(settings) abort
   let quote = s:_quote()
   let command = self._command(a:settings)
+  if has_key(a:settings, 'unixSocket')
+    let command .= ' --unix-socket ' . quote . a:settings.unixSocket . quote
+  endif
   let a:settings._file.header = s:_tempname()
   let command .= ' --dump-header ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
@@ -581,6 +588,9 @@ function! s:clients.wget._command(settings) abort
 endfunction
 
 function! s:clients.wget.request(settings) abort
+  if has_key(a:settings, 'unixSocket')
+    throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
+  endif
   let quote = s:_quote()
   let command = self._command(a:settings)
   let method = a:settings.method
