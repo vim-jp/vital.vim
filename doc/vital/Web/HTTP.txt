@@ -106,6 +106,9 @@ request({method}, {url} [, {settings}])
 	"gzipDecompress"	Default: 0
 		Attempt to decompress response data as if it was gzipped
 
+	"unixSocket"	Default: (None)
+		Use --unix-sokect (only curl >= 7.40.0)
+
 parseHeader({headers})			*Vital.Web.HTTP.parseHeader()*
 	Parse {headers} list to a dictionary.
 	Duplicated fields are overwritten.
