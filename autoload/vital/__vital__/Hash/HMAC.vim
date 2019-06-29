@@ -49,7 +49,7 @@ endfunction
 function! s:HMAC.hash(hashobj) abort
   if type(a:hashobj) is# type({})
         \ && has_key(a:hashobj,'digest_raw')
-        \ && type(a:hashobj.digest_raw) is# type(function("tr"))
+        \ && type(a:hashobj.digest_raw) is# type(function('tr'))
     let self._dict['hash'] = a:hashobj
   else
     call s:_throw('given argument is not HASH API object')

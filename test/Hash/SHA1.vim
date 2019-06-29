@@ -19,13 +19,13 @@ function! s:suite.encode() abort
    call s:assert.equal(s:SHA1.sum('12345678901234567890123456789012345678901234567890123456789012345678901234567890'), '50abf5706a150990a08b2c5ea40fa0e585554732')
 
    " RFC Test Driver's testdata
-   let s:TEST1   = "abc"
-   let s:TEST2a  = "abcdbcdecdefdefgefghfghighijhi"
-   let s:TEST2b  = "jkijkljklmklmnlmnomnopnopq"
+   let s:TEST1   = 'abc'
+   let s:TEST2a  = 'abcdbcdecdefdefgefghfghighijhi'
+   let s:TEST2b  = 'jkijkljklmklmnlmnomnopnopq'
    let s:TEST2   = s:TEST2a . s:TEST2b
-   let s:TEST3   = "a"
-   let s:TEST4a  = "01234567012345670123456701234567"
-   let s:TEST4b  = "01234567012345670123456701234567"
+   let s:TEST3   = 'a'
+   let s:TEST4a  = '01234567012345670123456701234567'
+   let s:TEST4b  = '01234567012345670123456701234567'
    " an exact multiple of 512 bits
    let s:TEST4   = s:TEST4a . s:TEST4b
    let s:testarray = [
@@ -36,18 +36,18 @@ function! s:suite.encode() abort
          \ ]
    " original result
    " let s:resultarray = [
-   "      \ "a9993e364706816aba3e25717850c26c9cd0d89d",
-   "      \ "84983e441c3bd26ebaae4aa1f95129e5e54670f1",
-   "      \ "34aa973cd4c4daa4f61eeb2bdbad27316534016f",
-   "      \ "dea356a2cddd90c7a7ecedc5ebb563934f460452"
+   "      \ 'a9993e364706816aba3e25717850c26c9cd0d89d",
+   "      \ '84983e441c3bd26ebaae4aa1f95129e5e54670f1",
+   "      \ '34aa973cd4c4daa4f61eeb2bdbad27316534016f",
+   "      \ 'dea356a2cddd90c7a7ecedc5ebb563934f460452"
    "      \ ]
 
    " other SHA1 test site generate result
    let s:resultarray = [
-         \ "a9993e364706816aba3e25717850c26c9cd0d89d",
-         \ "84983e441c3bd26ebaae4aa1f95129e5e54670f1",
-         \ "86f7e437faa5a7fce15d1ddcb9eaeaea377667b8",
-         \ "e0c094e867ef46c350ef54a7f59dd60bed92ae83"
+         \ 'a9993e364706816aba3e25717850c26c9cd0d89d',
+         \ '84983e441c3bd26ebaae4aa1f95129e5e54670f1',
+         \ '86f7e437faa5a7fce15d1ddcb9eaeaea377667b8',
+         \ 'e0c094e867ef46c350ef54a7f59dd60bed92ae83'
          \]
 
    call s:assert.equal(s:SHA1.sum(s:testarray[0]),s:resultarray[0])
