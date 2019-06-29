@@ -1,0 +1,38 @@
+*vital/Hash/SHA1.txt*		sha1 utilities library.
+
+Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Hash.SHA1-contents*
+
+INTRODUCTION		                |Vital.Hash.SHA1-introduction|
+INTERFACE		                |Vital.Hash.SHA1-interface|
+  Functions                             |Vital.Hash.SHA1-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Hash.SHA1-introduction*
+
+*Vital.Hash.SHA1* is a SHA1 Utilities Library.
+It provides functions to return the SHA1 sum/digest of a given string as
+hex/bytes list.
+
+The algorithm was ported to Vim script by Yukihiro Nakadaira and this module is
+imported from the implementation.
+
+https://github.com/vim-scripts/sha1.vim
+
+==============================================================================
+INTERFACE				*Vital.Hash.SHA1-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Hash.SHA1-functions*
+
+sum({str})				*Vital.Hash.SHA1.sum()*
+sum_raw({bytes})			*Vital.Hash.SHA1.sum_raw()*
+	Return SHA1 hashed string from {str} or raw {bytes} list.
+
+digest({str})				*Vital.Hash.SHA1.digest()*
+digest_raw({bytes})			*Vital.Hash.SHA1.digest_raw()*
+	Return SHA1 hashed bytes list from {str} or raw {bytes} list.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
