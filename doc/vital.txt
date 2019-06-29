@@ -185,6 +185,7 @@ LINKS					*Vital-links*
   |vital/Database/SQLite.txt|	sqlite utilities library.
   |vital/DateTime.txt|		date and time library.
   |vital/Experimental/Functor.txt|	Utilities for functor.
+  |vital/Hash/HMAC.txt|	        Hash-based Message Authentication Code.
   |vital/Hash/MD5.txt|	        MD5 encoding.
   |vital/Hash/SHA1.txt|	        SHA1 encoding.
   |vital/Interpreter/Brainf__k.txt|	Brainf**k interpreter

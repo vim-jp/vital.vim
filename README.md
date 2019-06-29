@@ -62,6 +62,7 @@ Module						 | Description
 [Database.SQLite](doc/vital/Database/SQLite.txt) | sqlite utilities library
 [DateTime](doc/vital/DateTime.txt)		 | date and time library
 [Experimental.Functor](doc/vital/Experimental/Functor.txt) | Utilities for functor
+[Hash.HMAC](doc/vital/Hash/HMAC.txt) | Hash-based Message Authentication Code
 [Hash.MD5](doc/vital/Hash/MD5.txt) | MD5 encoding
 [Hash.SHA1](doc/vital/Hash/SHA1.txt) | SHA1 encoding
 [Interpreter.Brainf__k](doc/vital/Interpreter/Brainf__k.txt) | Brainf\*\*k interpreter

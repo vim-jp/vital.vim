@@ -1,0 +1,53 @@
+*vital/Hash/HMAC.txt*		HMAC utilities library.
+
+Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Hash.HMAC-contents*
+
+INTRODUCTION		                |Vital.Hash.HMAC-introduction|
+INTERFACE		                |Vital.Hash.HMAC-interface|
+  Functions                             |Vital.Hash.HMAC-functions|
+OBJECTS					|Vital.Hash.HMAC-objects|
+  HMAC Object				|Vital.Hash.HMAC-HMAC|
+
+==============================================================================
+INTRODUCTION				*Vital.Hash.HMAC-introduction*
+
+*Vital.Hash.HMAC* is a HMAC Utilities Library.
+It provides functions to return the HMAC mac given string as
+hex/bytes list.
+
+==============================================================================
+INTERFACE				*Vital.Hash.HMAC-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Hash.HMAC-functions*
+
+new({hashobj},{key})			*Vital.Hash.HMAC.new()*
+	Return HMAC object with {hashobj} algo and {key}.
+	{hashobj} see also |Vital.Hash.HMAC-HMAC.hash()|.
+	{key} see also |Vital.Hash.HMAC-HMAC.key()|.
+
+==============================================================================
+OBJECTS					*Vital.Hash.HMAC-objects*
+
+------------------------------------------------------------------------------
+HMAC Object				*Vital.Hash.HMAC-HMAC*
+
+HMAC.hash({hashobj})			*Vital.Hash.HMAC-HMAC.hash()*
+	Set HMAC {hashobj} hash algorithm.
+	{hashobj} must 'digest_raw' method(input/output {bytes} list).
+	Such as Hash.MD5,SHA1.
+
+HMAC.key({str|bytes})				*Vital.Hash.HMAC-HMAC.key()*
+	Set HMAC secret key {str|bytes}. key is string or bytes list.
+
+HMAC.calc({data})			*Vital.Hash.HMAC-HMAC.calc()*
+	Calculate and return HMAC value that was bytes list.
+
+HMAC.hmac({data})			*Vital.Hash.HMAC-HMAC.hmac()*
+	Calculate and return HMAC value that was string
+	(calc result converted value).
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
