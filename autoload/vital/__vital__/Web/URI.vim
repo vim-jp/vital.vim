@@ -606,27 +606,40 @@ function! s:_uri_to_string() dict abort
 endfunction
 
 
-let s:FUNCTION_DESCS = [
-\ 'scheme', 'userinfo', 'host',
-\ 'port', 'path', 'path_abempty',
-\ 'path_absolute', 'path_noscheme',
-\ 'path_rootless',
-\ 'query', 'fragment'
-\]
-
-" Create s:_eat_*() functions.
-function! s:_create_eat_functions() abort
-  for where in s:FUNCTION_DESCS
-    execute join([
-    \ 'function! s:_eat_'.where.'(str, pattern_set) abort',
-    \   'return s:_eat_em(a:str, "^" . a:pattern_set.get('.string(where).'), '.string(where).')',
-    \ 'endfunction',
-    \], "\n")
-  endfor
+function! s:_eat_scheme(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('scheme'), 'scheme')
 endfunction
-call s:_create_eat_functions()
+function! s:_eat_userinfo(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('userinfo'), 'userinfo')
+endfunction
+function! s:_eat_host(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('host'), 'host')
+endfunction
+function! s:_eat_port(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('port'), 'port')
+endfunction
+function! s:_eat_path(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('path'), 'path')
+endfunction
+function! s:_eat_path_abempty(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('path_abempty'), 'path_abempty')
+endfunction
+function! s:_eat_path_absolute(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('path_absolute'), 'path_absolute')
+endfunction
+function! s:_eat_path_noscheme(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('path_noscheme'), 'path_noscheme')
+endfunction
+function! s:_eat_path_rootless(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('path_rootless'), 'path_rootless')
+endfunction
+function! s:_eat_query(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('query'), 'query')
+endfunction
+function! s:_eat_fragment(str, pattern_set) abort
+  return s:_eat_em(a:str, '^' . a:pattern_set.get('fragment'), 'fragment')
+endfunction
 
-" Create s:_uri_is_*() functions.
 function! s:_has_error(func, args) abort
   try
     call call(a:func, a:args)
@@ -635,17 +648,40 @@ function! s:_has_error(func, args) abort
     return 1
   endtry
 endfunction
-function! s:_create_check_functions() abort
-  for where in s:FUNCTION_DESCS
-    execute join([
-    \ 'function! s:_uri_is_'.where.'(str) dict abort',
-    \   'return !s:_has_error("s:_eat_'.where.'", [a:str, self.__pattern_set])',
-    \ 'endfunction',
-    \], "\n")
-  endfor
-endfunction
-call s:_create_check_functions()
 
+function! s:_uri_is_scheme(str) dict abort
+  return !s:_has_error('s:_eat_scheme', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_userinfo(str) dict abort
+  return !s:_has_error('s:_eat_userinfo', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_host(str) dict abort
+  return !s:_has_error('s:_eat_host', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_port(str) dict abort
+  return !s:_has_error('s:_eat_port', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_path(str) dict abort
+  return !s:_has_error('s:_eat_path', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_path_abempty(str) dict abort
+  return !s:_has_error('s:_eat_path_abempty', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_path_absolute(str) dict abort
+  return !s:_has_error('s:_eat_path_absolute', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_path_noscheme(str) dict abort
+  return !s:_has_error('s:_eat_path_noscheme', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_path_rootless(str) dict abort
+  return !s:_has_error('s:_eat_path_rootless', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_query(str) dict abort
+  return !s:_has_error('s:_eat_query', [a:str, self.__pattern_set])
+endfunction
+function! s:_uri_is_fragment(str) dict abort
+  return !s:_has_error('s:_eat_fragment', [a:str, self.__pattern_set])
+endfunction
 
 function! s:_local_func(name) abort
   let sid = matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__local_func$')
