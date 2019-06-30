@@ -356,7 +356,7 @@ Describe DateTime
         Assert Equals(new_dt.to_string(), dt.to_string())
       End
 
-      Context when DateTime is in the range of 64bit unix time
+      Context when DateTime is beyond 2038 but within the range of 64 bit unix time
         if has('num64')
           It returns the unix time
             "  20000000000 | 2603-10-11 11:33:20
