@@ -2,7 +2,7 @@ Describe Hash.HMAC
   Before all
     let HMAC = vital#vital#new().import('Hash.HMAC')
     let MD5  = vital#vital#new().import('Hash.MD5')
-    " let SHA1 = vital#vital#new().import('Hash.SHA1')
+    let SHA1 = vital#vital#new().import('Hash.SHA1')
 
     " https://tools.ietf.org/html/rfc2202
     " RFC TestVector
@@ -187,19 +187,17 @@ Describe Hash.HMAC
       let hmacmd5 = HMAC.new(MD5, test_case_md5[0].key)
       Assert Equals(test_case_md5[0].digest_str, hmacmd5.hmac(test_case_md5[0].data))
     End
-    " need SHA1
-    " It add after construction argument override
-    "   let hmacmd5 = HMAC.new(SHA1, test_case_md5[0].key)
-    "   call hmacmd5.hash(MD5)
-    "   Assert Equals(test_case_md5[0].digest_str, hmacmd5.hmac(test_case_md5[0].data))
-    " End
-    " need SHA1
-    " It add after construction add normal only algo new
-    "   let hmacmd5 = HMAC.new(SHA1)
-    "   call hmacmd5.hash(MD5)
-    "   call hmacmd5.key(test_case_md5[0].key)
-    "   Assert Equals(test_case_md5[0].digest_str, hmacmd5.hmac(test_case_md5[0].data))
-    " End
+    It add after construction argument override
+      let hmacmd5 = HMAC.new(SHA1, test_case_md5[0].key)
+      call hmacmd5.hash(MD5)
+      Assert Equals(test_case_md5[0].digest_str, hmacmd5.hmac(test_case_md5[0].data))
+    End
+    It add after construction add normal only algo new
+      let hmacmd5 = HMAC.new(SHA1)
+      call hmacmd5.hash(MD5)
+      call hmacmd5.key(test_case_md5[0].key)
+      Assert Equals(test_case_md5[0].digest_str, hmacmd5.hmac(test_case_md5[0].data))
+    End
     It add after construction add normal no arg new
       let hmacmd5 = HMAC.new()
       call hmacmd5.hash(MD5)
@@ -223,11 +221,10 @@ Describe Hash.HMAC
         let hmacmd5 = HMAC.new(MD5, test.key)
         Assert Equals(test.digest, hmacmd5.calc(test.data))
       endfor
-      " need SHA1
-      " for test in test_case_sha1
-      "   let hmacsha1 = HMAC.new(SHA1, test.key)
-      "   Assert Equals(test.digest_str, hmacsha1.hmac(test.data))
-      " endfor
+      for test in test_case_sha1
+        let hmacsha1 = HMAC.new(SHA1, test.key)
+        Assert Equals(test.digest_str, hmacsha1.hmac(test.data))
+      endfor
     End
     It add after construction work fine
       for test in test_case_md5
@@ -236,13 +233,12 @@ Describe Hash.HMAC
         call hmacmd5.key(test.key)
         Assert Equals(test.digest, hmacmd5.calc(test.data))
       endfor
-      " need SHA1
-      " for test in test_case_sha1
-      "   let hmacsha1 = HMAC.new()
-      "   call hmacsha1.hash(SHA1)
-      "   call hmacsha1.key(test.key)
-      "   Assert Equals(test.digest_str, hmacsha1.hmac(test.data))
-      " endfor
+      for test in test_case_sha1
+        let hmacsha1 = HMAC.new()
+        call hmacsha1.hash(SHA1)
+        call hmacsha1.key(test.key)
+        Assert Equals(test.digest_str, hmacsha1.hmac(test.data))
+      endfor
     End
     It no set algo do not work
       let hmacmd5 = HMAC.new()
@@ -273,11 +269,10 @@ Describe Hash.HMAC
         let hmacmd5 = HMAC.new(MD5, test.key)
         Assert Equals(test.digest_str, hmacmd5.hmac(test.data))
       endfor
-      " need SHA1
-      " for test in test_case_sha1
-      "   let hmacsha1 = HMAC.new(SHA1, test.key)
-      "   Assert Equals(test.digest_str, hmacsha1.hmac(test.data))
-      " endfor
+      for test in test_case_sha1
+        let hmacsha1 = HMAC.new(SHA1, test.key)
+        Assert Equals(test.digest_str, hmacsha1.hmac(test.data))
+      endfor
     End
     It add after construction work fine
       for test in test_case_md5
@@ -286,13 +281,12 @@ Describe Hash.HMAC
         call hmacmd5.key(test.key)
         Assert Equals(test.digest_str, hmacmd5.hmac(test.data))
       endfor
-      " SHA1
-      " for test in test_case_sha1
-      "   let hmacsha1 = HMAC.new()
-      "   call hmacsha1.hash(SHA1)
-      "   call hmacsha1.key(test.key)
-      "   Assert Equals(test.digest_str, hmacsha1.hmac(test.data))
-      " endfor
+      for test in test_case_sha1
+        let hmacsha1 = HMAC.new()
+        call hmacsha1.hash(SHA1)
+        call hmacsha1.key(test.key)
+        Assert Equals(test.digest_str, hmacsha1.hmac(test.data))
+      endfor
     End
     It no set algo do not work
       let hmacmd5 = HMAC.new()
