@@ -1,6 +1,6 @@
 e95e7692800046598367fe40559e31e1ef96a2ca
 	Modules: Hash.MD5
-	Hash.MD5.sum_raw alrady does not affect the argument variable.
+	Hash.MD5.sum_raw won't destroy the argument.
 	This is a change of internal function. This change is to ensure that there is no impact when copying to other modules.
 4fc7b6ea0ca8d7f1da1b08e49268e721901f55d9
 	Modules: Data.Optional
