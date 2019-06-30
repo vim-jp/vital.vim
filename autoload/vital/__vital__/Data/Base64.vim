@@ -5,18 +5,24 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! s:encode(data) abort
-  let b64 = s:_b64encode(s:_str2bytes(a:data), s:standard_table, '=')
-  return join(b64, '')
+  return s:encodebytes(s:_str2bytes(a:data))
 endfunction
 
 function! s:encodebin(data) abort
-  let b64 = s:_b64encode(s:_binstr2bytes(a:data), s:standard_table, '=')
+  return s:encodebytes(s:_binstr2bytes(a:data))
+endfunction
+
+function! s:encodebytes(data) abort
+  let b64 = s:_b64encode(a:data, s:standard_table, '=')
   return join(b64, '')
 endfunction
 
 function! s:decode(data) abort
-  let bytes = s:_b64decode(split(a:data, '\zs'), s:standard_table, '=')
-  return s:_bytes2str(bytes)
+  return s:_bytes2str(s:decoderaw(a:data))
+endfunction
+
+function! s:decoderaw(data) abort
+  return s:_b64decode(split(a:data, '\zs'), s:standard_table, '=')
 endfunction
 
 let s:standard_table = [

@@ -36,6 +36,12 @@ Describe Data.Base64
     End
   End
 
+  Describe .encodebytes()
+    It encode bytes-list encoded as hex to base64 encoded string.
+      Assert Equals(B.encodebytes([0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21]), 'aGVsbG8sIHdvcmxkIQ==')
+    End
+  End
+
   Describe .decode()
     It decode base64 encoded string to string.
       Assert Equals(B.decode("aGVsbG8sIHdvcmxkIQ=="), 'hello, world!')
@@ -61,6 +67,12 @@ Describe Data.Base64
     End
     It decode string RFC Test Vector 7.
       Assert Equals(B.decode("Zm9vYmFy"), 'foobar')
+    End
+  End
+
+  Describe .decoderaw()
+    It decode base64 encoded string to bytes-list.
+      Assert Equals(B.decoderaw("aGVsbG8sIHdvcmxkIQ=="), [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21])
     End
   End
 End

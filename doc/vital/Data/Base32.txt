@@ -29,9 +29,15 @@ encodebin({str})			*Vital.Data.Base32.encodebin()*
 	Return base32 encoded string from {str}. {str} is hex encoded string
 	figured as bytes.
 
+encodebytes({bytes})			*Vital.Data.Base32.encodebytes()*
+	Return base32 encoded string from {bytes}.
+
 decode({str})				*Vital.Data.Base32.decode()*
 	Return decoded string from {str} that's base32 encoded.
 	{str} are case insensitive.
+
+decoderaw({str})			*Vital.Data.Base32.decoderaw()*
+	Return decoded bytes-list from {str} that's base32 encoded.
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
