@@ -646,7 +646,7 @@ function! s:clients.wget.request(settings) abort
 endfunction
 
 function! s:_quote() abort
-  return shellescape('')[0]
+  return &shell =~# 'sh$' ? "'" : '"'
 endfunction
 
 let &cpo = s:save_cpo
