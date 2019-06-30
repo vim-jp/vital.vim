@@ -1,7 +1,7 @@
 a9a3520e4b48c020a3c4802578e10e9682738e7a
 	Modules: Data.Collection
 	Data.Collection is gone. If you used Data.Collection.get_f, replace it with following:
-	s:C.get_f(c, k, o) -> has_key(c, k) ? c[:k] : function(o)()
+	s:C.get_f(c, k, o) -> has_key(c, k) ? c[k] : function(o)()
 e95e7692800046598367fe40559e31e1ef96a2ca
 	Modules: Hash.MD5
 	Hash.MD5.sum_raw won't destroy the argument.
