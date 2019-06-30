@@ -44,7 +44,7 @@ function! s:sum(data) abort
 endfunction
 
 function! s:sum_raw(bytes) abort
-  return s:_bytes2str(s:digest_raw(a:bytes))
+  return s:_bytes2binstr(s:digest_raw(a:bytes))
 endfunction
 
 function! s:digest(data) abort
@@ -126,8 +126,8 @@ function! s:_leftrotate(x, c) abort
   return s:bitwise.and(s:bitwise.or(s:bitwise.lshift(l:x, a:c), s:bitwise.rshift(l:x, (32-a:c))), 0xFFFFFFFF)
 endfunction
 
-function! s:_bytes2str(bytes) abort
-  return join(map(a:bytes, 'printf(''%02x'', v:val)'), '')
+function! s:_bytes2binstr(bytes) abort
+  return join(map(copy(a:bytes), 'printf(''%02x'', v:val)'), '')
 endfunction
 
 function! s:_str2bytes(str) abort
