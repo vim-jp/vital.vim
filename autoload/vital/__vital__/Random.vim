@@ -105,7 +105,9 @@ endfunction
 
 function! s:new(...) abort
   let generator = a:0 ? a:1 : ''
-  let seed = 2 <= a:0 ? a:2 : s:next()
+  " vint: -ProhibitUsingUndeclaredVariable
+  let seed = 2 <= a:0 ? a:2 : s:next() " s:next() is defined by execute() below
+  " vint: +ProhibitUsingUndeclaredVariable
   let random = deepcopy(s:Random)
   let random._generator = s:_get_generator(generator)
   call random.seed(seed)
