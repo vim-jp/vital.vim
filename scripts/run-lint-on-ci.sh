@@ -7,8 +7,8 @@ fi
 
 set -ev
 
-REVIEWDOG_VERSION=0.9.9
-VINT_VERSION=0.3.18
+REVIEWDOG_VERSION=0.9.12
+VINT_VERSION=0.3.21
 
 mkdir -p ~/bin/ && export PATH="~/bin/:$PATH"
 
