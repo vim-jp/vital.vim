@@ -159,6 +159,8 @@ DateTime.quarter()		*Vital.DateTime-DateTime.quarter()*
 DateTime.unix_time()		*Vital.DateTime-DateTime.unix_time()*
 	Returns the unix time.
 	If this DateTime is out of range of unix time, returns -1.
+	NOTE: When `num64` has supported. do not has "Year 2038 problem", work
+	correctly.
 
 DateTime.is_leap_year()		*Vital.DateTime-DateTime.is_leap_year()*
 	Returns true when the year is a leap year.
