@@ -76,7 +76,7 @@ Describe System.Filepath
       let relpath = 'foo'
       call mkdir(relpath, "")
       let ret = FP.abspath(relpath)
-      let exp = FP.join(getcwd(), relpath)
+      let exp = FP.join(getcwd(), relpath) . FP.separator()
       Assert NotSame(ret, relpath)
       Assert NotEquals(ret, relpath)
       Assert Equals(ret, exp)
