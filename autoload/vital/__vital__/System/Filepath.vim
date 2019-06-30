@@ -202,8 +202,8 @@ function! s:abspath(path) abort
     return a:path
   endif
   " Note:
-  "   the behavior of ':p' for non existing file path is not defined
-  return filereadable(a:path)
+  "   the behavior of ':p' for non existing file path/directory is not defined
+  return (filereadable(a:path) || isdirectory(a:path))
         \ ? fnamemodify(a:path, ':p')
         \ : s:join(fnamemodify(getcwd(), ':p'), a:path)
 endfunction

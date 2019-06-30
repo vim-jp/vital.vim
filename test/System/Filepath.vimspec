@@ -61,7 +61,7 @@ Describe System.Filepath
       Assert Same(ret, abspath)
     End
 
-    It should return an absolute path of {path} which exists
+    It should return an absolute path of {path} which exists file
       let relpath = 'foo.txt'
       call writefile(['foo'], relpath)
       let ret = FP.abspath(relpath)
@@ -70,6 +70,17 @@ Describe System.Filepath
       Assert NotEquals(ret, relpath)
       Assert Equals(ret, exp)
       call delete(relpath)
+    End
+
+    It should return an absolute path of {path} which exists dir
+      let relpath = 'foo'
+      call mkdir(relpath, "")
+      let ret = FP.abspath(relpath)
+      let exp = FP.join(getcwd(), relpath)
+      Assert NotSame(ret, relpath)
+      Assert NotEquals(ret, relpath)
+      Assert Equals(ret, exp)
+      call delete(relpath, 'd')
     End
 
     It should return an absolute path of {path} which does not exist
