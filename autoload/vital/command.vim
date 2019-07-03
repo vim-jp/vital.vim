@@ -1,4 +1,4 @@
-" vitalizer in vim script.
+" vital commands implementations.
 
 let s:save_cpo = &cpo
 set cpo&vim

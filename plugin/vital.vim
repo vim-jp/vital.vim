@@ -1,9 +1,9 @@
-" vitalizer by vim script.
+" vital commands.
 
-if exists('g:loaded_vitalizer')
+if exists('g:loaded_vital')
   finish
 endif
-let g:loaded_vitalizer = 1
+let g:loaded_vital = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
