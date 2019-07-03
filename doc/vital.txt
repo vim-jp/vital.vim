@@ -175,6 +175,7 @@ LINKS					*Vital-links*
   |vital/Data/Dict.txt|		dictionary utilities library.
   |vital/Data/LazyList.txt|	lazy list including file io.
   |vital/Data/List.txt|		list utilities library.
+  |vital/Data/List/Byte.txt|	Bytes-List and other bytes-list like data converter.
   |vital/Data/Optional.txt|	Provide optional value
   |vital/Data/OrderedSet.txt|	ordered collection library.
   |vital/Data/Set.txt|		set library.
