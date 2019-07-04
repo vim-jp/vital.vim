@@ -315,4 +315,119 @@ Describe Bitwise
       End
     endif
   End
+
+  Describe .uint8()
+    It cast data
+      Assert Equals(B.uint8(0x123), 0x23)
+    End
+  End
+
+  Describe .uint16()
+    It cast data
+      Assert Equals(B.uint16(0x12345), 0x2345)
+    End
+  End
+
+  Describe .uint32()
+    It cast data
+      if has('num64')
+        Assert Equals(B.uint32(0x123456789), 0x23456789)
+      else
+        Assert Equals(B.uint32(0x23456789), 0x23456789)
+      endif
+    End
+  End
+
+  Describe .uint64()
+    It cast data
+      if has('num64')
+        Assert Equals(B.uint64(0x2345678923456789), 0x2345678923456789)
+      else
+        Throws /^vital: Bitwise:/ B.uint64(0)
+      endif
+    End
+  End
+
+
+  Describe .rotate8l()
+    It cast data
+      Assert Equals(B.rotate8l(0b11001001, 3), 0b01001110)
+    End
+  End
+
+  Describe .rotate8r()
+    It cast data
+      Assert Equals(B.rotate8r(0b11001001, 5), 0b01001110)
+    End
+  End
+
+  Describe .rotate16l()
+    It cast data
+      Assert Equals(B.rotate16l(0b0000000011001001, 11), 0b0100100000000110)
+    End
+  End
+
+  Describe .rotate16r()
+    It cast data
+      Assert Equals(B.rotate16r(0b0000000011001001, 5), 0b0100100000000110)
+    End
+  End
+
+  Describe .rotate32l()
+    It cast data
+      " input
+      " 0b 00001111 10100101 00000000 11001001
+      " rotl 27
+      " output
+      " 0b  01001 <-- 00001111 10100101  00000000  110
+      Assert Equals(B.rotate32l(0b00001111101001010000000011001001, 27), 0b01001000011111010010100000000110)
+    End
+  End
+
+  Describe .rotate32l()
+    It cast data
+      " input
+      " 0b 00001111 10100101 00000000 11001001
+      " rotr 5
+      " output
+      " 0b  01001 --> 00001111 10100101  00000000  110
+      Assert Equals(B.rotate32r(0b00001111101001010000000011001001, 5), 0b01001000011111010010100000000110)
+    End
+  End
+
+  Describe .rotate64l()
+    if has('num64')
+      It cast data
+        " input
+        " 0b 00001111 10100101 00000000 11001001 00000000 11111111 10101010 01010101
+        " rotl 27
+        " output
+        " 0b  01001 00000000 11111111 10101010 01010101 <-- 00001111 10100101  00000000  110
+        " Assert Equals(B.rotate64l(0b0000111110100101000000001100100100000000111111111010101001010101 , 27), 0b0100100000000111111111010101001010101000011111010010100000000110)
+        Assert Equals(B.rotate64l(0x0FA500C900FFAA55 , 27), 0x4807FD52A87D2806)
+      End
+    else
+      It cast data
+        Throws /^vital: Bitwise:/ B.rotate64l(0,0)
+      End
+    endif
+  End
+
+  Describe .rotate64r()
+    if has('num64')
+      It cast data
+        " input
+        " 0b 00001111 10100101 00000000 11001001 00000000 11111111 10101010 01010101
+        " rotr 37
+        " output
+        " 0b  01001 00000000 11111111 10101010 01010101 --> 00001111 10100101  00000000  110
+        " Assert Equals(B.rotate64r(0b0000111110100101000000001100100100000000111111111010101001010101 , 37), 0b0100100000000111111111010101001010101000011111010010100000000110)
+        Assert Equals(B.rotate64r(0x0FA500C900FFAA55 , 37), 0x4807FD52A87D2806)
+      End
+    else
+      It cast data
+        Throws /^vital: Bitwise:/ B.rotate64r(0,0)
+      End
+    endif
+  End
 End
