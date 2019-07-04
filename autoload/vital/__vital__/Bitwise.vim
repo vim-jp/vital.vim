@@ -33,11 +33,17 @@ function! s:compare(a, b) abort
 endfunction
 
 function! s:lshift(a, n) abort
-  return  a:a * s:pow2[s:and(a:n, s:mask)]
+  " and/or/xor/invert generate from built-in
+  " vint: -ProhibitUsingUndeclaredVariable
+  return a:a * s:pow2[s:and(a:n, s:mask)]
+  " vint: +ProhibitUsingUndeclaredVariable
 endfunction
 
 function! s:rshift(a, n) abort
+  " and/or/xor/invert generate from built-in
+  " vint: -ProhibitUsingUndeclaredVariable
   let n = s:and(a:n, s:mask)
+  " vint: +ProhibitUsingUndeclaredVariable
   return n == 0 ? a:a :
   \  a:a < 0 ? (a:a - s:min) / s:pow2[n] + s:pow2[-2] / s:pow2[n - 1]
   \          : a:a / s:pow2[n]
@@ -92,36 +98,53 @@ endfunction
 function! s:_vital_loaded(V) abort
   if has('num64')
     let s:mask32bit = 0xFFFFFFFF
+    " and/or/xor/invert generate from built-in
+    " vint: -ProhibitUsingUndeclaredVariable
     let s:mask64bit = s:or(
           \ s:lshift(s:mask32bit, 32),
           \          s:mask32bit
           \)
+    " vint: +ProhibitUsingUndeclaredVariable
   else
+    " vint: -ProhibitUsingUndeclaredVariable
     let s:mask32bit = s:or(
           \ s:lshift(0xFFFF, 16),
           \          0xFFFF
           \)
+    " vint: +ProhibitUsingUndeclaredVariable
   endif
 endfunction
 
 " 32bit/64bit common method part2 : use defined method
 
 function! s:uint8(value) abort
+  " and/or/xor/invert generate from built-in
+  " vint: -ProhibitUsingUndeclaredVariable
   return s:and(a:value, 0xFF)
+  " vint: +ProhibitUsingUndeclaredVariable
 endfunction
 
 function! s:uint16(value) abort
+  " and/or/xor/invert generate from built-in
+  " vint: -ProhibitUsingUndeclaredVariable
   return s:and(a:value, 0xFFFF)
+  " vint: +ProhibitUsingUndeclaredVariable
 endfunction
 
 function! s:uint32(value) abort
+  " and/or/xor/invert generate from built-in
+  " vint: -ProhibitUsingUndeclaredVariable
   return s:and(a:value, s:mask32bit)
+  " vint: +ProhibitUsingUndeclaredVariable
 endfunction
 
 function! s:rotate8l(data, bits) abort
   let data = s:uint8(a:data)
+  " and/or/xor/invert generate from built-in
+  " vint: -ProhibitUsingUndeclaredVariable
   return s:uint8(s:or(s:lshift(data, a:bits),
                     \ s:rshift(data, 8 - a:bits)))
+  " vint: +ProhibitUsingUndeclaredVariable
 endfunction
 function! s:rotate8r(data, bits) abort
   return s:rotate8l(a:data, 8 - a:bits)
@@ -129,8 +152,11 @@ endfunction
 
 function! s:rotate16l(data, bits) abort
   let data = s:uint16(a:data)
+  " and/or/xor/invert generate from built-in
+  " vint: -ProhibitUsingUndeclaredVariable
   return s:uint16(s:or(s:lshift(data, a:bits),
                      \ s:rshift(data, 16 - a:bits)))
+  " vint: +ProhibitUsingUndeclaredVariable
 endfunction
 function! s:rotate16r(data, bits) abort
   return s:rotate16l(a:data, 16 - a:bits)
@@ -138,8 +164,11 @@ endfunction
 
 function! s:rotate32l(data, bits) abort
   let data = s:uint32(a:data)
+  " and/or/xor/invert generate from built-in
+  " vint: -ProhibitUsingUndeclaredVariable
   return s:uint32(s:or(s:lshift(data, a:bits),
                      \ s:rshift(data, 32 - a:bits)))
+  " vint: +ProhibitUsingUndeclaredVariable
 endfunction
 function! s:rotate32r(data, bits) abort
   return s:rotate32l(a:data, 32 - a:bits)
@@ -150,13 +179,19 @@ endfunction
 "                          32bit throw exception.
 if has('num64')
   function! s:uint64(value) abort
+    " and/or/xor/invert generate from built-in
+    " vint: -ProhibitUsingUndeclaredVariable
     return s:and(a:value, s:mask64bit)
+    " vint: +ProhibitUsingUndeclaredVariable
   endfunction
 
   function! s:rotate64l(data, bits) abort
     let data = s:uint64(a:data)
+    " and/or/xor/invert generate from built-in
+    " vint: -ProhibitUsingUndeclaredVariable
     return s:uint64(s:or(s:lshift(data, a:bits),
                        \ s:rshift(data, 64 - a:bits)))
+    " vint: +ProhibitUsingUndeclaredVariable
   endfunction
 else
   function! s:uint64(value) abort
