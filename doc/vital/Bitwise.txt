@@ -71,5 +71,49 @@ rshift32({expr}, {bits})			*Vital.Bitwise.rshift32()*
 	With |+num64|, upper 32bits of {expr} is ignored.
 
 
+uint8({int})				  *Vital.Bitwise.uint8()*
+	Return uint8 (1 byte) casted integer from {int}.
+
+uint16({int})				  *Vital.Bitwise.uint16()*
+	Return uint16 (2 byte) casted integer from {int}.
+
+uint32({int})				  *Vital.Bitwise.uint32()*
+	Return uint32 (4 byte) casted integer from {int}.
+
+uint64({int})				  *Vital.Bitwise.uint64()*
+	Return uint64 (8 byte) casted integer from {int}.
+	NOTE:Support only |+num64|.
+
+rotate8l({int}, {bits})			  *Vital.Bitwise.rotate8l()*
+	Return value that is {bits}-bit left bit-rotated with {int} as uint8.
+	Ex. >
+	echo printf('08b' B.rotate8(0b11001001, 3)
+	"         01001110
+	" 110 <-- 01001 <-- 110
+<
+
+rotate8r({int}, {bits})			  *Vital.Bitwise.rotate8r()*
+	Same as |Vital.Bitwise.rotate8l()|, shift right.
+
+rotate16l({int}, {bits})		  *Vital.Bitwise.rotate16l()*
+	Return value that is {bits}-bit left bit-rotated with {int} as uint16.
+
+rotate16r({int}, {bits})		  *Vital.Bitwise.rotate16r()*
+	Same as |Vital.Bitwise.rotate16l()|, shift right.
+
+rotate32l({int}, {bits})		  *Vital.Bitwise.rotate32l()*
+	Return value that is {bits}-bit left bit-rotated with {int} as uint32.
+
+rotate32r({int}, {bits})		  *Vital.Bitwise.rotate32r()*
+	Same as |Vital.Bitwise.rotate32l()|, shift right.
+
+rotate64l({int}, {bits})		  *Vital.Bitwise.rotate64l()*
+	Return value that is {bits}-bit left bit-rotated with {int} as uint64.
+	NOTE:Support only |+num64|.
+
+rotate64r({int}, {bits})		  *Vital.Bitwise.rotate64r()*
+	Same as |Vital.Bitwise.rotate64l()|, shift right.
+	NOTE:Support only |+num64|.
+
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
