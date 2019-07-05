@@ -54,14 +54,14 @@ to_blob({bytes})		         *Vital.Data.List.Byte.to_blob()*
 	Return blob that is {bytes} stored to blob structure.
 
 
-from_int({int}, {bits})		         *Vital.Data.List.Byte.from_blob()*
+from_int({int}, {bits})		         *Vital.Data.List.Byte.from_int()*
 	Return bytes-list from {int}.
 	bytes-list like: {bits} bit-length int value.
 	Byte-order: big-endian
 	If you need little-endian result, using
 	|Vital.Data.List.Byte.endian_convert()|
 
-to_int({bytes})			         *Vital.Data.List.Byte.to_blob()*
+to_int({bytes})			         *Vital.Data.List.Byte.to_int()*
 	Return int that is {bytes} decode big-endian bytes value.
 	If you need little-endian decode work, using
 	|Vital.Data.List.Byte.endian_convert()|
