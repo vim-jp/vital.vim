@@ -7,12 +7,11 @@ function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:bitwise = s:V.import('Bitwise')
   let s:type    = s:V.import('Vim.Type')
-  let s:int     = s:V.import('Vim.Type.Number')
   let s:List    = s:V.import('Data.List')
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Bitwise', 'Vim.Type', 'Vim.Type.Number', 'Data.List']
+  return ['Bitwise', 'Vim.Type', 'Data.List']
 endfunction
 
 function! s:validate(data) abort
@@ -48,7 +47,7 @@ endfunction
 
 function! s:from_int(value, bits) abort
   " return to big endian
-  return s:List.new(a:bits/8, {i -> s:int.uint8(s:bitwise.rshift(a:value, a:bits - (i + 1)*8))})
+  return s:List.new(a:bits/8, {i -> s:bitwise.uint8(s:bitwise.rshift(a:value, a:bits - (i + 1)*8))})
 endfunction
 
 function! s:to_int(bytes) abort
