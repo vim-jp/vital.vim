@@ -12,7 +12,7 @@ INTERFACE		                 |Vital.Assertion-interface|
 ==============================================================================
 INTRODUCTION			                *Vital.Assertion-introduction*
 
-*Vital.Assertion* provides domain specific language (DLS) for assertion as a
+*Vital.Assertion* provides domain specific language (DSL) for assertion as a
 Vim command.
 
 ==============================================================================
