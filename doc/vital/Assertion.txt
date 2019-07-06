@@ -12,7 +12,8 @@ INTERFACE		                 |Vital.Assertion-interface|
 ==============================================================================
 INTRODUCTION			                *Vital.Assertion-introduction*
 
-*Vital.Assertion* is assertion library.
+*Vital.Assertion* provides domain specific language (DLS) for assertion as a
+Vim command.
 
 ==============================================================================
 INTERFACE			                   *Vital.Assertion-interface*
@@ -53,7 +54,7 @@ define({assert_command_name}, ...)                  *Vital.Assertion.define()*
            Assert  0 <=> 1
 
            " Assert 3 <=> 2 :Failed
-           " > assert_point: /private/var/folders/66/zvrbqcn97238kw4b_qqdl__c0000gn/T/vdrqOUi/6, line 7
+           " > assert_point: /tmp/a.vim, line 7
            " > lhs: 3 
            " > rhs:  2
            " function <SNR>140__assertion..<SNR>140__outputter, line 15
