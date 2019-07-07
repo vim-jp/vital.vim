@@ -46,7 +46,6 @@ Module						 | Description
 [Data.Base32](doc/vital/Data/Base32.txt)	 | base32 utilities library
 [Data.BigNum](doc/vital/Data/BigNum.txt)	 | multi precision integer library
 [Data.Closure](doc/vital/Data/Closure.txt)	 | Provide Closure object
-[Data.Collection](doc/vital/Data/Collection.txt) | Utilities both for list and dict
 [Data.Counter](doc/vital/Data/Counter.txt) | Counter library to support convenient tallies
 [Data.Dict](doc/vital/Data/Dict.txt)		 | dictionary utilities library
 [Data.Either](doc/vital/Data/Either.txt)	 | either value library

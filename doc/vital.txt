@@ -171,7 +171,6 @@ LINKS					*Vital-links*
   |vital/Data/Base32.txt|	base32 utilities library.
   |vital/Data/BigNum.txt|	Multi precision integer library.
   |vital/Data/Closure.txt|	Provide Closure object.
-  |vital/Data/Collection.txt|	Utilities both for list and dict.
   |vital/Data/Counter.txt|	Counter library to support convenient tallies.
   |vital/Data/Dict.txt|		dictionary utilities library.
   |vital/Data/LazyList.txt|	lazy list including file io.
