@@ -15,7 +15,7 @@ mkdir -p ~/bin/ && export PATH="~/bin/:$PATH"
 # Install https://github.com/reviewdog/reviewdog/releases
 curl -sfL \
   https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh |\
-  sh -s -- -b $(go env GOPATH)/bin "v${REVIEWDOG_VERSION}"
+  sh -s -- -b ~/bin "v${REVIEWDOG_VERSION}"
 
 pip3 install --user vim-vint=="${VINT_VERSION}"
 
@@ -33,7 +33,7 @@ curl -L -o ./install-misspell.sh https://git.io/misspell \
 go get -d -v ./scripts
 
 # Run reviewdog.
-"$(go env GOPATH)/bin/reviewdog" -reporter=github-pr-check
+"~/bin/reviewdog" -reporter=github-pr-check
 
 # Check tag name conflicts
 vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
