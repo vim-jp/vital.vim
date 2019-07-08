@@ -15,9 +15,12 @@ INTERFACE			|Vital.Bitwise-interface|
 INTRODUCTION					*Vital.Bitwise-introduction*
 
 *Vital.Bitwise* provides some bitwise operators.
-If vim provides builtin functions, uses these directly.
 
-
+Vim provides some bitwise operators as builtin functions, but they don't
+always exist, depending on the version or the variant of the Vim. This module
+provides them as a wrapper, so that Vim plugin authors can guarantee that
+these functionalities exist, and the users can benefit from the performance
+Vim core provides too.
 
 ==============================================================================
 INTERFACE					*Vital.Bitwise-interface*
