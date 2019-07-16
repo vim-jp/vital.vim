@@ -33,7 +33,7 @@ curl -L -o ./install-misspell.sh https://git.io/misspell \
 go get -d -v ./scripts
 
 # Run reviewdog.
-~/bin/reviewdog -reporter=github-pr-check
+reviewdog -reporter=github-pr-check
 
 # Check tag name conflicts
 vim --cmd "try | helptags doc/ | catch | cquit | endtry" --cmd quit
