@@ -7,15 +7,15 @@ fi
 
 set -ev
 
-REVIEWDOG_VERSION=0.9.9
-VINT_VERSION=0.3.18
+REVIEWDOG_VERSION=0.9.12
+VINT_VERSION=0.3.21
 
 mkdir -p ~/bin/ && export PATH="~/bin/:$PATH"
 
-# Install https://github.com/haya14busa/reviewdog
-curl -fSL \
-  https://github.com/haya14busa/reviewdog/releases/download/$REVIEWDOG_VERSION/reviewdog_linux_amd64 \
-  -o ~/bin/reviewdog && chmod +x ~/bin/reviewdog
+# Install https://github.com/reviewdog/reviewdog/releases
+curl -sfL \
+  https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh |\
+  sh -s -- -b ~/bin "v${REVIEWDOG_VERSION}"
 
 pip3 install --user vim-vint=="${VINT_VERSION}"
 
