@@ -24,13 +24,11 @@ function! s:suite.__of__()
     \ A.of({})
     Throws /^vital: Validator.Args: of(): expected string argument but got float/
     \ A.of(3.14)
-    if v:version >= 800
-      Throws /^vital: Validator.Args: of(): expected string argument but got bool/
-      \ A.of(v:false)
-      Throws /^vital: Validator.Args: of(): expected string argument but got none/
-      \ A.of(v:null)
-      " TODO: job, channel
-    endif
+    Throws /^vital: Validator.Args: of(): expected string argument but got bool/
+    \ A.of(v:false)
+    Throws /^vital: Validator.Args: of(): expected string argument but got none/
+    \ A.of(v:null)
+    " TODO: job, channel
   endfunction
 
   function! of.of_should_not_validate_if_disabled() abort
@@ -78,13 +76,11 @@ function! s:suite.__of__()
     \ A.of('test()').type([T.STRING, T.FUNC]).validate([{}])
     Throws /^test(): invalid type arguments were given (expected: string or func, got: float)/
     \ A.of('test()').type([T.STRING, T.FUNC]).validate([3.14])
-    if v:version >= 800
-      Throws /^test(): invalid type arguments were given (expected: string or func, got: bool)/
-      \ A.of('test()').type([T.STRING, T.FUNC]).validate([v:false])
-      Throws /^test(): invalid type arguments were given (expected: string or func, got: none)/
-      \ A.of('test()').type([T.STRING, T.FUNC]).validate([v:null])
-      " TODO: job, channel
-    endif
+    Throws /^test(): invalid type arguments were given (expected: string or func, got: bool)/
+    \ A.of('test()').type([T.STRING, T.FUNC]).validate([v:false])
+    Throws /^test(): invalid type arguments were given (expected: string or func, got: none)/
+    \ A.of('test()').type([T.STRING, T.FUNC]).validate([v:null])
+    " TODO: job, channel
   endfunction
 
   function! of.any_type() abort
@@ -95,11 +91,9 @@ function! s:suite.__of__()
     call A.of('test()').type(T.ANY).validate([[]])
     call A.of('test()').type(T.ANY).validate([{}])
     call A.of('test()').type(T.ANY).validate([3.14])
-    if v:version >= 800
-      call A.of('test()').type(T.ANY).validate([v:false])
-      call A.of('test()').type(T.ANY).validate([v:null])
-      " TODO: job, channel
-    endif
+    call A.of('test()').type(T.ANY).validate([v:false])
+    call A.of('test()').type(T.ANY).validate([v:null])
+    " TODO: job, channel
   endfunction
 
   function! of.wrong_types_and_correct_types()
@@ -115,13 +109,11 @@ function! s:suite.__of__()
     \ A.of('test()').type(T.STRING).validate([{}])
     Throws /^test(): invalid type arguments were given (expected: string, got: float)/
     \ A.of('test()').type(T.STRING).validate([3.14])
-    if v:version >= 800
-      Throws /^test(): invalid type arguments were given (expected: string, got: bool)/
-      \ A.of('test()').type(T.STRING).validate([v:false])
-      Throws /^test(): invalid type arguments were given (expected: string, got: none)/
-      \ A.of('test()').type(T.STRING).validate([v:null])
-      " TODO: job, channel
-    endif
+    Throws /^test(): invalid type arguments were given (expected: string, got: bool)/
+    \ A.of('test()').type(T.STRING).validate([v:false])
+    Throws /^test(): invalid type arguments were given (expected: string, got: none)/
+    \ A.of('test()').type(T.STRING).validate([v:null])
+    " TODO: job, channel
   endfunction
 
   function! of.validate_should_throw_if_it_received_non_list_value() abort
@@ -137,13 +129,11 @@ function! s:suite.__of__()
     \ A.of('test()').type(T.ANY).validate({})
     Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got float/
     \ A.of('test()').type(T.ANY).validate(3.14)
-    if v:version >= 800
-      Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got bool/
-      \ A.of('test()').type(T.ANY).validate(v:false)
-      Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got none/
-      \ A.of('test()').type(T.ANY).validate(v:null)
-      " TODO: job, channel
-    endif
+    Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got bool/
+    \ A.of('test()').type(T.ANY).validate(v:false)
+    Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got none/
+    \ A.of('test()').type(T.ANY).validate(v:null)
+    " TODO: job, channel
   endfunction
 
   function! of.arity_is_correct() abort
