@@ -13,21 +13,21 @@ function! s:suite.__of__()
 
   function! of.of_should_throw_if_it_received_non_string_value() abort
     let [A, T] = [s:A, s:T]
-    Throws /^vital: Validator.Args: of(): expected String argument but got Number/
+    Throws /^vital: Validator.Args: of(): expected string argument but got number/
     \ A.of(42)
     call A.of('')
-    Throws /^vital: Validator.Args: of(): expected String argument but got Funcref/
+    Throws /^vital: Validator.Args: of(): expected string argument but got func/
     \ A.of(function('function'))
-    Throws /^vital: Validator.Args: of(): expected String argument but got List/
+    Throws /^vital: Validator.Args: of(): expected string argument but got list/
     \ A.of([42])
-    Throws /^vital: Validator.Args: of(): expected String argument but got Dictionary/
+    Throws /^vital: Validator.Args: of(): expected string argument but got dict/
     \ A.of({})
-    Throws /^vital: Validator.Args: of(): expected String argument but got Float/
+    Throws /^vital: Validator.Args: of(): expected string argument but got float/
     \ A.of(3.14)
     if v:version >= 800
-      Throws /^vital: Validator.Args: of(): expected String argument but got Bool/
+      Throws /^vital: Validator.Args: of(): expected string argument but got bool/
       \ A.of(v:false)
-      Throws /^vital: Validator.Args: of(): expected String argument but got None/
+      Throws /^vital: Validator.Args: of(): expected string argument but got none/
       \ A.of(v:null)
       " TODO: job, channel
     endif
@@ -46,7 +46,7 @@ function! s:suite.__of__()
 
     " enabled
     let v = A.of('func()', 1).type(T.STRING)
-    Throws /^func(): invalid type arguments were given (expected: String, got: Number)/
+    Throws /^func(): invalid type arguments were given (expected: string, got: number)/
     \ v.validate([42])
   endfunction
 
@@ -68,20 +68,20 @@ function! s:suite.__of__()
 
   function! of.union_types()
     let [A, T] = [s:A, s:T]
-    Throws /^test(): invalid type arguments were given (expected: String or Funcref, got: Number)/
+    Throws /^test(): invalid type arguments were given (expected: string or func, got: number)/
     \ A.of('test()').type([T.STRING, T.FUNC]).validate([42])
     call A.of('test()').type([T.STRING, T.FUNC]).validate([''])
     call A.of('test()').type([T.STRING, T.FUNC]).validate([function('function')])
-    Throws /^test(): invalid type arguments were given (expected: String or Funcref, got: List)/
+    Throws /^test(): invalid type arguments were given (expected: string or func, got: list)/
     \ A.of('test()').type([T.STRING, T.FUNC]).validate([[]])
-    Throws /^test(): invalid type arguments were given (expected: String or Funcref, got: Dictionary)/
+    Throws /^test(): invalid type arguments were given (expected: string or func, got: dict)/
     \ A.of('test()').type([T.STRING, T.FUNC]).validate([{}])
-    Throws /^test(): invalid type arguments were given (expected: String or Funcref, got: Float)/
+    Throws /^test(): invalid type arguments were given (expected: string or func, got: float)/
     \ A.of('test()').type([T.STRING, T.FUNC]).validate([3.14])
     if v:version >= 800
-      Throws /^test(): invalid type arguments were given (expected: String or Funcref, got: Bool)/
+      Throws /^test(): invalid type arguments were given (expected: string or func, got: bool)/
       \ A.of('test()').type([T.STRING, T.FUNC]).validate([v:false])
-      Throws /^test(): invalid type arguments were given (expected: String or Funcref, got: None)/
+      Throws /^test(): invalid type arguments were given (expected: string or func, got: none)/
       \ A.of('test()').type([T.STRING, T.FUNC]).validate([v:null])
       " TODO: job, channel
     endif
@@ -104,21 +104,21 @@ function! s:suite.__of__()
 
   function! of.wrong_types_and_correct_types()
     let [A, T] = [s:A, s:T]
-    Throws /^test(): invalid type arguments were given (expected: String, got: Number)/
+    Throws /^test(): invalid type arguments were given (expected: string, got: number)/
     \ A.of('test()').type(T.STRING).validate([42])
     call A.of('test()').type(T.STRING).validate([''])
-    Throws /^test(): invalid type arguments were given (expected: String, got: Funcref)/
+    Throws /^test(): invalid type arguments were given (expected: string, got: func)/
     \ A.of('test()').type(T.STRING).validate([function('function')])
-    Throws /^test(): invalid type arguments were given (expected: String, got: List)/
+    Throws /^test(): invalid type arguments were given (expected: string, got: list)/
     \ A.of('test()').type(T.STRING).validate([[]])
-    Throws /^test(): invalid type arguments were given (expected: String, got: Dictionary)/
+    Throws /^test(): invalid type arguments were given (expected: string, got: dict)/
     \ A.of('test()').type(T.STRING).validate([{}])
-    Throws /^test(): invalid type arguments were given (expected: String, got: Float)/
+    Throws /^test(): invalid type arguments were given (expected: string, got: float)/
     \ A.of('test()').type(T.STRING).validate([3.14])
     if v:version >= 800
-      Throws /^test(): invalid type arguments were given (expected: String, got: Bool)/
+      Throws /^test(): invalid type arguments were given (expected: string, got: bool)/
       \ A.of('test()').type(T.STRING).validate([v:false])
-      Throws /^test(): invalid type arguments were given (expected: String, got: None)/
+      Throws /^test(): invalid type arguments were given (expected: string, got: none)/
       \ A.of('test()').type(T.STRING).validate([v:null])
       " TODO: job, channel
     endif
@@ -126,21 +126,21 @@ function! s:suite.__of__()
 
   function! of.validate_should_throw_if_it_received_non_list_value() abort
     let [A, T] = [s:A, s:T]
-    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Number/
+    Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got number/
     \ A.of('test()').type(T.ANY).validate(42)
-    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got String/
+    Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got string/
     \ A.of('test()').type(T.ANY).validate('')
-    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Funcref/
+    Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got func/
     \ A.of('test()').type(T.ANY).validate(function('function'))
     call A.of('test()').type(T.ANY).validate([42])
-    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Dictionary/
+    Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got dict/
     \ A.of('test()').type(T.ANY).validate({})
-    Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Float/
+    Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got float/
     \ A.of('test()').type(T.ANY).validate(3.14)
     if v:version >= 800
-      Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got Bool/
+      Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got bool/
       \ A.of('test()').type(T.ANY).validate(v:false)
-      Throws /^vital: Validator.Args: Validator.validate(): expected List argument but got None/
+      Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got none/
       \ A.of('test()').type(T.ANY).validate(v:null)
       " TODO: job, channel
     endif
@@ -163,9 +163,9 @@ function! s:suite.__of__()
   function! of.type_invalid_args() abort
     let [A, T] = [s:A, s:T]
 
-    Throws /^vital: Validator.Args: Validator.type(): expected type or union types but got String/
-    \ A.of('test()').type('String')
-    Throws /^vital: Validator.Args: Validator.type(): expected type or union types but got Number/
+    Throws /^vital: Validator.Args: Validator.type(): expected type or union types but got string/
+    \ A.of('test()').type('string')
+    Throws /^vital: Validator.Args: Validator.type(): expected type or union types but got number/
     \ A.of('test()').type(10)
 
     Throws /^vital: Validator.Args: Validator.type(): multiple OPTARG were given/
@@ -232,7 +232,7 @@ function! s:suite.__of__()
   function! of.mixed_validation_with_assert_and_type() abort
     let [A, T] = [s:A, s:T]
     " .type() checking failure
-    Throws /^test(): invalid type arguments were given (expected: String, got: Number)/
+    Throws /^test(): invalid type arguments were given (expected: string, got: number)/
     \ A.of('test()').type(T.STRING)
                    \.assert(1, 'v:val != ''''',
                    \            'the first argument should be non empty string')

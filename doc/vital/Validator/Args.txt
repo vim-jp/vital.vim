@@ -205,7 +205,7 @@ Validator.validate({args})		*Vital.Validator.Args-Validator.validate()*
 
 	* Any types of function arguments and type()'s arguments
 	  are different:
-	  `func(): invalid type arguments were given (expected: String, got: Number)`
+	  `func(): invalid type arguments were given (expected: string, got: number)`
 
 	* assert()'s {assert} argument doesn't match with the given argument:
 	  `func(): the {nth}th argument's assertion was failed`

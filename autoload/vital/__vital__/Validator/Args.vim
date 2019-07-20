@@ -21,21 +21,23 @@ let s:TYPE.ANY = range(s:TYPE.NUMBER, s:TYPE.CHANNEL)
 let s:TYPE.OPTARG = []
 lockvar! s:TYPE
 
-let s:TYPES = ['Number', 'String', 'Funcref', 'List', 'Dictionary', 'Float']
-if v:version >=# 800
-  let s:TYPES += ['Bool', 'None', 'Job', 'Channel']
-endif
-lockvar! s:TYPES
+function! s:_vital_loaded(V) abort
+  let s:T = a:V.import('Vim.Type')
+endfunction
 
 function! s:_vital_created(module) abort
   let a:module.TYPE = s:TYPE
 endfunction
 
+function! s:_vital_depends() abort
+  return ['Vim.Type']
+endfunction
+
 
 function! s:of(prefix, ...) abort
   if type(a:prefix) isnot s:TYPE.STRING
-    throw 'vital: Validator.Args: of(): expected String argument ' .
-    \     'but got ' . s:TYPES[type(a:prefix)]
+    throw 'vital: Validator.Args: of(): expected ' . s:T.type_names[s:TYPE.STRING] .
+    \     ' argument but got ' . s:T.type_names[type(a:prefix)]
   endif
   let validator = {
   \ '_prefix': a:prefix,
@@ -66,8 +68,8 @@ function! s:of(prefix, ...) abort
       return a:args
     endif
     if type(a:args) isnot s:TYPE.LIST
-      throw 'vital: Validator.Args: Validator.validate(): expected List argument ' .
-      \     'but got ' . s:TYPES[type(a:args)]
+      throw 'vital: Validator.Args: Validator.validate(): expected ' . s:T.type_names[s:TYPE.LIST] .
+      \     ' argument but got ' . s:T.type_names[type(a:args)]
     endif
     if has_key(self, '_types')
       call s:_validate_arg_types(a:args, self._types, self._prefix)
@@ -97,7 +99,7 @@ function! s:_check_type_args(args) abort
     \                  'type(v:val) isnot s:TYPE.NUMBER || ' .
     \                  'v:val < s:TYPE.NUMBER || v:val > s:TYPE.CHANNEL')))
       throw 'vital: Validator.Args: Validator.type(): expected type or union types ' .
-      \     'but got ' . s:TYPES[type(a:args[i])]
+      \     'but got ' . s:T.type_names[type(a:args[i])]
     endif
   endfor
 endfunction
@@ -159,10 +161,10 @@ function! s:_validate_type(value, expected_type, prefix, ...) abort
       if a:0
         return a:1
       endif
-      let expected = join(map(copy(a:expected_type), 's:TYPES[v:val]'), ' or ')
+      let expected = join(map(copy(a:expected_type), 's:T.type_names[v:val]'), ' or ')
       throw a:prefix . ': invalid type arguments were given ' .
       \     '(expected: ' . expected .
-      \     ', got: ' . s:TYPES[type(a:value)] . ')'
+      \     ', got: ' . s:T.type_names[type(a:value)] . ')'
     endif
     return
   endif
@@ -171,8 +173,8 @@ function! s:_validate_type(value, expected_type, prefix, ...) abort
       return a:1
     endif
     throw a:prefix . ': invalid type arguments were given ' .
-    \     '(expected: ' . s:TYPES[a:expected_type] .
-    \     ', got: ' . s:TYPES[type(a:value)] . ')'
+    \     '(expected: ' . s:T.type_names[a:expected_type] .
+    \     ', got: ' . s:T.type_names[type(a:value)] . ')'
   endif
   return a:value
 endfunction
