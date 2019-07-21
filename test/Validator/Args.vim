@@ -32,6 +32,8 @@ function! s:suite.__of__()
     \ A.of(test_null_job())
     Throws /^vital: Validator.Args: of(): expected string argument but got channel/
     \ A.of(test_null_channel())
+    Throws /^vital: Validator.Args: of(): expected string argument but got blob/
+    \ A.of(test_null_blob())
   endfunction
 
   function! of.of_should_not_validate_if_disabled() abort
@@ -87,6 +89,8 @@ function! s:suite.__of__()
     \ A.of('test()').type([T.STRING, T.FUNC]).validate([test_null_job()])
     Throws /^test(): invalid type arguments were given (expected: string or func, got: channel)/
     \ A.of('test()').type([T.STRING, T.FUNC]).validate([test_null_channel()])
+    Throws /^test(): invalid type arguments were given (expected: string or func, got: blob)/
+    \ A.of('test()').type([T.STRING, T.FUNC]).validate([test_null_blob()])
   endfunction
 
   function! of.any_type() abort
@@ -101,6 +105,7 @@ function! s:suite.__of__()
     call A.of('test()').type(T.ANY).validate([v:null])
     call A.of('test()').type(T.ANY).validate([test_null_job()])
     call A.of('test()').type(T.ANY).validate([test_null_channel()])
+    call A.of('test()').type(T.ANY).validate([test_null_blob()])
   endfunction
 
   function! of.wrong_types_and_correct_types()
@@ -124,6 +129,8 @@ function! s:suite.__of__()
     \ A.of('test()').type(T.STRING).validate([test_null_job()])
     Throws /^test(): invalid type arguments were given (expected: string, got: channel)/
     \ A.of('test()').type(T.STRING).validate([test_null_channel()])
+    Throws /^test(): invalid type arguments were given (expected: string, got: blob)/
+    \ A.of('test()').type(T.STRING).validate([test_null_blob()])
   endfunction
 
   function! of.validate_should_throw_if_it_received_non_list_value() abort
@@ -147,6 +154,8 @@ function! s:suite.__of__()
     \ A.of('test()').type(T.ANY).validate(test_null_job())
     Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got channel/
     \ A.of('test()').type(T.ANY).validate(test_null_channel())
+    Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got blob/
+    \ A.of('test()').type(T.ANY).validate(test_null_blob())
   endfunction
 
   function! of.arity_is_correct() abort
@@ -169,7 +178,7 @@ function! s:suite.__of__()
     Throws /^vital: Validator.Args: Validator.type(): expected type or union types but got string/
     \ A.of('test()').type('string')
     Throws /^vital: Validator.Args: Validator.type(): expected type or union types but got number/
-    \ A.of('test()').type(10)
+    \ A.of('test()').type(999)
 
     Throws /^vital: Validator.Args: Validator.type(): multiple OPTARG were given/
     \ A.of('test()').type(T.OPTARG, T.OPTARG)

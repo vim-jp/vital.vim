@@ -17,7 +17,8 @@ let s:TYPE.BOOL = 6
 let s:TYPE.NONE = 7
 let s:TYPE.JOB = 8
 let s:TYPE.CHANNEL = 9
-let s:TYPE.ANY = range(s:TYPE.NUMBER, s:TYPE.CHANNEL)
+let s:TYPE.BLOB = 10
+let s:TYPE.ANY = range(s:TYPE.NUMBER, s:TYPE.BLOB)
 let s:TYPE.OPTARG = []
 lockvar! s:TYPE
 
@@ -92,12 +93,12 @@ function! s:_check_type_args(args) abort
       endif
     endif
     if !(type(a:args[i]) is s:TYPE.NUMBER &&
-    \     a:args[i] >= s:TYPE.NUMBER &&
-    \     a:args[i] <= s:TYPE.CHANNEL) &&
+    \     a:args[i] >= s:TYPE.ANY[0] &&
+    \     a:args[i] <= s:TYPE.ANY[-1]) &&
     \  !(type(a:args[i]) is s:TYPE.LIST &&
     \     empty(filter(copy(a:args[i]),
     \                  'type(v:val) isnot s:TYPE.NUMBER || ' .
-    \                  'v:val < s:TYPE.NUMBER || v:val > s:TYPE.CHANNEL')))
+    \                  'v:val < s:TYPE.NUMBER || v:val > s:TYPE.BLOB')))
       throw 'vital: Validator.Args: Validator.type(): expected type or union types ' .
       \     'but got ' . s:T.type_names[type(a:args[i])]
     endif
