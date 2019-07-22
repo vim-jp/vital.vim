@@ -1,23 +1,27 @@
 language: generic
-sudo: false
+dist: xenial
 git:
   depth: 10
 
-matrix:
+jobs:
   include:
-    - os: linux
+    - name: Vim 8.0
+      os: linux
       env:
         - VIM_VERSION=v8.0.0000
         - THEMIS_PROFILE=vim-profile-v8.0.txt
-    - os: linux
+    - name: Vim 8.1
+      os: linux
       env:
         - VIM_VERSION=v8.1.0005
         - THEMIS_PROFILE=vim-profile-v8.1.txt
-    - os: linux
+    - name: Vim master
+      os: linux
       env:
         - VIM_VERSION=master
         - THEMIS_PROFILE=vim-profile-master.txt
-    - os: osx
+    - name: Vim MacVim latest
+      os: osx
       osx_image: xcode9.4
       env:
         - THEMIS_PROFILE=vim-profile-osx.txt
@@ -28,7 +32,8 @@ matrix:
           - /usr/local/Homebrew/Library/Taps/
       before_cache:
         - brew cleanup
-    - os: linux
+    - name: Vim Lint only
+      os: linux
       env:
         - RUN_LINT=true
 
