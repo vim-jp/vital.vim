@@ -3,11 +3,11 @@ let s:typelist = ['number', 'string', 'func', 'list', 'dict', 'float', 'bool', '
 let s:types = {}
 let s:type_names = {}
 
-for i in range(len(s:typelist))
- let s:types[s:typelist[i]] = i
- let s:type_names[i] = s:typelist[i]
+for s:idx in range(len(s:typelist))
+  let s:types[s:typelist[s:idx]] = s:idx
+  let s:type_names[s:idx] = s:typelist[s:idx]
 endfor
-
+unlet s:idx
 unlet s:typelist
 
 lockvar 1 s:types
