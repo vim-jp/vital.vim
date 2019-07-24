@@ -1,31 +1,16 @@
-let s:types = {
-\   'number'  : 0,
-\   'string'  : 1,
-\   'func'    : 2,
-\   'list'    : 3,
-\   'dict'    : 4,
-\   'float'   : 5,
-\   'bool'    : 6,
-\   'none'    : 7,
-\   'job'     : 8,
-\   'channel' : 9,
-\   'blob'    : 10,
-\ }
-lockvar 1 s:types
+let s:typelist = ['number', 'string', 'func', 'list', 'dict', 'float', 'bool', 'none', 'job', 'channel', 'blob']
 
-let s:type_names = {
-\   '0': 'number',
-\   '1': 'string',
-\   '2': 'func',
-\   '3': 'list',
-\   '4': 'dict',
-\   '5': 'float',
-\   '6': 'bool',
-\   '7': 'none',
-\   '8': 'job',
-\   '9': 'channel',
-\  '10': 'blob',
-\ }
+let s:types = {}
+let s:type_names = {}
+
+for s:idx in range(len(s:typelist))
+  let s:types[s:typelist[s:idx]] = s:idx
+  let s:type_names[s:idx] = s:typelist[s:idx]
+endfor
+unlet s:idx
+unlet s:typelist
+
+lockvar 1 s:types
 lockvar 1 s:type_names
 
 function! s:_vital_created(module) abort
