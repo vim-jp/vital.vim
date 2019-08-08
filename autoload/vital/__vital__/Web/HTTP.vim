@@ -354,13 +354,14 @@ try:
                     digestauth = urllib2.HTTPDigestAuthHandler(passman)
                     director.add_handler(basicauth)
                     director.add_handler(digestauth)
+                urllib2.install_opener(director)
                 req = urllib2.Request(settings['url'], data, request_headers)
                 req.get_method = lambda: settings['method']
                 default_timeout = socket.getdefaulttimeout()
                 try:
                     # for Python 2.5 or before
                     socket.setdefaulttimeout(timeout)
-                    res = director.open(req, timeout=timeout)
+                    res = urllib2.urlopen(req, timeout=timeout)
                 except urllib2.HTTPError as res:
                     pass
                 except urllib2.URLError:
