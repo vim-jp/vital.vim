@@ -354,6 +354,8 @@ try:
                     digestauth = urllib2.HTTPDigestAuthHandler(passman)
                     director.add_handler(basicauth)
                     director.add_handler(digestauth)
+                if settings.has_key('bearerToken'):
+                    request_headers.setdefault('Authorization', 'Bearer ' + settings['bearerToken'])
                 req = urllib2.Request(settings['url'], data, request_headers)
                 req.get_method = lambda: settings['method']
                 default_timeout = socket.getdefaulttimeout()
@@ -531,6 +533,10 @@ function! s:clients.curl.request(settings) abort
     endif
     let command .= ' --' . method . ' --user ' . quote . auth . quote
   endif
+  if has_key(a:settings, 'bearerToken')
+        \ && has_key(a:settings, 'authMethod') && (a:settings.authMethod ==? 'oauth2')
+    let command .= ' --oauth2-bearer '  . quote . a:settings.bearerToken . quote
+  endif
   if has_key(a:settings, 'data')
     let a:settings._file.post = s:_make_postfile(a:settings.data)
     let command .= ' --data-binary @' . quote . a:settings._file.post . quote
@@ -622,6 +628,9 @@ function! s:clients.wget.request(settings) abort
   endif
   if has_key(a:settings, 'password')
     let command .= ' --http-password=' . quote . escape(a:settings.password, quote) . quote
+  endif
+  if has_key(a:settings, 'bearerToken')
+    let command .= ' --header=' . quote . 'Authorization: Bearer ' . a:settings.bearerToken . quote
   endif
   let command .= ' ' . quote . a:settings.url . quote
   if has_key(a:settings, 'data')
