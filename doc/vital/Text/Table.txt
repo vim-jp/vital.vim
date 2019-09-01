@@ -138,7 +138,7 @@ Table.columns()
 	Returns column configuration objects.
 Table.columns({columns})
 	Sets column configuration objects(|Dictionary|). If its object already
-	has one or more rows, it will throws an exception. See
+	has one or more rows, it will throw an exception. See
 	|Vital.Text.Table-ColumnConfig| section for more details.
 	e.g. >
 	table.columns([
@@ -152,7 +152,7 @@ Table.columns({columns})
 				*Vital.Text.Table-Table.add_column()*
 Table.add_column({column})
 	Adds column configuration object. If its object already has one or
-	more rows, it will throws an exception. See
+	more rows, it will throw an exception. See
 	|Vital.Text.Table-ColumnConfig| section for more details.
 	e.g. >
 	table.add_column({'halign': 'left', 'valign': 'top', 'width': 30})
@@ -163,7 +163,7 @@ Table.header()
 	Returns a header row object(|Vital.Text.Table-Row|).
 Table.header({headers})
 	Sets a header row object(|Vital.Text.Table-Row|). If given
-	{headers} size is greater than its columns size, it will throws an
+	{headers} size is greater than its columns size, it will throw an
 	exception.
 	e.g. >
 	table.header(['header1', 'header1', 'header1'])
@@ -174,7 +174,7 @@ Table.rows()
 	Returns a row object(|Vital.Text.Table-Row|).
 Table.rows({rows})
 	Sets a row object(|Vital.Text.Table-Row|). If given any row of {rows}
-	size is greater than its columns size, it will throws an exception.
+	size is greater than its columns size, it will throw an exception.
 	e.g. >
 	table.rows([
 	\ ['row1column1', 'row1column2', 'row1column3'],
@@ -186,7 +186,7 @@ Table.rows({rows})
 				*Vital.Text.Table-Table.add_row()*
 Table.add_row({row})
 	Adds a row object(|Vital.Text.Table-Row|). If given {row} size is
-	greater than its columns size, it will throws an exception.
+	greater than its columns size, it will throw an exception.
 	e.g. >
 	table.add_row(['column1', 'column2', 'column3'])
 <
@@ -196,7 +196,7 @@ Table.footer()
 	Returns a footer row object(|Vital.Text.Table-Row|).
 Table.footer({footers})
 	Sets a footer row object(|Vital.Text.Table-Row|). If given {footer}
-	size is greater than its columns size, it will throws an exception.
+	size is greater than its columns size, it will throw an exception.
 	e.g. >
 	table.footer(['footer1', 'footer2', 'footer3'])
 <
@@ -204,7 +204,7 @@ Table.footer({footers})
 				*Vital.Text.Table-Table.stringify()*
 Table.stringify([{tstyle}])
 	Makes a table by configuration. Returns a |List| which has each table
-	row strings. And it can takes a table style object
+	row strings. And it can take a table style object
 	(|Vital.Text.Table-TableStyle|).
 	e.g. >
 	" [

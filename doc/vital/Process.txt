@@ -23,8 +23,8 @@ INTERFACE				*Vital.Process-interface*
 FUNCTIONS				*Vital.Process-functions*
 
 spawn({command} [, {special}])		*Vital.Process.spawn()*
-	Execute program in the background from Vim.  Return an empty string
-	always.
+	Execute program in the background from Vim.  Always return an empty
+	string.
 
 	{command} is |List| or |String| to run as background process.
 	If {command} is a |List|, it'll |shellescape()| each argument.

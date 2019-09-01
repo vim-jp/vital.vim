@@ -99,7 +99,7 @@ has({name})		*Vital.System.Cache.File-instance.has()*
 			*Vital.System.Cache.File-instance.get()*
 get({name}[, {default}])
 
-	Return a cached value of {name} in a cache directory. It return
+	Return a cached value of {name} in a cache directory. It returns
 	{default} if no value is found.
 
 	{name} (required)
@@ -142,7 +142,7 @@ clear()			*Vital.System.Cache.File-instance.clear()*
 	Clear all files in the cache directory without prompts.
 
 	CAUTION
-	It remove all files in the directory. Make sure the correct cache
+	It removes all files in the directory. Make sure the correct cache
 	directory is specified in the instance.
 
 on_changed()		*Vital.System.Cache.File-instance.on_changed()*

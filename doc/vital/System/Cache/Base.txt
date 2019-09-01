@@ -124,8 +124,8 @@ cache_key({obj})	*Vital.System.Cache.Base-instance.cache_key()*
 
 	Return a |String| which will be used as a cache key.
 	Variants can override this method to create a cache key from {obj}.
-	In default, it return {obj} if the {obj} is |String|. Otherwise it
-	return a string representation (See |string()| for details) of the
+	In default, it returns {obj} if the {obj} is |String|. Otherwise it
+	returns a string representation (See |string()| for details) of the
 	{obj}.
 
 has({name})		*Vital.System.Cache.Base-instance.has()*
@@ -149,7 +149,7 @@ has({name})		*Vital.System.Cache.Base-instance.has()*
 			*Vital.System.Cache.Base-instance.get()* 
 get({name}[, {default}])
 
-	Return a {name} cache. It no {name} cache is found, it return
+	Return a {name} cache. If no {name} cache is found, it returns
 	{default} or an empty |String|.
 
 	VARIANTS MUST OVERRIDE THIS METHOD
@@ -231,7 +231,7 @@ clear()			*Vital.System.Cache.Base-instance.clear()*
 on_changed()		*Vital.System.Cache.Base-instance.on_changed()*
 
 	A user defined hook method. This method is called when the content of
-	the cache is changed, namely after the follwing methods:
+	the cache is changed, namely after the following methods:
 	- |Vital.System.Cache.Base-instance.set()|
 	- |Vital.System.Cache.Base-instance.remove()|
 	- |Vital.System.Cache.Base-instance.clear()|

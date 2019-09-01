@@ -98,7 +98,7 @@ function! s:concat(list) abort
   return memo
 endfunction
 
-" Take each elements from lists to a new list.
+" Take all elements from lists to a new list.
 function! s:flatten(list, ...) abort
   let limit = a:0 > 0 ? a:1 : -1
   let memo = []
@@ -628,7 +628,7 @@ function! s:_get_binary_caller_(binary_f) abort
 endfunction
 
 " This is similar to s:_call_binary_string_expr(),
-" but a:pair[0] is regarted as v:val, and a:pair[1] is regarted as v:memo.
+" but a:pair[0] is regarded as v:val, and a:pair[1] is regarded as v:memo.
 function! s:_call_binary_string_expr_val_memo(expr, pair) abort
   let x = substitute(a:expr, 'v:memo', string(a:pair[1]), 'g')
   let y = substitute(x, 'v:val', string(a:pair[0]), 'g')

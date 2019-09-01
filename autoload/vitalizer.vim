@@ -246,7 +246,7 @@ function! s:get_changes() abort
       throw 'vitalizer: parse error in Changes file'
     endif
     " If "Modules: *" is specified, or "Modules: ..." line is
-    " not specified, show the change always.
+    " not specified, always show the change.
     let modules = modules ==# '*' ? '' : modules
     let changes[lines[0]] = {'text': text, 'modules': split(modules, '[^[:alnum:].]\+')}
   endfor

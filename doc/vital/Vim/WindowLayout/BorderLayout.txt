@@ -12,7 +12,7 @@ LAYOUT ATTRIBUTE	|Vital.Vim.WindowLayout.BorderLayout-attribute|
 INTRODUCTION		*Vital.Vim.WindowLayout.BorderLayout-introduction*
 
 *Vital.Vim.WindowLayout.BorderLayout* is a layout engine for
-|Vital.Vim.WindowLayout|. It split window to some regions.
+|Vital.Vim.WindowLayout|. It splits window to some regions.
 
 	+---------------------------------------------------------+
 	|                                                         |
@@ -52,8 +52,8 @@ east
 	|Vital.Vim.WindowLayout.apply()|'s {layoutdata}.
 
 width
-	A window width. It can takes |Number| or |Float|. A |Number| value is
-	a absolute columns width. A |Float| value is a relative columns width
+	A window width. It can take |Number| or |Float|. A |Number| value is
+	an absolute columns width. A |Float| value is a relative columns width
 	of parent window.
 
 height

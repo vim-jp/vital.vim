@@ -142,7 +142,7 @@ Cookie.touch([{DateTime}])
 			*Vital.Web.HTTP.Cookie-Cookie.make_cookie_header()*
 Cookie.make_cookie_header()
 	Makes "Set-Cookie:" header.
-	This does not contains "Set-Cookie:" string.
+	This does not contain "Set-Cookie:" string.
 
 Cookie.is_match({url})	*Vital.Web.HTTP.Cookie-Cookie.is_match()*
 	Returns non-zero when this cookie is used at {url}.

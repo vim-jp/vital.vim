@@ -30,7 +30,7 @@ We guarantee that the following versions of Vim are supported:
 * The latest major version (8.1.*)
 * The previous major version (8.0.*)
 
-And some modules have stricter requirements and additioinal dependencies.
+And some modules have stricter requirements and additional dependencies.
 Please read the docs of each module before using them.
 
 ==============================================================================
@@ -103,7 +103,7 @@ FUNCTIONS 				*Vital-functions*
 vital#{plugin-name}#new()			*vital#{plugin-name}#new()*
 	Creates a new Vital object(|Vital-Vital-object|).
 	If you just want to use |Vital-Vital.import()|, You can use
-	|vital#{plugin-name}#import()| instead without any peformance
+	|vital#{plugin-name}#import()| instead without any performance
 	degradation.
 
 vital#{plugin-name}#import({module-name})	*vital#{plugin-name}#import()*

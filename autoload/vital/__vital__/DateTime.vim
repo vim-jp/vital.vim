@@ -712,7 +712,7 @@ endfunction
 "   parse_conv = unused.
 " at parse:
 "   field = param name (with "_")
-"           if it doesn't exists, the descriptor can't use.
+"           if it doesn't exist, the descriptor can't use.
 "   field = #skip
 "           in this case, captor is a skipping pattern
 "   captor = pattern to match.

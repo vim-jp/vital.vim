@@ -15,7 +15,7 @@ INTRODUCTION			*Vital.System.Process.Mock-introduction*
 *Vital.System.Process.Mock* is a |Vital.System.Process| client for testing a
 process call.
 
-Note that this module is not automatically vitalized. Developers requires to
+Note that this module is not automatically vitalized. Developers require to
 |:Vitalize| this module explicitly before use.
 
 An item of {options.clients} of |Vital.System.Process.execute()| can be an

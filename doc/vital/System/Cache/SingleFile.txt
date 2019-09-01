@@ -101,7 +101,7 @@ has({name})		*Vital.System.Cache.SingleFile-instance.has()*
                         *Vital.System.Cache.SingleFile-instance.get()*
 get({name}[, {default}])
 
-	Return a cached value of {name} in a cache dictionary. It return
+	Return a cached value of {name} in a cache dictionary. It returns
 	{default} if no value is found.
 
 	{name} (required)
@@ -169,7 +169,7 @@ autodump		*Vital.System.Cache.SingleFile-instance.autodump*
 
 	A boolean to enable/disable autodump feature.
 	If the value is 1, |Vital.System.Cache.SingleFile-instance.dump()|
-	will be automatically calledn when the cache content is changed.
+	will be automatically called when the cache content is changed.
 	Otherwise users need to call the method manually to dump the cache
 	content into a cache file.
 

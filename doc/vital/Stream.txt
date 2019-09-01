@@ -150,7 +150,7 @@ zip({streams})
 <
 				*Vital.Stream.concat()*
 concat({streams})
-	Concatenates given streams.  If any of stream is an inifinite stream,
+	Concatenates given streams.  If any of stream is an infinite stream,
 	a result stream is an infinite stream.
 >
 	" Output: [1,2,3,4]

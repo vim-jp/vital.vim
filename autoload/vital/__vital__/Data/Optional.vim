@@ -139,7 +139,7 @@ function! s:flatten(x, ...) abort
 endfunction
 
 " Returns true for some({non optional}).
-" Otherwies, returns false.
+" Otherwise, returns false.
 " (Returns false for none().)
 function! s:_has_a_nest(x) abort
   return s:exists(a:x) && !s:is_optional(s:get(a:x))

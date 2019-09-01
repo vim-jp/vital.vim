@@ -181,7 +181,7 @@ filter({list}, {function})		*Vital.Data.List.filter()*
 	echo s:L.filter(xs, 'v:val % 2 is 0')
 	" [0, 2, 4, 6, 8]
 <
-	But this maybe slower than buildin |filter()|.
+	But this maybe slower than builtin |filter()|.
 
 	Non-destructive. This does not modify {list}.
 

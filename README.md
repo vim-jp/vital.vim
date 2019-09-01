@@ -11,7 +11,7 @@ We guarantee that the following versions of Vim are supported:
 * The latest major version (8.1.\*)
 * The previous major version (8.0.\*)
 
-And some modules have stricter requirements and additioinal dependencies.
+And some modules have stricter requirements and additional dependencies.
 Please read the docs of each module before using them.
 
 ## Handling libraries in Vim WAS hard
@@ -175,7 +175,7 @@ A lot of vim plugins are using vital.vim
 
 ### Badges
 
-It is not necessary but we recommend to add a badge to your project README to make the vital.vim developers happy ;-)
+It is not necessary but we recommend adding a badge to your project README to make the vital.vim developers happy ;-)
 The following is a markdown snippet.
 
 ```
