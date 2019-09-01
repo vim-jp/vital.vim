@@ -2,7 +2,7 @@
 " Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 " License CC0
 " Code:
-"   based on RFC 3174 Refeerence implementation. https://tools.ietf.org/html/rfc3174
+"   based on RFC 3174 Reference implementation. https://tools.ietf.org/html/rfc3174
 "   based on Vim implementation vim-scripts/sha1.vim (Licensed)
 
 let s:save_cpo = &cpo
@@ -309,7 +309,7 @@ function! s:sha1context.length.sizeset(data) dict abort
   let self.low  = s:_uint32(s:bitwise.lshift(len(a:data),      3))
 
   " SHA1 2^64 - 1 overflow check
-  " 0xh0000000 is not 0, then overflow it(byte data are Vim List;it can contains 2^64 - 1 item)
+  " 0xh0000000 is not 0, then overflow it(byte data are Vim List;it can contain 2^64 - 1 item)
   if (has('num64') && (0 != s:_uint32(s:bitwise.rshift(len(a:data), 32 + (32 - 3)))))
     let self.high = 0
     let self.low  = 0

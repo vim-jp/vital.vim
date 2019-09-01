@@ -12,7 +12,7 @@ INTERFACE			|Vital.Deprecated.Text.Sexp-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Deprecated.Text.Sexp-introduction*
 
-*Vital.Deprecated.Text.Sexp* is a S-Expression parsing library. For performance it uses
+*Vital.Deprecated.Text.Sexp* is an S-Expression parsing library. For performance it uses
 lua, so the Vim that runs this needs |+lua|.
 
 ==============================================================================

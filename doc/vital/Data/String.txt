@@ -137,7 +137,7 @@ dstring({expr})				*Vital.Data.String.dstring()*
 	" '"abc"'
 <
 lines({str})				*Vital.Data.String.lines()*
-	Splits into list of strings of each lines of {str}.
+	Splits into list of strings of each line of {str}.
 
 strchars({str})				*Vital.Data.String.strchars()*
 	Returns the number of characters in String {str}.

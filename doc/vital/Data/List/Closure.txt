@@ -31,7 +31,7 @@ INTRODUCTION				*Vital.Data.List.Closure-introduction*
 <
 Notice:
 This module doesn't have the job safety. I recommend to use |Data.List|
-directly if you use Vim 8 or later. (This problem depends unlifting of
+directly if you use Vim 8 or later. (This problem depends on unlifting of
 {closure} to |Funcref|)
 
 

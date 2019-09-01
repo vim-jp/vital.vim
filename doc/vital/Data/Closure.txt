@@ -118,7 +118,7 @@ from_command({command} [, {binding}])	*Vital.Data.Closure.from_command()*
 
 from_operator({operator})		*Vital.Data.Closure.from_operator()*
 	Builds a Closure object from {operator}.
-	{operator} is a operator string such as '+', '%', or '=~#'
+	{operator} is an operator string such as '+', '%', or '=~#'
 
 from_method({object}, {method})		*Vital.Data.Closure.from_method()*
 	Builds a Closure object from {object}(Dictionary) and the name of

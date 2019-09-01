@@ -22,7 +22,7 @@ Either simply holds one of two different structures
 >
 	function! AuthFooAccount(account_name, account_password) abort
 	  " Send the information to somewhere.
-	  " Return some response as {right} value if the operation is succeed.
+	  " Return some response as {right} value if the operation succeed.
 	  " Otherwise, return {left} value.
 	endfunction
 
@@ -132,7 +132,7 @@ map({either}, {f})			*Vital.Data.Either.map()*
 <
 
 map_left({either}, {f})			*Vital.Data.Either.map_left()*
-	Simular to |Vital.Data.Either.map()|, but map {f} to {left}.
+	Similar to |Vital.Data.Either.map()|, but map {f} to {left}.
 >
 	let either = E.left(10)
 	echo E.map_left(either, 'v:val + 1')  " left(11)

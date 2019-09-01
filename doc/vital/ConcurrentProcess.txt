@@ -288,7 +288,7 @@ is_busy({label})			*Vital.ConcurrentProcess.is_busy()*
 	This is an action |Vital.ConcurrentProcess-term.action|, and checks
 	if the queries are currently empty.
 
-	This function is possibly used for checking if you can querying
+	This function is possibly used for checking if you can query
 	something light and get the response immedicately, with using
 	consume_all_blocking(), like for code completion.
 

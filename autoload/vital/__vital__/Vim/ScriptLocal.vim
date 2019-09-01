@@ -77,7 +77,7 @@ endfunction
 
 "" Return SID from the given path
 " return -1 if the given path is not found in scriptnames()
-" NOTE: it execute `:source` a given path once if the file haven't sourced yet
+" NOTE: it executes `:source` a given path once if the file hasn't sourced yet
 function! s:sid(path) abort
   if s:cache.sid.has(a:path)
     return s:cache.sid.get(a:path)

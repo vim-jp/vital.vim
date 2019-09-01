@@ -221,7 +221,7 @@ function! s:__parse_tree(ctx, top) abort
       " closing tag: pop from stack and continue at upper level
       exec append_content_to_parent
 
-      if len(stack) " TODO: checking whether opened tag is exist. 
+      if len(stack) " TODO: checking whether opened tag exists.
         call remove(stack, -1)
       endif
       continue

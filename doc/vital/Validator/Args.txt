@@ -184,7 +184,7 @@ Validator.assert({nth}, {assert} [, {msg}])
 	{assert} is a |Funcref| or |String| which is a function to receive a
 	value of each argument.
 
-	{msg} is a exception message.
+	{msg} is an exception message.
 	Default value is: `"the " . nth . "th argument's assertion failed"`
 
 	See |Vital.Validator.Args-example-assert| for examples.

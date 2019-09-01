@@ -64,7 +64,7 @@ optional value.
 TERM					*Vital.Data.Optional-term*
 
 {optional}				*Vital.Data.Optional-term-optional*
-	{optional} is a optional value.  It is a |List| of 0 or 1 element
+	{optional} is an optional value.  It is a |List| of 0 or 1 element
 	actually.
 
 {none}					*Vital.Data.Optional-term-none*
@@ -218,7 +218,7 @@ bind({func}, {args}...)			*Vital.Data.Optional.bind()*
 <
 
 flat_map({func}, {arg})		*vital.Data.Optional.flat_map()*
-	Simular to |vital.Data.Optional.bind()| for the single argument.
+	Similar to |vital.Data.Optional.bind()| for the single argument.
 
 flatten({optional}, [{limit}])		*Vital.Data.Optional.flatten()*
 	Flattens a nested from optional values by default.

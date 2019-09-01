@@ -1,4 +1,4 @@
-*vital/System/Cache.txt*	An unified cache system
+*vital/System/Cache.txt*	A unified cache system
 
 Maintainer: Alisue <lambdalisue@hashnote.net>
 
@@ -16,7 +16,7 @@ Interface		|Vital.System.Cache-interface|
 ==============================================================================
 INTRODUCTIONS				*Vital.System.Cache-intro*
 
-*Vital.System.Cache* is an unified cache system. All variants (backends) share
+*Vital.System.Cache* is a unified cache system. All variants (backends) share
 the application interface so users can easily switch to a different cache
 variant. Currently the following variants are available.
 
@@ -57,7 +57,7 @@ If you just want to use a particular variant and want to reduce the size of
 your vital directory, you can directly import the variant without using
 |Vital.System.Cache| module like:
 >
-	" You don't need a first argument for new() while you are direcly
+	" You don't need a first argument for new() while you are directly
 	" importing a particular variant
 	let s:Cache = s:V.import('System.Cache.File')
 	let s:cache = s:Cache.new({ 'cache_dir': '~/.cache/foo' })
@@ -149,8 +149,8 @@ has({name})			*Vital.System.Cache-instance.has()*
 
 get({name}[, {default}])	*Vital.System.Cache-instance.get()*
 
-	Return a value from a {name} cache. It no {name} cache is found, it
-	return {default} or an empty |String|.
+	Return a value from a {name} cache. If no {name} cache is found, it
+	returns {default} or an empty |String|.
 
 	{name} (required)
 	A name of the cache. An actual cache key should have been created via

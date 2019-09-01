@@ -83,7 +83,7 @@ Jar.get([{condition}])	*Vital.Web.HTTP.CookieJar-Jar.get()*
 Jar.get_all([{condition}])
 	Returns cookies which agrees with {condition}.
 	{condition} is a |Dictionary| which contains the following items.
-	All items can omit.  A omitted condition is not used.
+	All items can omit.  An omitted condition is not used.
 
 	"url"
 		Matches to the URL.

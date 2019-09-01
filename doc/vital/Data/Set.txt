@@ -50,7 +50,7 @@ frozenset([{list}], [{hashfunc}])		*Vital.Data.Set.frozen()*
 	Returns a new 'Frozen' object which has not mutable methods
 	(|Vital.Data.Set-Set-mutable|).
 
-	{hashfunc} is used to hash the value for identifying each elements.
+	{hashfunc} is used to hash the value for identifying each element.
 
 	Example: >
 	  function! s:my_hash_func(x) abort

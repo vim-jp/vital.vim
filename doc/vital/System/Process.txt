@@ -112,7 +112,7 @@ execute({args}[, {options}])
 		|:verbose| command.
 		Default: &verbose
 
-	The following attributes exists in {result} dictionary and the value
+	The following attributes exist in {result} dictionary and the value
 	should be equal among clients and environments:
 
 		"success"
@@ -139,13 +139,13 @@ execute({args}[, {options}])
 
 	See individual client documents for extra attributes (e.g. "cmdline").
 
-	Note that when "options.debug" is grater than 0, it echos which client
+	Note that when "options.debug" is grater than 0, it echoes which client
 	is used and the actual cmdline, for debugging.
 
 				*Vital.System.Process.register()*
 register({name})
 	Register a {name} Vital module as a process client.
-	It only register when "is_available()" method of the module returns
+	It only registers when "is_available()" method of the module returns
 	truth value.
 	The order of the registration effect the default priority of the
 	clients.
