@@ -74,7 +74,7 @@ endfunction
 " inner
 
 function! s:_throw(message) abort
-  throw "vital: Data.List.Byte: " . a:message
+  throw 'vital: Data.List.Byte: ' . a:message
 endfunction
 
 let &cpo = s:save_cpo
