@@ -20,10 +20,9 @@ INTERFACE				*Vital.Data.List.Byte-interface*
 FUNCTIONS				*Vital.Data.List.Byte-functions*
 
 validate({data})		         *Vital.Data.List.Byte.validate()*
-	Return bool value.
-	{data} is List, all data as |Number| and it is min 0/max 255,
-	then return 1.
-	Otherwise return 0.
+	returns 1 the given {data} is a |List| with its all values are
+	0 to 255 |Number|s.
+	Otherwise returns 0.
 
 endian_convert({data})		         *Vital.Data.List.Byte.endian_convert()*
 	Return endian converted bytes-list value.
