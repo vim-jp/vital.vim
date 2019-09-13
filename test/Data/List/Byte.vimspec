@@ -1,0 +1,103 @@
+Describe Data.List.Byte
+  Before all
+    let ByteArray = vital#vital#new().import('Data.List.Byte')
+  End
+
+  Describe .validate()
+    It valid data
+      Assert True(ByteArray.validate([1,2,3]))
+    End
+
+    It invalid data
+      Assert False(ByteArray.validate([-1,2,3]))
+      Assert False(ByteArray.validate({}))
+      Assert False(ByteArray.validate([0, 'a', 100]))
+      Assert False(ByteArray.validate([0,  20, 300]))
+    End
+  End
+
+  Describe .endian_convert()
+    It valid data
+      Assert Equals(ByteArray.endian_convert([1, 2]), [2, 1])
+      Assert Equals(ByteArray.endian_convert([1, 2, 3, 4]), [4, 3, 2, 1])
+      Assert Equals(ByteArray.endian_convert([1, 2, 3, 4, 5 ,6 ,7 ,8]), [8, 7, 6, 5, 4, 3, 2, 1])
+    End
+
+    It invalid data
+      Throws /^vital: Data.List.Byte:/ ByteArray.endian_convert([])
+      Throws /^vital: Data.List.Byte:/ ByteArray.endian_convert([1])
+      Throws /^vital: Data.List.Byte:/ ByteArray.endian_convert([1, 2, 3])
+    End
+  End
+
+  Describe .from_string()
+    It from string to bytes-list.
+      Assert Equals(ByteArray.from_string('abc'), [0x61, 0x62, 0x63])
+    End
+  End
+
+  Describe .to_string()
+    It from bytes-list to string.
+      Assert Equals(ByteArray.to_string([0x61, 0x62, 0x63]), 'abc')
+    End
+  End
+
+  Describe .from_hexstring()
+    It from hex string to bytes-list.
+      Assert Equals(ByteArray.from_hexstring('616263'), [0x61, 0x62, 0x63])
+    End
+  End
+
+  Describe .to_hexstring()
+    It from bytes-list to hex string.
+      Assert Equals(ByteArray.to_hexstring([0x61, 0x62, 0x63]), '616263')
+    End
+  End
+
+  Describe .from_blob()
+    It from blob to bytes-list.
+      if has('patch-8.1.0735')
+        let result =  ByteArray.from_blob(0z616263)
+        let data = [0x61, 0x62, 0x63]
+
+        Assert Equals(type(result), type(data))
+        Assert Equals(len(result), len(data))
+        for i in range(len(data))
+          Assert Equals(result[i], data[i])
+        endfor
+      else
+        Skip no available blob type.
+      endif
+    End
+  End
+
+  Describe .to_blob()
+    It from bytes-list to blob.
+      if has('patch-8.1.0735')
+        let result =  ByteArray.to_blob([0x61, 0x62, 0x63])
+        let data = 0z616263
+
+        Assert Equals(type(result), type(data))
+        Assert Equals(len(result), len(data))
+        for i in range(len(data))
+          Assert Equals(result[i], data[i])
+        endfor
+      else
+        Skip no available blob type.
+      endif
+    End
+  End
+
+  Describe .from_int()
+    It from int to bytes-list.
+      Assert Equals(ByteArray.from_int(0x01ff ,32), [0x00, 0x00, 0x01, 0xff])
+    End
+  End
+
+  Describe .to_int()
+    It from bytes-list to int.
+      Assert Equals(ByteArray.to_int([0x00, 0x00, 0x01, 0xff]), 0x01ff)
+    End
+  End
+
+End
