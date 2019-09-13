@@ -5,8 +5,8 @@ set cpo&vim
 
 function! s:_vital_loaded(V) abort
   let s:V = a:V
-  let s:bitwise = s:V.import('Bitwise')
-  let s:type    = s:V.import('Vim.Type')
+  let s:Bitwise = s:V.import('Bitwise')
+  let s:Type    = s:V.import('Vim.Type')
   let s:List    = s:V.import('Data.List')
 endfunction
 
@@ -15,8 +15,8 @@ function! s:_vital_depends() abort
 endfunction
 
 function! s:validate(data) abort
-  return type(a:data) == s:type.types.list
-        \ && len(a:data) == len(s:List.filter(a:data, { v -> type(v) == s:type.types.number }))
+  return type(a:data) == s:Type.types.list
+        \ && len(a:data) == len(s:List.filter(a:data, { v -> type(v) == s:Type.types.number }))
         \ && min(a:data) >= 0
         \ && max(a:data) <= 255
 endfunction
@@ -47,16 +47,16 @@ endfunction
 
 function! s:from_int(value, bits) abort
   " return to big endian
-  return s:List.new(a:bits/8, {i -> s:bitwise.uint8(s:bitwise.rshift(a:value, a:bits - (i + 1)*8))})
+  return s:List.new(a:bits/8, {i -> s:Bitwise.uint8(s:Bitwise.rshift(a:value, a:bits - (i + 1)*8))})
 endfunction
 
 function! s:to_int(bytes) abort
   " from big endian
   let ret = 0
   let maxlen = len(a:bytes)
-  let values = map(copy(a:bytes), { i,v ->  s:bitwise.lshift(v, (maxlen-1 - i) * 8)})
+  let values = map(copy(a:bytes), { i,v ->  s:Bitwise.lshift(v, (maxlen-1 - i) * 8)})
   for v in values
-    let ret = s:bitwise.or(v,ret)
+    let ret = s:Bitwise.or(v,ret)
   endfor
   return ret
 endfunction
