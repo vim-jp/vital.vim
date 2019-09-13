@@ -51,7 +51,7 @@ Module						 | Description
 [Data.Either](doc/vital/Data/Either.txt)	 | either value library
 [Data.LazyList](doc/vital/Data/LazyList.txt)	 | lazy list including file io
 [Data.List](doc/vital/Data/List.txt)		 | list utilities library
-[Data.List.Closure](doc/vital/Data/List.txt)	 | Data.List provider for Data.Closure
+[Data.List.Closure](doc/vital/Data/List/Closure.txt)	 | Data.List provider for Data.Closure
 [Data.List.Byte](doc/vital/Data/List/Byte.txt)	 | Data.List provider for Bytes-List and other bytes-list like data converter.
 [Data.Optional](doc/vital/Data/Optional.txt)	 | optional value library
 [Data.OrderedSet](doc/vital/Data/OrderedSet.txt)| ordered collection library
