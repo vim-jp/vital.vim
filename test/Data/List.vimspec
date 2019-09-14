@@ -578,6 +578,19 @@ Describe Data.List
     End
   End
 
+  Describe .count()
+    It always returns 0 for empty list
+      Assert Equals(List.count({ _ -> 1 }, []), 0)
+    End
+
+    It counts num truethy satisfying the predicate for each values
+      Assert Equals(List.count({ n -> n % 2 == 0 }, [1, 2, 3, 4, 5, 6, 7]), 3)
+      Assert Equals(List.count(function('Even'), [1, 2, 3, 4, 5, 6, 7]), 3)
+
+      Assert Equals(List.count({ n -> n % 3 == 0 }, [1, 2, 3, 4, 5, 6, 7]), 2)
+    End
+  End
+
   Describe .zip()
     It returns mixed list from arguments
       Assert Equals(List.zip([1,2,3]), [[1],[2],[3]])

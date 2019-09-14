@@ -690,6 +690,30 @@ foldr1({function}, {xs})			*Vital.Data.List.foldr1()*
 
 	Non-destructive. This does not modify {xs}.
 
+count({f}, {xs})				*Vital.Data.List.count()*
+	NOTE: This is different to Vim script's native |count()| function.
+	NOTE: This is experimental. Unlike other Data.List functions, you
+	can't provide a string represated pseudo function to {f}.
+
+	Returns number of items in {xs} that satisfies the given predicate
+	function {f}.
+>
+	echo s:L.count({ x -> x == 2 }, [1, 2, 3, 4, 5])
+	"=> 1
+
+	echo s:L.count({ x -> x % 2 == 0 }, [1, 2, 3, 4, 5])
+	"=> 2
+
+	function! s:f(x)
+	  return a:x % 2 == 0
+	endfunction
+	echo s:L.count(function('s:f', [1, 2, 3, 4, 5])
+	"=> 2
+<
+	It scans from left to right. O(n).
+
+	Non-destructive. This does not modify {xs}.
+
 zip(...)				*Vital.Data.List.zip()*
 	Unifies lists in parallel. If the length of the lists is different,
 	adjusts for shorter list, longer list is sliced.

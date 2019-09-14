@@ -373,6 +373,17 @@ function! s:foldr1(f, xs) abort
   return s:foldr(a:f, a:xs[-1], a:xs[0:-2])
 endfunction
 
+function! s:count(f, xs) abort
+  let num = 0
+  for x in a:xs
+    if a:f(x)
+      let num += 1
+    endif
+  endfor
+  return num
+endfunction
+
+
 " Similar to python's zip() .
 function! s:zip(...) abort
   return map(range(min(map(copy(a:000), 'len(v:val)'))), "map(copy(a:000), 'v:val['.v:val.']')")
