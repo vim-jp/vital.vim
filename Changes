@@ -1,3 +1,6 @@
+2690a79e5110ec347131de6a634a944d841b5d9e
+	Modules: Prelude
+	Prelude.escape_file_searching() is gone. Use `escape(buffer_name, '*[]?{}, ')` instead.
 a9a3520e4b48c020a3c4802578e10e9682738e7a
 	Modules: Data.Collection
 	Data.Collection is gone. If you used Data.Collection.get_f, replace it with following:
