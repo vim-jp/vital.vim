@@ -38,6 +38,19 @@ Describe Prelude
     End
   End
 
+  Describe .is_infinity()
+    It checks if the argument is a float that infinity
+      Assert Equals(P.is_infinity(1.0/0), 1)
+      Assert Equals(P.is_infinity(-1.0/0), -1)
+      Assert Equals(P.is_infinity(0.0/0), 0)
+      Assert Equals(P.is_infinity(3.14159), 0)
+      Assert Equals(P.is_infinity(""), 0)
+      Assert Equals(P.is_infinity(function('tr')), 0)
+      Assert Equals(P.is_infinity([]), 0)
+      Assert Equals(P.is_infinity({}), 0)
+    End
+  End
+
   Describe .is_string()
     It checks if the argument is a string
       Assert Equals(P.is_string(3), 0)
