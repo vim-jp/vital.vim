@@ -61,6 +61,25 @@ function! s:is_float(Value) abort
   return type(a:Value) ==# s:__TYPE_FLOAT
 endfunction
 
+" Infinity
+if exists('*isinf')
+  function! s:is_infinity(Value) abort
+    return isinf(a:Value)
+  endfunction
+else
+  function! s:is_infinity(Value) abort
+    if type(a:Value) ==# s:__TYPE_FLOAT
+      let s = string(a:Value)
+      if s ==# 'inf'
+        return 1
+      elseif s ==# '-inf'
+        return -1
+      endif
+    endif
+    return 0
+  endfunction
+endif
+
 
 function! s:truncate_skipping(str, max, footer_width, separator) abort
   call s:_warn_deprecated('truncate_skipping', 'Data.String.truncate_skipping')

@@ -71,6 +71,19 @@ is_float({value})				*Vital.Prelude.is_float()*
 		:echo s:P.is_float("hoge")
 <		0
 
+is_infinity({value})				*Vital.Prelude.is_infinity()*
+	Return 1 if {expr} is a positive infinity, or -1 a negative
+	infinity, otherwise 0.
+		Examples: >
+		:let s:V = vital#{plugin-name}#new()
+		:let s:P = s:V.import('Prelude')
+		:echo s:P.is_infinity(1.0 / 0)
+<		1 >
+		:echo s:P.is_infinity(-1.0 / 0)
+<		-1 >
+		:echo s:P.is_infinity(123.0)
+<		0
+
 is_string({value})				*Vital.Prelude.is_string()*
 	Returns non-zero if {value} is a String (|expr-string|), zero otherwise.
 
