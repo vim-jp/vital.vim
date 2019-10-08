@@ -129,9 +129,6 @@ smart_execute_command({action}, {word})	*Vital.Prelude.smart_execute_command()*
 	execute 'echo' 123
 <
 
-escape_file_searching({str})		*Vital.Prelude.escape_file_searching()*
-	TODO
-
 escape_pattern({str})			*Vital.Prelude.escape_pattern()*
 	Use |Vital.Data.String.escape_pattern()| instead.
 	Note that |Vital.Data.String.escape_pattern()| does not escape a

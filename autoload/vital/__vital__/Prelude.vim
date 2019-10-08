@@ -176,7 +176,7 @@ function! s:smart_execute_command(action, word) abort
   execute a:action . ' ' . (a:word ==# '' ? '' : '`=a:word`')
 endfunction
 
-function! s:escape_file_searching(buffer_name) abort
+function! s:_escape_file_searching(buffer_name) abort
   return escape(a:buffer_name, '*[]?{}, ')
 endfunction
 
@@ -250,7 +250,7 @@ function! s:_path2project_directory_svn(path) abort
   let search_directory = a:path
   let directory = ''
 
-  let find_directory = s:escape_file_searching(search_directory)
+  let find_directory = s:_escape_file_searching(search_directory)
   let d = finddir('.svn', find_directory . ';')
   if d ==# ''
     return ''
@@ -275,7 +275,7 @@ function! s:_path2project_directory_others(vcs, path) abort
   let vcs = a:vcs
   let search_directory = a:path
 
-  let find_directory = s:escape_file_searching(search_directory)
+  let find_directory = s:_escape_file_searching(search_directory)
   let d = finddir(vcs, find_directory . ';')
   if d ==# ''
     return ''
@@ -307,7 +307,7 @@ function! s:path2project_directory(path, ...) abort
     for d in ['build.xml', 'prj.el', '.project', 'pom.xml', 'package.json',
           \ 'Makefile', 'configure', 'Rakefile', 'NAnt.build',
           \ 'P4CONFIG', 'tags', 'gtags']
-      let d = findfile(d, s:escape_file_searching(search_directory) . ';')
+      let d = findfile(d, s:_escape_file_searching(search_directory) . ';')
       if d !=# ''
         let directory = fnamemodify(d, ':p:h')
         break
