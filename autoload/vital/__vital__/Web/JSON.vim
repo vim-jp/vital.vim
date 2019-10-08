@@ -48,16 +48,24 @@ let s:float_nan = 0.0 / 0
 let s:float_inf = 1.0 / 0
 lockvar s:float_constants s:float_nan s:float_inf
 
+let s:special_constants = {
+    \   'v:true': 'true',
+    \   'v:false': 'false',
+    \   'v:null': 'null',
+    \   'v:none': 'null',
+    \ }
+lockvar s:special_constants
+
 function! s:_true() abort
-  return 1
+  return v:true
 endfunction
 
 function! s:_false() abort
-  return 0
+  return v:false
 endfunction
 
 function! s:_null() abort
-  return 0
+  return v:null
 endfunction
 
 function! s:_resolve(val, prefix) abort
@@ -169,6 +177,8 @@ function! s:encode(val, ...) abort
       throw 'vital: Web.JSON: Invalid float value: ' . val
     endif
     return val
+  elseif t == 6 || t == 7
+    return get(s:special_constants, a:val)
   else
     return string(a:val)
   endif

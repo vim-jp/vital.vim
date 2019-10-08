@@ -85,7 +85,7 @@ decode({json}[, {settings}])		*Vital.Web.JSON.decode()*
 	'use_token'
 	Use special tokens (e.g. |Vital.Web.JSON.true|) to represent
 	corresponding javascript tokens (e.g. 'true').
-	Otherwise 1 or 0 are used to represent these.
+	Otherwise |v:true|, |v:false| or |v:null| are used to represent these.
 	The default value is 0.
 >
 	echo s:JSON.decode('[true, false, null]')
