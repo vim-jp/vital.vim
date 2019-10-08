@@ -120,13 +120,14 @@ function! s:encode(val, ...) abort
         \ 'indent': 0,
         \}, get(a:000, 0, {})
         \)
-  if type(a:val) == 0
+  let t = type(a:val)
+  if t == 0
     return a:val
-  elseif type(a:val) == 1
+  elseif t == 1
     let s = substitute(a:val, '[\x01-\x1f\\"]', '\=s:control_chars[submatch(0)]', 'g')
     let s = iconv(s, &encoding, 'utf-8')
     return '"' . s . '"'
-  elseif type(a:val) == 2
+  elseif t == 2
     if s:const.true == a:val
       return 'true'
     elseif s:const.false == a:val
@@ -137,9 +138,9 @@ function! s:encode(val, ...) abort
       " backward compatibility
       return string(a:val)
     endif
-  elseif type(a:val) == 3
+  elseif t == 3
     return s:_encode_list(a:val, settings)
-  elseif type(a:val) == 4
+  elseif t == 4
     return s:_encode_dict(a:val, settings)
   else
     return string(a:val)
