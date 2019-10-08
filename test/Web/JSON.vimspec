@@ -81,6 +81,17 @@ Describe Web.JSON
       Assert Equals(JSON.decode('false', s), JSON.false)
       Assert Equals(JSON.decode('null', s), JSON.null)
     End
+
+    It decodes special floats (NaN/Infinity/-Infinity)
+      Assert Equals(string(JSON.decode('NaN')), 'nan')
+      Assert Equals(string(JSON.decode('Infinity')), 'inf')
+      Assert Equals(string(JSON.decode('-Infinity')), '-inf')
+
+      let s = { 'allow_nan': 0 }
+      Throws /^Vim(\w\+):E121:/ JSON.decode('NaN', s)
+      Throws /^Vim(\w\+):E121:/ JSON.decode('Infinity', s)
+      Throws /^Vim(\w\+):E121:/ JSON.decode('-Infinity', s)
+    End
   End
 
   Describe .encode()
@@ -230,6 +241,17 @@ Describe Web.JSON
       Assert Equals(JSON.encode(JSON.true), 'true')
       Assert Equals(JSON.encode(JSON.false), 'false')
       Assert Equals(JSON.encode(JSON.null), 'null')
+    End
+
+    It encodes special floats (NaN/Infinity/-Infinity)
+      Assert Equals(JSON.encode(0.0/0), 'NaN')
+      Assert Equals(JSON.encode(1.0/0), 'Infinity')
+      Assert Equals(JSON.encode(-1.0/0), '-Infinity')
+
+      let s = { 'allow_nan': 0 }
+      Throws /^vital: Web.JSON:/ JSON.encode(0.0/0, s)
+      Throws /^vital: Web.JSON:/ JSON.encode(1.0/0, s)
+      Throws /^vital: Web.JSON:/ JSON.encode(-1.0/0, s)
     End
   End
 End

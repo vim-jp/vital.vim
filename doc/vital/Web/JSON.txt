@@ -66,6 +66,18 @@ encode({object}[, {settings}])		*Vital.Web.JSON.encode()*
 	"   "b": 1
 	" }'
 <
+        'allow_nan'
+        If 'allows_nan' is 0, it will raise an exception when serializing
+        out of range float values (nan, inf, -inf).
+        Otherwise 'NaN', 'Infinity' or '-Infinity' are used to represent these.
+	The default value is 1.
+	Note that NaN and Infinity are not the JSON standard.
+>
+	echo s:JSON.encode([0.0/0, 1.0/0, -1.0/0])
+	" => [NaN,Infinity,-Infinity]
+	echo s:JSON.encode([0.0/0], {'allow_nan': 0})
+        " => vital: Web.JSON: Invalid float value: nan
+<
 decode({json}[, {settings}])		*Vital.Web.JSON.decode()*
 	Decode a JSON string into an object that vim can treat.
 	{settings} is a |Dictionary| which allows the following:
@@ -80,6 +92,17 @@ decode({json}[, {settings}])		*Vital.Web.JSON.decode()*
 	" => [1, 0, 0]
 	echo s:JSON.decode('[true, false, null]', {'use_token': 1})
 	" => [s:JSON.true, s:JSON.false, s:JSON.null]
+<
+        'allow_nan'
+        If 'allows_nan' is 0, it will raise an exception when deserializing
+        float constants ('NaN', 'Infinity', '-Infinity').
+        Otherwise nan, inf or -inf are used to represent these.
+	The default value is 1.
+>
+	echo s:JSON.decode('[NaN, Infinity, -Infinity]')
+	" => [nan, inf, -inf]
+	echo s:JSON.decode('[NaN]', {'allow_nan': 0})
+	" => E121: Undefined variable: NaN
 <
 
 =============================================================================

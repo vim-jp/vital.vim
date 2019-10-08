@@ -38,6 +38,16 @@ let s:control_chars = {
     \ }
 lockvar s:control_chars
 
+let s:float_constants = {
+    \   'nan': 'NaN',
+    \   '-nan': 'NaN',
+    \   'inf': 'Infinity',
+    \   '-inf': '-Infinity',
+    \ }
+let s:float_nan = 0.0 / 0
+let s:float_inf = 1.0 / 0
+lockvar s:float_constants s:float_nan s:float_inf
+
 function! s:_true() abort
   return 1
 endfunction
@@ -87,9 +97,12 @@ endfunction
 " @vimlint(EVL102, 1, l:null)
 " @vimlint(EVL102, 1, l:true)
 " @vimlint(EVL102, 1, l:false)
+" @vimlint(EVL102, 1, l:NaN)
+" @vimlint(EVL102, 1, l:Infinity)
 function! s:decode(json, ...) abort
   let settings = extend({
         \ 'use_token': 0,
+        \ 'allow_nan': 1,
         \}, get(a:000, 0, {}))
   let json = iconv(a:json, 'utf-8', &encoding)
   let json = join(split(json, "\n"), '')
@@ -99,6 +112,9 @@ function! s:decode(json, ...) abort
   let json = substitute(json, '\([\uD800-\uDBFF]\)\([\uDC00-\uDFFF]\)',
         \ '\=nr2char(0x10000+and(0x7ff,char2nr(submatch(1)))*0x400+and(0x3ff,char2nr(submatch(2))))',
         \ 'g')
+  if settings.allow_nan
+    let [NaN,Infinity] = [s:float_nan,s:float_inf]
+  endif
   if settings.use_token
     let prefix = '__Web.JSON__'
     while stridx(json, prefix) != -1
@@ -114,10 +130,13 @@ endfunction
 " @vimlint(EVL102, 0, l:null)
 " @vimlint(EVL102, 0, l:true)
 " @vimlint(EVL102, 0, l:false)
+" @vimlint(EVL102, 0, l:NaN)
+" @vimlint(EVL102, 0, l:Infinity)
 
 function! s:encode(val, ...) abort
   let settings = extend({
         \ 'indent': 0,
+        \ 'allow_nan': 1,
         \}, get(a:000, 0, {})
         \)
   let t = type(a:val)
@@ -142,6 +161,14 @@ function! s:encode(val, ...) abort
     return s:_encode_list(a:val, settings)
   elseif t == 4
     return s:_encode_dict(a:val, settings)
+  elseif t == 5
+    let val = string(a:val)
+    if settings.allow_nan
+      let val = get(s:float_constants, val, val)
+    elseif has_key(s:float_constants, val)
+      throw 'vital: Web.JSON: Invalid float value: ' . val
+    endif
+    return val
   else
     return string(a:val)
   endif
