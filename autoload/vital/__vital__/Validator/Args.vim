@@ -9,25 +9,34 @@ lockvar! s:NONE
 function! s:_vital_loaded(V) abort
   let s:T = a:V.import('Vim.Type')
 
-  if exists('v:t_blob')
-    let s:t_end = v:t_blob
-  else
-    for t in [
-    \ exists('v:null') ? type(v:null) : -1,
-    \ exists('v:true') ? type(v:true) : -1,
-    \ type(0.0),
-    \ type({}),
-    \ type([]),
-    \ type(function('function')),
-    \ type(''),
-    \ type(0),
-    \]
-      if t >= 0
-        let s:t_end = t
-        break
-      endif
-    endfor
-  endif
+  let s:t_end = -1
+  for t in has('nvim') ? [
+  \ exists('v:null') ? type(v:null) : -1,
+  \ exists('v:true') ? type(v:true) : -1,
+  \ type(0.0),
+  \ type({}),
+  \ type([]),
+  \ type(function('function')),
+  \ type(''),
+  \ type(0),
+  \] : [
+  \ get(v:, 't_blob', -1),
+  \ get(v:, 't_channel', -1),
+  \ get(v:, 't_job', -1),
+  \ get(v:, 't_none', -1),
+  \ get(v:, 't_bool', -1),
+  \ get(v:, 't_float', -1),
+  \ get(v:, 't_dict', -1),
+  \ get(v:, 't_list', -1),
+  \ get(v:, 't_func', -1),
+  \ get(v:, 't_string', -1),
+  \ get(v:, 't_number', -1),
+  \]
+    if t >= 0
+      let s:t_end = t
+      break
+    endif
+  endfor
 endfunction
 
 function! s:_vital_depends() abort
