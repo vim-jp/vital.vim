@@ -8,6 +8,26 @@ lockvar! s:NONE
 
 function! s:_vital_loaded(V) abort
   let s:T = a:V.import('Vim.Type')
+
+  if exists('v:t_blob')
+    let s:t_end = v:t_blob
+  else
+    for t in [
+    \ exists('v:null') ? type(v:null) : -1,
+    \ exists('v:true') ? type(v:true) : -1,
+    \ type(0.0),
+    \ type({}),
+    \ type([]),
+    \ type(function('function')),
+    \ type(''),
+    \ type(0),
+    \]
+      if t >= 0
+        let s:t_end = t
+        break
+      endif
+    endfor
+  endif
 endfunction
 
 function! s:_vital_depends() abort
@@ -80,7 +100,7 @@ endfunction
 
 function! s:_is_valid_type_arg(arg) abort
   let n = type(a:arg)
-  if n is# v:t_number && (v:t_number <=# a:arg && a:arg <=# v:t_blob)
+  if n is# v:t_number && (v:t_number <=# a:arg && a:arg <=# s:t_end)
     return 1
   endif
   if n is# v:t_string && (a:arg is# 'any' || a:arg is# 'option')
