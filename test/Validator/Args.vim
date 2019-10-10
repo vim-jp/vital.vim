@@ -3,6 +3,30 @@ scriptencoding utf-8
 let s:suite = themis#suite('Validator.Args')
 let s:assert = themis#helper('assert')
 
+function! s:assert_null_support() abort
+  if !exists('v:null')
+    Skip "this version of vim/neovim does not support v:null"
+  endif
+endfunction
+
+function! s:assert_job_support() abort
+  if !exists('*test_null_job')
+    Skip "this version of vim does not support job"
+  endif
+endfunction
+
+function! s:assert_channel_support() abort
+  if !exists('*test_null_channel')
+    Skip "this version of vim does not support channel"
+  endif
+endfunction
+
+function! s:assert_blob_support() abort
+  if !exists('*test_null_blob')
+    Skip "this version of vim does not support blob"
+  endif
+endfunction
+
 function! s:suite.before()
   let s:A = vital#vital#import('Validator.Args')
 endfunction
@@ -25,12 +49,16 @@ function! s:suite.__of__()
     \ A.of(3.14)
     Throws /^vital: Validator.Args: of(): expected string argument but got bool/
     \ A.of(v:false)
+    call s:assert_null_support()
     Throws /^vital: Validator.Args: of(): expected string argument but got none/
     \ A.of(v:null)
+    call s:assert_job_support()
     Throws /^vital: Validator.Args: of(): expected string argument but got job/
     \ A.of(test_null_job())
+    call s:assert_channel_support()
     Throws /^vital: Validator.Args: of(): expected string argument but got channel/
     \ A.of(test_null_channel())
+    call s:assert_blob_support()
     Throws /^vital: Validator.Args: of(): expected string argument but got blob/
     \ A.of(test_null_blob())
   endfunction
@@ -79,12 +107,16 @@ function! s:suite.__of__()
     \ A.of('test()').type([v:t_string, v:t_func]).validate([3.14])
     Throws /^test(): invalid type arguments were given (expected: string or func, got: bool)/
     \ A.of('test()').type([v:t_string, v:t_func]).validate([v:false])
+    call s:assert_null_support()
     Throws /^test(): invalid type arguments were given (expected: string or func, got: none)/
     \ A.of('test()').type([v:t_string, v:t_func]).validate([v:null])
+    call s:assert_job_support()
     Throws /^test(): invalid type arguments were given (expected: string or func, got: job)/
     \ A.of('test()').type([v:t_string, v:t_func]).validate([test_null_job()])
+    call s:assert_channel_support()
     Throws /^test(): invalid type arguments were given (expected: string or func, got: channel)/
     \ A.of('test()').type([v:t_string, v:t_func]).validate([test_null_channel()])
+    call s:assert_blob_support()
     Throws /^test(): invalid type arguments were given (expected: string or func, got: blob)/
     \ A.of('test()').type([v:t_string, v:t_func]).validate([test_null_blob()])
   endfunction
@@ -97,9 +129,13 @@ function! s:suite.__of__()
     call s:A.of('test()').type('any').validate([{}])
     call s:A.of('test()').type('any').validate([3.14])
     call s:A.of('test()').type('any').validate([v:false])
+    call s:assert_null_support()
     call s:A.of('test()').type('any').validate([v:null])
+    call s:assert_job_support()
     call s:A.of('test()').type('any').validate([test_null_job()])
+    call s:assert_channel_support()
     call s:A.of('test()').type('any').validate([test_null_channel()])
+    call s:assert_blob_support()
     call s:A.of('test()').type('any').validate([test_null_blob()])
   endfunction
 
@@ -118,12 +154,16 @@ function! s:suite.__of__()
     \ A.of('test()').type(v:t_string).validate([3.14])
     Throws /^test(): invalid type arguments were given (expected: string, got: bool)/
     \ A.of('test()').type(v:t_string).validate([v:false])
+    call s:assert_null_support()
     Throws /^test(): invalid type arguments were given (expected: string, got: none)/
     \ A.of('test()').type(v:t_string).validate([v:null])
+    call s:assert_job_support()
     Throws /^test(): invalid type arguments were given (expected: string, got: job)/
     \ A.of('test()').type(v:t_string).validate([test_null_job()])
+    call s:assert_channel_support()
     Throws /^test(): invalid type arguments were given (expected: string, got: channel)/
     \ A.of('test()').type(v:t_string).validate([test_null_channel()])
+    call s:assert_blob_support()
     Throws /^test(): invalid type arguments were given (expected: string, got: blob)/
     \ A.of('test()').type(v:t_string).validate([test_null_blob()])
   endfunction
@@ -143,12 +183,16 @@ function! s:suite.__of__()
     \ A.of('test()').type('any').validate(3.14)
     Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got bool/
     \ A.of('test()').type('any').validate(v:false)
+    call s:assert_null_support()
     Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got none/
     \ A.of('test()').type('any').validate(v:null)
+    call s:assert_job_support()
     Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got job/
     \ A.of('test()').type('any').validate(test_null_job())
+    call s:assert_channel_support()
     Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got channel/
     \ A.of('test()').type('any').validate(test_null_channel())
+    call s:assert_blob_support()
     Throws /^vital: Validator.Args: Validator.validate(): expected list argument but got blob/
     \ A.of('test()').type('any').validate(test_null_blob())
   endfunction
