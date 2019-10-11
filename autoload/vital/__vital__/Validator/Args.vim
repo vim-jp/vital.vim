@@ -6,38 +6,47 @@ set cpo&vim
 let s:NONE = []
 lockvar! s:NONE
 
-let s:TYPE = {}
-let s:TYPE.NUMBER = 0
-let s:TYPE.STRING = 1
-let s:TYPE.FUNC = 2
-let s:TYPE.LIST = 3
-let s:TYPE.DICT = 4
-let s:TYPE.FLOAT = 5
-let s:TYPE.BOOL = 6
-let s:TYPE.NONE = 7
-let s:TYPE.JOB = 8
-let s:TYPE.CHANNEL = 9
-let s:TYPE.ANY = range(s:TYPE.NUMBER, s:TYPE.CHANNEL)
-let s:TYPE.OPTARG = []
-lockvar! s:TYPE
-
 function! s:_vital_loaded(V) abort
   let s:T = a:V.import('Vim.Type')
-endfunction
 
-function! s:_vital_created(module) abort
-  let a:module.TYPE = s:TYPE
+  let s:t_end = -1
+  for t in has('nvim') ? [
+  \ exists('v:null') ? type(v:null) : -1,
+  \ exists('v:true') ? type(v:true) : -1,
+  \ type(0.0),
+  \ type({}),
+  \ type([]),
+  \ type(function('function')),
+  \ type(''),
+  \ type(0),
+  \] : [
+  \ get(v:, 't_blob', -1),
+  \ get(v:, 't_channel', -1),
+  \ get(v:, 't_job', -1),
+  \ get(v:, 't_none', -1),
+  \ get(v:, 't_bool', -1),
+  \ get(v:, 't_float', -1),
+  \ get(v:, 't_dict', -1),
+  \ get(v:, 't_list', -1),
+  \ get(v:, 't_func', -1),
+  \ get(v:, 't_string', -1),
+  \ get(v:, 't_number', -1),
+  \]
+    if t >= 0
+      let s:t_end = t
+      break
+    endif
+  endfor
 endfunction
 
 function! s:_vital_depends() abort
   return ['Vim.Type']
 endfunction
 
-
 function! s:of(prefix, ...) abort
-  if type(a:prefix) isnot s:TYPE.STRING
-    throw 'vital: Validator.Args: of(): expected ' . s:T.type_names[s:TYPE.STRING] .
-    \     ' argument but got ' . s:T.type_names[type(a:prefix)]
+  if type(a:prefix) isnot# v:t_string
+    throw 'vital: Validator.Args: of(): expected ' . s:_type_name(v:t_string) .
+    \     ' argument but got ' . s:_type_name(type(a:prefix))
   endif
   let validator = {
   \ '_prefix': a:prefix,
@@ -58,7 +67,7 @@ function! s:of(prefix, ...) abort
       call s:_check_out_of_range(a:no, self._types)
     endif
     let self._asserts[a:no - 1] = {
-    \ 'funclist': type(a:funclist) is s:TYPE.LIST ? a:funclist : [a:funclist],
+    \ 'funclist': type(a:funclist) is# v:t_list ? a:funclist : [a:funclist],
     \ 'msg': get(a:000, 0, 'the ' . a:no . 'th argument''s assertion was failed')
     \}
     return self
@@ -67,9 +76,9 @@ function! s:of(prefix, ...) abort
     if !self._enable
       return a:args
     endif
-    if type(a:args) isnot s:TYPE.LIST
-      throw 'vital: Validator.Args: Validator.validate(): expected ' . s:T.type_names[s:TYPE.LIST] .
-      \     ' argument but got ' . s:T.type_names[type(a:args)]
+    if type(a:args) isnot# v:t_list
+      throw 'vital: Validator.Args: Validator.validate(): expected ' . s:_type_name(v:t_list) .
+      \     ' argument but got ' . s:_type_name(type(a:args))
     endif
     if has_key(self, '_types')
       call s:_validate_arg_types(a:args, self._types, self._prefix)
@@ -85,23 +94,45 @@ endfunction
 function! s:_check_type_args(args) abort
   let optarg = 0
   for i in range(len(a:args))
-    if a:args[i] is s:TYPE.OPTARG
+    if a:args[i] is# 'option'
       let optarg += 1
       if optarg > 1
-        throw 'vital: Validator.Args: Validator.type(): multiple OPTARG were given'
+        throw 'vital: Validator.Args: Validator.type(): multiple optional arguments were given'
       endif
     endif
-    if !(type(a:args[i]) is s:TYPE.NUMBER &&
-    \     a:args[i] >= s:TYPE.NUMBER &&
-    \     a:args[i] <= s:TYPE.CHANNEL) &&
-    \  !(type(a:args[i]) is s:TYPE.LIST &&
-    \     empty(filter(copy(a:args[i]),
-    \                  'type(v:val) isnot s:TYPE.NUMBER || ' .
-    \                  'v:val < s:TYPE.NUMBER || v:val > s:TYPE.CHANNEL')))
+    if !s:_is_valid_type_arg(a:args[i])
       throw 'vital: Validator.Args: Validator.type(): expected type or union types ' .
-      \     'but got ' . s:T.type_names[type(a:args[i])]
+      \     'but got ' . s:_type_name(type(a:args[i]))
     endif
   endfor
+endfunction
+
+function! s:_is_valid_type_arg(arg) abort
+  let n = type(a:arg)
+  if n is# v:t_number && (v:t_number <=# a:arg && a:arg <=# s:t_end)
+    return 1
+  endif
+  if n is# v:t_string && (a:arg is# 'any' || a:arg is# 'option')
+    return 1
+  endif
+  if n is# v:t_list && empty(filter(copy(a:arg), '!s:_is_valid_type_arg(v:val)'))
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:_type_name(type) abort
+  if !s:_is_valid_type_arg(a:type)
+    throw 'vital: Validator.Args: invalid type value: ' . string(a:type)
+  endif
+  let n = type(a:type)
+  if n is# v:t_number
+    return s:T.type_names[a:type]
+  elseif n is# v:t_string
+    return a:type
+  else
+    return join(map(copy(a:type), 's:_type_name(v:val)'), ' or ')
+  endif
 endfunction
 
 function! s:_check_assert_args(args) abort
@@ -113,7 +144,7 @@ function! s:_check_assert_args(args) abort
 endfunction
 
 function! s:_check_out_of_range(no, types) abort
-  let idx = index(a:types, s:TYPE.OPTARG)
+  let idx = index(a:types, 'option')
   if a:no > len(a:types) - (idx >= 0 && idx !=# len(a:types) - 1 ? 1 : 0)
     if idx >= 0
       let arity = idx . '-' . (len(a:types) - idx)
@@ -133,13 +164,13 @@ function! s:_validate_arg_types(args, types, prefix) abort
   let i = 0
   while i < argslen
     if i + optarg >= typelen
-      if optarg && a:types[-1] is s:TYPE.OPTARG
+      if optarg && a:types[-1] is# 'option'
         break
       else
         throw a:prefix . ': too many arguments'
       endif
     endif
-    if a:types[i + optarg] is s:TYPE.OPTARG
+    if a:types[i + optarg] is# 'option'
       let optarg += 1
       continue
     endif
@@ -148,33 +179,36 @@ function! s:_validate_arg_types(args, types, prefix) abort
     \)
     let i += 1
   endwhile
-  if !optarg && i < typelen && a:types[i] isnot s:TYPE.OPTARG
+  if !optarg && i < typelen && a:types[i] isnot# 'option'
     throw a:prefix . ': too few arguments'
   endif
 endfunction
 
 function! s:_validate_type(value, expected_type, prefix, ...) abort
-  if type(a:expected_type) is s:TYPE.LIST
+  if a:expected_type is# 'any'
+    return a:value
+  endif
+  if type(a:expected_type) is# v:t_list
     let matched = filter(copy(a:expected_type),
-    \     's:_validate_type(a:value, v:val, a:prefix, s:NONE) isnot s:NONE')
+    \     's:_validate_type(a:value, v:val, a:prefix, s:NONE) isnot# s:NONE')
     if empty(matched)
       if a:0
         return a:1
       endif
-      let expected = join(map(copy(a:expected_type), 's:T.type_names[v:val]'), ' or ')
+      let expected = s:_type_name(a:expected_type)
       throw a:prefix . ': invalid type arguments were given ' .
       \     '(expected: ' . expected .
-      \     ', got: ' . s:T.type_names[type(a:value)] . ')'
+      \     ', got: ' . s:_type_name(type(a:value)) . ')'
     endif
     return
   endif
-  if type(a:value) isnot a:expected_type
+  if type(a:value) isnot# a:expected_type
     if a:0
       return a:1
     endif
     throw a:prefix . ': invalid type arguments were given ' .
-    \     '(expected: ' . s:T.type_names[a:expected_type] .
-    \     ', got: ' . s:T.type_names[type(a:value)] . ')'
+    \     '(expected: ' . s:_type_name(a:expected_type) .
+    \     ', got: ' . s:_type_name(type(a:value)) . ')'
   endif
   return a:value
 endfunction
@@ -196,7 +230,7 @@ function! s:_validate_assert(value, funclist, msg, prefix) abort
 endfunction
 
 function! s:_call1(f, arg) abort
-  if type(a:f) is s:TYPE.FUNC
+  if type(a:f) is# v:t_func
     return call(a:f, [a:arg])
   else
     return map([a:arg], a:f)[0]
