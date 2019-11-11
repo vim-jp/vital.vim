@@ -145,14 +145,19 @@ function! s:encode(val, ...) abort
   let settings = extend({
         \ 'indent': 0,
         \ 'allow_nan': 1,
+        \ 'from_encoding': &encoding,
         \}, get(a:000, 0, {})
         \)
+  return s:_encode(a:val, settings)
+endfunction
+
+function! s:_encode(val, settings) abort
   let t = type(a:val)
   if t == 0
     return a:val
   elseif t == 1
-    let s = substitute(a:val, '[\x01-\x1f\\"]', '\=s:control_chars[submatch(0)]', 'g')
-    let s = iconv(s, &encoding, 'utf-8')
+    let s = iconv(a:val, a:settings.from_encoding, 'utf-8')
+    let s = substitute(s, '[\x01-\x1f\\"]', '\=s:control_chars[submatch(0)]', 'g')
     return '"' . s . '"'
   elseif t == 2
     if s:const.true == a:val
@@ -166,12 +171,12 @@ function! s:encode(val, ...) abort
       return string(a:val)
     endif
   elseif t == 3
-    return s:_encode_list(a:val, settings)
+    return s:_encode_list(a:val, a:settings)
   elseif t == 4
-    return s:_encode_dict(a:val, settings)
+    return s:_encode_dict(a:val, a:settings)
   elseif t == 5
     let val = string(a:val)
-    if settings.allow_nan
+    if a:settings.allow_nan
       let val = get(s:float_constants, val, val)
     elseif has_key(s:float_constants, val)
       throw 'vital: Web.JSON: Invalid float value: ' . val
@@ -189,7 +194,7 @@ function! s:_encode_list(val, settings) abort
   if empty(a:val)
     return '[]'
   elseif !a:settings.indent
-    let encoded_candidates = map(copy(a:val), 's:encode(v:val, a:settings)')
+    let encoded_candidates = map(copy(a:val), 's:_encode(v:val, a:settings)')
     return printf('[%s]', join(encoded_candidates, ','))
   else
     let previous_indent = get(a:settings, '_previous_indent')
@@ -199,7 +204,7 @@ function! s:_encode_list(val, settings) abort
           \})
     let encoded_candidates = map(
           \ copy(a:val),
-          \ printf('''%s'' . s:encode(v:val, ns)', repeat(' ', indent)),
+          \ printf('''%s'' . s:_encode(v:val, ns)', repeat(' ', indent)),
           \)
     return printf(
           \ "[\n%s\n%s]",
@@ -216,7 +221,7 @@ function! s:_encode_dict(val, settings) abort
     return '{}'
   elseif !a:settings.indent
     let encoded_candidates = map(keys(a:val),
-          \ 's:encode(v:val, a:settings) . '':'' . s:encode(a:val[v:val], a:settings)'
+          \ 's:_encode(v:val, a:settings) . '':'' . s:_encode(a:val[v:val], a:settings)'
           \)
     return printf('{%s}', join(encoded_candidates, ','))
   else
@@ -227,7 +232,7 @@ function! s:_encode_dict(val, settings) abort
           \})
     let encoded_candidates = map(keys(a:val),
           \ printf(
-          \   '''%s'' . s:encode(v:val, ns) . '': '' . s:encode(a:val[v:val], ns)',
+          \   '''%s'' . s:_encode(v:val, ns) . '': '' . s:_encode(a:val[v:val], ns)',
           \   repeat(' ', indent),
           \ ),
           \)

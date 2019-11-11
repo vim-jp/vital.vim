@@ -42,6 +42,20 @@ Describe Web.JSON
       Assert Equals(JSON.decode('"\ud83c\u00a0"'), "\ud83c\u00a0")
     End
 
+    It decodes strings with character encoding
+      let expected_utf8 = "sあc漢g"
+      Assert Equals(JSON.decode('"sあc漢g"'), expected_utf8)
+
+      let expected_sjis = iconv("sあc漢g", 'utf-8', 'sjis')
+      try
+        let &encoding = 'sjis'
+        let res = JSON.decode('"sあc漢g"')
+      finally
+        let &encoding = 'utf-8'
+      endtry
+      Assert Equals(res, expected_sjis)
+    End
+
     It decodes lists
       Assert Equals(JSON.decode('[]'), [])
       Assert Equals(JSON.decode('[0, 1, 2]'), [0, 1, 2])
@@ -124,6 +138,23 @@ Describe Web.JSON
       Assert Equals(JSON.encode("s¢cĴgё"), '"s¢cĴgё"')
       " UTF-16 surrogate pair
       Assert Equals(JSON.encode("\xf0\x9f\x8d\xa3"), "\"\xf0\x9f\x8d\xa3\"")
+    End
+
+    It encodes strings with character encoding
+      let str_utf8 = "sあc漢g"
+      Assert Equals(JSON.encode(str_utf8), '"sあc漢g"')
+
+      let str_sjis = iconv("sあc漢g", 'utf-8', 'sjis')
+      try
+        let &encoding = 'sjis'
+        let res = JSON.encode(str_sjis)
+      finally
+        let &encoding = 'utf-8'
+      endtry
+      Assert Equals(res, '"sあc漢g"')
+
+      let s = { 'from_encoding': 'sjis' }
+      Assert Equals(JSON.encode(str_sjis, s), '"sあc漢g"')
     End
 
     It encodes lists
