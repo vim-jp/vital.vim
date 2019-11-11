@@ -63,7 +63,6 @@ function! s:_resolve(val, prefix) abort
   return a:val
 endfunction
 
-
 function! s:_vital_created(module) abort
   " define constant variables
   if !exists('s:const')
@@ -96,6 +95,10 @@ function! s:decode(json, ...) abort
   let json = join(split(json, "\n"), '')
   let json = substitute(json, '\\u34;', '\\"', 'g')
   let json = substitute(json, '\\u\(\x\x\x\x\)', '\=s:string.nr2enc_char("0x".submatch(1))', 'g')
+  " convert surrogate pair
+  let json = substitute(json, '\([\uD800-\uDBFF]\)\([\uDC00-\uDFFF]\)',
+        \ '\=nr2char(0x10000+and(0x7ff,char2nr(submatch(1)))*0x400+and(0x3ff,char2nr(submatch(2))))',
+        \ 'g')
   if settings.use_token
     let prefix = '__Web.JSON__'
     while stridx(json, prefix) != -1
