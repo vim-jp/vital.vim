@@ -157,6 +157,14 @@ Describe Web.JSON
       Assert Equals(JSON.encode(str_sjis, s), '"sあc漢g"')
     End
 
+    It encodes strings with {settings.ensure_ascii} = true
+      let s = { 'ensure_ascii': v:true }
+      " multibyte
+      Assert Equals(JSON.encode("s¢cĴgё", s), '"s\u00a2c\u0134g\u0451"')
+      " UTF-16 surrogate pair
+      Assert Equals(JSON.encode("su\xf0\x9f\x8d\xa3shi", s), '"su\ud83c\udf63shi"')
+    End
+
     It encodes lists
       Assert Equals(JSON.encode([]), '[]')
       Assert Equals(JSON.encode([0, 1, 2]), '[0,1,2]')

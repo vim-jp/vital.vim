@@ -146,9 +146,25 @@ function! s:encode(val, ...) abort
         \ 'indent': 0,
         \ 'allow_nan': 1,
         \ 'from_encoding': &encoding,
+        \ 'ensure_ascii': 0,
         \}, get(a:000, 0, {})
         \)
-  return s:_encode(a:val, settings)
+  let json = s:_encode(a:val, settings)
+  if settings.ensure_ascii
+    let json = substitute(json, '[\U0000007f-\U0010ffff]',
+        \ {m -> s:_escape_unicode_chars(m[0])}, 'g')
+  endif
+  return json
+endfunction
+
+function! s:_escape_unicode_chars(char) abort
+  let n = char2nr(a:char)
+  if n < 0x10000
+    return printf('\u%04x', n)
+  else
+    let n -= 0x10000
+    return printf('\u%04x%\u%04x', 0xd800 + n / 0x400, 0xdc00 + and(0x3ff, n))
+  endif
 endfunction
 
 function! s:_encode(val, settings) abort

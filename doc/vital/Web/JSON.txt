@@ -78,6 +78,18 @@ encode({object}[, {settings}])		*Vital.Web.JSON.encode()*
 	echo s:JSON.encode([0.0/0], {'allow_nan': 0})
         " => vital: Web.JSON: Invalid float value: nan
 <
+        'ensure_ascii'
+        If 'ensure_ascii' is 0, all characters without control-chars
+        (0x01-0x1f) will be output as-is.
+        Otherwise the output is guaranteed to have all incoming non-ASCII
+        characters escaped.
+	The default value is 0.
+>
+	echo s:JSON.encode(["foo", "bár", "\n"])
+	" => '["foo","bár","\n"]'
+	echo s:JSON.encode(["foo", "bár", "\n"], {'ensure_ascii': 1})
+	" => '["foo","b\u00e1r","\n"]'
+<
 decode({json}[, {settings}])		*Vital.Web.JSON.decode()*
 	Decode a JSON string into an object that vim can treat.
 	{settings} is a |Dictionary| which allows the following:
