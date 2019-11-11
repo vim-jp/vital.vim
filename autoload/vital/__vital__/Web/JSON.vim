@@ -183,9 +183,6 @@ function! s:_encode(val, settings) abort
       return 'false'
     elseif s:const.null == a:val
       return 'null'
-    else
-      " backward compatibility
-      return string(a:val)
     endif
   elseif t == 3
     return s:_encode_list(a:val, a:settings)
@@ -203,9 +200,8 @@ function! s:_encode(val, settings) abort
     return get(s:special_constants, a:val)
   elseif t == 10
     return s:_encode_list(s:bytes.from_blob(a:val), a:settings)
-  else
-    return string(a:val)
   endif
+  throw 'vital: Web.JSON: Invalid argument: ' . string(a:val)
 endfunction
 
 " @vimlint(EVL102, 1, l:ns)

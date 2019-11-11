@@ -308,5 +308,26 @@ Describe Web.JSON
       Assert Equals(JSON.encode(0z), '[]')
       Assert Equals(JSON.encode(0zFF.00.ED.01.5D.AF), '[255,0,237,1,93,175]')
     End
+
+    It throws exception when encodes funcref
+      let Funcref = function('get')
+      Throws /^vital: Web\.JSON: Invalid argument: / JSON.encode(Funcref)
+    End
+
+    It throws exception when encodes job
+      if !exists('*test_null_job')
+        Skip no available job type.
+      endif
+      let job = test_null_job()
+      Throws /^vital: Web\.JSON: Invalid argument: / JSON.encode(job)
+    End
+
+    It throws exception when encodes channel
+      if !exists('*test_null_channel')
+        Skip no available channel type.
+      endif
+      let ch = test_null_channel()
+      Throws /^vital: Web\.JSON: Invalid argument: / JSON.encode(ch)
+    End
   End
 End
