@@ -300,5 +300,13 @@ Describe Web.JSON
       Throws /^vital: Web.JSON:/ JSON.encode(1.0/0, s)
       Throws /^vital: Web.JSON:/ JSON.encode(-1.0/0, s)
     End
+
+    It encodes blob
+      if !has('patch-8.1.0735')
+        Skip no available blob type.
+      endif
+      Assert Equals(JSON.encode(0z), '[]')
+      Assert Equals(JSON.encode(0zFF.00.ED.01.5D.AF), '[255,0,237,1,93,175]')
+    End
   End
 End

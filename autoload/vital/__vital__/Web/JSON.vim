@@ -96,10 +96,11 @@ endfunction
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:string = s:V.import('Data.String')
+  let s:bytes = s:V.import('Data.List.Byte')
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Data.String']
+  return ['Data.String', 'Data.List.Byte']
 endfunction
 
 " @vimlint(EVL102, 1, l:null)
@@ -200,6 +201,8 @@ function! s:_encode(val, settings) abort
     return val
   elseif t == 6 || t == 7
     return get(s:special_constants, a:val)
+  elseif t == 10
+    return s:_encode_list(s:bytes.from_blob(a:val), a:settings)
   else
     return string(a:val)
   endif
