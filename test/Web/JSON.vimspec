@@ -5,9 +5,9 @@ Describe Web.JSON
 
   Describe .constants()
     It should have constant variables which indicate the special tokens
-      Assert Match(string(JSON.true), "function('\.*_true')")
-      Assert Match(string(JSON.false), "function('\.*_false')")
-      Assert Match(string(JSON.null), "function('\.*_null')")
+      Assert Same(JSON.true, v:true)
+      Assert Same(JSON.false, v:false)
+      Assert Same(JSON.null, v:null)
     End
   End
 
@@ -85,18 +85,9 @@ Describe Web.JSON
     End
 
     It decodes special tokens (true/false/null)
-      " true/false/null
-      Assert Equals(JSON.decode('true'), 1)
-      Assert Equals(JSON.decode('false'), 0)
-      Assert Equals(JSON.decode('null'), 0)
       Assert Same(JSON.decode('true'), v:true)
       Assert Same(JSON.decode('false'), v:false)
       Assert Same(JSON.decode('null'), v:null)
-
-      let s = { 'use_token': 1 }
-      Assert Equals(JSON.decode('true', s), JSON.true)
-      Assert Equals(JSON.decode('false', s), JSON.false)
-      Assert Equals(JSON.decode('null', s), JSON.null)
     End
 
     It decodes special floats (NaN/Infinity/-Infinity)

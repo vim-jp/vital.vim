@@ -56,38 +56,13 @@ let s:special_constants = {
     \ }
 lockvar s:special_constants
 
-function! s:_true() abort
-  return v:true
-endfunction
-
-function! s:_false() abort
-  return v:false
-endfunction
-
-function! s:_null() abort
-  return v:null
-endfunction
-
-function! s:_resolve(val, prefix) abort
-  let t = type(a:val)
-  if t == type('')
-    let m = matchlist(a:val, '^' . a:prefix . '\(null\|true\|false\)$')
-    if !empty(m)
-      return s:const[m[1]]
-    endif
-  elseif t == type([]) || t == type({})
-    return map(a:val, 's:_resolve(v:val, a:prefix)')
-  endif
-  return a:val
-endfunction
-
 function! s:_vital_created(module) abort
   " define constant variables
   if !exists('s:const')
     let s:const = {}
-    let s:const.true = function('s:_true')
-    let s:const.false = function('s:_false')
-    let s:const.null = function('s:_null')
+    let s:const.true = v:true
+    let s:const.false = v:false
+    let s:const.null = v:null
     lockvar s:const
   endif
   call extend(a:module, s:const)
@@ -110,7 +85,6 @@ endfunction
 " @vimlint(EVL102, 1, l:Infinity)
 function! s:decode(json, ...) abort
   let settings = extend({
-        \ 'use_token': 0,
         \ 'allow_nan': 1,
         \}, get(a:000, 0, {}))
   let json = iconv(a:json, 'utf-8', &encoding)
@@ -124,17 +98,8 @@ function! s:decode(json, ...) abort
   if settings.allow_nan
     let [NaN,Infinity] = [s:float_nan,s:float_inf]
   endif
-  if settings.use_token
-    let prefix = '__Web.JSON__'
-    while stridx(json, prefix) != -1
-      let prefix .= '_'
-    endwhile
-    let [null,true,false] = map(['null','true','false'], 'prefix . v:val')
-    sandbox return s:_resolve(eval(json), prefix)
-  else
-    let [null,true,false] = [s:const.null(),s:const.true(),s:const.false()]
-    sandbox return eval(json)
-  endif
+  let [null, true, false] = [v:null, v:true, v:false]
+  sandbox return eval(json)
 endfunction
 " @vimlint(EVL102, 0, l:null)
 " @vimlint(EVL102, 0, l:true)
@@ -176,14 +141,6 @@ function! s:_encode(val, settings) abort
     let s = iconv(a:val, a:settings.from_encoding, 'utf-8')
     let s = substitute(s, '[\x01-\x1f\\"]', '\=s:control_chars[submatch(0)]', 'g')
     return '"' . s . '"'
-  elseif t == 2
-    if s:const.true == a:val
-      return 'true'
-    elseif s:const.false == a:val
-      return 'false'
-    elseif s:const.null == a:val
-      return 'null'
-    endif
   elseif t == 3
     return s:_encode_list(a:val, a:settings)
   elseif t == 4

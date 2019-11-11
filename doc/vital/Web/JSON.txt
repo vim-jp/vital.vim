@@ -23,34 +23,39 @@ INTERFACE				*Vital.Web.JSON-interface*
 CONSTS					*Vital.Web.JSON-consts*
 
 true					*Vital.Web.JSON.true*
-	It is used to indicate 'true' in JSON string. It is represented as a
-	|Funcref| thus if you assign the value to a variable which name does not
-	start with a capital, "s:", "w:", "t:" or "b:" will raise an exception.
-	This returns 1 when you use it as a function.
+	It is |v:true|. This is left for backward compatibility.
 
 false					*Vital.Web.JSON.false*
-	It is used to indicate 'false' in JSON string. It is represented as a
-	|Funcref| thus if you assign the value to a variable which name does not
-	start with a capital, "s:", "w:", "t:" or "b:" will raise an exception.
-	This returns 0 when you use it as a function.
+	It is |v:false|. This is left for backward compatibility.
 
 null					*Vital.Web.JSON.null*
-	It is used to indicate 'null' in JSON string. It is represented as a
-	|Funcref| thus if you assign the value to a variable which name does not
-	start with a capital, "s:", "w:", "t:" or "b:" will raise an exception.
-	This returns 0 when you use it as a function.
+	It is |v:null|. This is left for backward compatibility.
 
 ------------------------------------------------------------------------------
 FUNCTIONS				*Vital.Web.JSON-functions*
 
 encode({object}[, {settings}])		*Vital.Web.JSON.encode()*
-	Encode an object into a JSON string. Special tokens
-	(e.g. |Vital.Web.JSON.true|) are encoded into corresponding javascript
-	tokens (e.g. 'true').
->
-	echo s:JSON.encode([s:JSON.true, s:JSON.false, s:JSON.null])
-	" => '[true, false, null]'
-<
+	Encode an object into a JSON string.
+	Vim values are converted as follows:
+	   |Number|		decimal number
+	   |Float|		floating point number
+	   Float nan		"NaN"
+	   Float inf		"Infinity"
+	   Float -inf		"-Infinity"
+	   |String|		in double quotes (possibly null)
+	   |List|		as an array (possibly null); when
+				used recursively: []
+	   |Dict|		as an object (possibly null); when
+				used recursively: {}
+	   |Blob|		as an array of the individual bytes
+	   v:false		"false"
+	   v:true		"true"
+	   v:none		"null"
+	   v:null		"null"
+	   |Funcref|		not possible, error
+	   |job|		not possible, error
+	   |channel|		not possible, error
+
 	{settings} is a |Dictionary| which allows the following:
 
 	'indent'
@@ -94,17 +99,6 @@ decode({json}[, {settings}])		*Vital.Web.JSON.decode()*
 	Decode a JSON string into an object that vim can treat.
 	{settings} is a |Dictionary| which allows the following:
 
-	'use_token'
-	Use special tokens (e.g. |Vital.Web.JSON.true|) to represent
-	corresponding javascript tokens (e.g. 'true').
-	Otherwise |v:true|, |v:false| or |v:null| are used to represent these.
-	The default value is 0.
->
-	echo s:JSON.decode('[true, false, null]')
-	" => [1, 0, 0]
-	echo s:JSON.decode('[true, false, null]', {'use_token': 1})
-	" => [s:JSON.true, s:JSON.false, s:JSON.null]
-<
         'allow_nan'
         If 'allows_nan' is 0, it will raise an exception when deserializing
         float constants ('NaN', 'Infinity', '-Infinity').
