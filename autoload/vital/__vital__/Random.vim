@@ -70,7 +70,9 @@ function! s:Random.shuffle(list) abort
   while 1 < pos
     let n = self.range(pos)
     let pos -= 1
-    let [a:list[n], a:list[pos]] = [a:list[pos], a:list[n]]
+    if n != pos
+      let [a:list[n], a:list[pos]] = [a:list[pos], a:list[n]]
+    endif
   endwhile
   return a:list
 endfunction
