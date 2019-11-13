@@ -71,14 +71,11 @@ function! s:Random.shuffle(list) abort
     let n = self.range(pos)
     let pos -= 1
     if n != pos
-      let temp = a:list[n]
-      let a:list[n] = a:list[pos]
-      let a:list[pos] = temp
+      let [a:list[n], a:list[pos]] = [a:list[pos], a:list[n]]
     endif
   endwhile
   return a:list
 endfunction
-
 
 function! s:make_seed() abort
   let seed = localtime()
