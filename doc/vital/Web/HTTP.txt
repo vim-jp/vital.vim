@@ -74,6 +74,9 @@ request({method}, {url} [, {settings}])
 	"password"	Default: (None)
 		Password for an HTTP authentication.
 
+	"bearerToken"	Default: (None)
+		Bearer token for an HTTP authentication (OAuth2).
+
 	"maxRedirect"	Default: 20
 		Maximum number of redirections.
 		The default is 20, which is usually far more than necessary.
@@ -100,7 +103,8 @@ request({method}, {url} [, {settings}])
 	"authMethod"	Default: (None)
 		(This is only valid for "curl" interface.)
 		Specify the authorization method.
-		The value must be in ['basic', 'digest', 'ntlm', 'negotiate']
+		The value must be in ['basic', 'digest', 'ntlm', 'negotiate',
+		'oauth2']
 		The default value is None, and then use "anyauth".
 
 	"gzipDecompress"	Default: 0
