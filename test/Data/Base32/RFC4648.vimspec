@@ -1,6 +1,6 @@
-Describe Data.Base32
+Describe Data.Base32.RFC4648
   Before all
-    let B = vital#vital#new().import('Data.Base32')
+    let B = vital#vital#new().import('Data.Base32.RFC4648')
   End
 
   Describe .encode()

@@ -1,0 +1,43 @@
+*vital/Data/Base32/Hex.txt*		base32 utilities library.
+
+Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO+develop@Gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Base32.Hex-contents*
+
+INTRODUCTION			|Vital.Data.Base32.Hex-introduction|
+INTERFACE			|Vital.Data.Base32.Hex-interface|
+  Functions			  |Vital.Data.Base32.Hex-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Base32.Hex-introduction*
+
+*Vital.Data.Base32.Hex* is Base32 Hex implementation.
+It provides base32 Hex converter.
+
+==============================================================================
+INTERFACE				*Vital.Data.Base32.Hex-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Base32.Hex-functions*
+
+
+encode({str})				*Vital.Data.Base32.Hex.encode()*
+	Return base32 Hex encoded string from {str}.
+
+encodebin({str})			*Vital.Data.Base32.Hex.encodebin()*
+	Return base32 Hex encoded string from {str}. {str} is hex encoded
+	string figured as bytes.
+
+encodebytes({bytes})			*Vital.Data.Base32.Hex.encodebytes()*
+	Return base32 Hex encoded string from {bytes}.
+
+decode({str})				*Vital.Data.Base32.Hex.decode()*
+	Return decoded string from {str} that's base32 Hex encoded.
+	{str} are case insensitive.
+
+decoderaw({str})			*Vital.Data.Base32.Hex.decoderaw()*
+	Return decoded bytes-list from {str} that's base32 Hex encoded.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl:noet:fen:
