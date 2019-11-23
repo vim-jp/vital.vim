@@ -1,0 +1,41 @@
+*vital/Data/Base64/Base64.txt*		base64 raw utilities library.
+
+Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO+develop@Gmail.com>
+Original Maintainer: mattn   <mattn.jp@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Base64.Base64-contents*
+
+INTRODUCTION			|Vital.Data.Base64.Base64-introduction|
+INTERFACE			|Vital.Data.Base64.Base64-interface|
+  Functions			  |Vital.Data.Base64.Base64-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Base64.Base64-introduction*
+
+*Vital.Data.Base64.Base64* is Base64 internal utlitiy.
+It provides base64 encode/decode routine.
+
+==============================================================================
+INTERFACE				*Vital.Data.Base64.Base64-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Base64.Base64-functions*
+
+
+					  *Vital.Data.Base64.Base64.b64encode()*
+b64encode({bytes}, {table}, {padding flag}, {padding char})
+	Return base64 encoded string from {bytes} that convert based on
+	{table}.
+	If {padding flag} is true, encoded string padding at {padding char}.
+	This function is mainly used to create Base64 derived types.
+
+					  *Vital.Data.Base64.Base64.b64decode()*
+b64decode({str}, {map}, {padding flag}, {padding char})
+	Return decoded bytes-list from {str} that convert based on {map}
+	symbol to value mapping.
+	If {padding flag} is true, encode string has padding thas is {padding
+	char} and remove it in decode phase.
+	This function is mainly used to create Base64 derived types.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl:noet:fen:

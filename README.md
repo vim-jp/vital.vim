@@ -42,7 +42,9 @@ Module						 | Description
 [Async.Promise](doc/vital/Async/Promise.txt)	 | An asynchronous operation like ES6 Promise
 [Bitwise](doc/vital/Bitwise.txt)		 | bitwise operators
 [ConcurrentProcess](doc/vital/ConcurrentProcess.txt)	 | manages processes concurrently with vimproc
-[Data.Base64](doc/vital/Data/Base64.txt)	 | base64 utilities library
+[Data.Base64](doc/vital/Data/Base64.txt)	 | base64 utilities library (RFC Wrapper IF)
+[Data.Base64.RFC4648](doc/vital/Data/Base64/RFC4648.txt)	 | base64 RFC4648 utilities library
+[Data.Base64.URLSafe](doc/vital/Data/Base64/URLSafe.txt)	 | base64 URLSafe utilities library
 [Data.Base32](doc/vital/Data/Base32.txt)	 | base32 utilities library (RFC Wrapper IF)
 [Data.Base32.Crockford](doc/vital/Data/Base32/Crockford.txt)	 | base32 Crockford utilities library
 [Data.Base32.Hex](doc/vital/Data/Base32/Hex.txt)	 | base32 Hex utilities library
