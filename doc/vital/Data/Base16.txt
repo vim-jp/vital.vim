@@ -1,0 +1,43 @@
+*vital/Data/Base16.txt*		base16 utilities library.
+
+Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO+develop@Gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Base16-contents*
+
+INTRODUCTION			|Vital.Data.Base16-introduction|
+INTERFACE			|Vital.Data.Base16-interface|
+  Functions			  |Vital.Data.Base16-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Base16-introduction*
+
+*Vital.Data.Base16* is base16 wrapping interface for |Vital.Data.List.Byte|.
+It provides base16 standard converter.
+
+==============================================================================
+INTERFACE				*Vital.Data.Base16-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Base16-functions*
+
+
+encode({str})				*Vital.Data.Base16.encode()*
+	Return base16 RFC4648 encoded string from {str}.
+
+encodebin({str})			*Vital.Data.Base16.encodebin()*
+	Return base16 RFC4648 encoded string from {str}.
+	same as {str} and return through {str}.
+
+encodebytes({bytes})			*Vital.Data.Base16.encodebytes()*
+	Return base16 RFC4648 encoded string from {bytes}.
+
+decode({str})				*Vital.Data.Base16.decode()*
+	Return decoded string from {str} that's base16 RFC4648 encoded.
+	{str} are case insensitive.
+
+decoderaw({str})			*Vital.Data.Base16.decoderaw()*
+	Return decoded bytes-list from {str} that's base16 RFC4648 encoded.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl:noet:fen:

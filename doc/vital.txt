@@ -169,6 +169,7 @@ LINKS					*Vital-links*
   |vital/ConcurrentProcess.txt|	Manages processes concurrently with vimproc.
   |vital/Data/Base64.txt|	base64 utilities library.
   |vital/Data/Base32.txt|	base32 utilities library.
+  |vital/Data/Base16.txt|	base16 utilities library.
   |vital/Data/BigNum.txt|	Multi precision integer library.
   |vital/Data/Closure.txt|	Provide Closure object.
   |vital/Data/Counter.txt|	Counter library to support convenient tallies.
