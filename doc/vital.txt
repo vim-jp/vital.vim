@@ -167,10 +167,10 @@ LINKS					*Vital-links*
   |vital/Async/Promise.txt|	An asynchronous operation like ES6 Promise
   |vital/Bitwise.txt|		bitwise operators.
   |vital/ConcurrentProcess.txt|	Manages processes concurrently with vimproc.
-  |vital/Data/Base64.txt|	base64 utilities library (RFC Wrapper IF).
+  |vital/Data/Base64.txt|	base64 utilities library.
   |vital/Data/Base64/RFC4648.txt|	base64 RFC4648 utilities library.
   |vital/Data/Base64/URLSafe.txt|	base64 URLSafe utilities library.
-  |vital/Data/Base32.txt|	base32 utilities library (RFC Wrapper IF).
+  |vital/Data/Base32.txt|	base32 utilities library.
   |vital/Data/Base32/Crockford.txt|	base32 Crockford utilities library.
   |vital/Data/Base32/Hex.txt|	base32 Hex utilities library.
   |vital/Data/Base32/RFC4648.txt|	base32 RFC4648 utilities library.
