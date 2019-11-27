@@ -93,12 +93,15 @@ function! s:b32decode(b32, map, is_padding, padcheck) abort
     "  5                          +---+
     "  6                               +---+
     "  7                                    +---+
+    "    0b11       -> 0x03
+    "    0b11111000 -> 0xf8
+    "    0b00000111 -> 0x07
     let n_hi = s:Bitwise.or(
-          \ s:Bitwise.and(s:Bitwise.lshift(pack[0], 3), 0b11111000),
-          \ s:Bitwise.and(s:Bitwise.rshift(pack[1], 2), 0b00000111)
+          \ s:Bitwise.and(s:Bitwise.lshift(pack[0], 3), 0xf8),
+          \ s:Bitwise.and(s:Bitwise.rshift(pack[1], 2), 0x07)
           \ )
 
-    let n_lo = s:Bitwise.and(pack[1], 0b11) * 0x40000000
+    let n_lo = s:Bitwise.and(pack[1], 0x03) * 0x40000000
           \ + pack[2]                       *  0x2000000
           \ + pack[3]                       *   0x100000
           \ + pack[4]                       *     0x8000
