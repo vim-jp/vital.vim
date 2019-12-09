@@ -76,11 +76,3 @@ script:
 
 after_success:
   - bash scripts/coverage.sh
-
-notifications:
-  webhooks:
-    urls:
-      - http://travis-ci.herokuapp.com/vim
-    on_success: never
-    on_failure: always
-    on_start: never
