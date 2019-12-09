@@ -36,12 +36,3 @@ after_test:
   - codecov -f coverage.xml
 
 deploy: off
-notifications:
-  - provider: Webhook
-    url: http://appveyor.herokuapp.com/vim
-    headers:
-      User-Agent: appveyor-lingrbot 1.0
-      Authorization:
-        secure: cjzTMN7bP3fkRnz6S0ZRjc0Q3nPPvdJ7AXrizCQBKK0=
-    on_build_success: false
-    on_build_failure: true
