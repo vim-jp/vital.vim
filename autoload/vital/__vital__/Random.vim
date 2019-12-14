@@ -85,9 +85,7 @@ function! s:make_seed() abort
       let seed = s:Bitwise.xor(seed, str2nr(n))
     endfor
   endif
-  if exists('*getpid')
-    let seed = s:Bitwise.xor(seed, getpid())
-  endif
+  let seed = s:Bitwise.xor(seed, getpid())
   let seed = s:_seed_from_string(seed, expand('~'))
   return seed
 endfunction
