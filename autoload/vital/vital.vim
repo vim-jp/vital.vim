@@ -105,7 +105,7 @@ let s:Vital.exists = function('s:exists')
 function! s:search(pattern) abort dict
   let paths = s:_extract_files(a:pattern, self.vital_files())
   let modules = sort(map(paths, 's:_file2module(v:val)'))
-  return s:_uniq(modules)
+  return uniq(modules)
 endfunction
 let s:Vital.search = function('s:search')
 
@@ -327,20 +327,3 @@ endfunction
 function! s:_sfuncname(sid, funcname) abort
   return printf('<SNR>%s_%s', a:sid, a:funcname)
 endfunction
-
-if exists('*uniq')
-  function! s:_uniq(list) abort
-    return uniq(a:list)
-  endfunction
-else
-  function! s:_uniq(list) abort
-    let i = len(a:list) - 1
-    while 0 < i
-      if a:list[i] ==# a:list[i - 1]
-        call remove(a:list, i)
-      endif
-      let i -= 1
-    endwhile
-    return a:list
-  endfunction
-endif
