@@ -31,17 +31,9 @@ function! s:some(v) abort
 endfunction
 
 function! s:new(v, ...) abort
-  if exists('v:null')
-    return a:v == v:null || (a:0 > 0 && a:v == a:1)
-          \ ? s:none()
-          \ : s:some(a:v)
-  elseif a:0 > 0
-    return a:v == a:1
-          \ ? s:none()
-          \ : s:some(a:v)
-  else
-      throw 'vital: Data.Optional: both v:null and {null} are missing'
-  endif
+  return a:v == v:null || (a:0 > 0 && a:v == a:1)
+        \ ? s:none()
+        \ : s:some(a:v)
 endfunction
 
 function! s:is_optional(v) abort
