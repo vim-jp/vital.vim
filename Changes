@@ -1,3 +1,13 @@
+613c6cc1f26e21bfc222d691960f4b89c5b64019
+	Modules: Data.Base64
+	Refactoring: core logic move to Data.Base64.Base64.
+	Base implements in Data.Base64.RFC4648.
+	Data.Base64 is refine to wrapper IF module.
+a7101eba3d7bc04869fd9927a6352a0d18b0abd1
+	Modules: Data.Base32
+	Refactoring: core logic move to Data.Base32.Base32.
+	Base implements in Data.Base32.RFC4648.
+	Data.Base32 is refine to wrapper IF module.
 2690a79e5110ec347131de6a634a944d841b5d9e
 	Modules: Prelude
 	Prelude.escape_file_searching() is gone. Use `escape(buffer_name, '*[]?{}, ')` instead.

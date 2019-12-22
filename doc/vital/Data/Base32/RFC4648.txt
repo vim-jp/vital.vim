@@ -1,41 +1,41 @@
-*vital/Data/Base32.txt*		base32 utilities library.
+*vital/Data/Base32/RFC4648.txt*		base32 utilities library.
 
 Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO+develop@Gmail.com>
 
 ==============================================================================
-CONTENTS				*Vital.Data.Base32-contents*
+CONTENTS				*Vital.Data.Base32.RFC4648-contents*
 
-INTRODUCTION			|Vital.Data.Base32-introduction|
-INTERFACE			|Vital.Data.Base32-interface|
-  Functions			  |Vital.Data.Base32-functions|
+INTRODUCTION			|Vital.Data.Base32.RFC4648-introduction|
+INTERFACE			|Vital.Data.Base32.RFC4648-interface|
+  Functions			  |Vital.Data.Base32.RFC4648-functions|
 
 ==============================================================================
-INTRODUCTION				*Vital.Data.Base32-introduction*
+INTRODUCTION				*Vital.Data.Base32.RFC4648-introduction*
 
-*Vital.Data.Base32* is Base32 wrapping interface for |Vital.Data.Base32.RFC4648|.
+*Vital.Data.Base32.RFC4648* is Base32 RFC4648 implementation.
 It provides base32 standard converter.
 
 ==============================================================================
-INTERFACE				*Vital.Data.Base32-interface*
+INTERFACE				*Vital.Data.Base32.RFC4648-interface*
 ------------------------------------------------------------------------------
-FUNCTIONS				*Vital.Data.Base32-functions*
+FUNCTIONS				*Vital.Data.Base32.RFC4648-functions*
 
 
-encode({str})				*Vital.Data.Base32.encode()*
+encode({str})				*Vital.Data.Base32.RFC4648.encode()*
 	Return base32 RFC4648 encoded string from {str}.
 
-encodebin({str})			*Vital.Data.Base32.encodebin()*
+encodebin({str})			*Vital.Data.Base32.RFC4648.encodebin()*
 	Return base32 RFC4648 encoded string from {str}. {str} is hex encoded
 	string figured as bytes.
 
-encodebytes({bytes})			*Vital.Data.Base32.encodebytes()*
+encodebytes({bytes})			*Vital.Data.Base32.RFC4648.encodebytes()*
 	Return base32 RFC4648 encoded string from {bytes}.
 
-decode({str})				*Vital.Data.Base32.decode()*
+decode({str})				*Vital.Data.Base32.RFC4648.decode()*
 	Return decoded string from {str} that's base32 RFC4648 encoded.
 	{str} are case insensitive.
 
-decoderaw({str})			*Vital.Data.Base32.decoderaw()*
+decoderaw({str})			*Vital.Data.Base32.RFC4648.decoderaw()*
 	Return decoded bytes-list from {str} that's base32 RFC4648 encoded.
 
 

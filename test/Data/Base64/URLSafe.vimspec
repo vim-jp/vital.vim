@@ -1,29 +1,29 @@
-Describe Data.Base64
+Describe Data.Base64.URLSafe
   Before all
-    let B = vital#vital#new().import('Data.Base64')
+    let B = vital#vital#new().import('Data.Base64.URLSafe')
   End
 
   Describe .encode()
     It encode string to base64 encoded string.
-      Assert Equals(B.encode("hello, world!"), 'aGVsbG8sIHdvcmxkIQ==')
+      Assert Equals(B.encode("hello, world!"), 'aGVsbG8sIHdvcmxkIQ')
     End
     It encode string RFC Test Vector 1.
       Assert Equals(B.encode(""      ) , ''        )
     End
     It encode string RFC Test Vector 2.
-      Assert Equals(B.encode("f"     ) , 'Zg=='    )
+      Assert Equals(B.encode("f"     ) , 'Zg'      )
     End
     It encode string RFC Test Vector 3.
-      Assert Equals(B.encode("fo"    ) , 'Zm8='    )
+      Assert Equals(B.encode("fo"    ) , 'Zm8'     )
     End
     It encode string RFC Test Vector 4.
       Assert Equals(B.encode("foo"   ) , 'Zm9v'    )
     End
     It encode string RFC Test Vector 5.
-      Assert Equals(B.encode("foob"  ) , 'Zm9vYg==')
+      Assert Equals(B.encode("foob"  ) , 'Zm9vYg'  )
     End
     It encode string RFC Test Vector 6.
-      Assert Equals(B.encode("fooba" ) , 'Zm9vYmE=')
+      Assert Equals(B.encode("fooba" ) , 'Zm9vYmE' )
     End
     It encode string RFC Test Vector 7.
       Assert Equals(B.encode("foobar") , 'Zm9vYmFy')
@@ -32,37 +32,37 @@ Describe Data.Base64
 
   Describe .encodebin()
     It encode string encoded as hex to base64 encoded string.
-      Assert Equals(B.encodebin('68656c6c6f2c20776f726c6421'), 'aGVsbG8sIHdvcmxkIQ==')
+      Assert Equals(B.encodebin('68656c6c6f2c20776f726c6421'), 'aGVsbG8sIHdvcmxkIQ')
     End
   End
 
   Describe .encodebytes()
     It encode bytes-list encoded as hex to base64 encoded string.
-      Assert Equals(B.encodebytes([0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21]), 'aGVsbG8sIHdvcmxkIQ==')
+      Assert Equals(B.encodebytes([0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21]), 'aGVsbG8sIHdvcmxkIQ')
     End
   End
 
   Describe .decode()
     It decode base64 encoded string to string.
-      Assert Equals(B.decode("aGVsbG8sIHdvcmxkIQ=="), 'hello, world!')
+      Assert Equals(B.decode("aGVsbG8sIHdvcmxkIQ"), 'hello, world!')
     End
     It decode string RFC Test Vector 1.
       Assert Equals(B.decode(""        ), ''      )
     End
     It decode string RFC Test Vector 2.
-      Assert Equals(B.decode("Zg=="    ), 'f'     )
+      Assert Equals(B.decode("Zg"      ), 'f'     )
     End
     It decode string RFC Test Vector 3.
-      Assert Equals(B.decode("Zm8="    ), 'fo'    )
+      Assert Equals(B.decode("Zm8"     ), 'fo'    )
     End
     It decode string RFC Test Vector 4.
       Assert Equals(B.decode("Zm9v"    ), 'foo'   )
     End
     It decode string RFC Test Vector 5.
-      Assert Equals(B.decode("Zm9vYg=="), 'foob'  )
+      Assert Equals(B.decode("Zm9vYg"  ), 'foob'  )
     End
     It decode string RFC Test Vector 6.
-      Assert Equals(B.decode("Zm9vYmE="), 'fooba' )
+      Assert Equals(B.decode("Zm9vYmE" ), 'fooba' )
     End
     It decode string RFC Test Vector 7.
       Assert Equals(B.decode("Zm9vYmFy"), 'foobar')
@@ -71,7 +71,7 @@ Describe Data.Base64
 
   Describe .decoderaw()
     It decode base64 encoded string to bytes-list.
-      Assert Equals(B.decoderaw("aGVsbG8sIHdvcmxkIQ=="), [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21])
+      Assert Equals(B.decoderaw("aGVsbG8sIHdvcmxkIQ"), [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21])
     End
   End
 End

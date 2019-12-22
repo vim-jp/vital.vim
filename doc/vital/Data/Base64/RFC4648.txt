@@ -1,40 +1,40 @@
-*vital/Data/Base64.txt*		base64 utilities library.
+*vital/Data/Base64/RFC4648.txt*		base64 utilities library.
 
 Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO+develop@Gmail.com>
 
 ==============================================================================
-CONTENTS				*Vital.Data.Base64-contents*
+CONTENTS				*Vital.Data.Base64.RFC4648-contents*
 
-INTRODUCTION			|Vital.Data.Base64-introduction|
-INTERFACE			|Vital.Data.Base64-interface|
-  Functions			  |Vital.Data.Base64-functions|
+INTRODUCTION			|Vital.Data.Base64.RFC4648-introduction|
+INTERFACE			|Vital.Data.Base64.RFC4648-interface|
+  Functions			  |Vital.Data.Base64.RFC4648-functions|
 
 ==============================================================================
-INTRODUCTION				*Vital.Data.Base64-introduction*
+INTRODUCTION				*Vital.Data.Base64.RFC4648-introduction*
 
-*Vital.Data.Base64* is Base64 wrapping interface for |Vital.Data.Base64.RFC4648|.
+*Vital.Data.Base64.RFC4648* is Base64 RFC4648 implementation.
 It provides base64 standard converter.
 
 ==============================================================================
-INTERFACE				*Vital.Data.Base64-interface*
+INTERFACE				*Vital.Data.Base64.RFC4648-interface*
 ------------------------------------------------------------------------------
-FUNCTIONS				*Vital.Data.Base64-functions*
+FUNCTIONS				*Vital.Data.Base64.RFC4648-functions*
 
 
-encode({str})				*Vital.Data.Base64.encode()*
+encode({str})				*Vital.Data.Base64.RFC4648.encode()*
 	Return base64 RFC4648 encoded string from {str}.
 
-encodebin({str})			*Vital.Data.Base64.encodebin()*
+encodebin({str})			*Vital.Data.Base64.RFC4648.encodebin()*
 	Return base64 RFC4648 encoded string from {str}. {str} is hex encoded
 	string figured as bytes.
 
-encodebytes({bytes})			*Vital.Data.Base64.encodebytes()*
+encodebytes({bytes})			*Vital.Data.Base64.RFC4648.encodebytes()*
 	Return base64 RFC4648 encoded string from {bytes}.
 
-decode({str})				*Vital.Data.Base64.decode()*
+decode({str})				*Vital.Data.Base64.RFC4648.decode()*
 	Return decoded string from {str} that's base64 RFC4648 encoded.
 
-decoderaw({str})			*Vital.Data.Base64.decoderaw()*
+decoderaw({str})			*Vital.Data.Base64.RFC4648.decoderaw()*
 	Return decoded bytes-list from {str} that's base64 RFC4648 encoded.
 
 

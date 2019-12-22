@@ -1,91 +1,36 @@
-" Utilities for Base64.
-" RFC 4648 http://tools.ietf.org/html/rfc4648.html
+" Utilities for Base64. old IF wrapper
+" RFC 4648 https://tools.ietf.org/html/rfc4648
 
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:Base64rfc = s:V.import('Data.Base64.RFC4648')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Data.Base64.RFC4648']
+endfunction
+
 function! s:encode(data) abort
-  return s:encodebytes(s:_str2bytes(a:data))
+  return s:Base64rfc.encode(a:data)
 endfunction
 
 function! s:encodebin(data) abort
-  return s:encodebytes(s:_binstr2bytes(a:data))
+  return s:Base64rfc.encodebin(a:data)
 endfunction
 
 function! s:encodebytes(data) abort
-  let b64 = s:_b64encode(a:data, s:standard_table, '=')
-  return join(b64, '')
+  return s:Base64rfc.encodebytes(a:data)
 endfunction
 
 function! s:decode(data) abort
-  return s:_bytes2str(s:decoderaw(a:data))
+  return s:Base64rfc.decode(a:data)
 endfunction
 
 function! s:decoderaw(data) abort
-  return s:_b64decode(split(a:data, '\zs'), s:standard_table, '=')
-endfunction
-
-let s:standard_table = [
-      \ 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
-      \ 'Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f',
-      \ 'g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v',
-      \ 'w','x','y','z','0','1','2','3','4','5','6','7','8','9','+','/']
-
-function! s:_b64encode(bytes, table, pad) abort
-  let b64 = []
-  for i in range(0, len(a:bytes) - 1, 3)
-    let n = a:bytes[i] * 0x10000
-          \ + get(a:bytes, i + 1, 0) * 0x100
-          \ + get(a:bytes, i + 2, 0)
-    call add(b64, a:table[n / 0x40000])
-    call add(b64, a:table[n / 0x1000 % 0x40])
-    call add(b64, a:table[n / 0x40 % 0x40])
-    call add(b64, a:table[n % 0x40])
-  endfor
-  if len(a:bytes) % 3 == 1
-    let b64[-1] = a:pad
-    let b64[-2] = a:pad
-  endif
-  if len(a:bytes) % 3 == 2
-    let b64[-1] = a:pad
-  endif
-  return b64
-endfunction
-
-function! s:_b64decode(b64, table, pad) abort
-  let a2i = {}
-  for i in range(len(a:table))
-    let a2i[a:table[i]] = i
-  endfor
-  let bytes = []
-  for i in range(0, len(a:b64) - 1, 4)
-    let n = a2i[a:b64[i]] * 0x40000
-          \ + a2i[a:b64[i + 1]] * 0x1000
-          \ + (a:b64[i + 2] == a:pad ? 0 : a2i[a:b64[i + 2]]) * 0x40
-          \ + (a:b64[i + 3] == a:pad ? 0 : a2i[a:b64[i + 3]])
-    call add(bytes, n / 0x10000)
-    call add(bytes, n / 0x100 % 0x100)
-    call add(bytes, n % 0x100)
-  endfor
-  if a:b64[-1] == a:pad
-    unlet bytes[-1]
-  endif
-  if a:b64[-2] == a:pad
-    unlet bytes[-1]
-  endif
-  return bytes
-endfunction
-
-function! s:_binstr2bytes(str) abort
-  return map(range(len(a:str)/2), 'str2nr(a:str[v:val*2 : v:val*2+1], 16)')
-endfunction
-
-function! s:_str2bytes(str) abort
-  return map(range(len(a:str)), 'char2nr(a:str[v:val])')
-endfunction
-
-function! s:_bytes2str(bytes) abort
-  return eval('"' . join(map(copy(a:bytes), 'printf(''\x%02x'', v:val)'), '') . '"')
+  return s:Base64rfc.decoderaw(a:data)
 endfunction
 
 let &cpo = s:save_cpo

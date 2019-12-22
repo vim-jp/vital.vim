@@ -168,7 +168,13 @@ LINKS					*Vital-links*
   |vital/Bitwise.txt|		bitwise operators.
   |vital/ConcurrentProcess.txt|	Manages processes concurrently with vimproc.
   |vital/Data/Base64.txt|	base64 utilities library.
+  |vital/Data/Base64/RFC4648.txt|	base64 RFC4648 utilities library.
+  |vital/Data/Base64/URLSafe.txt|	base64 URLSafe utilities library.
   |vital/Data/Base32.txt|	base32 utilities library.
+  |vital/Data/Base32/Crockford.txt|	base32 Crockford utilities library.
+  |vital/Data/Base32/Hex.txt|	base32 Hex utilities library.
+  |vital/Data/Base32/RFC4648.txt|	base32 RFC4648 utilities library.
+  |vital/Data/Base16.txt|	base16 utilities library.
   |vital/Data/BigNum.txt|	Multi precision integer library.
   |vital/Data/Closure.txt|	Provide Closure object.
   |vital/Data/Counter.txt|	Counter library to support convenient tallies.

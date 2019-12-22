@@ -1,0 +1,42 @@
+*vital/Data/Base64/URLSafe.txt*		base64 utilities library.
+
+Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO+develop@Gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Base64.URLSafe-contents*
+
+INTRODUCTION			|Vital.Data.Base64.URLSafe-introduction|
+INTERFACE			|Vital.Data.Base64.URLSafe-interface|
+  Functions			  |Vital.Data.Base64.URLSafe-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Base64.URLSafe-introduction*
+
+*Vital.Data.Base64.URLSafe* is Base64 URLSafe implementation.
+It provides base64 url-safe converter.
+
+==============================================================================
+INTERFACE				*Vital.Data.Base64.URLSafe-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Base64.URLSafe-functions*
+
+
+encode({str})				*Vital.Data.Base64.URLSafe.encode()*
+	Return base64 URLSafe encoded string from {str}.
+
+encodebin({str})			*Vital.Data.Base64.URLSafe.encodebin()*
+	Return base64 URLSafe encoded string from {str}. {str} is hex encoded
+	string figured as bytes.
+
+encodebytes({bytes})			*Vital.Data.Base64.URLSafe.encodebytes()*
+	Return base64 URLSafe encoded string from {bytes}.
+
+decode({str})				*Vital.Data.Base64.URLSafe.decode()*
+	Return decoded string from {str} that's base64 URLSafe encoded.
+
+decoderaw({str})			*Vital.Data.Base64.URLSafe.decoderaw()*
+	Return decoded bytes-list from {str} that's base64 URLSafe encoded.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl:noet:fen:

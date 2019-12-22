@@ -1,0 +1,77 @@
+Describe Data.Base16
+  Before all
+    let B = vital#vital#new().import('Data.Base16')
+  End
+
+  Describe .encode()
+    It encode string to base16 encoded string.
+      Assert Equals(B.encode("hello, world!"), '68656c6c6f2c20776f726c6421')
+    End
+    It decode string RFC Test Vector 1.
+      Assert Equals(B.decode(""            ), ''      )
+    End
+    It decode string RFC Test Vector 2.
+      Assert Equals(B.decode("66"          ), 'f'     )
+    End
+    It decode string RFC Test Vector 3.
+      Assert Equals(B.decode("666F"        ), 'fo'    )
+    End
+    It decode string RFC Test Vector 4.
+      Assert Equals(B.decode("666F6F"      ), 'foo'   )
+    End
+    It decode string RFC Test Vector 5.
+      Assert Equals(B.decode("666F6F62"    ), 'foob'  )
+    End
+    It decode string RFC Test Vector 6.
+      Assert Equals(B.decode("666F6F6261"  ), 'fooba' )
+    End
+    It decode string RFC Test Vector 7.
+      Assert Equals(B.decode("666F6F626172"), 'foobar')
+    End
+  End
+
+  Describe .encodebin()
+    It encode string encoded as hex to base16 encoded string.
+      Assert Equals(B.encodebin('68656c6c6f2c20776f726c6421'), '68656c6c6f2c20776f726c6421')
+    End
+  End
+
+  Describe .encodebytes()
+    It encode string encoded as bytes-list to base16 encoded string.
+      Assert Equals(B.encodebytes([0x00, 0xff]), '00ff')
+    End
+  End
+
+  Describe .decode()
+    It decode base16 encoded string to string.
+      Assert Equals(B.decode("68656c6c6f2c20776f726c6421"), 'hello, world!')
+    End
+    It decode string RFC Test Vector 1.
+      Assert Equals(B.decode(""            ), ''      )
+    End
+    It decode string RFC Test Vector 2.
+      Assert Equals(B.decode("66"          ), 'f'     )
+    End
+    It decode string RFC Test Vector 3.
+      Assert Equals(B.decode("666F"        ), 'fo'    )
+    End
+    It decode string RFC Test Vector 4.
+      Assert Equals(B.decode("666F6F"      ), 'foo'   )
+    End
+    It decode string RFC Test Vector 5.
+      Assert Equals(B.decode("666F6F62"    ), 'foob'  )
+    End
+    It decode string RFC Test Vector 6.
+      Assert Equals(B.decode("666F6F6261"  ), 'fooba' )
+    End
+    It decode string RFC Test Vector 7.
+      Assert Equals(B.decode("666F6F626172"), 'foobar')
+    End
+  End
+
+  Describe .decoderaw()
+    It decode base16 encoded string to bytes-list.
+      Assert Equals(B.decoderaw("00ff"), [0x00, 0xff])
+    End
+  End
+End
