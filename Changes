@@ -1,3 +1,6 @@
+e18013b1596819eabe87e6c87e0622f526ad85c8
+	Modules: *
+	Drop Vim 8.0 support.
 2690a79e5110ec347131de6a634a944d841b5d9e
 	Modules: Prelude
 	Prelude.escape_file_searching() is gone. Use `escape(buffer_name, '*[]?{}, ')` instead.
