@@ -1,0 +1,77 @@
+Describe Data.Base32.Hex
+  Before all
+    let B = vital#vital#new().import('Data.Base32.Hex')
+  End
+
+  Describe .encode()
+    It encode string to base32 encoded string.
+      Assert Equals(B.encode("hello, world!"), 'D1IMOR3F5GG7ERRIDHI22===')
+    End
+    It encode string RFC Test Vector 1.
+      Assert Equals(B.encode(""      ), ''                )
+    End
+    It encode string RFC Test Vector 2.
+      Assert Equals(B.encode("f"     ), 'CO======'        )
+    End
+    It encode string RFC Test Vector 3.
+      Assert Equals(B.encode("fo"    ), 'CPNG===='        )
+    End
+    It encode string RFC Test Vector 4.
+      Assert Equals(B.encode("foo"   ), 'CPNMU==='        )
+    End
+    It encode string RFC Test Vector 5.
+      Assert Equals(B.encode("foob"  ), 'CPNMUOG='        )
+    End
+    It encode string RFC Test Vector 6.
+      Assert Equals(B.encode("fooba" ), 'CPNMUOJ1'        )
+    End
+    It encode string RFC Test Vector 7.
+      Assert Equals(B.encode("foobar"), 'CPNMUOJ1E8======')
+    End
+  End
+
+  Describe .encodebin()
+    It encode string encoded as hex to base32 encoded string.
+      Assert Equals(B.encodebin('68656c6c6f2c20776f726c6421'), 'D1IMOR3F5GG7ERRIDHI22===')
+    End
+  End
+
+  Describe .encodebytes()
+    It encode bytes-list encoded as hex to base32 encoded string.
+      Assert Equals(B.encodebytes([0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21]), 'D1IMOR3F5GG7ERRIDHI22===')
+    End
+  End
+
+  Describe .decode()
+    It decode base32 encoded string to string.
+      Assert Equals(B.decode("D1IMOR3F5GG7ERRIDHI22==="), 'hello, world!')
+    End
+    It decode string RFC Test Vector 1.
+      Assert Equals(B.decode(""                ), ''      )
+    End
+    It decode string RFC Test Vector 2.
+      Assert Equals(B.decode("CO======"        ), 'f'     )
+    End
+    It decode string RFC Test Vector 3.
+      Assert Equals(B.decode("CPNG===="        ), 'fo'    )
+    End
+    It decode string RFC Test Vector 4.
+      Assert Equals(B.decode("CPNMU==="        ), 'foo'   )
+    End
+    It decode string RFC Test Vector 5.
+      Assert Equals(B.decode("CPNMUOG="        ), 'foob'  )
+    End
+    It decode string RFC Test Vector 6.
+      Assert Equals(B.decode("CPNMUOJ1"        ), 'fooba' )
+    End
+    It decode string RFC Test Vector 7.
+      Assert Equals(B.decode("CPNMUOJ1E8======"), 'foobar')
+    End
+  End
+
+  Describe .decoderaw()
+    It decode base32 encoded string to bytes-list.
+      Assert Equals(B.decoderaw("D1IMOR3F5GG7ERRIDHI22==="), [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21])
+    End
+  End
+End

@@ -1,0 +1,45 @@
+*vital/Data/Base32/Crockford.txt*		base32 utilities library.
+
+Maintainer: Tsuyoshi CHO <Tsuyoshi.CHO+develop@Gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Data.Base32.Crockford-contents*
+
+INTRODUCTION			|Vital.Data.Base32.Crockford-introduction|
+INTERFACE			|Vital.Data.Base32.Crockford-interface|
+  Functions			  |Vital.Data.Base32.Crockford-functions|
+
+==============================================================================
+INTRODUCTION				*Vital.Data.Base32.Crockford-introduction*
+
+*Vital.Data.Base32.Crockford* is Crockford's Base32 implementation.
+It provides base32 Crockford converter.
+
+https://www.crockford.com/base32.html
+
+==============================================================================
+INTERFACE				*Vital.Data.Base32.Crockford-interface*
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Data.Base32.Crockford-functions*
+
+
+encode({str})				*Vital.Data.Base32.Crockford.encode()*
+	Return base32 Crockford encoded string from {str}.
+
+encodebin({str})			*Vital.Data.Base32.Crockford.encodebin()*
+	Return base32 Crockford encoded string from {str}. {str} is hex
+	encoded string figured as bytes.
+
+encodebytes({bytes})			*Vital.Data.Base32.Crockford.encodebytes()*
+	Return base32 Crockford encoded string from {bytes}.
+
+decode({str})				*Vital.Data.Base32.Crockford.decode()*
+	Return decoded string from {str} that's base32 Crockford encoded.
+	{str} are case insensitive.
+
+decoderaw({str})			*Vital.Data.Base32.Crockford.decoderaw()*
+	Return decoded bytes-list from {str} that's base32 Crockford encoded.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl:noet:fen:
