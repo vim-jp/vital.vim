@@ -5,16 +5,16 @@ git:
 
 jobs:
   include:
-    - name: Vim 8.0
-      os: linux
-      env:
-        - VIM_VERSION=v8.0.0000
-        - THEMIS_PROFILE=vim-profile-v8.0.txt
     - name: Vim 8.1
       os: linux
       env:
         - VIM_VERSION=v8.1.0005
         - THEMIS_PROFILE=vim-profile-v8.1.txt
+    - name: Vim 8.2
+      os: linux
+      env:
+        - VIM_VERSION=v8.2.0
+        - THEMIS_PROFILE=vim-profile-v8.2.txt
     - name: Vim master
       os: linux
       env:

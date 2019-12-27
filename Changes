@@ -1,3 +1,6 @@
+e18013b1596819eabe87e6c87e0622f526ad85c8
+	Modules: *
+	Drop Vim 8.0 support.
 613c6cc1f26e21bfc222d691960f4b89c5b64019
 	Modules: Data.Base64
 	Refactoring: core logic move to Data.Base64.Base64.
