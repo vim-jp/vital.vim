@@ -59,9 +59,9 @@ starts_with({str}, {prefix})		*Vital.Data.String.starts_with()*
 ends_with({str}, {suffix})		*Vital.Data.String.ends_with()*
 	Returns true when {str} ends with {suffix}.
 >
-	echo s:S.starts_with('vital.vim', 'vim')
+	echo s:S.ends_with('vital.vim', 'vim')
 	" 1
-	echo s:S.starts_with('vital.vim', 'vi')
+	echo s:S.ends_with('vital.vim', 'vi')
 	" 0
 <
 common_head({strs})			*Vital.Data.String.common_head()*
