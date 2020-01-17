@@ -116,6 +116,9 @@ function! s:nsplit(expr, n, ...) abort
         let pos = 1
       endif
       let expr = expr[pos+ml :]
+      if len(ret) != a:n - 1
+        continue
+      endif
     endif
     if len(expr) == 0
       break
