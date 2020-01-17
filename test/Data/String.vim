@@ -278,6 +278,10 @@ function! s:suite.nsplit()
   call s:assert.equals( s:String.nsplit('neo compl__cache', 2, '[ _]', 0), ['neo', 'compl__cache'])
   call s:assert.equals( s:String.nsplit('neo compl__cache', 3, '[ _]', 0), ['neo', 'compl', '_cache'])
   call s:assert.equals( s:String.nsplit('neo compl__cache', 4, '[ _]', 0), ['neo', 'compl', 'cache'])
+  call s:assert.equals( s:String.nsplit('bar::', 1, ':', 1), ['bar'])
+  call s:assert.equals( s:String.nsplit('bar::', 2, ':', 1), ['bar', ''])
+  call s:assert.equals( s:String.nsplit('bar::', 3, ':', 1), ['bar', '', ''])
+  call s:assert.equals( s:String.nsplit('bar::', 4, ':', 1), ['bar', '', ''])
 endfunction
 
 function! s:suite.diffidx()
