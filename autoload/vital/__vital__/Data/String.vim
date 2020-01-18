@@ -99,35 +99,36 @@ function! s:nsplit(expr, n, ...) abort
   if a:n <= 1
     return [expr]
   endif
-  while 1
+  while len(ret) < a:n - 1
     let pos = match(expr, pattern)
+    " non match / last node
     if pos == -1
       if expr !~ pattern || keepempty
         call add(ret, expr)
       endif
+      let expr = v:none
       break
-    elseif pos >= 0
+    endif
+    " match
+    if pos >= 0
       let left = pos > 0 ? expr[:pos-1] : ''
+      let ml = len(matchstr(expr, pattern))
+      let right = expr[pos+ml :]
       if pos > 0 || keepempty
         call add(ret, left)
       endif
-      let ml = len(matchstr(expr, pattern))
       if pos == 0 && ml == 0
         let pos = 1
       endif
-      let expr = expr[pos+ml :]
-      if len(ret) != a:n - 1
-        continue
-      endif
-    endif
-    if len(expr) == 0
-      break
-    endif
-    if len(ret) == a:n - 1
-      call add(ret, expr)
-      break
+      let expr = right
     endif
   endwhile
+  " node count last check
+  if len(ret) == a:n - 1 && type(expr) == type('')
+    if len(expr) > 0 || keepempty
+      call add(ret, expr)
+    endif
+  endif
   return ret
 endfunction
 
