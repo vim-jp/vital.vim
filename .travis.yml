@@ -20,22 +20,22 @@ jobs:
       env:
         - VIM_VERSION=master
         - THEMIS_PROFILE=vim-profile-master.txt
-    - name: Vim MacVim latest
-      os: osx
-      osx_image: xcode9.4
-      env:
-        - THEMIS_PROFILE=vim-profile-osx.txt
-      cache:
-        directories:
-          - $HOME/Library/Caches/Homebrew/
-          - /usr/local/Homebrew/Library/Homebrew/vendor/
-          - /usr/local/Homebrew/Library/Taps/
-      before_cache:
-        - brew cleanup
-    - name: Vim Lint only
-      os: linux
-      env:
-        - RUN_LINT=true
+    # - name: Vim MacVim latest
+    #   os: osx
+    #   osx_image: xcode9.4
+    #   env:
+    #     - THEMIS_PROFILE=vim-profile-osx.txt
+    #   cache:
+    #     directories:
+    #       - $HOME/Library/Caches/Homebrew/
+    #       - /usr/local/Homebrew/Library/Homebrew/vendor/
+    #       - /usr/local/Homebrew/Library/Taps/
+    #   before_cache:
+    #     - brew cleanup
+    # - name: Vim Lint only
+    #   os: linux
+    #   env:
+    #     - RUN_LINT=true
 
 addons:
   apt:
