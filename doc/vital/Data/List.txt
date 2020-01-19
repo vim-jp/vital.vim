@@ -46,7 +46,8 @@ manipulate |List|.
 TERM					*Vital.Data.List-term*
 
 {function}				*Vital.Data.List-term-function*
-	|Funcref| or |String|(as expression)
+	|Funcref| or |String|(as expression). We recommend you just to use
+	Vim's |expr-lambda| notation to pass this.
 
 ==============================================================================
 INTERFACE				*Vital.Data.List-interface*
