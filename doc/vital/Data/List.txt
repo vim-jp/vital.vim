@@ -314,7 +314,9 @@ max_by({list}, {function})			*Vital.Data.List.max_by()*
 	Returns 0 if {list} is empty.
 	"v:val" can be used in {function} if {function} is string expression.
 >
-	echo s:L.max_by(['pineapple','orange','banana','apple'], 'len(v:val)')
+	echo s:L.max_by(
+	\ ['pineapple', 'orange', 'banana', 'apple'],
+	\ 'len(v:val)')
 	" pineapple
 	echo s:L.max_by([20, -50, -15, 30], function('abs'))
 	" -50
@@ -327,7 +329,9 @@ min_by({list}, {function})			*Vital.Data.List.min_by()*
 	Returns 0 if {list} is empty.
 	"v:val" can be used in {function} if {function} is string expression.
 >
-	echo s:L.min_by(['pineapple','orange','banana','apple'], 'len(v:val)')
+	echo s:L.min_by(
+	\ ['pineapple', 'orange', 'banana', 'apple'],
+	\ 'len(v:val)')
 	" apple
 	echo s:L.min_by([20, -50, -15, 30], function('abs'))
 	" -15
@@ -385,7 +389,7 @@ break({function}, {list})			*Vital.Data.List.break()*
 	Returns a list of two lists where concatenation of them is
 	equal to {list}, all the items of the first list do not satisfy
 	{function} and the first item of the second list satisfies {function}.
-	If {function} is the string expression,|v:val| has the value of the
+	If {function} is the string expression, |v:val| has the value of the
 	current item.
 >
 	function! Is5(x) abort
@@ -413,7 +417,7 @@ break({function}, {list})			*Vital.Data.List.break()*
 take_while({function}, {list})		*Vital.Data.List.take_while()*
 	Returns a list which is from the beginning of the given {list} to an
 	element that all of them satisfies given expression {function}.
-	If {function} is the string expression,|v:val| has the value of the
+	If {function} is the string expression, |v:val| has the value of the
 	current item.
 >
 	function! Under5(x) abort
@@ -440,7 +444,7 @@ take_while({function}, {list})		*Vital.Data.List.take_while()*
 
 drop_while({function}, {list})		*Vital.Data.List.drop_while()*
 	Returns the suffix remaining after |Vital.Data.List.take_while()|.
-	If {function} is the string expression,|v:val| has the value of the
+	If {function} is the string expression, |v:val| has the value of the
 	current item.
 >
 	function! Under5(x) abort
