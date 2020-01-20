@@ -600,10 +600,22 @@ Describe Async.Promise
       endfor
     End
 
-    It should create resolved Promise with given Promise value
+    It should create resolved Promise with given Promise value (without Wait())
       for p in [
       \   P.resolve(P.resolve(42)),
       \   P.resolve(P.resolve(P.resolve(P.resolve(42)))),
+      \ ]
+        Assert Equals(p._state, FULFILLED)
+        let l = l:
+        call p.then({x -> extend(l, {'result' : x})})
+        call s:wait_has_key(l, 'result')
+        Assert Equals(result, 42)
+        unlet result
+      endfor
+    End
+
+    It creates resolved Promise with given Promise value (with Wait())
+      for p in [
       \   P.resolve(Wait(10).then({-> 42}))
       \ ]
         Assert Equals(p._state, FULFILLED)
