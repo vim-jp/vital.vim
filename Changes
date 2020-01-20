@@ -1,3 +1,7 @@
+3c5655f9ae6682364a134e371809fcc0946bcf7f
+	Modules: Data.String
+	Bugfix nsplit() not keeping empty strings for cetain cases even with keepempty arg.
+	See https://github.com/vim-jp/vital.vim/issues/704 for the details
 e18013b1596819eabe87e6c87e0622f526ad85c8
 	Modules: *
 	Drop Vim 8.0 support.
