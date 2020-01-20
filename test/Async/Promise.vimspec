@@ -11,7 +11,7 @@ function! s:wait_has_key_with_timeout(obj, name, timeout_sec) abort
     endif
     let i += 1
   endwhile
-  throw printf("s:wait_has_key(): After 5000ms, the given object does not have key '%s': %s", a:name, a:obj)
+  throw printf("s:wait_has_key(): After %ds, the given object does not have key '%s': %s", a:timeout_sec, a:name, a:obj)
 endfunction
 
 function! s:resolver(resolve, reject) abort
@@ -604,28 +604,16 @@ Describe Async.Promise
       endfor
     End
 
-    It should create resolved Promise with given Promise value (without Wait())
+    It should create resolved Promise with given Promise value
       for p in [
       \   P.resolve(P.resolve(42)),
       \   P.resolve(P.resolve(P.resolve(P.resolve(42)))),
+      \   P.resolve(Wait(10).then({-> 42}))
       \ ]
-        Assert Equals(p._state, FULFILLED)
         let l = l:
         call p.then({x -> extend(l, {'result' : x})})
         call s:wait_has_key(l, 'result')
-        Assert Equals(result, 42)
-        unlet result
-      endfor
-    End
-
-    It creates resolved Promise with given Promise value (with Wait())
-      for p in [
-      \   P.resolve(Wait(10).then({-> 42}))
-      \ ]
         Assert Equals(p._state, FULFILLED)
-        let l = l:
-        call p.then({x -> extend(l, {'result' : x})})
-        call s:wait_has_key_with_timeout(l, 'result', 50) " 10 times longer than default
         Assert Equals(result, 42)
         unlet result
       endfor
