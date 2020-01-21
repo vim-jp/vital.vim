@@ -1,13 +1,17 @@
 function! s:wait_has_key(obj, name) abort
+  return s:wait_has_key_with_timeout(a:obj, a:name, 5)
+endfunction
+
+function! s:wait_has_key_with_timeout(obj, name, timeout_sec) abort
   let i = 0
-  while i < 500
+  while i < a:timeout_sec * 100
     sleep 10m
     if has_key(a:obj, a:name)
       return
     endif
     let i += 1
   endwhile
-  throw printf("s:wait_has_key(): After 5000ms, the given object does not have key '%s': %s", a:name, a:obj)
+  throw printf("s:wait_has_key(): After %ds, the given object does not have key '%s': %s", a:timeout_sec, a:name, a:obj)
 endfunction
 
 function! s:resolver(resolve, reject) abort
@@ -606,10 +610,10 @@ Describe Async.Promise
       \   P.resolve(P.resolve(P.resolve(P.resolve(42)))),
       \   P.resolve(Wait(10).then({-> 42}))
       \ ]
-        Assert Equals(p._state, FULFILLED)
         let l = l:
         call p.then({x -> extend(l, {'result' : x})})
         call s:wait_has_key(l, 'result')
+        Assert Equals(p._state, FULFILLED)
         Assert Equals(result, 42)
         unlet result
       endfor
