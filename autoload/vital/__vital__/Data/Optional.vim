@@ -74,7 +74,7 @@ function! s:get_unsafe(o) abort
 endfunction
 
 function! s:get_or(o, alt) abort
-  return get(a:o, s:SOME_KEY, a:alt())
+  return has_key(a:o, s:SOME_KEY) ? a:o[s:SOME_KEY] : a:alt()
 endfunction
 
 function! s:has(o, type) abort
