@@ -18,6 +18,14 @@ function! s:_vital_created(module) abort
   lockvar a:module.TimeoutError
 endfunction
 
+function! s:_vital_loaded(V) abort
+  let s:Later = a:V.import('Async.Later')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Async.Later']
+endfunction
+
 " @vimlint(EVL103, 1, a:resolve)
 " @vimlint(EVL103, 1, a:reject)
 function! s:noop(resolve, reject) abort
@@ -42,7 +50,7 @@ function! s:_next_id() abort
   return s:id
 endfunction
 
-" ... is added to use this function as a callback of timer_start()
+" ... is added to use this function as a callback of s:Later.call()
 function! s:_invoke_callback(settled, promise, callback, result, ...) abort
   let has_callback = a:callback isnot v:null
   let success = 1
@@ -74,7 +82,7 @@ function! s:_invoke_callback(settled, promise, callback, result, ...) abort
   endif
 endfunction
 
-" ... is added to use this function as a callback of timer_start()
+" ... is added to use this function as a callback of s:Later.call()
 function! s:_publish(promise, ...) abort
   let settled = a:promise._state
   if settled == s:PENDING
@@ -142,7 +150,7 @@ function! s:_fulfill(promise, value) abort
   let a:promise._result = a:value
   let a:promise._state = s:FULFILLED
   if !empty(a:promise._children)
-    call timer_start(0, funcref('s:_publish', [a:promise]))
+    call s:Later.call(funcref('s:_publish', [a:promise]))
   endif
 endfunction
 
@@ -152,7 +160,7 @@ function! s:_reject(promise, ...) abort
   endif
   let a:promise._result = a:0 > 0 ? a:1 : v:null
   let a:promise._state = s:REJECTED
-  call timer_start(0, funcref('s:_publish', [a:promise]))
+  call s:Later.call(funcref('s:_publish', [a:promise]))
 endfunction
 
 function! s:_notify_done(wg, index, value) abort
@@ -269,9 +277,9 @@ function! s:_promise_then(...) dict abort
   let l:Res = a:0 > 0 ? a:1 : v:null
   let l:Rej = a:0 > 1 ? a:2 : v:null
   if state == s:FULFILLED
-    call timer_start(0, funcref('s:_invoke_callback', [state, child, Res, parent._result]))
+    call s:Later.call(funcref('s:_invoke_callback', [state, child, Res, parent._result]))
   elseif state == s:REJECTED
-    call timer_start(0, funcref('s:_invoke_callback', [state, child, Rej, parent._result]))
+    call s:Later.call(funcref('s:_invoke_callback', [state, child, Rej, parent._result]))
   else
     call s:_subscribe(parent, child, Res, Rej)
   endif
@@ -303,7 +311,7 @@ function! s:_promise_finally(...) dict abort
     let l:CB = funcref('s:_on_finally', [a:1, parent])
   endif
   if state != s:PENDING
-    call timer_start(0, funcref('s:_invoke_callback', [state, child, CB, parent._result]))
+    call s:Later.call(funcref('s:_invoke_callback', [state, child, CB, parent._result]))
   else
     call s:_subscribe(parent, child, CB, CB)
   endif
