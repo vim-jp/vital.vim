@@ -1,0 +1,68 @@
+*Vital/Async/Later.txt*		FIFO task queue for calling function later
+
+Maintainer : Alisue <lambdalisue@hashnote.net>
+
+
+==============================================================================
+CONTENTS				*Vital.Async.Later-contents*
+
+INTRODUCTION			|Vital.Async.Later-introduction|
+FUNCTION			|Vital.Async.Later-function|
+
+
+==============================================================================
+INTRODUCTION				*Vital.Async.Later-introduction*
+
+*Vital.Async.Later* provides a FIFO task queue. While Vim uses FILO way to
+execute a task registered by |timer_start()|, the following code become
+opposite in Vim and Neovim.
+>
+	let rs = []
+	call timer_start(0, { -> add(rs, 1) })
+	call timer_start(0, { -> add(rs, 2) })
+	call timer_start(0, { -> add(rs, 3) })
+	call timer_start(0, { -> timer_start(0, { -> add(rs, 4) }) })
+	call timer_start(0, { -> timer_start(0, { -> add(rs, 5) }) })
+	call timer_start(0, { -> timer_start(0, { -> add(rs, 6) }) })
+	" Vim:    [3, 2, 1, 4, 5, 6]
+	" Neovim: [1, 2, 3, 4, 5, 6]
+>
+To solve this difference, |Vital.Async.Later| uses an internal task queue
+to controls the order of the execution. The following code works both on
+Vim and Neovim.
+>
+	let s:Later = vital#vital#import('Async.Later')
+
+	let rs = []
+	call s:Later.call({ -> add(rs, 1) })
+	call s:Later.call({ -> add(rs, 2) })
+	call s:Later.call({ -> add(rs, 3) })
+	call s:Later.call({ -> s:Later.call({ -> add(rs, 4) }) })
+	call s:Later.call({ -> s:Later.call({ -> add(rs, 5) }) })
+	call s:Later.call({ -> s:Later.call({ -> add(rs, 6) }) })
+	" Vim:    [1, 2, 3, 4, 5, 6]
+	" Neovim: [1, 2, 3, 4, 5, 6]
+<
+
+
+=============================================================================
+FUNCTION 				*Vital.Async.Later-function*
+
+						*Vital.Async.Later.call()*
+.call({task} [, {arglist} [, {dict}]])
+	Similar to |call()| but it calls {task} a bit later, when Vim is not
+	busy. For convenience, {arglist} can be omit.
+
+	When an exception is thrown in {task}, the exception is caught and
+	echomsg with |hl-ErrorMsg|.
+
+	Internally, it queues {task} in an internal task queue and start an
+	internal timer to execute a task. If the internal timer is already
+	started, it won't start a new timer. When the internal timer is
+	emitted, the timer calls a first task in the internal queue and
+	start a new internal timer again if there are more tasks.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
+
