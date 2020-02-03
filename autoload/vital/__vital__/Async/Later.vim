@@ -2,7 +2,7 @@ let s:tasks = []
 let s:workers = []
 let s:max_workers = 50
 
-function! s:call(fn, ...) abort dict
+function! s:call(fn, ...) abort
   call add(s:tasks, [a:fn, a:000])
   if empty(s:workers)
     call add(s:workers, timer_start(0, s:Worker, { 'repeat': -1 }))
