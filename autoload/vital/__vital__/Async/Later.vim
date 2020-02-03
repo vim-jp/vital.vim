@@ -1,21 +1,31 @@
 let s:tasks = []
-let s:timer = v:null
+let s:workers = []
+let s:max_workers = 50
 
-function! s:call(fn, ...) abort
+function! s:call(fn, ...) abort dict
   call add(s:tasks, [a:fn, a:000])
-  call s:_emit()
+  if empty(s:workers)
+    call add(s:workers, timer_start(0, s:Worker, { 'repeat': -1 }))
+  endif
 endfunction
 
-function! s:_emit() abort
-  if v:dying || s:timer isnot# v:null || empty(s:tasks)
+function! s:get_max_workers(n) abort
+  return s:max_workers
+endfunction
+
+function! s:set_max_workers(n) abort
+  let s:max_workers = a:n
+endfunction
+
+function! s:_worker(...) abort
+  if v:dying
     return
   endif
-  let s:timer = timer_start(0, funcref('s:_callback'))
-endfunction
-
-function! s:_callback(timer) abort
-  let s:timer = v:null
-  if v:dying || empty(s:tasks)
+  let n_workers = len(s:workers)
+  if empty(s:tasks)
+    if n_workers
+      call timer_stop(remove(s:workers, 0))
+    endif
     return
   endif
   try
@@ -28,5 +38,9 @@ function! s:_callback(timer) abort
     endfor
     echohl None
   endtry
-  call s:_emit()
+  if n_workers < s:max_workers
+    call add(s:workers, timer_start(0, s:Worker, { 'repeat': -1 }))
+  endif
 endfunction
+
+let s:Worker = funcref('s:_worker')

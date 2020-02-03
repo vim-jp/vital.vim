@@ -1,6 +1,8 @@
 Describe Async.Later
-  Before
+  Before all
     let Later = vital#vital#import('Async.Later')
+    " NOTE: To start event-loop, call void function here
+    call Later.call({ -> 0 })
   End
 
   Describe .call()

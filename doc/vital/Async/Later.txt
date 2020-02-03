@@ -8,6 +8,7 @@ CONTENTS				*Vital.Async.Later-contents*
 
 INTRODUCTION			|Vital.Async.Later-introduction|
 FUNCTION			|Vital.Async.Later-function|
+VARIABLE			|Vital.Async.Later-variable|
 
 
 ==============================================================================
@@ -56,13 +57,22 @@ FUNCTION 				*Vital.Async.Later-function*
 	When an exception is thrown in {task}, the exception is caught and
 	echomsg with |hl-ErrorMsg|.
 
-	Internally, it queues {task} in an internal task queue and start an
-	internal timer to execute a task. If the internal timer is already
-	started, it won't start a new timer. When the internal timer is
-	emitted, the timer calls a first task in the internal queue and
-	start a new internal timer again if there are more tasks.
+	Internally, it enqueues a {task} into an internal task queue. Tasks
+	in the queue will be dequeued and processed by internal workers. The
+	number of internal workers are gradually increase until all tasks in
+	the queue are completed or reached to the value of "max_workers".
+	Once the queue become empty, the number of internal workers are
+	gradually decrease so that no workers exists at the end.
+
+					*Vital.Async.Later.get_max_workers()*
+.get_max_workers()
+	Return a maximum number of workers.
+	Default: 50
+
+					*Vital.Async.Later.set_max_workers()*
+.set_max_workers({n})
+	Set a maximum number of workers to {n}.
 
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
-
