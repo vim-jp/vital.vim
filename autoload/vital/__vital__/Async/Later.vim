@@ -14,6 +14,9 @@ function! s:get_max_workers(n) abort
 endfunction
 
 function! s:set_max_workers(n) abort
+  if a:n <= 0
+    throw 'vital: Async.Later: the n must be a positive integer'
+  endif
   let s:max_workers = a:n
 endfunction
 
