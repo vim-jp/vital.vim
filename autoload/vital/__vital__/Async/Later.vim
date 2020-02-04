@@ -20,6 +20,23 @@ function! s:set_max_workers(n) abort
   let s:max_workers = a:n
 endfunction
 
+function! s:get_error_handler() abort
+  return s:error_handler
+endfunction
+
+function! s:set_error_handler(handler) abort
+  let s:error_handler = a:handler
+endfunction
+
+function! s:default_error_handler() abort
+  let ms = split(v:exception . "\n" . v:throwpoint, '\n')
+  echohl ErrorMsg
+  for m in ms
+    echomsg m
+  endfor
+  echohl None
+endfunction
+
 function! s:_worker(...) abort
   if v:dying
     return
@@ -34,12 +51,7 @@ function! s:_worker(...) abort
   try
     call call('call', remove(s:tasks, 0))
   catch
-    let ms = split(v:exception . "\n" . v:throwpoint, '\n')
-    echohl ErrorMsg
-    for m in ms
-      echomsg m
-    endfor
-    echohl None
+    call s:error_handler()
   endtry
   if n_workers < s:max_workers
     call add(s:workers, timer_start(0, s:Worker, { 'repeat': -1 }))
@@ -47,3 +59,4 @@ function! s:_worker(...) abort
 endfunction
 
 let s:Worker = funcref('s:_worker')
+let s:error_handler = funcref('s:default_error_handler')

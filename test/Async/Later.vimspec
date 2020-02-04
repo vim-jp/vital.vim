@@ -92,5 +92,23 @@ Describe Async.Later
             \ '^\nHello World\nfunction .*<SNR>\d\+_throw, line 1',
             \)
     End
+
+    It uses assigned error handler
+      function! s:throw(message) abort
+        throw a:message
+      endfunction
+
+      let errors = []
+
+      function! s:error_handler() abort closure
+        call add(errors, v:exception)
+      endfunction
+
+      call Later.set_error_handler(funcref('s:error_handler'))
+      call Later.call({ -> s:throw('Hello World') })
+      sleep 10m
+      Assert Equals(errors, ['Hello World'])
+      call Later.set_error_handler(Later.default_error_handler)
+    End
   End
 End

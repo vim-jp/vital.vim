@@ -49,13 +49,14 @@ Vim and Neovim.
 =============================================================================
 FUNCTION 				*Vital.Async.Later-function*
 
-						*Vital.Async.Later.call()*
+				*Vital.Async.Later.call()*
 .call({task} [, {arglist} [, {dict}]])
 	Similar to |call()| but it calls {task} a bit later, when Vim is not
 	busy. For convenience, {arglist} can be omit.
 
 	When an exception is thrown in {task}, the exception is caught and
-	echomsg with |hl-ErrorMsg|.
+	echomsg with |hl-ErrorMsg| by a default error handler.
+	Use |Vital.Async.Later.set_error_handler()| to change this behavior.
 
 	Internally, it enqueues a {task} into an internal task queue. Tasks
 	in the queue will be dequeued and processed by internal workers. The
@@ -64,14 +65,29 @@ FUNCTION 				*Vital.Async.Later-function*
 	Once the queue become empty, the number of internal workers are
 	gradually decrease so that no workers exists at the end.
 
-					*Vital.Async.Later.get_max_workers()*
+				*Vital.Async.Later.get_max_workers()*
 .get_max_workers()
 	Return a maximum number of workers.
 	Default: 50
 
-					*Vital.Async.Later.set_max_workers()*
+				*Vital.Async.Later.set_max_workers()*
 .set_max_workers({n})
 	Set a maximum number of workers to {n}.
+
+				*Vital.Async.Later.get_error_handler()*
+.get_error_handler()
+	Return an error handler (|Funcref|).
+	Default: |Vital.Async.Later.default_error_handler()|
+					
+				*Vital.Async.Later.set_error_handler()*
+.set_error_handler({handler})
+	Set an error handler (|Funcref|) which is called when tasks throws
+	errors. Use |v:exception| and |v:throwpoint| in the {handler} to
+	access cought errors.
+
+				*Vital.Async.Later.default_error_handler()*
+.default_error_handler()
+	A default error handler which |echomsg| cought errors.
 
 
 ==============================================================================
