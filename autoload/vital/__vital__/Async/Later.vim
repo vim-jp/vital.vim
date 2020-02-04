@@ -9,7 +9,7 @@ function! s:call(fn, ...) abort
   endif
 endfunction
 
-function! s:get_max_workers(n) abort
+function! s:get_max_workers() abort
   return s:max_workers
 endfunction
 
