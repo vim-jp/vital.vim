@@ -52,6 +52,25 @@ Describe Async.Later
       Assert Equals(rs, [1, 2, 3, 4])
     End
 
+    It calls tasks in FIFO manner (max_workers << tasks)
+      let default_max_workers = Later.get_max_workers()
+      call Later.set_max_workers(2)
+      sleep 100m
+
+      let rs = []
+      call map(
+            \ range(20),
+            \ { _, v -> Later.call({ -> add(rs, v) }) },
+            \)
+
+      Assert Equals(rs, [])
+      sleep 1000m
+      Assert Equals(rs, range(20))
+
+      call Later.set_max_workers(default_max_workers)
+      sleep 100m
+    End
+
     It echomsg an exception when a task throws an exception
       function! s:throw(message) abort
         throw a:message
