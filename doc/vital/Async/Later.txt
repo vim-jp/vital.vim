@@ -57,6 +57,9 @@ FUNCTION 				*Vital.Async.Later-function*
 	When an exception is thrown in {task}, the exception is caught and
 	echomsg with |hl-ErrorMsg| by a default error handler.
 	Use |Vital.Async.Later.set_error_handler()| to change this behavior.
+	Note that this error handler exists as a safety-net. Developers should
+	NOT rely on the behavior of the error handler and SHOULD catch errors
+	by themselves in each {task}.
 
 	Internally, it enqueues a {task} into an internal task queue. Tasks
 	in the queue will be dequeued and processed by internal workers. The
