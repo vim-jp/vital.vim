@@ -4,6 +4,10 @@ Describe Async.Later
   End
 
   Describe .call()
+    After
+      call Later.set_error_handler(v:null)
+    End
+
     It registers a task and call it a bit later
       let rs = []
       call Later.call({ -> add(rs, 1) })
@@ -106,7 +110,6 @@ Describe Async.Later
       call Later.call({ -> s:throw('Hello World') })
       sleep 10m
       Assert Equals(errors, ['Hello World'])
-      call Later.set_error_handler(Later.default_error_handler)
     End
   End
 End

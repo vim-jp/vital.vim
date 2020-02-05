@@ -1,6 +1,7 @@
 let s:tasks = []
 let s:workers = []
 let s:max_workers = 50
+let s:error_handler = v:null
 
 function! s:call(fn, ...) abort
   call add(s:tasks, [a:fn, a:000])
@@ -28,7 +29,7 @@ function! s:set_error_handler(handler) abort
   let s:error_handler = a:handler
 endfunction
 
-function! s:default_error_handler() abort
+function! s:_default_error_handler() abort
   let ms = split(v:exception . "\n" . v:throwpoint, '\n')
   echohl ErrorMsg
   for m in ms
@@ -51,7 +52,11 @@ function! s:_worker(...) abort
   try
     call call('call', remove(s:tasks, 0))
   catch
-    call s:error_handler()
+    if s:error_handler is# v:null
+      call s:_default_error_handler()
+    else
+      call s:error_handler()
+    endif
   endtry
   if n_workers < s:max_workers
     call add(s:workers, timer_start(0, s:Worker, { 'repeat': -1 }))
@@ -59,4 +64,3 @@ function! s:_worker(...) abort
 endfunction
 
 let s:Worker = funcref('s:_worker')
-let s:error_handler = funcref('s:default_error_handler')

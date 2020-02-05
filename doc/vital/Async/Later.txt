@@ -76,18 +76,15 @@ FUNCTION 				*Vital.Async.Later-function*
 
 				*Vital.Async.Later.get_error_handler()*
 .get_error_handler()
-	Return an error handler (|Funcref|).
-	Default: |Vital.Async.Later.default_error_handler()|
+	Return an error handler (|Funcref|) or |v:null| if no custom error
+	handler has specified.
+	Default: |v:null|
 					
 				*Vital.Async.Later.set_error_handler()*
 .set_error_handler({handler})
 	Set an error handler (|Funcref|) which is called when tasks throws
 	errors. Use |v:exception| and |v:throwpoint| in the {handler} to
-	access cought errors.
-
-				*Vital.Async.Later.default_error_handler()*
-.default_error_handler()
-	A default error handler which |echomsg| cought errors.
+	access cought errors. Set |v:null| to use a default error handler.
 
 
 ==============================================================================
