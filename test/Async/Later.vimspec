@@ -1,13 +1,15 @@
 Describe Async.Later
-  Before
+  Before all
     let Later = vital#vital#import('Async.Later')
+    let default_max_workers = Later.get_max_workers()
+  End
+
+  After
+    call Later.set_error_handler(v:null)
+    call Later.set_max_workers(default_max_workers)
   End
 
   Describe .call()
-    After
-      call Later.set_error_handler(v:null)
-    End
-
     It registers a task and call it a bit later
       let rs = []
       call Later.call({ -> add(rs, 1) })
@@ -55,7 +57,6 @@ Describe Async.Later
     End
 
     It calls tasks in FIFO manner (max_workers << tasks)
-      let default_max_workers = Later.get_max_workers()
       call Later.set_max_workers(2)
       sleep 100m
 
@@ -68,9 +69,6 @@ Describe Async.Later
       Assert Equals(rs, [])
       sleep 1000m
       Assert Equals(rs, range(20))
-
-      call Later.set_max_workers(default_max_workers)
-      sleep 100m
     End
 
     It echomsg an exception when a task throws an exception
