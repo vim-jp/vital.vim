@@ -1,0 +1,113 @@
+Describe Async.Later
+  Before all
+    let Later = vital#vital#import('Async.Later')
+    let default_max_workers = Later.get_max_workers()
+  End
+
+  After
+    call Later.set_error_handler(v:null)
+    call Later.set_max_workers(default_max_workers)
+  End
+
+  Describe .call()
+    It registers a task and call it a bit later
+      let rs = []
+      call Later.call({ -> add(rs, 1) })
+      Assert Equals(rs, [])
+      sleep 10m
+      Assert Equals(rs, [1])
+    End
+
+    It calls tasks in FIFO manner
+      let rs = []
+      call Later.call({ -> add(rs, 1) })
+      call Later.call({ -> add(rs, 2) })
+      call Later.call({ -> add(rs, 3) })
+      Assert Equals(rs, [])
+      sleep 10m
+      Assert Equals(rs, [1, 2, 3])
+    End
+
+    It calls tasks in FIFO manner (nest)
+      let rs = []
+      call Later.call({ -> add(rs, 1) })
+      call Later.call({ -> Later.call({ -> add(rs, 3) }) })
+      call Later.call({ -> Later.call({ -> Later.call({ -> add(rs, 5) }) }) })
+      call Later.call({ -> Later.call({ -> add(rs, 4) }) })
+      call Later.call({ -> add(rs, 2) })
+      Assert Equals(rs, [])
+      sleep 10m
+      Assert Equals(rs, [1, 2, 3, 4, 5])
+    End
+
+    It calls task in FIFO manner (block)
+      function! s:block(time) abort
+        let s = reltime()
+        while reltimefloat(reltime(s)) * 1000 < a:time
+        endwhile
+      endfunction
+
+      let rs = []
+      call Later.call({ -> [s:block(30), add(rs, 1)] })
+      call Later.call({ -> [s:block(10), add(rs, 2)] })
+      call Later.call({ -> [s:block(20), add(rs, 3)] })
+      call Later.call({ -> add(rs, 4) })
+      sleep 100m
+      Assert Equals(rs, [1, 2, 3, 4])
+    End
+
+    It calls tasks in FIFO manner (max_workers << tasks)
+      call Later.set_max_workers(2)
+      sleep 100m
+
+      let rs = []
+      call map(
+            \ range(20),
+            \ { _, v -> Later.call({ -> add(rs, v) }) },
+            \)
+
+      Assert Equals(rs, [])
+      sleep 1000m
+      Assert Equals(rs, range(20))
+    End
+
+    It echomsg an exception when a task throws an exception
+      function! s:throw(message) abort
+        throw a:message
+      endfunction
+
+      let exception = v:null
+      try
+        redir => messages
+        call Later.call({ -> s:throw('Hello World') })
+        sleep 10m
+      catch
+        let exception = v:exception
+      finally
+        redir END
+      endtry
+      Assert Equals(exception, v:null)
+      Assert Match(
+            \ messages,
+            \ '^\nHello World\nfunction .*<SNR>\d\+_throw, line 1',
+            \)
+    End
+
+    It uses assigned error handler
+      function! s:throw(message) abort
+        throw a:message
+      endfunction
+
+      let errors = []
+
+      function! s:error_handler() abort closure
+        call add(errors, v:exception)
+      endfunction
+
+      call Later.set_error_handler(funcref('s:error_handler'))
+      call Later.call({ -> s:throw('Hello World') })
+      sleep 10m
+      Assert Equals(errors, ['Hello World'])
+    End
+  End
+End

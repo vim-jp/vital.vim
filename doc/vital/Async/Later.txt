@@ -1,0 +1,94 @@
+*Vital/Async/Later.txt*		FIFO task queue for calling function later
+
+Maintainer : Alisue <lambdalisue@hashnote.net>
+
+
+==============================================================================
+CONTENTS				*Vital.Async.Later-contents*
+
+INTRODUCTION			|Vital.Async.Later-introduction|
+FUNCTION			|Vital.Async.Later-function|
+VARIABLE			|Vital.Async.Later-variable|
+
+
+==============================================================================
+INTRODUCTION				*Vital.Async.Later-introduction*
+
+*Vital.Async.Later* provides a FIFO task queue. While Vim uses FILO way to
+execute a task registered by |timer_start()|, the following code become
+opposite in Vim and Neovim.
+>
+	let rs = []
+	call timer_start(0, { -> add(rs, 1) })
+	call timer_start(0, { -> add(rs, 2) })
+	call timer_start(0, { -> add(rs, 3) })
+	call timer_start(0, { -> timer_start(0, { -> add(rs, 4) }) })
+	call timer_start(0, { -> timer_start(0, { -> add(rs, 5) }) })
+	call timer_start(0, { -> timer_start(0, { -> add(rs, 6) }) })
+	" Vim:    [3, 2, 1, 4, 5, 6]
+	" Neovim: [1, 2, 3, 4, 5, 6]
+>
+To solve this difference, |Vital.Async.Later| uses an internal task queue
+to controls the order of the execution. The following code works both on
+Vim and Neovim.
+>
+	let s:Later = vital#vital#import('Async.Later')
+
+	let rs = []
+	call s:Later.call({ -> add(rs, 1) })
+	call s:Later.call({ -> add(rs, 2) })
+	call s:Later.call({ -> add(rs, 3) })
+	call s:Later.call({ -> s:Later.call({ -> add(rs, 4) }) })
+	call s:Later.call({ -> s:Later.call({ -> add(rs, 5) }) })
+	call s:Later.call({ -> s:Later.call({ -> add(rs, 6) }) })
+	" Vim:    [1, 2, 3, 4, 5, 6]
+	" Neovim: [1, 2, 3, 4, 5, 6]
+<
+
+
+=============================================================================
+FUNCTION 				*Vital.Async.Later-function*
+
+				*Vital.Async.Later.call()*
+.call({task} [, {arglist} [, {dict}]])
+	Similar to |call()| but it calls {task} a bit later, when Vim is not
+	busy. For convenience, {arglist} can be omit.
+
+	When an exception is thrown in {task}, the exception is caught and
+	echomsg with |hl-ErrorMsg| by a default error handler.
+	Use |Vital.Async.Later.set_error_handler()| to change this behavior.
+	Note that this error handler exists as a safety-net. Developers should
+	NOT rely on the behavior of the error handler and SHOULD catch errors
+	by themselves in each {task}.
+
+	Internally, it enqueues a {task} into an internal task queue. Tasks
+	in the queue will be dequeued and processed by internal workers. The
+	number of internal workers are gradually increase until all tasks in
+	the queue are completed or reached to the value of "max_workers".
+	Once the queue become empty, the number of internal workers are
+	gradually decrease so that no workers exists at the end.
+
+				*Vital.Async.Later.get_max_workers()*
+.get_max_workers()
+	Return a maximum number of workers.
+	Default: 50
+
+				*Vital.Async.Later.set_max_workers()*
+.set_max_workers({n})
+	Set a maximum number of workers to {n}.
+
+				*Vital.Async.Later.get_error_handler()*
+.get_error_handler()
+	Return an error handler (|Funcref|) or |v:null| if no custom error
+	handler has specified.
+	Default: |v:null|
+					
+				*Vital.Async.Later.set_error_handler()*
+.set_error_handler({handler})
+	Set an error handler (|Funcref|) which is called when tasks throws
+	errors. Use |v:exception| and |v:throwpoint| in the {handler} to
+	access cought errors. Set |v:null| to use a default error handler.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
