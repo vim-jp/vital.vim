@@ -377,6 +377,13 @@ wait({promise}[, {options}])		*Vital.Async.Promise.wait()*
 	call Promise.wait(p, 1000)
 	" Is equivalent to call Promise.wait(p, {'timeout': 1000})
 >
+on_unhandled_rejection({callback})	*Vital.Async.Promise.on_unhandled_rejection*
+
+ 	Set callback to catch all unhandled rejected promise's result.
+
+	Note:
+	This callback will called even if you using |Vital.Async.Promise.wait()|.
+
 
 is_promise({value})			*Vital.Async.Promise.is_promise()*
 

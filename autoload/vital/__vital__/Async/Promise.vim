@@ -90,6 +90,9 @@ function! s:_publish(promise, ...) abort
   endif
 
   if empty(a:promise._children)
+    if settled == s:REJECTED
+      call s:_on_unhandled_rejection(a:promise._result)
+    endif
     return
   endif
 
@@ -268,6 +271,11 @@ function! s:wait(promise, ...) abort
   else
     return [v:null, a:promise._result]
   endif
+endfunction
+
+let s:_on_unhandled_rejection = s:NOOP
+function! s:on_unhandled_rejection(on_unhandled_rejection) abort
+  let s:_on_unhandled_rejection = a:on_unhandled_rejection
 endfunction
 
 function! s:_promise_then(...) dict abort

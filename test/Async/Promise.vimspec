@@ -804,6 +804,56 @@ Describe Async.Promise
       endif
     End
   End
+
+  Describe .on_unhandled_rejection
+    It should call when promsie does not catch
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
+      let p = P.resolve().then({ -> execute('throw "error"') })
+      call s:wait_has_key(l, 'result')
+      Assert HasKey(result, 'exception')
+      Assert HasKey(result, 'throwpoint')
+    End
+
+    It should call when promise does not catch with finally
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
+      let p = P.resolve().then({ -> execute('throw "error"') }).finally({ -> {} })
+      call s:wait_has_key(l, 'result')
+      Assert HasKey(result, 'exception')
+      Assert HasKey(result, 'throwpoint')
+    End
+
+    It should call when promise does not catch with children
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
+      let p = P.resolve().then({ -> execute('throw "error"') }).then({ -> {} })
+      call s:wait_has_key(l, 'result')
+      Assert HasKey(result, 'exception')
+      Assert HasKey(result, 'throwpoint')
+    End
+
+    It should call when promise does not catch with wait
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
+      let p = P.resolve().then({ -> execute('throw "error"') }).then({ -> {} })
+      let [_, error] = P.wait(p)
+      Assert Equals(error, result)
+    End
+
+    It should not call when promise catched
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
+      let p = P.resolve().then({ -> execute('throw "error"') }).catch({ -> {} })
+      call P.wait(Wait(100))
+      Assert KeyNotExists(l, 'result')
+    End
+  End
 End
 
 " vim:et ts=2 sts=2 sw=2 tw=0:
