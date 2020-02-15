@@ -41,7 +41,7 @@ function! s:check_system() abort
 endfunction
 
 function! s:git(cmd) abort
-  let cmd = printf('git --git-dir "%s" %s', s:git_dir(), a:cmd)
+  let cmd = printf('git --git-dir "%s" --work-tree "%s" %s', s:git_dir(), g:vitalizer#vital_dir, a:cmd)
   let output = system(cmd)
   if v:shell_error
     throw "vitalizer: '" . cmd . "' failed: ".output
