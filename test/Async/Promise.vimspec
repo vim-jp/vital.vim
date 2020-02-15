@@ -806,7 +806,12 @@ Describe Async.Promise
   End
 
   Describe .on_unhandled_rejection
-    It should call when promsie does not catch
+
+    After each
+      call P.on_unhandled_rejection(P.noop)
+    End
+
+    It should call when promise throw error but unhandled
       let l = l:
       call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
 
@@ -814,6 +819,16 @@ Describe Async.Promise
       call s:wait_has_key(l, 'result')
       Assert HasKey(result, 'exception')
       Assert HasKey(result, 'throwpoint')
+    End
+
+    It should call when promise rejected but unhandled
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
+      let p = P.reject({ 'error': 'error' })
+      call s:wait_has_key(l, 'result')
+      Assert HasKey(result, 'error')
+      Assert Equals(result.error, 'error')
     End
 
     It should call when promise does not catch with finally
@@ -850,6 +865,15 @@ Describe Async.Promise
       call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
 
       let p = P.resolve().then({ -> execute('throw "error"') }).catch({ -> {} })
+      call P.wait(Wait(100))
+      Assert KeyNotExists(l, 'result')
+    End
+
+    It should not call when promise does not throw error
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
+      let p = P.resolve().then({ -> { 'success': 'success' } })
       call P.wait(Wait(100))
       Assert KeyNotExists(l, 'result')
     End
