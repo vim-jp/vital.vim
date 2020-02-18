@@ -7,9 +7,8 @@ Describe Interpreter.Brainf__k
 
   Describe .run_vim_parse_execute()
     It shows hello world
-      redir => output
-        silent call BF.run_vim_parse_execute("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.")
-      redir END
+      let script = '++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.'
+      let output = execute(printf('call BF.run_vim_parse_execute("%s")', script))
       Assert Equals(output, "Hello World!\n")
     End
   End
