@@ -97,6 +97,15 @@ is_case_tolerant()		*Vital.System.Filepath.is_case_tolerant()*
 	Return non-zero if filesystem ignores alphabetic case of a filename,
 	zero otherwise.
 
+expand_home({path})		*Vital.System.Filepath.expand_home()*
+	Return a home-expanded path of {path}.  The home directory expansion
+	will not have a trailing directory separator.
+
+	Like |expand()|, but only expanding a leading "~" home directory
+	sequence, or like |fnamemodify()| with the ":p" modifier, but without
+	full path expansion or unpredictable results if a file name doesn't
+	exist and doesn't have an absolute path.  See |filename-modifiers|.
+
 abspath({path})			*Vital.System.Filepath.abspath()*
 	Return an absolute path of {path}.
 	If the {path} is already an absolute path, it returns the {path}.

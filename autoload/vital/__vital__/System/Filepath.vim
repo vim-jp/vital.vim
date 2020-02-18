@@ -197,12 +197,23 @@ function! s:is_case_tolerant() abort
 endfunction
 
 
+function! s:expand_home(path) abort
+  if a:path[:0] !=# '~'
+    return a:path
+  endif
+  let post_home_idx = match(a:path, s:path_sep_pattern)
+  return post_home_idx is# -1
+        \ ? s:remove_last_separator(expand(a:path))
+        \ : s:remove_last_separator(expand(a:path[0 : post_home_idx - 1]))
+        \   . a:path[post_home_idx :]
+endfunction
+
 function! s:abspath(path) abort
   if s:is_absolute(a:path)
     return a:path
   endif
-  " Note:
-  "   the behavior of ':p' for non existing file path/directory is not defined
+  " NOTE: The behavior of ':p' for a non existing file/directory path
+  " is not defined.
   return (filereadable(a:path) || isdirectory(a:path))
         \ ? fnamemodify(a:path, ':p')
         \ : s:join(fnamemodify(getcwd(), ':p'), a:path)
