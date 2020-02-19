@@ -380,6 +380,7 @@ wait({promise}[, {options}])		*Vital.Async.Promise.wait()*
 on_unhandled_rejection({callback})	*Vital.Async.Promise.on_unhandled_rejection*
 
  	Set callback to catch all unhandled rejected promise's result.
+	If {callback} throws error, |Async.Promise| does not handle it.
 
 	The {callback} is |Funcref|, it's argument can be unhandled thrown error or unhandled rejected value.
 
