@@ -864,6 +864,15 @@ Describe Async.Promise
       let l = l:
       call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
 
+      let p = P.reject({ 'error': 'error' }).catch({ -> {} })
+      call P.wait(Wait(100))
+      Assert KeyNotExists(l, 'result')
+    End
+
+    It should not call when promise catched
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
       let p = P.resolve().then({ -> execute('throw "error"') }).catch({ -> {} })
       call P.wait(Wait(100))
       Assert KeyNotExists(l, 'result')
