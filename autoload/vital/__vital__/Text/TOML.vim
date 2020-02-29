@@ -306,7 +306,6 @@ function! s:_unescape(text) abort
   let text = substitute(text, '\\n', "\n", 'g')
   let text = substitute(text, '\\f', "\f", 'g')
   let text = substitute(text, '\\r', "\r", 'g')
-  let text = substitute(text, '\\/', '/', 'g')
   let text = substitute(text, '\\\\', '\', 'g')
   let text = substitute(text, '\C\\u\(\x\{4}\)', '\=s:_nr2char("0x" . submatch(1))', 'g')
   let text = substitute(text, '\C\\U\(\x\{8}\)', '\=s:_nr2char("0x" . submatch(1))', 'g')
