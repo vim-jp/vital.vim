@@ -268,14 +268,40 @@ function! s:suite.__parse__()
       let data = s:TOML.parse(join([
       \ '[table]',
       \ 'key = "value"',
+      \ 'bare_key = "value"',
+      \ 'bare-key = "value"',
+      \ '',
+      \ '"127.0.0.1" = "value"',
+      \ '"character encoding" = "value"',
       \], "\n"))
 
-      call s:assert.has_key(data, 'table')
-      call s:assert.is_dict(data.table)
-      call s:assert.equals(data.table, {'key': 'value'})
+      call s:assert.equals(data, {
+      \ 'table': {
+      \   'key': 'value',
+      \   'bare_key': 'value',
+      \   'bare-key': 'value',
+      \   '127.0.0.1': 'value',
+      \   'character encoding': 'value',
+      \ },
+      \})
     endfunction
 
     function! table.nested()
+      let data = s:TOML.parse(join([
+      \ '[ dog . "tater.man" ]',
+      \ 'type = "pug"',
+      \]))
+
+      call s:assert.equals(data, {
+      \ 'dog': {
+      \   'tater.man': {
+      \     'type': 'pug',
+      \   },
+      \ },
+      \})
+    endfunction
+
+    function! table.nested_without_super_tables()
       let data = s:TOML.parse(join([
       \ '# [x] you',
       \ '# [x.y] don''t',
