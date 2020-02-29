@@ -157,16 +157,22 @@ function! s:suite.__parse__()
 
   function! parse.integer()
     let data = s:TOML.parse(join([
-    \ 'one=+99',
-    \ 'two=42',
-    \ 'three=0',
-    \ 'four=-17',
+    \ 'int1 = +99',
+    \ 'int2 = 42',
+    \ 'int3 = 0',
+    \ 'int4 = -17',
+    \ 'int5 = 1_000',
+    \ 'int6 = 5_349_221',
+    \ 'int7 = 1_2_3_4_5',
     \], "\n"))
 
-    call s:assert.equals(data.one, 99)
-    call s:assert.equals(data.two, 42)
-    call s:assert.equals(data.three, 0)
-    call s:assert.equals(data.four, -17)
+    call s:assert.equals(data.int1, 99)
+    call s:assert.equals(data.int2, 42)
+    call s:assert.equals(data.int3, 0)
+    call s:assert.equals(data.int4, -17)
+    call s:assert.equals(data.int5, 1000)
+    call s:assert.equals(data.int6, 5349221)
+    call s:assert.equals(data.int7, 12345)
   endfunction
 
   function! parse.__float__()
@@ -174,45 +180,54 @@ function! s:suite.__parse__()
 
     function! float.fractional()
       let data = s:TOML.parse(join([
-      \ 'one=+1.0',
-      \ 'two=3.1415',
-      \ 'three=-0.01',
+      \ 'flt1 = +1.0',
+      \ 'flt2 = 3.1415',
+      \ 'flt3 = -0.01',
       \], "\n"))
 
-      call s:assert.is_float(data.one)
-      call s:assert.equals(data.one, 1.0)
+      call s:assert.is_float(data.flt1)
+      call s:assert.equals(data.flt1, 1.0)
 
-      call s:assert.is_float(data.two)
-      call s:assert.equals(data.two, 3.1415)
+      call s:assert.is_float(data.flt2)
+      call s:assert.equals(data.flt2, 3.1415)
 
-      call s:assert.is_float(data.three)
-      call s:assert.equals(data.three, -0.01)
+      call s:assert.is_float(data.flt3)
+      call s:assert.equals(data.flt3, -0.01)
     endfunction
 
     function! float.exponent()
       let data = s:TOML.parse(join([
-      \ 'one=5e+22',
-      \ 'two=1e6',
-      \ 'three=-2E-2',
+      \ 'flt4 = 5e+22',
+      \ 'flt5 = 1e6',
+      \ 'flt6 = -2E-2',
       \], "\n"))
 
-      call s:assert.is_float(data.one)
-      call s:assert.equals(data.one, 5.0e22)
+      call s:assert.is_float(data.flt4)
+      call s:assert.equals(data.flt4, 5.0e22)
 
-      call s:assert.is_float(data.two)
-      call s:assert.equals(data.two, 1.0e6)
+      call s:assert.is_float(data.flt5)
+      call s:assert.equals(data.flt5, 1.0e6)
 
-      call s:assert.is_float(data.three)
-      call s:assert.equals(data.three, -2.0e-2)
+      call s:assert.is_float(data.flt6)
+      call s:assert.equals(data.flt6, -2.0e-2)
     endfunction
 
     function! float.both()
       let data = s:TOML.parse(join([
-      \ 'one=6.626e-34',
+      \ 'flt7 = 6.626e-34',
       \], "\n"))
 
-      call s:assert.is_float(data.one)
-      call s:assert.equals(data.one, 6.626e-34)
+      call s:assert.is_float(data.flt7)
+      call s:assert.equals(data.flt7, 6.626e-34)
+    endfunction
+
+    function! float.underscores()
+      let data = s:TOML.parse(join([
+      \ 'flt8 = 224_617.445_991_228',
+      \], "\n"))
+
+      call s:assert.is_float(data.flt8)
+      call s:assert.equals(data.flt8, 224617.445991228)
     endfunction
   endfunction
 

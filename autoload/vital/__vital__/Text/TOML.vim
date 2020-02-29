@@ -143,7 +143,7 @@ function! s:_value(input) abort
     return s:_boolean(a:input)
   elseif s:_match(a:input, '\d\{4}-')
     return s:_datetime(a:input)
-  elseif s:_match(a:input, '[+-]\?\%(\d\+\.\d\|\d\+\%(\.\d\+\)\?[eE]\)')
+  elseif s:_match(a:input, '[+-]\?\d\+\%(_\d\+\)*\%(\.\d\+\%(_\d\+\)*\|\%(\.\d\+\%(_\d\+\)*\)\?[eE]\)')
     return s:_float(a:input)
   else
     return s:_integer(a:input)
@@ -183,7 +183,8 @@ endfunction
 " Integer
 "
 function! s:_integer(input) abort
-  let s = s:_consume(a:input, '[+-]\?\d\+')
+  let s = s:_consume(a:input, '[+-]\?\d\+\%(_\d\+\)*')
+  let s = substitute(s, '_', '', 'g')
   return str2nr(s)
 endfunction
 
@@ -191,20 +192,8 @@ endfunction
 " Float
 "
 function! s:_float(input) abort
-  if s:_match(a:input, '[+-]\?[0-9.]\+[eE][+-]\?\d\+')
-    return s:_exponent(a:input)
-  else
-    return s:_fractional(a:input)
-  endif
-endfunction
-
-function! s:_fractional(input) abort
-  let s = s:_consume(a:input, '[+-]\?[0-9.]\+')
-  return str2float(s)
-endfunction
-
-function! s:_exponent(input) abort
-  let s = s:_consume(a:input, '[+-]\?[0-9.]\+[eE][+-]\?\d\+')
+  let s = s:_consume(a:input, '[+-]\?[0-9._]\+\%([eE][+-]\?\d\+\%(_\d\+\)*\)\?')
+  let s = substitute(s, '_', '', 'g')
   return str2float(s)
 endfunction
 
