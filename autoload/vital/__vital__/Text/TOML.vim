@@ -135,6 +135,8 @@ function! s:_value(input) abort
     return s:_literal(a:input)
   elseif s:_match(a:input, '\[')
     return s:_array(a:input)
+  elseif s:_match(a:input, '{')
+    return s:_inline_table(a:input)
   elseif s:_match(a:input, '\%(true\|false\)')
     return s:_boolean(a:input)
   elseif s:_match(a:input, '\d\{4}-')
@@ -259,7 +261,27 @@ function! s:_table(input) abort
 endfunction
 
 "
-" Array of tables
+" Inline Table
+"
+function! s:_inline_table(input) abort
+  let tbl = {}
+  call s:_consume(a:input, '{')
+  while !s:_eof(a:input) && !s:_match(a:input, '}')
+    let key = s:_key(a:input)
+    call s:_equals(a:input)
+    let value = s:_value(a:input)
+
+    let tbl[key] = value
+
+    call s:_consume(a:input, ',\?')
+    call s:_skip(a:input)
+  endwhile
+  call s:_consume(a:input, '}')
+  return tbl
+endfunction
+
+"
+" Array of Tables
 "
 function! s:_array_of_tables(input) abort
   let tbl = {}

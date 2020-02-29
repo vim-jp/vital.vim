@@ -292,6 +292,30 @@ function! s:suite.__parse__()
     endfunction
   endfunction
 
+  function! parse.inline_table()
+    let data = s:TOML.parse(join([
+    \ '[table.inline]',
+    \ '',
+    \ 'name = { first = "Tom", last = "Preston-Werner" }',
+    \ 'point = { x = 1, y = 2 }'
+    \]))
+
+    call s:assert.equals(data, {
+    \ 'table': {
+    \   'inline': {
+    \     'name': {
+    \       'first': 'Tom',
+    \       'last': 'Preston-Werner',
+    \     },
+    \     'point': {
+    \       'x': 1,
+    \       'y': 2,
+    \     },
+    \   },
+    \ },
+    \})
+  endfunction
+
   function! parse.array_of_tables()
     let data = s:TOML.parse(join([
     \ '[[fruit]]',
