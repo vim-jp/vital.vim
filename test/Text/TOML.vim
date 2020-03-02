@@ -168,11 +168,15 @@ function! s:suite.__parse__()
       \ 'str4 = """Here are two quotation marks: "". Simple enough."""',
       \ 'str5 = """Here are three quotation marks: ""\"."""',
       \ 'str6 = """Here are fifteen quotation marks: ""\"""\"""\"""\"""\"."""',
+      \ '',
+      \ '# "This," she said, "is just a pointless statement."',
+      \ 'str7 = """"This," she said, "is just a pointless statement.""""',
       \], "\n"))
 
       call s:assert.same(data.str4, 'Here are two quotation marks: "". Simple enough.')
       call s:assert.same(data.str5, 'Here are three quotation marks: """.')
       call s:assert.same(data.str6, 'Here are fifteen quotation marks: """"""""""""""".')
+      call s:assert.same(data.str7, '"This," she said, "is just a pointless statement."')
     endfunction
   endfunction
 
@@ -199,6 +203,11 @@ function! s:suite.__parse__()
     \ '   All other whitespace',
     \ '   is preserved.',
     \ '''''''',
+    \ '',
+    \ 'quot15 = ''''''Here fifteen quotation marks: """""""""""""""''''''',
+    \ '',
+    \ "# 'That's still pointless', she said.",
+    \ "str = ''''That's still pointless', she said.'''",
     \], "\n"))
 
     call s:assert.same(data.regex2, 'I [dw]on''t need \d{2} apples')
@@ -209,6 +218,8 @@ function! s:suite.__parse__()
     \ '   is preserved.',
     \ '',
     \], "\n"))
+    call s:assert.same(data.quot15, 'Here fifteen quotation marks: """""""""""""""')
+    call s:assert.same(data.str,    '''That''s still pointless'', she said.')
   endfunction
 
   function! parse.__integer__()
