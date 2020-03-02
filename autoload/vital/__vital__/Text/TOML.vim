@@ -147,6 +147,8 @@ function! s:_value(input) abort
     return s:_datetime(a:input)
   elseif s:_match(a:input, '[+-]\?\d\+\%(_\d\+\)*\%(\.\d\+\%(_\d\+\)*\|\%(\.\d\+\%(_\d\+\)*\)\?[eE]\)')
     return s:_float(a:input)
+  elseif s:_match(a:input, '[+-]\?\%(inf\|nan\)')
+    return s:_special_float(a:input)
   else
     return s:_integer(a:input)
   endif
@@ -196,6 +198,11 @@ endfunction
 function! s:_float(input) abort
   let s = s:_consume(a:input, '[+-]\?[0-9._]\+\%([eE][+-]\?\d\+\%(_\d\+\)*\)\?')
   let s = substitute(s, '_', '', 'g')
+  return str2float(s)
+endfunction
+
+function! s:_special_float(input) abort
+  let s = s:_consume(a:input, '[+-]\?\%(inf\|nan\)')
   return str2float(s)
 endfunction
 

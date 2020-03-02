@@ -285,6 +285,38 @@ function! s:suite.__parse__()
       call s:assert.is_float(data.flt8)
       call s:assert.equals(data.flt8, 224617.445991228)
     endfunction
+
+    function! float.special_float()
+      let data = s:TOML.parse(join([
+      \ '# infinity',
+      \ 'sf1 = inf  # positive infinity',
+      \ 'sf2 = +inf # positive infinity',
+      \ 'sf3 = -inf # negative infinity',
+      \ '',
+      \ '# not a number',
+      \ 'sf4 = nan  # actual sNaN/qNan encoding is implementation specific',
+      \ 'sf5 = +nan # same as `nan`',
+      \ 'sf6 = -nan # valid, actual encoding is implementation specific',
+      \], "\n"))
+
+      call s:assert.is_float(data.sf1)
+      call s:assert.same(string(data.sf1), 'inf')
+
+      call s:assert.is_float(data.sf2)
+      call s:assert.same(string(data.sf2), 'inf')
+
+      call s:assert.is_float(data.sf3)
+      call s:assert.same(string(data.sf3), '-inf')
+
+      call s:assert.is_float(data.sf4)
+      call s:assert.truthy(isnan(data.sf4))
+
+      call s:assert.is_float(data.sf5)
+      call s:assert.truthy(isnan(data.sf5))
+
+      call s:assert.is_float(data.sf6)
+      call s:assert.truthy(isnan(data.sf6))
+    endfunction
   endfunction
 
   function! parse.boolean()
