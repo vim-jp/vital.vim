@@ -103,6 +103,26 @@ function! s:suite.__parse__()
       \ 'quoted "value"': 'value',
       \})
     endfunction
+
+    function! keys.dotted_keys()
+      let data = s:TOML.parse(join([
+      \ 'name = "Orange"',
+      \ 'physical.color = "orange"',
+      \ 'physical.shape = "round"',
+      \ 'site."google.com" = true',
+      \], "\n"))
+
+      call s:assert.equals(data, {
+      \  'name': 'Orange',
+      \  'physical': {
+      \    'color': 'orange',
+      \    'shape': 'round',
+      \  },
+      \  'site': {
+      \    'google.com': 1,
+      \  },
+      \})
+    endfunction
   endfunction
 
   function! parse.basic_strings()
@@ -335,13 +355,15 @@ function! s:suite.__parse__()
     function! table.nested()
       let data = s:TOML.parse(join([
       \ '[ dog . "tater.man" ]',
-      \ 'type = "pug"',
+      \ 'type.name = "pug"',
       \]))
 
       call s:assert.equals(data, {
       \ 'dog': {
       \   'tater.man': {
-      \     'type': 'pug',
+      \     'type': {
+      \       'name': 'pug',
+      \     },
       \   },
       \ },
       \})
@@ -369,7 +391,8 @@ function! s:suite.__parse__()
     \ '[table.inline]',
     \ '',
     \ 'name = { first = "Tom", last = "Preston-Werner" }',
-    \ 'point = { x = 1, y = 2 }'
+    \ 'point = { x = 1, y = 2 }',
+    \ 'animal = { type.name = "pug" }',
     \]))
 
     call s:assert.equals(data, {
@@ -382,6 +405,11 @@ function! s:suite.__parse__()
     \     'point': {
     \       'x': 1,
     \       'y': 2,
+    \     },
+    \     'animal': {
+    \       'type': {
+    \         'name': 'pug',
+    \       },
     \     },
     \   },
     \ },
