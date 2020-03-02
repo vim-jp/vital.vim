@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 let s:suite = themis#suite('Text.TOML')
 let s:assert = themis#helper('assert')
 
@@ -64,6 +66,44 @@ endfunction
 
 function! s:suite.__parse__()
   let parse = themis#suite('parse()')
+
+  function! parse.__keys__()
+    let keys = themis#suite('keys')
+
+    function! keys.bare_keys()
+      let data = s:TOML.parse(join([
+      \ 'key = "value"',
+      \ 'bare_key = "value"',
+      \ 'bare-key = "value"',
+      \ '1234 = "value"',
+      \], "\n"))
+
+      call s:assert.equals(data, {
+      \ 'key': 'value',
+      \ 'bare_key': 'value',
+      \ 'bare-key': 'value',
+      \ '1234': 'value',
+      \})
+    endfunction
+
+    function! keys.quoted_keys()
+      let data = s:TOML.parse(join([
+      \ '"127.0.0.1" = "value"',
+      \ '"character encoding" = "value"',
+      \ '"ʎǝʞ" = "value"',
+      \ '''key2'' = "value"',
+      \ '''quoted "value"'' = "value"',
+      \], "\n"))
+
+      call s:assert.equals(data, {
+      \ '127.0.0.1': 'value',
+      \ 'character encoding': 'value',
+      \ 'ʎǝʞ': 'value',
+      \ 'key2': 'value',
+      \ 'quoted "value"': 'value',
+      \})
+    endfunction
+  endfunction
 
   function! parse.basic_strings()
     let data = s:TOML.parse('hoge="I''m a string. \"You can quote me\". Name\tJos\u0024\nLocation\tSF."')
@@ -283,20 +323,11 @@ function! s:suite.__parse__()
       let data = s:TOML.parse(join([
       \ '[table]',
       \ 'key = "value"',
-      \ 'bare_key = "value"',
-      \ 'bare-key = "value"',
-      \ '',
-      \ '"127.0.0.1" = "value"',
-      \ '"character encoding" = "value"',
       \], "\n"))
 
       call s:assert.equals(data, {
       \ 'table': {
       \   'key': 'value',
-      \   'bare_key': 'value',
-      \   'bare-key': 'value',
-      \   '127.0.0.1': 'value',
-      \   'character encoding': 'value',
       \ },
       \})
     endfunction

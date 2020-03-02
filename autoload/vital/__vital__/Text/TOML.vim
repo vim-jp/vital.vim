@@ -108,6 +108,8 @@ function! s:_keys(input, end) abort
     call s:_skip(a:input)
     if s:_match(a:input, '"')
       let key = s:_basic_string(a:input)
+    elseif s:_match(a:input, "'")
+      let key = s:_literal(a:input)
     else
       let key = s:_consume(a:input, s:bare_key_pattern)
     endif
