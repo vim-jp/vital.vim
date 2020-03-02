@@ -136,47 +136,43 @@ function! s:suite.__parse__()
 
     function! multiline_basic_strings.trims_first_newline()
       let data = s:TOML.parse(join([
-      \ 'hoge="""',
-      \ 'One',
-      \ 'Two"""',
+      \ 'str1 = """',
+      \ 'Roses are red',
+      \ 'Violets are blue"""',
       \], "\n"))
 
-      call s:assert.same(data.hoge, "One\nTwo")
+      call s:assert.same(data.str1, "Roses are red\nViolets are blue")
     endfunction
 
     function! multiline_basic_strings.trims_whitespaces_after_backslash()
       let data = s:TOML.parse(join([
-      \ 'hoge= """',
+      \ 'str2 = """',
       \ 'The quick brown \',
       \ '',
       \ '',
       \ '  fox jumps over \',
       \ '    the lazy dog."""',
-      \], "\n"))
-
-      call s:assert.same(data.hoge, 'The quick brown fox jumps over the lazy dog.')
-    endfunction
-
-    function! multiline_basic_strings.trims_whitespaces_after_backslash2()
-      let data = s:TOML.parse(join([
-      \ 'hoge = """\',
+      \ 'str3 = """\',
       \ '    The quick brown \',
       \ '    fox jumps over \',
       \ '    the lazy dog.\',
       \ '    """',
       \], "\n"))
 
-      call s:assert.same(data.hoge, 'The quick brown fox jumps over the lazy dog.')
+      call s:assert.same(data.str2, 'The quick brown fox jumps over the lazy dog.')
+      call s:assert.same(data.str3, 'The quick brown fox jumps over the lazy dog.')
     endfunction
 
     function! multiline_basic_strings.includes_escaped_character()
       let data = s:TOML.parse(join([
-      \ 'hoge = """\',
-      \ 'delimiter = ''\"""''\',
-      \ '"""',
+      \ 'str4 = """Here are two quotation marks: "". Simple enough."""',
+      \ 'str5 = """Here are three quotation marks: ""\"."""',
+      \ 'str6 = """Here are fifteen quotation marks: ""\"""\"""\"""\"""\"."""',
       \], "\n"))
 
-      call s:assert.same(data.hoge, 'delimiter = ''"""''')
+      call s:assert.same(data.str4, 'Here are two quotation marks: "". Simple enough.')
+      call s:assert.same(data.str5, 'Here are three quotation marks: """.')
+      call s:assert.same(data.str6, 'Here are fifteen quotation marks: """"""""""""""".')
     endfunction
   endfunction
 

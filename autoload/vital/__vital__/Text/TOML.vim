@@ -165,7 +165,7 @@ function! s:_multiline_basic_string(input) abort
   let s = s:_consume(a:input, '"\{3}\%(\\.\|\_.\)\{-}"\{3}')
   let s = s[3 : -4]
   let s = substitute(s, "^\n", '', '')
-  let s = substitute(s, '\\' . "\n" . '\_s*', '', 'g')
+  let s = substitute(s, '\\\s*' . "\n" . '\_s*', '', 'g')
   return s:_unescape(s)
 endfunction
 
