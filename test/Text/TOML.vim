@@ -211,24 +211,72 @@ function! s:suite.__parse__()
     \], "\n"))
   endfunction
 
-  function! parse.integer()
-    let data = s:TOML.parse(join([
-    \ 'int1 = +99',
-    \ 'int2 = 42',
-    \ 'int3 = 0',
-    \ 'int4 = -17',
-    \ 'int5 = 1_000',
-    \ 'int6 = 5_349_221',
-    \ 'int7 = 1_2_3_4_5',
-    \], "\n"))
+  function! parse.__integer__()
+    let integer = themis#suite('integer')
 
-    call s:assert.equals(data.int1, 99)
-    call s:assert.equals(data.int2, 42)
-    call s:assert.equals(data.int3, 0)
-    call s:assert.equals(data.int4, -17)
-    call s:assert.equals(data.int5, 1000)
-    call s:assert.equals(data.int6, 5349221)
-    call s:assert.equals(data.int7, 12345)
+    function! integer.decimal()
+      let data = s:TOML.parse(join([
+      \ 'int1 = +99',
+      \ 'int2 = 42',
+      \ 'int3 = 0',
+      \ 'int4 = -17',
+      \ 'int5 = 1_000',
+      \ 'int6 = 5_349_221',
+      \ 'int7 = 1_2_3_4_5',
+      \], "\n"))
+
+      call s:assert.equals(data.int1, 99)
+      call s:assert.equals(data.int2, 42)
+      call s:assert.equals(data.int3, 0)
+      call s:assert.equals(data.int4, -17)
+      call s:assert.equals(data.int5, 1000)
+      call s:assert.equals(data.int6, 5349221)
+      call s:assert.equals(data.int7, 12345)
+    endfunction
+
+    function! integer.binary()
+      let data = s:TOML.parse(join([
+      \ '# binary with prefix `0b`',
+      \ 'bin1 = 0b11010110',
+      \ 'bin2 = 0b1101_0110',
+      \ 'bin3 = 0b1_1_0_1_0_1_1_0',
+      \], "\n"))
+
+      " TODO: workaround for vim-vint<0.4
+      call s:assert.equals(data.bin1, +'0b11010110')
+      call s:assert.equals(data.bin2, +'0b11010110')
+      call s:assert.equals(data.bin3, +'0b11010110')
+    endfunction
+
+    function! integer.octal()
+      let data = s:TOML.parse(join([
+      \ '# octal with prefix `0o`',
+      \ 'oct1 = 0o01234567',
+      \ 'oct2 = 0o755 # useful for Unix file permissions',
+      \ 'oct3 = 0o0_755',
+      \ 'oct4 = 0o0_7_5_5',
+      \], "\n"))
+
+      call s:assert.equals(data.oct1, 001234567)
+      call s:assert.equals(data.oct2, 0755)
+      call s:assert.equals(data.oct3, 0755)
+      call s:assert.equals(data.oct4, 0755)
+    endfunction
+
+    function! integer.hexadecimal()
+      let data = s:TOML.parse(join([
+      \ '# hexadecimal with prefix `0x`',
+      \ 'hex1 = 0xDEADBEEF',
+      \ 'hex2 = 0xdeadbeef',
+      \ 'hex3 = 0xdead_beef',
+      \ 'hex4 = 0xd_e_a_d_b_e_e_f',
+      \], "\n"))
+
+      call s:assert.equals(data.hex1, 0xdeadbeef)
+      call s:assert.equals(data.hex2, 0xdeadbeef)
+      call s:assert.equals(data.hex3, 0xdeadbeef)
+      call s:assert.equals(data.hex4, 0xdeadbeef)
+    endfunction
   endfunction
 
   function! parse.__float__()

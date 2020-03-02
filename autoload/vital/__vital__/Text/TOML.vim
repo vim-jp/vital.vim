@@ -187,9 +187,22 @@ endfunction
 " Integer
 "
 function! s:_integer(input) abort
-  let s = s:_consume(a:input, '[+-]\?\d\+\%(_\d\+\)*')
+  if s:_match(a:input, '0b')
+    let s = s:_consume(a:input, '0b[01]\+\%(_[01]\+\)*')
+    let base = 2
+  elseif s:_match(a:input, '0o')
+    let s = s:_consume(a:input, '0o[0-7]\+\%(_[0-7]\+\)*')
+    let s = s[2 :]
+    let base = 8
+  elseif s:_match(a:input, '0x')
+    let s = s:_consume(a:input, '0x[A-Fa-f0-9]\+\%(_[A-Fa-f0-9]\+\)*')
+    let base = 16
+  else
+    let s = s:_consume(a:input, '[+-]\?\d\+\%(_\d\+\)*')
+    let base = 10
+  endif
   let s = substitute(s, '_', '', 'g')
-  return str2nr(s)
+  return str2nr(s, base)
 endfunction
 
 "
