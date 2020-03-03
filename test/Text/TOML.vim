@@ -406,11 +406,13 @@ function! s:suite.__parse__()
     \ 'dt1 = 1979-05-27T07:32:00Z',
     \ 'dt2 = 1979-05-27T00:32:00-07:00',
     \ 'dt3 = 1979-05-27T00:32:00.999999-07:00',
+    \ 'dt4 = 1979-05-27 07:32:00Z',
     \], "\n"))
 
     call s:assert.same(data.dt1, '1979-05-27T07:32:00Z')
     call s:assert.same(data.dt2, '1979-05-27T00:32:00-07:00')
     call s:assert.same(data.dt3, '1979-05-27T00:32:00.999999-07:00')
+    call s:assert.same(data.dt4, '1979-05-27 07:32:00Z')
   endfunction
 
   function! parse.array()
