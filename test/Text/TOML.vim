@@ -20,12 +20,12 @@ function! s:suite.__parse_file__()
   endfunction
 
   function! parse_file.parses_toml_formatted_file()
-    let data = s:TOML.parse_file('./test/_testdata/Text/TOML/toml-sample.txt')
+    let data = s:TOML.parse_file('./test/_testdata/Text/TOML/sample.toml')
 
     call s:assert.equals(data, {
     \ 'title': 'TOML Example',
     \ 'owner': {
-    \   'name': 'Lance Uppercut',
+    \   'name': 'Tom Preston-Werner',
     \   'dob': '1979-05-27T07:32:00-08:00',
     \ },
     \ 'database': {
@@ -66,6 +66,11 @@ endfunction
 
 function! s:suite.__parse__()
   let parse = themis#suite('parse()')
+
+  function! parse.throws_if_input_is_in_illegal_format()
+    let toml = s:TOML 
+    Throws /vital: Text.TOML:/ toml.parse(']')
+  endfunction
 
   function! parse.__keys__()
     let keys = themis#suite('keys')
@@ -123,12 +128,20 @@ function! s:suite.__parse__()
       \  },
       \})
     endfunction
+
+    function! keys.empty_keys()
+      let toml = s:TOML
+      Throw /vital: Text.TOML:/ toml.parse('= "no key name"')
+
+      call s:assert.equals(s:TOML.parse('"" = "blank"'), {'': 'blank'})
+      call s:assert.equals(s:TOML.parse("'' = 'blank'"), {'': 'blank'})
+    endfunction
   endfunction
 
   function! parse.basic_strings()
-    let data = s:TOML.parse('hoge="I''m a string. \"You can quote me\". Name\tJos\u0024\nLocation\tSF."')
+    let data = s:TOML.parse('str = "I''m a string. \"You can quote me\". Name\tJos\u0024\nLocation\tSF."')
 
-    call s:assert.same(data.hoge, "I'm a string. \"You can quote me\". Name\tJos\u0024\nLocation\tSF.")
+    call s:assert.same(data.str, "I'm a string. \"You can quote me\". Name\tJos\u0024\nLocation\tSF.")
   endfunction
 
   function! parse.__multiline_basic_strings__()
@@ -380,47 +393,60 @@ function! s:suite.__parse__()
 
   function! parse.boolean()
     let data = s:TOML.parse(join([
-    \ 'true=true',
-    \ 'false=false',
+    \ 'bool1 = true',
+    \ 'bool2 = false',
     \], "\n"))
 
-    call s:assert.truthy(data.true)
-    call s:assert.falsy(data.false)
+    call s:assert.truthy(data.bool1)
+    call s:assert.falsy(data.bool2)
   endfunction
 
   function! parse.datetime()
     let data = s:TOML.parse(join([
-    \ 'one=1979-05-27T07:32:00Z',
-    \ 'two=1979-05-27T00:32:00-07:00',
-    \ 'three=1979-05-27T00:32:00.999999-07:00'
+    \ 'dt1 = 1979-05-27T07:32:00Z',
+    \ 'dt2 = 1979-05-27T00:32:00-07:00',
+    \ 'dt3 = 1979-05-27T00:32:00.999999-07:00',
     \], "\n"))
 
-    call s:assert.same(data.one,   '1979-05-27T07:32:00Z')
-    call s:assert.same(data.two,   '1979-05-27T00:32:00-07:00')
-    call s:assert.same(data.three, '1979-05-27T00:32:00.999999-07:00')
+    call s:assert.same(data.dt1, '1979-05-27T07:32:00Z')
+    call s:assert.same(data.dt2, '1979-05-27T00:32:00-07:00')
+    call s:assert.same(data.dt3, '1979-05-27T00:32:00.999999-07:00')
   endfunction
 
   function! parse.array()
     let data = s:TOML.parse(join([
-    \ 'one=[ 1, 2, 3 ]',
-    \ 'two=[ "red", "yellow", "green" ]',
-    \ 'three=[ [ 1, 2 ], [3, 4, 5] ]',
-    \ 'four=[ [ 1, 2 ], ["a", "b", "c"] ] # this is ok',
-    \ 'five = [',
+    \ 'integers = [ 1, 2, 3 ]',
+    \ 'colors = [ "red", "yellow", "green" ]',
+    \ 'nested_array_of_int = [ [ 1, 2 ], [3, 4, 5] ]',
+    \ 'nested_mixed_array = [ [ 1, 2 ], ["a", "b", "c"] ]',
+    \ 'string_array = [ "all", ''strings'', """are the same""", ''''''type'''''' ]',
+    \ '',
+    \ '# Mixed-type arryas are allowed',
+    \ 'numbers = [ 0.1, 0.2, 0.5, 1, 2, 5 ]',
+    \ 'contributors = [',
+    \ '  "Foo Bar <foo@example.com>"',
+    \ '  { name = "Baz Qux", email = "bazqux@example.com", url = "https://example.com/bazqux" }',
+    \ ']',
+    \ '',
+    \ 'integers2 = [',
     \ '  1, 2, 3',
     \ ']',
-    \ 'six = [',
+    \ '',
+    \ 'integers3 = [',
     \ '  1,',
     \ '  2, # this is ok',
     \ ']',
     \], "\n"))
 
-    call s:assert.equals(data.one,   [1, 2, 3])
-    call s:assert.equals(data.two,   ['red', 'yellow', 'green'])
-    call s:assert.equals(data.three, [[1, 2], [3, 4, 5]])
-    call s:assert.equals(data.four,  [[1, 2], ['a', 'b', 'c']])
-    call s:assert.equals(data.five,  [1, 2, 3])
-    call s:assert.equals(data.six,   [1, 2])
+    call s:assert.equals(data.integers,            [1, 2, 3])
+    call s:assert.equals(data.colors,              ['red', 'yellow', 'green'])
+    call s:assert.equals(data.nested_array_of_int, [[1, 2], [3, 4, 5]])
+    call s:assert.equals(data.nested_mixed_array,  [[1, 2], ['a', 'b', 'c']])
+    call s:assert.equals(data.string_array,        ['all', 'strings', 'are the same', 'type'])
+    call s:assert.equals(data.numbers,             [0.1, 0.2, 0.5, 1, 2, 5])
+    call s:assert.equals(data.contributors,        ['Foo Bar <foo@example.com>', {'name': 'Baz Qux', 'email': 'bazqux@example.com', 'url': 'https://example.com/bazqux'}])
+    call s:assert.equals(data.integers2,           [1, 2, 3])
+    call s:assert.equals(data.integers3,           [1, 2])
   endfunction
 
   function! parse.__table__()
@@ -428,20 +454,30 @@ function! s:suite.__parse__()
 
     function! table.simple()
       let data = s:TOML.parse(join([
-      \ '[table]',
-      \ 'key = "value"',
+      \ '[table-1]',
+      \ 'key1 = "some string"',
+      \ 'key2 = 123',
+      \ '',
+      \ '[table-2]',
+      \ 'key1 = "another string"',
+      \ 'key2 = 456',
       \], "\n"))
 
       call s:assert.equals(data, {
-      \ 'table': {
-      \   'key': 'value',
+      \ 'table-1': {
+      \   'key1': 'some string',
+      \   'key2': 123,
+      \ },
+      \ 'table-2': {
+      \   'key1': 'another string',
+      \   'key2': 456,
       \ },
       \})
     endfunction
 
     function! table.nested()
       let data = s:TOML.parse(join([
-      \ '[ dog . "tater.man" ]',
+      \ '[dog."tater.man"]',
       \ 'type.name = "pug"',
       \]))
 
@@ -458,18 +494,29 @@ function! s:suite.__parse__()
 
     function! table.nested_without_super_tables()
       let data = s:TOML.parse(join([
+      \ '[a.b.c]           # this is best practice',
+      \ '[ d.e.f ]         # same as [d.e.f]',
+      \ '[ g . h . i ]     # same as [g.h.i]',
+      \ '[ j . "ʞ" . ''l'' ] # same as [j."ʞ".''l'']',
+      \ '',
       \ '# [x] you',
       \ '# [x.y] don''t',
       \ '# [x.y.z] need these',
       \ '[x.y.z.w] # for this to work',
+      \ '',
+      \ '[x] # defining a super-table afterwards is ok',
       \], "\n"))
 
+      call s:assert.has_key(data, 'a')
+      call s:assert.equals(data.a, {'b': {'c': {}}})
+      call s:assert.has_key(data, 'd')
+      call s:assert.equals(data.d, {'e': {'f': {}}})
+      call s:assert.has_key(data, 'g')
+      call s:assert.equals(data.g, {'h': {'i': {}}})
+      call s:assert.has_key(data, 'j')
+      call s:assert.equals(data.j, {'ʞ': {'l': {}}})
       call s:assert.has_key(data, 'x')
-      call s:assert.has_key(data.x, 'y')
-      call s:assert.has_key(data.x.y, 'z')
-      call s:assert.has_key(data.x.y.z, 'w')
-      call s:assert.is_dict(data.x.y.z.w)
-      call s:assert.equals(data.x.y.z.w, {})
+      call s:assert.equals(data.x, {'y': {'z': {'w': {}}}})
     endfunction
   endfunction
 
@@ -531,20 +578,20 @@ function! s:suite.__parse__()
     \     'name': 'apple',
     \     'physical': {
     \       'color': 'red',
-    \       'shape': 'round'
+    \       'shape': 'round',
     \     },
     \     'variety': [
     \       { 'name': 'red delicious' },
-    \       { 'name': 'granny smith' }
-    \     ]
+    \       { 'name': 'granny smith' },
+    \     ],
     \   },
     \   {
     \     'name': 'banana',
     \     'variety': [
-    \       { 'name': 'plantain' }
-    \     ]
-    \   }
-    \ ]
+    \       { 'name': 'plantain' },
+    \     ],
+    \   },
+    \ ],
     \})
   endfunction
 endfunction

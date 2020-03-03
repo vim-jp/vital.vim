@@ -19,8 +19,8 @@ function! s:parse_file(filename) abort
   endif
 
   let text = join(readfile(a:filename), "\n")
-  " fileencoding is always utf8
-  return s:parse(iconv(text, 'utf8', &encoding))
+  " fileencoding is always UTF-8
+  return s:parse(iconv(text, 'utf-8', &encoding))
 endfunction
 
 "
@@ -74,7 +74,7 @@ function! s:_error(input) abort
     let offset += 1
   endwhile
 
-  throw printf("vital: Text.TOML: Illegal toml format at `%s'.", join(buf, ''))
+  throw printf("vital: Text.TOML: Illegal TOML format at `%s'.", join(buf, ''))
 endfunction
 
 function! s:_parse(input) abort
@@ -131,11 +131,11 @@ function! s:_value(input) abort
 
   if s:_match(a:input, '"\{3}')
     return s:_multiline_basic_string(a:input)
-  elseif s:_match(a:input, '"\{1}')
+  elseif s:_match(a:input, '"')
     return s:_basic_string(a:input)
   elseif s:_match(a:input, "'\\{3}")
     return s:_multiline_literal(a:input)
-  elseif s:_match(a:input, "'\\{1}")
+  elseif s:_match(a:input, "'")
     return s:_literal(a:input)
   elseif s:_match(a:input, '\[')
     return s:_array(a:input)
@@ -224,15 +224,14 @@ endfunction
 "
 function! s:_boolean(input) abort
   let s = s:_consume(a:input, '\%(true\|false\)')
-  return (s ==# 'true') ? 1 : 0
+  return s ==# 'true'
 endfunction
 
 "
 " Datetime
 "
 function! s:_datetime(input) abort
-  let s = s:_consume(a:input, '\d\{4}-\d\{2}-\d\{2}T\d\{2}:\d\{2}:\d\{2}\%(Z\|-\?\d\{2}:\d\{2}\|\.\d\+-\d\{2}:\d\{2}\)')
-  return s
+  return s:_consume(a:input, '\d\{4}-\d\{2}-\d\{2}T\d\{2}:\d\{2}:\d\{2}\%(\.\d\+\)\?\%(Z\|[+-]\d\{2}:\d\{2}\)')
 endfunction
 
 "
@@ -240,14 +239,14 @@ endfunction
 "
 function! s:_array(input) abort
   let ary = []
-  let _ = s:_consume(a:input, '\[')
+  call s:_consume(a:input, '\[')
   call s:_skip(a:input)
   while !s:_eof(a:input) && !s:_match(a:input, '\]')
     let ary += [s:_value(a:input)]
     call s:_consume(a:input, ',\?')
     call s:_skip(a:input)
   endwhile
-  let _ = s:_consume(a:input, '\]')
+  call s:_consume(a:input, '\]')
   return ary
 endfunction
 
@@ -324,7 +323,7 @@ function! s:_unescape(text) abort
 endfunction
 
 function! s:_nr2char(nr) abort
-  return iconv(nr2char(a:nr), &encoding, 'utf8')
+  return iconv(nr2char(a:nr), &encoding, 'utf-8')
 endfunction
 
 function! s:_put_dict(dict, keys, value) abort
@@ -340,14 +339,17 @@ function! s:_put_dict(dict, keys, value) abort
     endif
   endfor
 
-  let ref[a:keys[-1]] = a:value
+  if has_key(ref, a:keys[-1]) && type(a:value) == v:t_dict
+    call extend(ref[a:keys[-1]], a:value)
+  else
+    let ref[a:keys[-1]] = a:value
+  endif
 endfunction
 
 function! s:_put_array(dict, keys, value) abort
   let ref = a:dict
   for key in a:keys[: -2]
     let ref[key] = get(ref, key, {})
-
     if type(ref[key]) == v:t_list
       let ref = ref[key][-1]
     else
