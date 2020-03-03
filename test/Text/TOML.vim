@@ -401,18 +401,28 @@ function! s:suite.__parse__()
     call s:assert.falsy(data.bool2)
   endfunction
 
-  function! parse.datetime()
+  function! parse.offset_datetime()
     let data = s:TOML.parse(join([
-    \ 'dt1 = 1979-05-27T07:32:00Z',
-    \ 'dt2 = 1979-05-27T00:32:00-07:00',
-    \ 'dt3 = 1979-05-27T00:32:00.999999-07:00',
-    \ 'dt4 = 1979-05-27 07:32:00Z',
+    \ 'odt1 = 1979-05-27T07:32:00Z',
+    \ 'odt2 = 1979-05-27T00:32:00-07:00',
+    \ 'odt3 = 1979-05-27T00:32:00.999999-07:00',
+    \ 'odt4 = 1979-05-27 07:32:00Z',
     \], "\n"))
 
-    call s:assert.same(data.dt1, '1979-05-27T07:32:00Z')
-    call s:assert.same(data.dt2, '1979-05-27T00:32:00-07:00')
-    call s:assert.same(data.dt3, '1979-05-27T00:32:00.999999-07:00')
-    call s:assert.same(data.dt4, '1979-05-27 07:32:00Z')
+    call s:assert.same(data.odt1, '1979-05-27T07:32:00Z')
+    call s:assert.same(data.odt2, '1979-05-27T00:32:00-07:00')
+    call s:assert.same(data.odt3, '1979-05-27T00:32:00.999999-07:00')
+    call s:assert.same(data.odt4, '1979-05-27 07:32:00Z')
+  endfunction
+
+  function! parse.local_datetime()
+    let data = s:TOML.parse(join([
+    \ 'ldt1 = 1979-05-27T07:32:00',
+    \ 'ldt2 = 1979-05-27T00:32:00.999999',
+    \], "\n"))
+
+    call s:assert.same(data.ldt1, '1979-05-27T07:32:00')
+    call s:assert.same(data.ldt2, '1979-05-27T00:32:00.999999')
   endfunction
 
   function! parse.array()
