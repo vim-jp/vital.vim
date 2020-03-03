@@ -145,6 +145,8 @@ function! s:_value(input) abort
     return s:_boolean(a:input)
   elseif s:_match(a:input, '\d\{4}-')
     return s:_datetime(a:input)
+  elseif s:_match(a:input, '\d\{2}:')
+    return s:_local_time(a:input)
   elseif s:_match(a:input, '[+-]\?\d\+\%(_\d\+\)*\%(\.\d\+\%(_\d\+\)*\|\%(\.\d\+\%(_\d\+\)*\)\?[eE]\)')
     return s:_float(a:input)
   elseif s:_match(a:input, '[+-]\?\%(inf\|nan\)')
@@ -234,6 +236,13 @@ endfunction
 "
 function! s:_datetime(input) abort
   return s:_consume(a:input, '\d\{4}-\d\{2}-\d\{2}\%([T ]\d\{2}:\d\{2}:\d\{2}\%(\.\d\+\)\?\%(Z\|[+-]\d\{2}:\d\{2}\)\?\)\?')
+endfunction
+
+"
+" Local Time
+"
+function! s:_local_time(input) abort
+  return s:_consume(a:input, '\d\{2}:\d\{2}:\d\{2}\%(\.\d\+\)\?')
 endfunction
 
 "
