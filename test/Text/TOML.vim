@@ -425,6 +425,14 @@ function! s:suite.__parse__()
     call s:assert.same(data.ldt2, '1979-05-27T00:32:00.999999')
   endfunction
 
+  function! parse.local_date()
+    let data = s:TOML.parse(join([
+    \ 'ld1 = 1979-05-27',
+    \], "\n"))
+
+    call s:assert.same(data.ld1, '1979-05-27')
+  endfunction
+
   function! parse.array()
     let data = s:TOML.parse(join([
     \ 'integers = [ 1, 2, 3 ]',
