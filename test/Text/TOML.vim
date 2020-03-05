@@ -75,48 +75,53 @@ function! s:suite.__parse__()
     let multiline_basic_strings = themis#suite('Multi-line basic strings')
 
     function! multiline_basic_strings.trims_first_newline()
-      let data = s:TOML.parse(join([
-      \ 'hoge="""',
-      \ 'One',
-      \ 'Two"""',
-      \], "\n"))
+      for newline in ["\n", "\r\n"]
+        let data = s:TOML.parse(join([
+        \ 'str1 = """',
+        \ 'Roses are red',
+        \ 'Violets are blue"""',
+        \], newline))
 
-      call s:assert.same(data.hoge, "One\nTwo")
+        call s:assert.same(data.str1, join([
+        \ 'Roses are red',
+        \ 'Violets are blue'
+        \], newline))
+      endfor
     endfunction
 
     function! multiline_basic_strings.trims_whitespaces_after_backslash()
-      let data = s:TOML.parse(join([
-      \ 'hoge= """',
-      \ 'The quick brown \',
-      \ '',
-      \ '',
-      \ '  fox jumps over \',
-      \ '    the lazy dog."""',
-      \], "\n"))
+      for newline in ["\n", "\r\n"]
+        let data = s:TOML.parse(join([
+        \ 'str2 = """',
+        \ 'The quick brown \',
+        \ '',
+        \ '',
+        \ '  fox jumps over \',
+        \ '    the lazy dog."""',
+        \ 'str3 = """\',
+        \ '    The quick brown \',
+        \ '    fox jumps over \',
+        \ '    the lazy dog.\',
+        \ '    """',
+        \], newline))
 
-      call s:assert.same(data.hoge, 'The quick brown fox jumps over the lazy dog.')
-    endfunction
-
-    function! multiline_basic_strings.trims_whitespaces_after_backslash2()
-      let data = s:TOML.parse(join([
-      \ 'hoge = """\',
-      \ '    The quick brown \',
-      \ '    fox jumps over \',
-      \ '    the lazy dog.\',
-      \ '    """',
-      \], "\n"))
-
-      call s:assert.same(data.hoge, 'The quick brown fox jumps over the lazy dog.')
+        call s:assert.same(data.str2, 'The quick brown fox jumps over the lazy dog.')
+        call s:assert.same(data.str3, 'The quick brown fox jumps over the lazy dog.')
+      endfor
     endfunction
 
     function! multiline_basic_strings.includes_escaped_character()
-      let data = s:TOML.parse(join([
-      \ 'hoge = """\',
-      \ 'delimiter = ''\"""''\',
-      \ '"""',
-      \], "\n"))
+      for newline in ["\n", "\r\n"]
+        let data = s:TOML.parse(join([
+        \ 'str4 = """Here are two quotation marks: "". Simple enough."""',
+        \ 'str5 = """Here are three quotation marks: ""\"."""',
+        \ 'str6 = """Here are fifteen quotation marks: ""\"""\"""\"""\"""\"."""',
+        \], newline))
 
-      call s:assert.same(data.hoge, 'delimiter = ''"""''')
+        call s:assert.same(data.str4, 'Here are two quotation marks: "". Simple enough.')
+        call s:assert.same(data.str5, 'Here are three quotation marks: """.')
+        call s:assert.same(data.str6, 'Here are fifteen quotation marks: """"""""""""""".')
+      endfor
     endfunction
   endfunction
 
@@ -135,24 +140,26 @@ function! s:suite.__parse__()
   endfunction
 
   function! parse.multiline_literal_string()
-    let data = s:TOML.parse(join([
-    \ 'regex2 = ''''''I [dw]on''t need \d{2} apples''''''',
-    \ 'lines  = ''''''',
-    \ 'The first newline is',
-    \ 'trimmed in raw strings.',
-    \ '   All other whitespace',
-    \ '   is preserved.',
-    \ '''''''',
-    \], "\n"))
+    for newline in ["\n", "\r\n"]
+      let data = s:TOML.parse(join([
+      \ 'regex2 = ''''''I [dw]on''t need \d{2} apples''''''',
+      \ 'lines  = ''''''',
+      \ 'The first newline is',
+      \ 'trimmed in raw strings.',
+      \ '   All other whitespace',
+      \ '   is preserved.',
+      \ '''''''',
+      \], newline))
 
-    call s:assert.same(data.regex2, 'I [dw]on''t need \d{2} apples')
-    call s:assert.same(data.lines,  join([
-    \ 'The first newline is',
-    \ 'trimmed in raw strings.',
-    \ '   All other whitespace',
-    \ '   is preserved.',
-    \ '',
-    \], "\n"))
+      call s:assert.same(data.regex2, 'I [dw]on''t need \d{2} apples')
+      call s:assert.same(data.lines,  join([
+      \ 'The first newline is',
+      \ 'trimmed in raw strings.',
+      \ '   All other whitespace',
+      \ '   is preserved.',
+      \ '',
+      \], newline))
+    endfor
   endfunction
 
   function! parse.integer()
