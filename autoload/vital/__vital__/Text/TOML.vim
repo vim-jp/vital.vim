@@ -26,12 +26,11 @@ endfunction
 "
 " private api
 "
-" work around: '[^\r\n]*' doesn't work well in old-vim, but "[^\r\n]*" works well
-let s:skip_pattern = '\C^\%(\_s\+\|' . "#[^\r\n]*" . '\)'
+let s:skip_pattern = '\C^\%(\%(\s\|\r\?\n\)\+\|#[^\r\n]*\)'
 let s:bare_key_pattern = '\%([A-Za-z0-9_-]\+\)'
 
 function! s:_skip(input) abort
-  while s:_match(a:input, '\%(\_s\|#\)')
+  while s:_match(a:input, '\%(\s\|\r\?\n\|#\)')
     let a:input.p = matchend(a:input.text, s:skip_pattern, a:input.p)
   endwhile
 endfunction
@@ -67,14 +66,10 @@ function! s:_eof(input) abort
 endfunction
 
 function! s:_error(input) abort
-  let buf = []
-  let offset = 0
-  while (a:input.p + offset) < a:input.length && a:input.text[a:input.p + offset] !~# "[\r\n]"
-    let buf += [a:input.text[a:input.p + offset]]
-    let offset += 1
-  endwhile
+  let s = matchstr(a:input.text, s:regex_prefix . '.\{-}\ze\%(\r\?\n\|$\)', a:input.p)
+  let s = substitute(s, '\r', '\\r', 'g')
 
-  throw printf("vital: Text.TOML: Illegal TOML format at `%s'.", join(buf, ''))
+  throw printf("vital: Text.TOML: Illegal TOML format at `%s'.", s)
 endfunction
 
 function! s:_parse(input) abort
@@ -168,8 +163,8 @@ endfunction
 function! s:_multiline_basic_string(input) abort
   let s = s:_consume(a:input, '"\{3}\%(\\.\|\_.\)\{-}"\{,2}"\{3}')
   let s = s[3 : -4]
-  let s = substitute(s, "^\n", '', '')
-  let s = substitute(s, '\\\s*' . "\n" . '\_s*', '', 'g')
+  let s = substitute(s, '^\r\?\n', '', '')
+  let s = substitute(s, '\\\%(\s\|\r\?\n\)*', '', 'g')
   return s:_unescape(s)
 endfunction
 
@@ -181,7 +176,7 @@ endfunction
 function! s:_multiline_literal(input) abort
   let s = s:_consume(a:input, "'\\{3}.\\{-}'\\{,2}'\\{3}")
   let s = s[3 : -4]
-  let s = substitute(s, "^\n", '', '')
+  let s = substitute(s, '^\r\?\n', '', '')
   return s
 endfunction
 

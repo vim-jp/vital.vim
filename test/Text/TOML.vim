@@ -148,48 +148,57 @@ function! s:suite.__parse__()
     let multiline_basic_strings = themis#suite('Multi-line basic strings')
 
     function! multiline_basic_strings.trims_first_newline()
-      let data = s:TOML.parse(join([
-      \ 'str1 = """',
-      \ 'Roses are red',
-      \ 'Violets are blue"""',
-      \], "\n"))
+      for newline in ["\n", "\r\n"]
+        let data = s:TOML.parse(join([
+        \ 'str1 = """',
+        \ 'Roses are red',
+        \ 'Violets are blue"""',
+        \], newline))
 
-      call s:assert.same(data.str1, "Roses are red\nViolets are blue")
+        call s:assert.same(data.str1, join([
+        \ 'Roses are red',
+        \ 'Violets are blue'
+        \], newline))
+      endfor
     endfunction
 
     function! multiline_basic_strings.trims_whitespaces_after_backslash()
-      let data = s:TOML.parse(join([
-      \ 'str2 = """',
-      \ 'The quick brown \',
-      \ '',
-      \ '',
-      \ '  fox jumps over \',
-      \ '    the lazy dog."""',
-      \ 'str3 = """\',
-      \ '    The quick brown \',
-      \ '    fox jumps over \',
-      \ '    the lazy dog.\',
-      \ '    """',
-      \], "\n"))
+      for newline in ["\n", "\r\n"]
+        let data = s:TOML.parse(join([
+        \ 'str2 = """',
+        \ 'The quick brown \',
+        \ '',
+        \ '',
+        \ '  fox jumps over \',
+        \ '    the lazy dog."""',
+        \ 'str3 = """\',
+        \ '    The quick brown \',
+        \ '    fox jumps over \',
+        \ '    the lazy dog.\',
+        \ '    """',
+        \], newline))
 
-      call s:assert.same(data.str2, 'The quick brown fox jumps over the lazy dog.')
-      call s:assert.same(data.str3, 'The quick brown fox jumps over the lazy dog.')
+        call s:assert.same(data.str2, 'The quick brown fox jumps over the lazy dog.')
+        call s:assert.same(data.str3, 'The quick brown fox jumps over the lazy dog.')
+      endfor
     endfunction
 
     function! multiline_basic_strings.includes_escaped_character()
-      let data = s:TOML.parse(join([
-      \ 'str4 = """Here are two quotation marks: "". Simple enough."""',
-      \ 'str5 = """Here are three quotation marks: ""\"."""',
-      \ 'str6 = """Here are fifteen quotation marks: ""\"""\"""\"""\"""\"."""',
-      \ '',
-      \ '# "This," she said, "is just a pointless statement."',
-      \ 'str7 = """"This," she said, "is just a pointless statement.""""',
-      \], "\n"))
+      for newline in ["\n", "\r\n"]
+        let data = s:TOML.parse(join([
+        \ 'str4 = """Here are two quotation marks: "". Simple enough."""',
+        \ 'str5 = """Here are three quotation marks: ""\"."""',
+        \ 'str6 = """Here are fifteen quotation marks: ""\"""\"""\"""\"""\"."""',
+        \ '',
+        \ '# "This," she said, "is just a pointless statement."',
+        \ 'str7 = """"This," she said, "is just a pointless statement.""""',
+        \], newline))
 
-      call s:assert.same(data.str4, 'Here are two quotation marks: "". Simple enough.')
-      call s:assert.same(data.str5, 'Here are three quotation marks: """.')
-      call s:assert.same(data.str6, 'Here are fifteen quotation marks: """"""""""""""".')
-      call s:assert.same(data.str7, '"This," she said, "is just a pointless statement."')
+        call s:assert.same(data.str4, 'Here are two quotation marks: "". Simple enough.')
+        call s:assert.same(data.str5, 'Here are three quotation marks: """.')
+        call s:assert.same(data.str6, 'Here are fifteen quotation marks: """"""""""""""".')
+        call s:assert.same(data.str7, '"This," she said, "is just a pointless statement."')
+      endfor
     endfunction
   endfunction
 
@@ -208,31 +217,33 @@ function! s:suite.__parse__()
   endfunction
 
   function! parse.multiline_literal_string()
-    let data = s:TOML.parse(join([
-    \ 'regex2 = ''''''I [dw]on''t need \d{2} apples''''''',
-    \ 'lines  = ''''''',
-    \ 'The first newline is',
-    \ 'trimmed in raw strings.',
-    \ '   All other whitespace',
-    \ '   is preserved.',
-    \ '''''''',
-    \ '',
-    \ 'quot15 = ''''''Here fifteen quotation marks: """""""""""""""''''''',
-    \ '',
-    \ "# 'That's still pointless', she said.",
-    \ "str = ''''That's still pointless', she said.'''",
-    \], "\n"))
+    for newline in ["\n", "\r\n"]
+      let data = s:TOML.parse(join([
+      \ 'regex2 = ''''''I [dw]on''t need \d{2} apples''''''',
+      \ 'lines  = ''''''',
+      \ 'The first newline is',
+      \ 'trimmed in raw strings.',
+      \ '   All other whitespace',
+      \ '   is preserved.',
+      \ '''''''',
+      \ '',
+      \ 'quot15 = ''''''Here fifteen quotation marks: """""""""""""""''''''',
+      \ '',
+      \ "# 'That's still pointless', she said.",
+      \ "str = ''''That's still pointless', she said.'''",
+      \], newline))
 
-    call s:assert.same(data.regex2, 'I [dw]on''t need \d{2} apples')
-    call s:assert.same(data.lines,  join([
-    \ 'The first newline is',
-    \ 'trimmed in raw strings.',
-    \ '   All other whitespace',
-    \ '   is preserved.',
-    \ '',
-    \], "\n"))
-    call s:assert.same(data.quot15, 'Here fifteen quotation marks: """""""""""""""')
-    call s:assert.same(data.str,    '''That''s still pointless'', she said.')
+      call s:assert.same(data.regex2, 'I [dw]on''t need \d{2} apples')
+      call s:assert.same(data.lines,  join([
+      \ 'The first newline is',
+      \ 'trimmed in raw strings.',
+      \ '   All other whitespace',
+      \ '   is preserved.',
+      \ '',
+      \], newline))
+      call s:assert.same(data.quot15, 'Here fifteen quotation marks: """""""""""""""')
+      call s:assert.same(data.str,    '''That''s still pointless'', she said.')
+    endfor
   endfunction
 
   function! parse.__integer__()
