@@ -22,14 +22,13 @@ jobs:
         - THEMIS_PROFILE=vim-profile-master.txt
     - name: Vim MacVim latest
       os: osx
-      osx_image: xcode9.4
       env:
         - THEMIS_PROFILE=vim-profile-osx.txt
       cache:
         directories:
           - $HOME/Library/Caches/Homebrew/
           - /usr/local/Homebrew/Library/Homebrew/vendor/
-          - /usr/local/Homebrew/Library/Taps/
+          - /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/
       before_cache:
         - brew cleanup
     - name: Vim Lint only
@@ -54,7 +53,7 @@ install:
   - rvm reset
   - bash scripts/install-vim.sh
   - export PATH=$HOME/vim/bin:$PATH
-    # Install https://github.com/Vimjas/covimerage
+  # Install https://github.com/Vimjas/covimerage
   - pip3 install --user --upgrade pip
   - pip3 install --user --upgrade setuptools
   - pip3 install --user covimerage
