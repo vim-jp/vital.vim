@@ -75,48 +75,53 @@ function! s:suite.__parse__()
     let multiline_basic_strings = themis#suite('Multi-line basic strings')
 
     function! multiline_basic_strings.trims_first_newline()
-      let data = s:TOML.parse(join([
-      \ 'hoge="""',
-      \ 'One',
-      \ 'Two"""',
-      \], "\n"))
+      for newline in ["\n", "\r\n"]
+        let data = s:TOML.parse(join([
+        \ 'str1 = """',
+        \ 'Roses are red',
+        \ 'Violets are blue"""',
+        \], newline))
 
-      call s:assert.same(data.hoge, "One\nTwo")
+        call s:assert.same(data.str1, join([
+        \ 'Roses are red',
+        \ 'Violets are blue'
+        \], newline))
+      endfor
     endfunction
 
     function! multiline_basic_strings.trims_whitespaces_after_backslash()
-      let data = s:TOML.parse(join([
-      \ 'hoge= """',
-      \ 'The quick brown \',
-      \ '',
-      \ '',
-      \ '  fox jumps over \',
-      \ '    the lazy dog."""',
-      \], "\n"))
+      for newline in ["\n", "\r\n"]
+        let data = s:TOML.parse(join([
+        \ 'str2 = """',
+        \ 'The quick brown \',
+        \ '',
+        \ '',
+        \ '  fox jumps over \',
+        \ '    the lazy dog."""',
+        \ 'str3 = """\',
+        \ '    The quick brown \',
+        \ '    fox jumps over \',
+        \ '    the lazy dog.\',
+        \ '    """',
+        \], newline))
 
-      call s:assert.same(data.hoge, 'The quick brown fox jumps over the lazy dog.')
-    endfunction
-
-    function! multiline_basic_strings.trims_whitespaces_after_backslash2()
-      let data = s:TOML.parse(join([
-      \ 'hoge = """\',
-      \ '    The quick brown \',
-      \ '    fox jumps over \',
-      \ '    the lazy dog.\',
-      \ '    """',
-      \], "\n"))
-
-      call s:assert.same(data.hoge, 'The quick brown fox jumps over the lazy dog.')
+        call s:assert.same(data.str2, 'The quick brown fox jumps over the lazy dog.')
+        call s:assert.same(data.str3, 'The quick brown fox jumps over the lazy dog.')
+      endfor
     endfunction
 
     function! multiline_basic_strings.includes_escaped_character()
-      let data = s:TOML.parse(join([
-      \ 'hoge = """\',
-      \ 'delimiter = ''\"""''\',
-      \ '"""',
-      \], "\n"))
+      for newline in ["\n", "\r\n"]
+        let data = s:TOML.parse(join([
+        \ 'str4 = """Here are two quotation marks: "". Simple enough."""',
+        \ 'str5 = """Here are three quotation marks: ""\"."""',
+        \ 'str6 = """Here are fifteen quotation marks: ""\"""\"""\"""\"""\"."""',
+        \], newline))
 
-      call s:assert.same(data.hoge, 'delimiter = ''"""''')
+        call s:assert.same(data.str4, 'Here are two quotation marks: "". Simple enough.')
+        call s:assert.same(data.str5, 'Here are three quotation marks: """.')
+        call s:assert.same(data.str6, 'Here are fifteen quotation marks: """"""""""""""".')
+      endfor
     endfunction
   endfunction
 
@@ -135,38 +140,46 @@ function! s:suite.__parse__()
   endfunction
 
   function! parse.multiline_literal_string()
-    let data = s:TOML.parse(join([
-    \ 'regex2 = ''''''I [dw]on''t need \d{2} apples''''''',
-    \ 'lines  = ''''''',
-    \ 'The first newline is',
-    \ 'trimmed in raw strings.',
-    \ '   All other whitespace',
-    \ '   is preserved.',
-    \ '''''''',
-    \], "\n"))
+    for newline in ["\n", "\r\n"]
+      let data = s:TOML.parse(join([
+      \ 'regex2 = ''''''I [dw]on''t need \d{2} apples''''''',
+      \ 'lines  = ''''''',
+      \ 'The first newline is',
+      \ 'trimmed in raw strings.',
+      \ '   All other whitespace',
+      \ '   is preserved.',
+      \ '''''''',
+      \], newline))
 
-    call s:assert.same(data.regex2, 'I [dw]on''t need \d{2} apples')
-    call s:assert.same(data.lines,  join([
-    \ 'The first newline is',
-    \ 'trimmed in raw strings.',
-    \ '   All other whitespace',
-    \ '   is preserved.',
-    \ '',
-    \], "\n"))
+      call s:assert.same(data.regex2, 'I [dw]on''t need \d{2} apples')
+      call s:assert.same(data.lines,  join([
+      \ 'The first newline is',
+      \ 'trimmed in raw strings.',
+      \ '   All other whitespace',
+      \ '   is preserved.',
+      \ '',
+      \], newline))
+    endfor
   endfunction
 
   function! parse.integer()
     let data = s:TOML.parse(join([
-    \ 'one=+99',
-    \ 'two=42',
-    \ 'three=0',
-    \ 'four=-17',
+    \ 'int1 = +99',
+    \ 'int2 = 42',
+    \ 'int3 = 0',
+    \ 'int4 = -17',
+    \ 'int5 = 1_000',
+    \ 'int6 = 5_349_221',
+    \ 'int7 = 1_2_3_4_5',
     \], "\n"))
 
-    call s:assert.equals(data.one, 99)
-    call s:assert.equals(data.two, 42)
-    call s:assert.equals(data.three, 0)
-    call s:assert.equals(data.four, -17)
+    call s:assert.equals(data.int1, 99)
+    call s:assert.equals(data.int2, 42)
+    call s:assert.equals(data.int3, 0)
+    call s:assert.equals(data.int4, -17)
+    call s:assert.equals(data.int5, 1000)
+    call s:assert.equals(data.int6, 5349221)
+    call s:assert.equals(data.int7, 12345)
   endfunction
 
   function! parse.__float__()
@@ -174,45 +187,54 @@ function! s:suite.__parse__()
 
     function! float.fractional()
       let data = s:TOML.parse(join([
-      \ 'one=+1.0',
-      \ 'two=3.1415',
-      \ 'three=-0.01',
+      \ 'flt1 = +1.0',
+      \ 'flt2 = 3.1415',
+      \ 'flt3 = -0.01',
       \], "\n"))
 
-      call s:assert.is_float(data.one)
-      call s:assert.equals(data.one, 1.0)
+      call s:assert.is_float(data.flt1)
+      call s:assert.equals(data.flt1, 1.0)
 
-      call s:assert.is_float(data.two)
-      call s:assert.equals(data.two, 3.1415)
+      call s:assert.is_float(data.flt2)
+      call s:assert.equals(data.flt2, 3.1415)
 
-      call s:assert.is_float(data.three)
-      call s:assert.equals(data.three, -0.01)
+      call s:assert.is_float(data.flt3)
+      call s:assert.equals(data.flt3, -0.01)
     endfunction
 
     function! float.exponent()
       let data = s:TOML.parse(join([
-      \ 'one=5e+22',
-      \ 'two=1e6',
-      \ 'three=-2E-2',
+      \ 'flt4 = 5e+22',
+      \ 'flt5 = 1e6',
+      \ 'flt6 = -2E-2',
       \], "\n"))
 
-      call s:assert.is_float(data.one)
-      call s:assert.equals(data.one, 5.0e22)
+      call s:assert.is_float(data.flt4)
+      call s:assert.equals(data.flt4, 5.0e22)
 
-      call s:assert.is_float(data.two)
-      call s:assert.equals(data.two, 1.0e6)
+      call s:assert.is_float(data.flt5)
+      call s:assert.equals(data.flt5, 1.0e6)
 
-      call s:assert.is_float(data.three)
-      call s:assert.equals(data.three, -2.0e-2)
+      call s:assert.is_float(data.flt6)
+      call s:assert.equals(data.flt6, -2.0e-2)
     endfunction
 
     function! float.both()
       let data = s:TOML.parse(join([
-      \ 'one=6.626e-34',
+      \ 'flt7 = 6.626e-34',
       \], "\n"))
 
-      call s:assert.is_float(data.one)
-      call s:assert.equals(data.one, 6.626e-34)
+      call s:assert.is_float(data.flt7)
+      call s:assert.equals(data.flt7, 6.626e-34)
+    endfunction
+
+    function! float.underscores()
+      let data = s:TOML.parse(join([
+      \ 'flt8 = 224_617.445_991_228',
+      \], "\n"))
+
+      call s:assert.is_float(data.flt8)
+      call s:assert.equals(data.flt8, 224617.445991228)
     endfunction
   endfunction
 
@@ -268,14 +290,40 @@ function! s:suite.__parse__()
       let data = s:TOML.parse(join([
       \ '[table]',
       \ 'key = "value"',
+      \ 'bare_key = "value"',
+      \ 'bare-key = "value"',
+      \ '',
+      \ '"127.0.0.1" = "value"',
+      \ '"character encoding" = "value"',
       \], "\n"))
 
-      call s:assert.has_key(data, 'table')
-      call s:assert.is_dict(data.table)
-      call s:assert.equals(data.table, {'key': 'value'})
+      call s:assert.equals(data, {
+      \ 'table': {
+      \   'key': 'value',
+      \   'bare_key': 'value',
+      \   'bare-key': 'value',
+      \   '127.0.0.1': 'value',
+      \   'character encoding': 'value',
+      \ },
+      \})
     endfunction
 
     function! table.nested()
+      let data = s:TOML.parse(join([
+      \ '[ dog . "tater.man" ]',
+      \ 'type = "pug"',
+      \]))
+
+      call s:assert.equals(data, {
+      \ 'dog': {
+      \   'tater.man': {
+      \     'type': 'pug',
+      \   },
+      \ },
+      \})
+    endfunction
+
+    function! table.nested_without_super_tables()
       let data = s:TOML.parse(join([
       \ '# [x] you',
       \ '# [x.y] don''t',
@@ -290,6 +338,30 @@ function! s:suite.__parse__()
       call s:assert.is_dict(data.x.y.z.w)
       call s:assert.equals(data.x.y.z.w, {})
     endfunction
+  endfunction
+
+  function! parse.inline_table()
+    let data = s:TOML.parse(join([
+    \ '[table.inline]',
+    \ '',
+    \ 'name = { first = "Tom", last = "Preston-Werner" }',
+    \ 'point = { x = 1, y = 2 }'
+    \]))
+
+    call s:assert.equals(data, {
+    \ 'table': {
+    \   'inline': {
+    \     'name': {
+    \       'first': 'Tom',
+    \       'last': 'Preston-Werner',
+    \     },
+    \     'point': {
+    \       'x': 1,
+    \       'y': 2,
+    \     },
+    \   },
+    \ },
+    \})
   endfunction
 
   function! parse.array_of_tables()

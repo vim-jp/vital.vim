@@ -12,7 +12,7 @@ INTERFACE			|Vital.Text.TOML-interface|
 ==============================================================================
 INTRODUCTION			*Vital.Text.TOML-introduction*
 
-*Vital.Text.TOML* is a TOML parser.
+*Vital.Text.TOML* is a TOML parser (v0.4.0 compliant).
 
 See https://github.com/toml-lang/toml
 

@@ -26,13 +26,11 @@ endfunction
 "
 " private api
 "
-" work around: '[^\r\n]*' doesn't work well in old-vim, but "[^\r\n]*" works well
-let s:skip_pattern = '\C^\%(\_s\+\|' . "#[^\r\n]*" . '\)'
-let s:table_name_pattern = '\%([^ [:tab:]#.[\]=]\+\)'
-let s:table_key_pattern = s:table_name_pattern
+let s:skip_pattern = '\C^\%(\%(\s\|\r\?\n\)\+\|#[^\r\n]*\)'
+let s:bare_key_pattern = '\%([A-Za-z0-9_-]\+\)'
 
 function! s:_skip(input) abort
-  while s:_match(a:input, '\%(\_s\|#\)')
+  while s:_match(a:input, '\%(\s\|\r\?\n\|#\)')
     let a:input.p = matchend(a:input.text, s:skip_pattern, a:input.p)
   endwhile
 endfunction
@@ -68,14 +66,10 @@ function! s:_eof(input) abort
 endfunction
 
 function! s:_error(input) abort
-  let buf = []
-  let offset = 0
-  while (a:input.p + offset) < a:input.length && a:input.text[a:input.p + offset] !~# "[\r\n]"
-    let buf += [a:input.text[a:input.p + offset]]
-    let offset += 1
-  endwhile
+  let s = matchstr(a:input.text, s:regex_prefix . '.\{-}\ze\%(\r\?\n\|$\)', a:input.p)
+  let s = substitute(s, '\r', '\\r', 'g')
 
-  throw printf("vital: Text.TOML: Illegal toml format at `%s'.", join(buf, ''))
+  throw printf("vital: Text.TOML: Illegal toml format at `%s'.", s)
 endfunction
 
 function! s:_parse(input) abort
@@ -84,25 +78,16 @@ function! s:_parse(input) abort
   call s:_skip(a:input)
   while !s:_eof(a:input)
     if s:_match(a:input, '[^ [:tab:]#.[\]]')
-      let key = s:_key(a:input)
+      let keys = s:_keys(a:input, '=')
       call s:_equals(a:input)
       let value = s:_value(a:input)
-
-      call s:_put_dict(data, key, value)
-
-      unlet value
+      call s:_put_dict(data, keys, value)
     elseif s:_match(a:input, '\[\[')
-      let [key, value] = s:_array_of_tables(a:input)
-
-      call s:_put_array(data, key, value)
-
-      unlet value
+      let [keys, value] = s:_array_of_tables(a:input)
+      call s:_put_array(data, keys, value)
     elseif s:_match(a:input, '\[')
-      let [key, value] = s:_table(a:input)
-
-      call s:_put_dict(data, key, value)
-
-      unlet value
+      let [keys, value] = s:_table(a:input)
+      call s:_put_dict(data, keys, value)
     else
       call s:_error(a:input)
     endif
@@ -112,14 +97,26 @@ function! s:_parse(input) abort
   return data
 endfunction
 
-function! s:_key(input) abort
-  let s = s:_consume(a:input, s:table_key_pattern)
-  return s
+function! s:_keys(input, end) abort
+  let keys = []
+  while !s:_eof(a:input) && !s:_match(a:input, a:end)
+    call s:_skip(a:input)
+    if s:_match(a:input, '"')
+      let key = s:_basic_string(a:input)
+    else
+      let key = s:_consume(a:input, s:bare_key_pattern)
+    endif
+    let keys += [key]
+    call s:_consume(a:input, '\.\?')
+  endwhile
+  if empty(keys)
+    return s:_error(a:input)
+  endif
+  return keys
 endfunction
 
 function! s:_equals(input) abort
-  call s:_consume(a:input, '=')
-  return '='
+  return s:_consume(a:input, '=')
 endfunction
 
 function! s:_value(input) abort
@@ -135,11 +132,13 @@ function! s:_value(input) abort
     return s:_literal(a:input)
   elseif s:_match(a:input, '\[')
     return s:_array(a:input)
+  elseif s:_match(a:input, '{')
+    return s:_inline_table(a:input)
   elseif s:_match(a:input, '\%(true\|false\)')
     return s:_boolean(a:input)
   elseif s:_match(a:input, '\d\{4}-')
     return s:_datetime(a:input)
-  elseif s:_match(a:input, '[+-]\?\%(\d\+\.\d\|\d\+\%(\.\d\+\)\?[eE]\)')
+  elseif s:_match(a:input, '[+-]\?\d\+\%(_\d\+\)*\%(\.\d\+\%(_\d\+\)*\|\%(\.\d\+\%(_\d\+\)*\)\?[eE]\)')
     return s:_float(a:input)
   else
     return s:_integer(a:input)
@@ -158,8 +157,8 @@ endfunction
 function! s:_multiline_basic_string(input) abort
   let s = s:_consume(a:input, '"\{3}\%(\\.\|\_.\)\{-}"\{3}')
   let s = s[3 : -4]
-  let s = substitute(s, "^\n", '', '')
-  let s = substitute(s, '\\' . "\n" . '\_s*', '', 'g')
+  let s = substitute(s, '^\r\?\n', '', '')
+  let s = substitute(s, '\\\%(\s\|\r\?\n\)*', '', 'g')
   return s:_unescape(s)
 endfunction
 
@@ -171,7 +170,7 @@ endfunction
 function! s:_multiline_literal(input) abort
   let s = s:_consume(a:input, "'\\{3}.\\{-}'\\{3}")
   let s = s[3 : -4]
-  let s = substitute(s, "^\n", '', '')
+  let s = substitute(s, '^\r\?\n', '', '')
   return s
 endfunction
 
@@ -179,7 +178,8 @@ endfunction
 " Integer
 "
 function! s:_integer(input) abort
-  let s = s:_consume(a:input, '[+-]\?\d\+')
+  let s = s:_consume(a:input, '[+-]\?\d\+\%(_\d\+\)*')
+  let s = substitute(s, '_', '', 'g')
   return str2nr(s)
 endfunction
 
@@ -187,20 +187,8 @@ endfunction
 " Float
 "
 function! s:_float(input) abort
-  if s:_match(a:input, '[+-]\?[0-9.]\+[eE][+-]\?\d\+')
-    return s:_exponent(a:input)
-  else
-    return s:_fractional(a:input)
-  endif
-endfunction
-
-function! s:_fractional(input) abort
-  let s = s:_consume(a:input, '[+-]\?[0-9.]\+')
-  return str2float(s)
-endfunction
-
-function! s:_exponent(input) abort
-  let s = s:_consume(a:input, '[+-]\?[0-9.]\+[eE][+-]\?\d\+')
+  let s = s:_consume(a:input, '[+-]\?[0-9._]\+\%([eE][+-]\?\d\+\%(_\d\+\)*\)\?')
+  let s = substitute(s, '_', '', 'g')
   return str2float(s)
 endfunction
 
@@ -241,40 +229,54 @@ endfunction
 "
 function! s:_table(input) abort
   let tbl = {}
-  let name = s:_consume(a:input, '\[\s*' . s:table_name_pattern . '\%(\s*\.\s*' . s:table_name_pattern . '\)*\s*\]')
-  let name = name[1 : -2]
+  call s:_consume(a:input, '\[')
+  let name = s:_keys(a:input, '\]')
+  call s:_consume(a:input, '\]')
   call s:_skip(a:input)
   " while !s:_eof(a:input) && !s:_match(a:input, '\[\{1,2}[a-zA-Z0-9.]\+\]\{1,2}')
   while !s:_eof(a:input) && !s:_match(a:input, '\[')
-    let key = s:_key(a:input)
+    let keys = s:_keys(a:input, '=')
     call s:_equals(a:input)
     let value = s:_value(a:input)
-
-    let tbl[key] = value
-
-    unlet value
+    call s:_put_dict(tbl, keys, value)
     call s:_skip(a:input)
   endwhile
   return [name, tbl]
 endfunction
 
 "
-" Array of tables
+" Inline Table
+"
+function! s:_inline_table(input) abort
+  let tbl = {}
+  call s:_consume(a:input, '{')
+  while !s:_eof(a:input) && !s:_match(a:input, '}')
+    let keys = s:_keys(a:input, '=')
+    call s:_equals(a:input)
+    let value = s:_value(a:input)
+    call s:_put_dict(tbl, keys, value)
+    call s:_consume(a:input, ',\?')
+    call s:_skip(a:input)
+  endwhile
+  call s:_consume(a:input, '}')
+  return tbl
+endfunction
+
+"
+" Array of Tables
 "
 function! s:_array_of_tables(input) abort
   let tbl = {}
-  let name = s:_consume(a:input, '\[\[\s*' . s:table_name_pattern . '\%(\s*\.\s*' . s:table_name_pattern . '\)*\s*\]\]')
-  let name = name[2 : -3]
+  call s:_consume(a:input, '\[\[')
+  let name = s:_keys(a:input, '\]\]')
+  call s:_consume(a:input, '\]\]')
   call s:_skip(a:input)
   " while !s:_eof(a:input) && !s:_match(a:input, '\[\{1,2}[a-zA-Z0-9.]\+\]\{1,2}')
   while !s:_eof(a:input) && !s:_match(a:input, '\[')
-    let key = s:_key(a:input)
+    let keys = s:_keys(a:input, '=')
     call s:_equals(a:input)
     let value = s:_value(a:input)
-
-    let tbl[key] = value
-
-    unlet value
+    call s:_put_dict(tbl, keys, value)
     call s:_skip(a:input)
   endwhile
   return [name, [tbl]]
@@ -288,7 +290,6 @@ function! s:_unescape(text) abort
   let text = substitute(text, '\\n', "\n", 'g')
   let text = substitute(text, '\\f', "\f", 'g')
   let text = substitute(text, '\\r', "\r", 'g')
-  let text = substitute(text, '\\/', '/', 'g')
   let text = substitute(text, '\\\\', '\', 'g')
   let text = substitute(text, '\C\\u\(\x\{4}\)', '\=s:_nr2char("0x" . submatch(1))', 'g')
   let text = substitute(text, '\C\\U\(\x\{8}\)', '\=s:_nr2char("0x" . submatch(1))', 'g')
@@ -299,14 +300,12 @@ function! s:_nr2char(nr) abort
   return iconv(nr2char(a:nr), &encoding, 'utf8')
 endfunction
 
-function! s:_put_dict(dict, key, value) abort
-  let keys = split(a:key, '\.')
-
+function! s:_put_dict(dict, keys, value) abort
   let ref = a:dict
-  for key in keys[ : -2]
-    if has_key(ref, key) && type(ref[key]) == type({})
+  for key in a:keys[: -2]
+    if has_key(ref, key) && type(ref[key]) == v:t_dict
       let ref = ref[key]
-    elseif has_key(ref, key) && type(ref[key]) == type([])
+    elseif has_key(ref, key) && type(ref[key]) == v:t_list
       let ref = ref[key][-1]
     else
       let ref[key] = {}
@@ -314,24 +313,22 @@ function! s:_put_dict(dict, key, value) abort
     endif
   endfor
 
-  let ref[keys[-1]] = a:value
+  let ref[a:keys[-1]] = a:value
 endfunction
 
-function! s:_put_array(dict, key, value) abort
-  let keys = split(a:key, '\.')
-
+function! s:_put_array(dict, keys, value) abort
   let ref = a:dict
-  for key in keys[ : -2]
+  for key in a:keys[: -2]
     let ref[key] = get(ref, key, {})
 
-    if type(ref[key]) == type([])
+    if type(ref[key]) == v:t_list
       let ref = ref[key][-1]
     else
       let ref = ref[key]
     endif
   endfor
 
-  let ref[keys[-1]] = get(ref, keys[-1], []) + a:value
+  let ref[a:keys[-1]] = get(ref, a:keys[-1], []) + a:value
 endfunction
 
 let &cpo = s:save_cpo
