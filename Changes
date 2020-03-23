@@ -1,3 +1,6 @@
+b2dd494bd56486ef898fdb49467e5763e81cde71
+	Modules: Text.TOML
+	TOML support version v0.4.0 compliant -> v0.5.0 compliant
 3c5655f9ae6682364a134e371809fcc0946bcf7f
 	Modules: Data.String
 	Bugfix nsplit() not keeping empty strings for cetain cases even with keepempty arg.
