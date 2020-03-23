@@ -19,8 +19,8 @@ function! s:parse_file(filename) abort
   endif
 
   let text = join(readfile(a:filename), "\n")
-  " fileencoding is always utf8
-  return s:parse(iconv(text, 'utf8', &encoding))
+  " fileencoding is always UTF-8
+  return s:parse(iconv(text, 'utf-8', &encoding))
 endfunction
 
 "
@@ -69,7 +69,7 @@ function! s:_error(input) abort
   let s = matchstr(a:input.text, s:regex_prefix . '.\{-}\ze\%(\r\?\n\|$\)', a:input.p)
   let s = substitute(s, '\r', '\\r', 'g')
 
-  throw printf("vital: Text.TOML: Illegal toml format at `%s'.", s)
+  throw printf("vital: Text.TOML: Illegal TOML format at `%s'.", s)
 endfunction
 
 function! s:_parse(input) abort
@@ -103,6 +103,8 @@ function! s:_keys(input, end) abort
     call s:_skip(a:input)
     if s:_match(a:input, '"')
       let key = s:_basic_string(a:input)
+    elseif s:_match(a:input, "'")
+      let key = s:_literal(a:input)
     else
       let key = s:_consume(a:input, s:bare_key_pattern)
     endif
@@ -124,11 +126,11 @@ function! s:_value(input) abort
 
   if s:_match(a:input, '"\{3}')
     return s:_multiline_basic_string(a:input)
-  elseif s:_match(a:input, '"\{1}')
+  elseif s:_match(a:input, '"')
     return s:_basic_string(a:input)
   elseif s:_match(a:input, "'\\{3}")
     return s:_multiline_literal(a:input)
-  elseif s:_match(a:input, "'\\{1}")
+  elseif s:_match(a:input, "'")
     return s:_literal(a:input)
   elseif s:_match(a:input, '\[')
     return s:_array(a:input)
@@ -138,8 +140,12 @@ function! s:_value(input) abort
     return s:_boolean(a:input)
   elseif s:_match(a:input, '\d\{4}-')
     return s:_datetime(a:input)
+  elseif s:_match(a:input, '\d\{2}:')
+    return s:_local_time(a:input)
   elseif s:_match(a:input, '[+-]\?\d\+\%(_\d\+\)*\%(\.\d\+\%(_\d\+\)*\|\%(\.\d\+\%(_\d\+\)*\)\?[eE]\)')
     return s:_float(a:input)
+  elseif s:_match(a:input, '[+-]\?\%(inf\|nan\)')
+    return s:_special_float(a:input)
   else
     return s:_integer(a:input)
   endif
@@ -155,7 +161,7 @@ function! s:_basic_string(input) abort
 endfunction
 
 function! s:_multiline_basic_string(input) abort
-  let s = s:_consume(a:input, '"\{3}\%(\\.\|\_.\)\{-}"\{3}')
+  let s = s:_consume(a:input, '"\{3}\%(\\.\|\_.\)\{-}"\{,2}"\{3}')
   let s = s[3 : -4]
   let s = substitute(s, '^\r\?\n', '', '')
   let s = substitute(s, '\\\%(\s\|\r\?\n\)*', '', 'g')
@@ -168,7 +174,7 @@ function! s:_literal(input) abort
 endfunction
 
 function! s:_multiline_literal(input) abort
-  let s = s:_consume(a:input, "'\\{3}.\\{-}'\\{3}")
+  let s = s:_consume(a:input, "'\\{3}.\\{-}'\\{,2}'\\{3}")
   let s = s[3 : -4]
   let s = substitute(s, '^\r\?\n', '', '')
   return s
@@ -178,9 +184,22 @@ endfunction
 " Integer
 "
 function! s:_integer(input) abort
-  let s = s:_consume(a:input, '[+-]\?\d\+\%(_\d\+\)*')
+  if s:_match(a:input, '0b')
+    let s = s:_consume(a:input, '0b[01]\+\%(_[01]\+\)*')
+    let base = 2
+  elseif s:_match(a:input, '0o')
+    let s = s:_consume(a:input, '0o[0-7]\+\%(_[0-7]\+\)*')
+    let s = s[2 :]
+    let base = 8
+  elseif s:_match(a:input, '0x')
+    let s = s:_consume(a:input, '0x[A-Fa-f0-9]\+\%(_[A-Fa-f0-9]\+\)*')
+    let base = 16
+  else
+    let s = s:_consume(a:input, '[+-]\?\d\+\%(_\d\+\)*')
+    let base = 10
+  endif
   let s = substitute(s, '_', '', 'g')
-  return str2nr(s)
+  return str2nr(s, base)
 endfunction
 
 "
@@ -192,20 +211,33 @@ function! s:_float(input) abort
   return str2float(s)
 endfunction
 
+function! s:_special_float(input) abort
+  let s = s:_consume(a:input, '[+-]\?\%(inf\|nan\)')
+  return str2float(s)
+endfunction
+
 "
 " Boolean
 "
 function! s:_boolean(input) abort
   let s = s:_consume(a:input, '\%(true\|false\)')
-  return (s ==# 'true') ? 1 : 0
+  return s ==# 'true'
 endfunction
 
 "
-" Datetime
+" Offset Date-Time
+"  Local Date-Time
+"  Local Date
 "
 function! s:_datetime(input) abort
-  let s = s:_consume(a:input, '\d\{4}-\d\{2}-\d\{2}T\d\{2}:\d\{2}:\d\{2}\%(Z\|-\?\d\{2}:\d\{2}\|\.\d\+-\d\{2}:\d\{2}\)')
-  return s
+  return s:_consume(a:input, '\d\{4}-\d\{2}-\d\{2}\%([T ]\d\{2}:\d\{2}:\d\{2}\%(\.\d\+\)\?\%(Z\|[+-]\d\{2}:\d\{2}\)\?\)\?')
+endfunction
+
+"
+" Local Time
+"
+function! s:_local_time(input) abort
+  return s:_consume(a:input, '\d\{2}:\d\{2}:\d\{2}\%(\.\d\+\)\?')
 endfunction
 
 "
@@ -213,14 +245,14 @@ endfunction
 "
 function! s:_array(input) abort
   let ary = []
-  let _ = s:_consume(a:input, '\[')
+  call s:_consume(a:input, '\[')
   call s:_skip(a:input)
   while !s:_eof(a:input) && !s:_match(a:input, '\]')
     let ary += [s:_value(a:input)]
     call s:_consume(a:input, ',\?')
     call s:_skip(a:input)
   endwhile
-  let _ = s:_consume(a:input, '\]')
+  call s:_consume(a:input, '\]')
   return ary
 endfunction
 
@@ -297,7 +329,7 @@ function! s:_unescape(text) abort
 endfunction
 
 function! s:_nr2char(nr) abort
-  return iconv(nr2char(a:nr), &encoding, 'utf8')
+  return iconv(nr2char(a:nr), &encoding, 'utf-8')
 endfunction
 
 function! s:_put_dict(dict, keys, value) abort
@@ -313,14 +345,17 @@ function! s:_put_dict(dict, keys, value) abort
     endif
   endfor
 
-  let ref[a:keys[-1]] = a:value
+  if has_key(ref, a:keys[-1]) && type(a:value) == v:t_dict
+    call extend(ref[a:keys[-1]], a:value)
+  else
+    let ref[a:keys[-1]] = a:value
+  endif
 endfunction
 
 function! s:_put_array(dict, keys, value) abort
   let ref = a:dict
   for key in a:keys[: -2]
     let ref[key] = get(ref, key, {})
-
     if type(ref[key]) == v:t_list
       let ref = ref[key][-1]
     else
