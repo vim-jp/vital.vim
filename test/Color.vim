@@ -95,7 +95,7 @@ function! s:suite.error_parse()
   \ v:null,
   \ test_null_job(),
   \ test_null_channel(),
-  \ test_null_blob(),
+  \] + (exists('*test_null_blob') ? [test_null_blob()] : []) + [
   \ '',
   \ '#',
   \ '#d',
@@ -138,7 +138,7 @@ function! s:suite.error_rgb()
   \ repeat([v:null], 3),
   \ repeat([test_null_job()], 3),
   \ repeat([test_null_channel()], 3),
-  \ repeat([test_null_blob()], 3),
+  \] + (exists('*test_null_blob') ? [repeat([test_null_blob()], 3)] : []) + [
   \ [-1, 0, 0],
   \ [-2, 0, 0],
   \ [0, -1, 0],
@@ -171,7 +171,7 @@ function! s:suite.error_hsl()
   \ repeat([v:null], 3),
   \ repeat([test_null_job()], 3),
   \ repeat([test_null_channel()], 3),
-  \ repeat([test_null_blob()], 3),
+  \] + (exists('*test_null_blob') ? [repeat([test_null_blob()], 3)] : []) + [
   \ [-1, 0, 0],
   \ [-2, 0, 0],
   \ [0, -1, 0],
@@ -203,7 +203,7 @@ function! s:suite.error_xterm()
   \ v:null,
   \ test_null_job(),
   \ test_null_channel(),
-  \ test_null_blob(),
+  \] + (exists('*test_null_blob') ? [test_null_blob()] : []) + [
   \ -2,
   \ -1,
   \ 256,
