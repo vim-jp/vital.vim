@@ -31,6 +31,29 @@ function! s:suite.hsl()
   call s:assert.equals(s:C.hsl(0, 0, 0).as_hsl_str(), 'hsl(0,0%,0%)')
 endfunction
 
+function! s:suite.xterm()
+  for [code, hex] in [
+  \ [0, '#000000'],
+  \ [1, '#800000'],
+  \ [2, '#008000'],
+  \ [3, '#808000'],
+  \ [4, '#000080'],
+  \ [5, '#800080'],
+  \ [6, '#008080'],
+  \ [7, '#C0C0C0'],
+  \ [8, '#808080'],
+  \ [9, '#FF0000'],
+  \ [10, '#00FF00'],
+  \ [11, '#FFFF00'],
+  \ [12, '#0000FF'],
+  \ [13, '#FF00FF'],
+  \ [14, '#00FFFF'],
+  \ [15, '#FFFFFF'],
+  \]
+    call s:assert.equals(s:C.xterm(code).as_rgb_hex(), hex)
+  endfor
+endfunction
+
 function! s:suite.eq() abort
   for [l, r] in [
 \ [s:C.parse('#abcdef'), s:C.parse('rgb('.0xAB.', '.0xCD.', '.0xEF.')')],
