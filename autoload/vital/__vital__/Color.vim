@@ -22,10 +22,10 @@ function! s:Color.eq(color) abort
   return self.as_rgb() ==# a:color.as_rgb()
 endfunction
 
-function! s:Color.diff(color) abort
+function! s:Color.distance(color) abort
   let [r1, g1, b1] = self.as_rgb()
   let [r2, g2, b2] = a:color.as_rgb()
-  return abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)
+  return sqrt(pow(r1 - r2, 2) + pow(g1 - g2, 2) + pow(b1 - b2, 2))
 endfunction
 
 let s:RGB = deepcopy(s:Color)

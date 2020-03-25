@@ -66,13 +66,13 @@ function! s:suite.eq() abort
   endfor
 endfunction
 
-function! s:suite.diff() abort
+function! s:suite.distance() abort
   for [l, r] in [
  \ [s:C.parse('#abcdef'), s:C.parse('hsl(210, 68%, 80%)')],
  \ [s:C.parse('#012'), s:C.parse('hsl(210, 100%, 7%)')],
  \ [s:C.parse('#deadbe'), s:C.parse('rgb('.0xDE.','.0xAD.','.0xBE.')')],
  \]
-    call s:assert.compare(l.diff(r), '<', 5, l.as_rgb_hex() . ' diff ' . r.as_rgb_hex())
-    call s:assert.compare(r.diff(l), '<', 5, r.as_rgb_hex() . ' diff ' . l.as_rgb_hex())
+    call s:assert.compare(l.distance(r), '<', 3, l.as_rgb_hex() . ' distance ' . r.as_rgb_hex())
+    call s:assert.compare(r.distance(l), '<', 3, r.as_rgb_hex() . ' distance ' . l.as_rgb_hex())
   endfor
 endfunction
