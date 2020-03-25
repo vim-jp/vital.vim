@@ -22,6 +22,13 @@ function! s:suite.rgb()
   call s:assert.equals(s:C.rgb(0, 0, 0).as_rgb_str(), 'rgb('.0x00.','.0x00.','.0x00.')')
 endfunction
 
+function! s:suite.color_name()
+  call s:assert.equals(s:C.parse('Yellow').as_rgb_hex(), '#FFFF00')
+  call s:assert.equals(s:C.parse('ForestGreen').as_rgb(), [34.0, 139.0, 34.0])
+  call s:assert.equals(s:C.parse('Forest Green').as_rgb(), [34.0, 139.0, 34.0])
+  call s:assert.equals(s:C.parse('Snow').as_rgb(), [255.0, 250.0, 250.0])
+endfunction
+
 function! s:suite.hsl()
   call s:assert.equals(s:C.parse('hsl(210,68%,80%)').as_hsl_str(), 'hsl(210,68%,80%)')
   call s:assert.equals(s:C.parse('hsl(210,100%,7%)').as_hsl_str(), 'hsl(210,100%,7%)')
