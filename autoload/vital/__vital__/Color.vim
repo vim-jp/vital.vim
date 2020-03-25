@@ -68,7 +68,7 @@ let s:HSL_RE = '\v^hsl\((\d+),\s*(\d+)\%,\s*(\d+)\%\)$'
 let s:VIM_RGB_FILE = expand('$VIMRUNTIME/rgb.txt')
 function! s:parse(str) abort
   if type(a:str) !=# type('')
-    throw 'vital: Color: parse(): invalid format: ' . a:str
+    throw 'vital: Color: parse(): invalid value type: ' . string(a:str)
   endif
   " e.g. #FFFFFF
   let m = matchlist(a:str, s:RGB_HEX_RE)
@@ -136,9 +136,9 @@ function! s:rgb(r, g, b) abort
 endfunction
 
 function! s:_check_rgb_range(r, g, b) abort
-  for n in [a:r, a:g, a:b]
-    if type(n) !=# type(0) && type(n) !=# type(0.0)
-    \ || 0 ># n || n ># 255
+  for l:N in [a:r, a:g, a:b]
+    if type(l:N) !=# type(0) && type(l:N) !=# type(0.0)
+    \ || 0 ># l:N || l:N ># 255
       return 0
     endif
   endfor
@@ -154,8 +154,8 @@ function! s:hsl(h, s, l) abort
 endfunction
 
 function! s:_check_hsl_range(h, s, l) abort
-  for n in [a:h, a:s, a:l]
-    if type(n) !=# type(0) && type(n) !=# type(0.0)
+  for l:N in [a:h, a:s, a:l]
+    if type(l:N) !=# type(0) && type(l:N) !=# type(0.0)
       return 0
     endif
   endfor

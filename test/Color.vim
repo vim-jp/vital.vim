@@ -83,3 +83,136 @@ function! s:suite.distance() abort
     call s:assert.compare(r.distance(l), '<', 3, r.as_rgb_hex() . ' distance ' . l.as_rgb_hex())
   endfor
 endfunction
+
+function! s:suite.error_parse()
+  for l:V in [
+  \ 0,
+  \ function('function'),
+  \ [],
+  \ {},
+  \ 0.0,
+  \ v:false,
+  \ v:null,
+  \ test_null_job(),
+  \ test_null_channel(),
+  \ test_null_blob(),
+  \ '',
+  \ '#',
+  \ '#d',
+  \ '#de',
+  \ '#dead',
+  \ '#deadb',
+  \ '#deadbee',
+  \ '#deadbeef',
+  \ 'd',
+  \ 'de',
+  \ 'dea',
+  \ 'dead',
+  \ 'deadb',
+  \ 'deadbe',
+  \ 'deadbee',
+  \ 'deadbeef',
+  \ '0xc0ffee',
+  \ 'rgb(0,0%,0%)',
+  \ 'hsl(0,0,0)',
+  \ 'rgb(0,0,0);',
+  \ 'hsl(0,0%,0%);',
+  \ 'unknown_color_name',
+  \]
+    try
+      call s:C.parse(l:V)
+    catch /vital: Color: parse():/
+      call s:assert.true(1, string(l:V) . ' should not be parsed')
+    endtry
+  endfor
+endfunction
+
+function! s:suite.error_rgb()
+  for rgb in [
+  \ repeat([0], 3),
+  \ repeat([function('function')], 3),
+  \ repeat([[]], 3),
+  \ repeat([{}], 3),
+  \ repeat([0.0], 3),
+  \ repeat([v:false], 3),
+  \ repeat([v:null], 3),
+  \ repeat([test_null_job()], 3),
+  \ repeat([test_null_channel()], 3),
+  \ repeat([test_null_blob()], 3),
+  \ [-1, 0, 0],
+  \ [-2, 0, 0],
+  \ [0, -1, 0],
+  \ [0, -2, 0],
+  \ [0, 0, -1],
+  \ [0, 0, -2],
+  \ [256, 0, 0],
+  \ [257, 0, 0],
+  \ [0, 256, 0],
+  \ [0, 257, 0],
+  \ [0, 0, 256],
+  \ [0, 0, 257],
+  \]
+    try
+      call s:C.rgb(rgb[0], rgb[1], rgb[2])
+    catch /vital: Color: rgb():/
+      call s:assert.true(1, 'rgb() disallow ' . string(rgb))
+    endtry
+  endfor
+endfunction
+
+function! s:suite.error_hsl()
+  for hsl in [
+  \ repeat([0], 3),
+  \ repeat([function('function')], 3),
+  \ repeat([[]], 3),
+  \ repeat([{}], 3),
+  \ repeat([0.0], 3),
+  \ repeat([v:false], 3),
+  \ repeat([v:null], 3),
+  \ repeat([test_null_job()], 3),
+  \ repeat([test_null_channel()], 3),
+  \ repeat([test_null_blob()], 3),
+  \ [-1, 0, 0],
+  \ [-2, 0, 0],
+  \ [0, -1, 0],
+  \ [0, -2, 0],
+  \ [0, 0, -1],
+  \ [0, 0, -2],
+  \ [361, 0, 0],
+  \ [362, 0, 0],
+  \ [0, 101, 0],
+  \ [0, 102, 0],
+  \ [0, 0, 101],
+  \ [0, 0, 102],
+  \]
+    try
+      call s:C.hsl(hsl[0], hsl[1], hsl[2])
+    catch /vital: Color: hsl():/
+      call s:assert.true(1, 'hsl() disallow ' . string(hsl))
+    endtry
+  endfor
+endfunction
+
+function! s:suite.error_xterm()
+  for l:Value in [
+  \ function('function'),
+  \ [],
+  \ {},
+  \ 0.0,
+  \ v:false,
+  \ v:null,
+  \ test_null_job(),
+  \ test_null_channel(),
+  \ test_null_blob(),
+  \ -2,
+  \ -1,
+  \ 256,
+  \ 257,
+  \]
+    try
+      call s:C.xterm(l:Value)
+    catch /vital: Color: xterm():/
+      call s:assert.true(1, 'xterm() disallow ' . string(l:Value))
+    endtry
+  endfor
+endfunction
