@@ -12,6 +12,12 @@ function! s:Color.as_rgb_str() abort
   return printf('rgb(%d,%d,%d)', r, g, b)
 endfunction
 
+function! s:Color.as_rgb_hex() abort
+  let [r, g, b] = self.as_rgb()
+  let [r, g, b] = map([r, g, b], 'float2nr(round(v:val))')
+  return '#' . s:_nr2hex(r) . s:_nr2hex(g) . s:_nr2hex(b)
+endfunction
+
 function! s:Color.as_hsl_str() abort
   let [h, s, l] = self.as_hsl()
   let [h, s, l] = map([h, s, l], 'float2nr(round(v:val))')
@@ -30,11 +36,6 @@ endfunction
 
 let s:RGB = deepcopy(s:Color)
 
-function! s:RGB.as_rgb_hex() abort
-  let [r, g, b] = map([self._r, self._g, self._b], 'float2nr(round(v:val))')
-  return '#' . s:_nr2hex(r) . s:_nr2hex(g) . s:_nr2hex(b)
-endfunction
-
 function! s:RGB.as_rgb() abort
   return [self._r, self._g, self._b]
 endfunction
@@ -44,12 +45,6 @@ function! s:RGB.as_hsl() abort
 endfunction
 
 let s:HSL = deepcopy(s:Color)
-
-function! s:HSL.as_rgb_hex() abort
-  let [r, g, b] = s:_hsl2rgb(self._h, self._s, self._l)
-  let [r, g, b] = map([r, g, b], 'float2nr(round(v:val))')
-  return '#' . s:_nr2hex(r) . s:_nr2hex(g) . s:_nr2hex(b)
-endfunction
 
 function! s:HSL.as_rgb() abort
   return s:_hsl2rgb(self._h, self._s, self._l)
