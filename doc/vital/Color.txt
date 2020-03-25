@@ -103,6 +103,7 @@ Color.as_hsl_str()
 TODO					*Vital.Color-todo*
 
 - Add more terminal codes like Color.xterm()
+- Convert color object to the (exact|nearest) terminal code
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
