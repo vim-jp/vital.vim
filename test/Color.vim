@@ -14,6 +14,8 @@ function! s:suite.rgb()
   call s:assert.equals(s:C.parse('#012').as_rgb_str(), 'rgb('.0x00.','.0x11.','.0x22.')')
   call s:assert.equals(s:C.parse('rgb(123, 56, 78)').as_rgb_hex(), '#7B384E')
   call s:assert.equals(s:C.parse('rgb(123, 56, 78)').as_rgb_str(), 'rgb('.0x7B.','.0x38.','.0x4E.')')
+  call s:assert.equals(s:C.parse('rgb(100%, 0%, 0%)').as_rgb_hex(), '#FF0000')
+  call s:assert.equals(s:C.parse('rgb(100%, 0%, 0%)').as_rgb_str(), 'rgb('.0xFF.','.0x00.','.0x00.')')
   call s:assert.equals(s:C.rgb(255, 255, 255).as_rgb_hex(), '#FFFFFF')
   call s:assert.equals(s:C.rgb(255, 255, 255).as_rgb_str(), 'rgb('.0xFF.','.0xFF.','.0xFF.')')
   call s:assert.equals(s:C.rgb(255, 0, 0).as_rgb_hex(), '#FF0000')
@@ -113,7 +115,18 @@ function! s:suite.error_parse()
   \ 'deadbee',
   \ 'deadbeef',
   \ '0xc0ffee',
-  \ 'rgb(0,0%,0%)',
+  \ 'rgb(-1%,0%,0%)',
+  \ 'rgb(-2%,0%,0%)',
+  \ 'rgb(0%,-1%,0%)',
+  \ 'rgb(0%,-2%,0%)',
+  \ 'rgb(0%,0%,-1%)',
+  \ 'rgb(0%,0%,-2%)',
+  \ 'rgb(101%,0%,0%)',
+  \ 'rgb(102%,0%,0%)',
+  \ 'rgb(0%,101%,0%)',
+  \ 'rgb(0%,102%,0%)',
+  \ 'rgb(0%,0%,101%)',
+  \ 'rgb(0%,0%,102%)',
   \ 'hsl(0,0,0)',
   \ 'rgb(0,0,0);',
   \ 'hsl(0,0%,0%);',
@@ -121,7 +134,7 @@ function! s:suite.error_parse()
   \]
     try
       call s:C.parse(l:V)
-    catch /vital: Color: parse():/
+    catch /vital: Color:/
       call s:assert.true(1, string(l:V) . ' should not be parsed')
     endtry
   endfor

@@ -58,7 +58,7 @@ endfunction
 " Constructors
 
 let s:RGB_HEX_RE = '\v^#(\x{3}(\x{3})?)$'
-let s:RGB_RE = '\v^rgb\((\d+),\s*(\d+),\s*(\d+)\)$'
+let s:RGB_RE = '\v^rgb\((\d+\%?),\s*(\d+\%?),\s*(\d+\%?)\)$'
 let s:HSL_RE = '\v^hsl\((\d+),\s*(\d+)\%,\s*(\d+)\%\)$'
 let s:VIM_RGB_FILE = expand('$VIMRUNTIME/rgb.txt')
 function! s:parse(str) abort
@@ -76,9 +76,10 @@ function! s:parse(str) abort
     return s:rgb(r, g, b)
   endif
   " e.g. rgb(255,255,255)
+  " e.g. rgb(100%,100%,100%)
   let m = matchlist(a:str, s:RGB_RE)
   if !empty(m)
-    let [r, g, b] = [str2float(m[1]), str2float(m[2]), str2float(m[3])]
+    let [r, g, b] = map(m[1:3], 's:_per2float(v:val, 255.0)')
     return s:rgb(r, g, b)
   endif
   " e.g. hsl(0,0%,100%)
@@ -97,6 +98,10 @@ function! s:parse(str) abort
     endif
   endif
   throw 'vital: Color: parse(): invalid format: ' . a:str
+endfunction
+
+function! s:_per2float(per, n) abort
+  return a:per =~# '%$' ? str2float(a:per[:-2]) * a:n / 100.0 : str2float(a:per)
 endfunction
 
 let s:RGB_FILE_RE = '\v^\s*(\d+)\s+(\d+)\s+(\d+)\s+(.+)$'

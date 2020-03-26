@@ -28,7 +28,8 @@ parse({str})		*Vital.Color.parse()*
           * e.g. `#FFF`
           * e.g. `#000000`
         * CSS RGB format
-          * e.g. `rgb(100,100,100)`
+          * e.g. `rgb(255,255,255)`
+          * e.g. `rgb(100%,0%,0%)`
         * CSS HSL format
           * e.g. `hsl(0,50%,100%)`
           * `%` is mandatory
@@ -38,6 +39,7 @@ parse({str})		*Vital.Color.parse()*
 	let c1 = s:Color.parse('#012')
 	let c2 = s:Color.parse('#c0ffee')
 	let c3 = s:Color.parse('rgb(100,100,100)')
+	let c3 = s:Color.parse('rgb(0%,100%,100%)')
 	let c4 = s:Color.parse('hsl(0,50%,100%)')
 	let c5 = s:Color.parse('ForestGreen')
 <
