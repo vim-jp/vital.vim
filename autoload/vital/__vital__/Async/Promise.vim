@@ -26,12 +26,8 @@ function! s:_vital_depends() abort
   return ['Async.Later']
 endfunction
 
-" @vimlint(EVL103, 1, a:resolve)
-" @vimlint(EVL103, 1, a:reject)
-function! s:noop(resolve, reject) abort
+function! s:noop(...) abort
 endfunction
-" @vimlint(EVL103, 0, a:resolve)
-" @vimlint(EVL103, 0, a:reject)
 let s:NOOP = funcref('s:noop')
 
 " Internal APIs
