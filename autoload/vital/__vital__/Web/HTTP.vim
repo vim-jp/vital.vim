@@ -576,7 +576,7 @@ function! s:clients.python3.request(settings) abort
 
   " TODO: retry, outputFile
   let responses = []
-  python3 << endpython3
+  python3 << ENDPYTHON3
 try:
     class DummyClassForLocalScope:
         def main():
@@ -669,7 +669,7 @@ except RuntimeError as exception:
     if exception.args != ("Exit from local scope",):
         raise exception
 
-endpython3
+ENDPYTHON3
   return responses
 endfunction
 
