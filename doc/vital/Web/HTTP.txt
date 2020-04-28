@@ -84,7 +84,8 @@ request({method}, {url} [, {settings}])
 	"retry"		Default: 1
 		Maximum number of retries.
 
-	"client"	Default: ["python", "curl", "wget"]
+	"client"	Default: ["python", "curl", "wget",
+					"python3", "python2"]
 		Candidate list of HTTP client to use for a request.
 		The first available one is used.
 		A string as an HTTP client is also possible.
@@ -183,7 +184,8 @@ The following can be used.
 (TODO: More document.  Especially about limitation.)
 
 python					*Vital.Web.HTTP-client-python*
-	Use Python's urllib2 library via |if_python|.
+	"python" as "python3" or "python2" auto select.
+	(High priority for "python3".)
 
 curl					*Vital.Web.HTTP-client-curl*
 	Use curl command.
@@ -195,6 +197,11 @@ wget					*Vital.Web.HTTP-client-wget*
 
 	http://www.gnu.org/software/wget/
 
+python3					*Vital.Web.HTTP-client-python3*
+	Use Python3's urllib.request library via |if_pyth.txt|.
+
+python2					*Vital.Web.HTTP-client-python2*
+	Use Python2's urllib2 library via |if_pyth.txt|.
 
 
 ==============================================================================

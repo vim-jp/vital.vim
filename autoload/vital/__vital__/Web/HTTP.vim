@@ -218,7 +218,7 @@ function! s:_build_settings(args) abort
   let settings = {
   \   'method': 'GET',
   \   'headers': {},
-  \   'client': ['python', 'curl', 'wget'],
+  \   'client': ['python', 'curl', 'wget', 'python3', 'python2'],
   \   'maxRedirect': 20,
   \   'retry': 1,
   \ }
@@ -266,137 +266,22 @@ endfunction
 " Clients
 function! s:_get_client(settings) abort
   for name in a:settings.client
+    if name ==? 'python'
+      let name = 'python3'
+      if !has('python3') && has('python')
+        " python2 fallback
+        let name = 'python2'
+      endif
+    endif
     if has_key(s:clients, name) && s:clients[name].available(a:settings)
       return s:clients[name]
     endif
   endfor
   return {}
 endfunction
+
+" implements clients
 let s:clients = {}
-
-let s:clients.python = {}
-
-function! s:clients.python.available(settings) abort
-  if !has('python')
-    return 0
-  endif
-  if has_key(a:settings, 'outputFile')
-    " 'outputFile' is not supported yet
-    return 0
-  endif
-  if get(a:settings, 'retry', 0) != 1
-    " 'retry' is not supported yet
-    return 0
-  endif
-  if has_key(a:settings, 'authMethod')
-    return 0
-  endif
-  return 1
-endfunction
-
-function! s:clients.python.request(settings) abort
-  if has_key(a:settings, 'unixSocket')
-    throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
-  endif
-
-  " TODO: retry, outputFile
-  let responses = []
-  python << ENDPYTHON
-try:
-    class DummyClassForLocalScope:
-        def main():
-            try:
-                from StringIO import StringIO
-            except ImportError:
-                from io import StringIO
-            import vim, urllib2, socket, gzip
-
-            responses = vim.bindeval('responses')
-
-            class CustomHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
-                def __init__(self, max_redirect):
-                    self.max_redirect = max_redirect
-
-                def redirect_request(self, req, fp, code, msg, headers, newurl):
-                    if self.max_redirect == 0:
-                        return None
-                    if 0 < self.max_redirect:
-                        self.max_redirect -= 1
-                    header_list = filter(None, str(headers).split("\r\n"))
-                    responses.extend([[[status(code, msg)] + header_list, fp.read()]])
-                    return urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
-
-            def vimlist2str(list):
-                if not list:
-                    return None
-                return "\n".join([s.replace("\n", "\0") for s in list])
-
-            def status(code, msg):
-                return "HTTP/1.0 %d %s\r\n" % (code, msg)
-
-            def access():
-                settings = vim.eval('a:settings')
-                data = vimlist2str(settings.get('data'))
-                timeout = settings.get('timeout')
-                if timeout:
-                    timeout = float(timeout)
-                request_headers = settings.get('headers')
-                max_redirect = int(settings.get('maxRedirect'))
-                director = urllib2.build_opener(CustomHTTPRedirectHandler(max_redirect))
-                if settings.has_key('username'):
-                    passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                    passman.add_password(
-                        None,
-                        settings['url'],
-                        settings['username'],
-                        settings.get('password', ''))
-                    basicauth = urllib2.HTTPBasicAuthHandler(passman)
-                    digestauth = urllib2.HTTPDigestAuthHandler(passman)
-                    director.add_handler(basicauth)
-                    director.add_handler(digestauth)
-                if settings.has_key('bearerToken'):
-                    request_headers.setdefault('Authorization', 'Bearer ' + settings['bearerToken'])
-                req = urllib2.Request(settings['url'], data, request_headers)
-                req.get_method = lambda: settings['method']
-                default_timeout = socket.getdefaulttimeout()
-                try:
-                    # for Python 2.5 or before
-                    socket.setdefaulttimeout(timeout)
-                    res = director.open(req, timeout=timeout)
-                except urllib2.HTTPError as res:
-                    pass
-                except urllib2.URLError:
-                    return ('', '')
-                except socket.timeout:
-                    return ('', '')
-                finally:
-                    socket.setdefaulttimeout(default_timeout)
-
-                st = status(res.code, res.msg)
-                response_headers = st + ''.join(res.info().headers)
-                response_body = res.read()
-
-                gzip_decompress = settings.get('gzipDecompress', False)
-                if gzip_decompress:
-                    buf = StringIO(response_body)
-                    f = gzip.GzipFile(fileobj=buf)
-                    response_body = f.read()[:-1]
-
-                return (response_headers, response_body)
-
-            (header, body) = access()
-            responses.extend([[header.split("\r\n"), body]])
-
-        main()
-        raise RuntimeError("Exit from local scope")
-
-except RuntimeError as exception:
-    if exception.args != ("Exit from local scope",):
-        raise exception
-
-ENDPYTHON
-  return responses
-endfunction
 
 let s:clients.curl = {}
 
@@ -663,6 +548,255 @@ function! s:clients.wget.request(settings) abort
   let responses[-1][1] = content
   return responses
 endfunction
+
+let s:clients.python3 = {}
+
+function! s:clients.python3.available(settings) abort
+  if !has('python3')
+    return 0
+  endif
+  if has_key(a:settings, 'outputFile')
+    " 'outputFile' is not supported yet
+    return 0
+  endif
+  if get(a:settings, 'retry', 0) != 1
+    " 'retry' is not supported yet
+    return 0
+  endif
+  if has_key(a:settings, 'authMethod')
+    return 0
+  endif
+  return 1
+endfunction
+
+function! s:clients.python3.request(settings) abort
+  if has_key(a:settings, 'unixSocket')
+    throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
+  endif
+
+  " TODO: retry, outputFile
+  let responses = []
+  python3 << ENDPYTHON3
+try:
+    class DummyClassForLocalScope:
+        def main():
+            try:
+                from StringIO import StringIO
+            except ImportError:
+                from io import StringIO
+            import vim, urllib.request, urllib.error, socket, gzip
+
+            responses = vim.bindeval('responses')
+
+            class CustomHTTPRedirectHandler(urllib.request.HTTPRedirectHandler):
+                def __init__(self, max_redirect):
+                    self.max_redirect = max_redirect
+
+                def redirect_request(self, req, fp, code, msg, headers, newurl):
+                    if self.max_redirect == 0:
+                        return None
+                    if 0 < self.max_redirect:
+                        self.max_redirect -= 1
+                    header_list = filter(None, str(headers).split("\r\n"))
+                    responses.extend([[[status(code, msg)] + header_list, fp.read()]])
+                    return urllib.request.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
+
+            def vimlist2str(list):
+                if not list:
+                    return None
+                return "\n".join([s.replace("\n", "\0") for s in list])
+
+            def status(code, msg):
+                return "HTTP/1.0 %d %s\r\n" % (code, msg)
+
+            def access():
+                settings = vim.eval('a:settings')
+                data = vimlist2str(settings.get('data'))
+                timeout = settings.get('timeout')
+                if timeout:
+                    timeout = float(timeout)
+                request_headers = settings.get('headers')
+                max_redirect = int(settings.get('maxRedirect'))
+                director = urllib.request.build_opener(CustomHTTPRedirectHandler(max_redirect))
+                if 'username' in settings:
+                    passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+                    passman.add_password(
+                        None,
+                        settings['url'],
+                        settings['username'],
+                        settings.get('password', ''))
+                    basicauth = urllib.request.HTTPBasicAuthHandler(passman)
+                    digestauth = urllib.request.HTTPDigestAuthHandler(passman)
+                    director.add_handler(basicauth)
+                    director.add_handler(digestauth)
+                if 'bearerToken' in settings:
+                    request_headers.setdefault('Authorization', 'Bearer ' + settings['bearerToken'])
+                req = urllib.request.Request(settings['url'], data, request_headers)
+                req.get_method = lambda: settings['method']
+                default_timeout = socket.getdefaulttimeout()
+                try:
+                    # for Python 2.5 or before <- Is this needed?
+                    socket.setdefaulttimeout(timeout)
+                    res = director.open(req, timeout=timeout)
+                except urllib.error.HTTPError as res:
+                    pass
+                except urllib.error.URLError:
+                    return ('', '')
+                except socket.timeout:
+                    return ('', '')
+                finally:
+                    socket.setdefaulttimeout(default_timeout)
+
+                st = status(res.code, res.msg)
+                response_headers = st + ''.join(res.headers)
+                response_body = res.read()
+
+                gzip_decompress = settings.get('gzipDecompress', False)
+                if gzip_decompress:
+                    buf = StringIO(response_body)
+                    f = gzip.GzipFile(fileobj=buf)
+                    response_body = f.read()[:-1]
+
+                return (response_headers, response_body)
+
+            (header, body) = access()
+            responses.extend([[header.split("\r\n"), body]])
+
+        main()
+        raise RuntimeError("Exit from local scope")
+
+except RuntimeError as exception:
+    if exception.args != ("Exit from local scope",):
+        raise exception
+
+ENDPYTHON3
+  return responses
+endfunction
+
+let s:clients.python2 = {}
+
+function! s:clients.python2.available(settings) abort
+  if !has('python')
+    return 0
+  endif
+  if has_key(a:settings, 'outputFile')
+    " 'outputFile' is not supported yet
+    return 0
+  endif
+  if get(a:settings, 'retry', 0) != 1
+    " 'retry' is not supported yet
+    return 0
+  endif
+  if has_key(a:settings, 'authMethod')
+    return 0
+  endif
+  return 1
+endfunction
+
+function! s:clients.python2.request(settings) abort
+  if has_key(a:settings, 'unixSocket')
+    throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
+  endif
+
+  " TODO: retry, outputFile
+  let responses = []
+  python << ENDPYTHON
+try:
+    class DummyClassForLocalScope:
+        def main():
+            try:
+                from StringIO import StringIO
+            except ImportError:
+                from io import StringIO
+            import vim, urllib2, socket, gzip
+
+            responses = vim.bindeval('responses')
+
+            class CustomHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
+                def __init__(self, max_redirect):
+                    self.max_redirect = max_redirect
+
+                def redirect_request(self, req, fp, code, msg, headers, newurl):
+                    if self.max_redirect == 0:
+                        return None
+                    if 0 < self.max_redirect:
+                        self.max_redirect -= 1
+                    header_list = filter(None, str(headers).split("\r\n"))
+                    responses.extend([[[status(code, msg)] + header_list, fp.read()]])
+                    return urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
+
+            def vimlist2str(list):
+                if not list:
+                    return None
+                return "\n".join([s.replace("\n", "\0") for s in list])
+
+            def status(code, msg):
+                return "HTTP/1.0 %d %s\r\n" % (code, msg)
+
+            def access():
+                settings = vim.eval('a:settings')
+                data = vimlist2str(settings.get('data'))
+                timeout = settings.get('timeout')
+                if timeout:
+                    timeout = float(timeout)
+                request_headers = settings.get('headers')
+                max_redirect = int(settings.get('maxRedirect'))
+                director = urllib2.build_opener(CustomHTTPRedirectHandler(max_redirect))
+                if settings.has_key('username'):
+                    passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                    passman.add_password(
+                        None,
+                        settings['url'],
+                        settings['username'],
+                        settings.get('password', ''))
+                    basicauth = urllib2.HTTPBasicAuthHandler(passman)
+                    digestauth = urllib2.HTTPDigestAuthHandler(passman)
+                    director.add_handler(basicauth)
+                    director.add_handler(digestauth)
+                if settings.has_key('bearerToken'):
+                    request_headers.setdefault('Authorization', 'Bearer ' + settings['bearerToken'])
+                req = urllib2.Request(settings['url'], data, request_headers)
+                req.get_method = lambda: settings['method']
+                default_timeout = socket.getdefaulttimeout()
+                try:
+                    # for Python 2.5 or before
+                    socket.setdefaulttimeout(timeout)
+                    res = director.open(req, timeout=timeout)
+                except urllib2.HTTPError as res:
+                    pass
+                except urllib2.URLError:
+                    return ('', '')
+                except socket.timeout:
+                    return ('', '')
+                finally:
+                    socket.setdefaulttimeout(default_timeout)
+
+                st = status(res.code, res.msg)
+                response_headers = st + ''.join(res.info().headers)
+                response_body = res.read()
+
+                gzip_decompress = settings.get('gzipDecompress', False)
+                if gzip_decompress:
+                    buf = StringIO(response_body)
+                    f = gzip.GzipFile(fileobj=buf)
+                    response_body = f.read()[:-1]
+
+                return (response_headers, response_body)
+
+            (header, body) = access()
+            responses.extend([[header.split("\r\n"), body]])
+
+        main()
+        raise RuntimeError("Exit from local scope")
+
+except RuntimeError as exception:
+    if exception.args != ("Exit from local scope",):
+        raise exception
+
+ENDPYTHON
+  return responses
+endfunction
+
 
 function! s:_quote() abort
   return &shell =~# 'sh$' ? "'" : '"'
