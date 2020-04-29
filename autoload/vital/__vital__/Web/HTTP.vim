@@ -597,7 +597,7 @@ try:
                         return None
                     if 0 < self.max_redirect:
                         self.max_redirect -= 1
-                    header_list = filter(None, str(headers).split("\r\n"))
+                    header_list = list(filter(None, str(headers).split("\r\n")))
                     responses.extend([[[status(code, msg)] + header_list, fp.read()]])
                     return urllib.request.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
 
