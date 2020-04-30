@@ -1,3 +1,7 @@
+97e8cf8b230cd69720e130742859b51f5761196c
+	Modules: Web.HTTP
+	Added python3 to HTTP client, and refined its default value.
+	Now 'python' client selects python3 or python2 automatically (python3 has a higher priority).
 b2dd494bd56486ef898fdb49467e5763e81cde71
 	Modules: Text.TOML
 	TOML support version v0.4.0 compliant -> v0.5.0 compliant
