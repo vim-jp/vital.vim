@@ -6,7 +6,7 @@ Describe vital
     let Filepath = Vital.import('System.Filepath')
     let Prelude = Vital.import('Prelude')
 
-    let vitalize_modules  = ['Data.List', 'Data.LazyList', 'Data.String', 'Web.JSON', 'Cyclic1']
+    let vitalize_modules  = ['Data.List', 'Data.LazyList', 'Data.String', 'Web.JSON', 'Cyclic1', 'DataTest']
     call vitalizer#vitalize(g:testplugin_name, g:testplugin_root, vitalize_modules, '')
   End
 
@@ -177,6 +177,7 @@ Describe vital
         Assert NotEmpty(vital#vital#import('Data.List'))
         Assert NotEmpty(vital#vital#import('Selfmodule'))
         Assert NotEmpty(vital#vital#import('Cyclic1'))
+        Assert NotEmpty(vital#vital#import('DataTest'))
       End
     End
 
@@ -238,6 +239,10 @@ Describe vital
         Assert True(V.import('Cyclic1').return1())
       End
 
+      It supports datafile dependencies
+        Assert True(1 == len(readfile(Filepath.join(g:testplugin_root, 'autoload/vital/' . '_' . g:testplugin_name . '/DataTest.txt'))))
+      End
+
       Context wildignore handling
         Before all
           set wildignore+=*.vim
@@ -274,6 +279,7 @@ Describe vital
           Assert NotEmpty(V.import('Data.List'))
           Assert NotEmpty(V.import('Selfmodule'))
           Assert NotEmpty(V.import('Cyclic1'))
+          Assert NotEmpty(V.import('DataTest'))
         End
       End
     End
@@ -311,6 +317,10 @@ Describe vital
         let V = vital#{g:testplugin_name}#new()
         Assert Equals(V.load('Cyclic1'), V)
         Assert True(V.Cyclic1.return1())
+      End
+
+      It supports datafile dependencies
+        Assert True(1 == len(readfile(Filepath.join(g:testplugin_root, 'autoload/vital/' . '_' . g:testplugin_name . '/DataTest.txt'))))
       End
 
       Context wildignore handling
