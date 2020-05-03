@@ -490,7 +490,7 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
         call s:copy(from, to)
         " .vim is module file/otherwise data file
         " module file need autoloadablize process
-        if -1 !=? match(to, '\.vim$')
+        if fnamemodify(to, ':e') ==# 'vim'
           let module_name = s:file2module_name(to)
           if has_key(all_modules, module_name)
             call s:autoloadablize(to, vital_data.name, all_modules[module_name])
