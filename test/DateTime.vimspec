@@ -29,7 +29,7 @@ Describe DateTime
       Assert Equals(dt.second(), 5)
       Assert Equals(dt.timezone().offset(), 0)
     End
-    It can treat the some format specifier
+    It can treat some format specifier
       let dt = DT.from_format('02 Jan 2012 03:04:05 +0900', '%d %b %Y%n%H:%M:%S%n%z', 'C')
       Assert Equals(dt.year(), 2012)
       Assert Equals(dt.month(), 1)
