@@ -488,9 +488,13 @@ function! vitalizer#vitalize(name, to, modules, hash) abort
       " Install modules.
       for [from, to] in s:install_module_files(module_files, vital_data.name, a:to)
         call s:copy(from, to)
-        let module_name = s:file2module_name(to)
-        if !empty(module_name) && has_key(all_modules, module_name)
-          call s:autoloadablize(to, vital_data.name, all_modules[module_name])
+        " .vim is module file/otherwise data file
+        " module file need autoloadablize process
+        if -1 !=? match(to, '\.vim$')
+          let module_name = s:file2module_name(to)
+          if has_key(all_modules, module_name)
+            call s:autoloadablize(to, vital_data.name, all_modules[module_name])
+          endif
         endif
       endfor
       let content = [vital_data.name, hash, ''] + installing_modules
