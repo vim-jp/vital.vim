@@ -14,9 +14,11 @@ let g:testplugin_name = 'testplugin'
 let g:testplugin_root = g:root . '/test/_testdata/vital/' . g:testplugin_name . '/'
 let g:cyclic_module_root = g:root . '/test/_testdata/vital/cyclic/'
 let g:symlinkplugin_root = g:root . '/test/_testdata/vital/symlink_root/symlink/'
+let g:datafile_module_root = g:root . '/test/_testdata/vital/datatest/'
 call themis#option('runtimepath', g:testplugin_root)
 call themis#option('runtimepath', g:cyclic_module_root)
 call themis#option('runtimepath', g:symlinkplugin_root)
+call themis#option('runtimepath', g:datafile_module_root)
 
 if $THEMIS_PROFILE !=# ''
   execute 'profile' 'start' $THEMIS_PROFILE
