@@ -581,7 +581,7 @@ function! s:clients.python3.request(settings) abort
 
   " TODO: retry, outputFile
   let responses = []
-  py3file s:py3source
+  execute 'py3file' s:py3source
   return responses
 endfunction
 
@@ -612,7 +612,7 @@ function! s:clients.python2.request(settings) abort
 
   " TODO: retry, outputFile
   let responses = []
-  pyfile s:py2source
+  execute 'pyfile' s:py2source
   return responses
 endfunction
 
