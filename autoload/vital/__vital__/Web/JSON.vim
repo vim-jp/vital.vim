@@ -72,10 +72,11 @@ function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:string = s:V.import('Data.String')
   let s:bytes = s:V.import('Data.List.Byte')
+  let s:t = s:V.import('Vim.Type').types
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Data.String', 'Data.List.Byte']
+  return ['Data.String', 'Data.List.Byte', 'Vim.Type']
 endfunction
 
 " @vimlint(EVL102, 1, l:null)
@@ -135,17 +136,17 @@ endfunction
 
 function! s:_encode(val, settings) abort
   let t = type(a:val)
-  if t == 0
+  if t ==# s:t.number
     return a:val
-  elseif t == 1
+  elseif t ==# s:t.string
     let s = iconv(a:val, a:settings.from_encoding, 'utf-8')
     let s = substitute(s, '[\x01-\x1f\\"]', '\=s:control_chars[submatch(0)]', 'g')
     return '"' . s . '"'
-  elseif t == 3
+  elseif t ==# s:t.list
     return s:_encode_list(a:val, a:settings)
-  elseif t == 4
+  elseif t ==# s:t.dict
     return s:_encode_dict(a:val, a:settings)
-  elseif t == 5
+  elseif t ==# s:t.float
     let val = string(a:val)
     if a:settings.allow_nan
       let val = get(s:float_constants, val, val)
@@ -153,9 +154,9 @@ function! s:_encode(val, settings) abort
       throw 'vital: Web.JSON: Invalid float value: ' . val
     endif
     return val
-  elseif t == 6 || t == 7
+  elseif t ==# s:t.bool || t ==# s:t.none
     return get(s:special_constants, a:val)
-  elseif t == 10
+  elseif t ==# s:t.blob
     return s:_encode_list(s:bytes.from_blob(a:val), a:settings)
   endif
   throw 'vital: Web.JSON: Invalid argument: ' . string(a:val)
