@@ -327,6 +327,7 @@ Describe vital
       End
 
       It does not supports invalid self module which is in __latest__ dir
+        let V = vital#{g:testplugin_name}#new()
         Throws /vital: module not found: InvalidSelfmodule/ :call V.import('InvalidSelfmodule')
       End
 
