@@ -170,29 +170,40 @@ function! s:_format_throwpoint(throwpoint) abort
   let stack = matchstr(a:throwpoint, '^function \zs.*, .\{-} \d\+$')
   for line in split(stack, '\.\.')
     let m = matchlist(line, '^\(.\+\)\%(\[\(\d\+\)\]\|, .\{-} \(\d\+\)\)$')
-    if empty(m)
-      call add(funcs, line)
-      continue
+    if !empty(m)
+      let [name, lnum, lnum2] = m[1:3]
+      if empty(lnum)
+        let lnum = lnum2
+      endif
+      let info = s:_get_func_info(name)
+      if !empty(info)
+        call add(funcs, printf('function %s(...) %s Line:%d (%s)',
+        \        info.funcname, join(info.attrs, ' '), lnum, info.filename))
+        continue
+      endif
     endif
-    let [name, lnum, lnum2] = m[1:3]
-    if empty(lnum)
-      let lnum = lnum2
-    endif
-    let attr = ''
-    let file = s:_get_file_by_func_name(name)
-    call add(funcs, printf('function %s(...)%s Line:%d (%s)', name, attr, lnum, file))
+    " fallback when function information cannot be detected
+    call add(funcs, line)
   endfor
   return join(funcs, "\n")
 endfunction
 
-function! s:_get_file_by_func_name(name) abort
+function! s:_get_func_info(name) abort
   " If name is digits, it is anonymous-function
   let name = (a:name =~# '^\d\+$') ? printf('{%s}', a:name) : a:name
+  if !exists('*' . name)
+    return {}
+  endif
   let body = execute(printf('verbose function %s', name))
   let lines = split(body, "\n")
   let signature = matchstr(lines[0], '^\s*\zs.*')
   let file = matchstr(lines[1], '^\t\%(Last set from\|.\{-}:\)\s*\zs.*$')
-  return substitute(file, '[/\\]\+', '/', 'g')
+  return {
+  \   'filename': substitute(file, '[/\\]\+', '/', 'g'),
+  \   'funcname': a:name,
+  \   'arguments': split(matchstr(signature, '(\zs.*\ze)'), '\s*,\s*'),
+  \   'attrs': filter(['dict', 'abort', 'range', 'closure'], 'signature =~# (").*" . v:val)'),
+  \ }
 endfunction
 
 " s:_get_module() returns module object wihch has all script local functions.
