@@ -186,7 +186,9 @@ function! s:_format_throwpoint(throwpoint) abort
 endfunction
 
 function! s:_get_file_by_func_name(name) abort
-  let body = execute(printf('verbose function %s', a:name))
+  " If name is digits, it is anonymous-function
+  let name = (a:name =~# '^\d\+$') ? printf('{%s}', a:name) : a:name
+  let body = execute(printf('verbose function %s', name))
   let lines = split(body, "\n")
   let signature = matchstr(lines[0], '^\s*\zs.*')
   let file = matchstr(lines[1], '^\t\%(Last set from\|.\{-}:\)\s*\zs.*$')
