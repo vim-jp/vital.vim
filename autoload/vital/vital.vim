@@ -149,7 +149,7 @@ function! s:_import(name) abort dict
     call module._vital_created(module)
   endif
   let export_module = filter(copy(module), 'v:key =~# "^\\a"')
-  " Cache module before calling module.vital_loaded() to avoid cyclic
+  " Cache module before calling module._vital_loaded() to avoid cyclic
   " dependences but remove the cache if module._vital_loaded() fails.
   " let s:loaded[a:name] = export_module
   let s:loaded[a:name] = export_module
