@@ -167,18 +167,18 @@ let s:Vital._import = function('s:_import')
 
 function! s:_format_throwpoint(throwpoint) abort
   let funcs = []
-  let stack = matchstr(a:throwpoint, '^function \zs.*\ze, line \d\+$')
+  let stack = matchstr(a:throwpoint, '^function \zs.*, .\{-} \d\+$')
   for line in split(stack, '\.\.')
-    let m = matchlist(line, '^\%(<SNR>\(\d\+\)_\)\?\(.\+\)\[\(\d\+\)\]$')
+    let m = matchlist(line, '^\(.\+\)\%(\[\(\d\+\)\]\|, .\{-} \(\d\+\)\)$')
     if empty(m)
       call add(funcs, line)
       continue
     endif
-    let [sid, name, lnum] = m[1:3]
-    let attr = ''
-    if !empty(sid)
-      let name = printf('<SNR>%d_%s', sid, name)
+    let [name, lnum, lnum2] = m[1:3]
+    if empty(lnum)
+      let lnum = lnum2
     endif
+    let attr = ''
     let file = s:_get_file_by_func_name(name)
     call add(funcs, printf('function %s(...)%s Line:%d (%s)', name, attr, lnum, file))
   endfor
