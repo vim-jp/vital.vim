@@ -177,8 +177,10 @@ function! s:_format_throwpoint(throwpoint) abort
       endif
       let info = s:_get_func_info(name)
       if !empty(info)
-        call add(funcs, printf('function %s(...) %s Line:%d (%s)',
-        \        info.funcname, join(info.attrs, ' '), lnum, info.filename))
+        let attrs = empty(info.attrs) ? '' : join([''] + info.attrs)
+        let flnum = info.lnum == 0 ? '' : printf(' Line:%d', info.lnum + lnum)
+        call add(funcs, printf('function %s(...)%s Line:%d (%s%s)',
+        \        info.funcname, attrs, lnum, info.filename, flnum))
         continue
       endif
     endif
@@ -197,9 +199,11 @@ function! s:_get_func_info(name) abort
   let body = execute(printf('verbose function %s', name))
   let lines = split(body, "\n")
   let signature = matchstr(lines[0], '^\s*\zs.*')
-  let file = matchstr(lines[1], '^\t\%(Last set from\|.\{-}:\)\s*\zs.*$')
+  let [_, file, lnum; __] = matchlist(lines[1],
+  \   '^\t\%(Last set from\|.\{-}:\)\s*\zs\(.\{-}\)\%( \S\+ \(\d\+\)\)\?$')
   return {
   \   'filename': substitute(file, '[/\\]\+', '/', 'g'),
+  \   'lnum': 0 + lnum,
   \   'funcname': a:name,
   \   'arguments': split(matchstr(signature, '(\zs.*\ze)'), '\s*,\s*'),
   \   'attrs': filter(['dict', 'abort', 'range', 'closure'], 'signature =~# (").*" . v:val)'),
