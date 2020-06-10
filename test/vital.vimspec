@@ -222,9 +222,10 @@ Describe vital
 
       It can handle error stack in s:_vital_loaded(V)
         let errorpat = '/^vital: fail to call \._vital_loaded(): FOO from:\_.*\n'
-        \ . 'function \S*_vital_loaded(\.\.\.) abort Line:1 (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n'
-        \ . 'function \d\+(\.\.\.) dict abort Line:1 (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n'
-        \ . 'function \S*_throwFOO(\.\.\.) abort Line:1 (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)$/'
+        \ . 'function \S*_vital_loaded(\.\.\.) abort Line:\d\+ (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n'
+        \ . (has('lambda') ? 'function <lambda>\d\+(\.\.\.) Line:\d\+ (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n' : '')
+        \ . 'function \d\+(\.\.\.) dict abort Line:\d\+ (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n'
+        \ . 'function \S*_throwFOO(\.\.\.) abort Line:\d\+ (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)$/'
         execute 'Throws' errorpat ':call V.import("ErrorSelfmodule")'
       End
 
@@ -308,9 +309,10 @@ Describe vital
       It can handle error stack in s:_vital_loaded(V)
         let V = vital#{g:testplugin_name}#new()
         let errorpat = '/^vital: fail to call \._vital_loaded(): FOO from:\_.*\n'
-        \ . 'function \S*_vital_loaded(\.\.\.) abort Line:1 (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n'
-        \ . 'function \d\+(\.\.\.) dict abort Line:1 (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n'
-        \ . 'function \S*_throwFOO(\.\.\.) abort Line:1 (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)$/'
+        \ . 'function \S*_vital_loaded(\.\.\.) abort Line:\d\+ (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n'
+        \ . (has('lambda') ? 'function <lambda>\d\+(\.\.\.) Line:\d\+ (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n' : '')
+        \ . 'function \d\+(\.\.\.) dict abort Line:\d\+ (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)\n'
+        \ . 'function \S*_throwFOO(\.\.\.) abort Line:\d\+ (.*\/ErrorSelfmodule\.vim\( Line:\d\+\)\?)$/'
         execute 'Throws' errorpat ':call V.load("ErrorSelfmodule")'
       End
 

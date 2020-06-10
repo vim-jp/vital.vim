@@ -191,8 +191,12 @@ function! s:_format_throwpoint(throwpoint) abort
 endfunction
 
 function! s:_get_func_info(name) abort
-  " If name is digits, it is anonymous-function
-  let name = (a:name =~# '^\d\+$') ? printf('{%s}', a:name) : a:name
+  let name = a:name
+  if a:name =~# '^\d\+$'  " is anonymous-function
+    let name = printf('{%s}', a:name)
+  elseif a:name =~# '^<lambda>\d\+$'  " is lambda-function
+    let name = printf("{'%s'}", a:name)
+  endif
   if !exists('*' . name)
     return {}
   endif
