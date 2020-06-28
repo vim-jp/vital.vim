@@ -240,7 +240,9 @@ Describe vital
       End
 
       It supports datafile dependencies
-        Assert True(1 == len(readfile(Filepath.join(g:testplugin_root, 'autoload/vital/' . '_' . g:testplugin_name . '/DataTest.txt'))))
+        Assert True(filereadable(Filepath.join(g:testplugin_root, 'autoload/vital/' . '_' . g:testplugin_name . '/DataTest.txt')))
+        Assert True(V.import('DataTest').exists())
+        Assert True(V.import('DataTest').valid())
       End
 
       Context wildignore handling
@@ -320,7 +322,11 @@ Describe vital
       End
 
       It supports datafile dependencies
-        Assert True(1 == len(readfile(Filepath.join(g:testplugin_root, 'autoload/vital/' . '_' . g:testplugin_name . '/DataTest.txt'))))
+        let V = vital#{g:testplugin_name}#new()
+        Assert Equals(V.load('DataTest'), V)
+        Assert True(filereadable(Filepath.join(g:testplugin_root, 'autoload/vital/' . '_' . g:testplugin_name . '/DataTest.txt')))
+        Assert True(V.DataTest.exists())
+        Assert True(V.DataTest.valid())
       End
 
       Context wildignore handling
