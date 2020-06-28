@@ -1,0 +1,114 @@
+*vital/Color.txt*	RGB/HSL/terminal code conversion library
+
+Maintainer: tyru <tyru.exe@gmail.com>
+
+==============================================================================
+CONTENTS				*Vital.Color-contents*
+
+INTRODUCTION			|Vital.Color-introduction|
+INTERFACE			|Vital.Color-interface|
+  FUNCTIONS			  |Vital.Color-functions|
+TODO				|Vital.Color-todo|
+
+==============================================================================
+INTRODUCTION				*Vital.Color-introduction*
+
+*Vital.Color* is a color conversion library between RGB/HSL/terminal code.
+
+==============================================================================
+INTERFACE				*Vital.Color-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS				*Vital.Color-functions*
+
+parse({str})		*Vital.Color.parse()*
+	Parses various color text formats and creates |Vital.Color-Color-object|.
+	Supported format is:
+	* Hex RGB format
+	  * e.g. `#FFF`
+	  * e.g. `#000000`
+	* CSS RGB format
+	  * e.g. `rgb(255,255,255)`
+	  * e.g. `rgb(100%,0%,0%)`
+	* CSS HSL format
+	  * e.g. `hsl(0,50%,100%)`
+	  * `%` is mandatory
+	* Color name
+	  * See $VIMRUNTIME/rgb.txt for color names
+>
+	let c1 = s:Color.parse('#012')
+	let c2 = s:Color.parse('#c0ffee')
+	let c3 = s:Color.parse('rgb(100,100,100)')
+	let c3 = s:Color.parse('rgb(0%,100%,100%)')
+	let c4 = s:Color.parse('hsl(0,50%,100%)')
+	let c5 = s:Color.parse('ForestGreen')
+<
+rgb({red}, {green}, {blue})		*Vital.Color.rgb()*
+	Creates |Vital.Color-Color-object| with given parameters.
+	The value ranges of {red}, {green}, {blue} are 0-255.
+>
+	echo s:Color.rgb(0x00, 0x11, 0x22).as_rgb_hex() == '#001122'
+	echo s:Color.rgb(0x00, 0x11, 0x22).as_rgb_str() == 'rgb(0,17,34)'
+	echo s:Color.rgb(0x00, 0x11, 0x22).as_rgb() == [0.0, 17.0, 34.0]
+<
+hsl({hue}, {saturation}, {lightness})		*Vital.Color.hsl()*
+	Creates |Vital.Color-Color-object| with given parameters.
+	The value ranges are:
+	{hue} = 0-360
+	{saturation} = 0-100
+	{lightness} = 0-100
+>
+	echo s:Color.hsl(0, 50, 100).as_hsl_str() == 'hsl(0,50%,100%)'
+	echo s:Color.hsl(0, 50, 100).as_hsl() == [0.0, 50.0, 100.0]
+<
+xterm({code})		*Vital.Color.xterm()*
+	Creates |Vital.Color-Color-object| with given parameters.
+	The value range of {code} is 0-255.
+
+	This converts color name to RGB values internally (so `.as_rgb()`,
+	`.as_rgb_str()`, `.as_rgb_hex()` doesn't lose the precision).
+>
+	echo s:Color.xterm(0).as_rgb_hex() == '#000000'
+	echo s:Color.xterm(15).as_rgb_hex() == '#FFFFFF'
+<
+==============================================================================
+COLOR OBJECT				*Vital.Color-Color-object*
+
+				*Vital.Color-Color.eq()*
+Color.eq({color})
+	Returns |TRUE| if this object is equal to {color}.
+	Returns |FALSE| otherwise.
+
+				*Vital.Color-Color.distance()*
+Color.distance({color})
+	Returns the distance of 3D vector (r, g, b).
+
+				*Vital.Color-Color.as_rgb()*
+Color.as_rgb()
+	Returns `[r, g, b]` value.  r, g, b are |Float| values.
+
+				*Vital.Color-Color.as_rgb_str()*
+Color.as_rgb_str()
+	Returns a string like `rgb({r},{g},{b})`.  r, g, b are |Float| values.
+
+				*Vital.Color-Color.as_rgb_hex()*
+Color.as_rgb_hex()
+	Returns a string like `#{r}{g}{b}` (e.g. `#000000`, always 7 digits).
+
+				*Vital.Color-Color.as_hsl()*
+Color.as_hsl()
+	Returns `[h, s, l]` value.  h, s, l are |Float| values.
+
+				*Vital.Color-Color.as_hsl_str()*
+Color.as_hsl_str()
+	Returns a string like `hsl({h},{s}%,{l}%)`.
+	h, s, l are |Float| values.
+
+==============================================================================
+TODO					*Vital.Color-todo*
+
+- Add more terminal codes like Color.xterm()
+- Convert color object to the (exact|nearest) terminal code
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl:noet
