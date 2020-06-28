@@ -28,9 +28,20 @@ function! s:_vital_depends() abort
   \ }
 endfunction
 
+" lua array index as 0 based.
+let s:_base = 0
+if has('patch-8.2.1066')
+  " fix lua array index as 1 based.
+  let s:_base = 1
+endif
+function! s:_index(idx) abort
+  return printf('%d', s:_base + a:idx)
+endfunction
+
 function! s:parse(sexp) abort
   if exists('*luaeval')
-    return luaeval('_G[_A[0]].vim.parse(_A[1])', [s:sfile, a:sexp])
+    return luaeval('_G[_A[' . s:_index(0) . ']].vim.parse(_A[' .  s:_index(1)  . '])', [s:sfile, a:sexp])
+    " return luaeval('_G[_A[0]].vim.parse(_A[1])', [s:sfile, a:sexp])
     " return luaeval('vital_text_sexp.parse(_A)', a:sexp)
     " return luaeval('vital_text_sexp.parse(vital_text_sexp.parse(_A))', a:sexp)
   else
