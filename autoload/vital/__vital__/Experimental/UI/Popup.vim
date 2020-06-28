@@ -55,7 +55,7 @@ function! s:_set_contents(data, contents) abort
   let a:data['contents'] = a:contents
 endfunction
 
-function! s:_get_contents(data)
+function! s:_get_contents(data) abort
   return get(a:data, 'contents', [])
 endfunction
 
@@ -91,7 +91,7 @@ function! s:_set_col(data, col) abort
   endif
 endfunction
 
-function! s:close(id)
+function! s:close(id) abort
   if has_key(s:_popups, a:id)
     if s:_has_nvim
       silent! call nvim_win_close(a:id, 1)
