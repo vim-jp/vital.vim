@@ -1,6 +1,43 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:control_chars = {
+    \   '\': '\\',
+    \   '"': '\"',
+    \   "\x01": '\u0001',
+    \   "\x02": '\u0002',
+    \   "\x03": '\u0003',
+    \   "\x04": '\u0004',
+    \   "\x05": '\u0005',
+    \   "\x06": '\u0006',
+    \   "\x07": '\u0007',
+    \   "\x08": '\b',
+    \   "\x09": '\t',
+    \   "\x0a": '\n',
+    \   "\x0b": '\u000b',
+    \   "\x0c": '\f',
+    \   "\x0d": '\r',
+    \   "\x0e": '\u000e',
+    \   "\x0f": '\u000f',
+    \   "\x10": '\u0010',
+    \   "\x11": '\u0011',
+    \   "\x12": '\u0012',
+    \   "\x13": '\u0013',
+    \   "\x14": '\u0014',
+    \   "\x15": '\u0015',
+    \   "\x16": '\u0016',
+    \   "\x17": '\u0017',
+    \   "\x18": '\u0018',
+    \   "\x19": '\u0019',
+    \   "\x1a": '\u001a',
+    \   "\x1b": '\u001b',
+    \   "\x1c": '\u001c',
+    \   "\x1d": '\u001d',
+    \   "\x1e": '\u001e',
+    \   "\x1f": '\u001f',
+    \ }
+lockvar s:control_chars
+
 function! s:_true() abort
   return 1
 endfunction
@@ -25,7 +62,6 @@ function! s:_resolve(val, prefix) abort
   endif
   return a:val
 endfunction
-
 
 function! s:_vital_created(module) abort
   " define constant variables
@@ -59,6 +95,10 @@ function! s:decode(json, ...) abort
   let json = join(split(json, "\n"), '')
   let json = substitute(json, '\\u34;', '\\"', 'g')
   let json = substitute(json, '\\u\(\x\x\x\x\)', '\=s:string.nr2enc_char("0x".submatch(1))', 'g')
+  " convert surrogate pair
+  let json = substitute(json, '\([\uD800-\uDBFF]\)\([\uDC00-\uDFFF]\)',
+        \ '\=nr2char(0x10000+and(0x7ff,char2nr(submatch(1)))*0x400+and(0x3ff,char2nr(submatch(2))))',
+        \ 'g')
   if settings.use_token
     let prefix = '__Web.JSON__'
     while stridx(json, prefix) != -1
@@ -83,11 +123,9 @@ function! s:encode(val, ...) abort
   if type(a:val) == 0
     return a:val
   elseif type(a:val) == 1
-    let json = '"' . escape(a:val, '\"') . '"'
-    let json = substitute(json, "\r", '\\r', 'g')
-    let json = substitute(json, "\n", '\\n', 'g')
-    let json = substitute(json, "\t", '\\t', 'g')
-    return iconv(json, &encoding, 'utf-8')
+    let s = substitute(a:val, '[\x01-\x1f\\"]', '\=s:control_chars[submatch(0)]', 'g')
+    let s = iconv(s, &encoding, 'utf-8')
+    return '"' . s . '"'
   elseif type(a:val) == 2
     if s:const.true == a:val
       return 'true'

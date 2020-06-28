@@ -29,7 +29,17 @@ Describe Web.JSON
             \ JSON.decode('"He said \"I''m a vimmer\""'),
             \ 'He said "I''m a vimmer"'
             \)
-      " there should be iconv tests as well
+      " control chars
+      Assert Equals(JSON.decode('"\u0001\u0002\u0003\u0004\u0005\u0006\u0007"'), "\x01\x02\x03\x04\x05\x06\x07")
+      Assert Equals(JSON.decode('"\b\t\n\u000b\f\r\u000e\u000f"'), "\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f")
+      Assert Equals(JSON.decode('"\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017"'), "\x10\x11\x12\x13\x14\x15\x16\x17")
+      Assert Equals(JSON.decode('"\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f"'), "\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f")
+      " multibyte
+      Assert Equals(JSON.decode('"s¢cĴgё"'), "s¢cĴgё")
+      " UTF-16 surrogate pair
+      Assert Equals(JSON.decode('"\ud83c\udf63"'), "\xf0\x9f\x8d\xa3")
+      " unpaired UTF-16 surrogate
+      Assert Equals(JSON.decode('"\ud83c\u00a0"'), "\ud83c\u00a0")
     End
 
     It decodes lists
@@ -91,7 +101,15 @@ Describe Web.JSON
             \ JSON.encode('He said "I''m a vimmer"'),
             \ '"He said \"I''m a vimmer\""'
             \)
-      " there should be iconv tests as well
+      " control chars
+      Assert Equals(JSON.encode("\x01\x02\x03\x04\x05\x06\x07"), '"\u0001\u0002\u0003\u0004\u0005\u0006\u0007"')
+      Assert Equals(JSON.encode("\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"), '"\b\t\n\u000b\f\r\u000e\u000f"')
+      Assert Equals(JSON.encode("\x10\x11\x12\x13\x14\x15\x16\x17"), '"\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017"')
+      Assert Equals(JSON.encode("\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f"), '"\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f"')
+      " multibyte
+      Assert Equals(JSON.encode("s¢cĴgё"), '"s¢cĴgё"')
+      " UTF-16 surrogate pair
+      Assert Equals(JSON.encode("\xf0\x9f\x8d\xa3"), "\"\xf0\x9f\x8d\xa3\"")
     End
 
     It encodes lists
