@@ -19,9 +19,32 @@ function! s:create(opt) abort
   let data = {}
   call s:_set_w(data, get(a:opt, 'w', 5))
   call s:_set_h(data, get(a:opt, 'h', 5))
-  call s:_set_contents(data, get(a:opt, 'contents', []))
   call s:_set_x(data, get(a:opt, 'x', 1))
   call s:_set_y(data, get(a:opt, 'y', 1))
+  call s:_set_pos(data, get(a:opt, 'pos', 'topleft'))
+  call s:_set_contents(data, get(a:opt, 'contents', []))
+
+  if data['pos'] ==# 'topleft'
+    let data['sx'] = data['x']
+    let data['sy'] = data['y']
+  elseif data['pos'] ==# 'topright'
+    let data['sx'] = data['x'] + data['w'] + 1
+    let data['sy'] = data['y']
+  elseif data['pos'] ==# 'bottomleft'
+    let data['sx'] = data['x']
+    let data['sy'] = data['y'] - data['h'] + 1
+  elseif data['pos'] ==# 'bottomright'
+    let data['sx'] = data['x'] + data['w'] + 1
+    let data['sy'] = data['y'] - data['h'] + 1
+  elseif data['pos'] ==# 'topcenter'
+    let data['sx'] = data['x'] + float2nr(data['x'] / 2) + 1
+    let data['sy'] = data['y'] - data['h']
+  elseif data['pos'] ==# 'bottomcenter'
+    let data['sx'] = data['x'] + float2nr(data['x'] / 2) + 1
+    let data['sy'] = data['y'] + 1
+  else
+    throw 'invalid popup pos'
+  endif
 
   if s:_has_nvim
     let buf = nvim_create_buf(0, 1)
@@ -31,8 +54,8 @@ function! s:create(opt) abort
           \ 'style': 'minimal',
           \ 'width': data['w'],
           \ 'height': data['h'],
-          \ 'col': data['x'],
-          \ 'row': data['y'],
+          \ 'col': data['sx'],
+          \ 'row': data['sy'],
           \ 'focusable': 0,
           \ }
     let id = nvim_open_win(buf, 1, opt)
@@ -45,8 +68,8 @@ function! s:create(opt) abort
           \ 'minheight': data['h'],
           \ 'maxwidth': data['w'],
           \ 'maxheight': data['h'],
-          \ 'col': data['x'],
-          \ 'line': data['y'],
+          \ 'col': data['sx'],
+          \ 'line': data['sy'],
           \ 'scrollbar': 0,
           \ })
   endif
@@ -84,6 +107,10 @@ function! s:_set_x(data, x) abort
   else
     let a:data['x'] = a:x
   endif
+endfunction
+
+function! s:_set_pos(data, pos) abort
+  let a:data['pos'] = a:pos
 endfunction
 
 function! s:close(id) abort
