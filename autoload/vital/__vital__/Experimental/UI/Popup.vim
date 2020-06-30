@@ -5,7 +5,7 @@ let s:_has_nvim = has('nvim')
 let s:_popups = {}
 
 function! s:is_supported() abort
-  return has('nvim') && exists('*nvim_open_win') || !has('nvim') && exists('*popup_create')
+  return has('nvim') && exists('*nvim_open_win') || (!has('nvim') && exists('*popup_create') && has('patch-8.2.0286'))
 endfunction
 
 " opt = {
