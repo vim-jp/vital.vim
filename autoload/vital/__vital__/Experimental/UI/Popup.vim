@@ -43,7 +43,7 @@ function! s:create(opt) abort
     let data['sx'] = data['x'] + float2nr(data['x'] / 2) + 1
     let data['sy'] = data['y'] + 1
   else
-    throw 'invalid popup pos'
+    throw 'vital: Experimental.UI.Popup: Invalid pos'
   endif
 
   if s:_has_nvim
