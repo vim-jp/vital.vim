@@ -10,41 +10,44 @@ endfunction
 
 " opt = {
 "   'contents': ['This', 'is', 'a', 'line'],
-"   'width': 5,
-"   'height': 5,
-"   'line': 1,
-"   'col': 1,
+"   'w': 5,
+"   'h': 5,
+"   'x': 1,
+"   'y': 1,
 " }
 function! s:create(opt) abort
   let data = {}
-  call s:_set_width(data, get(a:opt, 'width', 5))
-  call s:_set_height(data, get(a:opt, 'height', 5))
+  call s:_set_w(data, get(a:opt, 'w', 5))
+  call s:_set_h(data, get(a:opt, 'h', 5))
   call s:_set_contents(data, get(a:opt, 'contents', []))
-  call s:_set_line(data, get(a:opt, 'line', 1))
-  call s:_set_col(data, get(a:opt, 'col', 1))
+  call s:_set_x(data, get(a:opt, 'x', 1))
+  call s:_set_y(data, get(a:opt, 'y', 1))
+
   if s:_has_nvim
     let buf = nvim_create_buf(0, 1)
     call nvim_buf_set_lines(buf, 0, -1, 1, s:_get_contents(data))
     let opt = {
           \ 'relative': 'editor',
           \ 'style': 'minimal',
-          \ 'width': data['width'],
-          \ 'height': data['height'],
-          \ 'row': data['line'],
-          \ 'col': data['col'],
+          \ 'width': data['w'],
+          \ 'height': data['h'],
+          \ 'col': data['x'],
+          \ 'row': data['y'],
           \ 'focusable': 0,
           \ }
     let id = nvim_open_win(buf, 1, opt)
   else
+    " neovim doesn't support scrollbar so don't enable it
     let id = popup_create(s:_get_contents(data), {
-          \ 'width': data['width'],
-          \ 'height': data['height'],
-          \ 'minwidth': data['width'],
-          \ 'minheight': data['height'],
-          \ 'maxwidth': data['width'],
-          \ 'maxheight': data['height'],
-          \ 'line': data['line'],
-          \ 'col': data['col'],
+          \ 'width': data['w'],
+          \ 'height': data['h'],
+          \ 'minwidth': data['w'],
+          \ 'minheight': data['h'],
+          \ 'maxwidth': data['w'],
+          \ 'maxheight': data['h'],
+          \ 'col': data['x'],
+          \ 'line': data['y'],
+          \ 'scrollbar': 0,
           \ })
   endif
   let s:_popups[id] = data
@@ -59,35 +62,27 @@ function! s:_get_contents(data) abort
   return get(a:data, 'contents', [])
 endfunction
 
-function! s:_set_width(data, width) abort
-  let a:data['width'] = a:width
+function! s:_set_w(data, w) abort
+  let a:data['w'] = a:w
 endfunction
 
-function! s:_get_width(data) abort
-  return a:data['width']
+function! s:_set_h(data, h) abort
+  let a:data['h'] = a:h
 endfunction
 
-function! s:_get_height(data) abort
-  return a:data['height']
-endfunction
-
-function! s:_set_height(data, height) abort
-  let a:data['height'] = a:height
-endfunction
-
-function! s:_set_line(data, line) abort
+function! s:_set_y(data, y) abort
   if s:_has_nvim
-    let a:data['line'] = a:line - 1
+    let a:data['y'] = a:y - 1
   else
-    let a:data['line'] = a:line
+    let a:data['y'] = a:y
   endif
 endfunction
 
-function! s:_set_col(data, col) abort
+function! s:_set_x(data, x) abort
   if s:_has_nvim
-    let a:data['col'] = a:col - 1
+    let a:data['x'] = a:x - 1
   else
-    let a:data['col'] = a:col
+    let a:data['x'] = a:x
   endif
 endfunction
 
