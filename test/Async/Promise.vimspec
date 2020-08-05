@@ -863,6 +863,18 @@ Describe Async.Promise
       Assert KeyNotExists(l, 'Goodbye')
     End
 
+    It sequentially calls functions in factories beyonds &maxfuncdepth and resolves promises
+      let l = l:
+      let fs = map(
+           \ range(&maxfuncdepth * 2),
+           \ { k -> { -> P.new({r -> r(k) }) } },
+           \)
+      let p = P.chain(fs).then({ v -> extend(l, { 'result': v })})
+      call s:wait_has_key(l, 'result')
+      Assert Equals(len(result), &maxfuncdepth * 2)
+      Assert Equals(result, range(&maxfuncdepth * 2))
+      Assert Equals(p._state, FULFILLED)
+    End
   End
 
   Describe .on_unhandled_rejection
