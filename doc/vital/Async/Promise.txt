@@ -379,8 +379,8 @@ wait({promise}[, {options}])		*Vital.Async.Promise.wait()*
 >
 chain({promise_factories})		*Vital.Async.Promise.chain()*
 	Chain promises produced by {promise_factories} (|List| of |Function|)
-	and return a result |List| which contains result of each produced
-	promises.
+	and return a promise which resolves to a result |List| which contains 
+	result of each produced	promises.
 	It is like an asynchronous sequential call. It rejects when one of
 	function in {promise_factories} has failed or produced promises
 	rejects. Note that it stops producing promises by functions after
