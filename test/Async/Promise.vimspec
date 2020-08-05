@@ -805,6 +805,78 @@ Describe Async.Promise
     End
   End
 
+  Describe .chain()
+    It returns a promise which resolves to an empty List when an empty factories has specified
+      let l = l:
+      let p = P.chain([]).then({ v -> extend(l, { 'result': v })})
+      call s:wait_has_key(l, 'result')
+      Assert Equals(result, [])
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It sequentially calls functions in factories and resolves promises
+      let l = l:
+      let fs = [
+            \ { -> P.resolve('Hello') },
+            \ { -> P.resolve('World') },
+            \ { -> P.resolve('Goodbye') },
+            \]
+      let p = P.chain(fs).then({ v -> extend(l, { 'result': v })})
+      call s:wait_has_key(l, 'result')
+      Assert Equals(result, ['Hello', 'World', 'Goodbye'])
+      Assert Equals(p._state, FULFILLED)
+    End
+
+    It sequentially calls functions in factories but reject promises if intermediate function call fails
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
+      let fs = [
+            \ { -> P.resolve('Hello').then({ -> extend(l, { 'Hello': 1 }) }) },
+            \ { -> execute('throw HOGE') },
+            \ { -> P.resolve('Goodbye').then({ -> extend(l, { 'Goodbye': 1 }) }) },
+            \]
+      let p = P.chain(fs).then({ -> execute('throw "error"') })
+      call s:wait_has_key(l, 'result')
+      Assert HasKey(result, 'exception')
+      Assert HasKey(result, 'throwpoint')
+      Assert Equals(p._state, REJECTED)
+      Assert HasKey(l, 'Hello')
+      Assert KeyNotExists(l, 'Goodbye')
+    End
+
+    It sequentially calls functions in factories but reject promises if intermediate promise reject
+      let l = l:
+      call P.on_unhandled_rejection({ result -> extend(l, { 'result': result }) })
+
+      let fs = [
+            \ { -> P.resolve('Hello').then({ -> extend(l, { 'Hello': 1 }) }) },
+            \ { -> P.resolve('World').then({ -> extend(l, { 'World': 1 }) }).then({ -> P.reject('Wow')}) },
+            \ { -> P.resolve('Goodbye').then({ -> extend(l, { 'Goodbye': 1 }) }) },
+            \]
+      let p = P.chain(fs).then({ -> execute('throw "error"') })
+      call s:wait_has_key(l, 'result')
+      Assert Equals(result, 'Wow')
+      Assert Equals(p._state, REJECTED)
+      Assert HasKey(l, 'Hello')
+      Assert HasKey(l, 'World')
+      Assert KeyNotExists(l, 'Goodbye')
+    End
+
+    It sequentially calls functions in factories beyonds &maxfuncdepth and resolves promises
+      let l = l:
+      let fs = map(
+           \ range(&maxfuncdepth * 2),
+           \ { k -> { -> P.new({r -> r(k) }) } },
+           \)
+      let p = P.chain(fs).then({ v -> extend(l, { 'result': v })})
+      call s:wait_has_key(l, 'result')
+      Assert Equals(len(result), &maxfuncdepth * 2)
+      Assert Equals(result, range(&maxfuncdepth * 2))
+      Assert Equals(p._state, FULFILLED)
+    End
+  End
+
   Describe .on_unhandled_rejection
 
     After each

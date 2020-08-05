@@ -377,6 +377,42 @@ wait({promise}[, {options}])		*Vital.Async.Promise.wait()*
 	call Promise.wait(p, 1000)
 	" Is equivalent to call Promise.wait(p, {'timeout': 1000})
 >
+chain({promise_factories})		*Vital.Async.Promise.chain()*
+	Chain promises produced by {promise_factories} (|List| of |Function|)
+	and return a promise which resolves to a result |List| which contains 
+	result of each produced	promises.
+	It is like an asynchronous sequential call. It rejects when one of
+	function in {promise_factories} has failed or produced promises
+	rejects. Note that it stops producing promises by functions after
+	rejection.
+>
+	let fs = [
+	      \ { -> Promise.new({ r -> timer_start(50, { -> r('1') })})},
+	      \ { -> Promise.new({ r -> timer_start(50, { -> r('2') })})},
+	      \ { -> Promise.new({ r -> timer_start(50, { -> r('3') })})},
+	      \]
+	call Promise.chain(fs)
+	" --------1--------2--------3----> RESOLVE
+	"         50ms     100ms    150ms
+
+	let fs = [
+	      \ { -> Promise.new({ r -> timer_start(50, { -> r('1') })})},
+	      \ { -> execute('throw "Error"') },
+	      \ { -> Promise.new({ r -> timer_start(50, { -> r('3') })})},
+	      \]
+	call Promise.chain(fs)
+	" --------1----> REJECT
+	"         50ms
+
+	let fs = [
+	      \ { -> Promise.new({ r -> timer_start(50, { -> r('1') })})},
+	      \ { -> Promise.new({ _, rj -> timer_start(50, { -> rj('2') })})},
+	      \ { -> Promise.new({ r -> timer_start(50, { -> r('3') })})},
+	      \]
+	call Promise.chain(fs)
+	" --------1--------2----> REJECT
+	"         50ms     100ms
+<
 on_unhandled_rejection({callback})	*Vital.Async.Promise.on_unhandled_rejection*
 
  	Set callback to catch all unhandled rejected promise's result.
