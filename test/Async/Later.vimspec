@@ -89,7 +89,7 @@ Describe Async.Later
       Assert Equals(exception, v:null)
       Assert Match(
             \ messages,
-            \ '^\nHello World\nfunction .*<SNR>\d\+_throw, line 1',
+            \ '^\nHello World\n.*function .*<SNR>\d\+_throw, line 1',
             \)
     End
 
