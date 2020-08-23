@@ -14,41 +14,15 @@ endfunction
 "   'h': 5,
 "   'x': 1,
 "   'y': 1,
+"   'pos': 'topleft|topright|bottomleft|bottomright|topcenter|bottomcenter',
 " }
 function! s:create(opt) abort
   let data = {}
-  call s:_set_w(data, get(a:opt, 'w', 5))
-  call s:_set_h(data, get(a:opt, 'h', 5))
-  call s:_set_x(data, get(a:opt, 'x', 1))
-  call s:_set_y(data, get(a:opt, 'y', 1))
-  call s:_set_pos(data, get(a:opt, 'pos', 'topleft'))
-  call s:_set_contents(data, get(a:opt, 'contents', []))
-
-  if data['pos'] ==# 'topleft'
-    let data['sx'] = data['x']
-    let data['sy'] = data['y']
-  elseif data['pos'] ==# 'topright'
-    let data['sx'] = data['x'] + data['w'] + 1
-    let data['sy'] = data['y']
-  elseif data['pos'] ==# 'bottomleft'
-    let data['sx'] = data['x']
-    let data['sy'] = data['y'] - data['h'] + 1
-  elseif data['pos'] ==# 'bottomright'
-    let data['sx'] = data['x'] + data['w'] + 1
-    let data['sy'] = data['y'] - data['h'] + 1
-  elseif data['pos'] ==# 'topcenter'
-    let data['sx'] = data['x'] + float2nr(data['x'] / 2) + 1
-    let data['sy'] = data['y'] - data['h']
-  elseif data['pos'] ==# 'bottomcenter'
-    let data['sx'] = data['x'] + float2nr(data['x'] / 2) + 1
-    let data['sy'] = data['y'] + 1
-  else
-    throw 'vital: Experimental.UI.Popup: Invalid pos'
-  endif
+  call s:_set(data, a:opt)
 
   if s:_has_nvim
     let buf = nvim_create_buf(0, 1)
-    call nvim_buf_set_lines(buf, 0, -1, 1, s:_get_contents(data))
+    call nvim_buf_set_lines(buf, 0, -1, 1, data['contents'])
     let opt = {
           \ 'relative': 'editor',
           \ 'style': 'minimal',
@@ -61,7 +35,7 @@ function! s:create(opt) abort
     let id = nvim_open_win(buf, 1, opt)
   else
     " neovim doesn't support scrollbar so don't enable it
-    let id = popup_create(s:_get_contents(data), {
+    let id = popup_create(data['contents'], {
           \ 'width': data['w'],
           \ 'height': data['h'],
           \ 'minwidth': data['w'],
@@ -77,42 +51,6 @@ function! s:create(opt) abort
   return id
 endfunction
 
-function! s:_set_contents(data, contents) abort
-  let a:data['contents'] = a:contents
-endfunction
-
-function! s:_get_contents(data) abort
-  return get(a:data, 'contents', [])
-endfunction
-
-function! s:_set_w(data, w) abort
-  let a:data['w'] = a:w
-endfunction
-
-function! s:_set_h(data, h) abort
-  let a:data['h'] = a:h
-endfunction
-
-function! s:_set_y(data, y) abort
-  if s:_has_nvim
-    let a:data['y'] = a:y - 1
-  else
-    let a:data['y'] = a:y
-  endif
-endfunction
-
-function! s:_set_x(data, x) abort
-  if s:_has_nvim
-    let a:data['x'] = a:x - 1
-  else
-    let a:data['x'] = a:x
-  endif
-endfunction
-
-function! s:_set_pos(data, pos) abort
-  let a:data['pos'] = a:pos
-endfunction
-
 function! s:close(id) abort
   if has_key(s:_popups, a:id)
     if s:_has_nvim
@@ -121,6 +59,47 @@ function! s:close(id) abort
       silent! call popup_close(a:id)
     endif
     call remove(s:_popups, a:id)
+  endif
+endfunction
+
+function! s:_set(data, opt) abort
+  " try to set values from a:opt, if not set from a:data, if not default
+  let a:data['w'] = get(a:opt, 'w', get(a:data, 'w', 5))
+  let a:data['h'] = get(a:opt, 'h', get(a:data, 'h', 5))
+
+  if s:_has_nvim
+    " a:opt[x/y] need to - 1
+    " a:data['x/y'] already normalized
+    let a:data['x'] = has_key(a:opt, 'x') ? a:opt['x'] - 1 : get(a:data, 'x', 0)
+    let a:data['y'] = has_key(a:opt, 'y') ? a:opt['y'] - 1 : get(a:data, 'y', 0)
+  else
+    let a:data['x'] = get(a:opt, 'x', get(a:data, 'x', 1))
+    let a:data['y'] = get(a:opt, 'y', get(a:data, 'y', 1))
+  endif
+
+  let a:data['contents'] = get(a:opt, 'contents', get(a:data, 'contents', []))
+  let a:data['pos'] = get(a:opt, 'pos', get(a:data, 'pos', 'topleft'))
+
+  if a:data['pos'] ==# 'topleft'
+    let a:data['sx'] = a:data['x']
+    let a:data['sy'] = a:data['y']
+  elseif a:data['pos'] ==# 'topright'
+    let a:data['sx'] = a:data['x'] + a:data['w'] + 1
+    let a:data['sy'] = a:data['y']
+  elseif a:data['pos'] ==# 'bottomleft'
+    let a:data['sx'] = a:data['x']
+    let a:data['sy'] = a:data['y'] - a:data['h'] + 1
+  elseif a:data['pos'] ==# 'bottomright'
+    let a:data['sx'] = a:data['x'] + a:data['w'] + 1
+    let a:data['sy'] = a:data['y'] - a:data['h'] + 1
+  elseif a:data['pos'] ==# 'topcenter'
+    let a:data['sx'] = a:data['x'] + float2nr(a:data['x'] / 2) + 1
+    let a:data['sy'] = a:data['y'] - a:data['h']
+  elseif a:data['pos'] ==# 'bottomcenter'
+    let a:data['sx'] = a:data['x'] + float2nr(a:data['x'] / 2) + 1
+    let a:data['sy'] = a:data['y'] + 1
+  else
+    throw 'vital: Experimental.UI.Popup: Invalid pos'
   endif
 endfunction
 
