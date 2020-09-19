@@ -48,6 +48,7 @@ function! s:create(opt) abort
           \ })
   endif
   let s:_popups[id] = data
+  call s:_notify(id, {}, 'create')
   return id
 endfunction
 
@@ -58,11 +59,19 @@ function! s:close(id) abort
     else
       silent! call popup_close(a:id)
     endif
+    call s:_notify(a:id, {}, 'close')
     call remove(s:_popups, a:id)
   endif
 endfunction
 
 function! s:_set(data, opt) abort
+  " copy all callbacks to data
+  for [key, Cb] in items(a:opt)
+    if stridx(key, 'on_') == 0
+      let a:data[key] = Cb
+    endif
+  endfor
+
   " try to set values from a:opt, if not set from a:data, if not default
   let a:data['w'] = get(a:opt, 'w', get(a:data, 'w', 5))
   let a:data['h'] = get(a:opt, 'h', get(a:data, 'h', 5))
@@ -100,6 +109,16 @@ function! s:_set(data, opt) abort
     let a:data['sy'] = a:data['y'] + 1
   else
     throw 'vital: Experimental.UI.Popup: Invalid pos'
+  endif
+endfunction
+
+function! s:_notify(id, data, event) abort
+  if has_key(s:_popups[a:id], 'on_event')
+    call s:_popups[a:id]['on_event'](a:id, a:data, a:event)
+  endif
+  let eventhandler = 'on_' . a:event
+  if has_key(s:_popups[a:id], eventhandler)
+    call s:_popups[a:id][eventhandler](a:id, a:data, a:event)
   endif
 endfunction
 
