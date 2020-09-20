@@ -26,16 +26,7 @@ function! s:create(opt) abort
   if s:_has_nvim
     let data['bufnr'] = nvim_create_buf(0, 1)
     call nvim_buf_set_lines(data['bufnr'], 0, -1, 1, data['contents'])
-    let opt = {
-          \ 'relative': 'editor',
-          \ 'style': 'minimal',
-          \ 'width': data['w'],
-          \ 'height': data['h'],
-          \ 'col': data['sx'],
-          \ 'row': data['sy'],
-          \ 'focusable': 0,
-          \ }
-    let data['winid'] = nvim_open_win(data['bufnr'], 1, opt)
+    let data['winid'] = s:_nvim_open_win(id, data)
   else
     " neovim doesn't support scrollbar so don't enable it
     let data['winid'] = popup_create(data['contents'], {
@@ -67,6 +58,19 @@ function! s:close(id) abort
     call s:_notify(a:id, {}, 'close')
     call remove(s:_popups, a:id)
   endif
+endfunction
+
+function! s:_nvim_open_win(id, data) abort
+  let opt = {
+    \ 'relative': 'editor',
+    \ 'style': 'minimal',
+    \ 'width': a:data['w'],
+    \ 'height': a:data['h'],
+    \ 'col': a:data['sx'],
+    \ 'row': a:data['sy'],
+    \ 'focusable': 0,
+    \ }
+  return nvim_open_win(a:data['bufnr'], 1, opt)
 endfunction
 
 function! s:_set(data, opt) abort
