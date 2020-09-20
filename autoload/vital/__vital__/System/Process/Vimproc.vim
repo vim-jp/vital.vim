@@ -51,10 +51,13 @@ function! s:execute(args, options) abort
     " background process via Builtin always return exit_code:0 so mimic
     let status = 0
   else
+    " System.Process.execute() {options} timeout unit as second.
+    " convert to
+    " vimproc#system {timeout} unit as millisecond.
     let output = vimproc#system(
           \ cmdline,
           \ s:Prelude.is_string(a:options.input) ? a:options.input : '',
-          \ a:options.timeout,
+          \ a:options.timeout * 1000,
           \)
     let status = vimproc#get_last_status()
   endif
