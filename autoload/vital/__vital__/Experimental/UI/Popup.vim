@@ -92,6 +92,14 @@ function! s:contents(id, contents) abort
   endif
 endfunction
 
+function! s:winid(id) abort
+  return s:_popups[a:id]['winid']
+endfunction
+
+function! s:bufnr(id) abort
+  return s:_popups[a:id]['bufnr']
+endfunction
+
 function! s:_nvim_open_win(id, data) abort
   let opt = {
     \ 'relative': 'editor',
