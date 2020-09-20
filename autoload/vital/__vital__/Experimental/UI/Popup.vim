@@ -19,7 +19,7 @@ endfunction
 " }
 function! s:create(opt) abort
   let id = s:_nextid()
-  let data = {}
+  let data = { 'winid': 0 }
 
   call s:_set(data, a:opt)
 
@@ -52,6 +52,7 @@ function! s:close(id) abort
     let data = s:_popups[a:id]
     if s:_has_nvim
       call nvim_win_close(data['winid'], 1)
+      let data['winid'] = 0
     else
       call popup_close(data['winid'])
     endif
