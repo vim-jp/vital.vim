@@ -26,21 +26,10 @@ function! s:create(opt) abort
   if s:_has_nvim
     let data['bufnr'] = nvim_create_buf(0, 1)
     call nvim_buf_set_lines(data['bufnr'], 0, -1, 1, data['contents'])
-    let data['winid'] = s:_nvim_open_win(id, data)
+    let data['winid'] = s:_nvim_open_win(data)
   else
     " neovim doesn't support scrollbar so don't enable it
-    let data['winid'] = popup_create(data['contents'], {
-          \ 'width': data['w'],
-          \ 'height': data['h'],
-          \ 'minwidth': data['w'],
-          \ 'minheight': data['h'],
-          \ 'maxwidth': data['w'],
-          \ 'maxheight': data['h'],
-          \ 'col': data['sx'],
-          \ 'line': data['sy'],
-          \ 'scrollbar': 0,
-          \ 'wrap': 0,
-          \ })
+    let data['winid'] = popup_create(data['contents'], s:_get_vim_options(data))
     let data['bufnr'] = winbufnr(data['winid'])
   endif
   let s:_popups[id] = data
@@ -75,7 +64,7 @@ endfunction
 function! s:show(id) abort
   let data = s:_popups[a:id]
   if s:_has_nvim
-    let data['winid'] = s:_nvim_open_win(a:id, data)
+    let data['winid'] = s:_nvim_open_win(data)
   else
     call popup_show(data['winid'])
   endif
@@ -92,7 +81,19 @@ function! s:contents(id, contents) abort
   endif
 endfunction
 
+function! s:options(id, opt) abort
+  let data = s:_popups[a:id]
+  call s:_set(data, a:opt)
+  if s:_has_nvim
+    call nvim_win_set_config(data['winid'], s:_get_nvim_options(data))
+  else
+    call popup_setoptions(data['winid'], s:_get_vim_options(data))
+  endif
+  call s:_notify(a:id, {}, 'options')
+endfunction
+
 function! s:winid(id) abort
+  " can return 0 when hidden for neovim
   return s:_popups[a:id]['winid']
 endfunction
 
@@ -100,8 +101,23 @@ function! s:bufnr(id) abort
   return s:_popups[a:id]['bufnr']
 endfunction
 
-function! s:_nvim_open_win(id, data) abort
-  let opt = {
+function! s:_get_vim_options(data) abort
+  return {
+    \ 'width': a:data['w'],
+    \ 'height': a:data['h'],
+    \ 'minwidth': a:data['w'],
+    \ 'minheight': a:data['h'],
+    \ 'maxwidth': a:data['w'],
+    \ 'maxheight': a:data['h'],
+    \ 'col': a:data['sx'],
+    \ 'line': a:data['sy'],
+    \ 'scrollbar': 0,
+    \ 'wrap': 0,
+    \ }
+endfunction
+
+function! s:_get_nvim_options(data) abort
+  return {
     \ 'relative': 'editor',
     \ 'style': 'minimal',
     \ 'width': a:data['w'],
@@ -110,7 +126,26 @@ function! s:_nvim_open_win(id, data) abort
     \ 'row': a:data['sy'],
     \ 'focusable': 0,
     \ }
-  return nvim_open_win(a:data['bufnr'], 0, opt)
+endfunction
+
+function! s:_nvim_open_win(data) abort
+  return nvim_open_win(a:data['bufnr'], 0, s:_get_nvim_options(a:data))
+endfunction
+
+function! s:_user_to_editor_xy(val) abort
+  if s:_has_nvim
+    return a:val - 1
+  else
+    return a:val
+  endif
+endfunction
+
+function! s:_editor_to_user_xy(val) abort
+  if s:_has_nvim
+    return a:val + 1
+  else
+    return a:val
+  endif
 endfunction
 
 function! s:_set(data, opt) abort
@@ -126,10 +161,10 @@ function! s:_set(data, opt) abort
   let a:data['h'] = get(a:opt, 'h', get(a:data, 'h', 5))
 
   if s:_has_nvim
-    " a:opt[x/y] need to - 1
+    " a:opt[x/y] need to normalize
     " a:data['x/y'] already normalized
-    let a:data['x'] = has_key(a:opt, 'x') ? a:opt['x'] - 1 : get(a:data, 'x', 0)
-    let a:data['y'] = has_key(a:opt, 'y') ? a:opt['y'] - 1 : get(a:data, 'y', 0)
+    let a:data['x'] = has_key(a:opt, 'x') ? s:_user_to_editor_xy(a:opt['x']) : get(a:data, 'x', 0)
+    let a:data['y'] = has_key(a:opt, 'y') ? s:_user_to_editor_xy(a:opt['y']) : get(a:data, 'y', 0)
   else
     let a:data['x'] = get(a:opt, 'x', get(a:data, 'x', 1))
     let a:data['y'] = get(a:opt, 'y', get(a:data, 'y', 1))
