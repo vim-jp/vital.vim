@@ -44,21 +44,41 @@ function! s:create(opt) abort
   endif
   let s:_popups[id] = data
   call s:_notify(id, {}, 'create')
+  call s:_notify(id, {}, 'show')
   return id
 endfunction
 
 function! s:close(id) abort
-  if has_key(s:_popups, a:id)
-    let data = s:_popups[a:id]
-    if s:_has_nvim
-      call nvim_win_close(data['winid'], 1)
-      let data['winid'] = 0
-    else
-      call popup_close(data['winid'])
-    endif
-    call s:_notify(a:id, {}, 'close')
-    call remove(s:_popups, a:id)
+  let data = s:_popups[a:id]
+  if s:_has_nvim
+    call nvim_win_close(data['winid'], 1)
+    let data['winid'] = 0
+  else
+    call popup_close(data['winid'])
   endif
+  call s:_notify(a:id, {}, 'close')
+  call remove(s:_popups, a:id)
+endfunction
+
+function! s:hide(id) abort
+  let data = s:_popups[a:id]
+  if s:_has_nvim
+    call nvim_win_close(data['winid'], 1)
+    let data['winid'] = 0
+  else
+    call popup_hide(data['winid'])
+  endif
+  call s:_notify(a:id, {}, 'hide')
+endfunction
+
+function! s:show(id) abort
+  let data = s:_popups[a:id]
+  if s:_has_nvim
+    let data['winid'] = s:_nvim_open_win(a:id, data)
+  else
+    call popup_show(data['winid'])
+  endif
+  call s:_notify(a:id, {}, 'show')
 endfunction
 
 function! s:_nvim_open_win(id, data) abort
@@ -71,7 +91,7 @@ function! s:_nvim_open_win(id, data) abort
     \ 'row': a:data['sy'],
     \ 'focusable': 0,
     \ }
-  return nvim_open_win(a:data['bufnr'], 1, opt)
+  return nvim_open_win(a:data['bufnr'], 0, opt)
 endfunction
 
 function! s:_set(data, opt) abort
