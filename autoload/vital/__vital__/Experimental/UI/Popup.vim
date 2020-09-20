@@ -3,6 +3,7 @@ set cpo&vim
 
 let s:_has_nvim = has('nvim')
 let s:_popups = {}
+let s:_id = 0
 
 function! s:is_supported() abort
   return has('nvim') && exists('*nvim_open_win') || (!has('nvim') && exists('*popup_create') && has('patch-8.2.0286'))
@@ -17,12 +18,14 @@ endfunction
 "   'pos': 'topleft|topright|bottomleft|bottomright|topcenter|bottomcenter',
 " }
 function! s:create(opt) abort
+  let id = s:_nextid()
   let data = {}
+
   call s:_set(data, a:opt)
 
   if s:_has_nvim
-    let buf = nvim_create_buf(0, 1)
-    call nvim_buf_set_lines(buf, 0, -1, 1, data['contents'])
+    let data['bufnr'] = nvim_create_buf(0, 1)
+    call nvim_buf_set_lines(data['bufnr'], 0, -1, 1, data['contents'])
     let opt = {
           \ 'relative': 'editor',
           \ 'style': 'minimal',
@@ -32,10 +35,10 @@ function! s:create(opt) abort
           \ 'row': data['sy'],
           \ 'focusable': 0,
           \ }
-    let id = nvim_open_win(buf, 1, opt)
+    let data['winid'] = nvim_open_win(data['bufnr'], 1, opt)
   else
     " neovim doesn't support scrollbar so don't enable it
-    let id = popup_create(data['contents'], {
+    let data['winid'] = popup_create(data['contents'], {
           \ 'width': data['w'],
           \ 'height': data['h'],
           \ 'minwidth': data['w'],
@@ -46,6 +49,7 @@ function! s:create(opt) abort
           \ 'line': data['sy'],
           \ 'scrollbar': 0,
           \ })
+    let data['bufnr'] = winbufnr(data['winid'])
   endif
   let s:_popups[id] = data
   call s:_notify(id, {}, 'create')
@@ -54,10 +58,11 @@ endfunction
 
 function! s:close(id) abort
   if has_key(s:_popups, a:id)
+    let data = s:_popups[a:id]
     if s:_has_nvim
-      silent! call nvim_win_close(a:id, 1)
+      call nvim_win_close(data['winid'], 1)
     else
-      silent! call popup_close(a:id)
+      call popup_close(data['winid'])
     endif
     call s:_notify(a:id, {}, 'close')
     call remove(s:_popups, a:id)
@@ -110,6 +115,11 @@ function! s:_set(data, opt) abort
   else
     throw 'vital: Experimental.UI.Popup: Invalid pos'
   endif
+endfunction
+
+function! s:_nextid() abort
+  let s:_id += 1
+  return s:_id
 endfunction
 
 function! s:_notify(id, data, event) abort
