@@ -1,3 +1,7 @@
+8ebc53cf1ed6c53ee793e31611829fa57ae7c06d
+	Modules: System.Process.Vimproc
+	Documents as wrote seconds, but it was actually treated as milliseconds.
+	Fix inner timeout unit, timeout set as seconds, call function as milliseconds at value x1000.
 97e8cf8b230cd69720e130742859b51f5761196c
 	Modules: Web.HTTP
 	Added python3 to HTTP client, and refined its default value.
