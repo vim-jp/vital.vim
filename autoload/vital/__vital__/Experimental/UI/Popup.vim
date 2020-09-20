@@ -81,6 +81,16 @@ function! s:show(id) abort
   call s:_notify(a:id, {}, 'show')
 endfunction
 
+function! s:contents(id, contents) abort
+  let data = s:_popups[a:id]
+  let data['contents'] = a:contents
+  if s:_has_nvim
+    call nvim_buf_set_lines(data['bufnr'], 0, -1, 1, a:contents)
+  else
+    call popup_settext(data['winid'], a:contents)
+  endif
+endfunction
+
 function! s:_nvim_open_win(id, data) abort
   let opt = {
     \ 'relative': 'editor',
