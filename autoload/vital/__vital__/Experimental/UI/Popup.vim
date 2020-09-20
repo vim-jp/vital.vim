@@ -39,6 +39,7 @@ function! s:create(opt) abort
           \ 'col': data['sx'],
           \ 'line': data['sy'],
           \ 'scrollbar': 0,
+          \ 'wrap': 0,
           \ })
     let data['bufnr'] = winbufnr(data['winid'])
   endif
