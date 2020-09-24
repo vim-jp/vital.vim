@@ -29,12 +29,14 @@ Describe System.Process.Vimproc
           " Not sure but 'sleep' doesn't properly works in AppVeyor?
           " The code below worked on Windows 10 + PowerShell
           It DOES NOT throws an exception when {options.timeout} is specified
-            let options.timeout = 100
-            let args = s:cmd + ['sleep', '10']
+            " timeout 1 second = 1000 millisoconds
+            let options.timeout = 1
+            " sleep command 100 seconds wait
+            let args = s:cmd + ['sleep', '100']
             let result = Process.execute(args, options)
             " While the execution time reachs the timeout, the success is 0.
             Assert Equals(result.success, 0)
-          Assert Equals(result.status, 15)
+            Assert Equals(result.status, 15)
           End
         endif
 
@@ -157,8 +159,10 @@ Describe System.Process.Vimproc
     Context [Unix]
       Describe .execute({args}[, {options}])
         It DOES NOT throws an exception when {options.timeout} is specified
-          let options.timeout = 100
-          let args = ['sleep', '10']
+          " timeout 1 second = 1000 millisoconds
+          let options.timeout = 1
+          " sleep command 100 seconds wait
+          let args = ['sleep', '100']
           let result = Process.execute(args, options)
           " While the execution time reachs the timeout, the success is 0.
           Assert Equals(result.success, 0)
