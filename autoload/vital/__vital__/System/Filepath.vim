@@ -280,7 +280,8 @@ function! s:contains(path, base) abort
   return pathlist[: baselistlen - 1] ==# baselist
 endfunction
 
-if s:is_windows && exists('+completeslash')
+if exists('+completeslash')
+  " completeslash bug in Windows and specific version range (Vim 8.1.1769 - Vim 8.2.1746)
   function! s:expand(path) abort
     let backup_completeslash = &completeslash
     try

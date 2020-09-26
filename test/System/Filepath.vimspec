@@ -124,13 +124,13 @@ Describe System.Filepath
 
   Describe .expand_home()
     if s:is_windows
-      It [windows] non home path arre no expanded, there are same.
+      It [windows] non home path are no expanded, there are same.
         let path = 'C:/Hoge'
         let ret = FP.expand_home(path)
         Assert Equals(ret, path)
       End
     else
-      It [unix] non home path arre no expanded, there are same.
+      It [unix] non home path are no expanded, there are same.
         let path = '/Hoge'
         let ret = FP.expand_home(path)
         Assert Equals(ret, path)
