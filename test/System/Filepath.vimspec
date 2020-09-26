@@ -137,7 +137,11 @@ Describe System.Filepath
       End
     endif
     It expand head ~ home path
-      let path = '~/Hoge'
+      if s:is_windows
+        let path = '~\Hoge'
+      else
+        let path = '~/Hoge'
+      endif
       let ret = FP.expand_home(path)
       Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
     End
@@ -157,7 +161,7 @@ Describe System.Filepath
         It [windows] completeslash not set home expand test
           let backup_completeslash = &completeslash
           set completeslash&
-          let path = '~/Hoge'
+          let path = '~\Hoge'
           let ret = FP.expand_home(path)
           Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
           let &completeslash = backup_completeslash
@@ -165,7 +169,7 @@ Describe System.Filepath
         It [windows] completeslash=slash home expand test
           let backup_completeslash = &completeslash
           set completeslash=slash
-          let path = '~/Hoge'
+          let path = '~\Hoge'
           let ret = FP.expand_home(path)
           Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
           let &completeslash = backup_completeslash
@@ -173,7 +177,7 @@ Describe System.Filepath
         It [windows] completeslash=backslash home expand test
           let backup_completeslash = &completeslash
           set completeslash=backslash
-          let path = '~/Hoge'
+          let path = '~\Hoge'
           let ret = FP.expand_home(path)
           Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
           let &completeslash = backup_completeslash
