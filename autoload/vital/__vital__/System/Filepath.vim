@@ -15,7 +15,7 @@ let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
-" windows expand follow do not need for file extention
+" windows expand follow do not need for file extension
 let s:is_case_tolerant = filereadable(expand('<sfile>:r') . '.VIM')
 
 if s:is_windows
@@ -237,7 +237,7 @@ endfunction
 
 if s:is_windows
   function! s:realpath(path) abort
-    if exists('&shellslash') && &shellslash
+    if exists('+shellslash') && &shellslash
       return s:unixpath(a:path)
     else
       return s:winpath(a:path)
@@ -280,7 +280,7 @@ function! s:contains(path, base) abort
   return pathlist[: baselistlen - 1] ==# baselist
 endfunction
 
-if s:is_windows && exists('&completeslash')
+if s:is_windows && exists('+completeslash')
   function! s:expand(path) abort
     let backup_completeslash = &completeslash
     try
