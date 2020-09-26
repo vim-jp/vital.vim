@@ -143,7 +143,6 @@ Describe System.Filepath
     End
     It  include .. in path no-expand, but head ~ home expanded.
       if s:is_windows
-        " base shellslash not set need
         let target = '~\Hoge\..\Fuga'
       else
         let target = '~/Hoge/../Fuga'
@@ -154,6 +153,32 @@ Describe System.Filepath
     End
     if s:is_windows
       " need completeslash test
+      if exists('&completeslash')
+        It [windows] completeslash not set home expand test
+          let backup_completeslash = &completeslash
+          set completeslash&
+          let path = '~/Hoge'
+          let ret = FP.expand_home(path)
+          Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
+          let &completeslash = backup_completeslash
+        End
+        It [windows] completeslash=slash home expand test
+          let backup_completeslash = &completeslash
+          set completeslash=slash
+          let path = '~/Hoge'
+          let ret = FP.expand_home(path)
+          Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
+          let &completeslash = backup_completeslash
+        End
+        It [windows] completeslash=backslash home expand test
+          let backup_completeslash = &completeslash
+          set completeslash=backslash
+          let path = '~/Hoge'
+          let ret = FP.expand_home(path)
+          Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
+          let &completeslash = backup_completeslash
+        End
+      endif
     else
       " need ~user test
       It [unix] ~user expand check
