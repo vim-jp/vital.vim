@@ -157,6 +157,15 @@ Vital has module system. The below is an example to import/load a module
 
 ```vim
 " Recommended way
+let s:O = vital#pluginname#import('Math')
+call s:O.lcm([2, 3, 4])
+" -> 12
+```
+
+or
+
+```vim
+" Alternate way
 let s:V = vital#pluginname#new()
 let s:O = s:V.import('Math')
 call s:O.lcm([2, 3, 4])
@@ -166,7 +175,7 @@ call s:O.lcm([2, 3, 4])
 or
 
 ```vim
-" Recommended way only if you rarely use the module
+" Alternate way only if you rarely use the module
 let s:V = vital#pluginname#new()
 call s:V.load('Math')
 call s:V.Math.lcm([2, 3, 4])
