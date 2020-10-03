@@ -41,6 +41,7 @@ Module						 | Description
 [Assertion](doc/vital/Assertion.txt)		 | assertion library
 [Async.Promise](doc/vital/Async/Promise.txt)	 | An asynchronous operation like ES6 Promise
 [Bitwise](doc/vital/Bitwise.txt)		 | bitwise operators
+[Color](doc/vital/Color.txt)                     | color conversion library between RGB/HSL/terminal code
 [ConcurrentProcess](doc/vital/ConcurrentProcess.txt)	 | manages processes concurrently with vimproc
 [Data.Base64](doc/vital/Data/Base64.txt)	 | base64 utilities library
 [Data.Base64.RFC4648](doc/vital/Data/Base64/RFC4648.txt)	 | base64 RFC4648 utilities library
