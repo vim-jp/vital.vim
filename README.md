@@ -153,29 +153,29 @@ and then you can call functions by `pluginname#util#system()`, without taking ca
 of `vital.vim` itself. It's all hidden.
 
 Vital has module system. The below is an example to import/load a module
-`Data.OrderedSet` and to call a function `f()` of the module.
+`Math` and to call a function `lcm()` of the module.
 
 ```vim
 " Recommended way
-let s:O = vital#pluginname#import('Math')
-call s:O.lcm([2, 3, 4])
+let s:M = vital#pluginname#import('Math')
+call s:M.lcm([2, 3, 4])
 " -> 12
 ```
 
 or
 
 ```vim
-" Alternate way
+" Alternative way
 let s:V = vital#pluginname#new()
-let s:O = s:V.import('Math')
-call s:O.lcm([2, 3, 4])
+let s:M = s:V.import('Math')
+call s:M.lcm([2, 3, 4])
 " -> 12
 ```
 
 or
 
 ```vim
-" Alternate way only if you rarely use the module
+" Alternative way only if you rarely use the module
 let s:V = vital#pluginname#new()
 call s:V.load('Math')
 call s:V.Math.lcm([2, 3, 4])
