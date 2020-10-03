@@ -117,10 +117,11 @@ Module						 | Description
 ### Install modules for your own plugin
 
 Use `:Vitalize` to install modules.
+Assuming your Vim plugin name is `pluginname`.
 Please see [the help](doc/vitalizer.txt) for more details.
 
 ```vim
-:Vitalize --name=your_plugin_name $HOME/.vim/bundle/your_plugin_dir/
+:Vitalize --name=pluginname $HOME/.vim/bundle/pluginname/
 ```
 
 You can also install only specified modules; recommended for making your
@@ -128,22 +129,27 @@ repository size small, assuming you are going to upload it to a remote
 repository
 
 ```vim
-:Vitalize --name=your_plugin_name $HOME/.vim/bundle/your_plugin_dir/ Data.String Data.List
+:Vitalize --name=pluginname $HOME/.vim/bundle/pluginname/ Data.String Data.List
 ```
 
 ### Use vital functions
 
-Assuming your Vim plugin name is `ujihisa`. You can define your utility
-function set `ujihisa#util` just by
+Assuming your Vim plugin name is `pluginname`. You can define your utility
+function set `pluginname#util` just by
 
 ```vim
-let s:V = vital#ujihisa#new()
-function! ujihisa#util#system(...)
-  return call(s:V.system, a:000, s:V)
+let s:V = vital#pluginname#new()
+let s:process = s:V.import('System.Process')
+
+function! pluginname#util#system(...)
+  return s:process.execute(a:000)
 endfunction
+" run
+" echo pluginname#util#system('echo','abc')
+" -> $ echo abc
 ```
 
-and then you can call functions by `ujihisa#util#system()`, without taking care
+and then you can call functions by `pluginname#util#system()`, without taking care
 of `vital.vim` itself. It's all hidden.
 
 Vital has module system. The below is an example to import/load a module
@@ -151,27 +157,30 @@ Vital has module system. The below is an example to import/load a module
 
 ```vim
 " Recommended way
-let s:V = vital#ujihisa#new()
-let s:O = s:V.import('Data.OrderedSet')
-call s:O.f()
+let s:V = vital#pluginname#new()
+let s:O = s:V.import('Math')
+call s:O.lcm([2, 3, 4])
+" -> 12
 ```
 
 or
 
 ```vim
 " Recommended way only if you rarely use the module
-let s:V = vital#ujihisa#new()
-call s:V.load('Data.OrderedSet')
-call s:V.Data.OrderedSet.f()
+let s:V = vital#pluginname#new()
+call s:V.load('Math')
+call s:V.Math.lcm([2, 3, 4])
+" -> 12
 ```
 
 or
 
 ```vim
 " Available, but we don't recommend this very much
-let s:V = vital#ujihisa#new()
-call s:V.import('Data.OrderedSet', s:)
-call s:f()
+let s:V = vital#pluginname#new()
+call s:V.import('Math', s:)
+call s:lcm([2, 3, 4])
+" -> 12
 ```
 
 We recommend you to use a capital letter for a Vital module dictionary to assign.
