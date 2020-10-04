@@ -117,6 +117,7 @@ Module						 | Description
 ### Install modules for your own plugin
 
 Use `:Vitalize` to install modules.
+Assuming your Vim plugin name is `your_plugin_name` and plugin directory is `your_plugin_dir`. 
 Please see [the help](doc/vitalizer.txt) for more details.
 
 ```vim
@@ -133,45 +134,61 @@ repository
 
 ### Use vital functions
 
-Assuming your Vim plugin name is `ujihisa`. You can define your utility
-function set `ujihisa#util` just by
+Assuming your Vim plugin name is `your_plugin_name`. You can define your utility
+function set `your_plugin_name#util` just by
 
 ```vim
-let s:V = vital#ujihisa#new()
-function! ujihisa#util#system(...)
-  return call(s:V.system, a:000, s:V)
+let s:Process = vital#your_plugin_name#import('System.Process')
+
+function! your_plugin_name#util#system(...)
+  return s:Process.execute(a:000)
 endfunction
+" run
+" echo your_plugin_name#util#system('echo','abc')
+" -> $ echo abc
 ```
 
-and then you can call functions by `ujihisa#util#system()`, without taking care
+and then you can call functions by `your_plugin_name#util#system()`, without taking care
 of `vital.vim` itself. It's all hidden.
 
 Vital has module system. The below is an example to import/load a module
-`Data.OrderedSet` and to call a function `f()` of the module.
+`Math` and to call a function `lcm()` of the module.
 
 ```vim
 " Recommended way
-let s:V = vital#ujihisa#new()
-let s:O = s:V.import('Data.OrderedSet')
-call s:O.f()
+let s:M = vital#your_plugin_name#import('Math')
+call s:M.lcm([2, 3, 4])
+" -> 12
 ```
 
 or
 
 ```vim
-" Recommended way only if you rarely use the module
-let s:V = vital#ujihisa#new()
-call s:V.load('Data.OrderedSet')
-call s:V.Data.OrderedSet.f()
+" Alternative way
+let s:V = vital#your_plugin_name#new()
+let s:M = s:V.import('Math')
+call s:M.lcm([2, 3, 4])
+" -> 12
+```
+
+or
+
+```vim
+" Alternative way only if you rarely use the module
+let s:V = vital#your_plugin_name#new()
+call s:V.load('Math')
+call s:V.Math.lcm([2, 3, 4])
+" -> 12
 ```
 
 or
 
 ```vim
 " Available, but we don't recommend this very much
-let s:V = vital#ujihisa#new()
-call s:V.import('Data.OrderedSet', s:)
-call s:f()
+let s:V = vital#your_plugin_name#new()
+call s:V.import('Math', s:)
+call s:lcm([2, 3, 4])
+" -> 12
 ```
 
 We recommend you to use a capital letter for a Vital module dictionary to assign.

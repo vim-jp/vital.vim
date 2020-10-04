@@ -36,35 +36,41 @@ Please read the docs of each module before using them.
 ==============================================================================
 USAGE					*Vital-usage*
 
-Assuming your Vim plugin name is "ujihisa", you can define your utility
-function set 'ujihisa#util' just by
+Assuming your Vim plugin name is "your_plugin_name". You can define your utility
+function set "your_plugin_name#util" just by
 >
-    let s:P = vital#ujihisa#new().import('Process')
-    function! ujihisa#util#system(...)
-      return call(s:P.system, a:000, s:P)
+    let s:Process = vital#your_plugin_name#import('System.Process')
+    
+    function! your_plugin_name#util#system(...)
+       return s:Process.execute(a:000)
     endfunction
 <
-and then you can call functions by 'ujihisa#util#system()', without taking
+and then you can call functions by 'your_plugin_name#util#system()', without taking
 care of |vital.vim| itself. It's all hidden.
 
 |Vital| has module system. The below is an example to import/load a module
-"data/ordered_set" and to call a function "f()" of the module.
+"Math" and to call a function "lcm()" of the module.
 >
-    let s:V = vital#ujihisa#new()
-    let s:O = s:V.import('Data.OrderedSet')
-    call s:O.f()
+    let s:M = vital#your_plugin_name#import('Math')
+    call s:M.lcm([2, 3, 4])
 <
 or
 >
-    let s:V = vital#ujihisa#new()
-    call s:V.load('Data.OrderedSet')
-    call s:V.Data.OrderedSet.f()
+    let s:V = vital#your_plugin_name#new()
+    let s:M = s:V.import('Math')
+    call s:M.lcm([2, 3, 4])
 <
 or
 >
-    let s:V = vital#ujihisa#new()
-    call s:V.import('Data.OrderedSet', s:)
-    call s:f()
+    let s:V = vital#your_plugin_name#new()
+    call s:V.load('Math')
+    call s:V.Math.lcm([2, 3, 4])
+<
+or
+>
+    let s:V = vital#your_plugin_name#new()
+    call s:V.import('Math', s:)
+    call s:lcm([2, 3, 4])
 <
 We recommend you to use a capital letter for a Vital module dictionary to
 assign as Vital convention. That makes your code more readable among Vital
