@@ -15,6 +15,7 @@ let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
+
 let s:is_case_tolerant = filereadable(expand('<sfile>:r') . '.VIM')
 
 if s:is_windows
@@ -203,8 +204,8 @@ function! s:expand_home(path) abort
   endif
   let post_home_idx = match(a:path, s:path_sep_pattern)
   return post_home_idx is# -1
-        \ ? s:remove_last_separator(expand(a:path))
-        \ : s:remove_last_separator(expand(a:path[0 : post_home_idx - 1]))
+        \ ? s:remove_last_separator(s:expand(a:path))
+        \ : s:remove_last_separator(s:expand(a:path[0 : post_home_idx - 1]))
         \   . a:path[post_home_idx :]
 endfunction
 
@@ -236,7 +237,7 @@ endfunction
 
 if s:is_windows
   function! s:realpath(path) abort
-    if exists('&shellslash') && &shellslash
+    if exists('+shellslash') && &shellslash
       return s:unixpath(a:path)
     else
       return s:winpath(a:path)
@@ -278,6 +279,23 @@ function! s:contains(path, base) abort
   endif
   return pathlist[: baselistlen - 1] ==# baselist
 endfunction
+
+if exists('+completeslash')
+  " completeslash bug in Windows and specific version range (Vim 8.1.1769 - Vim 8.2.1746)
+  function! s:expand(path) abort
+    let backup_completeslash = &completeslash
+    try
+      set completeslash&
+      return expand(a:path)
+    finally
+      let &completeslash = backup_completeslash
+    endtry
+  endfunction
+else
+  function! s:expand(path) abort
+    return expand(a:path)
+  endfunction
+endif
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

@@ -1,5 +1,6 @@
 let s:V = vital#vital#new()
 let s:is_windows = has('win32')
+let s:is_mac = has('mac')
 
 Describe System.Filepath
   Before all
@@ -119,6 +120,82 @@ Describe System.Filepath
       Assert NotSame(ret, path)
       Assert Equals(ret, 'C:/Foo/Bar/Hoge.txt')
     End
+  End
+
+  Describe .expand_home()
+    if s:is_windows
+      It [windows] non home path are no expanded, there are same.
+        let path = 'C:/Hoge'
+        let ret = FP.expand_home(path)
+        Assert Equals(ret, path)
+      End
+    else
+      It [unix] non home path are no expanded, there are same.
+        let path = '/Hoge'
+        let ret = FP.expand_home(path)
+        Assert Equals(ret, path)
+      End
+    endif
+    It expand head ~ home path
+      if s:is_windows
+        let path = '~\Hoge'
+      else
+        let path = '~/Hoge'
+      endif
+      let ret = FP.expand_home(path)
+      Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
+    End
+    It  include .. in path no-expand, but head ~ home expanded.
+      if s:is_windows
+        let target = '~\Hoge\..\Fuga'
+      else
+        let target = '~/Hoge/../Fuga'
+      endif
+      let path = '~' . FP.separator() . target
+      let ret = FP.expand_home(path)
+      Assert Equals(ret, $HOME . FP.separator() . target)
+    End
+    if s:is_windows
+      " need completeslash test
+      if exists('&completeslash')
+        It [windows] completeslash not set home expand test
+          let backup_completeslash = &completeslash
+          set completeslash&
+          let path = '~\Hoge'
+          let ret = FP.expand_home(path)
+          Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
+          let &completeslash = backup_completeslash
+        End
+        It [windows] completeslash=slash home expand test
+          let backup_completeslash = &completeslash
+          set completeslash=slash
+          let path = '~\Hoge'
+          let ret = FP.expand_home(path)
+          Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
+          let &completeslash = backup_completeslash
+        End
+        It [windows] completeslash=backslash home expand test
+          let backup_completeslash = &completeslash
+          set completeslash=backslash
+          let path = '~\Hoge'
+          let ret = FP.expand_home(path)
+          Assert Equals(ret, $HOME . FP.separator() . 'Hoge')
+          let &completeslash = backup_completeslash
+        End
+      endif
+    else
+      " need ~user test
+      It [unix] ~user expand check
+        let path = '~root/Hoge'
+        let ret = FP.expand_home(path)
+        if s:is_mac
+          let expect = '/var/root/Hoge'
+        else
+          let expect = '/root/Hoge'
+        endif
+        Assert Equals(ret, expect)
+      End
+    endif
   End
 
   Describe .winpath()
