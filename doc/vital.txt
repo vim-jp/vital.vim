@@ -36,40 +36,39 @@ Please read the docs of each module before using them.
 ==============================================================================
 USAGE					*Vital-usage*
 
-Assuming your Vim plugin name is "pluginname". You can define your utility
-function set "pluginname#util" just by
+Assuming your Vim plugin name is "your_plugin_name". You can define your utility
+function set "your_plugin_name#util" just by
 >
-    let s:V = vital#pluginname#new()
-    let s:process = s:V.import('System.Process')
+    let s:Process = vital#your_plugin_name#import('System.Process')
     
-    function! pluginname#util#system(...)
-      return s:process.execute(a:000)
+    function! your_plugin_name#util#system(...)
+       return s:Process.execute(a:000)
     endfunction
 <
-and then you can call functions by 'pluginname#util#system()', without taking
+and then you can call functions by 'your_plugin_name#util#system()', without taking
 care of |vital.vim| itself. It's all hidden.
 
 |Vital| has module system. The below is an example to import/load a module
 "Math" and to call a function "lcm()" of the module.
 >
-    let s:M = vital#pluginname#import('Math')
+    let s:M = vital#your_plugin_name#import('Math')
     call s:M.lcm([2, 3, 4])
 <
 or
 >
-    let s:V = vital#pluginname#new()
+    let s:V = vital#your_plugin_name#new()
     let s:M = s:V.import('Math')
     call s:M.lcm([2, 3, 4])
 <
 or
 >
-    let s:V = vital#pluginname#new()
+    let s:V = vital#your_plugin_name#new()
     call s:V.load('Math')
     call s:V.Math.lcm([2, 3, 4])
 <
 or
 >
-    let s:V = vital#pluginname#new()
+    let s:V = vital#your_plugin_name#new()
     call s:V.import('Math', s:)
     call s:lcm([2, 3, 4])
 <

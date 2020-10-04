@@ -117,11 +117,11 @@ Module						 | Description
 ### Install modules for your own plugin
 
 Use `:Vitalize` to install modules.
-Assuming your Vim plugin name is `pluginname`.
+Assuming your Vim plugin name is `your_plugin_name` and plugin directory is `your_plugin_dir`. 
 Please see [the help](doc/vitalizer.txt) for more details.
 
 ```vim
-:Vitalize --name=pluginname $HOME/.vim/bundle/pluginname/
+:Vitalize --name=your_plugin_name $HOME/.vim/bundle/your_plugin_dir/
 ```
 
 You can also install only specified modules; recommended for making your
@@ -129,27 +129,26 @@ repository size small, assuming you are going to upload it to a remote
 repository
 
 ```vim
-:Vitalize --name=pluginname $HOME/.vim/bundle/pluginname/ Data.String Data.List
+:Vitalize --name=your_plugin_name $HOME/.vim/bundle/your_plugin_dir/ Data.String Data.List
 ```
 
 ### Use vital functions
 
-Assuming your Vim plugin name is `pluginname`. You can define your utility
-function set `pluginname#util` just by
+Assuming your Vim plugin name is `your_plugin_name`. You can define your utility
+function set `your_plugin_name#util` just by
 
 ```vim
-let s:V = vital#pluginname#new()
-let s:process = s:V.import('System.Process')
+let s:Process = vital#your_plugin_name#import('System.Process')
 
-function! pluginname#util#system(...)
-  return s:process.execute(a:000)
+function! your_plugin_name#util#system(...)
+  return s:Process.execute(a:000)
 endfunction
 " run
-" echo pluginname#util#system('echo','abc')
+" echo your_plugin_name#util#system('echo','abc')
 " -> $ echo abc
 ```
 
-and then you can call functions by `pluginname#util#system()`, without taking care
+and then you can call functions by `your_plugin_name#util#system()`, without taking care
 of `vital.vim` itself. It's all hidden.
 
 Vital has module system. The below is an example to import/load a module
@@ -157,7 +156,7 @@ Vital has module system. The below is an example to import/load a module
 
 ```vim
 " Recommended way
-let s:M = vital#pluginname#import('Math')
+let s:M = vital#your_plugin_name#import('Math')
 call s:M.lcm([2, 3, 4])
 " -> 12
 ```
@@ -166,7 +165,7 @@ or
 
 ```vim
 " Alternative way
-let s:V = vital#pluginname#new()
+let s:V = vital#your_plugin_name#new()
 let s:M = s:V.import('Math')
 call s:M.lcm([2, 3, 4])
 " -> 12
@@ -176,7 +175,7 @@ or
 
 ```vim
 " Alternative way only if you rarely use the module
-let s:V = vital#pluginname#new()
+let s:V = vital#your_plugin_name#new()
 call s:V.load('Math')
 call s:V.Math.lcm([2, 3, 4])
 " -> 12
@@ -186,7 +185,7 @@ or
 
 ```vim
 " Available, but we don't recommend this very much
-let s:V = vital#pluginname#new()
+let s:V = vital#your_plugin_name#new()
 call s:V.import('Math', s:)
 call s:lcm([2, 3, 4])
 " -> 12
