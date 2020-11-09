@@ -55,15 +55,14 @@ try:
                 req = urllib.request.Request(settings['url'], data, request_headers)
                 req.get_method = lambda: settings['method']
                 default_timeout = socket.getdefaulttimeout()
+                res = None
                 try:
                     # for Python 2.5 or before <- Is this needed?
                     socket.setdefaulttimeout(timeout)
                     res = director.open(req, timeout=timeout)
-                except urllib.error.HTTPError as res:
-                    pass
-                except urllib.error.URLError:
-                    return ('', '')
-                except urllib.error.ContentTooShortError:
+                except urllib.error.HTTPError as e:
+                    res = e
+                except (urllib.error.URLError, urllib.error.ContentTooShortError):
                     return ('', '')
                 except socket.timeout:
                     return ('', '')
