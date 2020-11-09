@@ -63,10 +63,15 @@ try:
                     pass
                 except urllib.error.URLError:
                     return ('', '')
+                except urllib.error.ContentTooShortError:
+                    return ('', '')
                 except socket.timeout:
                     return ('', '')
                 finally:
                     socket.setdefaulttimeout(default_timeout)
+
+                if res is None:
+                    return ('', '')
 
                 st = status(res.code, res.msg)
                 response_headers = st + ''.join(res.headers)
