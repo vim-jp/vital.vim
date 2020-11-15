@@ -31,8 +31,6 @@ function! s:from_num(n) abort
   let bignum = deepcopy(s:_ZERO)
   let bignum.sign = (a:n < 0) ? -1 : 1
 
-  let sign = (a:n < 0) ? -1 : 1
-
   let num = []
 
   " abs(-max) > abs(max), first time divid before sign removal
@@ -56,7 +54,7 @@ endfunction
 
 function! s:from_string(str) abort
   if !s:_is_number(a:str)
-    call s:_throw('is not string or number string: '.a:str)
+    call s:_throw('is not string or non-number string: ' . string(a:str))
   endif
 
   let bignum = deepcopy(s:_ZERO)
