@@ -3,6 +3,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_loaded(V) abort
+  let s:V = a:V
+  let s:P = s:V.import('Prelude')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Prelude']
+endfunction
+
 let s:_ZERO = {'num': [0], 'sign': 1}
 let s:_NODE_MAX_DIGIT = 4
 let s:_NODE_MAX_NUM = 10000
@@ -11,18 +20,43 @@ lockvar! s:_NODE_MAX_DIGIT
 lockvar! s:_NODE_MAX_NUM
 
 function! s:_is_number(str) abort
-  return a:str =~# '^[+-]\?\d\+$'
+  return s:P.is_string(a:str) && (a:str =~# '^[+-]\?\d\+$')
 endfunction
 
 function! s:from_num(n) abort
-  " TODO: do not use s:from_string
-  return s:from_string(string(a:n))
+  if !s:P.is_number(a:n)
+    call s:_throw('is not number: ' . string(a:n))
+  endif
+
+  let bignum = deepcopy(s:_ZERO)
+  let bignum.sign = (a:n < 0) ? -1 : 1
+
+  let num = []
+
+  " abs(-max) > abs(max), first time divid before sign removal
+  let div = a:n
+  let remain = 0
+  let [div, remain] = [div / s:_NODE_MAX_NUM, div % s:_NODE_MAX_NUM]
+
+  let [div, remain] = [abs(div), abs(remain)]
+
+  while div != 0
+    let num = extend(num, [remain])
+
+    let [div, remain] = [div / s:_NODE_MAX_NUM, div % s:_NODE_MAX_NUM]
+  endwhile
+
+  let num = extend(num, [remain])
+
+  let l:bignum.num = reverse(num)
+  return s:_fix_form(l:bignum)
 endfunction
 
 function! s:from_string(str) abort
-  if s:_is_number(a:str) != 1
-    call s:_throw('is not number: '.a:str)
+  if !s:_is_number(a:str)
+    call s:_throw('is not string or non-number string: ' . string(a:str))
   endif
+
   let bignum = deepcopy(s:_ZERO)
   let bignum.sign = (a:str[0] ==# '-') ? -1 : 1
   if a:str =~# '^[+-]'
