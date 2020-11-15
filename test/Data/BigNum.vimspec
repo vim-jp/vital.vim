@@ -428,7 +428,7 @@ Describe Data.BigNum
       Assert Equals(B.div_mod('519920419074760465703', '22801763489'), [B.from_string('22801763527'), B.from_num(0)])
     End
     It basic div/mod, div zero.
-      Assert Equals(B.div_mod('22801763489', '519920419074760465703'), [B.from_num(0), B.from_string('22801763527')])
+      Assert Equals(B.div_mod('22801763489', '519920419074760465703'), [B.from_num(0), B.from_string('22801763489')])
     End
   End
 
