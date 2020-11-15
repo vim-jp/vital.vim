@@ -55,18 +55,22 @@ try:
                 req = urllib2.Request(settings['url'], data, request_headers)
                 req.get_method = lambda: settings['method']
                 default_timeout = socket.getdefaulttimeout()
+                res = None
                 try:
                     # for Python 2.5 or before
                     socket.setdefaulttimeout(timeout)
                     res = director.open(req, timeout=timeout)
-                except urllib2.HTTPError as res:
-                    pass
+                except urllib2.HTTPError as e:
+                    res = e
                 except urllib2.URLError:
                     return ('', '')
                 except socket.timeout:
                     return ('', '')
                 finally:
                     socket.setdefaulttimeout(default_timeout)
+
+                if res is None:
+                    return ('', '')
 
                 st = status(res.code, res.msg)
                 response_headers = st + ''.join(res.info().headers)
