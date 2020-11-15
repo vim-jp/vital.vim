@@ -19,6 +19,18 @@ Describe Data.BigNum
     It netative value, under int -max
       Assert Equals(B.from_num(-2147483648), {'num': [21, 4748, 3648], 'sign': -1})
     End
+
+    Context Invalid Data check
+      It invalid type
+        Throw /vital: Data.BigNum:/ B.from_num([])
+      End
+      It invalid num(not number / float)
+        Throw /vital: Data.BigNum:/ B.from_num(0.5)
+      End
+      It invalid string type
+        Throw /vital: Data.BigNum:/ B.from_num('abc')
+      End
+    End
   End
 
   Describe .from_string()
@@ -39,6 +51,15 @@ Describe Data.BigNum
     End
     It huge value, multiblock
       Assert Equals(B.from_string('10002000300040000'), {'num': [1, 2, 3, 4, 0], 'sign': 1})
+    End
+
+    Context Invalid Data check
+      It invalid type
+        Throw /vital: Data.BigNum:/ B.from_string([])
+      End
+      It invalid string not number
+        Throw /vital: Data.BigNum:/ B.from_string('abc')
+      End
     End
   End
 
