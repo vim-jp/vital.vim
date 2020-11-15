@@ -30,6 +30,9 @@ Describe Data.BigNum
       It invalid string type.
         Throw /vital: Data.BigNum:/ B.from_num('abc')
       End
+      It invalid string, but valid string data.
+        Throw /vital: Data.BigNum:/ B.from_num('2')
+      End
     End
   End
 
@@ -40,13 +43,13 @@ Describe Data.BigNum
     It positive value.
       Assert Equals(B.from_string('123'), {'num': [123], 'sign': 1})
     End
-    It positive value, large.
+    It positive value, huge.
       Assert Equals(B.from_string('12345678901'), {'num': [123, 4567, 8901], 'sign': 1})
     End
     It negative value.
       Assert Equals(B.from_string('-123'), {'num': [123], 'sign': -1})
     End
-    It negative value, large.
+    It negative value, huge.
       Assert Equals(B.from_string('-12345678901'), {'num': [123, 4567, 8901], 'sign': -1})
     End
     It huge value, multiblock.
@@ -60,6 +63,9 @@ Describe Data.BigNum
       It invalid string not number.
         Throw /vital: Data.BigNum:/ B.from_string('abc')
       End
+      It invalid string not number / float.
+        Throw /vital: Data.BigNum:/ B.from_string('3.5')
+      End
     End
   End
 
@@ -70,13 +76,13 @@ Describe Data.BigNum
     It positive value.
       Assert Equals(B.to_string({'num': [123], 'sign': 1}), '123')
     End
-    It positive value, large.
+    It positive value, huge.
       Assert Equals(B.to_string({'num': [123, 4567, 8901], 'sign': 1}), '12345678901')
     End
     It negative value.
       Assert Equals(B.to_string({'num': [123], 'sign': -1}), '-123')
     End
-    It negative value, large.
+    It negative value, huge.
       Assert Equals(B.to_string({'num': [123, 4567, 8901], 'sign': -1}), '-12345678901')
     End
     It huge value, multiblock at each block store non 4digit.
@@ -101,6 +107,12 @@ Describe Data.BigNum
       It positive value, b greater than a.
         Assert Equals(B.compare(1, 2), -1)
       End
+      It negative value, b less than a.
+        Assert Equals(B.compare(-1, -2), 1)
+      End
+      It negative value, b greater than a.
+        Assert Equals(B.compare(-2, -1), -1)
+      End
       It positive and negative value.
         Assert Equals(B.compare(1, -1), 1)
       End
@@ -110,22 +122,22 @@ Describe Data.BigNum
     End
 
     Context string and num
-      It large positive value and zero.
+      It positive huge value and zero.
         Assert Equals(B.compare('12345678901', 0), 1)
       End
-      It negative value, large and zero.
+      It negative huge value and zero.
         Assert Equals(B.compare('-12345678901', 0), -1)
       End
     End
 
     Context string and string
-      It positive value, same large.
+      It positive value, same huge.
         Assert Equals(B.compare('12345678901', '12345678901'), 0)
       End
-      It negative value, same large.
+      It negative value, same huge.
         Assert Equals(B.compare('-12345678901', '-12345678901'), 0)
       End
-      It positive value, large. b less than a.
+      It positive value, huge. b less than a.
         Assert Equals(B.compare('12345678901', '11111111111'), 1)
       End
       It negative huge value. b greater than a.
@@ -138,6 +150,9 @@ Describe Data.BigNum
     Context int32 + int32
       It both zero value.
         Assert Equals(B.add(0, 0), B.from_num(0))
+      End
+      It positive value, positive value.
+        Assert Equals(B.add(1, 999), B.from_num(1000))
       End
       It negative value, positive value.
         Assert Equals(B.add(-1, 999), B.from_num(998))
@@ -183,11 +198,20 @@ Describe Data.BigNum
       It both zero value.
         Assert Equals(B.sub(0, 0), B.from_num(0))
       End
+      It positive value, positive value. result positive.
+        Assert Equals(B.sub(999, 1), B.from_num(998))
+      End
+      It positive value, positive value. result negative.
+        Assert Equals(B.sub(1, 999), B.from_num(-998))
+      End
       It negative value, positive value.
         Assert Equals(B.sub(-1, 999), B.from_num(-1000))
       End
-      It negative value, negative value.
+      It negative value, negative value. result positive.
         Assert Equals(B.sub(-1000, -1234), B.from_num(234))
+      End
+      It negative value, negative value. result negative.
+        Assert Equals(B.sub(-1234, -1000), B.from_num(-234))
       End
     End
 
@@ -226,22 +250,25 @@ Describe Data.BigNum
       It both zero value.
         Assert Equals(B.mul(0, 0), B.from_num(0))
       End
-      It positive value, positive value
+      It positive value, positive value.
         Assert Equals(B.mul(12345678, 9), B.from_num(111111102))
       End
-      It negative value, positive value
+      It negative value, positive value.
         Assert Equals(B.mul(-12345678, 2), B.from_num(-24691356))
       End
-      It negative value, negative value
+      It positive value, negative value.
+        Assert Equals(B.mul(2, -12345678), B.from_num(-24691356))
+      End
+      It negative value, negative value.
         Assert Equals(B.mul(-3, -2), B.from_num(6))
       End
     End
 
     Context int32 * int32 -> bignum
-      It positive value, positive value
+      It positive value, positive value.
         Assert Equals(B.mul(1234567890, 1234567890), B.from_string('1524157875019052100'))
       End
-      It negative value, negative value
+      It negative value, negative value.
         Assert Equals(B.mul(-2147483648, -2147483648), B.from_string('4611686018427387904'))
       End
     End
@@ -363,20 +390,20 @@ Describe Data.BigNum
       It positive, positive, huge value case 4.
         Assert Equals(B.div('519920419074760465703', '22801763489'), B.from_string('22801763527'))
       End
-      It positive, positive, super huge value case.
+      It negative, positive, super huge value case.
         Assert Equals(B.div('-1522605027922533360535618378132637429718068114961380688657908494580122963258952897654000350692006139', '37975227936943673922808872755445627854565536638199'), B.from_string('-40094690950920881030683735292761468389214899724061'))
       End
     End
   End
 
   Describe .mod()
-    It positive, negative, result positive one.
+    It positive value, negative value, result positive one.
       Assert Equals(B.mod(3, -2), B.from_num(1))
     End
-    It positive, negative, result negative one.
+    It positive value, negative value, result negative one.
       Assert Equals(B.mod(-3, 2), B.from_num(-1))
     End
-    It negative, negative, result negative one.
+    It negative value, negative value, result negative one.
       Assert Equals(B.mod(-3, -2), B.from_num(-1))
     End
     It mod result zero, 10 times value.
@@ -399,6 +426,9 @@ Describe Data.BigNum
   Describe .div_mod()
     It basic div/mod, mod zero.
       Assert Equals(B.div_mod('519920419074760465703', '22801763489'), [B.from_string('22801763527'), B.from_num(0)])
+    End
+    It basic div/mod, div zero.
+      Assert Equals(B.div_mod('22801763489', '519920419074760465703'), [B.from_num(0), B.from_string('22801763527')])
     End
   End
 
@@ -424,11 +454,17 @@ Describe Data.BigNum
     It zero.
       Assert Equals(B.neg(0), B.from_num(0))
     End
+    It positive value.
+      Assert Equals(B.neg(1111), B.from_num(-1111))
+    End
     It negative value.
       Assert Equals(B.neg(-1111), B.from_num(1111))
     End
     It huge positive to negative.
       Assert Equals(B.neg('1234567890123'), B.from_string('-1234567890123'))
+    End
+    It huge negative to positive.
+      Assert Equals(B.neg('-1234567890123'), B.from_string('1234567890123'))
     End
   End
 End
