@@ -15,6 +15,10 @@ function! s:suite.from_num() abort
   call s:assert.equals(s:BigNum.from_num(-789), {'num': [789], 'sign': -1})
   call s:assert.equals(s:BigNum.from_num(2147483647), {'num': [21, 4748, 3647], 'sign': 1})
   call s:assert.equals(s:BigNum.from_num(-2147483648), {'num': [21, 4748, 3648], 'sign': -1})
+
+  Throw /vital: Data.BigNum:/ s:BigNum.from_num([])
+  Throw /vital: Data.BigNum:/ s:BigNum.from_num(0.5)
+  Throw /vital: Data.BigNum:/ s:BigNum.from_num('abc')
 endfunction
 
 function! s:suite.from_string() abort
@@ -24,6 +28,9 @@ function! s:suite.from_string() abort
   call s:assert.equals(s:BigNum.from_string('-123'), {'num': [123], 'sign': -1})
   call s:assert.equals(s:BigNum.from_string('-12345678901'), {'num': [123, 4567, 8901], 'sign': -1})
   call s:assert.equals(s:BigNum.from_string('10002000300040000'), {'num': [1, 2, 3, 4, 0], 'sign': 1})
+
+  Throw /vital: Data.BigNum:/ s:BigNum.from_string([])
+  Throw /vital: Data.BigNum:/ s:BigNum.from_string('abc')
 endfunction
 
 function! s:suite.to_string() abort
