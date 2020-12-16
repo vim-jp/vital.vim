@@ -171,12 +171,16 @@ Describe Data.List
       delfunction Succ
     End
 
-    It maps given string expression to a list
-      Assert Equals(List.map([1, 2, 3], 'v:val + 1'), [2, 3, 4])
+    It maps given lambda to a list
+      Assert Equals(List.map([1, 2, 3], { x -> x + 1 }), [2, 3, 4])
     End
 
     It maps given funcref to a list without indice
       Assert Equals(List.map([1, 2, 3], function('Succ')), [2, 3, 4])
+    End
+
+    It maps given string expression to a list (DEPRECATED)
+      Assert Equals(List.map([1, 2, 3], 'v:val + 1'), [2, 3, 4])
     End
   End
 
