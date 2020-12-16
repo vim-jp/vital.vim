@@ -185,11 +185,15 @@ Describe Data.List
   End
 
   Describe .filter()
-    It takes elements that satisfies given the predicate as the string expression
+    It takes elements that satisfies given the predicate as the lambda
+      Assert Equals(List.filter(range(0, 9), { x -> x % 2 is 0 }), [0, 2, 4, 6, 8])
+    End
+
+    It takes elements that satisfies given the predicate as the function
       Assert Equals(List.filter(range(0, 9), function('Even')), [0, 2, 4, 6, 8])
     End
 
-    It takes elements that satisfies given the predicate as the funcref
+    It takes elements that satisfies given the predicate as the string expression (DEPRECATED)
       Assert Equals(List.filter(range(0, 9), 'v:val % 2 is 0'), [0, 2, 4, 6, 8])
     End
   End
