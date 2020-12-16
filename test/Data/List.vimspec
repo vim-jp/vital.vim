@@ -1,3 +1,5 @@
+#!themis
+
 Describe Data.List
   Before all
     let V = vital#vital#new()
