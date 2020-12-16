@@ -213,12 +213,12 @@ Describe Data.List
   End
 
   Describe .uniq_by()
-    It makes a list unique based on given string expression
+    It makes a list unique based on given lambda
       Assert Equals(
       \ List.uniq_by([
       \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
       \     ],
-      \     'tolower(v:val)'
+      \     { x -> tolower(x) }
       \   ),
       \ [
       \   'vim', 'emacs', 'gVim'
@@ -238,6 +238,20 @@ Describe Data.List
       \ ]
       \ )
     End
+
+    It makes a list unique based on given string expression (DEPRECATED)
+      Assert Equals(
+      \ List.uniq_by([
+      \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
+      \     ],
+      \     'tolower(v:val)'
+      \   ),
+      \ [
+      \   'vim', 'emacs', 'gVim'
+      \ ]
+      \ )
+    End
+
   End
 
   Describe .clear()
