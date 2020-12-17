@@ -1,3 +1,5 @@
+#!themis
+
 Describe Data.List
   Before all
     let V = vital#vital#new()
@@ -169,21 +171,29 @@ Describe Data.List
       delfunction Succ
     End
 
-    It maps given string expression to a list
-      Assert Equals(List.map([1, 2, 3], 'v:val + 1'), [2, 3, 4])
+    It maps given lambda to a list
+      Assert Equals(List.map([1, 2, 3], { x -> x + 1 }), [2, 3, 4])
     End
 
     It maps given funcref to a list without indice
       Assert Equals(List.map([1, 2, 3], function('Succ')), [2, 3, 4])
     End
+
+    It maps given string expression to a list (DEPRECATED)
+      Assert Equals(List.map([1, 2, 3], 'v:val + 1'), [2, 3, 4])
+    End
   End
 
   Describe .filter()
-    It takes elements that satisfies given the predicate as the string expression
+    It takes elements that satisfies given the predicate as the lambda
+      Assert Equals(List.filter(range(0, 9), { x -> x % 2 is 0 }), [0, 2, 4, 6, 8])
+    End
+
+    It takes elements that satisfies given the predicate as the function
       Assert Equals(List.filter(range(0, 9), function('Even')), [0, 2, 4, 6, 8])
     End
 
-    It takes elements that satisfies given the predicate as the funcref
+    It takes elements that satisfies given the predicate as the string expression (DEPRECATED)
       Assert Equals(List.filter(range(0, 9), 'v:val % 2 is 0'), [0, 2, 4, 6, 8])
     End
   End
@@ -203,12 +213,12 @@ Describe Data.List
   End
 
   Describe .uniq_by()
-    It makes a list unique based on given string expression
+    It makes a list unique based on given lambda
       Assert Equals(
       \ List.uniq_by([
       \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
       \     ],
-      \     'tolower(v:val)'
+      \     { x -> tolower(x) }
       \   ),
       \ [
       \   'vim', 'emacs', 'gVim'
@@ -228,6 +238,20 @@ Describe Data.List
       \ ]
       \ )
     End
+
+    It makes a list unique based on given string expression (DEPRECATED)
+      Assert Equals(
+      \ List.uniq_by([
+      \       'vim', 'Vim', 'VIM', 'emacs', 'Emacs', 'EMACS', 'gVim', 'GVIM'
+      \     ],
+      \     'tolower(v:val)'
+      \   ),
+      \ [
+      \   'vim', 'emacs', 'gVim'
+      \ ]
+      \ )
+    End
+
   End
 
   Describe .clear()
@@ -252,27 +276,32 @@ Describe Data.List
 
   Describe .max_by()
     It returns 0 if the list is empty.
-      Assert Equals(List.max_by([], 'v:val'), 0)
+      Assert Equals(List.max_by([], { x -> x }), 0)
     End
 
-    It returns a maximum value in the non empty list through the given string expr
+    It returns a maximum value in the non empty list through the given lambda
       Assert Equals(List.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'hehehe')
-      Assert Equals(List.max_by([20, -50, -15, 30], 'abs(v:val)'), -50)
+      Assert Equals(List.max_by([20, -50, -15, 30], { x -> abs(x) }), -50)
     End
 
     It returns a maximum value in the non empty list through the given funcref
       Assert Equals(List.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], function('len')), 'hehehe')
       Assert Equals(List.max_by([20, -50, -15, 30], function('abs')), -50)
     End
+
+    It returns a maximum value in the non empty list through the given string expr (DEPRECATED)
+      Assert Equals(List.max_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'hehehe')
+      Assert Equals(List.max_by([20, -50, -15, 30], 'abs(v:val)'), -50)
+    End
   End
 
   Describe .min_by()
     It returns 0 if the list is empty.
-      Assert Equals(List.min_by([], 'v:val'), 0)
+      Assert Equals(List.min_by([], { x -> x }), 0)
     End
 
-    It returns a minimum value in the non empty list through the given string expr
-      Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'foo')
+    It returns a minimum value in the non empty list through the given lambda
+      Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], { x -> len(x) }), 'foo')
       Assert Equals(List.min_by([20, -50, -15, 30], 'abs(v:val)'), -15)
     End
 
@@ -280,13 +309,18 @@ Describe Data.List
       Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], function('len')), 'foo')
       Assert Equals(List.min_by([20, -50, -15, 30], function('abs')), -15)
     End
+
+    It returns a minimum value in the non empty list through the given string expr (DEPRECATED)
+      Assert Equals(List.min_by(['hoge', 'foo', 'hehehe', 'yahoo'], 'len(v:val)'), 'foo')
+      Assert Equals(List.min_by([20, -50, -15, 30], 'abs(v:val)'), -15)
+    End
   End
 
   Describe .span()
-    It splits a list into two lists with given string expression. The former is until the given condition doesn't satisfy.
-      Assert Equals(List.span('v:val < 5', [1, 3, 5, 2]), [[1, 3], [5, 2]])
-      Assert Equals(List.span('v:val > 3', [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
-      Assert Equals(List.span('v:val < 3', [1, 2, 3, 4, 5]), [[1, 2], [3, 4, 5]])
+    It splits a list into two lists with given lambda. The former is until the given condition doesn't satisfy.
+      Assert Equals(List.span({ x -> x < 5 }, [1, 3, 5, 2]), [[1, 3], [5, 2]])
+      Assert Equals(List.span({ x -> x > 3 }, [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
+      Assert Equals(List.span({ x -> x < 3 }, [1, 2, 3, 4, 5]), [[1, 2], [3, 4, 5]])
     End
 
     It splits a list into two lists with given funcref. The former is until the given condition doesn't satisfy.
@@ -295,10 +329,17 @@ Describe Data.List
       Assert Equals(List.span(function('IsUnder3'), [1, 2, 3, 4, 5]), [[1, 2], [3, 4, 5]])
     End
 
+    It splits a list into two lists with given string expression. The former is until the given condition doesn't satisfy. (DEPRECATED)
+      Assert Equals(List.span('v:val < 5', [1, 3, 5, 2]), [[1, 3], [5, 2]])
+      Assert Equals(List.span('v:val > 3', [1, 2, 3, 4, 5]), [[], [1, 2, 3, 4, 5]])
+      Assert Equals(List.span('v:val < 3', [1, 2, 3, 4, 5]), [[1, 2], [3, 4, 5]])
+    End
+
+
     It of course handles list of list.
       let is_non_empty = Closure.from_funcname('*IsNonEmpty')
 
-      Assert Equals(List.span('len(v:val) > 0', [[1], [2, 3], [], [4]]),
+      Assert Equals(List.span({ x -> len(x) > 0 }, [[1], [2, 3], [], [4]]),
             \ [[[1], [2, 3]], [[], [4]]])
       Assert Equals(List.span(function('IsNonEmpty'), [[1], [2, 3], [], [4]]),
             \ [[[1], [2, 3]], [[], [4]]])

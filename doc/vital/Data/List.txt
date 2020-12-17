@@ -26,7 +26,7 @@ manipulate |List|.
 	echo s:L.conj([2, 3], 1)
 	" [2, 3, 1]
 
-	echo s:L.foldl('v:memo + v:val', 0, range(1, 10))
+	echo s:L.foldl({ memo, val -> memo + val }, 0, range(1, 10))
 	" 55 := 1+2+3+4+5+6+7+8+9+10
 
 	echo s:L.count({ x -> x % 2 == 0 }, [1, 2, 3, 4, 5])
@@ -46,8 +46,11 @@ manipulate |List|.
 TERM					*Vital.Data.List-term*
 
 {function}				*Vital.Data.List-term-function*
-	|Funcref| or |String|(as expression). We recommend you just to use
-	Vim's |expr-lambda| notation to pass this.
+	It's just |Funcref|, but also |String| as expression works fine for
+	backward compatibility. |String| for this is DEPRECATED.
+
+	For new code please always simply use Vim's |expr-lambda| notation for
+	this.
 
 ==============================================================================
 INTERFACE				*Vital.Data.List-interface*
@@ -164,9 +167,11 @@ map({list}, {function})			*Vital.Data.List.map()*
 	  return a:x + 1
 	endfunction
 
+	echo s:L.map(range(0, 4), { x + 1 })
+	" [1, 2, 3, 4, 5]
 	echo s:L.map(range(0, 4), function('Succ'))
 	" [1, 2, 3, 4, 5]
-	echo s:L.map(range(0, 4), 'v:val + 1')
+	echo s:L.map(range(0, 4), 'v:val + 1') " DEPRECATED
 	" [1, 2, 3, 4, 5]
 <
 	But this maybe slower than builtin |map()|.
