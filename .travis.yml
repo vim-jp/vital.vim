@@ -1,5 +1,5 @@
 language: generic
-dist: xenial
+dist: bionic
 git:
   depth: 10
 
@@ -53,7 +53,7 @@ install:
   - pip3 install --user covimerage
 
 before_script:
-  - git clone --depth 1 --branch v1.5.4 --single-branch https://github.com/thinca/vim-themis /tmp/vim-themis
+  - git clone --depth 1 --branch v1.5.5 --single-branch https://github.com/thinca/vim-themis /tmp/vim-themis
   - git clone --depth 1 https://github.com/Shougo/vimproc.vim /tmp/vimproc
   - (cd /tmp/vimproc && make)
 
