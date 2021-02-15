@@ -61,8 +61,10 @@ script:
   - uname -a
   - which -a vim
   - vim --version
+  - export TZ=America/Vancouver
   - |
     if [[ "${RUN_LINT}" != "true" ]]; then
+        env | sort
         /tmp/vim-themis/bin/themis --runtimepath /tmp/vimproc --exclude ConcurrentProcess --reporter dot
     fi
   - if [[ "${RUN_LINT}" == "true" ]] ; then bash scripts/run-lint-on-ci.sh ; fi
