@@ -24,7 +24,7 @@ Describe System.Process.Vimproc
 
     Context [Windows]
       Describe .execute({args}[, {options}])
-        if empty($APPVEYOR)
+        if empty($APPVEYOR) && empty($CI)
           " NOTE:
           " Not sure but 'sleep' doesn't properly works in AppVeyor?
           " The code below worked on Windows 10 + PowerShell
