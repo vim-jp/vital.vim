@@ -1,5 +1,5 @@
 ###### Requirements without Version Specifiers ######
-#
+
 ###### Requirements with Version Specifiers ######
-covimerage == 0.2.1
-#
+click<8.0.0
+covimerage==0.2.1
