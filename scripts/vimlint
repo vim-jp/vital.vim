@@ -1,2 +1,0 @@
-#!/bin/bash
-bash "${VIMLINT_PATH}/bin/vimlint.sh" -l "${VIMLINT_PATH}" -p "${VIMLPARSER_PATH}" $@

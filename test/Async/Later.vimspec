@@ -24,7 +24,7 @@ Describe Async.Later
       call Later.call({ -> add(rs, 2) })
       call Later.call({ -> add(rs, 3) })
       Assert Equals(rs, [])
-      sleep 10m
+      sleep 20m
       Assert Equals(rs, [1, 2, 3])
     End
 
@@ -36,7 +36,7 @@ Describe Async.Later
       call Later.call({ -> Later.call({ -> add(rs, 4) }) })
       call Later.call({ -> add(rs, 2) })
       Assert Equals(rs, [])
-      sleep 10m
+      sleep 50m
       Assert Equals(rs, [1, 2, 3, 4, 5])
     End
 

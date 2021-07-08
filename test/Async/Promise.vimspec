@@ -4,6 +4,8 @@ function! s:wait_has_key(obj, name) abort
   while i < timeout_sec * 100
     sleep 10m
     if has_key(a:obj, a:name)
+      " need state update
+      sleep 10m
       return
     endif
     let i += 1
@@ -725,8 +727,9 @@ Describe Async.Promise
       let s = reltime()
       Assert Equals(p._state, PENDING)
       Assert Equals(P.wait(p), ['resolved', v:null])
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 30)
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1000)
+      let done = reltimefloat(reltime(s)) * 1000
+      Assert Compare(done, '>=', 30)
+      Assert Compare(done, '<=', 1000)
     End
 
     It throws an exception when a given promise has rejected
@@ -734,8 +737,9 @@ Describe Async.Promise
       let s = reltime()
       Assert Equals(p._state, PENDING)
       Assert Equals(P.wait(p), [v:null, 'rejected'])
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 30)
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1000)
+      let done = reltimefloat(reltime(s)) * 1000
+      Assert Compare(done, '>=', 30)
+      Assert Compare(done, '<=', 1000)
 
       let p = Wait(30).then({ -> P.reject({ 'exception': 'rejected' }) })
       Assert Equals(P.wait(p), [v:null, { 'exception': 'rejected' }])
@@ -749,8 +753,9 @@ Describe Async.Promise
       let s = reltime()
       Assert Equals(p._state, PENDING)
       Assert Equals(P.wait(p, { 'timeout': 30 }), [v:null, P.TimeoutError])
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 30)
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1000)
+      let done = reltimefloat(reltime(s)) * 1000
+      Assert Compare(done, '>=', 30)
+      Assert Compare(done, '<=', 1000)
     End
 
     It waits until a given timeout and returns Async.Promise.TimeoutError (type 2)
@@ -758,49 +763,58 @@ Describe Async.Promise
       let s = reltime()
       Assert Equals(p._state, PENDING)
       Assert Equals(P.wait(p, 30), [v:null, P.TimeoutError])
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 30)
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1000)
+      let done = reltimefloat(reltime(s)) * 1000
+      Assert Compare(done, '>=', 30)
+      Assert Compare(done, '<=', 1000)
     End
 
     It waits at least the interval milliseconds (interval > epoch)
       let p = Wait(200).then({ -> 'resolved' })
       let s = reltime()
       Assert Equals(p._state, PENDING)
-      Assert Equals(P.wait(p, { 'interval': 1000 }), ['resolved', v:null])
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 2000)
+      " 1050 for Timer accuracy; 1000m sleep result 995m to 1005m in Windows
+      Assert Equals(P.wait(p, { 'interval': 1050 }), ['resolved', v:null])
+      let done = reltimefloat(reltime(s)) * 1000
+      Assert Compare(done, '>=', 1000)
+      Assert Compare(done, '<=', 2000)
 
       let p = Wait(200).then({ -> P.reject('rejected') })
       let s = reltime()
       Assert Equals(p._state, PENDING)
-      Assert Equals(P.wait(p, { 'interval': 1000 }), [v:null, 'rejected'])
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 2000)
+      " 1050 for Timer accuracy; 1000m sleep result 995m to 1005m in Windows
+      Assert Equals(P.wait(p, { 'interval': 1050 }), [v:null, 'rejected'])
+      let done = reltimefloat(reltime(s)) * 1000
+      Assert Compare(done, '>=', 1000)
+      Assert Compare(done, '<=', 2000)
     End
 
     It waits at least the interval milliseconds (interval < epoch)
       let p = Wait(1000).then({ -> 'resolved' })
       let s = reltime()
       Assert Equals(p._state, PENDING)
-      Assert Equals(P.wait(p, { 'interval': 200 }), ['resolved', v:null])
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
+      " Timer accuracy fixing need
+      Assert Equals(P.wait(p, { 'interval': 340 }), ['resolved', v:null])
+      let done = reltimefloat(reltime(s)) * 1000
+      Assert Compare(done, '>=', 1000)
       if has('mac')
         " TODO: I know this is a terrible IDEA, but this assert makes osx test fails.
         " Let's disable until we figure out why and how.
       else
-        Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1200)
+      	Assert Compare(done, '<=', 1360)
       endif
 
       let p = Wait(1000).then({ -> P.reject('rejected') })
       let s = reltime()
       Assert Equals(p._state, PENDING)
-      Assert Equals(P.wait(p, { 'interval': 200 }), [v:null, 'rejected'])
-      Assert Compare(reltimefloat(reltime(s)) * 1000, '>=', 1000)
+      " Timer accuracy fixing need
+      Assert Equals(P.wait(p, { 'interval': 340 }), [v:null, 'rejected'])
+      let done = reltimefloat(reltime(s)) * 1000
+      Assert Compare(done, '>=', 1000)
       if has('mac')
         " TODO: I know this is a terrible IDEA, but this assert makes osx test fails.
         " Let's disable until we figure out why and how.
       else
-        Assert Compare(reltimefloat(reltime(s)) * 1000, '<=', 1200)
+      	Assert Compare(done, '<=', 1360)
       endif
     End
   End

@@ -1,0 +1,11 @@
+name: "vim help tag name check"
+on: [push, pull_request]
+jobs:
+  tagname:
+    name: Check tag name conflict
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: help tag check
+        uses: tsuyoshicho/action-vimhelp-tagname-check@v1
