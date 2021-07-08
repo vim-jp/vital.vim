@@ -51,7 +51,11 @@ Describe Data.String.Interpolation
     End
     It handle reassignment different type
       Assert Equals(g:I.interpolate('${a} ${b}', {'a': 1, 'b': '1'}), '1 1')
-      Throws /Vim(let):E806:/ g:I.interpolate('${a} ${b}', {'a': 1, 'b': 1.0E-6})
+      if !has('patch-8.2.2948')
+        Throws /Vim(let):E806:/ g:I.interpolate('${a} ${b}', {'a': 1, 'b': 1.0E-6})
+      else
+        Assert Equals(g:I.interpolate('${a} ${b}', {'a': 1, 'b': 1.0E-6}), '1 1.0e-6')
+      endif
     End
     It doesn't raise Vim(let):E704: Funcref variable name must start with a capital
       Throws /Vim(let):E729:/ g:I.interpolate('${Funcref}', {'Funcref': function('InterpolationFunc')})
