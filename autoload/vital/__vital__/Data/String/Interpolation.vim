@@ -11,8 +11,8 @@ function! s:interpolate(string, ...) abort
     let expr = str[(s + len(s:_parser_config._ps)):(e - len(s:_parser_config._pend))]
     let V = s:_context_eval(expr, context)
     let str = (s > 0 ? str[0:(s-1)] : '') . V . str[(e+1):]
-    let ps = s:_parse_first_idx_range(str, s + len(V))
-    unlet V
+    let vlen = type(V) is# v:t_string ? len(V) : len(string(V))
+    let ps = s:_parse_first_idx_range(str, s + vlen)
   endwhile
   return str
 endfunction
