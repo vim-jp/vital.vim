@@ -13,7 +13,6 @@ function! s:interpolate(string, ...) abort
     let str = (s > 0 ? str[0:(s-1)] : '') . V . str[(e+1):]
     let vlen = type(V) is# v:t_string ? len(V) : len(string(V))
     let ps = s:_parse_first_idx_range(str, s + vlen)
-    unlet V vlen
   endwhile
   return str
 endfunction
