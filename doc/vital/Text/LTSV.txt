@@ -14,7 +14,7 @@ INTERFACE			|Vital.Text.LTSV-interface|
 ==============================================================================
 INTRODUCTION			*Vital.Text.LTSV-introduction*
 
-*Vital.Text.LTSV* is a parser and dumper for Labelled Tab-separated
+*Vital.Text.LTSV* is a parser and dumper for Labeled Tab-separated
 Values(LTSV).
 
 http://ltsv.org/
