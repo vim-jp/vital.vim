@@ -52,7 +52,7 @@ jobs:
         with:
           github_token: ${{ secrets.github_token }}
           reporter: ${{ steps.reporter.outputs.value }}
-          locale: "US"
+            # vital.vim allows both US/UK.
   vital-throw-message:
     name: runner / vital-throw-message
     runs-on: ubuntu-latest
