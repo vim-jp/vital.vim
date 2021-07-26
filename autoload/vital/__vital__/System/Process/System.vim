@@ -41,7 +41,7 @@ endfunction
 function! s:execute(args, options) abort
   " NOTE:
   " execute() is a command for executing program WITHOUT using shell.
-  " so mimic that behaviour with shell
+  " so mimic that behavior with shell
   let guard = s:Guard.store(filter([
         \ '&shell',
         \ '&shellcmdflag',
