@@ -1,0 +1,192 @@
+name: "build and test at vim"
+on: [push, pull_request]
+env:
+  THEMIS_VERSION: v1.5.5
+  LUA_VERSION: 5.3.5
+jobs:
+  unixlike:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        vim: [v8.1.0005, v8.2.0020, head]
+        type: [vim, macvim]
+        download: [available]
+        # Linux vim 8.1 build only, action-setup-vim 1.0.1 or after auto switch
+        exclude:
+          - os: ubuntu-latest
+            # linux only vim/ macvim run as mac os
+            type: macvim
+          - os: macos-latest
+            type: macvim
+            # macvim only head
+            vim: v8.1.0005
+          - os: macos-latest
+            type: macvim
+            # macvim only head
+            vim: v8.2.0020
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.type }} ${{ matrix.vim }}/${{ matrix.os }} test
+    env:
+      OS: ${{ matrix.os }}
+      VIMVER: ${{ matrix.type }}-${{ matrix.vim }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup apt
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+      - name: Setup lua
+        if: matrix.type == 'macvim'
+        run: |
+          brew update
+          brew install lua
+      - name: Setup pip
+        run: |
+          sudo pip3 install -U pip
+      - name: Get pip cache
+        id: pip-cache
+        run: |
+          python3 -c "from pip._internal.locations import USER_CACHE_DIR; print('::set-output name=dir::' + USER_CACHE_DIR)"
+      - name: Set pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Setup cached item
+        run: |
+          pip3 install --user -r requirements.txt
+      - name: Setup Vim
+        id: 'vim'
+        uses: thinca/action-setup-vim@v1
+        with:
+          vim_version: '${{ matrix.vim }}'
+          vim_type: '${{ matrix.type }}'
+          download: '${{ matrix.vim_download || matrix.download }}'
+      - name: Setup MacVim
+        if: matrix.type == 'macvim'
+        run: |
+          echo "set luadll=$(brew --prefix lua)/lib/liblua.dylib" > ${GITHUB_WORKSPACE}/.themisrc
+      - name: Run test
+        env:
+          THEMIS_VIM: ${{ steps.vim.outputs.executable }}
+          THEMIS_PROFILE: ${{ github.workspace }}/vim-profile-${{ runner.os }}-${{ matrix.vim }}-${{ matrix.type }}.txt
+        run: |
+          git clone --depth 1 --branch ${THEMIS_VERSION} --single-branch https://github.com/thinca/vim-themis  ${GITHUB_WORKSPACE}/vim-themis
+          git clone --depth 1                                            https://github.com/Shougo/vimproc.vim ${GITHUB_WORKSPACE}/vimproc
+          (cd ${GITHUB_WORKSPACE}/vimproc && make)
+          ${THEMIS_VIM} --version
+          ${GITHUB_WORKSPACE}/vim-themis/bin/themis --runtimepath ${GITHUB_WORKSPACE}/vimproc --exclude ConcurrentProcess --reporter dot
+      - name: Collect coverage
+        env:
+          THEMIS_PROFILE: ${{ github.workspace }}/vim-profile-${{ runner.os }}-${{ matrix.vim }}-${{ matrix.type }}.txt
+        run: |
+          export PATH=$(python3 -m site --user-base)/bin:${PATH}
+          covimerage write_coverage "${THEMIS_PROFILE}"
+          coverage xml
+      - name: Send coverage
+        uses: codecov/codecov-action@v2
+        with:
+          file: ./coverage.xml
+          env_vars: OS,VIMVER
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        vim: [v8.1.0005, v8.2.0020, head]
+        type: [vim]
+        download: [available]
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.type }} ${{ matrix.vim }}/${{ matrix.os }} test
+    env:
+      OS: ${{ matrix.os }}
+      VIMVER: ${{ matrix.type }}-${{ matrix.vim }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Determining the library file
+        id: files
+        shell: pwsh
+        run: |
+          $lua_url = 'https://sourceforge.net/projects/luabinaries/files/' + ${Env:LUA_VERSION} + '/Windows%20Libraries/Dynamic/lua-' + ${Env:LUA_VERSION} + '_Win64_dllw6_lib.zip/download'
+          Write-Host "::set-output name=url::$($lua_url)"
+          Write-Output $lua_url | Out-File url.txt
+          $dir = ${Env:GITHUB_WORKSPACE} + '\lib'
+          New-Item $dir -ItemType Directory
+          Write-Host "::set-output name=dir::$($dir)"
+      - name: Set files cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.files.outputs.dir }}
+          key: ${{ runner.os }}-64-files-${{ hashFiles('**/url.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-64-files-
+      - name: Setup lua
+        shell: pwsh
+        run: |
+          $lua = ${Env:GITHUB_WORKSPACE} + '\lua\'
+          $zip = '${{ steps.files.outputs.dir }}\lua-lib.zip'
+          if (Test-Path $zip) {
+            Write-Host cache hit
+          } else {
+            (New-Object Net.WebClient).DownloadFile('${{ steps.files.outputs.url }}', $zip)
+          }
+          [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') > $null
+          [System.IO.Compression.ZipFile]::ExtractToDirectory($zip, $lua)
+          Write-Output "$($lua)" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Setup pip
+        id: setup
+        run: |
+          python -m pip install --upgrade pip
+      - name: Get pip cache
+        id: pip-cache
+        run: |
+          python -c "from pip._internal.locations import USER_CACHE_DIR; print('::set-output name=dir::' + USER_CACHE_DIR)"
+      - name: Set pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Setup Vim
+        id: 'vim'
+        uses: thinca/action-setup-vim@v1
+        with:
+          vim_version: '${{ matrix.vim }}'
+          vim_type: '${{ matrix.type }}'
+          download: '${{ matrix.vim_download || matrix.download }}'
+      - name: Build
+        shell: pwsh
+        run: |
+          git -c advice.detachedHead=false clone https://github.com/thinca/vim-themis  --quiet --branch ${Env:THEMIS_VERSION} --single-branch --depth 1 ${Env:GITHUB_WORKSPACE}\vim-themis
+          git -c advice.detachedHead=false clone https://github.com/Shougo/vimproc.vim --quiet --branch ver.9.2               --single-branch --depth 1 ${Env:GITHUB_WORKSPACE}\vimproc
+          Invoke-WebRequest -Uri "https://github.com/Shougo/vimproc.vim/releases/download/ver.9.2/vimproc_win64.dll" -OutFile "${Env:GITHUB_WORKSPACE}\vimproc\lib\vimproc_win64.dll"
+      - name: Run test
+        env:
+          THEMIS_VIM: ${{ steps.vim.outputs.executable }}
+          THEMIS_PROFILE: ${{ github.workspace }}/vim-profile-${{ runner.os }}-${{ matrix.vim }}-${{ matrix.type }}.txt
+        shell: cmd
+        run: |
+          set TEMP=%GITHUB_WORKSPACE%\tmp
+          set TMP=%TEMP%
+          mkdir %TEMP%
+          %THEMIS_VIM% --version
+          %GITHUB_WORKSPACE%\vim-themis\bin\themis.bat --runtimepath %GITHUB_WORKSPACE%\vimproc --exclude ConcurrentProcess --reporter dot
+      - name: Collect coverage
+        env:
+          THEMIS_PROFILE: ${{ github.workspace }}/vim-profile-${{ runner.os }}-${{ matrix.vim }}-${{ matrix.type }}.txt
+        shell: pwsh
+        run: |
+          pip install -r requirements.txt
+          covimerage write_coverage ${Env:THEMIS_PROFILE}
+          coverage xml
+      - name: Send coverage
+        uses: codecov/codecov-action@v2
+        with:
+          file: ./coverage.xml
+          env_vars: OS,VIMVER
