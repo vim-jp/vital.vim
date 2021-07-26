@@ -154,7 +154,7 @@ PRINCIPLE			*Vital.ConcurrentProcess-principle*
 * Synchronous (asynchronous in Vim always makes trouble)
 * Don't show lower layer too much easily, but don't hide completely. No
   perfect abstraction exists in the world.
-* Avoid tricky specification. Function name and behaviour itself should
+* Avoid tricky specification. Function name and behavior itself should
   explain what it does.
 >
 ==============================================================================
