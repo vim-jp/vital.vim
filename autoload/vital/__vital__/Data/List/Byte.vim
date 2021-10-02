@@ -14,6 +14,11 @@ function! s:_vital_depends() abort
   return ['Bitwise', 'Vim.Type', 'Data.List']
 endfunction
 
+function! s:_vital_created(module) abort
+  " Expose script-local funcref
+  let a:module.to_string = function('list2str')
+endfunction
+
 function! s:validate(data) abort
   return type(a:data) == s:Type.types.list
         \ && len(a:data) == len(s:List.filter(a:data, { v -> type(v) == s:Type.types.number }))
@@ -39,10 +44,6 @@ endfunction
 
 function! s:from_string(str) abort
   return s:List.new(len(a:str), {i -> char2nr(a:str[i])})
-endfunction
-
-function! s:to_string(bytes) abort
-  return eval('"' . join(map(copy(a:bytes), 'printf(''\x%02x'', v:val)'), '') . '"')
 endfunction
 
 function! s:from_hexstring(hexstr) abort
