@@ -5,6 +5,9 @@ on:
   repository_dispatch:
     types: [depup]
   workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   reviewdog:
