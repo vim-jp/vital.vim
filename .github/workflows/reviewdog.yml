@@ -1,5 +1,12 @@
 name: reviewdog
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+permissions:
+  pull-requests: write
+
 jobs:
   vint:
     name: runner / vint

@@ -1,8 +1,8 @@
 name: "build and test at vim"
 on: [push, pull_request]
 env:
-  THEMIS_VERSION: v1.5.5
   LUA_VERSION: 5.3.5
+
 jobs:
   unixlike:
     strategy:
@@ -33,6 +33,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setup env
+        run: |
+          cat ENVFILE >> $GITHUB_ENV
       - name: Setup apt
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -125,6 +128,10 @@ jobs:
           key: ${{ runner.os }}-64-files-${{ hashFiles('**/url.txt') }}
           restore-keys: |
             ${{ runner.os }}-64-files-
+      - name: Setup env
+        shell: cmd
+        run: |
+          type ENVFILE >> %GITHUB_ENV%
       - name: Setup lua
         shell: pwsh
         run: |
