@@ -176,7 +176,7 @@ function! s:_tempname() abort
 endfunction
 
 function! s:_file_resolve(file) abort
-  return tr(a:file, '\', '/')
+  return fnamemodify(a:file, ':gs?\\?/?')
 endfunction
 
 function! s:_postdata(data) abort
