@@ -1,5 +1,6 @@
 name: "vim help tag name check"
 on: [push, pull_request]
+
 jobs:
   tagname:
     name: Check tag name conflict
