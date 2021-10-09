@@ -172,7 +172,11 @@ function! s:_make_postfile(data) abort
 endfunction
 
 function! s:_tempname() abort
-  return tr(tempname(), '\', '/')
+  return s:_file_resolve(tempname())
+endfunction
+
+function! s:_file_resolve(file) abort
+  return fnamemodify(a:file, ':gs?\\?/?')
 endfunction
 
 function! s:_postdata(data) abort
@@ -388,7 +392,7 @@ function! s:clients.curl.request(settings) abort
   let command .= ' --dump-header ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
   if has_output_file
-    let output_file = a:settings.outputFile
+    let output_file = s:_file_resolve(a:settings.outputFile)
   else
     let output_file = s:_tempname()
     let a:settings._file.content = output_file
@@ -499,7 +503,7 @@ function! s:clients.wget.request(settings) abort
   let command .= ' -o ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
   if has_output_file
-    let output_file = a:settings.outputFile
+    let output_file = s:_file_resolve(a:settings.outputFile)
   else
     let output_file = s:_tempname()
     let a:settings._file.content = output_file
