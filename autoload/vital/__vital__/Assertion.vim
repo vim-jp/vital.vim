@@ -68,7 +68,8 @@ function! s:_define_scriptfunction(fname) abort
   endif
 endfunction
 
-function! s:_assertion( q_args, local, scriptfilename, about_currline, cmd) abort
+" @vimlint(EVL103, 1, a:scriptfilename)
+function! s:_assertion(q_args, local, scriptfilename, about_currline, cmd) abort
   let s:_local = {}
   for s:_local.key in keys(a:local)
     execute printf('let %s = %s',s:_local.key,string(a:local[s:_local.key]))
@@ -119,6 +120,7 @@ function! s:_assertion( q_args, local, scriptfilename, about_currline, cmd) abor
           \ })
   endif
 endfunction
+" @vimlint(EVL103, 0, a:scriptfilename)
 
 function! s:define(cmd_name,...) abort
   if (0 < len(a:000)) ? a:1 : 0
@@ -128,9 +130,11 @@ function! s:define(cmd_name,...) abort
   endif
 endfunction
 
+" @vimlint(EVL103, 1, a:config)
 function! s:set_config(config) abort
   " TODO
 endfunction
+" @vimlint(EVL103, 0, a:config)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
