@@ -10,6 +10,7 @@ set cpo&vim
 
 let s:sfile = tr(expand('<sfile>:p'), '\', '/')
 
+" @vimlint(EVL103, 1, a:V)
 function! s:_vital_loaded(V) abort
   if exists('*luaeval')
     execute printf('lua vital_context = "%s"', s:sfile)
@@ -20,6 +21,7 @@ function! s:_vital_loaded(V) abort
     endif
   endif
 endfunction
+" @vimlint(EVL103, 0, a:V)
 
 function! s:_vital_depends() abort
   return {
