@@ -42,8 +42,10 @@ function! s:Message.load(lang) abort
   let self.data = data
 endfunction
 let s:Message._ = s:Message.get
+" @vimlint(EVL103, 1, a:text)
 function! s:Message.missing(text) abort
 endfunction
+" @vimlint(EVL103, 0, a:text)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
