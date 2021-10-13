@@ -87,6 +87,7 @@ endfunction
 
 " setup at module loaded time.
 " define inner utility part2 : use defined method
+" @vimlint(EVL103, 1, a:V)
 function! s:_vital_loaded(V) abort
   if has('num64')
     let s:mask32bit = 0xFFFFFFFF
@@ -101,6 +102,7 @@ function! s:_vital_loaded(V) abort
           \)
   endif
 endfunction
+" @vimlint(EVL103, 0, a:V)
 
 " 32bit/64bit common method part2 : use defined method
 
@@ -157,13 +159,19 @@ if has('num64')
                      \ s:rshift(data, 64 - a:bits)))
   endfunction
 else
+  " @vimlint(EVL103, 1, a:value)
   function! s:uint64(value) abort
     call s:_throw('64bit unsupport.')
   endfunction
+  " @vimlint(EVL103, 0, a:value)
 
+  " @vimlint(EVL103, 1, a:data)
+  " @vimlint(EVL103, 1, a:bits)
   function! s:rotate64l(data, bits) abort
     call s:_throw('64bit unsupport.')
   endfunction
+  " @vimlint(EVL103, 0, a:bits)
+  " @vimlint(EVL103, 0, a:data)
 endif
 
 " When 32bit throw exception.
