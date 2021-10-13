@@ -17,12 +17,14 @@ function! s:b32encode(bytes, table, is_padding, pad) abort
   let b32 = []
   for i in range(0, len(a:bytes) - 1, 5)
     if 5 <= ((len(a:bytes) - 1) - i)
+      " @vimlint(EVL108, 1)
       let bitstring = ''
             \ . printf('%08b',     a:bytes[i]        )
             \ . printf('%08b', get(a:bytes, i + 1, 0))
             \ . printf('%08b', get(a:bytes, i + 2, 0))
             \ . printf('%08b', get(a:bytes, i + 3, 0))
             \ . printf('%08b', get(a:bytes, i + 4, 0))
+      " @vimlint(EVL108, 0)
     else
       let length = len(a:bytes) - i
       let n = a:bytes[i]
