@@ -163,6 +163,7 @@ function! s:_parse_uri(str, ignore_rest, pattern_set) abort
   return [obj, rest]
 endfunction
 
+" @vimlint(EVL103, 1, a:uriobj)
 function! s:_get_handler_module(scheme, uriobj) abort
   if a:scheme ==# ''
     return {}
@@ -173,6 +174,7 @@ function! s:_get_handler_module(scheme, uriobj) abort
   endif
   return s:V.import(name)
 endfunction
+" @vimlint(EVL103, 0, a:uriobj)
 
 function! s:_eat_em(str, pat, ...) abort
   let pat = a:pat.'\C'
