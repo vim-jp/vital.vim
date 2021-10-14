@@ -18,6 +18,7 @@ function! s:new(...) abort
         \)
 endfunction
 
+" @vimlint(EVL103, 1)
 function! s:cache.has(name) abort
   return 0
 endfunction
@@ -36,6 +37,7 @@ endfunction
 function! s:cache.clear() abort
   " do nothing
 endfunction
+" @vimlint(EVL103, 0)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
