@@ -203,6 +203,8 @@ function! s:_get_func_info(name) abort
   let body = execute(printf('verbose function %s', name))
   let lines = split(body, "\n")
   let signature = matchstr(lines[0], '^\s*\zs.*')
+  " vimlint workaround unpack rest value/__
+  " @vimlint(EVL103, 1, l:__)
   let [_, file, lnum; __] = matchlist(lines[1],
   \   '^\t\%(Last set from\|.\{-}:\)\s*\zs\(.\{-}\)\%( \S\+ \(\d\+\)\)\?$')
   return {
@@ -212,6 +214,7 @@ function! s:_get_func_info(name) abort
   \   'arguments': split(matchstr(signature, '(\zs.*\ze)'), '\s*,\s*'),
   \   'attrs': filter(['dict', 'abort', 'range', 'closure'], 'signature =~# (").*" . v:val)'),
   \ }
+  " @vimlint(EVL103, 0, l:__)
 endfunction
 
 " s:_get_module() returns module object wihch has all script local functions.
