@@ -53,7 +53,7 @@ function! s:_make_is_comparable_cache() abort
   if has('patch-8.1.0735')
     " TODO vint workaround
     " let vals += [0z00]
-    execute "let vals += [0z00]"
+    execute 'let vals += [0z00]'
   endif
 
   let result = []
