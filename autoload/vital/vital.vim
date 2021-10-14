@@ -190,8 +190,8 @@ function! s:_format_throwpoint(throwpoint) abort
   return join(funcs, "\n")
 endfunction
 
-" vimlint workaround unpack rest value/__
-" @vimlint(EVL103, 1, l:__)
+" @vimlint(EVL102, 1, l:_)
+" @vimlint(EVL102, 1, l:__)
 function! s:_get_func_info(name) abort
   let name = a:name
   if a:name =~# '^\d\+$'  " is anonymous-function
@@ -215,7 +215,8 @@ function! s:_get_func_info(name) abort
   \   'attrs': filter(['dict', 'abort', 'range', 'closure'], 'signature =~# (").*" . v:val)'),
   \ }
 endfunction
-" @vimlint(EVL103, 0, l:__)
+" @vimlint(EVL102, 0, l:__)
+" @vimlint(EVL102, 0, l:_)
 
 " s:_get_module() returns module object wihch has all script local functions.
 function! s:_get_module(name) abort dict
