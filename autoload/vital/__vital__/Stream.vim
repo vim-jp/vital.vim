@@ -761,7 +761,8 @@ function! s:_plus(a, b) abort
   return a:a + a:b
 endfunction
 
-" @vimlint(EVL102, 1, a:1)
+" TODO vimlint a:N workaround
+" @vimlint(EVL101, 1, a:1)
 function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
   let l:Result = {}
   if a:0
@@ -791,7 +792,7 @@ function! s:Stream.to_dict(key_mapper, value_mapper, ...) abort
   endif
   return l:Result
 endfunction
-" @vimlint(EVL102, 0, a:1)
+" @vimlint(EVL101, 0, a:1)
 
 function! s:Stream.count(...) abort
   if self.__has_characteristic__(s:SIZED)

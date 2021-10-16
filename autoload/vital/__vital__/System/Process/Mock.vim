@@ -5,9 +5,11 @@ function! s:is_available() abort
   return 1
 endfunction
 
+" @vimlint(EVL103, 1, a:options)
 function! s:is_supported(options) abort
   return 1
 endfunction
+" @vimlint(EVL103, 0, a:options)
 
 function! s:execute(args, options) abort
   if a:options.debug > 0

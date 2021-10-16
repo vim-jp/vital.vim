@@ -51,7 +51,9 @@ function! s:_make_is_comparable_cache() abort
   \   exists('*test_null_channel') ? test_null_channel() : 0,
   \ ]
   if has('patch-8.1.0735')
-    let vals += [0z00]
+    " TODO vint workaround
+    " let vals += [0z00]
+    execute 'let vals += [0z00]'
   endif
 
   let result = []

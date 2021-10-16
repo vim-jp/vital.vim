@@ -75,9 +75,11 @@ function! s:Manager.close(...) abort
   endif
 endfunction
 
+" @vimlint(EVL103, 1, a:bufname)
 function! s:Manager.opened(bufname) abort
   " This is placeholder function.
 endfunction
+" @vimlint(EVL103, 0, a:bufname)
 
 function! s:Manager.config(...) abort
   if a:0 == 0

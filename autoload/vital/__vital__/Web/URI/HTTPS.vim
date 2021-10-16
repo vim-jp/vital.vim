@@ -15,8 +15,10 @@ function! s:canonicalize(uriobj) abort
   return s:HTTP.canonicalize(a:uriobj)
 endfunction
 
+" @vimlint(EVL103, 1, a:uriobj)
 function! s:default_port(uriobj) abort
   return '443'
 endfunction
+" @vimlint(EVL103, 0, a:uriobj)
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:fen:

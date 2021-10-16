@@ -15,6 +15,8 @@ function! s:_vital_depends() abort
 endfunction
 
 let s:_PRESET_COMPLETER = {}
+" @vimlint(EVL103, 1, a:cmdline)
+" @vimlint(EVL103, 1, a:cursorpos)
 function! s:_PRESET_COMPLETER.file(optlead, cmdline, cursorpos) abort
   let candidates = glob(a:optlead . '*', 0, 1)
   if a:optlead =~# '^\~'
@@ -24,6 +26,8 @@ function! s:_PRESET_COMPLETER.file(optlead, cmdline, cursorpos) abort
   call map(candidates, "escape(isdirectory(v:val) ? v:val.'/' : v:val, ' \\')")
   return candidates
 endfunction
+" @vimlint(EVL103, 0, a:cursorpos)
+" @vimlint(EVL103, 0, a:cmdline)
 
 function! s:_make_option_description_for_help(opt) abort
   let extra = ''

@@ -17,8 +17,10 @@ function! s:canonicalize(uriobj) abort
   endif
 endfunction
 
+" @vimlint(EVL103, 1, a:uriobj)
 function! s:default_port(uriobj) abort
   return '80'
 endfunction
+" @vimlint(EVL103, 0, a:uriobj)
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:fen:

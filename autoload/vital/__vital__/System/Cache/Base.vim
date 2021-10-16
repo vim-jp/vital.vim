@@ -18,6 +18,8 @@ function! s:cache.cache_key(obj) abort
   let cache_key = s:Prelude.is_string(a:obj) ? a:obj : string(a:obj)
   return cache_key
 endfunction
+" @vimlint(EVL103, 1, a:name)
+" @vimlint(EVL103, 1, a:value)
 function! s:cache.has(name) abort
   throw 'vital: System.Cache.Base: has({name}) is not implemented'
 endfunction
@@ -36,6 +38,8 @@ endfunction
 function! s:cache.clear() abort
   throw 'vital: System.Cache.Base: clear() is not implemented'
 endfunction
+" @vimlint(EVL103, 0, a:value)
+" @vimlint(EVL103, 0, a:name)
 function! s:cache.on_changed() abort
   " A user defined hook function
 endfunction
