@@ -89,7 +89,14 @@ function! s:parse(str) abort
     return s:hsl(h, s, l)
   endif
   " e.g. DarkGray
-  if filereadable(s:VIM_RGB_FILE)
+  if exists('v:colornames')  " after patch 8.2.3562
+    let name = s:_normalize_color_name(a:str)
+    if has_key(v:colornames, name)
+      let m = matchlist(v:colornames[name], s:RGB_HEX_RE)
+      let [r, g, b] = [str2float('0x' . m[1][0:1]), str2float('0x' . m[1][2:3]), str2float('0x' . m[1][4:5])]
+      return s:rgb(r, g, b)
+    endif
+  elseif filereadable(s:VIM_RGB_FILE)
     let color_map = s:_parse_rgb_file(s:VIM_RGB_FILE)
     let name = s:_normalize_color_name(a:str)
     if has_key(color_map, name)

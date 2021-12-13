@@ -5,6 +5,8 @@ let s:assert = themis#helper('assert')
 
 function! s:suite.before()
   let s:C = vital#vital#new().import('Color')
+  " need for v:colornames
+  silent! colorscheme default
 endfunction
 
 function! s:suite.rgb()
