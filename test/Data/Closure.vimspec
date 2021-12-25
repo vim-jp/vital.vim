@@ -240,8 +240,8 @@ Describe Data.Closure
       Throws /^vital: Data.Closure:/ Func1(20)
       Throws /^vital: Data.Closure:/ Func2(20)
       call C.sweep_functions()
-      Throws /^Vim(\w\+):E117:/ Func1(20)
-      Throws /^Vim(\w\+):E117:/ Func2(20)
+      Throws /^Vim(\w\+):E\%(117\|1085\):/ Func1(20)
+      Throws /^Vim(\w\+):E\%(117\|1085\):/ Func2(20)
     End
   End
 
@@ -316,7 +316,7 @@ Describe Data.Closure
           Assert Equals(Func(20), 30)
           Throws /^vital: Data.Closure:/ Equals(Func(20), 30)
           call C.sweep_functions()
-          Throws /^Vim(\w\+):E117:/ Equals(Func(20), 30)
+          Throws /^Vim(\w\+):E\%(117\|1085\):/ Equals(Func(20), 30)
         End
       End
     End
@@ -328,7 +328,7 @@ Describe Data.Closure
         Assert IsFunc(Func)
         Assert Equals(Func(20), 30)
         call closure.delete_function()
-        Throws /^Vim(\w\+):E117:/ Equals(Func(20), 30)
+        Throws /^Vim(\w\+):E\%(117\|1085\):/ Equals(Func(20), 30)
       End
     End
   End
