@@ -22,11 +22,19 @@ function! s:validate(data) abort
 endfunction
 
 function! s:from_blob(blob) abort
-  return s:List.new(len(a:blob), {i -> a:blob[i]})
+  if exists('*blob2list')  " add 8.2.3438
+    return blob2list(a:blob)
+  else
+    return s:List.new(len(a:blob), {i -> a:blob[i]})
+  endif
 endfunction
 
 function! s:to_blob(bytes) abort
-  return eval('0z' . s:to_hexstring(a:bytes))
+  if exists('*list2blob')  " add 8.2.3438
+    return list2blob(a:bytes)
+  else
+    return eval('0z' . s:to_hexstring(a:bytes))
+  endif
 endfunction
 
 function! s:from_string(str) abort
