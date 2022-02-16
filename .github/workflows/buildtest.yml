@@ -2,7 +2,7 @@ name: "build and test at vim"
 on: [push, pull_request]
 env:
   LUA_VERSION: 5.3.5
-  VIMPROC_VERSION: ver.9.3
+  VIMPROC_VERSION: ver.10.0
 
 jobs:
   unixlike:
