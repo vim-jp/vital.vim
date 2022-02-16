@@ -2,6 +2,7 @@ name: "build and test at vim"
 on: [push, pull_request]
 env:
   LUA_VERSION: 5.3.5
+  VIMPROC_VERSION: ver.9.3
 
 jobs:
   unixlike:
@@ -73,14 +74,25 @@ jobs:
         if: matrix.type == 'macvim'
         run: |
           echo "set luadll=$(brew --prefix lua)/lib/liblua.dylib" > ${GITHUB_WORKSPACE}/.themisrc
+      - name: Setup vim-themis
+        uses: actions/checkout@v2
+        with:
+          repository: thinca/vim-themis
+          ref: ${{ env.THEMIS_VERSION }}
+          path: ${{ github.workspace }}/vim-themis
+      - name: Setup vimproc
+        uses: actions/checkout@v2
+        with:
+          repository: Shougo/vimproc.vim
+          path: ${{ github.workspace }}/vimproc
+      - name: Build vimproc
+        run: |
+          make -C ${GITHUB_WORKSPACE}/vimproc
       - name: Run test
         env:
           THEMIS_VIM: ${{ steps.vim.outputs.executable }}
           THEMIS_PROFILE: ${{ github.workspace }}/vim-profile-${{ runner.os }}-${{ matrix.vim }}-${{ matrix.type }}.txt
         run: |
-          git clone --depth 1 --branch ${THEMIS_VERSION} --single-branch https://github.com/thinca/vim-themis  ${GITHUB_WORKSPACE}/vim-themis
-          git clone --depth 1                                            https://github.com/Shougo/vimproc.vim ${GITHUB_WORKSPACE}/vimproc
-          (cd ${GITHUB_WORKSPACE}/vimproc && make)
           ${THEMIS_VIM} --version
           ${GITHUB_WORKSPACE}/vim-themis/bin/themis --runtimepath ${GITHUB_WORKSPACE}/vimproc --exclude ConcurrentProcess --reporter dot
       - name: Collect coverage
@@ -109,8 +121,16 @@ jobs:
       OS: ${{ matrix.os }}
       VIMVER: ${{ matrix.type }}-${{ matrix.vim }}
     steps:
+      - name: Setup git
+        shell: bash
+        run: |
+          git config --global core.autocrlf input
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setup env
+        shell: bash
+        run: |
+          cat ENVFILE >> $GITHUB_ENV
       - name: Determining the library file
         id: files
         shell: pwsh
@@ -128,10 +148,6 @@ jobs:
           key: ${{ runner.os }}-64-files-${{ hashFiles('**/url.txt') }}
           restore-keys: |
             ${{ runner.os }}-64-files-
-      - name: Setup env
-        shell: cmd
-        run: |
-          type ENVFILE >> %GITHUB_ENV%
       - name: Setup lua
         shell: pwsh
         run: |
@@ -167,12 +183,22 @@ jobs:
           vim_version: '${{ matrix.vim }}'
           vim_type: '${{ matrix.type }}'
           download: '${{ matrix.vim_download || matrix.download }}'
-      - name: Build
+      - name: Setup vim-themis
+        uses: actions/checkout@v2
+        with:
+          repository: thinca/vim-themis
+          ref: ${{ env.THEMIS_VERSION }}
+          path: ${{ github.workspace }}/vim-themis
+      - name: Setup vimproc
+        uses: actions/checkout@v2
+        with:
+          repository: Shougo/vimproc.vim
+          ref: ${{ env.VIMPROC_VERSION }}
+          path: ${{ github.workspace }}/vimproc
+      - name: Fetch vimproc dll
         shell: pwsh
         run: |
-          git -c advice.detachedHead=false clone https://github.com/thinca/vim-themis  --quiet --branch ${Env:THEMIS_VERSION} --single-branch --depth 1 ${Env:GITHUB_WORKSPACE}\vim-themis
-          git -c advice.detachedHead=false clone https://github.com/Shougo/vimproc.vim --quiet --branch ver.9.2               --single-branch --depth 1 ${Env:GITHUB_WORKSPACE}\vimproc
-          Invoke-WebRequest -Uri "https://github.com/Shougo/vimproc.vim/releases/download/ver.9.2/vimproc_win64.dll" -OutFile "${Env:GITHUB_WORKSPACE}\vimproc\lib\vimproc_win64.dll"
+          Invoke-WebRequest -Uri "https://github.com/Shougo/vimproc.vim/releases/download/${Env:VIMPROC_VERSION}/vimproc_win64.dll" -OutFile "${Env:GITHUB_WORKSPACE}\vimproc\lib\vimproc_win64.dll"
       - name: Run test
         env:
           THEMIS_VIM: ${{ steps.vim.outputs.executable }}
