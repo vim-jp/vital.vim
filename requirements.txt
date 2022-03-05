@@ -1,6 +1,5 @@
 ###### Requirements without Version Specifiers ######
 #
-click
 covimerage
 ###### Requirements with Version Specifiers ######
 #
