@@ -25,6 +25,8 @@ if $THEMIS_PROFILE !=# ''
   profile! file ./autoload/*
 endif
 
+language C
+
 " Show environmental information for debugging
 if $CI !=# ''
   call themis#log('***********************************************************')
