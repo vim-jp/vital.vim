@@ -1,5 +1,5 @@
 ###### Requirements without Version Specifiers ######
-
+#
+covimerage
 ###### Requirements with Version Specifiers ######
-click<8.0.0
-covimerage==0.2.1
+#
