@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	vimlparser "github.com/haya14busa/go-vimlparser"
-	"github.com/haya14busa/go-vimlparser/ast"
-	"github.com/haya14busa/go-vimlparser/token"
+	vimlparser "github.com/vim-jp/go-vimlparser"
+	"github.com/vim-jp/go-vimlparser/ast"
+	"github.com/vim-jp/go-vimlparser/token"
 )
 
 const usageMessage = "" +
