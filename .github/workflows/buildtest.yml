@@ -44,7 +44,7 @@ jobs:
       - name: Setup lua
         if: matrix.type == 'macvim'
         run: |
-          brew update
+          brew upgrade
           brew install lua
       - name: Setup pip
         run: |
