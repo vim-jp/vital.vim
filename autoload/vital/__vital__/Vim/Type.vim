@@ -50,11 +50,9 @@ function! s:_make_is_comparable_cache() abort
   \   exists('*test_null_job') ? test_null_job() : 0,
   \   exists('*test_null_channel') ? test_null_channel() : 0,
   \ ]
-  if has('patch-8.1.0735')
-    " TODO vint workaround
-    " let vals += [0z00]
-    execute 'let vals += [0z00]'
-  endif
+  " TODO vint workaround
+  " let vals += [0z00]
+  execute 'let vals += [0z00]'
 
   let result = []
   for l:V1 in vals

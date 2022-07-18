@@ -14,11 +14,7 @@ function! s:_vital_loaded(V) abort
     let s:LuaP = s:P.lua_namespace()
 
     execute printf('lua vital_context = "%s"', escape(s:sfile, '\'))
-    if has('patch-8.1.0672')
-      call luaeval('nil,dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
-    else
-      call luaeval('0,dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
-    endif
+    call luaeval('nil,dofile(_A)', substitute(s:sfile, '.vim$', '.lua', ''))
   endif
 endfunction
 
