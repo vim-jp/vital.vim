@@ -22,25 +22,21 @@ Describe Vim.Type
     It has .float
       Assert Equals(T.types.float, type(0.0))
     End
-    if 800 <= v:version
-      It has .bool
-        Assert Equals(T.types.bool, type(v:true))
-      End
-      It has .none
-        Assert Equals(T.types.none, type(v:none))
-      End
-      It has .job
-        Assert Equals(T.types.job, type(test_null_job()))
-      End
-      It has .channel
-        Assert Equals(T.types.channel, type(test_null_channel()))
-      End
-    endif
-    if has('patch-8.1.0735')
-      It has .blob
-        Assert Equals(T.types.blob, type(0z00))
-      End
-    endif
+    It has .bool
+      Assert Equals(T.types.bool, type(v:true))
+    End
+    It has .none
+      Assert Equals(T.types.none, type(v:none))
+    End
+    It has .job
+      Assert Equals(T.types.job, type(test_null_job()))
+    End
+    It has .channel
+      Assert Equals(T.types.channel, type(test_null_channel()))
+    End
+    It has .blob
+      Assert Equals(T.types.blob, type(0z00))
+    End
     It is locked
       Assert True(islocked('T.types'))
     End
@@ -65,25 +61,21 @@ Describe Vim.Type
     It can get name of "float"
       Assert Equals(T.type_names[type(0.0)], 'float')
     End
-    if 800 <= v:version
-      It can get name of "bool"
-        Assert Equals(T.type_names[type(v:true)], 'bool')
-      End
-      It can get name of "none"
-        Assert Equals(T.type_names[type(v:none)], 'none')
-      End
-      It can get name of "job"
-        Assert Equals(T.type_names[type(test_null_job())], 'job')
-      End
-      It can get name of "channel"
-        Assert Equals(T.type_names[type(test_null_channel())], 'channel')
-      End
-    endif
-    if has('patch-8.1.0735')
-      It can get name of "blob"
-        Assert Equals(T.type_names[type(0z00)], 'blob')
-      End
-    endif
+    It can get name of "bool"
+      Assert Equals(T.type_names[type(v:true)], 'bool')
+    End
+    It can get name of "none"
+      Assert Equals(T.type_names[type(v:none)], 'none')
+    End
+    It can get name of "job"
+      Assert Equals(T.type_names[type(test_null_job())], 'job')
+    End
+    It can get name of "channel"
+      Assert Equals(T.type_names[type(test_null_channel())], 'channel')
+    End
+    It can get name of "blob"
+      Assert Equals(T.type_names[type(0z00)], 'blob')
+    End
     It is locked
       Assert True(islocked('T.type_names'))
     End
@@ -112,34 +104,30 @@ Describe Vim.Type
     End
   End
 
-  if 800 <= v:version
-    Describe .is_special()
-      Context when {value} is a Special value
-        It returns TRUE
-          Assert True(T.is_special(v:false))
-          Assert True(T.is_special(v:true))
-          Assert True(T.is_special(v:null))
-          Assert True(T.is_special(v:none))
-        End
-      End
-      Context when {value} is not a Special value
-        It returns FALSE
-          Assert False(T.is_special(1))
-          Assert False(T.is_special(0))
-        End
+  Describe .is_special()
+    Context when {value} is a Special value
+      It returns TRUE
+        Assert True(T.is_special(v:false))
+        Assert True(T.is_special(v:true))
+        Assert True(T.is_special(v:null))
+        Assert True(T.is_special(v:none))
       End
     End
-  endif
+    Context when {value} is not a Special value
+      It returns FALSE
+        Assert False(T.is_special(1))
+        Assert False(T.is_special(0))
+      End
+    End
+  End
 
   Describe .is_predicate()
     Context when {value} is a predicate
       It returns TRUE
         Assert True(T.is_predicate(10))
         Assert True(T.is_predicate('10'))
-        if 800 <= v:version
-          Assert True(T.is_predicate(v:true))
-          Assert True(T.is_predicate(v:none))
-        endif
+        Assert True(T.is_predicate(v:true))
+        Assert True(T.is_predicate(v:none))
       End
     End
     Context when {value} is not a predicate
@@ -148,23 +136,15 @@ Describe Vim.Type
         Assert False(T.is_predicate([10]))
         Assert False(T.is_predicate({'value': 10}))
         Assert False(T.is_predicate(1.0))
-        if 800 <= v:version
-          Assert False(T.is_predicate(test_null_job()))
-          Assert False(T.is_predicate(test_null_channel()))
-        endif
+        Assert False(T.is_predicate(test_null_job()))
+        Assert False(T.is_predicate(test_null_channel()))
       End
     End
   End
 
   Describe .is_comparable()
     Before each
-      let vals = [0, '', function('type'), [], {}, 0.0]
-      if 800 <= v:version
-        let vals += [v:false, v:null, test_null_job(), test_null_channel()]
-      endif
-      if has('patch-8.1.0735')
-        let vals += [0z00]
-      endif
+      let vals = [0, '', function('type'), [], {}, 0.0, v:false, v:null, test_null_job(), test_null_channel(), 0z00]
 
       let true_group = []
       let false_group = []
