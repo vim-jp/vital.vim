@@ -32,16 +32,26 @@ function! s:compare(a, b) abort
   endif
 endfunction
 
-function! s:lshift(a, n) abort
-  return a:a * s:pow2[and(a:n, s:mask)]
-endfunction
+if has("patch- 8.2.5003")
+  function! s:lshift(a, n) abort
+    return a:a << and(a:n, s:mask)
+  endfunction
 
-function! s:rshift(a, n) abort
-  let n = and(a:n, s:mask)
-  return n == 0 ? a:a :
-  \  a:a < 0 ? (a:a - s:min) / s:pow2[n] + s:pow2[-2] / s:pow2[n - 1]
-  \          : a:a / s:pow2[n]
-endfunction
+  function! s:rshift(a, n) abort
+    return a:a >> and(a:n, s:mask)
+  endfunction
+else
+  function! s:lshift(a, n) abort
+    return a:a * s:pow2[and(a:n, s:mask)]
+  endfunction
+
+  function! s:rshift(a, n) abort
+    let n = and(a:n, s:mask)
+    return n == 0 ? a:a :
+    \  a:a < 0 ? (a:a - s:min) / s:pow2[n] + s:pow2[-2] / s:pow2[n - 1]
+    \          : a:a / s:pow2[n]
+  endfunction
+endif
 
 " 32bit or 64bit specific method
 " define sign_extension
