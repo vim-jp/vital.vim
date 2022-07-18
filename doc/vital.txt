@@ -25,10 +25,10 @@ jQuery at the same time.
 If you are a Vim user who doesn't make Vim plugins, please ignore this page.
 If you are a Vim plugin author, please check this out.
 
-Modules in vital.vim basically support Vim 8.1 or later.
+Modules in vital.vim basically support Vim 8.2 or later.
 We guarantee that the following versions of Vim are supported:
-* The latest major version (8.2.*)
-* The previous major version (8.1.*)
+* The latest major version (9.0.*)
+* The previous major version (8.2.*)
 
 And some modules have stricter requirements and additional dependencies.
 Please read the docs of each module before using them.
