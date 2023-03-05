@@ -93,7 +93,7 @@ endfunction
 function! s:_seed_from_string(seed, str) abort
   let seed = a:seed
   for n in range(len(a:str))
-    let seed = s:Bitwise.xor(seed, s:Bitwise.lshift(a:str[n], n % 4))
+    let seed = s:Bitwise.xor(seed, s:Bitwise.lshift(char2nr(a:str[n]), n % 4))
   endfor
   return seed
 endfunction
