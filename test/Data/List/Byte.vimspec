@@ -56,35 +56,27 @@ Describe Data.List.Byte
 
   Describe .from_blob()
     It from blob to bytes-list.
-      if has('patch-8.1.0735')
-        let result =  ByteArray.from_blob(0z616263)
-        let data = [0x61, 0x62, 0x63]
+      let result =  ByteArray.from_blob(0z616263)
+      let data = [0x61, 0x62, 0x63]
 
-        Assert Equals(type(result), type(data))
-        Assert Equals(len(result), len(data))
-        for i in range(len(data))
-          Assert Equals(result[i], data[i])
-        endfor
-      else
-        Skip no available blob type.
-      endif
+      Assert Equals(type(result), type(data))
+      Assert Equals(len(result), len(data))
+      for i in range(len(data))
+        Assert Equals(result[i], data[i])
+      endfor
     End
   End
 
   Describe .to_blob()
     It from bytes-list to blob.
-      if has('patch-8.1.0735')
-        let result =  ByteArray.to_blob([0x61, 0x62, 0x63])
-        let data = 0z616263
+      let result =  ByteArray.to_blob([0x61, 0x62, 0x63])
+      let data = 0z616263
 
-        Assert Equals(type(result), type(data))
-        Assert Equals(len(result), len(data))
-        for i in range(len(data))
-          Assert Equals(result[i], data[i])
-        endfor
-      else
-        Skip no available blob type.
-      endif
+      Assert Equals(type(result), type(data))
+      Assert Equals(len(result), len(data))
+      for i in range(len(data))
+        Assert Equals(result[i], data[i])
+      endfor
     End
   End
 
