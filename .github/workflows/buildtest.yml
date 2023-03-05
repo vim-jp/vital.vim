@@ -53,7 +53,7 @@ jobs:
         run: |
           python3 -c "from pip._internal.locations import USER_CACHE_DIR; print('::set-output name=dir::' + USER_CACHE_DIR)"
       - name: Set pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -141,7 +141,7 @@ jobs:
           New-Item $dir -ItemType Directory
           Write-Host "::set-output name=dir::$($dir)"
       - name: Set files cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.files.outputs.dir }}
           key: ${{ runner.os }}-64-files-${{ hashFiles('**/url.txt') }}
@@ -169,7 +169,7 @@ jobs:
         run: |
           python -c "from pip._internal.locations import USER_CACHE_DIR; print('::set-output name=dir::' + USER_CACHE_DIR)"
       - name: Set pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
