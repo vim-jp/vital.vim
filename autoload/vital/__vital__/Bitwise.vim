@@ -10,14 +10,6 @@ let s:bits = has('num64') ? 64 : 32
 let s:mask = s:bits - 1
 let s:mask32 = 32 - 1
 
-let s:pow2 = [1]
-for s:i in range(s:mask)
-  call add(s:pow2, s:pow2[-1] * 2)
-endfor
-unlet s:i
-
-let s:min = s:pow2[-1]
-
 " 32bit/64bit common method
 function! s:_throw(msg) abort
   throw 'vital: Bitwise: ' . a:msg
@@ -41,6 +33,14 @@ if has("patch-8.2.5003")
     return a:a >> and(a:n, s:mask)
   endfunction
 else
+  let s:pow2 = [1]
+  for s:i in range(s:mask)
+    call add(s:pow2, s:pow2[-1] * 2)
+  endfor
+  unlet s:i
+
+  let s:min = s:pow2[-1]
+
   function! s:lshift(a, n) abort
     return a:a * s:pow2[and(a:n, s:mask)]
   endfunction
