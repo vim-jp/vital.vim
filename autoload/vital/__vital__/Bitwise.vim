@@ -32,7 +32,7 @@ function! s:compare(a, b) abort
   endif
 endfunction
 
-if has("patch- 8.2.5003")
+if has("patch-8.2.5003")
   function! s:lshift(a, n) abort
     return a:a << and(a:n, s:mask)
   endfunction
