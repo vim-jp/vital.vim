@@ -61,9 +61,9 @@ if has('num64')
   " An int literal larger than or equal to 0x8000000000000000 will be rounded
   " to 0x7FFFFFFFFFFFFFFF after Vim 8.0.0219, so create it without literal
   if has("patch-8.2.5003")
-    let s:xFFFFFFFF00000000 = 0xFFFFFFFF * s:pow2[and(32, s:mask)]
+    let s:xFFFFFFFF00000000 = 0xFFFFFFFF << and(32, s:mask)
   else
-    let s:xFFFFFFFF00000000 = 0xFFFFFFFF << 32
+    let s:xFFFFFFFF00000000 = 0xFFFFFFFF * s:pow2[and(32, s:mask)]
   endif
   function! s:sign_extension(n) abort
     if and(a:n, 0x80000000)
