@@ -794,13 +794,13 @@ Describe Async.Promise
       Assert Equals(p._state, PENDING)
       " Timer accuracy fixing need
       Assert Equals(P.wait(p, { 'interval': 200 }), ['resolved', v:null])
+      let done = reltimefloat(reltime(s)) * 1000
       if has('mac')
         " Because of unstable result time on mac, we will expand the judgment range for the time test
         " It underflows and overflows.
         Assert Compare(done, '>=', 400)
         Assert Compare(done, '<=', 1000)
       else
-        let done = reltimefloat(reltime(s)) * 1000
         " interval period   | 1  | 2    | 3    | 4    | 5    | 6
         " elapsed time      |* 0 |* 200 |* 400 |* 600 |* 800 |* 1000
         " detect time range |                   +------+
@@ -815,13 +815,13 @@ Describe Async.Promise
       Assert Equals(p._state, PENDING)
       " Timer accuracy fixing need
       Assert Equals(P.wait(p, { 'interval': 200 }), ['resolved', v:null])
+      let done = reltimefloat(reltime(s)) * 1000
       if has('mac')
         " Because of unstable result time on mac, we will expand the judgment range for the time test
         " It underflows and overflows.
         Assert Compare(done, '>=', 600)
         Assert Compare(done, '<=', 1200)
       else
-        let done = reltimefloat(reltime(s)) * 1000
         " interval period   | 1  | 2    | 3    | 4    | 5    | 6
         " elapsed time      |* 0 |* 200 |* 400 |* 600 |* 800 |* 1000
         " detect time range |                          +------+
@@ -838,13 +838,13 @@ Describe Async.Promise
       Assert Equals(p._state, PENDING)
       " Timer accuracy fixing need
       Assert Equals(P.wait(p, { 'interval': 200 }), [v:null, 'rejected'])
+      let done = reltimefloat(reltime(s)) * 1000
       if has('mac')
         " Because of unstable result time on mac, we will expand the judgment range for the time test
         " It underflows and overflows.
         Assert Compare(done, '>=', 400)
         Assert Compare(done, '<=', 1000)
       else
-        let done = reltimefloat(reltime(s)) * 1000
         " interval period   | 1  | 2    | 3    | 4    | 5    | 6
         " elapsed time      |* 0 |* 200 |* 400 |* 600 |* 800 |* 1000
         " detect time range |                   +------+
@@ -859,13 +859,13 @@ Describe Async.Promise
       Assert Equals(p._state, PENDING)
       " Timer accuracy fixing need
       Assert Equals(P.wait(p, { 'interval': 200 }), [v:null, 'rejected'])
+      let done = reltimefloat(reltime(s)) * 1000
       if has('mac')
         " Because of unstable result time on mac, we will expand the judgment range for the time test
         " It underflows and overflows.
         Assert Compare(done, '>=', 600)
         Assert Compare(done, '<=', 1200)
       else
-        let done = reltimefloat(reltime(s)) * 1000
         " interval period   | 1  | 2    | 3    | 4    | 5    | 6
         " elapsed time      |* 0 |* 200 |* 400 |* 600 |* 800 |* 1000
         " detect time range |                          +------+
