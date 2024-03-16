@@ -788,7 +788,7 @@ Describe Async.Promise
       Assert Compare(done, '<=', 2000)
     End
 
-    It waits within interval range ((interval * n) <= epoch <= (interval * (n + 1))), resolved pattern
+    It waits within the interval range ((interval * n) <= epoch <= (interval * (n + 1))) until resolve
       let p = Wait(500).then({ -> 'resolved' })
       let s = reltime()
       Assert Equals(p._state, PENDING)
@@ -801,8 +801,8 @@ Describe Async.Promise
       " complete timing   |---------------o 500
       " lower limit : 600, upper limit : 800
       if has('mac')
-        " Because of unstable result time on mac, we will expand the judgment range for the time test
-        " It underflows and overflows.
+        " Because the time required for a result is not stable on mac, we will expand the wait time range to test the time test
+        " It can either underflow or overflow.
         Assert Compare(done, '>=', 400)
         Assert Compare(done, '<=', 1000)
       else
@@ -832,7 +832,7 @@ Describe Async.Promise
       endif
     End
 
-    It waits within interval range ((interval * n) <= epoch <= (interval * (n + 1))), rejected pattern
+    It waits within the interval range ((interval * n) <= epoch <= (interval * (n + 1))), until reject
       let p = Wait(500).then({ -> P.reject('rejected') })
       let s = reltime()
       Assert Equals(p._state, PENDING)
