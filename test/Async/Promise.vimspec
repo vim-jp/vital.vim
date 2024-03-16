@@ -788,33 +788,91 @@ Describe Async.Promise
       Assert Compare(done, '<=', 2000)
     End
 
-    It waits at least the interval milliseconds (interval < epoch)
-      let p = Wait(1000).then({ -> 'resolved' })
+    It waits within the interval range ((interval * n) <= epoch <= (interval * (n + 1))) until resolve
+      let p = Wait(500).then({ -> 'resolved' })
       let s = reltime()
       Assert Equals(p._state, PENDING)
       " Timer accuracy fixing need
-      Assert Equals(P.wait(p, { 'interval': 340 }), ['resolved', v:null])
+      Assert Equals(P.wait(p, { 'interval': 200 }), ['resolved', v:null])
       let done = reltimefloat(reltime(s)) * 1000
-      Assert Compare(done, '>=', 1000)
+      " interval period   | 1  | 2    | 3    | 4    | 5    | 6
+      " elapsed time      |* 0 |* 200 |* 400 |* 600 |* 800 |* 1000
+      " detect time range |                   +------+
+      " complete timing   |---------------o 500
+      " lower limit : 600, upper limit : 800
       if has('mac')
-        " TODO: I know this is a terrible IDEA, but this assert makes osx test fails.
-        " Let's disable until we figure out why and how.
+        " Because the time required for a result is not stable on mac, we will expand the wait time range to test the time test
+        " It can either underflow or overflow.
+        Assert Compare(done, '>=', 400)
+        Assert Compare(done, '<=', 1000)
       else
-      	Assert Compare(done, '<=', 1360)
+        Assert Compare(done, '>=', 600)
+        Assert Compare(done, '<=', 800)
       endif
 
-      let p = Wait(1000).then({ -> P.reject('rejected') })
+      let p = Wait(700).then({ -> 'resolved' })
       let s = reltime()
       Assert Equals(p._state, PENDING)
       " Timer accuracy fixing need
-      Assert Equals(P.wait(p, { 'interval': 340 }), [v:null, 'rejected'])
+      Assert Equals(P.wait(p, { 'interval': 200 }), ['resolved', v:null])
       let done = reltimefloat(reltime(s)) * 1000
-      Assert Compare(done, '>=', 1000)
+      " interval period   | 1  | 2    | 3    | 4    | 5    | 6
+      " elapsed time      |* 0 |* 200 |* 400 |* 600 |* 800 |* 1000
+      " detect time range |                          +------+
+      " complete timing   |----------------------o 700
+      " lower limit : 800, upper limit : 1000
       if has('mac')
-        " TODO: I know this is a terrible IDEA, but this assert makes osx test fails.
-        " Let's disable until we figure out why and how.
+        " Because the time required for a result is not stable on mac, we will expand the wait time range to test the time test
+        " It can either underflow or overflow.
+        Assert Compare(done, '>=', 600)
+        Assert Compare(done, '<=', 1200)
       else
-      	Assert Compare(done, '<=', 1360)
+        Assert Compare(done, '>=', 800)
+        Assert Compare(done, '<=', 1000)
+      endif
+    End
+
+    It waits within the interval range ((interval * n) <= epoch <= (interval * (n + 1))), until reject
+      let p = Wait(500).then({ -> P.reject('rejected') })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      " Timer accuracy fixing need
+      Assert Equals(P.wait(p, { 'interval': 200 }), [v:null, 'rejected'])
+      let done = reltimefloat(reltime(s)) * 1000
+      " interval period   | 1  | 2    | 3    | 4    | 5    | 6
+      " elapsed time      |* 0 |* 200 |* 400 |* 600 |* 800 |* 1000
+      " detect time range |                   +------+
+      " complete timing   |---------------o 500
+      " lower limit : 600, upper limit : 800
+      if has('mac')
+        " Because the time required for a result is not stable on mac, we will expand the wait time range to test the time test
+        " It can either underflow or overflow.
+        Assert Compare(done, '>=', 400)
+        Assert Compare(done, '<=', 1000)
+      else
+        Assert Compare(done, '>=', 600)
+        Assert Compare(done, '<=', 800)
+      endif
+
+      let p = Wait(700).then({ -> P.reject('rejected') })
+      let s = reltime()
+      Assert Equals(p._state, PENDING)
+      " Timer accuracy fixing need
+      Assert Equals(P.wait(p, { 'interval': 200 }), [v:null, 'rejected'])
+      let done = reltimefloat(reltime(s)) * 1000
+      " interval period   | 1  | 2    | 3    | 4    | 5    | 6
+      " elapsed time      |* 0 |* 200 |* 400 |* 600 |* 800 |* 1000
+      " detect time range |                          +------+
+      " complete timing   |----------------------o 700
+      " lower limit : 800, upper limit : 1000
+      if has('mac')
+        " Because the time required for a result is not stable on mac, we will expand the wait time range to test the time test
+        " It can either underflow or overflow.
+        Assert Compare(done, '>=', 600)
+        Assert Compare(done, '<=', 1200)
+      else
+        Assert Compare(done, '>=', 800)
+        Assert Compare(done, '<=', 1000)
       endif
     End
   End
