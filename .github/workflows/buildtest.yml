@@ -47,7 +47,11 @@ jobs:
           brew install lua
       - name: Setup pip
         run: |
-          sudo pip3 install -U pip
+          if [ "${{ matrix.os }}" = "macos-latest" ]; then
+            sudo pip3 install -U pip --break-system-packages
+          else
+            sudo pip3 install -U pip
+          fi
       - name: Get pip cache
         id: pip-cache
         run: |
@@ -61,7 +65,11 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Setup cached item
         run: |
-          pip3 install --user -r requirements.txt
+          if [ "${{ matrix.os }}" = "macos-latest" ]; then
+            pip3 install --user -r requirements.txt --break-system-packages
+          else
+            pip3 install --user -r requirements.txt
+          fi
       - name: Setup Vim
         id: 'vim'
         uses: thinca/action-setup-vim@v1
