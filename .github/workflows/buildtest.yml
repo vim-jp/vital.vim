@@ -18,6 +18,10 @@ jobs:
             # linux only vim/ macvim run as mac os
             type: macvim
           - os: macos-latest
+            type: vim
+            # v8.2.1310 or later is required to build on macos-latest
+            vim: v8.2.0020
+          - os: macos-latest
             type: macvim
             # macvim only head
             vim: v8.2.0020
