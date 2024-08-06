@@ -76,7 +76,7 @@ jobs:
           fi
       - name: Setup Vim
         id: 'vim'
-        uses: thinca/action-setup-vim@v1
+        uses: thinca/action-setup-vim@v2
         with:
           vim_version: '${{ matrix.vim }}'
           vim_type: '${{ matrix.type }}'
@@ -189,7 +189,7 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Setup Vim
         id: 'vim'
-        uses: thinca/action-setup-vim@v1
+        uses: thinca/action-setup-vim@v2
         with:
           vim_version: '${{ matrix.vim }}'
           vim_type: '${{ matrix.type }}'
