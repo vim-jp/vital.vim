@@ -33,7 +33,7 @@ jobs:
           private-key: ${{ secrets.VIM_JP_BOT_PRIVATE_KEY }}
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.app-token.outputs.token }}
           author: 'github-actions <41898282+github-actions[bot]@users.noreply.github.com>'
@@ -63,7 +63,7 @@ jobs:
           tag: true
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           author: 'github-actions <41898282+github-actions[bot]@users.noreply.github.com>'
