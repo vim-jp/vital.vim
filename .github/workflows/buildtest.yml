@@ -114,7 +114,7 @@ jobs:
           covimerage write_coverage "${THEMIS_PROFILE}"
           coverage xml
       - name: Send coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage.xml
           env_vars: OS,VIMVER
@@ -230,7 +230,7 @@ jobs:
           covimerage write_coverage ${Env:THEMIS_PROFILE}
           coverage xml
       - name: Send coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage.xml
           env_vars: OS,VIMVER
