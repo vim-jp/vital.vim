@@ -14,19 +14,19 @@ Describe Data.Base16
       Assert Equals(B.encode("f"     ), '66'          )
     End
     It encode string RFC Test Vector 3. (reverse pattern)
-      Assert Equals(B.encode("fo"    ), '666F'        )
+      Assert Equals(B.encode("fo"    ), '666f'        )
     End
     It encode string RFC Test Vector 4. (reverse pattern)
-      Assert Equals(B.encode("foo"   ), '666F6F'      )
+      Assert Equals(B.encode("foo"   ), '666f6f'      )
     End
     It encode string RFC Test Vector 5. (reverse pattern)
-      Assert Equals(B.encode("foob"  ), '666F6F62'    )
+      Assert Equals(B.encode("foob"  ), '666f6f62'    )
     End
     It encode string RFC Test Vector 6. (reverse pattern)
-      Assert Equals(B.encode("fooba" ), '666F6F6261'  )
+      Assert Equals(B.encode("fooba" ), '666f6f6261'  )
     End
     It encode string RFC Test Vector 7. (reverse pattern)
-      Assert Equals(B.encode("foobar"), '666F6F626172')
+      Assert Equals(B.encode("foobar"), '666f6f626172')
     End
   End
 
