@@ -7,26 +7,26 @@ Describe Data.Base16
     It encode string to base16 encoded string.
       Assert Equals(B.encode("hello, world!"), '68656c6c6f2c20776f726c6421')
     End
-    It decode string RFC Test Vector 1.
-      Assert Equals(B.decode(""            ), ''      )
+    It encode string RFC Test Vector 1. (reverse pattern)
+      Assert Equals(B.encode(""      ), ''            )
     End
-    It decode string RFC Test Vector 2.
-      Assert Equals(B.decode("66"          ), 'f'     )
+    It encode string RFC Test Vector 2. (reverse pattern)
+      Assert Equals(B.encode("f"     ), '66'          )
     End
-    It decode string RFC Test Vector 3.
-      Assert Equals(B.decode("666F"        ), 'fo'    )
+    It encode string RFC Test Vector 3. (reverse pattern)
+      Assert Equals(B.encode("fo"    ), '666f'        )
     End
-    It decode string RFC Test Vector 4.
-      Assert Equals(B.decode("666F6F"      ), 'foo'   )
+    It encode string RFC Test Vector 4. (reverse pattern)
+      Assert Equals(B.encode("foo"   ), '666f6f'      )
     End
-    It decode string RFC Test Vector 5.
-      Assert Equals(B.decode("666F6F62"    ), 'foob'  )
+    It encode string RFC Test Vector 5. (reverse pattern)
+      Assert Equals(B.encode("foob"  ), '666f6f62'    )
     End
-    It decode string RFC Test Vector 6.
-      Assert Equals(B.decode("666F6F6261"  ), 'fooba' )
+    It encode string RFC Test Vector 6. (reverse pattern)
+      Assert Equals(B.encode("fooba" ), '666f6f6261'  )
     End
-    It decode string RFC Test Vector 7.
-      Assert Equals(B.decode("666F6F626172"), 'foobar')
+    It encode string RFC Test Vector 7. (reverse pattern)
+      Assert Equals(B.encode("foobar"), '666f6f626172')
     End
   End
 
