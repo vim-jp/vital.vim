@@ -167,7 +167,7 @@ jobs:
           if (Test-Path $zip) {
             Write-Host cache hit
           } else {
-            (New-Object Net.WebClient).DownloadFile('${{ steps.files.outputs.url }}', $zip)
+            Invoke-WebRequest '${{ steps.files.outputs.url }}' -UserAgent 'pwsh' -OutFile $zip
           }
           [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') > $null
           [System.IO.Compression.ZipFile]::ExtractToDirectory($zip, $lua)
