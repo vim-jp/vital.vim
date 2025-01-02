@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        vim: [v9.0.0107, v9.1.0000 ,head]
+        vim: [v9.0.0107, v9.1.0100 ,head]
         type: [vim, macvim]
         download: [available]
         exclude:
@@ -24,7 +24,7 @@ jobs:
           - os: macos-latest
             type: macvim
             # macvim only head
-            vim: v9.1.0000
+            vim: v9.1.0100
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.type }} ${{ matrix.vim }}/${{ matrix.os }} test
     env:
@@ -119,7 +119,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        vim: [v9.0.0107, v9.1.0000 ,head]
+        vim: [v9.0.0107, v9.1.0100 ,head]
         type: [vim]
         download: [available]
     runs-on: ${{ matrix.os }}
