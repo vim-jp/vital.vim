@@ -49,13 +49,25 @@ jobs:
         run: |
           brew upgrade
           brew install lua
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+      - name: Setup venv
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          echo "VIRTUAL_ENV=${VIRTUAL_ENV}" >> $GITHUB_ENV
+          echo "${VIRTUAL_ENV}/bin" >> $GITHUB_PATH
+          echo "${VIRTUAL_ENV}/lib" >> $GITHUB_PATH
+          echo "${VIRTUAL_ENV}/lib64" >> $GITHUB_PATH
+          echo "LD_LIBRARY_PATH=${VIRTUAL_ENV}/lib:${VIRTUAL_ENV}/lib64:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "PYTHON_PATH=${VIRTUAL_ENV}/bin" >> "$GITHUB_OUTPUT"
+          echo "RETICULATE_PYTHON=${VIRTUAL_ENV}/bin/python3" >> "$GITHUB_OUTPUT"
+          echo "PYTHON_VERSION=$(python --version)" >> "$GITHUB_OUTPUT"
       - name: Setup pip
         run: |
-          if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            sudo pip3 install -U pip --break-system-packages
-          else
-            sudo pip3 install -U pip
-          fi
+          pip3 install -U pip
       - name: Get pip cache
         id: pip-cache
         run: |
@@ -69,11 +81,7 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Setup cached item
         run: |
-          if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            pip3 install --user -r requirements.txt --break-system-packages
-          else
-            pip3 install --user -r requirements.txt
-          fi
+          pip3 install -r requirements.txt
       - name: Setup Vim
         id: 'vim'
         uses: thinca/action-setup-vim@v2
