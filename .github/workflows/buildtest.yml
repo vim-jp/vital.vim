@@ -49,13 +49,22 @@ jobs:
         run: |
           brew upgrade
           brew install lua
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+      - name: Setup venv
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          echo "VIRTUAL_ENV=${VIRTUAL_ENV}" >> $GITHUB_ENV
+          echo "${VIRTUAL_ENV}/bin" >> $GITHUB_PATH
+          echo "${VIRTUAL_ENV}/lib" >> $GITHUB_PATH
+          echo "${VIRTUAL_ENV}/lib64" >> $GITHUB_PATH
+          echo "LD_LIBRARY_PATH=${VIRTUAL_ENV}/lib:${VIRTUAL_ENV}/lib64:$LD_LIBRARY_PATH" >> $GITHUB_ENV
       - name: Setup pip
         run: |
-          if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            sudo pip3 install -U pip --break-system-packages
-          else
-            sudo pip3 install -U pip
-          fi
+          pip3 install -U pip
       - name: Get pip cache
         id: pip-cache
         run: |
@@ -69,11 +78,10 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Setup cached item
         run: |
-          if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            pip3 install --user -r requirements.txt --break-system-packages
-          else
-            pip3 install --user -r requirements.txt
-          fi
+          pip3 install -r requirements.txt
+          echo '::group:: pip list'
+          pip3 list
+          echo '::endgroup::'
       - name: Setup Vim
         id: 'vim'
         uses: thinca/action-setup-vim@v2
@@ -110,13 +118,21 @@ jobs:
         env:
           THEMIS_PROFILE: ${{ github.workspace }}/vim-profile-${{ runner.os }}-${{ matrix.vim }}-${{ matrix.type }}.txt
         run: |
-          export PATH=$(python3 -m site --user-base)/bin:${PATH}
+          echo '::group:: Profile file: ${THEMIS_PROFILE}'
+          cat "${THEMIS_PROFILE}"
+          echo '::endgroup::'
           covimerage write_coverage "${THEMIS_PROFILE}"
+          echo '::group:: coverage file: .coverage_covimerage'
+          cat .coverage_covimerage
+          echo '::endgroup::'
           coverage xml
+          echo '::group:: xml file: coverage.xml'
+          cat coverage.xml
+          echo '::endgroup::'
       - name: Send coverage
         uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
+          files: ./coverage.xml
           env_vars: OS,VIMVER
   windows:
     strategy:
@@ -172,6 +188,16 @@ jobs:
           [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') > $null
           [System.IO.Compression.ZipFile]::ExtractToDirectory($zip, $lua)
           Write-Output "$($lua)" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+      - name: Setup venv
+        run: |
+          python -m venv .venv
+          .venv\Scripts\activate
+          echo "VIRTUAL_ENV=%VIRTUAL_ENV%" >> %GITHUB_ENV%
+          echo "%VIRTUAL_ENV%\Scripts" >> %GITHUB_PATH%
       - name: Setup pip
         id: setup
         run: |
@@ -187,6 +213,12 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+      - name: Setup cached item
+        run: |
+          pip install -r requirements.txt
+          echo '::group:: pip list'
+          pip list
+          echo '::endgroup::'
       - name: Setup Vim
         id: 'vim'
         uses: thinca/action-setup-vim@v2
@@ -226,11 +258,19 @@ jobs:
           THEMIS_PROFILE: ${{ github.workspace }}/vim-profile-${{ runner.os }}-${{ matrix.vim }}-${{ matrix.type }}.txt
         shell: pwsh
         run: |
-          pip install -r requirements.txt
+          echo '::group:: Profile file: ${Env:THEMIS_PROFILE}'
+          cat "${Env:THEMIS_PROFILE}"
+          echo '::endgroup::'
           covimerage write_coverage ${Env:THEMIS_PROFILE}
+          echo '::group:: coverage file: .coverage_covimerage'
+          cat .coverage_covimerage
+          echo '::endgroup::'
           coverage xml
+          echo '::group:: xml file: coverage.xml'
+          cat coverage.xml
+          echo '::endgroup::'
       - name: Send coverage
         uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
+          files: ./coverage.xml
           env_vars: OS,VIMVER
