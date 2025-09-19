@@ -98,7 +98,7 @@ endfunction
 
 function! s:_max_by(dict, expr) abort
   let dict = s:swap(map(copy(a:dict), a:expr))
-  let key = dict[max(keys(dict))]
+  let key = dict[max(map(keys(dict), 'v:val + 0'))]
   return [key, a:dict[key]]
 endfunction
 
