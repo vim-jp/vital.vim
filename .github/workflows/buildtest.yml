@@ -84,7 +84,7 @@ jobs:
           echo '::endgroup::'
       - name: Setup Vim
         id: 'vim'
-        uses: thinca/action-setup-vim@v2
+        uses: thinca/action-setup-vim@v3
         with:
           vim_version: '${{ matrix.vim }}'
           vim_type: '${{ matrix.type }}'
@@ -221,7 +221,7 @@ jobs:
           echo '::endgroup::'
       - name: Setup Vim
         id: 'vim'
-        uses: thinca/action-setup-vim@v2
+        uses: thinca/action-setup-vim@v3
         with:
           vim_version: '${{ matrix.vim }}'
           vim_type: '${{ matrix.type }}'
