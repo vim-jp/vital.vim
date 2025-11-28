@@ -6,30 +6,45 @@ let s:scriptfile = s:Path.realpath(
       \ 'autoload/vital/__vital__/System/AsyncProcess.vim'
       \)
 
+let s:is_windows = has('win32')
+
+function! s:wait_until(cond, timeout) abort
+  let start = reltime()
+  while 1
+    if a:cond()
+      return 1
+    endif
+    if reltimefloat(reltime(start)) * 1000 > a:timeout
+      return 0
+    endif
+    sleep 10m
+  endwhile
+endfunction
+
 Describe System.AsyncProcess
   Before
     let AsyncProcess = s:V.import('System.AsyncProcess')
+    let g:exit_code = ""
+    let g:out_msg = ""
+    let g:err_msg = ""
   End
 
   After
+    unlet g:exit_code
+    unlet g:out_msg
+    unlet g:err_msg
   End
 
   Describe .execute({args}, {options})
     It uses a String item
-      let exit_code = ""
-      let out_msg = ""
-      let err_msg = ""
       function! s:my_out_cb(out_msg) abort
-        let out_msg = out_msg . a:out_msg
+        let g:out_msg = g:out_msg . a:out_msg
       endfunction
       function! s:my_err_cb(err_msg) abort
-        let err_msg = err_msg . a:err_msg
+        let g:err_msg = g:err_msg . a:err_msg
       endfunction
       function! s:my_exit_cb(exit_code) abort
-        let exit_code = a:exit_code
-        Assert Equals(l:exit_code, 0)
-        Assert Equals(l:out_msg, "abcdefg\n")
-        Assert Equals(l:err_msg, "")
+        let g:exit_code = a:exit_code
       endfunction
 
       let args = 'echo "abcdefg"'
@@ -38,6 +53,20 @@ Describe System.AsyncProcess
         \   'out_cb': function('s:my_out_cb'),
         \   'err_cb': function('s:my_err_cb'),
         \ })
+
+      call s:wait_until({-> g:exit_code !=# ""}, 2000)
+
+      Assert Equals(g:exit_code, 0)
+      Assert Equals(g:err_msg, "")
+
+      if s:is_windows
+        let actual_out_msg = '\"abcdefg\"'
+      else
+        let actual_out_msg = "abcdefg"
+      endif
+
+      Assert Equals(g:out_msg, actual_out_msg)
     End
   End
 End
+
