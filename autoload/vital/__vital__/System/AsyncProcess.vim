@@ -16,10 +16,26 @@ function! s:_vital_depends() abort
   return []
 endfunction
 
+if s:is_windows
+  " iconv() wrapper for safety.
+  function! s:iconv(expr, from, to) abort
+    if a:from ==# '' || a:to ==# '' || a:from ==? a:to
+      return a:expr
+    endif
+    let result = iconv(a:expr, a:from, a:to)
+    return result !=# '' ? result : a:expr
+  endfunction
+endif
+
 if !s:is_nvim
   " inner callbacks for Vim
   function! s:inner_out_cb(user_out_cb, ch, msg) abort
-    call a:user_out_cb(a:msg)
+    let result = a:msg
+    if s:is_windows
+      let result = s:iconv(a:msg, 'char', &encoding)
+    endif
+
+    call a:user_out_cb(result)
   endfunction
 
   function! s:inner_exit_cb(user_exit_cb, job, exit_code) abort
@@ -27,7 +43,12 @@ if !s:is_nvim
   endfunction
 
   function! s:inner_err_cb(user_err_cb, ch, msg) abort
-    call a:user_err_cb(a:msg)
+    let result = a:msg
+    if s:is_windows
+      let result = s:iconv(a:msg, 'char', &encoding)
+    endif
+
+    call a:user_err_cb(result)
   endfunction
 else
   " inner callbacks for Neovim
