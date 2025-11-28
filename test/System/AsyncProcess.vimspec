@@ -1,0 +1,43 @@
+scriptencoding utf-8
+
+let s:V = vital#vital#new()
+let s:Path = s:V.import('System.Filepath')
+let s:scriptfile = s:Path.realpath(
+      \ 'autoload/vital/__vital__/System/AsyncProcess.vim'
+      \)
+
+Describe System.AsyncProcess
+  Before
+    let AsyncProcess = s:V.import('System.AsyncProcess')
+  End
+
+  After
+  End
+
+  Describe .execute({args}, {options})
+    It uses a String item
+      let exit_code = ""
+      let out_msg = ""
+      let err_msg = ""
+      function! s:my_out_cb(out_msg) abort
+        let out_msg = out_msg . a:out_msg
+      endfunction
+      function! s:my_err_cb(err_msg) abort
+        let err_msg = err_msg . a:err_msg
+      endfunction
+      function! s:my_exit_cb(exit_code) abort
+        let exit_code = a:exit_code
+        Assert Equals(l:exit_code, 0)
+        Assert Equals(l:out_msg, "abcdefg\n")
+        Assert Equals(l:err_msg, "")
+      endfunction
+
+      let args = 'echo "abcdefg"'
+      call AsyncProcess.execute(args, {
+        \   'exit_cb': function('s:my_exit_cb'),
+        \   'out_cb': function('s:my_out_cb'),
+        \   'err_cb': function('s:my_err_cb'),
+        \ })
+    End
+  End
+End
