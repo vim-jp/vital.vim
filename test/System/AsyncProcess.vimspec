@@ -68,5 +68,71 @@ Describe System.AsyncProcess
       Assert Equals(g:out_msg, actual_out_msg)
     End
   End
+
+  Describe .stop()
+    It stop
+      let g:out_msg = []
+      let g:err_msg = []
+      let g:exit_code = ""
+      function! s:my_out_cb(out_msg) abort
+        let g:out_msg = g:out_msg + [a:out_msg]
+      endfunction
+      function! s:my_err_cb(err_msg) abort
+        let g:err_msg = g:err_msg + [a:err_msg]
+      endfunction
+      function! s:my_exit_cb(exit_code) abort
+        let g:exit_code = a:exit_code
+      endfunction
+
+      let args = "ping 0.0.0.0"
+      let process = AsyncProcess.execute(args, {
+        \   'exit_cb': function('s:my_exit_cb'),
+        \   'out_cb': function('s:my_out_cb'),
+        \   'err_cb': function('s:my_err_cb'),
+        \ })
+
+      call process.stop()
+
+      " Wait exit_cb process
+      call s:wait_until({-> g:exit_code !=# ""}, 1000)
+
+      Assert Equals(len(g:out_msg), 0)
+      Assert Equals(len(g:err_msg), 0)
+      Assert True(g:exit_code != 0)
+
+    End
+  End
+
+  Describe .timeout
+    It stop
+      let g:out_msg = []
+      let g:err_msg = []
+      let g:exit_code = ""
+      function! s:my_out_cb(out_msg) abort
+        let g:out_msg = g:out_msg + [a:out_msg]
+      endfunction
+      function! s:my_err_cb(err_msg) abort
+        let g:err_msg = g:err_msg + [a:err_msg]
+      endfunction
+      function! s:my_exit_cb(exit_code) abort
+        let g:exit_code = a:exit_code
+      endfunction
+
+      let args = "ping 0.0.0.0"
+      let process = AsyncProcess.execute(args, {
+        \   'exit_cb': function('s:my_exit_cb'),
+        \   'out_cb': function('s:my_out_cb'),
+        \   'err_cb': function('s:my_err_cb'),
+        \   'timeout': 1000,
+        \ })
+
+      call s:wait_until({-> g:exit_code !=# ""}, 1000)
+
+      Assert True(len(g:out_msg) > 0)
+      Assert Equals(len(g:err_msg), 0)
+      Assert True(g:exit_code != 0)
+
+    End
+  End
 End
 
