@@ -8,14 +8,6 @@ let s:TYPE_DICT = type({})
 let s:TYPE_LIST = type([])
 let s:TYPE_STRING = type('')
 
-function! s:_vital_loaded(V) abort
-  let s:V = a:V
-endfunction
-
-function! s:_vital_depends() abort
-  return []
-endfunction
-
 if s:is_windows
   " iconv() wrapper for safety.
   function! s:iconv(expr, from, to) abort
