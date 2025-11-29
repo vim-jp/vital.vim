@@ -79,6 +79,7 @@ endif
 "     out_cb: function(stdout_msg), " call per line
 "     err_cb: function(stderr_msg), " call per line
 "     exit_cb: function(exit_code), " call on exit
+"     timeout: Number(ms),
 "   }
 function! s:execute(command, options) abort
   if !type(a:options) is s:TYPE_DICT
@@ -112,6 +113,12 @@ function! s:execute(command, options) abort
 
     let job_id = jobstart([&shell] + args, options)
 
+    if has_key(a:options, 'timeout')
+      if a:options.timeout > 0
+        call timer_start(a:options.timeout, {-> jobstop(job_id)})
+      endif
+    endif
+
     return {
           \ 'stop': function('jobstop', [job_id]),
           \  }
@@ -122,6 +129,12 @@ function! s:execute(command, options) abort
     let options['exit_cb'] = function('s:inner_exit_cb', [a:options.exit_cb])
 
     let job = job_start([&shell] + args, options)
+
+    if has_key(a:options, 'timeout')
+      if a:options.timeout > 0
+        call timer_start(a:options.timeout, {-> job_stop(job)})
+      endif
+    endif
 
     return {
           \ 'stop': function('job_stop', [job]),
