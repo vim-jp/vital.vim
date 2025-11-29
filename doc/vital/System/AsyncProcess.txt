@@ -42,6 +42,7 @@ USAGE						*Vital.System.AsyncProcess-usage*
 	      \   'exit_cb': function('s:my_exit_cb'),
 	      \   'out_cb': function('s:my_out_cb'),
 	      \   'err_cb': function('s:my_err_cb'),
+	      \   'timeout': 5000,
 	      \ }
 	      \)
 <
@@ -52,6 +53,7 @@ FUNCTIONS				*Vital.System.AsyncProcess-functions*
 				*Vital.System.AsyncProcess.execute()*
 execute({args}[, {options}])
 	Executes a async process specified by {args} (|List| or |String|).
+	This method need to return a {result} |Dictionary|.
 
 	The following attributes are supported in {options}
 
@@ -61,12 +63,24 @@ execute({args}[, {options}])
 
 		"out_cb"
 		A |function| of callback function called when the process outputs
-		some data. The callback function has one argument, out_msg(|String|).
+		some data. The callback function has one argument,
+		out_msg(|String|).
 
 		"err_cb"
 		A |function| of callback function called when the process outputs
-		some error data. The callback function has one argument, err_msg(|String|).
+		some error data. The callback function has one argument,
+		err_msg(|String|).
 
+		"timeout"
+		A |Number| of timeout value in milliseconds. If the
+		process does not exit within the timeout period, it will
+		be killed.
+
+	The following attributes exist in {result} dictionary
+
+		"stop()"
+		A |function| of function to stop the process.
+		When this function is called, the process will be killed.
 
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
