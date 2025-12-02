@@ -126,7 +126,8 @@ Describe System.AsyncProcess
         \   'timeout': 1000,
         \ })
 
-      call s:wait_until({-> g:exit_code !=# ""}, 1000)
+      " wait timeout and exit_cb
+      call s:wait_until({-> g:exit_code !=# ""}, 2000)
 
       Assert True(len(g:out_msg) > 0)
       Assert Equals(len(g:err_msg), 0)
