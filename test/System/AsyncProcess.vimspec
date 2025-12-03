@@ -84,7 +84,7 @@ Describe System.AsyncProcess
         let g:exit_code = a:exit_code
       endfunction
 
-      let args = "ping 0.0.0.0"
+      let args = "ping 127.0.0.1"
       let process = AsyncProcess.execute(args, {
         \   'exit_cb': function('s:my_exit_cb'),
         \   'out_cb': function('s:my_out_cb'),
@@ -124,7 +124,7 @@ Describe System.AsyncProcess
         let g:exit_code = a:exit_code
       endfunction
 
-      let args = "ping 0.0.0.0"
+      let args = "ping 127.0.0.1"
       let process = AsyncProcess.execute(args, {
         \   'exit_cb': function('s:my_exit_cb'),
         \   'out_cb': function('s:my_out_cb'),
