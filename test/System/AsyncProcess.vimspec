@@ -100,7 +100,7 @@ Describe System.AsyncProcess
       Assert Equals(len(g:err_msg), 0)
       " v8.2.238 or earlier, job_stop() exit status is 0.
       " See: https://github.com/vim/vim/commit/b3e195cca7b3201b188c1713b64012b1bef4f61f
-      if v:version == 802 && !has('patch238') || v:version < 802
+      if has('win32') && (v:version == 802 && !has('patch238') || v:version < 802)
         Assert True(g:exit_code == 0)
       else
         Assert True(g:exit_code != 0)
@@ -139,7 +139,7 @@ Describe System.AsyncProcess
       Assert Equals(len(g:err_msg), 0)
       " v8.2.238 or earlier, job_stop() exit status is 0.
       " See: https://github.com/vim/vim/commit/b3e195cca7b3201b188c1713b64012b1bef4f61f
-      if v:version == 802 && !has('patch238') || v:version < 802
+      if has('win32') && (v:version == 802 && !has('patch238') || v:version < 802)
         Assert True(g:exit_code == 0)
       else
         Assert True(g:exit_code != 0)
