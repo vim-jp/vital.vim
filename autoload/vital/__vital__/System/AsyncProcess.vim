@@ -19,7 +19,7 @@ endfunction
 
 function! s:_ensure_buffer_string(string) abort
     if s:is_windows
-      return = s:iconv(a:string, 'char', &encoding)
+      return s:Process.iconv(a:string, 'char', &encoding)
     else
       return a:string
     endif
