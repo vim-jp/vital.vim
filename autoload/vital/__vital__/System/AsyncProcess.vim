@@ -27,20 +27,20 @@ endfunction
 
 if !s:is_nvim
   " inner callbacks for Vim
-  function! s:inner_out_cb(user_out_cb, ch, msg) abort
+  function! s:_inner_out_cb(user_out_cb, ch, msg) abort
     call a:user_out_cb(s:_ensure_buffer_string(a:msg))
   endfunction
 
-  function! s:inner_exit_cb(user_exit_cb, job, exit_code) abort
+  function! s:_inner_exit_cb(user_exit_cb, job, exit_code) abort
     call a:user_exit_cb(a:exit_code)
   endfunction
 
-  function! s:inner_err_cb(user_err_cb, ch, msg) abort
+  function! s:_inner_err_cb(user_err_cb, ch, msg) abort
     call a:user_err_cb(s:_ensure_buffer_string(result))
   endfunction
 else
   " inner callbacks for Neovim
-  function! s:inner_out_cb(user_out_cb, job_id, data, event) abort
+  function! s:_inner_out_cb(user_out_cb, job_id, data, event) abort
     for line in a:data
       if line !=# ''
         call a:user_out_cb(line)
@@ -48,11 +48,11 @@ else
     endfor
   endfunction
 
-  function! s:inner_exit_cb(user_exit_cb, job_id, exit_code, event) abort
+  function! s:_inner_exit_cb(user_exit_cb, job_id, exit_code, event) abort
     call a:user_exit_cb(a:exit_code)
   endfunction
 
-  function! s:inner_err_cb(user_err_cb, job_id, data, event) abort
+  function! s:_inner_err_cb(user_err_cb, job_id, data, event) abort
     for line in a:data
       if line !=# ''
         call a:user_err_cb(line)
@@ -97,9 +97,9 @@ function! s:execute(command, options) abort
   let job_id = -1
   if s:is_nvim
     let options = {
-          \ 'on_stdout': function('s:inner_out_cb', [a:options.out_cb]),
-          \ 'on_stderr': function('s:inner_err_cb', [a:options.err_cb]),
-          \ 'on_exit': function('s:inner_exit_cb', [a:options.exit_cb]),
+          \ 'on_stdout': function('s:_inner_out_cb', [a:options.out_cb]),
+          \ 'on_stderr': function('s:_inner_err_cb', [a:options.err_cb]),
+          \ 'on_exit': function('s:_inner_exit_cb', [a:options.exit_cb]),
           \ }
 
     let job_id = jobstart([&shell] + args, options)
@@ -115,9 +115,9 @@ function! s:execute(command, options) abort
           \  }
   else
     let options = {
-          \ 'out_cb': function('s:inner_out_cb', [a:options.out_cb]),
-          \ 'err_cb': function('s:inner_err_cb', [a:options.err_cb]),
-          \ 'exit_cb': function('s:inner_exit_cb', [a:options.exit_cb]),
+          \ 'out_cb': function('s:_inner_out_cb', [a:options.out_cb]),
+          \ 'err_cb': function('s:_inner_err_cb', [a:options.err_cb]),
+          \ 'exit_cb': function('s:_inner_exit_cb', [a:options.exit_cb]),
           \ }
 
     let job = job_start([&shell] + args, options)
