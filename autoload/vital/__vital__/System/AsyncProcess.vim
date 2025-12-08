@@ -85,9 +85,11 @@ function! s:execute(command, options) abort
 
   " build args
   let args = []
-  if s:is_windows
+  if stridx(&shell, 'cmd.exe') != -1
+    " cmd.exe
     let args = args + ['/c']
   else
+    " sh, bash, pwsh, etc.
     let args = args + ['-c']
   endif
   let args = args + [command]
