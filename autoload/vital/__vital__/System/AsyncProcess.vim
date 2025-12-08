@@ -17,15 +17,18 @@ function! s:_vital_depends() abort
   return ['Process']
 endfunction
 
+function! s:_ensure_buffer_string(string) abort
+    if s:is_windows
+      return = s:iconv(a:string, 'char', &encoding)
+    else
+      return a:string
+    endif
+endfunction
+
 if !s:is_nvim
   " inner callbacks for Vim
   function! s:inner_out_cb(user_out_cb, ch, msg) abort
-    let result = a:msg
-    if s:is_windows
-      let result = s:iconv(a:msg, 'char', &encoding)
-    endif
-
-    call a:user_out_cb(result)
+    call a:user_out_cb(s:_ensure_buffer_string(a:msg))
   endfunction
 
   function! s:inner_exit_cb(user_exit_cb, job, exit_code) abort
@@ -33,12 +36,7 @@ if !s:is_nvim
   endfunction
 
   function! s:inner_err_cb(user_err_cb, ch, msg) abort
-    let result = a:msg
-    if s:is_windows
-      let result = s:iconv(a:msg, 'char', &encoding)
-    endif
-
-    call a:user_err_cb(result)
+    call a:user_err_cb(s:_ensure_buffer_string(result))
   endfunction
 else
   " inner callbacks for Neovim
