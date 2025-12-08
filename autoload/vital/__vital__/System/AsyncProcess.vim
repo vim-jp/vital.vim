@@ -96,10 +96,11 @@ function! s:execute(command, options) abort
 
   let job_id = -1
   if s:is_nvim
-    let options = {}
-    let options['on_stdout'] = function('s:inner_out_cb', [a:options.out_cb])
-    let options['on_stderr'] = function('s:inner_err_cb', [a:options.err_cb])
-    let options['on_exit'] = function('s:inner_exit_cb', [a:options.exit_cb])
+    let options = {
+          \ 'on_stdout': function('s:inner_out_cb', [a:options.out_cb]),
+          \ 'on_stderr': function('s:inner_err_cb', [a:options.err_cb]),
+          \ 'on_exit': function('s:inner_exit_cb', [a:options.exit_cb]),
+          \ }
 
     let job_id = jobstart([&shell] + args, options)
 
@@ -113,10 +114,11 @@ function! s:execute(command, options) abort
           \ 'stop': function('jobstop', [job_id]),
           \  }
   else
-    let options = {}
-    let options['out_cb'] = function('s:inner_out_cb', [a:options.out_cb])
-    let options['err_cb'] = function('s:inner_err_cb', [a:options.err_cb])
-    let options['exit_cb'] = function('s:inner_exit_cb', [a:options.exit_cb])
+    let options = {
+          \ 'out_cb': function('s:inner_out_cb', [a:options.out_cb]),
+          \ 'err_cb': function('s:inner_err_cb', [a:options.err_cb]),
+          \ 'exit_cb': function('s:inner_exit_cb', [a:options.exit_cb]),
+          \ }
 
     let job = job_start([&shell] + args, options)
 
