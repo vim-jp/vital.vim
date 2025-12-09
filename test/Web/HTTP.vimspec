@@ -66,7 +66,7 @@ Describe Web.HTTP
 
     It option_outputFile
       let current_dir = getcwd()
-      let output_file = '/tmp/vital_test_web_http_outputFile.txt'
+      let output_file = tempname()
       let response = HTTP.request({
             \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
             \ 'outputFile': output_file,
