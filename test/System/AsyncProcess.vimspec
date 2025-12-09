@@ -69,6 +69,15 @@ Describe System.AsyncProcess
     End
   End
 
+  Describe .execute({args})
+    It uses a String item
+      let args = 'echo "abcdefg"'
+      call AsyncProcess.execute(args, {})
+
+      " expect is nothing error
+    End
+  End
+
   Describe .stop()
     It stop
       let g:out_msg = []
