@@ -52,4 +52,33 @@ Describe Web.HTTP
       endfor
     End
   End
+
+  Describe .request()
+    It client curl
+      let current_dir = getcwd()
+      let response = HTTP.request({
+            \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
+            \ 'client': ['curl'],
+            \ })
+
+      Assert Equals(response.content, "テスト\n")
+    End
+
+    It option_outputFile
+      let current_dir = getcwd()
+      let output_file = '/tmp/vital_test_web_http_outputFile.txt'
+      let response = HTTP.request({
+            \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
+            \ 'outputFile': output_file,
+            \ 'client': ['curl'],
+            \ })
+
+      let output_file_content = readfile(output_file)
+
+      Assert Equals(len(output_file_content), 1)
+      Assert Equals(output_file_content[0], "テスト")
+
+      call delete(output_file)
+    End
+  End
 End
