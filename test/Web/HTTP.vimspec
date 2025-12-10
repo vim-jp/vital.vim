@@ -3,12 +3,6 @@ scriptencoding utf-8
 Describe Web.HTTP
   Before all
     let HTTP = vital#vital#new().import('Web.HTTP')
-    let temp_dir = expand(tempname(), ":p")
-    call mkdir(temp_dir, "p")
-  End
-
-  After all
-    call delete(temp_dir)
   End
 
   Describe .encodeURI()
@@ -61,7 +55,7 @@ Describe Web.HTTP
 
   Describe .request()
     It client curl
-      let current_dir = getcwd()
+      let current_dir = fnamemodify(getcwd(), ":gs?\\?/?")
       let response = HTTP.request({
             \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
             \ 'client': ['curl'],
@@ -71,7 +65,7 @@ Describe Web.HTTP
     End
 
     It option_outputFile
-      let current_dir = getcwd()
+      let current_dir = fnamemodify(getcwd(), ":gs?\\?/?")
       let output_file = tempname()
       let response = HTTP.request({
             \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
