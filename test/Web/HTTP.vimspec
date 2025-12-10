@@ -3,6 +3,12 @@ scriptencoding utf-8
 Describe Web.HTTP
   Before all
     let HTTP = vital#vital#new().import('Web.HTTP')
+    let temp_dir = expand(tempname(), ":p")
+    call mkdir(temp_dir, "p")
+  End
+
+  After all
+    call delete(temp_dir)
   End
 
   Describe .encodeURI()
