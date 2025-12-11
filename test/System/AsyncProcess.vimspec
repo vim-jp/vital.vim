@@ -1,0 +1,160 @@
+scriptencoding utf-8
+
+let s:V = vital#vital#new()
+let s:Path = s:V.import('System.Filepath')
+let s:scriptfile = s:Path.realpath(
+      \ 'autoload/vital/__vital__/System/AsyncProcess.vim'
+      \)
+
+let s:is_windows = has('win32')
+
+function! s:wait_until(cond, timeout) abort
+  let start = reltime()
+  while 1
+    if a:cond()
+      return 1
+    endif
+    if reltimefloat(reltime(start)) * 1000 > a:timeout
+      return 0
+    endif
+    sleep 10m
+  endwhile
+endfunction
+
+Describe System.AsyncProcess
+  Before
+    let AsyncProcess = s:V.import('System.AsyncProcess')
+    let g:exit_code = ""
+    let g:out_msg = ""
+    let g:err_msg = ""
+  End
+
+  After
+    unlet g:exit_code
+    unlet g:out_msg
+    unlet g:err_msg
+  End
+
+  Describe .execute({args}, {options})
+    It uses a String item
+      function! s:my_out_cb(out_msg) abort
+        let g:out_msg = g:out_msg . a:out_msg
+      endfunction
+      function! s:my_err_cb(err_msg) abort
+        let g:err_msg = g:err_msg . a:err_msg
+      endfunction
+      function! s:my_exit_cb(exit_code) abort
+        let g:exit_code = a:exit_code
+      endfunction
+
+      let args = 'echo "abcdefg"'
+      call AsyncProcess.execute(args, {
+        \   'exit_cb': function('s:my_exit_cb'),
+        \   'out_cb': function('s:my_out_cb'),
+        \   'err_cb': function('s:my_err_cb'),
+        \ })
+
+      call s:wait_until({-> g:exit_code !=# ""}, 2000)
+
+      Assert Equals(g:exit_code, 0)
+      Assert Equals(g:err_msg, "")
+
+      if s:is_windows
+        let actual_out_msg = '\"abcdefg\"'
+      else
+        let actual_out_msg = "abcdefg"
+      endif
+
+      Assert Equals(g:out_msg, actual_out_msg)
+    End
+  End
+
+  Describe .execute({args})
+    It uses a String item
+      let args = 'echo "abcdefg"'
+      call AsyncProcess.execute(args, {})
+
+      " expect is nothing error
+    End
+  End
+
+  Describe .stop()
+    It stop
+      let g:out_msg = []
+      let g:err_msg = []
+      let g:exit_code = ""
+      function! s:my_out_cb(out_msg) abort
+        let g:out_msg = g:out_msg + [a:out_msg]
+      endfunction
+      function! s:my_err_cb(err_msg) abort
+        let g:err_msg = g:err_msg + [a:err_msg]
+      endfunction
+      function! s:my_exit_cb(exit_code) abort
+        let g:exit_code = a:exit_code
+      endfunction
+
+      let args = "ping 127.0.0.1"
+      let process = AsyncProcess.execute(args, {
+        \   'exit_cb': function('s:my_exit_cb'),
+        \   'out_cb': function('s:my_out_cb'),
+        \   'err_cb': function('s:my_err_cb'),
+        \ })
+
+      call process.stop()
+
+      " Wait exit_cb process
+      call s:wait_until({-> g:exit_code !=# ""}, 1000)
+
+      Assert Equals(len(g:out_msg), 0)
+      Assert Equals(len(g:err_msg), 0)
+      " v8.2.238 or earlier, job_stop() exit status is 0.
+      " See: https://github.com/vim/vim/commit/b3e195cca7b3201b188c1713b64012b1bef4f61f
+      if has('win32') && (v:version == 802 && !has('patch238') || v:version < 802)
+        Assert True(g:exit_code == 0)
+      else
+        Assert True(g:exit_code != 0)
+      endif
+
+    End
+  End
+
+  Describe .timeout
+    It stop
+      let g:out_msg = []
+      let g:err_msg = []
+      let g:exit_code = ""
+      function! s:my_out_cb(out_msg) abort
+        let g:out_msg = g:out_msg + [a:out_msg]
+      endfunction
+      function! s:my_err_cb(err_msg) abort
+        let g:err_msg = g:err_msg + [a:err_msg]
+      endfunction
+      function! s:my_exit_cb(exit_code) abort
+        let g:exit_code = a:exit_code
+      endfunction
+
+      let args = "ping 127.0.0.1"
+      let process = AsyncProcess.execute(args, {
+        \   'exit_cb': function('s:my_exit_cb'),
+        \   'out_cb': function('s:my_out_cb'),
+        \   'err_cb': function('s:my_err_cb'),
+        \   'timeout': 1000,
+        \ })
+
+      " wait timeout and exit_cb
+      call s:wait_until({-> g:exit_code !=# ""}, 2000)
+
+      Assert True(len(g:out_msg) > 0)
+      Assert Equals(len(g:err_msg), 0)
+      " v8.2.238 or earlier, job_stop() exit status is 0.
+      " See: https://github.com/vim/vim/commit/b3e195cca7b3201b188c1713b64012b1bef4f61f
+      if has('win32') && (v:version == 802 && !has('patch238') || v:version < 802)
+        Assert True(g:exit_code == 0)
+      else
+        Assert True(g:exit_code != 0)
+      endif
+
+    End
+  End
+End
+

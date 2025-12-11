@@ -1,0 +1,87 @@
+*vital/System/AsyncProcess.txt*	Cross platform async process executor
+
+Maintainer: mikoto2000		<mikoto2000@gmail.com>
+
+=============================================================================
+CONTENTS				*Vital.System.AsyncProcess-contents*
+
+Introduction			|Vital.System.AsyncProcess-introduction|
+Usage				|Vital.System.AsyncProcess-usage|
+Functions			|Vital.System.AsyncProcess-functions|
+
+
+=============================================================================
+INTRODUCTION				*Vital.System.AsyncProcess-introduction*
+
+|Vital.System.AsyncProcess| provides a cross-platform functions to execute
+async process.
+
+
+=============================================================================
+USAGE						*Vital.System.AsyncProcess-usage*
+>
+	" call on exit callback
+	function! s:my_exit_cb(exit_code) abort
+	  echomsg 'exit_cb status: ' .. a:exit_code
+	endfunction
+	
+	" call on out callback(called per line)
+	function! s:my_out_cb(out_msg) abort
+	  echomsg 'out_cb_bytes: ' .. a:out_msg
+	endfunction
+	
+	" call on error callback(called per line)
+	function! s:my_err_cb(err_msg) abort
+	  echomsg 'err_cb msg: ' .. a:err_msg
+	endfunction
+	
+	" execute async process
+	call s:AsyncProcess.execute(
+	      \ 'ls /',
+	      \ {
+	      \   'exit_cb': function('s:my_exit_cb'),
+	      \   'out_cb': function('s:my_out_cb'),
+	      \   'err_cb': function('s:my_err_cb'),
+	      \   'timeout': 5000,
+	      \ }
+	      \)
+<
+
+=============================================================================
+FUNCTIONS				*Vital.System.AsyncProcess-functions*
+
+				*Vital.System.AsyncProcess.execute()*
+execute({args}[, {options}])
+	Executes a async process specified by {args} (|List| or |String|).
+	This method need to return a {result} |Dictionary|.
+
+	The following attributes are supported in {options}
+
+		"exit_cb"
+		A |function| of callback function called when the process exits.
+		The callback function has one argument, exit_code(|Number|).
+
+		"out_cb"
+		A |function| of callback function called when the process outputs
+		some data. The callback function has one argument,
+		out_msg(|String|).
+
+		"err_cb"
+		A |function| of callback function called when the process outputs
+		some error data. The callback function has one argument,
+		err_msg(|String|).
+
+		"timeout"
+		A |Number| of timeout value in milliseconds. If the
+		process does not exit within the timeout period, it will
+		be killed.
+
+	The following attributes exist in {result} dictionary
+
+		"stop()"
+		A |function| of function to stop the process.
+		When this function is called, the process will be killed.
+
+=============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
+
