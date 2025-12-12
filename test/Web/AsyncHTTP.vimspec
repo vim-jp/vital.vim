@@ -1,0 +1,81 @@
+scriptencoding utf-8
+
+let s:is_windows = has('win32')
+
+function! s:wait_until(cond, timeout) abort
+  let start = reltime()
+  while 1
+    if a:cond()
+      return 1
+    endif
+    if reltimefloat(reltime(start)) * 1000 > a:timeout
+      return 0
+    endif
+    sleep 10m
+  endwhile
+endfunction
+
+Describe Web.AsyncHTTP
+  Before all
+    let AsyncHTTP = vital#vital#new().import('Web.AsyncHTTP')
+  End
+
+  After all
+    unlet g:response
+  End
+
+  Before
+    let g:response = {}
+  End
+
+  Describe .request()
+    It client curl
+      if s:is_windows && exists('$GITHUB_ACTIONS') && $GITHUB_ACTIONS ==# 'true'
+        Skip Windows on GitHub Actions, occur unknown write error...
+      endif
+
+      function! s:user_cb(response) abort
+        let g:response = a:response
+      endfunction
+
+      let current_dir = fnamemodify(getcwd(), ":gs?\\?/?")
+      let response = AsyncHTTP.request({
+            \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
+            \ 'client': ['curl'],
+            \ 'user_cb': function('s:user_cb'),
+            \ })
+
+      call s:wait_until({-> g:response !=# {}}, 2000)
+
+      Assert Equals(g:response.content, "テスト\n")
+    End
+
+    It option_outputFile
+      if s:is_windows && exists('$GITHUB_ACTIONS') && $GITHUB_ACTIONS ==# 'true'
+        Skip Windows on GitHub Actions, occur unknown write error...
+      endif
+
+      function! s:user_cb(response) abort
+        let g:response = a:response
+      endfunction
+
+      let current_dir = fnamemodify(getcwd(), ":gs?\\?/?")
+      let output_file = tempname()
+      let response = AsyncHTTP.request({
+            \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
+            \ 'outputFile': output_file,
+            \ 'client': ['curl'],
+            \ })
+
+      call s:wait_until({-> g:response !=# {}}, 2000)
+
+      let output_file_content = readfile(output_file)
+
+      Assert Equals(len(output_file_content), 1)
+      Assert Equals(output_file_content[0], "テスト")
+
+      call delete(output_file)
+    End
+  End
+End
+
