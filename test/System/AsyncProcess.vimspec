@@ -47,7 +47,12 @@ Describe System.AsyncProcess
         let g:exit_code = a:exit_code
       endfunction
 
-      let args = 'echo "abcdefg"'
+      if s:is_windows
+        let args = 'cmd.exe /c echo "abcdefg"'
+      else
+        let args = 'bash -c "echo \"abcdefg\""'
+      endif
+
       call AsyncProcess.execute(args, {
         \   'exit_cb': function('s:my_exit_cb'),
         \   'out_cb': function('s:my_out_cb'),
@@ -60,7 +65,7 @@ Describe System.AsyncProcess
       Assert Equals(g:err_msg, "")
 
       if s:is_windows
-        let actual_out_msg = '\"abcdefg\"'
+        let actual_out_msg = '"abcdefg"'
       else
         let actual_out_msg = "abcdefg"
       endif
