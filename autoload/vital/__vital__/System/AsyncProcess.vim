@@ -36,7 +36,7 @@ if !s:is_nvim
   endfunction
 
   function! s:_inner_err_cb(user_err_cb, ch, msg) abort
-    call a:user_err_cb(s:_ensure_buffer_string(result))
+    call a:user_err_cb(s:_ensure_buffer_string(a:msg))
   endfunction
 else
   " inner callbacks for Neovim
@@ -83,17 +83,6 @@ function! s:execute(command, options) abort
     throw 'vital: AsyncProcess: invalid argument (value type:' . type(a:command) . ')'
   endif
 
-  " build args
-  let args = []
-  if stridx(&shell, 'cmd.exe') != -1
-    " cmd.exe
-    let args = args + ['/c']
-  else
-    " sh, bash, pwsh, etc.
-    let args = args + ['-c']
-  endif
-  let args = args + [command]
-
   let job_id = -1
   if s:is_nvim
     let options = {}
@@ -107,7 +96,7 @@ function! s:execute(command, options) abort
       let options['on_exit'] = function('s:_inner_exit_cb', [a:options.exit_cb])
     endif
 
-    let job_id = jobstart([&shell] + args, options)
+    let job_id = jobstart(command, options)
 
     if has_key(a:options, 'timeout')
       if a:options.timeout > 0
@@ -130,7 +119,7 @@ function! s:execute(command, options) abort
       let options['exit_cb'] = function('s:_inner_exit_cb', [a:options.exit_cb])
     endif
 
-    let job = job_start([&shell] + args, options)
+    let job = job_start(command, options)
 
     if has_key(a:options, 'timeout')
       if a:options.timeout > 0
