@@ -5,9 +5,9 @@ Describe Web.JSON
 
   Describe .constants()
     It should have constant variables which indicate the special tokens
-      Assert Match(string(JSON.true), "function('\.*_true')")
-      Assert Match(string(JSON.false), "function('\.*_false')")
-      Assert Match(string(JSON.null), "function('\.*_null')")
+      Assert Same(JSON.true, v:true)
+      Assert Same(JSON.false, v:false)
+      Assert Same(JSON.null, v:null)
     End
   End
 
@@ -42,6 +42,20 @@ Describe Web.JSON
       Assert Equals(JSON.decode('"\ud83c\u00a0"'), "\ud83c\u00a0")
     End
 
+    It decodes strings with character encoding
+      let expected_utf8 = "sあc漢g"
+      Assert Equals(JSON.decode('"sあc漢g"'), expected_utf8)
+
+      let expected_sjis = iconv("sあc漢g", 'utf-8', 'sjis')
+      try
+        let &encoding = 'sjis'
+        let res = JSON.decode('"sあc漢g"')
+      finally
+        let &encoding = 'utf-8'
+      endtry
+      Assert Equals(res, expected_sjis)
+    End
+
     It decodes lists
       Assert Equals(JSON.decode('[]'), [])
       Assert Equals(JSON.decode('[0, 1, 2]'), [0, 1, 2])
@@ -71,15 +85,20 @@ Describe Web.JSON
     End
 
     It decodes special tokens (true/false/null)
-      " true/false/null
-      Assert Equals(JSON.decode('true'), 1)
-      Assert Equals(JSON.decode('false'), 0)
-      Assert Equals(JSON.decode('null'), 0)
+      Assert Same(JSON.decode('true'), v:true)
+      Assert Same(JSON.decode('false'), v:false)
+      Assert Same(JSON.decode('null'), v:null)
+    End
 
-      let s = { 'use_token': 1 }
-      Assert Equals(JSON.decode('true', s), JSON.true)
-      Assert Equals(JSON.decode('false', s), JSON.false)
-      Assert Equals(JSON.decode('null', s), JSON.null)
+    It decodes special floats (NaN/Infinity/-Infinity)
+      Assert Equals(string(JSON.decode('NaN')), 'nan')
+      Assert Equals(string(JSON.decode('Infinity')), 'inf')
+      Assert Equals(string(JSON.decode('-Infinity')), '-inf')
+
+      let s = { 'allow_nan': 0 }
+      Throws /^Vim(\w\+):E121:/ JSON.decode('NaN', s)
+      Throws /^Vim(\w\+):E121:/ JSON.decode('Infinity', s)
+      Throws /^Vim(\w\+):E121:/ JSON.decode('-Infinity', s)
     End
   End
 
@@ -110,6 +129,31 @@ Describe Web.JSON
       Assert Equals(JSON.encode("s¢cĴgё"), '"s¢cĴgё"')
       " UTF-16 surrogate pair
       Assert Equals(JSON.encode("\xf0\x9f\x8d\xa3"), "\"\xf0\x9f\x8d\xa3\"")
+    End
+
+    It encodes strings with character encoding
+      let str_utf8 = "sあc漢g"
+      Assert Equals(JSON.encode(str_utf8), '"sあc漢g"')
+
+      let str_sjis = iconv("sあc漢g", 'utf-8', 'sjis')
+      try
+        let &encoding = 'sjis'
+        let res = JSON.encode(str_sjis)
+      finally
+        let &encoding = 'utf-8'
+      endtry
+      Assert Equals(res, '"sあc漢g"')
+
+      let s = { 'from_encoding': 'sjis' }
+      Assert Equals(JSON.encode(str_sjis, s), '"sあc漢g"')
+    End
+
+    It encodes strings with {settings.ensure_ascii} = true
+      let s = { 'ensure_ascii': v:true }
+      " multibyte
+      Assert Equals(JSON.encode("s¢cĴgё", s), '"s\u00a2c\u0134g\u0451"')
+      " UTF-16 surrogate pair
+      Assert Equals(JSON.encode("su\xf0\x9f\x8d\xa3shi", s), '"su\ud83c\udf63shi"')
     End
 
     It encodes lists
@@ -230,6 +274,51 @@ Describe Web.JSON
       Assert Equals(JSON.encode(JSON.true), 'true')
       Assert Equals(JSON.encode(JSON.false), 'false')
       Assert Equals(JSON.encode(JSON.null), 'null')
+
+      Assert Equals(JSON.encode(v:true), 'true')
+      Assert Equals(JSON.encode(v:false), 'false')
+      Assert Equals(JSON.encode(v:null), 'null')
+      Assert Equals(JSON.encode(v:none), 'null')
+    End
+
+    It encodes special floats (NaN/Infinity/-Infinity)
+      Assert Equals(JSON.encode(0.0/0), 'NaN')
+      Assert Equals(JSON.encode(1.0/0), 'Infinity')
+      Assert Equals(JSON.encode(-1.0/0), '-Infinity')
+
+      let s = { 'allow_nan': 0 }
+      Throws /^vital: Web.JSON:/ JSON.encode(0.0/0, s)
+      Throws /^vital: Web.JSON:/ JSON.encode(1.0/0, s)
+      Throws /^vital: Web.JSON:/ JSON.encode(-1.0/0, s)
+    End
+
+    It encodes blob
+      if !has('patch-8.1.0735')
+        Skip no available blob type.
+      endif
+      Assert Equals(JSON.encode(0z), '[]')
+      Assert Equals(JSON.encode(0zFF.00.ED.01.5D.AF), '[255,0,237,1,93,175]')
+    End
+
+    It throws exception when encodes funcref
+      let Funcref = function('get')
+      Throws /^vital: Web\.JSON: Invalid argument: / JSON.encode(Funcref)
+    End
+
+    It throws exception when encodes job
+      if !exists('*test_null_job')
+        Skip no available job type.
+      endif
+      let job = test_null_job()
+      Throws /^vital: Web\.JSON: Invalid argument: / JSON.encode(job)
+    End
+
+    It throws exception when encodes channel
+      if !exists('*test_null_channel')
+        Skip no available channel type.
+      endif
+      let ch = test_null_channel()
+      Throws /^vital: Web\.JSON: Invalid argument: / JSON.encode(ch)
     End
   End
 End
