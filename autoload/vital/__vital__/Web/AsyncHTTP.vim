@@ -16,63 +16,15 @@ function! s:_vital_depends() abort
 endfunction
 
 function! s:decodeURI(str) abort
-  let ret = a:str
-  let ret = substitute(ret, '+', ' ', 'g')
-  let ret = substitute(ret, '%\(\x\x\)', '\=printf("%c", str2nr(submatch(1), 16))', 'g')
-  return ret
+  return s:Core.decodeURI(a:str)
 endfunction
 
 function! s:encodeURI(items) abort
-  let ret = ''
-  if s:Prelude.is_dict(a:items)
-    for key in sort(keys(a:items))
-      if strlen(ret)
-        let ret .= '&'
-      endif
-      let ret .= key . '=' . s:encodeURI(a:items[key])
-    endfor
-  elseif s:Prelude.is_list(a:items)
-    for item in sort(a:items)
-      if strlen(ret)
-        let ret .= '&'
-      endif
-      let ret .= item
-    endfor
-  else
-    let ret = s:Core.escape(a:items)
-  endif
-  return ret
+  return s:Core.encodeURI(a:items)
 endfunction
 
 function! s:encodeURIComponent(items) abort
-  let ret = ''
-  if s:Prelude.is_dict(a:items)
-    for key in sort(keys(a:items))
-      if strlen(ret) | let ret .= '&' | endif
-      let ret .= key . '=' . s:encodeURIComponent(a:items[key])
-    endfor
-  elseif s:Prelude.is_list(a:items)
-    for item in sort(a:items)
-      if strlen(ret) | let ret .= '&' | endif
-      let ret .= item
-    endfor
-  else
-    let items = iconv(a:items, &enc, 'utf-8')
-    let len = strlen(items)
-    let i = 0
-    while i < len
-      let ch = items[i]
-      if ch =~# '[0-9A-Za-z-._~!''()*]'
-        let ret .= ch
-      elseif ch ==# ' '
-        let ret .= '+'
-      else
-        let ret .= '%' . substitute('0' . s:String.nr2hex(char2nr(ch)), '^.*\(..\)$', '\1', '')
-      endif
-      let i = i + 1
-    endwhile
-  endif
-  return ret
+  return s:Core.encodeURIComponent(a:items)
 endfunction
 
 function! s:_request_cb(settings, responses, exit_code) abort
@@ -145,16 +97,7 @@ function! s:post(url, ...) abort
 endfunction
 
 function! s:parseHeader(headers) abort
-  " FIXME: User should be able to specify the treatment method of the duplicate item.
-  let header = {}
-  for h in a:headers
-    let matched = matchlist(h, '^\([^:]\+\):\s*\(.*\)$')
-    if !empty(matched)
-      let [name, value] = matched[1 : 2]
-      let header[name] = value
-    endif
-  endfor
-  return header
+  return c:Core.parseHeader(a:headers)
 endfunction
 
 " Clients
