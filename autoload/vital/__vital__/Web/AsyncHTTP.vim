@@ -96,7 +96,7 @@ function! s:post(url, ...) abort
 endfunction
 
 function! s:parseHeader(headers) abort
-  return c:Core.parseHeader(a:headers)
+  return s:Core.parseHeader(a:headers)
 endfunction
 
 " Clients
