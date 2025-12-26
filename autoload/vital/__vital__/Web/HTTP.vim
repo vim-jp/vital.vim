@@ -8,13 +8,12 @@ function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = s:V.import('Prelude')
   let s:Process = s:V.import('Process')
-  let s:String = s:V.import('Data.String')
   let s:Core = s:V.import('Web.HTTP.Core')
 endfunction
 
 function! s:_vital_depends() abort
    return {
-    \ 'modules':['Prelude', 'Data.String', 'Process', 'Web.HTTP.Core'] ,
+    \ 'modules':['Prelude', 'Process', 'Web.HTTP.Core'] ,
     \ 'files':  ['HTTP_python2.py', 'HTTP_python3.py'],
     \}
 endfunction

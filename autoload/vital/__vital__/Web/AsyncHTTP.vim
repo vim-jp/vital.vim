@@ -5,13 +5,12 @@ function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = s:V.import('Prelude')
   let s:AsyncProcess = s:V.import('System.AsyncProcess')
-  let s:String = s:V.import('Data.String')
   let s:Core = s:V.import('Web.HTTP.Core')
 endfunction
 
 function! s:_vital_depends() abort
    return {
-    \ 'modules':['Prelude', 'Data.String', 'System.AsyncProcess'] ,
+    \ 'modules':['Prelude', 'System.AsyncProcess'] ,
     \}
 endfunction
 
