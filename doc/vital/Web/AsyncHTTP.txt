@@ -35,6 +35,20 @@ request({url} [, {settings}])
 request({method}, {url} [, {settings}])
 	Send a request to the server.
 	This function requires one of the clients, "curl" or "wget".
+
+	Example: >
+	let s:AsyncHTTP = vital#{plugin-name}#new().import('Web.AsyncHTTP')
+
+	function! s:user_cb(response) abort
+	  echo a:response
+	  " => Dictionary in the same format as Web.HTTP
+	endfunction
+
+	call s:AsyncHTTP.request({
+	      \ 'url': 'https://example.com',
+	      \ 'user_cb': function('s:user_cb'),
+	      \ })
+<
 	{settings} is a |Dictionary| which contains the following items:
 
 	"url"		Required
