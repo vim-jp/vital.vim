@@ -1,9 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:py2source = expand('<sfile>:h') . '/HTTP_python2.py'
-let s:py3source = expand('<sfile>:h') . '/HTTP_python3.py'
-
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = s:V.import('Prelude')
@@ -14,7 +11,6 @@ endfunction
 function! s:_vital_depends() abort
    return {
     \ 'modules':['Prelude', 'Data.String', 'System.AsyncProcess'] ,
-    \ 'files':  ['HTTP_python2.py', 'HTTP_python3.py'],
     \}
 endfunction
 
@@ -232,7 +228,7 @@ function! s:_build_settings(args) abort
   let settings = {
   \   'method': 'GET',
   \   'headers': {},
-  \   'client': ['python', 'curl', 'wget', 'python3', 'python2'],
+  \   'client': ['curl', 'wget'],
   \   'maxRedirect': 20,
   \   'retry': 1,
   \ }
@@ -280,13 +276,6 @@ endfunction
 " Clients
 function! s:_get_client(settings) abort
   for name in a:settings.client
-    if name ==? 'python'
-      let name = 'python3'
-      if !has('python3') && has('python')
-        " python2 fallback
-        let name = 'python2'
-      endif
-    endif
     if has_key(s:clients, name) && s:clients[name].available(a:settings)
       return s:clients[name]
     endif
@@ -566,68 +555,6 @@ function! s:clients.wget.request(settings) abort
   endif
 
   call s:AsyncProcess.execute(command, {'exit_cb': function('s:_wget_cb', [has_output_file, output_file, a:settings])})
-endfunction
-
-let s:clients.python3 = {}
-
-function! s:clients.python3.available(settings) abort
-  if !has('python3')
-    return 0
-  endif
-  if has_key(a:settings, 'outputFile')
-    " 'outputFile' is not supported yet
-    return 0
-  endif
-  if get(a:settings, 'retry', 0) != 1
-    " 'retry' is not supported yet
-    return 0
-  endif
-  if has_key(a:settings, 'authMethod')
-    return 0
-  endif
-  return 1
-endfunction
-
-function! s:clients.python3.request(settings) abort
-  if has_key(a:settings, 'unixSocket')
-    throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
-  endif
-
-  " TODO: retry, outputFile
-  let responses = []
-  execute 'py3file' s:py3source
-  return responses
-endfunction
-
-let s:clients.python2 = {}
-
-function! s:clients.python2.available(settings) abort
-  if !has('python')
-    return 0
-  endif
-  if has_key(a:settings, 'outputFile')
-    " 'outputFile' is not supported yet
-    return 0
-  endif
-  if get(a:settings, 'retry', 0) != 1
-    " 'retry' is not supported yet
-    return 0
-  endif
-  if has_key(a:settings, 'authMethod')
-    return 0
-  endif
-  return 1
-endfunction
-
-function! s:clients.python2.request(settings) abort
-  if has_key(a:settings, 'unixSocket')
-    throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
-  endif
-
-  " TODO: retry, outputFile
-  let responses = []
-  execute 'pyfile' s:py2source
-  return responses
 endfunction
 
 
