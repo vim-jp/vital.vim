@@ -19,27 +19,11 @@ function! s:_vital_depends() abort
     \}
 endfunction
 
-function! s:__urlencode_char(c) abort
-  return printf('%%%02X', char2nr(a:c))
-endfunction
-
 function! s:decodeURI(str) abort
   let ret = a:str
   let ret = substitute(ret, '+', ' ', 'g')
   let ret = substitute(ret, '%\(\x\x\)', '\=printf("%c", str2nr(submatch(1), 16))', 'g')
   return ret
-endfunction
-
-function! s:escape(str) abort
-  let result = ''
-  for i in range(len(a:str))
-    if a:str[i] =~# '^[a-zA-Z0-9_.~-]$'
-      let result .= a:str[i]
-    else
-      let result .= s:__urlencode_char(a:str[i])
-    endif
-  endfor
-  return result
 endfunction
 
 function! s:encodeURI(items) abort
@@ -59,7 +43,7 @@ function! s:encodeURI(items) abort
       let ret .= item
     endfor
   else
-    let ret = s:escape(a:items)
+    let ret = s:Core.escape(a:items)
   endif
   return ret
 endfunction
@@ -96,7 +80,7 @@ function! s:encodeURIComponent(items) abort
 endfunction
 
 function! s:request(...) abort
-  let settings = s:_build_settings(a:000)
+  let settings = s:Core.build_settings(a:000)
   let settings.method = toupper(settings.method)
   if !has_key(settings, 'url')
     throw 'vital: Web.HTTP: "url" parameter is required.'
@@ -123,7 +107,7 @@ function! s:request(...) abort
     endif
   endif
   if has_key(settings, 'data')
-    let settings.data = s:_postdata(settings.data)
+    let settings.data = s:Core.postdata(settings.data)
     let settings.headers['Content-Length'] = len(join(settings.data, "\n"))
   endif
   let settings._file = {}
@@ -136,8 +120,8 @@ function! s:request(...) abort
     endif
   endfor
 
-  call map(responses, 's:_build_response(v:val[0], v:val[1])')
-  return s:_build_last_response(responses)
+  call map(responses, 's:Core.build_response(v:val[0], v:val[1])')
+  return s:Core.build_last_response(responses)
 endfunction
 
 function! s:get(url, ...) abort
@@ -157,107 +141,6 @@ function! s:post(url, ...) abort
   \    'method': a:0 > 2 ? a:3 : 'POST',
   \ }
   return s:request(settings)
-endfunction
-
-function! s:_readfile(file) abort
-  if filereadable(a:file)
-    return join(readfile(a:file, 'b'), "\n")
-  endif
-  return ''
-endfunction
-
-function! s:_make_postfile(data) abort
-  let fname = s:_tempname()
-  call writefile(a:data, fname, 'b')
-  return fname
-endfunction
-
-function! s:_tempname() abort
-  return s:_file_resolve(tempname())
-endfunction
-
-function! s:_file_resolve(file) abort
-  return fnamemodify(a:file, ':p:gs?\\?/?')
-endfunction
-
-function! s:_postdata(data) abort
-  if s:Prelude.is_dict(a:data)
-    return [s:encodeURI(a:data)]
-  elseif s:Prelude.is_list(a:data)
-    return a:data
-  else
-    return split(a:data, "\n")
-  endif
-endfunction
-
-function! s:_build_response(header, content) abort
-  let response = {
-  \   'header' : a:header,
-  \   'content': a:content,
-  \   'status': 0,
-  \   'statusText': '',
-  \   'success': 0,
-  \ }
-
-  if !empty(a:header)
-    let status_line = get(a:header, 0)
-    let matched = matchlist(status_line, '^HTTP/\%(1\.\d\|2\)\s\+\(\d\+\)\s\+\(.*\)')
-    if !empty(matched)
-      let [status, status_text] = matched[1 : 2]
-      let response.status = status - 0
-      let response.statusText = status_text
-      let response.success = status =~# '^2'
-      call remove(a:header, 0)
-    endif
-  endif
-  return response
-endfunction
-
-function! s:_build_last_response(responses) abort
-  let all_headers = []
-  for response in a:responses
-    call extend(all_headers, response.header)
-  endfor
-  let last_response = remove(a:responses, -1)
-  let last_response.redirectInfo = a:responses
-  let last_response.allHeaders = all_headers
-  return last_response
-endfunction
-
-function! s:_build_settings(args) abort
-  let settings = {
-  \   'method': 'GET',
-  \   'headers': {},
-  \   'client': ['python', 'curl', 'wget', 'python3', 'python2'],
-  \   'maxRedirect': 20,
-  \   'retry': 1,
-  \ }
-  let args = copy(a:args)
-  if len(args) == 0
-    throw 'vital: Web.HTTP: request() needs one or more arguments.'
-  endif
-  if s:Prelude.is_dict(args[-1])
-    call extend(settings, remove(args, -1))
-  endif
-  if len(args) == 2
-    let settings.method = remove(args, 0)
-  endif
-  if !empty(args)
-    let settings.url = args[0]
-  endif
-
-  return settings
-endfunction
-
-function! s:_make_header_args(headdata, option, quote) abort
-  let args = ''
-  for [key, value] in items(a:headdata)
-    if s:Prelude.is_windows()
-      let value = substitute(value, '"', '"""', 'g')
-    endif
-    let args .= ' ' . a:option . a:quote . key . ': ' . value . a:quote
-  endfor
-  return args
 endfunction
 
 function! s:parseHeader(headers) abort
@@ -310,13 +193,13 @@ function! s:clients.curl.request(settings) abort
   if has_key(a:settings, 'unixSocket')
     let command .= ' --unix-socket ' . quote . a:settings.unixSocket . quote
   endif
-  let a:settings._file.header = s:_tempname()
+  let a:settings._file.header = s:Core.tempname()
   let command .= ' --dump-header ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
   if has_output_file
-    let output_file = s:_file_resolve(a:settings.outputFile)
+    let output_file = s:Core.file_resolve(a:settings.outputFile)
   else
-    let output_file = s:_tempname()
+    let output_file = s:Core.tempname()
     let a:settings._file.content = output_file
   endif
   let command .= ' --output ' . quote . output_file . quote
@@ -330,7 +213,7 @@ function! s:clients.curl.request(settings) abort
     let command .= '-X ' . a:settings.method
   endif
   let command .= ' --max-redirs ' . a:settings.maxRedirect
-  let command .= s:_make_header_args(a:settings.headers, '-H ', quote)
+  let command .= s:Core.make_header_args(a:settings.headers, '-H ', quote)
   let timeout = get(a:settings, 'timeout', '')
   let command .= ' --retry ' . a:settings.retry
   if timeout =~# '^\d\+$'
@@ -354,7 +237,7 @@ function! s:clients.curl.request(settings) abort
     let command .= ' --oauth2-bearer '  . quote . a:settings.bearerToken . quote
   endif
   if has_key(a:settings, 'data')
-    let a:settings._file.post = s:_make_postfile(a:settings.data)
+    let a:settings._file.post = s:Core.make_postfile(a:settings.data)
     let command .= ' --data-binary @' . quote . a:settings._file.post . quote
   endif
   let command .= ' ' . quote . a:settings.url . quote
@@ -362,7 +245,7 @@ function! s:clients.curl.request(settings) abort
   call s:Process.system(command)
   let retcode = s:Process.get_last_status()
 
-  let headerstr = s:_readfile(a:settings._file.header)
+  let headerstr = s:Core.readfile(a:settings._file.header)
   let header_chunks = split(headerstr, "\r\n\r\n")
   let headers = map(header_chunks, 'split(v:val, "\r\n")')
 
@@ -376,7 +259,7 @@ function! s:clients.curl.request(settings) abort
   if has_output_file || a:settings.method ==? 'HEAD'
     let content = ''
   else
-    let content = s:_readfile(output_file)
+    let content = s:Core.readfile(output_file)
   endif
   let responses[-1][1] = content
   return responses
@@ -407,19 +290,19 @@ function! s:clients.wget.request(settings) abort
   elseif method !=# 'GET' && method !=# 'POST'
     let a:settings.headers['X-HTTP-Method-Override'] = a:settings.method
   endif
-  let a:settings._file.header = s:_tempname()
+  let a:settings._file.header = s:Core.tempname()
   let command .= ' -o ' . quote . a:settings._file.header . quote
   let has_output_file = has_key(a:settings, 'outputFile')
   if has_output_file
-    let output_file = s:_file_resolve(a:settings.outputFile)
+    let output_file = s:Core.file_resolve(a:settings.outputFile)
   else
-    let output_file = s:_tempname()
+    let output_file = s:Core.tempname()
     let a:settings._file.content = output_file
   endif
   let command .= ' -O ' . quote . output_file . quote
   let command .= ' --server-response -q -L '
   let command .= ' --max-redirect=' . a:settings.maxRedirect
-  let command .= s:_make_header_args(a:settings.headers, '--header=', quote)
+  let command .= s:Core.make_header_args(a:settings.headers, '--header=', quote)
   let timeout = get(a:settings, 'timeout', '')
   let command .= ' --tries=' . a:settings.retry
   if timeout =~# '^\d\+$'
@@ -436,7 +319,7 @@ function! s:clients.wget.request(settings) abort
   endif
   let command .= ' ' . quote . a:settings.url . quote
   if has_key(a:settings, 'data')
-    let a:settings._file.post = s:_make_postfile(a:settings.data)
+    let a:settings._file.post = s:Core.make_postfile(a:settings.data)
     let command .= ' --post-file=' . quote . a:settings._file.post . quote
   endif
 
@@ -460,7 +343,7 @@ function! s:clients.wget.request(settings) abort
   if has_output_file
     let content = ''
   else
-    let content = s:_readfile(output_file)
+    let content = s:Core.readfile(output_file)
   endif
   let responses[-1][1] = content
   return responses
