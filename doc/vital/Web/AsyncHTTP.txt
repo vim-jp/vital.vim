@@ -201,7 +201,6 @@ Data structure as |Directory| like following.
 CLIENT					*Vital.Web.AsyncHTTP-client*
 
 The following can be used.
-(TODO: More document.  Especially about limitation.)
 
 curl					*Vital.Web.AsyncHTTP-client-curl*
 	Use curl command.
