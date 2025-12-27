@@ -14,10 +14,23 @@ function! s:_vital_depends() abort
     \}
 endfunction
 
-function! s:urlencode_char(c) abort
+function! s:_urlencode_char(c) abort
   return printf('%%%02X', char2nr(a:c))
 endfunction
 
+function! s:_escape(str) abort
+  let result = ''
+  for i in range(len(a:str))
+    if a:str[i] =~# '^[a-zA-Z0-9_.~-]$'
+      let result .= a:str[i]
+    else
+      let result .= s:_urlencode_char(a:str[i])
+    endif
+  endfor
+  return result
+endfunction
+
+" public interface implements
 function! s:readfile(file) abort
   if filereadable(a:file)
     return join(readfile(a:file, 'b'), "\n")
@@ -119,19 +132,6 @@ function! s:make_header_args(headdata, option, quote) abort
   return args
 endfunction
 
-function! s:escape(str) abort
-  let result = ''
-  for i in range(len(a:str))
-    if a:str[i] =~# '^[a-zA-Z0-9_.~-]$'
-      let result .= a:str[i]
-    else
-      let result .= s:urlencode_char(a:str[i])
-    endif
-  endfor
-  return result
-endfunction
-
-" public interface implements
 function! s:parseHeader(headers) abort
   " FIXME: User should be able to specify the treatment method of the duplicate item.
   let header = {}
@@ -162,7 +162,7 @@ function! s:encodeURI(items) abort
       let ret .= item
     endfor
   else
-    let ret = s:escape(a:items)
+    let ret = s:_escape(a:items)
   endif
   return ret
 endfunction
