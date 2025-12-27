@@ -110,6 +110,7 @@ function! s:_get_client(settings) abort
 endfunction
 
 " implements clients
+" TODO: Implement async python3 mechanism and add document.
 let s:clients = {}
 
 let s:clients.curl = {}
