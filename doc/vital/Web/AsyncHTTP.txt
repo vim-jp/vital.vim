@@ -46,7 +46,7 @@ request({method}, {url} [, {settings}])
 
 	call s:AsyncHTTP.request({
 	      \ 'url': 'https://example.com',
-	      \ 'user_cb': function('s:user_cb'),
+	      \ 'userCallback': function('s:user_cb'),
 	      \ })
 <
 	{settings} is a |Dictionary| which contains the following items:
@@ -128,7 +128,7 @@ request({method}, {url} [, {settings}])
 	"unixSocket"	Default: (None)
 		Use --unix-sokect (only curl >= 7.40.0)
 
-	"user_cb"	Default: (None)
+	"userCallback"	Default: (None)
 		A |function| of callback function called when the process
 		outputs some data. The callback function has one argument,
 		response(|Dictionary| of response).

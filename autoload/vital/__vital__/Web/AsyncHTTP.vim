@@ -35,8 +35,8 @@ function! s:_request_cb(settings, responses, exit_code) abort
 
   call map(a:responses, 's:Core.build_response(v:val[0], v:val[1])')
   let last_response = s:Core.build_last_response(a:responses)
-  if has_key(a:settings, 'user_cb')
-    call a:settings.user_cb(last_response)
+  if has_key(a:settings, 'userCallback')
+    call a:settings.userCallback(last_response)
   endif
 endfunction
 

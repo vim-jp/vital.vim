@@ -90,7 +90,7 @@ Describe Web.AsyncHTTP
       let response = AsyncHTTP.request({
             \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
             \ 'client': ['curl'],
-            \ 'user_cb': function('s:user_cb'),
+            \ 'userCallback': function('s:user_cb'),
             \ })
 
       call s:wait_until({-> g:response !=# {}}, 1000)
