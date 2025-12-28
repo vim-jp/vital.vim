@@ -10,7 +10,7 @@ endfunction
 
 function! s:_vital_depends() abort
    return {
-    \ 'modules':['Prelude', 'System.AsyncProcess'] ,
+    \ 'modules':['Prelude', 'System.AsyncProcess', 'Web.HTTP.Core'] ,
     \}
 endfunction
 
