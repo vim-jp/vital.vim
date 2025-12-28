@@ -1,7 +1,7 @@
 *vital/Web/AsyncHTTP.txt*	simple  Async HTTP client library.
 
-Maintainer: mattn <mattn.jp@gmail.com>
-            thinca <thinca+vim@gmail.com>
+Maintainer: mikoto2000 <mikoto2000@gmail.com>
+	    (Based on Vital Web.HTTP)
 
 ==============================================================================
 CONTENTS				*Vital.Web.AsyncHTTP-contents*
