@@ -14,8 +14,8 @@ INTERFACE				|Vital.Web.AsyncHTTP-interface|
 ==============================================================================
 INTRODUCTION				*Vital.Web.AsyncHTTP-introduction*
 
-*Vital.Web.AsyncHTTP* is an Async HTTP Utilities Library.  It provides a simple
-Async HTTP client.
+*Vital.Web.AsyncHTTP* is an Async HTTP Utilities Library.  It provides a
+simple Async HTTP client.
 
 ==============================================================================
 INTERFACE				*Vital.Web.AsyncHTTP-interface*
