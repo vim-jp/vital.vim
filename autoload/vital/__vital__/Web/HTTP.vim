@@ -22,18 +22,6 @@ function! s:decodeURI(str) abort
   return s:Core.decodeURI(a:str)
 endfunction
 
-function! s:escape(str) abort
-  let result = ''
-  for i in range(len(a:str))
-    if a:str[i] =~# '^[a-zA-Z0-9_.~-]$'
-      let result .= a:str[i]
-    else
-      let result .= s:Core.urlencode_char(a:str[i])
-    endif
-  endfor
-  return result
-endfunction
-
 function! s:encodeURI(items) abort
   return s:Core.encodeURI(a:items)
 endfunction
