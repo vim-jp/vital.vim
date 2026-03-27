@@ -1,20 +1,16 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:py2source = expand('<sfile>:h') . '/HTTP_python2.py'
-let s:py3source = expand('<sfile>:h') . '/HTTP_python3.py'
-
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:Prelude = s:V.import('Prelude')
-  let s:Process = s:V.import('Process')
+  let s:AsyncProcess = s:V.import('System.AsyncProcess')
   let s:Core = s:V.import('Web.HTTP.Core')
 endfunction
 
 function! s:_vital_depends() abort
    return {
-    \ 'modules':['Prelude', 'Process', 'Web.HTTP.Core'] ,
-    \ 'files':  ['HTTP_python2.py', 'HTTP_python3.py'],
+    \ 'modules':['Prelude', 'System.AsyncProcess', 'Web.HTTP.Core'] ,
     \}
 endfunction
 
@@ -28,6 +24,20 @@ endfunction
 
 function! s:encodeURIComponent(items) abort
   return s:Core.encodeURIComponent(a:items)
+endfunction
+
+function! s:_request_cb(settings, responses, exit_code) abort
+  for file in values(a:settings._file)
+    if filereadable(file)
+      call delete(file)
+    endif
+  endfor
+
+  call map(a:responses, 's:Core.build_response(v:val[0], v:val[1])')
+  let last_response = s:Core.build_last_response(a:responses)
+  if has_key(a:settings, 'userCallback')
+    call a:settings.userCallback(last_response)
+  endif
 endfunction
 
 function! s:request(...) abort
@@ -64,15 +74,6 @@ function! s:request(...) abort
   let settings._file = {}
 
   let responses = client.request(settings)
-
-  for file in values(settings._file)
-    if filereadable(file)
-      call delete(file)
-    endif
-  endfor
-
-  call map(responses, 's:Core.build_response(v:val[0], v:val[1])')
-  return s:Core.build_last_response(responses)
 endfunction
 
 function! s:get(url, ...) abort
@@ -101,13 +102,6 @@ endfunction
 " Clients
 function! s:_get_client(settings) abort
   for name in a:settings.client
-    if name ==? 'python'
-      let name = 'python3'
-      if !has('python3') && has('python')
-        " python2 fallback
-        let name = 'python2'
-      endif
-    endif
     if has_key(s:clients, name) && s:clients[name].available(a:settings)
       return s:clients[name]
     endif
@@ -116,10 +110,10 @@ function! s:_get_client(settings) abort
 endfunction
 
 " implements clients
+" TODO: Implement async python3 mechanism and add document.
 let s:clients = {}
 
 let s:clients.curl = {}
-
 
 function! s:clients.curl.available(settings) abort
   return executable(self._command(a:settings))
@@ -129,8 +123,30 @@ function! s:clients.curl._command(settings) abort
   return get(get(a:settings, 'command', {}), 'curl', 'curl')
 endfunction
 
+function! s:_curl_cb(has_output_file, output_file, settings, exit_code) abort
+  let headerstr = s:Core.readfile(a:settings._file.header)
+  let header_chunks = split(headerstr, "\r\n\r\n")
+  let headers = map(header_chunks, 'split(v:val, "\r\n")')
+
+  call s:Core.curl_validate_retcode(headers, a:exit_code)
+
+  if !empty(headers)
+    let responses = map(headers, '[v:val, ""]')
+  else
+    let responses = [[[], '']]
+  endif
+  if a:has_output_file || a:settings.method ==? 'HEAD'
+    let content = ''
+  else
+    let content = s:Core.readfile(a:output_file)
+  endif
+  let responses[-1][1] = content
+
+  return s:_request_cb(a:settings, responses, a:exit_code)
+endfunction
+
 function! s:clients.curl.request(settings) abort
-  let quote = s:_quote()
+  let quote = '"'
   let command = self._command(a:settings)
   if has_key(a:settings, 'unixSocket')
     let command .= ' --unix-socket ' . quote . a:settings.unixSocket . quote
@@ -184,27 +200,8 @@ function! s:clients.curl.request(settings) abort
   endif
   let command .= ' ' . quote . a:settings.url . quote
 
-  call s:Process.system(command)
-  let retcode = s:Process.get_last_status()
-
-  let headerstr = s:Core.readfile(a:settings._file.header)
-  let header_chunks = split(headerstr, "\r\n\r\n")
-  let headers = map(header_chunks, 'split(v:val, "\r\n")')
-
-  call s:Core.curl_validate_retcode(headers, retcode)
-
-  if !empty(headers)
-    let responses = map(headers, '[v:val, ""]')
-  else
-    let responses = [[[], '']]
-  endif
-  if has_output_file || a:settings.method ==? 'HEAD'
-    let content = ''
-  else
-    let content = s:Core.readfile(output_file)
-  endif
-  let responses[-1][1] = content
-  return responses
+  call s:AsyncProcess.execute(command, {
+        \ 'exit_cb': function('s:_curl_cb', [has_output_file, output_file, a:settings])})
 endfunction
 
 let s:clients.wget = {}
@@ -220,11 +217,36 @@ function! s:clients.wget._command(settings) abort
   return get(get(a:settings, 'command', {}), 'wget', 'wget')
 endfunction
 
+function! s:_wget_cb(has_output_file, output_file, settings, exit_code) abort
+  if filereadable(a:settings._file.header)
+    let header_lines = readfile(a:settings._file.header, 'b')
+    call map(header_lines, 'matchstr(v:val, "^\\s*\\zs.*")')
+    let headerstr = join(header_lines, "\r\n")
+    let header_chunks = split(headerstr, '\r\n\zeHTTP/\%(1\.\d\|2\)')
+    let headers = map(header_chunks, 'split(v:val, "\r\n")')
+    let responses = map(headers, '[v:val, ""]')
+  else
+    let headers = []
+    let responses = [[[], '']]
+  endif
+
+  call s:Core.wget_validate_retcode(headers, a:exit_code)
+
+  if a:has_output_file
+    let content = ''
+  else
+    let content = s:Core.readfile(a:output_file)
+  endif
+  let responses[-1][1] = content
+
+  return s:_request_cb(a:settings, responses, a:exit_code)
+endfunction
+
 function! s:clients.wget.request(settings) abort
   if has_key(a:settings, 'unixSocket')
     throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
   endif
-  let quote = s:_quote()
+  let quote = '"'
   let command = self._command(a:settings)
   let method = a:settings.method
   if method ==# 'HEAD'
@@ -265,92 +287,7 @@ function! s:clients.wget.request(settings) abort
     let command .= ' --post-file=' . quote . a:settings._file.post . quote
   endif
 
-  call s:Process.system(command)
-  let retcode = s:Process.get_last_status()
-
-  if filereadable(a:settings._file.header)
-    let header_lines = readfile(a:settings._file.header, 'b')
-    call map(header_lines, 'matchstr(v:val, "^\\s*\\zs.*")')
-    let headerstr = join(header_lines, "\r\n")
-    let header_chunks = split(headerstr, '\r\n\zeHTTP/\%(1\.\d\|2\)')
-    let headers = map(header_chunks, 'split(v:val, "\r\n")')
-    let responses = map(headers, '[v:val, ""]')
-  else
-    let headers = []
-    let responses = [[[], '']]
-  endif
-
-  call s:Core.wget_validate_retcode(headers, retcode)
-
-  if has_output_file
-    let content = ''
-  else
-    let content = s:Core.readfile(output_file)
-  endif
-  let responses[-1][1] = content
-  return responses
-endfunction
-
-let s:clients.python3 = {}
-
-function! s:clients.python3.available(settings) abort
-  if !has('python3')
-    return 0
-  endif
-  if has_key(a:settings, 'outputFile')
-    " 'outputFile' is not supported yet
-    return 0
-  endif
-  if get(a:settings, 'retry', 0) != 1
-    " 'retry' is not supported yet
-    return 0
-  endif
-  if has_key(a:settings, 'authMethod')
-    return 0
-  endif
-  return 1
-endfunction
-
-function! s:clients.python3.request(settings) abort
-  if has_key(a:settings, 'unixSocket')
-    throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
-  endif
-
-  " TODO: retry, outputFile
-  let responses = []
-  execute 'py3file' s:py3source
-  return responses
-endfunction
-
-let s:clients.python2 = {}
-
-function! s:clients.python2.available(settings) abort
-  if !has('python')
-    return 0
-  endif
-  if has_key(a:settings, 'outputFile')
-    " 'outputFile' is not supported yet
-    return 0
-  endif
-  if get(a:settings, 'retry', 0) != 1
-    " 'retry' is not supported yet
-    return 0
-  endif
-  if has_key(a:settings, 'authMethod')
-    return 0
-  endif
-  return 1
-endfunction
-
-function! s:clients.python2.request(settings) abort
-  if has_key(a:settings, 'unixSocket')
-    throw 'vital: Web.HTTP: unixSocket only can be used with the curl.'
-  endif
-
-  " TODO: retry, outputFile
-  let responses = []
-  execute 'pyfile' s:py2source
-  return responses
+  call s:AsyncProcess.execute(command, {'exit_cb': function('s:_wget_cb', [has_output_file, output_file, a:settings])})
 endfunction
 
 
@@ -362,3 +299,4 @@ let &cpo = s:save_cpo
 unlet s:save_cpo
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:
+
