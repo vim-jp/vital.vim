@@ -130,7 +130,7 @@ jobs:
           cat coverage.xml
           echo '::endgroup::'
       - name: Send coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: ./coverage.xml
           env_vars: OS,VIMVER
@@ -270,7 +270,7 @@ jobs:
           cat coverage.xml
           echo '::endgroup::'
       - name: Send coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: ./coverage.xml
           env_vars: OS,VIMVER
