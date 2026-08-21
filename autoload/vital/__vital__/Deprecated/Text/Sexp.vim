@@ -25,11 +25,8 @@ function! s:_vital_depends() abort
 endfunction
 
 " lua array index as 0 based.
-let s:_base = 0
-if has('patch-8.2.1066')
-  " fix lua array index as 1 based.
-  let s:_base = 1
-endif
+" after patch-8.2.1066, fix lua array index as 1 based.
+let s:_base = 1
 function! s:_index(idx) abort
   return printf('%d', s:_base + a:idx)
 endfunction
