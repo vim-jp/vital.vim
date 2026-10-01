@@ -38,38 +38,31 @@ let s:control_chars = {
     \ }
 lockvar s:control_chars
 
-function! s:_true() abort
-  return 1
-endfunction
+let s:float_constants = {
+    \   'nan': 'NaN',
+    \   '-nan': 'NaN',
+    \   'inf': 'Infinity',
+    \   '-inf': '-Infinity',
+    \ }
+let s:float_nan = 0.0 / 0
+let s:float_inf = 1.0 / 0
+lockvar s:float_constants s:float_nan s:float_inf
 
-function! s:_false() abort
-  return 0
-endfunction
-
-function! s:_null() abort
-  return 0
-endfunction
-
-function! s:_resolve(val, prefix) abort
-  let t = type(a:val)
-  if t == type('')
-    let m = matchlist(a:val, '^' . a:prefix . '\(null\|true\|false\)$')
-    if !empty(m)
-      return s:const[m[1]]
-    endif
-  elseif t == type([]) || t == type({})
-    return map(a:val, 's:_resolve(v:val, a:prefix)')
-  endif
-  return a:val
-endfunction
+let s:special_constants = {
+    \   'v:true': 'true',
+    \   'v:false': 'false',
+    \   'v:null': 'null',
+    \   'v:none': 'null',
+    \ }
+lockvar s:special_constants
 
 function! s:_vital_created(module) abort
   " define constant variables
   if !exists('s:const')
     let s:const = {}
-    let s:const.true = function('s:_true')
-    let s:const.false = function('s:_false')
-    let s:const.null = function('s:_null')
+    let s:const.true = v:true
+    let s:const.false = v:false
+    let s:const.null = v:null
     lockvar s:const
   endif
   call extend(a:module, s:const)
@@ -78,18 +71,22 @@ endfunction
 function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:string = s:V.import('Data.String')
+  let s:bytes = s:V.import('Data.List.Byte')
+  let s:t = s:V.import('Vim.Type').types
 endfunction
 
 function! s:_vital_depends() abort
-  return ['Data.String']
+  return ['Data.String', 'Data.List.Byte', 'Vim.Type']
 endfunction
 
 " @vimlint(EVL102, 1, l:null)
 " @vimlint(EVL102, 1, l:true)
 " @vimlint(EVL102, 1, l:false)
+" @vimlint(EVL102, 1, l:NaN)
+" @vimlint(EVL102, 1, l:Infinity)
 function! s:decode(json, ...) abort
   let settings = extend({
-        \ 'use_token': 0,
+        \ 'allow_nan': 1,
         \}, get(a:000, 0, {}))
   let json = iconv(a:json, 'utf-8', &encoding)
   let json = join(split(json, "\n"), '')
@@ -99,51 +96,70 @@ function! s:decode(json, ...) abort
   let json = substitute(json, '\([\uD800-\uDBFF]\)\([\uDC00-\uDFFF]\)',
         \ '\=nr2char(0x10000+and(0x7ff,char2nr(submatch(1)))*0x400+and(0x3ff,char2nr(submatch(2))))',
         \ 'g')
-  if settings.use_token
-    let prefix = '__Web.JSON__'
-    while stridx(json, prefix) != -1
-      let prefix .= '_'
-    endwhile
-    let [null,true,false] = map(['null','true','false'], 'prefix . v:val')
-    sandbox return s:_resolve(eval(json), prefix)
-  else
-    let [null,true,false] = [s:const.null(),s:const.true(),s:const.false()]
-    sandbox return eval(json)
+  if settings.allow_nan
+    let [NaN,Infinity] = [s:float_nan,s:float_inf]
   endif
+  let [null, true, false] = [v:null, v:true, v:false]
+  sandbox return eval(json)
 endfunction
 " @vimlint(EVL102, 0, l:null)
 " @vimlint(EVL102, 0, l:true)
 " @vimlint(EVL102, 0, l:false)
+" @vimlint(EVL102, 0, l:NaN)
+" @vimlint(EVL102, 0, l:Infinity)
 
 function! s:encode(val, ...) abort
   let settings = extend({
         \ 'indent': 0,
+        \ 'allow_nan': 1,
+        \ 'from_encoding': &encoding,
+        \ 'ensure_ascii': 0,
         \}, get(a:000, 0, {})
         \)
-  if type(a:val) == 0
-    return a:val
-  elseif type(a:val) == 1
-    let s = substitute(a:val, '[\x01-\x1f\\"]', '\=s:control_chars[submatch(0)]', 'g')
-    let s = iconv(s, &encoding, 'utf-8')
-    return '"' . s . '"'
-  elseif type(a:val) == 2
-    if s:const.true == a:val
-      return 'true'
-    elseif s:const.false == a:val
-      return 'false'
-    elseif s:const.null == a:val
-      return 'null'
-    else
-      " backward compatibility
-      return string(a:val)
-    endif
-  elseif type(a:val) == 3
-    return s:_encode_list(a:val, settings)
-  elseif type(a:val) == 4
-    return s:_encode_dict(a:val, settings)
-  else
-    return string(a:val)
+  let json = s:_encode(a:val, settings)
+  if settings.ensure_ascii
+    let json = substitute(json, '[\U0000007f-\U0010ffff]',
+        \ {m -> s:_escape_unicode_chars(m[0])}, 'g')
   endif
+  return json
+endfunction
+
+function! s:_escape_unicode_chars(char) abort
+  let n = char2nr(a:char)
+  if n < 0x10000
+    return printf('\u%04x', n)
+  else
+    let n -= 0x10000
+    return printf('\u%04x%\u%04x', 0xd800 + n / 0x400, 0xdc00 + and(0x3ff, n))
+  endif
+endfunction
+
+function! s:_encode(val, settings) abort
+  let t = type(a:val)
+  if t ==# s:t.number
+    return a:val
+  elseif t ==# s:t.string
+    let s = iconv(a:val, a:settings.from_encoding, 'utf-8')
+    let s = substitute(s, '[\x01-\x1f\\"]', '\=s:control_chars[submatch(0)]', 'g')
+    return '"' . s . '"'
+  elseif t ==# s:t.list
+    return s:_encode_list(a:val, a:settings)
+  elseif t ==# s:t.dict
+    return s:_encode_dict(a:val, a:settings)
+  elseif t ==# s:t.float
+    let val = string(a:val)
+    if a:settings.allow_nan
+      let val = get(s:float_constants, val, val)
+    elseif has_key(s:float_constants, val)
+      throw 'vital: Web.JSON: Invalid float value: ' . val
+    endif
+    return val
+  elseif t ==# s:t.bool || t ==# s:t.none
+    return get(s:special_constants, a:val)
+  elseif t ==# s:t.blob
+    return s:_encode_list(s:bytes.from_blob(a:val), a:settings)
+  endif
+  throw 'vital: Web.JSON: Invalid argument: ' . string(a:val)
 endfunction
 
 " @vimlint(EVL102, 1, l:ns)
@@ -151,7 +167,7 @@ function! s:_encode_list(val, settings) abort
   if empty(a:val)
     return '[]'
   elseif !a:settings.indent
-    let encoded_candidates = map(copy(a:val), 's:encode(v:val, a:settings)')
+    let encoded_candidates = map(copy(a:val), 's:_encode(v:val, a:settings)')
     return printf('[%s]', join(encoded_candidates, ','))
   else
     let previous_indent = get(a:settings, '_previous_indent')
@@ -161,7 +177,7 @@ function! s:_encode_list(val, settings) abort
           \})
     let encoded_candidates = map(
           \ copy(a:val),
-          \ printf('''%s'' . s:encode(v:val, ns)', repeat(' ', indent)),
+          \ printf('''%s'' . s:_encode(v:val, ns)', repeat(' ', indent)),
           \)
     return printf(
           \ "[\n%s\n%s]",
@@ -178,7 +194,7 @@ function! s:_encode_dict(val, settings) abort
     return '{}'
   elseif !a:settings.indent
     let encoded_candidates = map(keys(a:val),
-          \ 's:encode(v:val, a:settings) . '':'' . s:encode(a:val[v:val], a:settings)'
+          \ 's:_encode(v:val, a:settings) . '':'' . s:_encode(a:val[v:val], a:settings)'
           \)
     return printf('{%s}', join(encoded_candidates, ','))
   else
@@ -189,7 +205,7 @@ function! s:_encode_dict(val, settings) abort
           \})
     let encoded_candidates = map(keys(a:val),
           \ printf(
-          \   '''%s'' . s:encode(v:val, ns) . '': '' . s:encode(a:val[v:val], ns)',
+          \   '''%s'' . s:_encode(v:val, ns) . '': '' . s:_encode(a:val[v:val], ns)',
           \   repeat(' ', indent),
           \ ),
           \)
