@@ -1,0 +1,128 @@
+scriptencoding utf-8
+
+let s:is_windows = has('win32')
+
+function! s:wait_until(cond, timeout) abort
+  let start = reltime()
+  while 1
+    if a:cond()
+      return 1
+    endif
+    if reltimefloat(reltime(start)) * 1000 > a:timeout
+      return 0
+    endif
+    sleep 10m
+  endwhile
+endfunction
+
+Describe Web.AsyncHTTP
+  Before all
+    let AsyncHTTP = vital#vital#new().import('Web.AsyncHTTP')
+  End
+
+  After all
+    unlet g:response
+  End
+
+  Before
+    let g:response = {}
+  End
+
+  Describe .encodeURI()
+    It encodes string
+      for s in ['1234567890',
+      \  'abcdefghijklmnopqrstuvwxyz',
+      \  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \  '._-',
+      \  'abc1.2345_ABCD-EZY']
+        Assert Equals(s, AsyncHTTP.encodeURI(s))
+      endfor
+
+      Assert Equals('abc12390', AsyncHTTP.encodeURI('abc12390'))
+      Assert Equals('abc%01%0A%0D%20AB-', AsyncHTTP.encodeURI("abc\x01\x0a\x0d AB-"))
+      Assert Equals('%A4%C1%A4%E3', AsyncHTTP.encodeURI("\xA4\xC1\xA4\xE3"))
+      Assert Equals('%A4%C1%A4%E5', AsyncHTTP.encodeURI("\xA4\xC1\xA4\xE5"))
+      Assert Equals('%A4%C1%A4%E7', AsyncHTTP.encodeURI("\xA4\xC1\xA4\xE7"))
+    End
+  End
+
+  Describe .decodeURI()
+    It decodes string
+      for s in ['1234567890',
+      \  'abcdefghijklmnopqrstuvwxyz',
+      \  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \  'abc12345ABCDEZY',
+      \  '._-',
+      \  'abc1.2345_ABCD-EZY']
+        Assert Equals(s, AsyncHTTP.decodeURI(s))
+      endfor
+      Assert Equals('1234567890', AsyncHTTP.decodeURI('1234567890'))
+      Assert Equals('abc12390', AsyncHTTP.decodeURI('abc12390'))
+      Assert Equals(AsyncHTTP.decodeURI('%A4%C1%A4%E3'), "\xA4\xC1\xA4\xE3")
+      Assert Equals(AsyncHTTP.decodeURI('%A4%C1%A4%E5'), "\xA4\xC1\xA4\xE5")
+      Assert Equals(AsyncHTTP.decodeURI('%A4%C1%A4%E7'), "\xA4\xC1\xA4\xE7")
+    End
+
+    It encodes and decodes string
+      for s in ['1234567890',
+      \  'abcdefghijklmnopqrstuvwxyz',
+      \  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \  'abc12345ABCDEZY',
+      \  '%123ABC!"#$%&''()~=-~^|\\[]@:;+<>/\',
+      \  'あいうえお',
+      \  'ちゃちゅちょ']
+        Assert Equals(s, AsyncHTTP.decodeURI(AsyncHTTP.encodeURI(s)))
+      endfor
+    End
+  End
+
+  Describe .request()
+    It client curl
+      if s:is_windows && exists('$GITHUB_ACTIONS') && $GITHUB_ACTIONS ==# 'true'
+        Skip Windows on GitHub Actions, occur unknown write error...
+      endif
+
+      function! s:user_cb(response) abort
+        let g:response = a:response
+      endfunction
+
+      let current_dir = fnamemodify(getcwd(), ":gs?\\?/?")
+      let response = AsyncHTTP.request({
+            \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
+            \ 'client': ['curl'],
+            \ 'userCallback': function('s:user_cb'),
+            \ })
+
+      call s:wait_until({-> g:response !=# {}}, 1000)
+
+      Assert Equals(g:response.content, "テスト\n")
+    End
+
+    It option_outputFile
+      if s:is_windows && exists('$GITHUB_ACTIONS') && $GITHUB_ACTIONS ==# 'true'
+        Skip Windows on GitHub Actions, occur unknown write error...
+      endif
+
+      function! s:user_cb(response) abort
+        let g:response = a:response
+      endfunction
+
+      let current_dir = fnamemodify(getcwd(), ":gs?\\?/?")
+      let output_file = tempname()
+      let response = AsyncHTTP.request({
+            \ 'url': 'file:///' .. current_dir .. '/test/_testdata/Web/test.html',
+            \ 'outputFile': output_file,
+            \ 'client': ['curl'],
+            \ })
+
+      call s:wait_until({-> g:response !=# {}}, 1000)
+
+      let output_file_content = readfile(output_file)
+
+      Assert Equals(len(output_file_content), 1)
+      Assert Equals(output_file_content[0], "テスト")
+
+      call delete(output_file)
+    End
+  End
+End
