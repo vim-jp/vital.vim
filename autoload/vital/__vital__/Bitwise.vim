@@ -24,34 +24,13 @@ function! s:compare(a, b) abort
   endif
 endfunction
 
-if has("patch-8.2.5003")
-  function! s:lshift(a, n) abort
-    return a:a << and(a:n, s:mask)
-  endfunction
+function! s:lshift(a, n) abort
+  return a:a << and(a:n, s:mask)
+endfunction
 
-  function! s:rshift(a, n) abort
-    return a:a >> and(a:n, s:mask)
-  endfunction
-else
-  let s:pow2 = [1]
-  for s:i in range(s:mask)
-    call add(s:pow2, s:pow2[-1] * 2)
-  endfor
-  unlet s:i
-
-  let s:min = s:pow2[-1]
-
-  function! s:lshift(a, n) abort
-    return a:a * s:pow2[and(a:n, s:mask)]
-  endfunction
-
-  function! s:rshift(a, n) abort
-    let n = and(a:n, s:mask)
-    return n == 0 ? a:a :
-    \  a:a < 0 ? (a:a - s:min) / s:pow2[n] + s:pow2[-2] / s:pow2[n - 1]
-    \          : a:a / s:pow2[n]
-  endfunction
-endif
+function! s:rshift(a, n) abort
+  return a:a >> and(a:n, s:mask)
+endfunction
 
 " 32bit or 64bit specific method
 " define sign_extension
@@ -60,11 +39,7 @@ if has('num64')
   " NOTE:
   " An int literal larger than or equal to 0x8000000000000000 will be rounded
   " to 0x7FFFFFFFFFFFFFFF after Vim 8.0.0219, so create it without literal
-  if has("patch-8.2.5003")
-    let s:xFFFFFFFF00000000 = 0xFFFFFFFF << and(32, s:mask)
-  else
-    let s:xFFFFFFFF00000000 = 0xFFFFFFFF * s:pow2[and(32, s:mask)]
-  endif
+  let s:xFFFFFFFF00000000 = 0xFFFFFFFF << and(32, s:mask)
   function! s:sign_extension(n) abort
     if and(a:n, 0x80000000)
       return or(a:n, s:xFFFFFFFF00000000)

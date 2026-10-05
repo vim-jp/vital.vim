@@ -60,7 +60,6 @@ endfunction
 let s:RGB_HEX_RE = '\v^#(\x{3}(\x{3})?)$'
 let s:RGB_RE = '\v^rgb\((\d+\%?),\s*(\d+\%?),\s*(\d+\%?)\)$'
 let s:HSL_RE = '\v^hsl\((\d+),\s*(\d+)\%,\s*(\d+)\%\)$'
-let s:VIM_RGB_FILE = expand('$VIMRUNTIME/rgb.txt')
 function! s:parse(str) abort
   if type(a:str) !=# type('')
     throw 'vital: Color: parse(): invalid value type: ' . string(a:str)
@@ -89,20 +88,11 @@ function! s:parse(str) abort
     return s:hsl(h, s, l)
   endif
   " e.g. DarkGray
-  if exists('v:colornames')  " after patch 8.2.3562
-    let name = s:_normalize_color_name(a:str)
-    if has_key(v:colornames, name)
-      let m = matchlist(v:colornames[name], s:RGB_HEX_RE)
-      let [r, g, b] = [str2float('0x' . m[1][0:1]), str2float('0x' . m[1][2:3]), str2float('0x' . m[1][4:5])]
-      return s:rgb(r, g, b)
-    endif
-  elseif filereadable(s:VIM_RGB_FILE)
-    let color_map = s:_parse_rgb_file(s:VIM_RGB_FILE)
-    let name = s:_normalize_color_name(a:str)
-    if has_key(color_map, name)
-      let [r, g, b] = color_map[name]
-      return s:rgb(r, g, b)
-    endif
+  let name = s:_normalize_color_name(a:str)
+  if has_key(v:colornames, name)
+    let m = matchlist(v:colornames[name], s:RGB_HEX_RE)
+    let [r, g, b] = [str2float('0x' . m[1][0:1]), str2float('0x' . m[1][2:3]), str2float('0x' . m[1][4:5])]
+    return s:rgb(r, g, b)
   endif
   throw 'vital: Color: parse(): invalid format: ' . a:str
 endfunction
