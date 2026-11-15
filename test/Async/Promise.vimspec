@@ -805,6 +805,10 @@ Describe Async.Promise
         " It can either underflow or overflow.
         Assert Compare(done, '>=', 400)
         Assert Compare(done, '<=', 1000)
+      elseif has('win32')
+        " Windows timer precision can shift polling slightly around the boundary.
+        Assert Compare(done, '>=', 580)
+        Assert Compare(done, '<=', 820)
       else
         Assert Compare(done, '>=', 600)
         Assert Compare(done, '<=', 800)
@@ -826,6 +830,10 @@ Describe Async.Promise
         " It can either underflow or overflow.
         Assert Compare(done, '>=', 600)
         Assert Compare(done, '<=', 1200)
+      elseif has('win32')
+        " Windows timer precision can shift polling slightly around the boundary.
+        Assert Compare(done, '>=', 780)
+        Assert Compare(done, '<=', 1020)
       else
         Assert Compare(done, '>=', 800)
         Assert Compare(done, '<=', 1000)
@@ -849,6 +857,10 @@ Describe Async.Promise
         " It can either underflow or overflow.
         Assert Compare(done, '>=', 400)
         Assert Compare(done, '<=', 1000)
+      elseif has('win32')
+        " Windows timer precision can shift polling slightly around the boundary.
+        Assert Compare(done, '>=', 580)
+        Assert Compare(done, '<=', 820)
       else
         Assert Compare(done, '>=', 600)
         Assert Compare(done, '<=', 800)
@@ -870,6 +882,10 @@ Describe Async.Promise
         " It can either underflow or overflow.
         Assert Compare(done, '>=', 600)
         Assert Compare(done, '<=', 1200)
+      elseif has('win32')
+        " Windows timer precision can shift polling slightly around the boundary.
+        Assert Compare(done, '>=', 780)
+        Assert Compare(done, '<=', 1020)
       else
         Assert Compare(done, '>=', 800)
         Assert Compare(done, '<=', 1000)
