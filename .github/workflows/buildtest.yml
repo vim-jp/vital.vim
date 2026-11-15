@@ -25,7 +25,7 @@ jobs:
             type: macvim
             # macvim only head
             vim: v9.1.0100
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os == 'ubuntu-latest' && 'ubuntu-24.04' || matrix.os }}
     name: ${{ matrix.type }} ${{ matrix.vim }}/${{ matrix.os }} test
     env:
       OS: ${{ matrix.os }}
