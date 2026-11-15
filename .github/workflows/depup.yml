@@ -36,6 +36,7 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.app-token.outputs.token }}
+          maintainer-can-modify: true
           author: 'github-actions <41898282+github-actions[bot]@users.noreply.github.com>'
           title: "chore(deps): update ${{ steps.depup.outputs.repo }} to ${{ steps.depup.outputs.latest }}"
           commit-message: "chore(deps): update ${{ steps.depup.outputs.repo }} to ${{ steps.depup.outputs.latest }}"
@@ -66,6 +67,7 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          maintainer-can-modify: true
           author: 'github-actions <41898282+github-actions[bot]@users.noreply.github.com>'
           title: "chore(deps): update ${{ steps.depup.outputs.repo }} to ${{ steps.depup.outputs.latest }}"
           commit-message: "chore(deps): update ${{ steps.depup.outputs.repo }} to ${{ steps.depup.outputs.latest }}"
