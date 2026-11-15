@@ -9,12 +9,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         vim: [v9.0.0107, v9.1.0100 ,head]
         type: [vim, macvim]
         download: [available]
         exclude:
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             # linux only vim/ macvim run as mac os
             type: macvim
           - os: macos-latest
@@ -25,7 +25,7 @@ jobs:
             type: macvim
             # macvim only head
             vim: v9.1.0100
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os == 'ubuntu-latest' && 'ubuntu-24.04' || matrix.os }}
     name: ${{ matrix.type }} ${{ matrix.vim }}/${{ matrix.os }} test
     env:
       OS: ${{ matrix.os }}
@@ -37,7 +37,7 @@ jobs:
         run: |
           cat ENVFILE >> $GITHUB_ENV
       - name: Setup apt
-        if: matrix.os == 'ubuntu-24.04'
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
       - name: Setup lua
