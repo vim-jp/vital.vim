@@ -1,5 +1,11 @@
 name: "build and test at vim"
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+permissions:
+  contents: read
 env:
   LUA_VERSION: 5.3.5
   VIMPROC_VERSION: ver.10.0
@@ -270,3 +276,143 @@ jobs:
         with:
           files: ./coverage.xml
           env_vars: OS,VIMVER
+
+  tagname:
+    name: Check tag name conflict
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Help tag check
+        uses: tsuyoshicho/action-vimhelp-tagname-check@v1
+
+  vint:
+    name: runner / vint
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Check out code.
+        uses: actions/checkout@v7
+      - uses: haya14busa/action-cond@v1
+        id: reporter
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: "github-pr-review"
+          if_false: "github-check"
+      - name: vint
+        uses: reviewdog/action-vint@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: ${{ steps.reporter.outputs.value }}
+
+  vimlint:
+    name: runner / vimlint
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Check out code.
+        uses: actions/checkout@v7
+      - uses: haya14busa/action-cond@v1
+        id: reporter
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: "github-pr-review"
+          if_false: "github-check"
+      - name: vimlint
+        uses: tsuyoshicho/action-vimlint@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: ${{ steps.reporter.outputs.value }}
+
+  misspell:
+    name: runner / misspell
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Check out code.
+        uses: actions/checkout@v7
+      - uses: haya14busa/action-cond@v1
+        id: reporter
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: "github-pr-review"
+          if_false: "github-check"
+      - name: misspell
+        uses: reviewdog/action-misspell@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: ${{ steps.reporter.outputs.value }}
+          # vital.vim allows both US/UK.
+
+  vital-throw-message:
+    name: runner / vital-throw-message
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Check out code.
+        uses: actions/checkout@v7
+      - uses: haya14busa/action-cond@v1
+        id: reporter
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: "github-pr-review"
+          if_false: "github-check"
+      - name: vital-throw-message
+        uses: ./.github/actions/vital-throw-message
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: ${{ steps.reporter.outputs.value }}
+
+  required-checks:
+    name: Required checks
+    if: ${{ always() }}
+    needs:
+      - unixlike
+      - windows
+      - tagname
+      - vint
+      - vimlint
+      - misspell
+      - vital-throw-message
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Verify required jobs succeeded
+        env:
+          UNIXLIKE_RESULT: ${{ needs.unixlike.result }}
+          WINDOWS_RESULT: ${{ needs.windows.result }}
+          TAGNAME_RESULT: ${{ needs.tagname.result }}
+          VINT_RESULT: ${{ needs.vint.result }}
+          VIMLINT_RESULT: ${{ needs.vimlint.result }}
+          MISSPELL_RESULT: ${{ needs.misspell.result }}
+          THROW_MESSAGE_RESULT: ${{ needs.vital-throw-message.result }}
+        run: |
+          printf 'unixlike: %s\n' "$UNIXLIKE_RESULT"
+          printf 'windows: %s\n' "$WINDOWS_RESULT"
+          printf 'tagname: %s\n' "$TAGNAME_RESULT"
+          printf 'vint: %s\n' "$VINT_RESULT"
+          printf 'vimlint: %s\n' "$VIMLINT_RESULT"
+          printf 'misspell: %s\n' "$MISSPELL_RESULT"
+          printf 'vital-throw-message: %s\n' "$THROW_MESSAGE_RESULT"
+          test "$UNIXLIKE_RESULT" = success
+          test "$WINDOWS_RESULT" = success
+          test "$TAGNAME_RESULT" = success
+          test "$VINT_RESULT" = success
+          test "$VIMLINT_RESULT" = success
+          test "$MISSPELL_RESULT" = success
+          test "$THROW_MESSAGE_RESULT" = success
